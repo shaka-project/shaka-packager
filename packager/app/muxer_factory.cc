@@ -40,6 +40,7 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
 
   switch (output_format) {
     case CONTAINER_AAC:
+    case CONTAINER_MP3:
     case CONTAINER_AC3:
     case CONTAINER_EAC3:
       muxer = std::make_shared<PackedAudioWriter>(options);

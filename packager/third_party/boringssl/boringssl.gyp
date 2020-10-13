@@ -175,15 +175,10 @@
               'sources': [ '<@(boringssl_linux_x86_64_sources)' ],
             }],
             ['OS == "win"', {
-              'sources': [ '<@(boringssl_win_x86_64_sources)' ],
-              # Windows' assembly is built with Yasm. The other platforms use
-              # the platform assembler.
-              'variables': {
-                'yasm_output_path': '<(SHARED_INTERMEDIATE_DIR)/third_party/boringssl',
+              # NOTES(kqyang): Somehow ASM fails to compile. Disable ASM.
+              'direct_dependent_settings': {
+                'defines': [ 'OPENSSL_NO_ASM' ],
               },
-              'includes': [
-                '../yasm/yasm_compile.gypi',
-              ],
             }],
             ['OS != "mac" and OS != "linux" and OS != "win" and OS != "android"', {
               'direct_dependent_settings': {

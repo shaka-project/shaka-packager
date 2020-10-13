@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "packager/base/macros.h"
 #include "packager/hls/public/hls_params.h"
@@ -60,7 +61,8 @@ class MediaPlaylist {
   };
 
   /// @param hls_params contains HLS parameters.
-  /// @param file_name is the file name of this media playlist.
+  /// @param file_name is the file name of this media playlist, relative to
+  ///        master playlist output path.
   /// @param name is the name of this playlist. In other words this is the
   ///        value of the NAME attribute for EXT-X-MEDIA. This is not
   ///        necessarily the same as @a file_name.
@@ -87,11 +89,21 @@ class MediaPlaylist {
   /// For testing only.
   void SetLanguageForTesting(const std::string& language);
 
+  /// For testing only.
+  void SetCharacteristicsForTesting(
+      const std::vector<std::string>& characteristics);
+
   /// This must succeed before calling any other public methods.
   /// @param media_info is the info of the segments that are going to be added
   ///        to this playlist.
   /// @return true on success, false otherwise.
   virtual bool SetMediaInfo(const MediaInfo& media_info);
+
+  /// Set the sample duration. Sample duration is used to generate frame rate.
+  /// Sample duration is not available right away especially. This allows
+  /// setting the sample duration after the Media Playlist has been initialized.
+  /// @param sample_duration is the duration of a sample.
+  virtual void SetSampleDuration(uint32_t sample_duration);
 
   /// Segments must be added in order.
   /// @param file_name is the file name of the segment.
@@ -140,7 +152,7 @@ class MediaPlaylist {
 
   /// Write the playlist to |file_path|.
   /// This does not close the file.
-  /// If target duration is not set expliticly, this will try to find the target
+  /// If target duration is not set explicitly, this will try to find the target
   /// duration. Note that target duration cannot be changed. So calling this
   /// without explicitly setting the target duration and before adding any
   /// segments will end up setting the target duration to 0 and will always
@@ -176,13 +188,38 @@ class MediaPlaylist {
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
 
+  /// @return Dolby Digital Plus JOC decoding complexity, ETSI TS 103 420 v1.2.1
+  ///         Backwards-compatible object audio carriage using Enhanced AC-3
+  ///         Standard C.3.2.3.
+  virtual int GetEC3JocComplexity() const;
+
+  /// @return true if it's an AC-4 IMS stream, based on Dolby AC-4 in MPEG-DASH
+  ///         for Online Delivery Specification 2.5.3.
+  ///         https://developer.dolby.com/tools-media/online-delivery-kits/dolby-ac-4/
+  virtual bool GetAC4ImsFlag() const;
+
+  /// @return true if it's an AC-4 CBI stream, based on ETSI TS 103 190-2
+  ///         Digital Audio Compression (AC-4) Standard; Part 2: Immersive and
+  ///         personalized audio 4.3.
+  virtual bool GetAC4CbiFlag() const;
+
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.
   virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;
 
+  /// @return The video range of the stream.
+  virtual std::string GetVideoRange() const;
+
+  /// @return the frame rate.
+  virtual double GetFrameRate() const;
+
   /// @return the language of the media, as an ISO language tag in its shortest
   ///         form.  May be an empty string for video.
-  std::string language() const { return language_; }
+  const std::string& language() const { return language_; }
+
+  const std::vector<std::string>& characteristics() const {
+    return characteristics_;
+  }
 
  private:
   // Add a SegmentInfoEntry (#EXTINF).
@@ -213,11 +250,12 @@ class MediaPlaylist {
   bool use_byte_range_ = false;
   std::string codec_;
   std::string language_;
-  int media_sequence_number_ = 0;
+  std::vector<std::string> characteristics_;
+  uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;
 
-  double longest_segment_duration_ = 0.0;
+  double longest_segment_duration_seconds_ = 0.0;
   uint32_t time_scale_ = 0;
 
   BandwidthEstimator bandwidth_estimator_;
@@ -230,7 +268,10 @@ class MediaPlaylist {
   bool target_duration_set_ = false;
   uint32_t target_duration_ = 0;
 
+  // TODO(kqyang): This could be managed better by a separate class, than having
+  // all them managed in MediaPlaylist.
   std::list<std::unique_ptr<HlsEntry>> entries_;
+  double current_buffer_depth_ = 0;
   // A list to hold the file names of the segments to be removed temporarily.
   // Once a file is actually removed, it is removed from the list.
   std::list<std::string> segments_to_be_removed_;

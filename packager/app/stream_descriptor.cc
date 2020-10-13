@@ -30,6 +30,11 @@ enum FieldType {
   kTrickPlayFactorField,
   kSkipEncryptionField,
   kDrmStreamLabelField,
+  kHlsCharacteristicsField,
+  kDashAccessiblitiesField,
+  kDashRolesField,
+  kDashOnlyField,
+  kHlsOnlyField,
 };
 
 struct FieldNameToTypeMapping {
@@ -63,6 +68,19 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"skip_encryption", kSkipEncryptionField},
     {"drm_stream_label", kDrmStreamLabelField},
     {"drm_label", kDrmStreamLabelField},
+    {"hls_characteristics", kHlsCharacteristicsField},
+    {"characteristics", kHlsCharacteristicsField},
+    {"charcs", kHlsCharacteristicsField},
+    {"dash_accessibilities", kDashAccessiblitiesField},
+    {"dash_accessibility", kDashAccessiblitiesField},
+    {"accessibilities", kDashAccessiblitiesField},
+    {"accessibility", kDashAccessiblitiesField},
+    {"dash_roles", kDashRolesField},
+    {"dash_role", kDashRolesField},
+    {"roles", kDashRolesField},
+    {"role", kDashRolesField},
+    {"dash_only", kDashOnlyField},
+    {"hls_only", kHlsOnlyField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -164,10 +182,60 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         descriptor.skip_encryption = skip_encryption_value > 0;
         break;
       }
-      case kDrmStreamLabelField: {
+      case kDrmStreamLabelField:
         descriptor.drm_label = iter->second;
         break;
-      }
+      case kHlsCharacteristicsField:
+        descriptor.hls_characteristics =
+            base::SplitString(iter->second, ";:", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        break;
+      case kDashAccessiblitiesField:
+        descriptor.dash_accessiblities =
+            base::SplitString(iter->second, ";", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        for (const std::string& accessibility :
+             descriptor.dash_accessiblities) {
+          size_t pos = accessibility.find('=');
+          if (pos == std::string::npos) {
+            LOG(ERROR)
+                << "Accessibility should be in scheme=value format, but seeing "
+                << accessibility;
+            return base::nullopt;
+          }
+        }
+        break;
+      case kDashRolesField:
+        descriptor.dash_roles =
+            base::SplitString(iter->second, ";", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        break;
+      case kDashOnlyField:
+        unsigned dash_only_value;
+        if (!base::StringToUint(iter->second, &dash_only_value)) {
+          LOG(ERROR) << "Non-numeric option for dash_only field "
+                        "specified (" << iter->second << ").";
+          return base::nullopt;
+        }
+        if (dash_only_value > 1) {
+          LOG(ERROR) << "dash_only should be either 0 or 1.";
+          return base::nullopt;
+        }
+        descriptor.dash_only = dash_only_value > 0;
+        break;
+      case kHlsOnlyField:
+        unsigned hls_only_value;
+        if (!base::StringToUint(iter->second, &hls_only_value)) {
+          LOG(ERROR) << "Non-numeric option for hls_only field "
+                        "specified (" << iter->second << ").";
+          return base::nullopt;
+        }
+        if (hls_only_value > 1) {
+          LOG(ERROR) << "hls_only should be either 0 or 1.";
+          return base::nullopt;
+        }
+        descriptor.hls_only = hls_only_value > 0;
+        break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
                    << "\").";

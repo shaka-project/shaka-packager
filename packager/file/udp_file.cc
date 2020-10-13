@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <ws2tcpip.h>
 #define close closesocket
+#define EINTR_CODE WSAEINTR
 
 #else
 
@@ -21,6 +22,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
+#define EINTR_CODE EINTR
 
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
 // building on a machine that is older than that.
@@ -43,6 +45,14 @@ bool IsIpv4MulticastAddress(const struct in_addr& addr) {
   return (ntohl(addr.s_addr) & 0xf0000000) == 0xe0000000;
 }
 
+int GetSocketErrorCode() {
+#if defined(OS_WIN)
+  return WSAGetLastError();
+#else
+  return errno;
+#endif
+}
+
 }  // anonymous namespace
 
 UdpFile::UdpFile(const char* file_name)
@@ -56,6 +66,10 @@ bool UdpFile::Close() {
     socket_ = INVALID_SOCKET;
   }
   delete this;
+#if defined(OS_WIN)
+  if (wsa_started_)
+    WSACleanup();
+#endif
   return true;
 }
 
@@ -71,7 +85,7 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
   do {
     result =
         recvfrom(socket_, reinterpret_cast<char*>(buffer), length, 0, NULL, 0);
-  } while ((result == -1) && (errno == EINTR));
+  } while (result == -1 && GetSocketErrorCode() == EINTR_CODE);
 
   return result;
 }
@@ -103,26 +117,6 @@ bool UdpFile::Tell(uint64_t* position) {
   return false;
 }
 
-#if defined(OS_WIN)
-class LibWinsockInitializer {
- public:
-  LibWinsockInitializer() {
-    WSADATA wsa_data;
-    error_ = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-  }
-
-  ~LibWinsockInitializer() {
-    if (error_ == 0)
-      WSACleanup();
-  }
-
-  int error() const { return error_; }
-
- private:
-  int error_;
-};
-#endif  // defined(OS_WIN)
-
 class ScopedSocket {
  public:
   explicit ScopedSocket(SOCKET sock_fd) : sock_fd_(sock_fd) {}
@@ -148,12 +142,13 @@ class ScopedSocket {
 
 bool UdpFile::Open() {
 #if defined(OS_WIN)
-  static LibWinsockInitializer lib_winsock_initializer;
-  if (lib_winsock_initializer.error() != 0) {
-    LOG(ERROR) << "Winsock start up failed with error "
-               << lib_winsock_initializer.error();
+  WSADATA wsa_data;
+  int wsa_error = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+  if (wsa_error != 0) {
+    LOG(ERROR) << "Winsock start up failed with error " << wsa_error;
     return false;
   }
+  wsa_started_ = true;
 #endif  // defined(OS_WIN)
 
   DCHECK_EQ(INVALID_SOCKET, socket_);
@@ -165,7 +160,7 @@ bool UdpFile::Open() {
 
   ScopedSocket new_socket(socket(AF_INET, SOCK_DGRAM, 0));
   if (new_socket.get() == INVALID_SOCKET) {
-    LOG(ERROR) << "Could not allocate socket.";
+    LOG(ERROR) << "Could not allocate socket, error = " << GetSocketErrorCode();
     return false;
   }
 
@@ -191,16 +186,17 @@ bool UdpFile::Open() {
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR,
                    reinterpret_cast<const char*>(&optval),
                    sizeof(optval)) < 0) {
-      LOG(ERROR)
-          << "Could not apply the SO_REUSEADDR property to the UDP socket";
+      LOG(ERROR) << "Could not apply the SO_REUSEADDR property to the UDP "
+                    "socket, error = "
+                 << GetSocketErrorCode();
       return false;
     }
   }
 
   if (bind(new_socket.get(),
            reinterpret_cast<struct sockaddr*>(&local_sock_addr),
-           sizeof(local_sock_addr))) {
-    LOG(ERROR) << "Could not bind UDP socket";
+           sizeof(local_sock_addr)) < 0) {
+    LOG(ERROR) << "Could not bind UDP socket, error = " << GetSocketErrorCode();
     return false;
   }
 
@@ -229,8 +225,9 @@ bool UdpFile::Open() {
                      IP_ADD_SOURCE_MEMBERSHIP,
                      reinterpret_cast<const char*>(&source_multicast_group),
                      sizeof(source_multicast_group)) < 0) {
-          LOG(ERROR) << "Failed to join multicast group.";
-          return false;
+        LOG(ERROR) << "Failed to join multicast group, error = "
+                   << GetSocketErrorCode();
+        return false;
       }
     } else {
       // this is a v2 join without a specific source.
@@ -246,12 +243,12 @@ bool UdpFile::Open() {
       }
 
       if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                    reinterpret_cast<const char*>(&multicast_group),
-                    sizeof(multicast_group)) < 0) {
-        LOG(ERROR) << "Failed to join multicast group.";
+                     reinterpret_cast<const char*>(&multicast_group),
+                     sizeof(multicast_group)) < 0) {
+        LOG(ERROR) << "Failed to join multicast group, error = "
+                   << GetSocketErrorCode();
         return false;
       }
-
   }
 
 #if defined(__linux__)
@@ -261,8 +258,9 @@ bool UdpFile::Open() {
     if (setsockopt(new_socket.get(), IPPROTO_IP, IP_MULTICAST_ALL,
                    reinterpret_cast<const char*>(&optval_zero),
                    sizeof(optval_zero)) < 0 &&
-        errno != ENOPROTOOPT) {
-      LOG(ERROR) << "Failed to disable IP_MULTICAST_ALL option.";
+        GetSocketErrorCode() != ENOPROTOOPT) {
+      LOG(ERROR) << "Failed to disable IP_MULTICAST_ALL option, error = "
+                 << GetSocketErrorCode();
       return false;
     }
 #endif  // #if defined(__linux__)
@@ -275,7 +273,8 @@ bool UdpFile::Open() {
     tv.tv_usec = options->timeout_us() % 1000000;
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVTIMEO,
                    reinterpret_cast<const char*>(&tv), sizeof(tv)) < 0) {
-      LOG(ERROR) << "Failed to set socket timeout.";
+      LOG(ERROR) << "Failed to set socket timeout, error = "
+                 << GetSocketErrorCode();
       return false;
     }
   }
@@ -285,8 +284,8 @@ bool UdpFile::Open() {
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVBUF,
                    reinterpret_cast<const char*>(&receive_buffer_size),
                    sizeof(receive_buffer_size)) < 0) {
-      LOG(ERROR) << "Failed to set the maximum receive buffer size: "
-                 << strerror(errno);
+      LOG(ERROR) << "Failed to set the maximum receive buffer size, error = "
+                 << GetSocketErrorCode();
       return false;
     }
   }

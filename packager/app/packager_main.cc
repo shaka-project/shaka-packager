@@ -39,6 +39,7 @@
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 DEFINE_bool(licenses, false, "Dump licenses.");
+DEFINE_bool(quiet, false, "When enabled, LOG(INFO) output is suppressed.");
 DEFINE_bool(use_fake_clock_for_muxer,
             false,
             "Set to true to use a fake clock for muxer. With this flag set, "
@@ -101,12 +102,23 @@ const char kUsage[] =
     "  - iframe_playlist_name: The optional HLS I-Frames only playlist file\n"
     "    to create. Usually ends with '.m3u8', and is relative to\n"
     "    hls_master_playlist_output. Should only be set for video streams. If\n"
-    "    unspecified, no I-Frames only playlist is created.\n";
+    "    unspecified, no I-Frames only playlist is created.\n"
+    "  - hls_characteristics (charcs): Optional colon/semicolon separated\n"
+    "    list of values for the CHARACTERISTICS attribute for EXT-X-MEDIA.\n"
+    "    See CHARACTERISTICS attribute in http://bit.ly/2OOUkdB for details.\n"
+    "  - dash_accessibilities (accessibilities): Optional semicolon separated\n"
+    "    list of values for DASH Accessibility elements. The value should be\n"
+    "    in the format: scheme_id_uri=value.\n"
+    "  - dash_roles (roles): Optional semicolon separated list of values for\n"
+    "    DASH Role elements. The value should be one of: caption, subtitle,\n"
+    "    main, alternate, supplementary, commentary and dub. See DASH\n"
+    "    (ISO/IEC 23009-1) specification for details.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";
 const char kKeyIdLabel[] = "key_id";
 const char kKeyLabel[] = "key";
+const char kKeyIvLabel[] = "iv";
 
 enum ExitStatus {
   kSuccess = 0,
@@ -196,6 +208,17 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
                  << value_map[kKeyLabel];
       return false;
     }
+    if (!value_map[kKeyIvLabel].empty()) {
+      if (!raw_key->iv.empty()) {
+        LOG(ERROR) << "IV already specified with --iv";
+        return false;
+      }
+      if (!base::HexStringToBytes(value_map[kKeyIvLabel], &key_info.iv)) {
+        LOG(ERROR) << "Empty IV or invalid hex string for IV: "
+                   << value_map[kKeyIvLabel];
+        return false;
+      }
+    }
   }
   return true;
 }
@@ -257,18 +280,17 @@ bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
   return true;
 }
 
-bool ParseProtectionSystems(
-    const std::string& protection_systems_str,
-    std::vector<EncryptionParams::ProtectionSystem>* protection_systems) {
-  protection_systems->clear();
+bool ParseProtectionSystems(const std::string& protection_systems_str,
+                            ProtectionSystem* protection_systems) {
+  *protection_systems = ProtectionSystem::kNone;
 
-  std::map<std::string, EncryptionParams::ProtectionSystem> mapping = {
-      {"common", EncryptionParams::ProtectionSystem::kCommonSystem},
-      {"commonsystem", EncryptionParams::ProtectionSystem::kCommonSystem},
-      {"fairplay", EncryptionParams::ProtectionSystem::kFairPlay},
-      {"marlin", EncryptionParams::ProtectionSystem::kMarlin},
-      {"playready", EncryptionParams::ProtectionSystem::kPlayReady},
-      {"widevine", EncryptionParams::ProtectionSystem::kWidevine},
+  std::map<std::string, ProtectionSystem> mapping = {
+      {"common", ProtectionSystem::kCommon},
+      {"commonsystem", ProtectionSystem::kCommon},
+      {"fairplay", ProtectionSystem::kFairPlay},
+      {"marlin", ProtectionSystem::kMarlin},
+      {"playready", ProtectionSystem::kPlayReady},
+      {"widevine", ProtectionSystem::kWidevine},
   };
 
   for (const std::string& protection_system :
@@ -280,7 +302,7 @@ bool ParseProtectionSystems(
                  << protection_system;
       return false;
     }
-    protection_systems->push_back(iter->second);
+    *protection_systems |= iter->second;
   }
   return true;
 }
@@ -332,12 +354,17 @@ base::Optional<PackagingParams> GetPackagingParams() {
     encryption_params.clear_lead_in_seconds = FLAGS_clear_lead;
     if (!GetProtectionScheme(&encryption_params.protection_scheme))
       return base::nullopt;
+    encryption_params.crypt_byte_block = FLAGS_crypt_byte_block;
+    encryption_params.skip_byte_block = FLAGS_skip_byte_block;
+
     encryption_params.crypto_period_duration_in_seconds =
         FLAGS_crypto_period_duration;
     encryption_params.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;
     encryption_params.stream_label_func = std::bind(
         &Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
         FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);
+    encryption_params.playready_extra_header_data =
+        FLAGS_playready_extra_header_data;
   }
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
@@ -440,11 +467,14 @@ base::Optional<PackagingParams> GetPackagingParams() {
   }
 
   mpd_params.default_language = FLAGS_default_language;
-  mpd_params.generate_static_live_mpd = FLAGS_generate_static_mpd;
+  mpd_params.default_text_language = FLAGS_default_text_language;
+  mpd_params.generate_static_live_mpd = FLAGS_generate_static_live_mpd;
   mpd_params.generate_dash_if_iop_compliant_mpd =
       FLAGS_generate_dash_if_iop_compliant_mpd;
   mpd_params.allow_approximate_segment_timeline =
       FLAGS_allow_approximate_segment_timeline;
+  mpd_params.allow_codec_switching = FLAGS_allow_codec_switching;
+  mpd_params.include_mspr_pro = FLAGS_include_mspr_pro_for_playready;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {
@@ -457,6 +487,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
   hls_params.preserved_segments_outside_live_window =
       FLAGS_preserved_segments_outside_live_window;
   hls_params.default_language = FLAGS_default_language;
+  hls_params.default_text_language = FLAGS_default_text_language;
+  hls_params.media_sequence_number = FLAGS_hls_media_sequence_number;
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = FLAGS_dump_stream_info;
@@ -488,6 +520,8 @@ int PackagerMain(int argc, char** argv) {
     google::ShowUsageWithFlags("Usage");
     return kSuccess;
   }
+  if (FLAGS_quiet)
+    logging::SetMinLogLevel(logging::LOG_WARNING);
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
       !ValidatePRCryptoFlags()) {
@@ -518,7 +552,8 @@ int PackagerMain(int argc, char** argv) {
     LOG(ERROR) << "Packaging Error: " << status.ToString();
     return kPackagingFailed;
   }
-  printf("Packaging completed successfully.\n");
+  if (!FLAGS_quiet)
+    printf("Packaging completed successfully.\n");
   return kSuccess;
 }
 

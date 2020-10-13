@@ -43,7 +43,7 @@ deps = {
   # Make sure the version matches the one in
   # src/packager/third_party/boringssl, which contains perl generated files.
   "src/packager/third_party/boringssl/src":
-    Var("github") + "/google/boringssl@fc9c67599d9bdeb2e0467085133b81a8e28f77a4",
+    Var("github") + "/google/boringssl@76918d016414bf1d71a86d28239566fbcf8aacf0",
 
   "src/packager/third_party/curl/source":
     Var("github") + "/curl/curl@62c07b5743490ce373910f469abc8cdc759bec2b",  #7.57.0

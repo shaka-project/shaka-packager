@@ -10,6 +10,7 @@
 #include "packager/packager.h"
 
 using testing::_;
+using testing::HasSubstr;
 using testing::Invoke;
 using testing::MockFunction;
 using testing::Return;
@@ -25,6 +26,7 @@ const char kTestFile[] = "packager/media/test/data/bear-640x360.mp4";
 const char kOutputVideo[] = "output_video.mp4";
 const char kOutputVideoTemplate[] = "output_video_$Number$.m4s";
 const char kOutputAudio[] = "output_audio.mp4";
+const char kOutputAudioTemplate[] = "output_audio_$Number$.m4s";
 const char kOutputMpd[] = "output.mpd";
 
 const double kSegmentDurationInSeconds = 1.0;
@@ -136,6 +138,51 @@ TEST_F(PackagerTest, MixingSegmentTemplateAndSingleSegment) {
   Packager packager;
   auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
   ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+}
+
+TEST_F(PackagerTest, DuplicatedOutputs) {
+  std::vector<StreamDescriptor> stream_descriptors;
+  StreamDescriptor stream_descriptor;
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "video";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptor.segment_template = GetFullPath(kOutputVideoTemplate);
+  stream_descriptors.push_back(stream_descriptor);
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "audio";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptor.segment_template = GetFullPath(kOutputAudioTemplate);
+  stream_descriptors.push_back(stream_descriptor);
+
+  Packager packager;
+  auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+  EXPECT_THAT(status.error_message(), HasSubstr("duplicated outputs"));
+}
+
+TEST_F(PackagerTest, DuplicatedSegmentTemplates) {
+  std::vector<StreamDescriptor> stream_descriptors;
+  StreamDescriptor stream_descriptor;
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "video";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptor.segment_template = GetFullPath(kOutputVideoTemplate);
+  stream_descriptors.push_back(stream_descriptor);
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "audio";
+  stream_descriptor.output = GetFullPath(kOutputAudio);
+  stream_descriptor.segment_template = GetFullPath(kOutputVideoTemplate);
+  stream_descriptors.push_back(stream_descriptor);
+
+  Packager packager;
+  auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+  EXPECT_THAT(status.error_message(),
+              HasSubstr("duplicated segment templates"));
 }
 
 TEST_F(PackagerTest, SegmentAlignedAndSubsegmentNotAligned) {

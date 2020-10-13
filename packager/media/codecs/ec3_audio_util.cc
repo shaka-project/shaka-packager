@@ -81,10 +81,77 @@ uint8_t ReverseBits8(uint8_t n) {
   return ((n >> 4) & 0x0f) | ((n & 0x0f) << 4);
 }
 
+// Mapping of channel configurations to the MPEG audio value based on
+// ETSI TS 102 366 V1.4.1 Digital Audio Compression (AC-3, Enhanced AC-3)
+// Standard Table I.1.1
+uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
+  uint32_t ret = 0;
+
+  switch (channel_map) {
+    case kCenter:
+      ret = 1;
+      break;
+    case kLeft | kRight:
+      ret = 2;
+      break;
+    case kCenter| kLeft | kRight:
+      ret = 3;
+      break;
+    case kCenter | kLeft | kRight | kCenterSurround:
+      ret = 4;
+      break;
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround:
+      ret = 5;
+      break;
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
+         kLFEScreen:
+      ret = 6;
+      break;
+    case kCenter | kLeft | kRight | kLwRwPair | kLeftSurround | kRightSurround |
+         kLFEScreen:
+      ret = 7;
+      break;
+    case kLeft | kRight | kCenterSurround:
+      ret = 9;
+      break;
+    case kLeft | kRight | kLeftSurround | kRightSurround:
+      ret = 10;
+      break;
+    case kCenter | kLeft | kRight | kLrsRrsPair | kCenterSurround | kLFEScreen:
+      ret = 11;
+      break;
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
+         kLrsRrsPair | kLFEScreen:
+      ret = 12;
+      break;
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
+         kLFEScreen | kLvhRvhPair:
+      ret = 14;
+      break;
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
+         kLFEScreen | kLvhRvhPair | kLtsRtsPair:
+      ret = 16;
+      break;
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
+         kLFEScreen | kLvhRvhPair | kCenterVerticalHeight | kLtsRtsPair |
+         kTopCenterSurround:
+      ret = 17;
+      break;
+    case kCenter | kLeft | kRight | kLsdRsdPair | kLrsRrsPair | kLFEScreen |
+         kLvhRvhPair | kLtsRtsPair:
+      ret = 19;
+      break;
+    default:
+      ret = 0xFFFFFFFF;
+  }
+  return ret;
+}
+
 bool ExtractEc3Data(const std::vector<uint8_t>& ec3_data,
                     uint8_t* audio_coding_mode,
                     bool* lfe_channel_on,
-                    uint16_t* dependent_substreams_layout) {
+                    uint16_t* dependent_substreams_layout,
+                    uint32_t* ec3_joc_complexity) {
   BitReader bit_reader(ec3_data.data(), ec3_data.size());
   // Read number of independent substreams and parse the independent substreams.
   uint8_t number_independent_substreams;
@@ -121,8 +188,20 @@ bool ExtractEc3Data(const std::vector<uint8_t>& ec3_data,
   *dependent_substreams_layout = 0;
   if (number_dependent_substreams > 0) {
     RCHECK(bit_reader.ReadBits(9, dependent_substreams_layout));
+  } else {
+    RCHECK(bit_reader.SkipBits(1));
+  }
+  *ec3_joc_complexity = 0;
+  if (bit_reader.bits_available() < 16) {
+    return true;
   }
 
+  RCHECK(bit_reader.SkipBits(7));
+  bool ec3_joc_flag;
+  RCHECK(bit_reader.ReadBits(1, &ec3_joc_flag));
+  if (ec3_joc_flag) {
+    RCHECK(bit_reader.ReadBits(8, ec3_joc_complexity));
+  }
   return true;
 }
 
@@ -133,8 +212,9 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
   uint8_t audio_coding_mode;
   bool lfe_channel_on;
   uint16_t dependent_substreams_layout;
+  uint32_t ec3_joc_complexity;
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
-                      &dependent_substreams_layout)) {
+                      &dependent_substreams_layout, &ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
                  << base::HexEncode(ec3_data.data(), ec3_data.size());
     return false;
@@ -165,6 +245,15 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
   return true;
 }
 
+bool CalculateEC3ChannelMPEGValue(const std::vector<uint8_t>& ec3_data,
+                                  uint32_t* ec3_channel_mpeg_value) {
+  uint32_t channel_map;
+  if (!CalculateEC3ChannelMap(ec3_data, &channel_map))
+    return false;
+  *ec3_channel_mpeg_value = EC3ChannelMaptoMPEGValue(channel_map);
+  return true;
+}
+
 size_t GetEc3NumChannels(const std::vector<uint8_t>& ec3_data) {
   uint32_t channel_map;
   if (!CalculateEC3ChannelMap(ec3_data, &channel_map))
@@ -179,6 +268,21 @@ size_t GetEc3NumChannels(const std::vector<uint8_t>& ec3_data) {
   }
   DCHECK_EQ(bit, 0);
   return num_channels;
+}
+
+bool GetEc3JocComplexity(const std::vector<uint8_t>& ec3_data,
+                         uint32_t* ec3_joc_complexity) {
+  uint8_t audio_coding_mode;
+  bool lfe_channel_on;
+  uint16_t dependent_substreams_layout;
+
+  if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
+                      &dependent_substreams_layout, ec3_joc_complexity)) {
+    LOG(WARNING) << "Seeing invalid EC3 data: "
+                 << base::HexEncode(ec3_data.data(), ec3_data.size());
+    return false;
+  }
+  return true;
 }
 
 }  // namespace media

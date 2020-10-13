@@ -23,19 +23,24 @@ namespace shaka {
 namespace media {
 namespace {
 
-const uint8_t kPlayReadyPsshBoxVersion = 1;
-const std::string kPlayHeaderObject_4_1 =
-    "<WRMHEADER "
-    "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
-    "version=\"4.1.0.0\"><DATA><PROTECTINFO>"
-    "<KID VALUE=\"$0\" ALGID=\"AESCTR\" CHECKSUM=\"$1\"></KID></PROTECTINFO>"
-    "</DATA></WRMHEADER>";
+const uint8_t kPlayReadyPsshBoxVersion = 0;
+
+// For PlayReady clients 1.0+ that support CTR keys.
 const std::string kPlayHeaderObject_4_0 =
     "<WRMHEADER "
     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
-    "version=\"4.0.0.0\"><DATA><PROTECTINFO><KEYLEN>16</KEYLEN>"
-    "<ALGID>AESCTR</ALGID></PROTECTINFO><KID>$0</KID><CHECKSUM>$1</CHECKSUM>"
-    "</DATA></WRMHEADER>";
+    "version=\"4.0.0.0\"><DATA>"
+    "<PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO>"
+    "<KID>$0</KID><CHECKSUM>$1</CHECKSUM>"
+    "</DATA>$2</WRMHEADER>";
+
+// For PlayReady clients 4.0+ that support CBC keys.
+const std::string kPlayHeaderObject_4_3 =
+    "<WRMHEADER "
+    "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
+    "version=\"4.3.0.0\"><DATA><PROTECTINFO><KIDS>"
+    "<KID ALGID=\"AESCBC\" VALUE=\"$0\"></KID>"
+    "</KIDS></PROTECTINFO></DATA>$1</WRMHEADER>";
 
 // Converts the key_id's endianness.
 std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
@@ -55,11 +60,12 @@ std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
 }
 
 // Generates the data section of a PlayReady PSSH.
-// PlayReady PSSH Data is a PlayReady Header Object.
-// Format is outlined in the following document.
-// http://download.microsoft.com/download/2/3/8/238F67D9-1B8B-48D3-AB83-9C00112268B2/PlayReady%20Header%20Object%202015-08-13-FINAL-CL.PDF
+// PlayReady PSSH Data is a PlayReady Header Object, which is described at
+// https://docs.microsoft.com/en-us/playready/specifications/playready-header-specification
 Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
                                  const std::vector<uint8_t>& key,
+                                 const std::string& extra_header_data,
+                                 const FourCC protection_scheme,
                                  std::vector<uint8_t>* output) {
   CHECK(output);
   std::vector<uint8_t> key_id_converted = ConvertGuidEndianness(key_id);
@@ -77,11 +83,35 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
   base::Base64Encode(
       std::string(key_id_converted.begin(), key_id_converted.end()),
       &base64_key_id);
-  std::string playready_header = kPlayHeaderObject_4_0;
-  base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$0",
-                                         base64_key_id);
-  base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
-                                         base64_checksum);
+
+  std::string playready_header;
+
+  switch (protection_scheme) {
+    case kAppleSampleAesProtectionScheme:
+    case FOURCC_cbc1:
+    case FOURCC_cbcs:
+      playready_header = kPlayHeaderObject_4_3;
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$0",
+                                             base64_key_id);
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
+                                             extra_header_data);
+      break;
+
+    case FOURCC_cenc:
+    case FOURCC_cens:
+      playready_header = kPlayHeaderObject_4_0;
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$0",
+                                             base64_key_id);
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
+                                             base64_checksum);
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$2",
+                                             extra_header_data);
+      break;
+
+    default:
+      return Status(error::INVALID_ARGUMENT,
+                    "The provided protection scheme is not supported.");
+  }
 
   // Create a PlayReady Record.
   // Outline in section '2.PlayReady Records' of
@@ -126,10 +156,14 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
 }
 }  // namespace
 
-PlayReadyPsshGenerator::PlayReadyPsshGenerator()
+PlayReadyPsshGenerator::PlayReadyPsshGenerator(
+    const std::string& extra_header_data,
+    FourCC protection_scheme)
     : PsshGenerator(std::vector<uint8_t>(std::begin(kPlayReadySystemId),
                                          std::end(kPlayReadySystemId)),
-                    kPlayReadyPsshBoxVersion) {}
+                    kPlayReadyPsshBoxVersion),
+      extra_header_data_(extra_header_data),
+      protection_scheme_(protection_scheme) {}
 
 PlayReadyPsshGenerator::~PlayReadyPsshGenerator() {}
 
@@ -142,7 +176,8 @@ PlayReadyPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
   std::vector<uint8_t> pssh_data;
-  Status status = GeneratePlayReadyPsshData(key_id, key, &pssh_data);
+  Status status = GeneratePlayReadyPsshData(key_id, key, extra_header_data_,
+                                            protection_scheme_, &pssh_data);
   if (!status.ok()) {
     LOG(ERROR) << status.ToString();
     return base::nullopt;

@@ -24,6 +24,12 @@ DEFINE_bool(segment_template_constant_duration,
             "Generates SegmentTemplate@duration if all segments except the "
             "last one has the same duration if this flag is set to true.");
 
+DEFINE_bool(dash_add_last_segment_number_when_needed,
+            false,
+            "Adds a Supplemental Descriptor with @schemeIdUri "
+            "set to http://dashif.org/guidelines/last-segment-number with "
+            "the @value set to the last segment number.");
+
 namespace shaka {
 
 using xml::XmlNode;
@@ -32,6 +38,7 @@ typedef MediaInfo::VideoInfo VideoInfo;
 
 namespace {
 const char kEC3Codec[] = "ec-3";
+const char kAC4Codec[] = "ac-4";
 
 std::string RangeToString(const Range& range) {
   return base::Uint64ToString(range.begin()) + "-" +
@@ -237,19 +244,24 @@ bool RepresentationBaseXmlNode::AddContentProtectionElements(
 void RepresentationBaseXmlNode::AddSupplementalProperty(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  XmlNode supplemental_property("SupplementalProperty");
-  supplemental_property.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  supplemental_property.SetStringAttribute("value", value);
-  AddChild(supplemental_property.PassScopedPtr());
+  AddDescriptor("SupplementalProperty", scheme_id_uri, value);
 }
 
 void RepresentationBaseXmlNode::AddEssentialProperty(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  XmlNode essential_property("EssentialProperty");
-  essential_property.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  essential_property.SetStringAttribute("value", value);
-  AddChild(essential_property.PassScopedPtr());
+  AddDescriptor("EssentialProperty", scheme_id_uri, value);
+}
+
+bool RepresentationBaseXmlNode::AddDescriptor(
+    const std::string& descriptor_name,
+    const std::string& scheme_id_uri,
+    const std::string& value) {
+  XmlNode descriptor(descriptor_name.c_str());
+  descriptor.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  if (!value.empty())
+    descriptor.SetStringAttribute("value", value);
+  return AddChild(descriptor.PassScopedPtr());
 }
 
 bool RepresentationBaseXmlNode::AddContentProtectionElement(
@@ -286,12 +298,15 @@ AdaptationSetXmlNode::AdaptationSetXmlNode()
     : RepresentationBaseXmlNode("AdaptationSet") {}
 AdaptationSetXmlNode::~AdaptationSetXmlNode() {}
 
+void AdaptationSetXmlNode::AddAccessibilityElement(
+    const std::string& scheme_id_uri,
+    const std::string& value) {
+  AddDescriptor("Accessibility", scheme_id_uri, value);
+}
+
 void AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
                                           const std::string& value) {
-  XmlNode role("Role");
-  role.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  role.SetStringAttribute("value", value);
-  AddChild(role.PassScopedPtr());
+  AddDescriptor("Role", scheme_id_uri, value);
 }
 
 RepresentationXmlNode::RepresentationXmlNode()
@@ -421,6 +436,15 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     if (IsTimelineConstantDuration(segment_infos, start_number)) {
       segment_template.SetIntegerAttribute("duration",
                                            segment_infos.front().duration);
+      if (FLAGS_dash_add_last_segment_number_when_needed) {
+        uint32_t last_segment_number = start_number - 1;
+        for (const auto& segment_info_element : segment_infos) 
+          last_segment_number += segment_info_element.repeat + 1;
+	
+        AddSupplementalProperty(
+          "http://dashif.org/guidelines/last-segment-number",
+          std::to_string(last_segment_number));	
+      }
     } else {
       XmlNode segment_timeline("SegmentTimeline");
       if (!PopulateSegmentTimeline(segment_infos, &segment_timeline) ||
@@ -437,26 +461,90 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
   std::string audio_channel_config_value;
 
   if (audio_info.codec() == kEC3Codec) {
-    // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
-    // Interoperability Points v3.0 9.2.1.2.
-    const uint16_t ec3_channel_map =
-        base::HostToNet16(audio_info.codec_specific_data().ec3_channel_map());
-    audio_channel_config_value =
+    const auto& codec_data = audio_info.codec_specific_data();
+    // Use MPEG scheme if the mpeg value is available and valid, fallback to
+    // EC3 channel mapping otherwise.
+    // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
+    const uint32_t ec3_channel_mpeg_value = codec_data.channel_mpeg_value();
+    const uint32_t NO_MAPPING = 0xFFFFFFFF;
+    if (ec3_channel_mpeg_value == NO_MAPPING) {
+      // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
+      // Interoperability Points v3.0 9.2.1.2.
+      const uint16_t ec3_channel_map =
+        base::HostToNet16(codec_data.channel_mask());
+      audio_channel_config_value =
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
-    audio_channel_config_scheme =
+      audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
+    } else {
+      // Calculate EC3 channel configuration descriptor value with MPEG scheme.
+      // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
+      // (AC-3, Enhanced AC-3) I.1.2.
+      audio_channel_config_value = base::UintToString(ec3_channel_mpeg_value);
+      audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
+    }
+    bool ret = AddDescriptor("AudioChannelConfiguration",
+                             audio_channel_config_scheme,
+                             audio_channel_config_value);
+    // Dolby Digital Plus JOC descriptor. Spec: ETSI TS 103 420 v1.2.1
+    // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
+    // D.2.2.
+    if (codec_data.ec3_joc_complexity() != 0) {
+      std::string ec3_joc_complexity =
+        base::UintToString(codec_data.ec3_joc_complexity());
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
+                           "JOC");
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2018:dash:"
+                           "EC3_ExtensionComplexityIndex:2018",
+                           ec3_joc_complexity);
+    }
+    return ret;
+  } else if (audio_info.codec().substr(0, 4) == kAC4Codec) {
+    const auto& codec_data = audio_info.codec_specific_data();
+    const bool ac4_ims_flag = codec_data.ac4_ims_flag();
+    // Use MPEG scheme if the mpeg value is available and valid, fallback to
+    // AC4 channel mask otherwise.
+    // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
+    const uint32_t ac4_channel_mpeg_value = codec_data.channel_mpeg_value();
+    const uint32_t NO_MAPPING = 0xFFFFFFFF;
+    if (ac4_channel_mpeg_value == NO_MAPPING) {
+      // Calculate AC-4 channel mask. Spec: ETSI TS 103 190-2 V1.2.1 Digital
+      // Audio Compression (AC-4) Standard; Part 2: Immersive and personalized
+      // audio G.3.1.
+      const uint32_t ac4_channel_mask =
+        base::HostToNet32(codec_data.channel_mask() << 8);
+      audio_channel_config_value =
+        base::HexEncode(&ac4_channel_mask, sizeof(ac4_channel_mask) - 1);
+      // Note that the channel config schemes for EC-3 and AC-4 are different.
+      // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
+      audio_channel_config_scheme =
+        "tag:dolby.com,2015:dash:audio_channel_configuration:2015";
+    } else {
+      // Calculate AC-4 channel configuration descriptor value with MPEG scheme.
+      // Spec: ETSI TS 103 190-2 V1.2.1 Digital Audio Compression (AC-4) Standard;
+      // Part 2: Immersive and personalized audio G.3.2.
+      audio_channel_config_value = base::UintToString(ac4_channel_mpeg_value);
+      audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
+    }
+    bool ret = AddDescriptor("AudioChannelConfiguration",
+                             audio_channel_config_scheme,
+                             audio_channel_config_value);
+    if (ac4_ims_flag) {
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2016:dash:virtualized_content:2016",
+                           "1");
+    }
+    return ret;
   } else {
     audio_channel_config_value = base::UintToString(audio_info.num_channels());
     audio_channel_config_scheme =
         "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
   }
 
-  XmlNode audio_channel_config("AudioChannelConfiguration");
-  audio_channel_config.SetStringAttribute("schemeIdUri",
-                                          audio_channel_config_scheme);
-  audio_channel_config.SetStringAttribute("value", audio_channel_config_value);
-
-  return AddChild(audio_channel_config.PassScopedPtr());
+  return AddDescriptor("AudioChannelConfiguration", audio_channel_config_scheme,
+                       audio_channel_config_value);
 }
 
 // MPD expects one number for sampling frequency, or if it is a range it should

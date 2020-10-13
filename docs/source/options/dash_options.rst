@@ -1,7 +1,7 @@
 DASH options
 ^^^^^^^^^^^^
 
---generate_static_mpd
+--generate_static_live_mpd
 
     If enabled, generates static mpd. If segment_template is specified in
     stream descriptors, shaka-packager generates dynamic mpd by default; if
@@ -51,7 +51,7 @@ DASH options
 
     The segments are not removed if the value is zero.
 
---utc_timing <scheme_id_uri_value_pairs>
+--utc_timings <scheme_id_uri_value_pairs>
 
     Comma separated UTCTiming schemeIdUri and value pairs for the MPD:
         **<scheme_id_uri>=<value>[,<scheme_id_uri>=<value>]...**
@@ -63,6 +63,14 @@ DASH options
     Any audio/text tracks tagged with this language will have
     <Role ... value=\"main\" /> in the manifest.  This allows the player to
     choose the correct default language for the content.
+
+    This applies to both audio and text tracks. The default language for text
+    tracks can be overriden by  'default_text_language'.
+
+--default_text_language <text_language>
+
+    Same as above, but this applies to text tracks only, and overrides the
+    default language for text tracks.
 
 --allow_approximate_segment_timeline
 
@@ -77,3 +85,13 @@ DASH options
 
     Ignored if $Time$ is used in segment template, since $Time$ requires
     accurate Segment Timeline.
+
+--dash_only=0|1
+
+    Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
+    stream is DASH only.
+
+--allow_codec_switching
+
+    If enabled, allow adaptive switching between different codecs, if they have 
+    the same language, media type (audio, video etc) and container type.

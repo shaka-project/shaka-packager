@@ -10,8 +10,8 @@
       <Representation id="0" bandwidth="672924" codecs="flac" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-flac-audio.mp4</BaseURL>
-        <SegmentBase indexRange="983-1050" timescale="44100">
-          <Initialization range="0-982"/>
+        <SegmentBase indexRange="987-1054" timescale="44100">
+          <Initialization range="0-986"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

@@ -1,4 +1,16 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
 #if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text	
 
 .globl	_rsaz_1024_sqr_avx2
@@ -77,7 +89,7 @@ L$sqr_1024_no_n_copy:
 	vmovdqu	256-128(%rsi),%ymm8
 
 	leaq	192(%rsp),%rbx
-	vpbroadcastq	L$and_mask(%rip),%ymm15
+	vmovdqu	L$and_mask(%rip),%ymm15
 	jmp	L$OOP_GRANDE_SQR_1024
 
 .p2align	5
@@ -829,10 +841,10 @@ L$oop_mul_1024:
 	vpmuludq	192-128(%rcx),%ymm11,%ymm12
 	vpaddq	%ymm12,%ymm6,%ymm6
 	vpmuludq	224-128(%rcx),%ymm11,%ymm13
-	vpblendd	$3,%ymm14,%ymm9,%ymm9
+	vpblendd	$3,%ymm14,%ymm9,%ymm12
 	vpaddq	%ymm13,%ymm7,%ymm7
 	vpmuludq	256-128(%rcx),%ymm11,%ymm0
-	vpaddq	%ymm9,%ymm3,%ymm3
+	vpaddq	%ymm12,%ymm3,%ymm3
 	vpaddq	%ymm0,%ymm8,%ymm8
 
 	movq	%rbx,%rax
@@ -845,7 +857,9 @@ L$oop_mul_1024:
 	vmovdqu	-8+64-128(%rsi),%ymm13
 
 	movq	%r10,%rax
+	vpblendd	$0xfc,%ymm14,%ymm9,%ymm9
 	imull	%r8d,%eax
+	vpaddq	%ymm9,%ymm4,%ymm4
 	andl	$0x1fffffff,%eax
 
 	imulq	16-128(%rsi),%rbx
@@ -1074,7 +1088,6 @@ L$oop_mul_1024:
 
 	decl	%r14d
 	jnz	L$oop_mul_1024
-	vpermq	$0,%ymm15,%ymm15
 	vpaddq	(%rsp),%ymm12,%ymm0
 
 	vpsrlq	$29,%ymm0,%ymm12
@@ -1215,6 +1228,7 @@ L$mul_1024_epilogue:
 
 .p2align	5
 _rsaz_1024_red2norm_avx2:
+
 	subq	$-128,%rsi
 	xorq	%rax,%rax
 	movq	-128(%rsi),%r8
@@ -1408,11 +1422,13 @@ _rsaz_1024_red2norm_avx2:
 	.byte	0xf3,0xc3
 
 
+
 .globl	_rsaz_1024_norm2red_avx2
 .private_extern _rsaz_1024_norm2red_avx2
 
 .p2align	5
 _rsaz_1024_norm2red_avx2:
+
 	subq	$-128,%rdi
 	movq	(%rsi),%r8
 	movl	$0x1fffffff,%eax
@@ -1566,11 +1582,13 @@ _rsaz_1024_norm2red_avx2:
 	movq	%r8,184(%rdi)
 	.byte	0xf3,0xc3
 
+
 .globl	_rsaz_1024_scatter5_avx2
 .private_extern _rsaz_1024_scatter5_avx2
 
 .p2align	5
 _rsaz_1024_scatter5_avx2:
+
 	vzeroupper
 	vmovdqu	L$scatter_permd(%rip),%ymm5
 	shll	$4,%edx
@@ -1590,6 +1608,7 @@ L$oop_scatter_1024:
 
 	vzeroupper
 	.byte	0xf3,0xc3
+
 
 
 .globl	_rsaz_1024_gather5_avx2
@@ -1714,22 +1733,9 @@ L$oop_gather_1024:
 
 L$SEH_end_rsaz_1024_gather5:
 
-
-.globl	_rsaz_avx2_eligible
-.private_extern _rsaz_avx2_eligible
-
-.p2align	5
-_rsaz_avx2_eligible:
-	leaq	_OPENSSL_ia32cap_P(%rip),%rax
-	movl	8(%rax),%eax
-	andl	$32,%eax
-	shrl	$5,%eax
-	.byte	0xf3,0xc3
-
-
 .p2align	6
 L$and_mask:
-.quad	0x1fffffff,0x1fffffff,0x1fffffff,-1
+.quad	0x1fffffff,0x1fffffff,0x1fffffff,0x1fffffff
 L$scatter_permd:
 .long	0,2,4,6,7,7,7,7
 L$gather_permd:

@@ -35,6 +35,11 @@ bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.
 bear-640x360.mp4  - Same as above, but in a different resolution.
 bear-640x360-ec3.mp4  - Same content, but audio encoded with E-AC3.
 bear-640x360-hevc.mp4  - Same content, but video encoded with HEVC.
+bear-640x360-hevc-hdr10.mp4  - Same content, but video encoded with HEVC with HDR10 using the below command:
+  ffmpeg -i bear-640x360-hevc.mp4 -c:a copy -c:v libx265 -tag:v hvc1 -crf 22 \
+  -pix_fmt yuv420p10le \
+  -x265-params "colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc" \
+  bear-640x360-hevc-hdr10.mp4
 bear-320x180.mp4  - Same as above, but in a different resolution.
 bear-640x360-trailing-moov.mp4  - Same content, but with moov box in the end.
 bear-640x360-trailing-moov-additional-mdat.mp4  - Same content, but with moov box in the end and an additional unused mdat, which should be ignored.
@@ -102,3 +107,8 @@ hevc-byte-stream-frame.h265 - Several video frames with SPS/PPS/VPS manually ext
 hevc-byte-stream-frame.h265 - hevc-byte-stream-frame.h265 converted to unit stream format.
 
 sintel-1024x436.mp4 - First 6 seconds of Sintel stream.
+
+// First 6 seconds of Sparks, generated from Netflix open content:
+// http://download.opencontent.netflix.com/?prefix=TechblogAssets/Sparks/Sparks_DolbyVision_P3D65_PQ_5994fps_4096x2160_LtRt_IMF_20170214/
+sparks_dovi_5.mp4  - Dolby Vision profile 5
+sparks_dovi_8.mp4  - Dolby Vision profile 8

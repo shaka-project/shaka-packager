@@ -71,10 +71,15 @@ void MpdNotifyMuxerListener::OnMediaStart(
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
+  for (const std::string& accessibility : accessibilities_)
+    media_info->add_dash_accessibilities(accessibility);
+  for (const std::string& role : roles_)
+    media_info->add_dash_roles(role);
 
   if (is_encrypted_) {
     internal::SetContentProtectionFields(protection_scheme_, default_key_id_,
                                          key_system_info_, media_info.get());
+    media_info->mutable_protected_content()->set_include_mspr_pro(mpd_notifier_->include_mspr_pro());
   }
 
   // The content may be splitted into multiple files, but their MediaInfo
@@ -112,9 +117,6 @@ void MpdNotifyMuxerListener::OnSampleDurationReady(
   }
   if (!media_info_->has_video_info()) {
     // If non video, don't worry about it (at the moment).
-    return;
-  }
-  if (media_info_->video_info().has_frame_duration()) {
     return;
   }
 

@@ -45,7 +45,23 @@ struct HlsParams {
   /// The renditions tagged with this language will have 'DEFAULT' set to 'YES'
   /// in 'EXT-X-MEDIA' tag. This allows the player to choose the correct default
   /// language for the content.
+  /// This applies to both audio and text tracks. The default language for text
+  /// tracks can be overriden by 'default_text_language'.
   std::string default_language;
+  /// Same as above, but this overrides the default language for text tracks,
+  /// i.e. subtitles or close-captions.
+  std::string default_text_language;
+  // Indicates that all media samples in the media segments can be decoded
+  // without information from other segments.
+  bool is_independent_segments;
+  /// This is the target segment duration requested by the user. The actual
+  /// segment duration may be different to the target segment duration. It will
+  /// be populated from segment duration specified in ChunkingParams if not
+  /// specified.
+  double target_segment_duration = 0;
+  /// Custom EXT-X-MEDIA-SEQUENCE value to allow continuous media playback
+  /// across packager restarts. See #691 for details.
+  uint32_t media_sequence_number = 0;
 };
 
 }  // namespace shaka

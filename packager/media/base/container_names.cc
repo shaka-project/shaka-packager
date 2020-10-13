@@ -1734,13 +1734,18 @@ MediaContainerName DetermineContainerFromFormatName(
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "ec3") ||
              base::EqualsCaseInsensitiveASCII(format_name, "eac3")) {
     return CONTAINER_EAC3;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "mp3")) {
+    return CONTAINER_MP3;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "webm")) {
     return CONTAINER_WEBM;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "m4a") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "cmfa") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "cmft") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "cmfv") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "m4a") ||
              base::EqualsCaseInsensitiveASCII(format_name, "m4s") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "mp4") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "mov")) {
+             base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "mov") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "mp4")) {
     return CONTAINER_MOV;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "ts") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mpeg2ts")) {

@@ -1,4 +1,16 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
 #if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text	
 
 
@@ -544,6 +556,10 @@ L$handle_ctr32_2:
 .p2align	5
 _aesni_gcm_encrypt:
 
+#ifdef BORINGSSL_DISPATCH_TEST
+
+	movb	$1,_BORINGSSL_function_hit+2(%rip)
+#endif
 	xorq	%r10,%r10
 
 

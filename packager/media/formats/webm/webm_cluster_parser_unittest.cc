@@ -91,6 +91,7 @@ const uint16_t kWidth = 320u;
 const uint16_t kHeight = 180u;
 const uint32_t kPixelWidth = 1u;
 const uint32_t kPixelHeight = 1u;
+const uint8_t kTransferCharacteristics = 0;
 const int16_t kTrickPlayFactor = 0u;
 const uint8_t kNaluLengthSize = 0u;
 
@@ -350,6 +351,7 @@ class WebMClusterParserTest : public testing::Test {
                                                kHeight,
                                                kPixelWidth,
                                                kPixelHeight,
+                                               kTransferCharacteristics,
                                                kTrickPlayFactor,
                                                kNaluLengthSize,
                                                kLanguage,
@@ -375,8 +377,7 @@ class WebMClusterParserTest : public testing::Test {
     streams_from_init_event_ = stream_info;
   }
 
-  bool NewSampleEvent(uint32_t track_id,
-                      const std::shared_ptr<MediaSample>& sample) {
+  bool NewSampleEvent(uint32_t track_id, std::shared_ptr<MediaSample> sample) {
     switch (track_id) {
       case kAudioTrackNum:
         audio_buffers_.push_back(sample);

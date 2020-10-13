@@ -410,12 +410,14 @@ namespace {
 // Any number for {AdaptationSet,Representation} ID. Required to create
 // either objects. Not checked in test.
 const char kSElementTemplate[] =
-    "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\" r=\"%" PRIu64 "\"/>\n";
+    "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\" r=\"%d\"/>\n";
 const char kSElementTemplateWithoutR[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
 const uint32_t kDefaultTimeScale = 1000u;
 const int64_t kScaledTargetSegmentDuration = 10;
+const double kTargetSegmentDurationInSeconds =
+    static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
 const uint32_t kSampleDuration = 2;
 
 std::string GetDefaultMediaInfo() {
@@ -452,7 +454,7 @@ class SegmentTemplateTest : public RepresentationTest {
   void AddSegments(int64_t start_time,
                    int64_t duration,
                    uint64_t size,
-                   uint64_t repeat) {
+                   int repeat) {
     DCHECK(representation_);
 
     SegmentInfo s = {start_time, duration, repeat};
@@ -465,7 +467,7 @@ class SegmentTemplateTest : public RepresentationTest {
           base::StringPrintf(kSElementTemplate, start_time, duration, repeat);
     }
 
-    for (uint64_t i = 0; i < repeat + 1; ++i) {
+    for (int i = 0; i < repeat + 1; ++i) {
       representation_->AddNewSegment(start_time, duration, size);
       start_time += duration;
       bandwidth_estimator_.AddBlock(
@@ -582,7 +584,7 @@ TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {
   const uint64_t kSize = 256;
   int64_t start_time = 0;
   int64_t duration = 40000;
-  uint64_t repeat = 2;
+  int repeat = 2;
   AddSegments(start_time, duration, kSize, repeat);
 
   start_time += duration * (repeat + 1);
@@ -602,7 +604,7 @@ TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
   const uint64_t kSize = 100000;
   int64_t start_time = 0;
   int64_t duration = 100000;
-  uint64_t repeat = 2;
+  int repeat = 2;
   AddSegments(start_time, duration, kSize, repeat);
 
   start_time += duration * (repeat + 1);
@@ -623,8 +625,8 @@ TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
 TEST_F(SegmentTemplateTest, NonZeroStartTime) {
   const int64_t kStartTime = 10;
   const int64_t kDuration = 22000;
-  const uint64_t kSize = 123456;
-  const uint64_t kRepeat = 1;
+  const int kSize = 123456;
+  const int kRepeat = 1;
   AddSegments(kStartTime, kDuration, kSize, kRepeat);
 
   EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
@@ -634,8 +636,8 @@ TEST_F(SegmentTemplateTest, NonZeroStartTime) {
 TEST_F(SegmentTemplateTest, NonContiguousLiveInfo) {
   const int64_t kStartTime = 10;
   const int64_t kDuration = 22000;
-  const uint64_t kSize = 123456;
-  const uint64_t kRepeat = 0;
+  const int kSize = 123456;
+  const int kRepeat = 0;
   AddSegments(kStartTime, kDuration, kSize, kRepeat);
 
   const int64_t kStartTimeOffset = 100;
@@ -650,8 +652,8 @@ TEST_F(SegmentTemplateTest, OutOfOrder) {
   const int64_t kEarlierStartTime = 0;
   const int64_t kLaterStartTime = 1000;
   const int64_t kDuration = 1000;
-  const uint64_t kSize = 123456;
-  const uint64_t kRepeat = 0;
+  const int kSize = 123456;
+  const int kRepeat = 0;
 
   AddSegments(kLaterStartTime, kDuration, kSize, kRepeat);
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
@@ -663,8 +665,8 @@ TEST_F(SegmentTemplateTest, OutOfOrder) {
 TEST_F(SegmentTemplateTest, OverlappingSegments) {
   const int64_t kEarlierStartTime = 0;
   const int64_t kDuration = 1000;
-  const uint64_t kSize = 123456;
-  const uint64_t kRepeat = 0;
+  const int kSize = 123456;
+  const int kRepeat = 0;
 
   const int64_t kOverlappingSegmentStartTime = kDuration / 2;
   CHECK_GT(kDuration, kOverlappingSegmentStartTime);
@@ -681,8 +683,8 @@ TEST_F(SegmentTemplateTest, OverlappingSegments) {
 TEST_F(SegmentTemplateTest, OverlappingSegmentsWithinErrorRange) {
   const int64_t kEarlierStartTime = 0;
   const int64_t kDuration = 1000;
-  const uint64_t kSize = 123456;
-  const uint64_t kRepeat = 0;
+  const int kSize = 123456;
+  const int kRepeat = 0;
 
   const int64_t kOverlappingSegmentStartTime = kDuration - 1;
   CHECK_GT(kDuration, kOverlappingSegmentStartTime);
@@ -715,8 +717,8 @@ class SegmentTimelineTestBase : public SegmentTemplateTest {
     const std::string& number_template_media_info =
         base::StringPrintf(kMediaInfo, kDefaultTimeScale);
     mpd_options_.mpd_type = MpdType::kDynamic;
-    mpd_options_.target_segment_duration =
-        static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
+    mpd_options_.mpd_params.target_segment_duration =
+        kTargetSegmentDurationInSeconds;
     representation_ =
         CreateRepresentation(ConvertToMediaInfo(number_template_media_info),
                              kAnyRepresentationId, NoListener());
@@ -819,7 +821,7 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
 
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
-    uint64_t kNumSegments = 3;
+    int kNumSegments = 3;
     expected_s_elements =
         base::StringPrintf(kSElementTemplate, kStartTime,
                            kScaledTargetSegmentDuration, kNumSegments - 1);
@@ -855,7 +857,7 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations2) {
         "<S t=\"0\" d=\"10\" r=\"1\"/>"
         "<S t=\"20\" d=\"13\"/>";
   } else {
-    uint64_t kNumSegments = 3;
+    int kNumSegments = 3;
     expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
                                              kDurationLarger, kNumSegments - 1);
   }
@@ -874,14 +876,14 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallGap) {
 
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
-    uint64_t kNumSegments = 3;
+    int kNumSegments = 3;
     expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
                                              kDuration, kNumSegments - 1);
   } else {
     expected_s_elements =
         base::StringPrintf(kSElementTemplateWithoutR, kStartTime, kDuration) +
         base::StringPrintf(kSElementTemplate, kStartTime + kDuration + kGap,
-                           kDuration, static_cast<uint64_t>(1) /* repeat */);
+                           kDuration, 1 /* repeat */);
   }
   EXPECT_THAT(representation_->GetXml().get(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -898,14 +900,14 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
 
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
-    uint64_t kNumSegments = 3;
+    int kNumSegments = 3;
     expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
                                              kDuration, kNumSegments - 1);
   } else {
     expected_s_elements =
         base::StringPrintf(kSElementTemplateWithoutR, kStartTime, kDuration) +
         base::StringPrintf(kSElementTemplate, kStartTime + kDuration - kOverlap,
-                           kDuration, static_cast<uint64_t>(1) /* repeat */);
+                           kDuration, 1 /* repeat */);
   }
   EXPECT_THAT(representation_->GetXml().get(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -974,8 +976,8 @@ TEST_P(TimeShiftBufferDepthTest, Normal) {
   // Trick to make every segment 1 second long.
   const int64_t kDuration = kDefaultTimeScale;
   const uint64_t kSize = 10000;
-  const uint64_t kRepeat = 1234;
-  const uint64_t kLength = kRepeat;
+  const int kRepeat = 1234;
+  const int kLength = kRepeat;
 
   CHECK_EQ(kDuration / kDefaultTimeScale * kRepeat, kLength);
 
@@ -992,7 +994,7 @@ TEST_P(TimeShiftBufferDepthTest, Normal) {
   const std::string expected_s_element = base::StringPrintf(
       kSElementTemplate,
       initial_start_time_ + kDuration * (kRepeat - kExpectedRepeatsLeft),
-      kDuration, static_cast<uint64_t>(kExpectedRepeatsLeft));
+      kDuration, kExpectedRepeatsLeft);
   EXPECT_THAT(
       representation_->GetXml().get(),
       XmlNodeEqual(ExpectedXml(expected_s_element, kExpectedStartNumber)));
@@ -1010,8 +1012,8 @@ TEST_P(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
 
   // Each duration is a second longer than timeShiftBufferDepth.
   const int64_t kDuration = kDefaultTimeScale * (kTimeShiftBufferDepth + 1);
-  const uint64_t kSize = 10000;
-  const uint64_t kRepeat = 1;
+  const int kSize = 10000;
+  const int kRepeat = 1;
 
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
 
@@ -1029,8 +1031,8 @@ TEST_P(TimeShiftBufferDepthTest, Generic) {
       kTimeShiftBufferDepth;
 
   const int64_t kDuration = kDefaultTimeScale;
-  const uint64_t kSize = 10000;
-  const uint64_t kRepeat = 1000;
+  const int kSize = 10000;
+  const int kRepeat = 1000;
 
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
   const int64_t first_s_element_end_time =
@@ -1047,8 +1049,7 @@ TEST_P(TimeShiftBufferDepthTest, Generic) {
   // Expect only the latest S element with 2 segments.
   const std::string expected_s_element =
       base::StringPrintf(kSElementTemplate, first_s_element_end_time,
-                         kTimeShiftBufferDepthDuration,
-                         static_cast<uint64_t>(kMoreSegmentsRepeat));
+                         kTimeShiftBufferDepthDuration, kMoreSegmentsRepeat);
 
   const int kExpectedRemovedSegments = kRepeat + 1;
   EXPECT_THAT(
@@ -1067,21 +1068,21 @@ TEST_P(TimeShiftBufferDepthTest, MoreThanOneS) {
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
-  const uint64_t kSize = 20000;
+  const int kSize = 20000;
 
   const int64_t kOneSecondDuration = kDefaultTimeScale;
-  const uint64_t kOneSecondSegmentRepeat = 99;
+  const int kOneSecondSegmentRepeat = 99;
   AddSegments(initial_start_time_, kOneSecondDuration, kSize,
               kOneSecondSegmentRepeat);
   const int64_t first_s_element_end_time =
       initial_start_time_ + kOneSecondDuration * (kOneSecondSegmentRepeat + 1);
 
   const int64_t kTwoSecondDuration = 2 * kDefaultTimeScale;
-  const uint64_t kTwoSecondSegmentRepeat = 20;
+  const int kTwoSecondSegmentRepeat = 20;
   AddSegments(first_s_element_end_time, kTwoSecondDuration, kSize,
               kTwoSecondSegmentRepeat);
 
-  const uint64_t kExpectedRemovedSegments =
+  const int kExpectedRemovedSegments =
       (kOneSecondSegmentRepeat + 1 + kTwoSecondSegmentRepeat * 2) -
       kTimeShiftBufferDepth;
 
@@ -1113,8 +1114,8 @@ TEST_P(TimeShiftBufferDepthTest, UseLastSegmentInS) {
       kTimeShiftBufferDepth;
 
   const int64_t kDuration1 = static_cast<int64_t>(kDefaultTimeScale * 1.5);
-  const uint64_t kSize = 20000;
-  const uint64_t kRepeat1 = 1;
+  const int kSize = 20000;
+  const int kRepeat1 = 1;
 
   AddSegments(initial_start_time_, kDuration1, kSize, kRepeat1);
 
@@ -1122,7 +1123,7 @@ TEST_P(TimeShiftBufferDepthTest, UseLastSegmentInS) {
       initial_start_time_ + kDuration1 * (kRepeat1 + 1);
 
   const int64_t kTwoSecondDuration = 2 * kDefaultTimeScale;
-  const uint64_t kTwoSecondSegmentRepeat = 4;
+  const int kTwoSecondSegmentRepeat = 4;
 
   AddSegments(first_s_element_end_time, kTwoSecondDuration, kSize,
               kTwoSecondSegmentRepeat);
@@ -1146,8 +1147,8 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
       kTimeShiftBufferDepth;
 
   const int64_t kDuration = kDefaultTimeScale;
-  const uint64_t kSize = 20000;
-  const uint64_t kRepeat = 6;
+  const int kSize = 20000;
+  const int kRepeat = 6;
   // CHECK here so that the when next S element is added with 1 segment, this S
   // element doesn't go away.
   CHECK_LT(kRepeat - 1u, static_cast<uint64_t>(kTimeShiftBufferDepth));
@@ -1171,15 +1172,15 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
       XmlNodeEqual(ExpectedXml(expected_s_element, kDefaultStartNumber)));
 }
 
-// Case where there is a huge gap so the first S element is removed.
+// Timeshift is based on segment duration not on segment time.
 TEST_P(TimeShiftBufferDepthTest, HugeGap) {
   const int kTimeShiftBufferDepth = 10;
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
   const int64_t kDuration = kDefaultTimeScale;
-  const uint64_t kSize = 20000;
-  const uint64_t kRepeat = 6;
+  const int kSize = 20000;
+  const int kRepeat = 6;
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
 
   const int64_t first_s_element_end_time =
@@ -1189,7 +1190,7 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
   const int64_t gap_s_element_start_time =
       first_s_element_end_time +
       (kTimeShiftBufferDepth + 1) * kDefaultTimeScale;
-  const uint64_t kSecondSElementRepeat = 9;
+  const int kSecondSElementRepeat = 9;
   static_assert(
       kSecondSElementRepeat < static_cast<int64_t>(kTimeShiftBufferDepth),
       "second_s_element_repeat_must_be_less_than_time_shift_buffer_depth");
@@ -1197,9 +1198,11 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
               kSecondSElementRepeat);
 
   std::string expected_s_element =
+      base::StringPrintf(kSElementTemplateWithoutR,
+                         initial_start_time_ + kRepeat * kDuration, kDuration) +
       base::StringPrintf(kSElementTemplate, gap_s_element_start_time, kDuration,
                          kSecondSElementRepeat);
-  const int kExpectedRemovedSegments = kRepeat + 1;
+  const int kExpectedRemovedSegments = kRepeat;
   EXPECT_THAT(
       representation_->GetXml().get(),
       XmlNodeEqual(ExpectedXml(
@@ -1213,9 +1216,9 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
       kTimeShiftBufferDepth;
 
   const int64_t kDuration = kDefaultTimeScale;
-  const uint64_t kSize = 20000;
-  const uint64_t kRepeat = 10000;
-  const uint64_t kTotalNumSegments = kRepeat + 1;
+  const int kSize = 20000;
+  const int kRepeat = 10000;
+  const int kTotalNumSegments = kRepeat + 1;
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
 
   const int kExpectedSegmentsLeft = kTimeShiftBufferDepth + 1;
@@ -1228,7 +1231,7 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
   std::string expected_s_element = base::StringPrintf(
       kSElementTemplate,
       initial_start_time_ + kExpectedRemovedSegments * kDuration, kDuration,
-      static_cast<uint64_t>(kExpectedSegmentsRepeat));
+      kExpectedSegmentsRepeat);
   EXPECT_THAT(
       representation_->GetXml().get(),
       XmlNodeEqual(ExpectedXml(expected_s_element, kExpectedStartNumber)));
@@ -1322,7 +1325,7 @@ TEST_F(RepresentationDeleteSegmentsTest, ManyNonRepeatingSegments) {
 // Verify that segments are deleted as expected with many repeating segments.
 TEST_F(RepresentationDeleteSegmentsTest, ManyRepeatingSegments) {
   const int kLoops = 4;
-  const uint64_t kRepeat = 10;
+  const int kRepeat = 10;
   for (int i = 0; i < kLoops; ++i) {
     AddSegments(kInitialStartTime + i * kDuration * (kRepeat + 1), kDuration,
                 kSize, kRepeat);

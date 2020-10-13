@@ -92,6 +92,9 @@ TEST(ContainerNamesTest, FromFormatName) {
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("mov"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("mp4"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("Mp4"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("cmfa"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("cmft"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("cmfv"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFormatName("ts"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFormatName("mpeg2ts"));
   EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFormatName("cat"));

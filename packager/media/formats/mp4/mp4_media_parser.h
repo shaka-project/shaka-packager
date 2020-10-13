@@ -35,7 +35,8 @@ class MP4MediaParser : public MediaParser {
   /// @name MediaParser implementation overrides.
   /// @{
   void Init(const InitCB& init_cb,
-            const NewSampleCB& new_sample_cb,
+            const NewMediaSampleCB& new_media_sample_cb,
+            const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
   bool Flush() override WARN_UNUSED_RESULT;
   bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
@@ -82,7 +83,7 @@ class MP4MediaParser : public MediaParser {
 
   State state_;
   InitCB init_cb_;
-  NewSampleCB new_sample_cb_;
+  NewMediaSampleCB new_sample_cb_;
   KeySource* decryption_key_source_;
   std::unique_ptr<DecryptorSource> decryptor_source_;
 

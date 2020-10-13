@@ -30,7 +30,6 @@ GENERATED_FILES = [
     'BUILD.generated.gni',
     'BUILD.generated_tests.gni',
     'boringssl.gypi',
-    'boringssl_tests.gypi',
     'err_data.c',
 ]
 
@@ -91,10 +90,12 @@ def main():
   # Clear the old generated files.
   for (osname, arch, _, _, _) in generate_build_files.OS_ARCH_COMBOS:
     path = os.path.join(BORINGSSL_PATH, osname + '-' + arch)
-    shutil.rmtree(path)
+    if os.path.exists(path):
+      shutil.rmtree(path)
   for file in GENERATED_FILES:
     path = os.path.join(BORINGSSL_PATH, file)
-    os.unlink(path)
+    if os.path.exists(path):
+      os.unlink(path)
 
   # Generate new ones.
   subprocess.check_call(['python',

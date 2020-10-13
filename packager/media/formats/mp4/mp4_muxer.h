@@ -48,15 +48,9 @@ class MP4Muxer : public Muxer {
 
   // Generate Audio/Video Track box.
   void InitializeTrak(const StreamInfo* info, Track* trak);
-  bool GenerateAudioTrak(const AudioStreamInfo* audio_info,
-                         Track* trak,
-                         uint32_t track_id);
-  bool GenerateVideoTrak(const VideoStreamInfo* video_info,
-                         Track* trak,
-                         uint32_t track_id);
-  bool GenerateTextTrak(const TextStreamInfo* video_info,
-                        Track* trak,
-                        uint32_t track_id);
+  bool GenerateAudioTrak(const AudioStreamInfo* audio_info, Track* trak);
+  bool GenerateVideoTrak(const VideoStreamInfo* video_info, Track* trak);
+  bool GenerateTextTrak(const TextStreamInfo* video_info, Track* trak);
 
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.

@@ -149,17 +149,17 @@ Mp2tMediaParser::Mp2tMediaParser()
 
 Mp2tMediaParser::~Mp2tMediaParser() {}
 
-void Mp2tMediaParser::Init(
-    const InitCB& init_cb,
-    const NewSampleCB& new_sample_cb,
-    KeySource* decryption_key_source) {
+void Mp2tMediaParser::Init(const InitCB& init_cb,
+                           const NewMediaSampleCB& new_media_sample_cb,
+                           const NewTextSampleCB& new_text_sample_cb,
+                           KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
 
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_sample_cb_ = new_media_sample_cb;
 }
 
 bool Mp2tMediaParser::Flush() {
@@ -298,6 +298,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
           base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
       break;
     case TsStreamType::kAdtsAac:
+    case TsStreamType::kMpeg1Audio:
     case TsStreamType::kAc3:
       es_parser.reset(new EsParserAudio(
           pes_pid, static_cast<TsStreamType>(stream_type),

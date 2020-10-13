@@ -4,6 +4,7 @@
 
 #include "packager/media/formats/mp4/box_definitions.h"
 
+#include <gflags/gflags.h>
 #include <limits>
 
 #include "packager/base/logging.h"
@@ -11,6 +12,11 @@
 #include "packager/media/base/macros.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
+
+DEFINE_bool(mvex_before_trak,
+            false,
+            "Android MediaExtractor requires mvex to be written before trak. "
+            "Set the flag to true to comply with the requirement.");
 
 namespace {
 const uint32_t kFourCCSize = 4;
@@ -36,6 +42,7 @@ const uint16_t kVideoDepth = 0x0018;
 const uint32_t kCompressorNameSize = 32u;
 const char kAv1CompressorName[] = "\012AOM Coding";
 const char kAvcCompressorName[] = "\012AVC Coding";
+const char kDolbyVisionCompressorName[] = "\013DOVI Coding";
 const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
 
@@ -1052,7 +1059,12 @@ bool SampleGroupDescription::ReadWriteEntries(BoxBuffer* buffer,
 
   uint32_t count = static_cast<uint32_t>(entries->size());
   RCHECK(buffer->ReadWriteUInt32(&count));
-  RCHECK(count != 0);
+  if (buffer->Reading()) {
+    if (count == 0)
+      return true;
+  } else {
+    RCHECK(count != 0);
+  }
   entries->resize(count);
 
   for (T& entry : *entries) {
@@ -1488,6 +1500,11 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
         compressor_name.assign(std::begin(kAvcCompressorName),
                                std::end(kAvcCompressorName));
         break;
+      case FOURCC_dvh1:
+      case FOURCC_dvhe:
+        compressor_name.assign(std::begin(kDolbyVisionCompressorName),
+                               std::end(kDolbyVisionCompressorName));
+        break;
       case FOURCC_hev1:
       case FOURCC_hvc1:
         compressor_name.assign(std::begin(kHevcCompressorName),
@@ -1544,6 +1561,27 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     return false;
 
   RCHECK(buffer->ReadWriteChild(&codec_configuration));
+
+  if (buffer->Reading()) {
+    extra_codec_configs.clear();
+    // Handle Dolby Vision boxes.
+    const bool is_hevc =
+        actual_format == FOURCC_dvhe || actual_format == FOURCC_dvh1 ||
+        actual_format == FOURCC_hev1 || actual_format == FOURCC_hvc1;
+    if (is_hevc) {
+      for (FourCC fourcc : {FOURCC_dvcC, FOURCC_dvvC, FOURCC_hvcE}) {
+        CodecConfiguration dv_box;
+        dv_box.box_type = fourcc;
+        RCHECK(buffer->TryReadWriteChild(&dv_box));
+        if (!dv_box.data.empty())
+          extra_codec_configs.push_back(std::move(dv_box));
+      }
+    }
+  } else {
+    for (CodecConfiguration& extra_codec_config : extra_codec_configs)
+      RCHECK(buffer->ReadWriteChild(&extra_codec_config));
+  }
+
   RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
@@ -1562,12 +1600,15 @@ size_t VideoSampleEntry::ComputeSizeInternal() {
     return 0;
   codec_configuration.box_type = GetCodecConfigurationBoxType(actual_format);
   DCHECK_NE(codec_configuration.box_type, FOURCC_NULL);
-  return HeaderSize() + sizeof(data_reference_index) + sizeof(width) +
-         sizeof(height) + sizeof(kVideoResolution) * 2 +
-         sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
-         pixel_aspect.ComputeSize() + sinf.ComputeSize() +
-         codec_configuration.ComputeSize() + kCompressorNameSize + 6 + 4 + 16 +
-         2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
+  size_t size = HeaderSize() + sizeof(data_reference_index) + sizeof(width) +
+                sizeof(height) + sizeof(kVideoResolution) * 2 +
+                sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
+                pixel_aspect.ComputeSize() + sinf.ComputeSize() +
+                codec_configuration.ComputeSize() + kCompressorNameSize + 6 +
+                4 + 16 + 2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
+  for (CodecConfiguration& codec_config : extra_codec_configs)
+    size += codec_config.ComputeSize();
+  return size;
 }
 
 FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
@@ -1577,6 +1618,8 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
     case FOURCC_avc1:
     case FOURCC_avc3:
       return FOURCC_avcC;
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
     case FOURCC_hev1:
     case FOURCC_hvc1:
       return FOURCC_hvcC;
@@ -1587,6 +1630,33 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
       LOG(ERROR) << FourCCToString(format) << " is not supported.";
       return FOURCC_NULL;
   }
+}
+
+std::vector<uint8_t> VideoSampleEntry::ExtraCodecConfigsAsVector() const {
+  BufferWriter buffer;
+  for (CodecConfiguration codec_config : extra_codec_configs)
+    codec_config.Write(&buffer);
+  return std::vector<uint8_t>(buffer.Buffer(), buffer.Buffer() + buffer.Size());
+}
+
+bool VideoSampleEntry::ParseExtraCodecConfigsVector(
+    const std::vector<uint8_t>& data) {
+  extra_codec_configs.clear();
+  size_t pos = 0;
+  while (pos < data.size()) {
+    bool err = false;
+    std::unique_ptr<BoxReader> box_reader(
+        BoxReader::ReadBox(data.data() + pos, data.size() - pos, &err));
+    RCHECK(!err && box_reader);
+
+    CodecConfiguration codec_config;
+    codec_config.box_type = box_reader->type();
+    RCHECK(codec_config.Parse(box_reader.get()));
+    extra_codec_configs.push_back(std::move(codec_config));
+
+    pos += box_reader->pos();
+  }
+  return true;
 }
 
 ElementaryStreamDescriptor::ElementaryStreamDescriptor() = default;
@@ -1602,9 +1672,11 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
     std::vector<uint8_t> data;
     RCHECK(buffer->ReadWriteVector(&data, buffer->BytesLeft()));
     RCHECK(es_descriptor.Parse(data));
-    if (es_descriptor.IsAAC()) {
+    if (es_descriptor.decoder_config_descriptor().IsAAC()) {
       RCHECK(aac_audio_specific_config.Parse(
-          es_descriptor.decoder_specific_info()));
+          es_descriptor.decoder_config_descriptor()
+              .decoder_specific_info_descriptor()
+              .data()));
     }
   } else {
     DCHECK(buffer->writer());
@@ -1615,8 +1687,10 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
 
 size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
-  if (es_descriptor.object_type() == ObjectType::kForbidden)
+  if (es_descriptor.decoder_config_descriptor().object_type() ==
+      ObjectType::kForbidden) {
     return 0;
+  }
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 
@@ -1692,6 +1766,27 @@ bool EC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
 }
 
 size_t EC3Specific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
+AC4Specific::AC4Specific() = default;
+AC4Specific::~AC4Specific() = default;
+
+FourCC AC4Specific::BoxType() const {
+  return FOURCC_dac4;
+}
+
+bool AC4Specific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t AC4Specific::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (data.empty())
     return 0;
@@ -1809,6 +1904,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&ddts));
   RCHECK(buffer->TryReadWriteChild(&dac3));
   RCHECK(buffer->TryReadWriteChild(&dec3));
+  RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
   RCHECK(buffer->TryReadWriteChild(&dfla));
 
@@ -1836,6 +1932,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
+         dac4.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
@@ -2265,9 +2362,17 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
     // We do not care the content of metadata box in the source content, so just
     // skip reading the box.
     RCHECK(buffer->TryReadWriteChild(&metadata));
+    if (FLAGS_mvex_before_trak) {
+      // |extends| has to be written before |tracks| to workaround Android
+      // MediaExtractor bug which requires |mvex| to be placed before |trak|.
+      // See https://github.com/google/shaka-packager/issues/711 for details.
+      RCHECK(buffer->TryReadWriteChild(&extends));
+    }
     for (uint32_t i = 0; i < tracks.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&tracks[i]));
-    RCHECK(buffer->TryReadWriteChild(&extends));
+    if (!FLAGS_mvex_before_trak) {
+      RCHECK(buffer->TryReadWriteChild(&extends));
+    }
     for (uint32_t i = 0; i < pssh.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&pssh[i]));
   }

@@ -21,31 +21,23 @@ class PlayReadyKeySource : public KeySource {
  public:
   /// Creates a new PlayReadyKeySource from the given packaging information.
   /// @param server_url PlayReady packaging server url.
-  /// @param protection_systems_flags is the flags indicating which PSSH should
+  /// @param protection_systems is the enum indicating which PSSH should
   ///        be included.
-  /// @param protection_scheme is the Protection Scheme to be used for
-  ///        encryption. It needs to be signalled in Widevine PSSH. This
-  ///        argument can be ignored if Widevine PSSH is not generated.
   PlayReadyKeySource(const std::string& server_url,
-                     int protection_systems_flags,
-                     FourCC protection_scheme);
+                     ProtectionSystem protection_systems);
   /// Creates a new PlayReadyKeySource from the given packaging information.
   /// @param server_url PlayReady packaging server url.
   /// @param client_cert_file absolute path to a client certificate.
   /// @param client_cert_private_key_file absolute path to the private file
   ///     for the client certificate.
   /// @param client_cert_private_key_password password for the private key.
-  /// @param protection_systems_flags is the flags indicating which PSSH should
+  /// @param protection_systems is the enum indicating which PSSH should
   ///        be included.
-  /// @param protection_scheme is the Protection Scheme to be used for
-  ///        encryption. It needs to be signalled in Widevine PSSH. This
-  ///        argument can be ignored if Widevine PSSH is not generated.
   PlayReadyKeySource(const std::string& server_url,
                      const std::string& client_cert_file,
                      const std::string& client_cert_private_key_file,
                      const std::string& client_cert_private_key_password,
-                     int protection_systems_flags,
-                     FourCC protection_scheme);
+                     ProtectionSystem protection_systems);
   ~PlayReadyKeySource() override;
 
   /// @name KeySource implementation overrides.
@@ -56,6 +48,7 @@ class PlayReadyKeySource : public KeySource {
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
+                            uint32_t crypto_period_duration_in_seconds,
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}

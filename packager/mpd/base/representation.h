@@ -197,10 +197,8 @@ class Representation {
   // |start_number_| by the number of segments removed.
   void SlideWindow();
 
-  // Remove |num_segments| starting from |start_time| with |duration|.
-  void RemoveSegments(int64_t start_time,
-                      int64_t duration,
-                      uint64_t num_segments);
+  // Remove the first segment in |segment_info|.
+  void RemoveOldSegment(SegmentInfo* segment_info);
 
   // Note: Because 'mimeType' is a required field for a valid MPD, these return
   // strings.
@@ -208,10 +206,15 @@ class Representation {
   std::string GetAudioMimeType() const;
   std::string GetTextMimeType() const;
 
+  // Get Representation as string. For debugging.
+  std::string RepresentationAsString() const;
+
   // Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So
   // any logic using this can assume only one set.
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
+
+  int64_t current_buffer_depth_ = 0;
   // TODO(kqyang): Address sliding window issue with multiple periods.
   std::list<SegmentInfo> segment_infos_;
   // A list to hold the file names of the segments to be removed temporarily.

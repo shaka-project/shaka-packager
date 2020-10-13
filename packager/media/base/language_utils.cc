@@ -110,7 +110,7 @@ std::string LanguageToShortestForm(const std::string& language) {
 
   // This could happen legitimately for languages which have no 2-letter code,
   // but that would imply that the input language code is a 3-letter code.
-  DCHECK_EQ(3u, main_language.size());
+  DCHECK_EQ(3u, main_language.size()) << main_language;
   return main_language + subtag;
 }
 

@@ -28,7 +28,6 @@ void ByteQueue::Reset() {
 
 void ByteQueue::Push(const uint8_t* data, int size) {
   DCHECK(data);
-  DCHECK_GT(size, 0);
 
   size_t size_needed = used_ + size;
 

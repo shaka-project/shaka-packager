@@ -661,8 +661,9 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
     bool colour_description_present_flag;
     TRUE_OR_RETURN(br->ReadBool(&colour_description_present_flag));
     if (colour_description_present_flag) {
-      // colour_primaries, transfer_characteristics, matrix_coeffs
-      TRUE_OR_RETURN(br->SkipBits(8 + 8 + 8));
+      TRUE_OR_RETURN(br->SkipBits(8));  // colour_primaries
+      TRUE_OR_RETURN(br->ReadBits(8, &vui->transfer_characteristics));
+      TRUE_OR_RETURN(br->SkipBits(8));  // matrix_coeffs
     }
   }
 
@@ -876,7 +877,7 @@ H265Parser::Result H265Parser::SkipReferencePictureListModification(
   bool ref_pic_list_modification_flag_l0;
   TRUE_OR_RETURN(br->ReadBool(&ref_pic_list_modification_flag_l0));
   if (ref_pic_list_modification_flag_l0) {
-    for (int i = 0; i <= pps.num_ref_idx_l0_default_active_minus1; i++) {
+    for (int i = 0; i <= slice_header.num_ref_idx_l0_active_minus1; i++) {
       TRUE_OR_RETURN(br->SkipBits(ceil(log2(num_pic_total_curr))));
     }
   }
@@ -885,7 +886,7 @@ H265Parser::Result H265Parser::SkipReferencePictureListModification(
     bool ref_pic_list_modification_flag_l1;
     TRUE_OR_RETURN(br->ReadBool(&ref_pic_list_modification_flag_l1));
     if (ref_pic_list_modification_flag_l1) {
-      for (int i = 0; i <= pps.num_ref_idx_l1_default_active_minus1; i++) {
+      for (int i = 0; i <= slice_header.num_ref_idx_l1_active_minus1; i++) {
         TRUE_OR_RETURN(br->SkipBits(ceil(log2(num_pic_total_curr))));
       }
     }

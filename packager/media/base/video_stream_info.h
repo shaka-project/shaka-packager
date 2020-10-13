@@ -39,6 +39,7 @@ class VideoStreamInfo : public StreamInfo {
                   uint16_t height,
                   uint32_t pixel_width,
                   uint32_t pixel_height,
+                  uint8_t transfer_characteristics,
                   uint32_t trick_play_factor,
                   uint8_t nalu_length_size,
                   const std::string& language,
@@ -53,6 +54,7 @@ class VideoStreamInfo : public StreamInfo {
   std::unique_ptr<StreamInfo> Clone() const override;
   /// @}
 
+  const std::vector<uint8_t>& extra_config() const { return extra_config_; }
   H26xStreamFormat h26x_stream_format() const { return h26x_stream_format_; }
   uint16_t width() const { return width_; }
   uint16_t height() const { return height_; }
@@ -62,15 +64,22 @@ class VideoStreamInfo : public StreamInfo {
   /// Returns the pixel height.
   /// @return 0 if unknown.
   uint32_t pixel_height() const { return pixel_height_; }
+  uint8_t transfer_characteristics() const { return transfer_characteristics_; }
   uint8_t nalu_length_size() const { return nalu_length_size_; }
   uint32_t trick_play_factor() const { return trick_play_factor_; }
   uint32_t playback_rate() const { return playback_rate_; }
   const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
 
+  void set_extra_config(const std::vector<uint8_t>& extra_config) {
+    extra_config_ = extra_config;
+  }
   void set_width(uint32_t width) { width_ = width; }
   void set_height(uint32_t height) { height_ = height; }
   void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }
   void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
+  void set_transfer_characteristics(uint8_t transfer_characteristics) {
+    transfer_characteristics_ = transfer_characteristics;
+  }
   void set_trick_play_factor(uint32_t trick_play_factor) {
     trick_play_factor_ = trick_play_factor;
   }
@@ -83,6 +92,9 @@ class VideoStreamInfo : public StreamInfo {
   }
 
  private:
+  // Extra codec configuration in a stream of mp4 boxes. It is only applicable
+  // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.
+  std::vector<uint8_t> extra_config_;
   H26xStreamFormat h26x_stream_format_;
   uint16_t width_;
   uint16_t height_;
@@ -91,6 +103,7 @@ class VideoStreamInfo : public StreamInfo {
   // 0 means unknown.
   uint32_t pixel_width_;
   uint32_t pixel_height_;
+  uint8_t transfer_characteristics_ = 0;
   uint32_t trick_play_factor_ = 0;  // Non-zero for trick-play streams.
 
   // Playback rate is the attribute for trick play stream, which signals the

@@ -18,7 +18,9 @@ namespace media {
 
 using ::testing::_;
 using ::testing::Bool;
+using ::testing::ElementsAre;
 using ::testing::InSequence;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
 using ::testing::TestWithParam;
@@ -36,6 +38,8 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     const std::string& name,
                     const std::string& group_id,
                     uint32_t* stream_id));
+  MOCK_METHOD2(NotifySampleDuration,
+               bool(uint32_t stream_id, uint32_t sample_duration));
   MOCK_METHOD6(NotifyNewSegment,
                bool(uint32_t stream_id,
                     const std::string& segment_name,
@@ -92,6 +96,8 @@ const bool kIFramesOnlyPlaylist = true;
 const char kDefaultPlaylistName[] = "default_playlist.m3u8";
 const char kDefaultName[] = "DEFAULTNAME";
 const char kDefaultGroupId[] = "DEFAULTGROUPID";
+const char kCharactersticA[] = "public.accessibility.transcribes-spoken-dialog";
+const char kCharactersticB[] = "public.easy-to-read";
 
 MATCHER_P(HasEncryptionScheme, expected_scheme, "") {
   *result_listener << "it has_protected_content: "
@@ -113,6 +119,7 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
                   !kIFramesOnlyPlaylist,
                   kDefaultName,
                   kDefaultGroupId,
+                  std::vector<std::string>{kCharactersticA, kCharactersticB},
                   &mock_notifier_) {}
 
   MuxerListener::MediaRanges GetMediaRanges(
@@ -152,9 +159,12 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  EXPECT_CALL(mock_notifier_,
-              NotifyNewStream(_, StrEq(kDefaultPlaylistName),
-                              StrEq("DEFAULTNAME"), StrEq("DEFAULTGROUPID"), _))
+  EXPECT_CALL(
+      mock_notifier_,
+      NotifyNewStream(Property(&MediaInfo::hls_characteristics,
+                               ElementsAre(kCharactersticA, kCharactersticB)),
+                      StrEq(kDefaultPlaylistName), StrEq("DEFAULTNAME"),
+                      StrEq("DEFAULTGROUPID"), _))
       .WillOnce(Return(true));
 
   MuxerOptions muxer_options;
@@ -302,8 +312,18 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyWithProtectionScheme) {
                          MuxerListener::kContainerMpeg2ts);
 }
 
-// Make sure it doesn't crash.
 TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  std::shared_ptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+  muxer_options.segment_template = "$Number$.mp4";
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+
+  EXPECT_CALL(mock_notifier_, NotifySampleDuration(_, 2340));
   listener_.OnSampleDurationReady(2340);
 }
 
@@ -436,6 +456,7 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
                   GetParam(),
                   kDefaultName,
                   kDefaultGroupId,
+                  std::vector<std::string>(),  // no characteristics.
                   &mock_notifier_) {}
 
   MockHlsNotifier mock_notifier_;

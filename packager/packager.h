@@ -106,6 +106,7 @@ struct StreamDescriptor {
   /// Optional value which contains a user-specified language tag. If specified,
   /// this value overrides any language metadata in the input stream.
   std::string language;
+
   /// Required for audio when outputting HLS. It defines the name of the output
   /// stream, which is not necessarily the same as output. This is used as the
   /// `NAME` attribute for EXT-X-MEDIA.
@@ -119,6 +120,19 @@ struct StreamDescriptor {
   /// Optional for HLS output. It defines the name of the I-Frames only playlist
   /// for the stream. For Video only. Usually ends with `.m3u8`.
   std::string hls_iframe_playlist_name;
+  /// Optional for HLS output. It defines the CHARACTERISTICS attribute of the
+  /// stream.
+  std::vector<std::string> hls_characteristics;
+
+  /// Optional for DASH output. It defines Accessibility elements of the stream.
+  std::vector<std::string> dash_accessiblities;
+  /// Optional for DASH output. It defines Role elements of the stream.
+  std::vector<std::string> dash_roles;
+
+  /// Set to true to indicate that the stream is for dash only.
+  bool dash_only = false;
+  /// Set to true to indicate that the stream is for hls only.
+  bool hls_only = false;
 };
 
 class SHAKA_EXPORT Packager {

@@ -6,6 +6,8 @@
 
 #include "packager/media/base/widevine_key_source.h"
 
+#include <gflags/gflags.h>
+
 #include "packager/base/base64.h"
 #include "packager/base/bind.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -19,6 +21,10 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_common_encryption.pb.h"
+
+DEFINE_string(video_feature,
+              "",
+              "Specify the optional video feature, e.g. HDR.");
 
 namespace shaka {
 namespace media {
@@ -78,16 +84,14 @@ ProtectionSystemSpecificInfo ProtectionSystemInfoFromPsshProto(
 }  // namespace
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
-                                     int protection_system_flags,
+                                     ProtectionSystem protection_systems,
                                      FourCC protection_scheme)
     // Widevine PSSH is fetched from Widevine license server.
-    : KeySource(protection_system_flags & ~WIDEVINE_PROTECTION_SYSTEM_FLAG,
-                protection_scheme),
-      generate_widevine_protection_system_(
+    : generate_widevine_protection_system_(
           // Generate Widevine protection system if there are no other
           // protection system specified.
-          protection_system_flags == NO_PROTECTION_SYSTEM_FLAG ||
-          protection_system_flags & WIDEVINE_PROTECTION_SYSTEM_FLAG),
+          protection_systems == ProtectionSystem::kNone ||
+          has_flag(protection_systems, ProtectionSystem::kWidevine)),
       key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
@@ -213,6 +217,7 @@ Status WidevineKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
+                                             uint32_t crypto_period_duration_in_seconds,
                                              const std::string& stream_label,
                                              EncryptionKey* key) {
   DCHECK(key_production_thread_.HasBeenStarted());
@@ -220,6 +225,7 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   {
     base::AutoLock scoped_lock(lock_);
     if (!key_production_started_) {
+      crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
       // Another client may have a slightly smaller starting crypto period
       // index. Set the initial value to account for that.
       first_crypto_period_index_ =
@@ -230,6 +236,10 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
           new EncryptionKeyQueue(queue_size, first_crypto_period_index_));
       start_key_production_.Signal();
       key_production_started_ = true;
+    }  else if (crypto_period_duration_in_seconds_ !=
+                crypto_period_duration_in_seconds) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Crypto period duration should not change.");
     }
   }
   return GetKeyInternal(crypto_period_index, stream_label, key);
@@ -353,10 +363,14 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
   if (enable_key_rotation) {
     request->set_first_crypto_period_index(first_crypto_period_index);
     request->set_crypto_period_count(crypto_period_count_);
+    request->set_crypto_period_seconds(crypto_period_duration_in_seconds_);
   }
 
   if (!group_id_.empty())
     request->set_group_id(group_id_.data(), group_id_.size());
+
+  if (!FLAGS_video_feature.empty())
+    request->set_video_feature(FLAGS_video_feature);
 }
 
 Status WidevineKeySource::GenerateKeyMessage(
@@ -417,6 +431,12 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
   uint32_t current_crypto_period_index = first_crypto_period_index_;
 
+  std::vector<std::vector<uint8_t>> key_ids;
+  for (const auto& track : response_proto.tracks()) {
+    if (!widevine_classic)
+      key_ids.emplace_back(track.key_id().begin(), track.key_id().end());
+  }
+
   EncryptionKeyMap encryption_key_map;
   for (const auto& track : response_proto.tracks()) {
     VLOG(2) << "track " << track.ShortDebugString();
@@ -446,6 +466,8 @@ bool WidevineKeySource::ExtractEncryptionKey(
     if (!widevine_classic) {
       encryption_key->key_id.assign(track.key_id().begin(),
                                     track.key_id().end());
+      encryption_key->iv.assign(track.iv().begin(), track.iv().end());
+      encryption_key->key_ids = key_ids;
 
       if (generate_widevine_protection_system_) {
         if (track.pssh_size() != 1) {
@@ -460,12 +482,6 @@ bool WidevineKeySource::ExtractEncryptionKey(
     encryption_key_map[stream_label] = std::move(encryption_key);
   }
 
-  if (!widevine_classic) {
-    if (!UpdateProtectionSystemInfo(&encryption_key_map).ok()) {
-      return false;
-    }
-  }
-
   DCHECK(!encryption_key_map.empty());
   if (!enable_key_rotation) {
     // Merge with previously requested keys.
@@ -473,6 +489,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
       encryption_key_map_[pair.first] = std::move(pair.second);
     return true;
   }
+
   return PushToKeyPool(&encryption_key_map);
 }
 

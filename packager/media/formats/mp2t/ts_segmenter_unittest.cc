@@ -14,6 +14,7 @@
 #include "packager/media/formats/mp2t/program_map_table_writer.h"
 #include "packager/media/formats/mp2t/ts_segmenter.h"
 #include "packager/status_test_util.h"
+#include "packager/media/base/macros.h"
 
 namespace shaka {
 namespace media {
@@ -44,6 +45,7 @@ const uint32_t kWidth = 1280;
 const uint32_t kHeight = 720;
 const uint32_t kPixelWidth = 1;
 const uint32_t kPixelHeight = 1;
+const uint8_t kTransferCharacteristics = 0;
 const uint16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 1;
 const bool kIsEncrypted = false;
@@ -80,15 +82,17 @@ class MockTsWriter : public TsWriter {
             // Create a bogus pmt writer, which we don't really care.
             new VideoProgramMapTableWriter(kUnknownCodec))) {}
 
-  MOCK_METHOD1(NewSegment, bool(const std::string& file_name));
+  MOCK_METHOD1(NewSegment, bool(BufferWriter* buffer_writer));
   MOCK_METHOD0(SignalEncrypted, void());
-  MOCK_METHOD0(FinalizeSegment, bool());
 
   // Similar to the hack above but takes a std::unique_ptr.
-  MOCK_METHOD1(AddPesPacketMock, bool(PesPacket* pes_packet));
-  bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet) override {
+  MOCK_METHOD2(AddPesPacketMock, bool(PesPacket* pes_packet,
+			  BufferWriter* buffer_writer));
+  bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet,
+		  BufferWriter* buffer_writer) override {
+     buffer_writer->AppendArray(kAnyData, arraysize(kAnyData));
     // No need to keep the pes packet around for the current tests.
-    return AddPesPacketMock(pes_packet.get());
+    return AddPesPacketMock(pes_packet.get(), buffer_writer);
   }
 };
 
@@ -110,7 +114,8 @@ TEST_F(TsSegmenterTest, Initialize) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -129,7 +134,8 @@ TEST_F(TsSegmenterTest, AddSample) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -141,7 +147,7 @@ TEST_F(TsSegmenterTest, AddSample) {
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   Sequence writer_sequence;
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment(_))
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -156,7 +162,7 @@ TEST_F(TsSegmenterTest, AddSample) {
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));
 
-  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_))
+  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_, _))
       .WillOnce(Return(true));
 
   // The pointer is released inside the segmenter.
@@ -180,9 +186,10 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       kTrackId, kInputTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   MuxerOptions options;
-  options.segment_template = "file$Number$.ts";
+  options.segment_template = "memory://file$Number$.ts";
 
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
@@ -200,15 +207,13 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   // Doesn't really matter how long this is.
   sample2->set_duration(kInputTimescale * 7);
 
-  // (Finalize is not called at the end of this test so) Expect one segment
-  // event. The length should be the same as the above sample that exceeds the
-  // duration.
   EXPECT_CALL(mock_listener,
-              OnNewSegment("file1.ts", kFirstPts * kTimeScale / kInputTimescale,
+              OnNewSegment("memory://file1.ts",
+		           kFirstPts * kTimeScale / kInputTimescale,
                            kTimeScale * 11, _));
 
   Sequence writer_sequence;
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment(_))
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -232,6 +237,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(1u));
+ 
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));
@@ -239,14 +245,11 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_CALL(*mock_pes_packet_generator_, Flush())
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_ts_writer_, FinalizeSegment())
-      .InSequence(writer_sequence)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file2.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment(_))
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_))
+  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_, _))
       .Times(2)
       .WillRepeatedly(Return(true));
 
@@ -274,7 +277,8 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -301,7 +305,8 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -313,14 +318,13 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
   EXPECT_CALL(*mock_pes_packet_generator_, Flush()).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .WillOnce(Return(0u));
-  EXPECT_CALL(*mock_ts_writer_, FinalizeSegment()).WillOnce(Return(true));
 
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
-  segmenter.SetTsWriterFileOpenedForTesting(true);
-  EXPECT_OK(segmenter.FinalizeSegment(0, 100 /* arbitrary duration */));
+
+  EXPECT_OK(segmenter.FinalizeSegment(0, 100 /* arbitrary duration*/));
 }
 
 TEST_F(TsSegmenterTest, EncryptedSample) {
@@ -328,17 +332,17 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   MuxerOptions options;
 
-  options.segment_template = "file$Number$.ts";
+  options.segment_template = "memory://file$Number$.ts";
 
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
 
   ON_CALL(*mock_ts_writer_, NewSegment(_)).WillByDefault(Return(true));
-  ON_CALL(*mock_ts_writer_, FinalizeSegment()).WillByDefault(Return(true));
-  ON_CALL(*mock_ts_writer_, AddPesPacketMock(_)).WillByDefault(Return(true));
+  ON_CALL(*mock_ts_writer_, AddPesPacketMock(_,_)).WillByDefault(Return(true));
   ON_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillByDefault(Return(true));
   ON_CALL(*mock_pes_packet_generator_, Flush()).WillByDefault(Return(true));
@@ -377,7 +381,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));
 
-  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_))
+  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_, _))
       .Times(2)
       .WillRepeatedly(Return(true));
 
@@ -390,6 +394,8 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       .InSequence(pes_packet_sequence)
       .WillOnce(Return(new PesPacket()));
 
+  EXPECT_CALL(mock_listener, OnNewSegment("memory://file1.ts", _, _, _));
+
   MockTsWriter* mock_ts_writer_raw = mock_ts_writer_.get();
 
   segmenter.InjectPesPacketGeneratorForTesting(
@@ -398,7 +404,6 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-
   EXPECT_OK(segmenter.FinalizeSegment(1, sample1->duration()));
   // Signal encrypted if sample is encrypted.
   EXPECT_CALL(*mock_ts_writer_raw, SignalEncrypted());

@@ -39,27 +39,23 @@ before_deploy:
   - rm -rf deploy
   - mkdir deploy
   - |
-    if [ ${LIBPACKAGER_TYPE} == "shared_library" ]; then
-      if [ ${TRAVIS_OS_NAME} == "linux" ]; then
-        mv out/${BUILD_TYPE}/lib/libpackager.so deploy/libpackager-${TRAVIS_OS_NAME}.so
-      else
-        mv out/${BUILD_TYPE}/libpackager.dylib deploy/libpackager-${TRAVIS_OS_NAME}.dylib
-      fi
-    else
+    if [ ${LIBPACKAGER_TYPE} == "static_library" ] ; then
       mv out/${BUILD_TYPE}/packager deploy/packager-${TRAVIS_OS_NAME}
       mv out/${BUILD_TYPE}/mpd_generator deploy/mpd_generator-${TRAVIS_OS_NAME}
+      tar -zcf pssh-box.py.tar.gz -C out/${BUILD_TYPE} pyproto pssh-box.py
+      mv pssh-box.py.tar.gz deploy/pssh-box-${TRAVIS_OS_NAME}.py.tar.gz
     fi
 
 deploy:
   provider: releases
   api_key:
-    secure: PbhquzRnY1BkGkM/6LmVSZjhUd8jWnj77QjxAKA8REnFhbAuzqwDYuytRmUsBFMtgatUEgTuh/1duZaIl0yXGvRZdNeGk7BgtguUy6vraWObjjNUSlQ6Njm4y/hMgaUIOhA9I2b8gokWU1PA0sDJOF/FoZaAxFpKXcW4d8Z2C0s=
+    secure: Ya5ptzB+UXESFhM8YKVRGwtfksPqCEe3XxHLLCwSDRscvs9Cck6M7Y4IGbEVfvfM8Wpb7Eyt2UoYgAsrugj9K6Y103NZ/Vv2ZJrdWYIi52QTye7GFtSEgImHdlM8LOjXbbh/KroWZFCi+ZxRcFDROaXaTM+P/xvYHeopLwEWs7g=
   file_glob: true
   file: deploy/*
   skip_cleanup: true
   on:
     tags: true
-    condition: ${BUILD_TYPE} = Release
+    condition: ${BUILD_TYPE} = Release && ${LIBPACKAGER_TYPE} == static_library
 
 branches:
   only:

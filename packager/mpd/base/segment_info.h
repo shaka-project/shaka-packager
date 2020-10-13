@@ -19,7 +19,7 @@ struct SegmentInfo {
   // |start_time| and has |duration| but none others have |start_time| * N and
   // |duration|, then this should be set to 0. The semantics is the same as S@r
   // in the DASH MPD spec.
-  uint64_t repeat;
+  int repeat;
 };
 }  // namespace shaka
 

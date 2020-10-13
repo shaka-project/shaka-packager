@@ -44,6 +44,9 @@ DEFINE_bool(generate_playready_pssh,
 DEFINE_bool(generate_common_pssh,
             false,
             "This flag is deprecated. Use --protection_systems instead.");
+DEFINE_bool(generate_static_mpd,
+            false,
+            "This flag is deprecated. Use --generate_static_live_mpd instead.");
 
 // The current gflags library does not provide a way to check whether a flag is
 // set in command line. If a flag has a different value to its default value,
@@ -89,6 +92,16 @@ bool InformRetiredPsshGenerationFlag(const char* flagname, bool value) {
   return true;
 }
 
+bool InformRetiredGenerateStaticMpdFlag(const char* flagname, bool value) {
+  if (value) {
+    fprintf(stderr,
+            "WARNING: %s is deprecated and ignored. Please switch to "
+            "--generate_static_live_mpd.\n",
+            flagname);
+  }
+  return true;
+}
+
 DEFINE_validator(profile, &InformRetiredStringFlag);
 DEFINE_validator(single_segment, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(webm_subsample_encryption, &InformRetiredDefaultTrueFlag);
@@ -101,3 +114,4 @@ DEFINE_validator(num_subsegments_per_sidx, &InformRetiredDefaultInt32Flag);
 DEFINE_validator(generate_widevine_pssh, &InformRetiredPsshGenerationFlag);
 DEFINE_validator(generate_playready_pssh, &InformRetiredPsshGenerationFlag);
 DEFINE_validator(generate_common_pssh, &InformRetiredPsshGenerationFlag);
+DEFINE_validator(generate_static_mpd, &InformRetiredGenerateStaticMpdFlag);

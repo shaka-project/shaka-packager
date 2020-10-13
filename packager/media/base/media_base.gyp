@@ -108,6 +108,8 @@
         'timestamp.h',
         'video_stream_info.cc',
         'video_stream_info.h',
+        'video_util.cc',
+        'video_util.h',
         'widevine_key_source.cc',
         'widevine_key_source.h',
         'widevine_pssh_generator.cc',
@@ -120,6 +122,7 @@
         '../../packager.gyp:status',
         '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../third_party/curl/curl.gyp:libcurl',
+        '../../third_party/gflags/gflags.gyp:gflags',
         '../../third_party/libxml/libxml.gyp:libxml',
         '../../version/version.gyp:version',
       ],
@@ -187,6 +190,7 @@
         'test/fake_prng.h',   # For rsa_key_unittest
         'test/rsa_test_data.cc',  # For rsa_key_unittest
         'test/rsa_test_data.h',   # For rsa_key_unittest
+        'video_util_unittest.cc',
         'widevine_key_source_unittest.cc',
       ],
       'dependencies': [

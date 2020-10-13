@@ -43,6 +43,15 @@ bool TryMatch(const T& value,
   return true;
 }
 
+MATCHER_P(IsPsshInfoWithSystemId,
+          system_id,
+          std::string(negation ? "doesn't " : "") + " have system ID " +
+              testing::PrintToString(system_id)) {
+  *result_listener << "which is (" << testing::PrintToString(arg.system_id)
+                   << ")";
+  return arg.system_id == system_id;
+}
+
 MATCHER_P4(IsStreamInfo, stream_index, time_scale, encrypted, language, "") {
   if (!TryMatchStreamDataType(arg->stream_data_type,
                               StreamDataType::kStreamInfo, result_listener)) {

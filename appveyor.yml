@@ -41,14 +41,14 @@ test_script:
 after_build:
   - if exist deploy rmdir /s /q deploy
   - mkdir deploy
-  - if [%LIBPACKAGER_TYPE%] == ["shared_library"] (
-      copy "out\%OUTPUT_DIRECTORY%\packager.dll" deploy\packager-win.dll
-    ) else (
-      copy "out\%OUTPUT_DIRECTORY%\packager.exe" deploy\packager-win.exe
-    )
-  - if NOT [%LIBPACKAGER_TYPE%] == ["shared_library"] (
-      copy "out\%OUTPUT_DIRECTORY%\mpd_generator.exe" deploy\mpd_generator-win.exe
-    )
+  - ps: >-
+      If ($env:LIBPACKAGER_TYPE -eq "static_library") {
+        copy "out\$env:OUTPUT_DIRECTORY\packager.exe" deploy\packager-win.exe
+        copy "out\$env:OUTPUT_DIRECTORY\mpd_generator.exe" deploy\mpd_generator-win.exe
+        7z a pssh-box.py.zip "$env:APPVEYOR_BUILD_FOLDER\out\$env:OUTPUT_DIRECTORY\pyproto"
+        7z a pssh-box.py.zip "$env:APPVEYOR_BUILD_FOLDER\out\$env:OUTPUT_DIRECTORY\pssh-box.py"
+        copy pssh-box.py.zip deploy\pssh-box-win.py.zip
+      }
 
 artifacts:
   - path: 'deploy\*'
@@ -56,11 +56,12 @@ artifacts:
 deploy:
   provider: GitHub
   auth_token:
-    secure: 0XTjRSDCHGH24WSnQRRizvhnaxK8gbq1cfivyuKQRrfwGPm7wpgiPL9SlyQ0aNdY
+    secure: tKyFNS3wiKnZ5+P71RPzsAzySnZLQWUWXKR3XAeco4bOTEXcTRwuQZSgggfSj19O
   on:
     appveyor_repo_tag: true
     platform: x64
     configuration: Release
+    libpackager_type: static_library
 
 branches:
   only:

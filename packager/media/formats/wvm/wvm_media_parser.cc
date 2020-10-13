@@ -112,14 +112,15 @@ WvmMediaParser::WvmMediaParser()
 WvmMediaParser::~WvmMediaParser() {}
 
 void WvmMediaParser::Init(const InitCB& init_cb,
-                          const NewSampleCB& new_sample_cb,
+                          const NewMediaSampleCB& new_media_sample_cb,
+                          const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
   decryption_key_source_ = decryption_key_source;
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_sample_cb_ = new_media_sample_cb;
 }
 
 bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
@@ -716,7 +717,9 @@ bool WvmMediaParser::ParseIndexEntry() {
                 "Could not extract AudioSpecificConfig from ES_Descriptor";
             return false;
           }
-          audio_codec_config = descriptor.decoder_specific_info();
+          audio_codec_config = descriptor.decoder_config_descriptor()
+                                   .decoder_specific_info_descriptor()
+                                   .data();
           break;
         }
         case Audio_EC3SpecificData:
@@ -742,9 +745,9 @@ bool WvmMediaParser::ParseIndexEntry() {
           stream_id_count_, time_scale, track_duration, kCodecH264,
           byte_to_unit_stream_converter_.stream_format(), std::string(),
           video_codec_config.data(), video_codec_config.size(), video_width,
-          video_height, pixel_width, pixel_height, trick_play_factor,
-          nalu_length_size, std::string(),
-          decryption_key_source_ ? false : true));
+          video_height, pixel_width, pixel_height,
+          0 /* transfer_characteristics */, trick_play_factor, nalu_length_size,
+          std::string(), decryption_key_source_ ? false : true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(
                                     video_pes_stream_id

@@ -355,33 +355,42 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         kCodecConfigurationData + arraysize(kCodecConfigurationData));
   }
 
-  void Fill(VideoSampleEntry* encv) {
-    encv->format = FOURCC_encv;
-    encv->data_reference_index = 1;
-    encv->width = 800;
-    encv->height = 600;
-    Fill(&encv->pixel_aspect);
-    Fill(&encv->sinf);
-    Fill(&encv->codec_configuration);
+  void Fill(VideoSampleEntry* entry) {
+    entry->format = FOURCC_encv;
+    entry->data_reference_index = 1;
+    entry->width = 800;
+    entry->height = 600;
+    Fill(&entry->pixel_aspect);
+    Fill(&entry->sinf);
+    Fill(&entry->codec_configuration);
+
+    const uint8_t kExtraCodecConfigData[] = {0x01, 0x02, 0x03, 0x04};
+    CodecConfiguration extra_codec_config;
+    extra_codec_config.data.assign(std::begin(kExtraCodecConfigData),
+                                   std::end(kExtraCodecConfigData));
+    for (FourCC fourcc : {FOURCC_dvcC, FOURCC_dvvC, FOURCC_hvcE}) {
+      extra_codec_config.box_type = fourcc;
+      entry->extra_codec_configs.push_back(extra_codec_config);
+      // Increment it so the boxes have different data.
+      extra_codec_config.data[0]++;
+    }
   }
 
-  void Modify(VideoSampleEntry* encv) {
-    encv->height += 600;
-    Modify(&encv->codec_configuration);
+  void Modify(VideoSampleEntry* entry) {
+    entry->height += 600;
+    Modify(&entry->codec_configuration);
   }
 
   void Fill(ElementaryStreamDescriptor* esds) {
     const uint8_t kDecoderSpecificInfo[] = {18, 16};
-    esds->es_descriptor.set_esid(1);
-    esds->es_descriptor.set_object_type(ObjectType::kISO_14496_3);
+    esds->es_descriptor.mutable_decoder_config_descriptor()->set_object_type(
+        ObjectType::kISO_14496_3);
     std::vector<uint8_t> decoder_specific_info(
         kDecoderSpecificInfo,
         kDecoderSpecificInfo + sizeof(kDecoderSpecificInfo));
-    esds->es_descriptor.set_decoder_specific_info(decoder_specific_info);
-  }
-
-  void Modify(ElementaryStreamDescriptor* esds) {
-    esds->es_descriptor.set_esid(2);
+    esds->es_descriptor.mutable_decoder_config_descriptor()
+        ->mutable_decoder_specific_info_descriptor()
+        ->set_data(decoder_specific_info);
   }
 
   void Fill(DTSSpecific* ddts) {
@@ -1228,6 +1237,21 @@ TEST_F(BoxDefinitionsTest, EC3SampleEntry) {
   ASSERT_EQ(entry, entry_readback);
 }
 
+TEST_F(BoxDefinitionsTest, AC4SampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_ac_4;
+  entry.data_reference_index = 2;
+  entry.channelcount = 6;
+  entry.samplesize = 16;
+  entry.samplerate = 48000;
+  Fill(&entry.dac4);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
 TEST_F(BoxDefinitionsTest, OpusSampleEntry) {
   AudioSampleEntry entry;
   entry.format = FOURCC_Opus;
@@ -1256,6 +1280,24 @@ TEST_F(BoxDefinitionsTest, FlacSampleEntry) {
   AudioSampleEntry entry_readback;
   ASSERT_TRUE(ReadBack(&entry_readback));
   ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, SampleEntryExtraCodecConfigs) {
+  VideoSampleEntry entry;
+  Fill(&entry);
+
+  const uint8_t kExpectedVector[] = {
+      0, 0, 0, 12, 'd', 'v', 'c', 'C', 1, 2, 3, 4,
+      0, 0, 0, 12, 'd', 'v', 'v', 'C', 2, 2, 3, 4,
+      0, 0, 0, 12, 'h', 'v', 'c', 'E', 3, 2, 3, 4,
+  };
+  const std::vector<uint8_t> expected_vector(std::begin(kExpectedVector),
+                                             std::end(kExpectedVector));
+  EXPECT_EQ(expected_vector, entry.ExtraCodecConfigsAsVector());
+
+  VideoSampleEntry new_entry;
+  ASSERT_TRUE(new_entry.ParseExtraCodecConfigsVector(expected_vector));
+  EXPECT_EQ(entry.extra_codec_configs, new_entry.extra_codec_configs);
 }
 
 TEST_F(BoxDefinitionsTest, CompactSampleSize_FieldSize16) {

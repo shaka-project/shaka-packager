@@ -13,7 +13,7 @@ namespace shaka {
 
 namespace error {
 namespace {
-std::string ErrorCodeToString(Code error_code) {
+const char* ErrorCodeToString(Code error_code) {
   switch (error_code) {
     case OK:
       return "OK";
@@ -53,10 +53,12 @@ std::string ErrorCodeToString(Code error_code) {
       return "NOT_FOUND";
     case ALREADY_EXISTS:
       return "ALREADY_EXISTS";
-    default:
-      NOTIMPLEMENTED() << "Unknown Status Code: " << error_code;
-      return "UNKNOWN_STATUS";
+    case TRICK_PLAY_ERROR:
+      return "TRICK_PLAY_ERROR";
   }
+
+  NOTIMPLEMENTED() << "Unknown Status Code: " << error_code;
+  return "UNKNOWN_STATUS";
 }
 }  // namespace
 }  // namespace error
@@ -82,9 +84,8 @@ std::string Status::ToString() const {
   if (error_code_ == error::OK)
     return "OK";
 
-  return base::StringPrintf("%d (%s): %s",
-                            error_code_,
-                            error::ErrorCodeToString(error_code_).c_str(),
+  return base::StringPrintf("%d (%s): %s", error_code_,
+                            error::ErrorCodeToString(error_code_),
                             error_message_.c_str());
 }
 

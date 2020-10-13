@@ -26,6 +26,14 @@ class VideoSliceHeaderParser {
   virtual bool Initialize(
       const std::vector<uint8_t>& decoder_configuration) = 0;
 
+  /// Process NAL unit, in particular parameter set NAL units.  Non parameter
+  /// set NAL unit is allowed but the function always returns true.
+  /// Returns false if there is any problem processing the parameter set NAL
+  /// unit.
+  /// This function is needed to handle parameter set NAL units not in decoder
+  /// configuration record, i.e. in the samples.
+  virtual bool ProcessNalu(const Nalu& nalu) = 0;
+
   /// Gets the header size of the given NALU.  Returns < 0 on error.
   virtual int64_t GetHeaderSize(const Nalu& nalu) = 0;
 
@@ -41,6 +49,7 @@ class H264VideoSliceHeaderParser : public VideoSliceHeaderParser {
   /// @name VideoSliceHeaderParser implementation overrides.
   /// @{
   bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
+  bool ProcessNalu(const Nalu& nalu) override;
   int64_t GetHeaderSize(const Nalu& nalu) override;
   /// @}
 
@@ -58,6 +67,7 @@ class H265VideoSliceHeaderParser : public VideoSliceHeaderParser {
   /// @name VideoSliceHeaderParser implementation overrides.
   /// @{
   bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
+  bool ProcessNalu(const Nalu& nalu) override;
   int64_t GetHeaderSize(const Nalu& nalu) override;
   /// @}
 
@@ -71,4 +81,3 @@ class H265VideoSliceHeaderParser : public VideoSliceHeaderParser {
 }  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_CODECS_VIDEO_SLICE_HEADER_PARSER_H_
-

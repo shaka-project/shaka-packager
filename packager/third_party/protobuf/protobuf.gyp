@@ -464,13 +464,6 @@
                 'python/google/protobuf/symbol_database.py',
                 'python/google/protobuf/text_encoding.py',
                 'python/google/protobuf/text_format.py',
-
-                # TODO(ncarter): protoc's python generator treats
-                # descriptor.proto specially, but only when the input path is
-                # exactly "google/protobuf/descriptor.proto".  I'm not sure how
-                # to execute a rule from a different directory.  For now, use a
-                # manually-generated copy of descriptor_pb2.py.
-                'python/google/protobuf/descriptor_pb2.py',
               ],
             },
             {
@@ -491,39 +484,33 @@
               ],
             },
           ],
-      #   # We can't generate a proper descriptor_pb2.py -- see earlier comment.
-      #   'rules': [
-      #     {
-      #       'rule_name': 'genproto',
-      #       'extension': 'proto',
-      #       'inputs': [
-      #         '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)protoc<(EXECUTABLE_SUFFIX)',
-      #       ],
-      #       'variables': {
-      #         # The protoc compiler requires a proto_path argument with the
-      #           # directory containing the .proto file.
-      #           'rule_input_relpath': 'src/google/protobuf',
-      #         },
-      #         'outputs': [
-      #           '<(PRODUCT_DIR)/pyproto/google/protobuf/<(RULE_INPUT_ROOT)_pb2.py',
-      #         ],
-      #         'action': [
-      #           '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)protoc<(EXECUTABLE_SUFFIX)',
-      #           '-I./src',
-      #           '-I.',
-      #           '--python_out=<(PRODUCT_DIR)/pyproto/google/protobuf',
-      #           'google/protobuf/descriptor.proto',
-      #         ],
-      #         'message': 'Generating Python code from <(RULE_INPUT_PATH)',
-      #       },
-      #     ],
-      #     'dependencies': [
-      #       'protoc#host',
-      #     ],
-      #     'sources': [
-      #       'src/google/protobuf/descriptor.proto',
-      #     ],
-         },
+          # Generate descriptor_pb2.py.
+          'rules': [
+            {
+              'rule_name': 'genproto',
+              'extension': 'proto',
+              'inputs': [
+                '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)protoc<(EXECUTABLE_SUFFIX)',
+              ],
+              'outputs': [
+                '<(PRODUCT_DIR)/pyproto/google/protobuf/<(RULE_INPUT_ROOT)_pb2.py',
+              ],
+              'action': [
+                '<(PRODUCT_DIR)/<(EXECUTABLE_PREFIX)protoc<(EXECUTABLE_SUFFIX)',
+                '-Isrc',
+                '--python_out=<(PRODUCT_DIR)/pyproto',
+                'src/google/protobuf/descriptor.proto',
+              ],
+              'message': 'Generating Python code from <(RULE_INPUT_PATH)',
+            },
+          ],
+          'dependencies': [
+            'protoc#host',
+          ],
+          'sources': [
+            'src/google/protobuf/descriptor.proto',
+          ],
+        },
       ],
     }, { # use_system_protobuf==1
       'targets': [

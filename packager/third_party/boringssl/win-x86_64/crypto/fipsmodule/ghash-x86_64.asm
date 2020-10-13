@@ -1,7 +1,14 @@
+; This file is generated from a similarly-named Perl script in the BoringSSL
+; source tree. Do not edit by hand.
+
 default	rel
 %define XMMWORD
 %define YMMWORD
 %define ZMMWORD
+
+%ifdef BORINGSSL_PREFIX
+%include "boringssl_prefix_symbols_nasm.inc"
+%endif
 section	.text code align=64
 
 EXTERN	OPENSSL_ia32cap_P
@@ -18,13 +25,21 @@ $L$SEH_begin_gcm_gmult_4bit:
 	mov	rsi,rdx
 
 
+
 	push	rbx
+
 	push	rbp
+
 	push	r12
+
 	push	r13
+
 	push	r14
+
 	push	r15
+
 	sub	rsp,280
+
 $L$gmult_prologue:
 
 	movzx	r8,BYTE[15+rdi]
@@ -102,12 +117,16 @@ $L$break1:
 	mov	QWORD[rdi],r9
 
 	lea	rsi,[((280+48))+rsp]
+
 	mov	rbx,QWORD[((-8))+rsi]
+
 	lea	rsp,[rsi]
+
 $L$gmult_epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
 	DB	0F3h,0C3h		;repret
+
 $L$SEH_end_gcm_gmult_4bit:
 global	gcm_ghash_4bit
 
@@ -123,13 +142,21 @@ $L$SEH_begin_gcm_ghash_4bit:
 	mov	rcx,r9
 
 
+
 	push	rbx
+
 	push	rbp
+
 	push	r12
+
 	push	r13
+
 	push	r14
+
 	push	r15
+
 	sub	rsp,280
+
 $L$ghash_prologue:
 	mov	r14,rdx
 	mov	r15,rcx
@@ -675,22 +702,32 @@ $L$outer_loop:
 	mov	QWORD[rdi],r9
 
 	lea	rsi,[((280+48))+rsp]
+
 	mov	r15,QWORD[((-48))+rsi]
+
 	mov	r14,QWORD[((-40))+rsi]
+
 	mov	r13,QWORD[((-32))+rsi]
+
 	mov	r12,QWORD[((-24))+rsi]
+
 	mov	rbp,QWORD[((-16))+rsi]
+
 	mov	rbx,QWORD[((-8))+rsi]
+
 	lea	rsp,[rsi]
+
 $L$ghash_epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
 	DB	0F3h,0C3h		;repret
+
 $L$SEH_end_gcm_ghash_4bit:
 global	gcm_init_clmul
 
 ALIGN	16
 gcm_init_clmul:
+
 $L$_init_clmul:
 $L$SEH_begin_gcm_init_clmul:
 
@@ -850,10 +887,12 @@ DB	102,15,58,15,227,8
 $L$SEH_end_gcm_init_clmul:
 	DB	0F3h,0C3h		;repret
 
+
 global	gcm_gmult_clmul
 
 ALIGN	16
 gcm_gmult_clmul:
+
 $L$_gmult_clmul:
 	movdqu	xmm0,XMMWORD[rcx]
 	movdqa	xmm5,XMMWORD[$L$bswap_mask]
@@ -901,10 +940,12 @@ DB	102,15,56,0,197
 	movdqu	XMMWORD[rcx],xmm0
 	DB	0F3h,0C3h		;repret
 
+
 global	gcm_ghash_clmul
 
 ALIGN	32
 gcm_ghash_clmul:
+
 $L$_ghash_clmul:
 	lea	rax,[((-136))+rsp]
 $L$SEH_begin_gcm_ghash_clmul:
@@ -1311,10 +1352,12 @@ DB	102,65,15,56,0,194
 $L$SEH_end_gcm_ghash_clmul:
 	DB	0F3h,0C3h		;repret
 
+
 global	gcm_init_avx
 
 ALIGN	32
 gcm_init_avx:
+
 $L$SEH_begin_gcm_init_avx:
 
 DB	0x48,0x83,0xec,0x18
@@ -1425,16 +1468,20 @@ $L$init_start_avx:
 $L$SEH_end_gcm_init_avx:
 	DB	0F3h,0C3h		;repret
 
+
 global	gcm_gmult_avx
 
 ALIGN	32
 gcm_gmult_avx:
+
 	jmp	NEAR $L$_gmult_clmul
+
 
 global	gcm_ghash_avx
 
 ALIGN	32
 gcm_ghash_avx:
+
 	lea	rax,[((-136))+rsp]
 $L$SEH_begin_gcm_ghash_avx:
 
@@ -1832,6 +1879,7 @@ $L$tail_no_xor_avx:
 	lea	rsp,[168+rsp]
 $L$SEH_end_gcm_ghash_avx:
 	DB	0F3h,0C3h		;repret
+
 
 ALIGN	64
 $L$bswap_mask:

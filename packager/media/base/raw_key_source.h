@@ -30,6 +30,7 @@ class RawKeySource : public KeySource {
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
+                            uint32_t crypto_period_duration_in_seconds,
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}
@@ -37,23 +38,14 @@ class RawKeySource : public KeySource {
   /// Creates a new RawKeySource from the given data.  Returns null
   /// if the parameter is malformed.
   /// @param raw_key contains parameters to setup the key source.
-  /// @param protection_systems_flags is the flags indicating which PSSH should
-  ///        be included.
-  /// @param protection_scheme is the Protection Scheme to be used for
-  ///        encryption. It needs to be signalled in Widevine PSSH. This
-  ///        argument can be ignored if Widevine PSSH is not generated.
-  static std::unique_ptr<RawKeySource> Create(const RawKeyParams& raw_key,
-                                              int protection_system_flags,
-                                              FourCC protection_scheme);
+  static std::unique_ptr<RawKeySource> Create(const RawKeyParams& raw_key);
 
  protected:
   // Allow default constructor for mock key sources.
   RawKeySource();
 
  private:
-  RawKeySource(EncryptionKeyMap&& encryption_key_map,
-               int protection_systems_flags,
-               FourCC protection_scheme);
+  RawKeySource(EncryptionKeyMap&& encryption_key_map);
   RawKeySource(const RawKeySource&) = delete;
   RawKeySource& operator=(const RawKeySource&) = delete;
 

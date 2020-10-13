@@ -18,6 +18,7 @@
 #include "packager/media/formats/mp2t/ac3_header.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mp2t/mpeg1_header.h"
 #include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
@@ -59,16 +60,24 @@ static bool LookForSyncWord(const uint8_t* raw_es,
     if (!audio_header->IsSyncWord(cur_buf))
       continue;
 
-    if (!audio_header->Parse(cur_buf, raw_es_size - offset))
-      continue;
-
-    // Check whether there is another frame |size| apart from the current one.
     const size_t remaining_size = static_cast<size_t>(raw_es_size - offset);
     const int kSyncWordSize = 2;
-    if (remaining_size >= audio_header->GetFrameSize() + kSyncWordSize &&
-        !audio_header->IsSyncWord(&cur_buf[audio_header->GetFrameSize()])) {
+    const size_t frame_size =
+        audio_header->GetFrameSizeWithoutParsing(cur_buf, remaining_size);
+    if (frame_size < audio_header->GetMinFrameSize())
+      // Too short to be a valid frame.
+      continue;
+    if (remaining_size < frame_size)
+      // Not a full frame: will resume when we have more data.
+      return false;
+    // Check whether there is another frame |size| apart from the current one.
+    if (remaining_size >= frame_size + kSyncWordSize &&
+        !audio_header->IsSyncWord(&cur_buf[frame_size])) {
       continue;
     }
+
+    if (!audio_header->Parse(cur_buf, frame_size))
+      continue;
 
     *new_pos = offset;
     return true;
@@ -90,6 +99,8 @@ EsParserAudio::EsParserAudio(uint32_t pid,
       sbr_in_mimetype_(sbr_in_mimetype) {
   if (stream_type == TsStreamType::kAc3) {
     audio_header_.reset(new Ac3Header);
+  } else if (stream_type == TsStreamType::kMpeg1Audio) {
+    audio_header_.reset(new Mpeg1Header);
   } else {
     DCHECK_EQ(stream_type, TsStreamType::kAdtsAac);
     audio_header_.reset(new AdtsHeader);
@@ -206,7 +217,9 @@ bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
                        : samples_per_second;
 
   const Codec codec =
-      stream_type_ == TsStreamType::kAc3 ? kCodecAC3 : kCodecAAC;
+      stream_type_ == TsStreamType::kAc3
+          ? kCodecAC3
+          : (stream_type_ == TsStreamType::kMpeg1Audio ? kCodecMP3 : kCodecAAC);
   last_audio_decoder_config_ = std::make_shared<AudioStreamInfo>(
       pid(), kMpeg2Timescale, kInfiniteDuration, codec,
       AudioStreamInfo::GetCodecString(codec, audio_header.GetObjectType()),

@@ -9,9 +9,8 @@
 namespace shaka {
 namespace media {
 
-DecoderConfigurationRecord::DecoderConfigurationRecord()
-    : nalu_length_size_(0) {}
-DecoderConfigurationRecord::~DecoderConfigurationRecord() {}
+DecoderConfigurationRecord::DecoderConfigurationRecord() = default;
+DecoderConfigurationRecord::~DecoderConfigurationRecord() = default;
 
 bool DecoderConfigurationRecord::Parse(const uint8_t* data, size_t data_size) {
   data_.assign(data, data + data_size);

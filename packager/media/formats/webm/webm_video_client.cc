@@ -5,6 +5,7 @@
 #include "packager/media/formats/webm/webm_video_client.h"
 
 #include "packager/base/logging.h"
+#include "packager/media/base/video_util.h"
 #include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
 #include "packager/media/formats/webm/webm_constants.h"
@@ -13,15 +14,6 @@ namespace {
 
 // Timestamps are represented in double in WebM. Convert to uint64_t in us.
 const uint32_t kWebMTimeScale = 1000000u;
-
-int64_t GetGreatestCommonDivisor(int64_t a, int64_t b) {
-  while (b) {
-    int64_t temp = b;
-    b = a % b;
-    a = temp;
-  }
-  return a;
-}
 
 }  // namespace
 
@@ -118,12 +110,12 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     LOG(ERROR) << "Unsupported display unit type " << display_unit_;
     return nullptr;
   }
+
   // Calculate sample aspect ratio.
-  int64_t sar_x = display_width_ * height_after_crop;
-  int64_t sar_y = display_height_ * width_after_crop;
-  int64_t gcd = GetGreatestCommonDivisor(sar_x, sar_y);
-  sar_x /= gcd;
-  sar_y /= gcd;
+  uint32_t pixel_width;
+  uint32_t pixel_height;
+  DerivePixelWidthHeight(width_after_crop, height_after_crop, display_width_,
+                         display_height_, &pixel_width, &pixel_height);
 
   // |codec_private| may be overriden later for some codecs, e.g. VP9 since for
   // VP9, the format for MP4 and WebM are different; MP4 format is used as the
@@ -131,8 +123,8 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   return std::make_shared<VideoStreamInfo>(
       track_num, kWebMTimeScale, 0, video_codec, H26xStreamFormat::kUnSpecified,
       codec_string, codec_private.data(), codec_private.size(),
-      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, std::string(),
-      is_encrypted);
+      width_after_crop, height_after_crop, pixel_width, pixel_height, 0, 0,
+      0 /* transfer_characteristics */, std::string(), is_encrypted);
 }
 
 VPCodecConfigurationRecord WebMVideoClient::GetVpCodecConfig(

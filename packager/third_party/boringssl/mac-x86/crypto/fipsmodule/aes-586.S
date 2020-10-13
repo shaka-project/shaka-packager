@@ -1,4 +1,10 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
 #if defined(__i386__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 .private_extern	__x86_AES_encrypt_compact
 .align	4
@@ -961,11 +967,11 @@ LAES_Te:
 .long	16,32,64,128
 .long	27,54,0,0
 .long	0,0,0,0
-.globl	_asm_AES_encrypt
-.private_extern	_asm_AES_encrypt
+.globl	_aes_nohw_encrypt
+.private_extern	_aes_nohw_encrypt
 .align	4
-_asm_AES_encrypt:
-L_asm_AES_encrypt_begin:
+_aes_nohw_encrypt:
+L_aes_nohw_encrypt_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -2145,11 +2151,11 @@ LAES_Td:
 .byte	200,235,187,60,131,83,153,97
 .byte	23,43,4,126,186,119,214,38
 .byte	225,105,20,99,85,33,12,125
-.globl	_asm_AES_decrypt
-.private_extern	_asm_AES_decrypt
+.globl	_aes_nohw_decrypt
+.private_extern	_aes_nohw_decrypt
 .align	4
-_asm_AES_decrypt:
-L_asm_AES_decrypt_begin:
+_aes_nohw_decrypt:
+L_aes_nohw_decrypt_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -2209,11 +2215,11 @@ L011x86:
 	popl	%ebx
 	popl	%ebp
 	ret
-.globl	_asm_AES_cbc_encrypt
-.private_extern	_asm_AES_cbc_encrypt
+.globl	_aes_nohw_cbc_encrypt
+.private_extern	_aes_nohw_cbc_encrypt
 .align	4
-_asm_AES_cbc_encrypt:
-L_asm_AES_cbc_encrypt_begin:
+_aes_nohw_cbc_encrypt:
+L_aes_nohw_cbc_encrypt_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -2970,18 +2976,18 @@ L045exit:
 	popl	%ebx
 	popl	%ebp
 	ret
-.globl	_asm_AES_set_encrypt_key
-.private_extern	_asm_AES_set_encrypt_key
+.globl	_aes_nohw_set_encrypt_key
+.private_extern	_aes_nohw_set_encrypt_key
 .align	4
-_asm_AES_set_encrypt_key:
-L_asm_AES_set_encrypt_key_begin:
+_aes_nohw_set_encrypt_key:
+L_aes_nohw_set_encrypt_key_begin:
 	call	__x86_AES_set_encrypt_key
 	ret
-.globl	_asm_AES_set_decrypt_key
-.private_extern	_asm_AES_set_decrypt_key
+.globl	_aes_nohw_set_decrypt_key
+.private_extern	_aes_nohw_set_decrypt_key
 .align	4
-_asm_AES_set_decrypt_key:
-L_asm_AES_set_decrypt_key_begin:
+_aes_nohw_set_decrypt_key:
+L_aes_nohw_set_decrypt_key_begin:
 	call	__x86_AES_set_encrypt_key
 	cmpl	$0,%eax
 	je	L054proceed

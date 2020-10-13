@@ -20,6 +20,7 @@ enum FourCC : uint32_t {
 
   FOURCC_aacd = 0x61616364,
   FOURCC_ac_3 = 0x61632d33,  // "ac-3"
+  FOURCC_ac_4 = 0x61632d34,  // "ac-4"
   FOURCC_ac3d = 0x61633364,
   FOURCC_apad = 0x61706164,
   FOURCC_av01 = 0x61763031,
@@ -41,6 +42,7 @@ enum FourCC : uint32_t {
   FOURCC_ctts = 0x63747473,
   FOURCC_dOps = 0x644f7073,
   FOURCC_dac3 = 0x64616333,
+  FOURCC_dac4 = 0x64616334,
   FOURCC_dash = 0x64617368,
   FOURCC_ddts = 0x64647473,
   FOURCC_dec3 = 0x64656333,
@@ -53,6 +55,10 @@ enum FourCC : uint32_t {
   FOURCC_dtsl = 0x6474736c,
   FOURCC_dtsm = 0x6474732d,  // "dts-"
   FOURCC_dtsp = 0x6474732b,  // "dts+"
+  FOURCC_dvcC = 0x64766343,
+  FOURCC_dvh1 = 0x64766831,
+  FOURCC_dvhe = 0x64766865,
+  FOURCC_dvvC = 0x64767643,
   FOURCC_ec_3 = 0x65632d33,  // "ec-3"
   FOURCC_ec3d = 0x65633364,
   FOURCC_edts = 0x65647473,
@@ -69,6 +75,7 @@ enum FourCC : uint32_t {
   FOURCC_hint = 0x68696e74,
   FOURCC_hvc1 = 0x68766331,
   FOURCC_hvcC = 0x68766343,
+  FOURCC_hvcE = 0x68766345,
   FOURCC_iden = 0x6964656e,
   FOURCC_iso6 = 0x69736f36,
   FOURCC_iso8 = 0x69736f38,
@@ -85,6 +92,7 @@ enum FourCC : uint32_t {
   FOURCC_minf = 0x6d696e66,
   FOURCC_moof = 0x6d6f6f66,
   FOURCC_moov = 0x6d6f6f76,
+  FOURCC_mp3a = 0x6d703361,
   FOURCC_mp41 = 0x6d703431,
   FOURCC_mp4a = 0x6d703461,
   FOURCC_mp4v = 0x6d703476,

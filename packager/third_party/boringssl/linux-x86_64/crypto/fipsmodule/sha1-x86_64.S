@@ -1,4 +1,16 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
 #if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text	
 .extern	OPENSSL_ia32cap_P
 .hidden OPENSSL_ia32cap_P
@@ -8,6 +20,7 @@
 .type	sha1_block_data_order,@function
 .align	16
 sha1_block_data_order:
+.cfi_startproc	
 	leaq	OPENSSL_ia32cap_P(%rip),%r10
 	movl	0(%r10),%r9d
 	movl	4(%r10),%r8d
@@ -24,17 +37,24 @@ sha1_block_data_order:
 .align	16
 .Lialu:
 	movq	%rsp,%rax
+.cfi_def_cfa_register	%rax
 	pushq	%rbx
+.cfi_offset	%rbx,-16
 	pushq	%rbp
+.cfi_offset	%rbp,-24
 	pushq	%r12
+.cfi_offset	%r12,-32
 	pushq	%r13
+.cfi_offset	%r13,-40
 	pushq	%r14
+.cfi_offset	%r14,-48
 	movq	%rdi,%r8
 	subq	$72,%rsp
 	movq	%rsi,%r9
 	andq	$-64,%rsp
 	movq	%rdx,%r10
 	movq	%rax,64(%rsp)
+.cfi_escape	0x0f,0x06,0x77,0xc0,0x00,0x06,0x23,0x08
 .Lprologue:
 
 	movl	0(%r8),%esi
@@ -1229,25 +1249,40 @@ sha1_block_data_order:
 	jnz	.Lloop
 
 	movq	64(%rsp),%rsi
+.cfi_def_cfa	%rsi,8
 	movq	-40(%rsi),%r14
+.cfi_restore	%r14
 	movq	-32(%rsi),%r13
+.cfi_restore	%r13
 	movq	-24(%rsi),%r12
+.cfi_restore	%r12
 	movq	-16(%rsi),%rbp
+.cfi_restore	%rbp
 	movq	-8(%rsi),%rbx
+.cfi_restore	%rbx
 	leaq	(%rsi),%rsp
+.cfi_def_cfa_register	%rsp
 .Lepilogue:
 	.byte	0xf3,0xc3
+.cfi_endproc	
 .size	sha1_block_data_order,.-sha1_block_data_order
 .type	sha1_block_data_order_ssse3,@function
 .align	16
 sha1_block_data_order_ssse3:
 _ssse3_shortcut:
+.cfi_startproc	
 	movq	%rsp,%r11
+.cfi_def_cfa_register	%r11
 	pushq	%rbx
+.cfi_offset	%rbx,-16
 	pushq	%rbp
+.cfi_offset	%rbp,-24
 	pushq	%r12
+.cfi_offset	%r12,-32
 	pushq	%r13
+.cfi_offset	%r13,-40
 	pushq	%r14
+.cfi_offset	%r14,-48
 	leaq	-64(%rsp),%rsp
 	andq	$-64,%rsp
 	movq	%rdi,%r8
@@ -2404,24 +2439,38 @@ _ssse3_shortcut:
 	movl	%edx,12(%r8)
 	movl	%ebp,16(%r8)
 	movq	-40(%r11),%r14
+.cfi_restore	%r14
 	movq	-32(%r11),%r13
+.cfi_restore	%r13
 	movq	-24(%r11),%r12
+.cfi_restore	%r12
 	movq	-16(%r11),%rbp
+.cfi_restore	%rbp
 	movq	-8(%r11),%rbx
+.cfi_restore	%rbx
 	leaq	(%r11),%rsp
+.cfi_def_cfa_register	%rsp
 .Lepilogue_ssse3:
 	.byte	0xf3,0xc3
+.cfi_endproc	
 .size	sha1_block_data_order_ssse3,.-sha1_block_data_order_ssse3
 .type	sha1_block_data_order_avx,@function
 .align	16
 sha1_block_data_order_avx:
 _avx_shortcut:
+.cfi_startproc	
 	movq	%rsp,%r11
+.cfi_def_cfa_register	%r11
 	pushq	%rbx
+.cfi_offset	%rbx,-16
 	pushq	%rbp
+.cfi_offset	%rbp,-24
 	pushq	%r12
+.cfi_offset	%r12,-32
 	pushq	%r13
+.cfi_offset	%r13,-40
 	pushq	%r14
+.cfi_offset	%r14,-48
 	leaq	-64(%rsp),%rsp
 	vzeroupper
 	andq	$-64,%rsp
@@ -3518,13 +3567,20 @@ _avx_shortcut:
 	movl	%edx,12(%r8)
 	movl	%ebp,16(%r8)
 	movq	-40(%r11),%r14
+.cfi_restore	%r14
 	movq	-32(%r11),%r13
+.cfi_restore	%r13
 	movq	-24(%r11),%r12
+.cfi_restore	%r12
 	movq	-16(%r11),%rbp
+.cfi_restore	%rbp
 	movq	-8(%r11),%rbx
+.cfi_restore	%rbx
 	leaq	(%r11),%rsp
+.cfi_def_cfa_register	%rsp
 .Lepilogue_avx:
 	.byte	0xf3,0xc3
+.cfi_endproc	
 .size	sha1_block_data_order_avx,.-sha1_block_data_order_avx
 .align	64
 K_XX_XX:
@@ -3542,3 +3598,4 @@ K_XX_XX:
 .byte	83,72,65,49,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	64
 #endif
+.section	.note.GNU-stack,"",@progbits

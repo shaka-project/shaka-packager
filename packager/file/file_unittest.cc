@@ -195,6 +195,12 @@ TEST_F(LocalFileTest, WriteFlushCheckSize) {
   }
 }
 
+TEST_F(LocalFileTest, IsLocalReguar) {
+  ASSERT_EQ(kDataSize,
+            base::WriteFile(test_file_path_, data_.data(), kDataSize));
+  ASSERT_TRUE(File::IsLocalRegularFile(local_file_name_.c_str()));
+}
+
 class ParamLocalFileTest : public LocalFileTest,
                            public ::testing::WithParamInterface<uint8_t> {};
 

@@ -37,6 +37,29 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
+std::string AdjustVideoCodec(const std::string& codec) {
+  // Apple does not like video formats with the parameter sets stored in the
+  // samples. It also fails mediastreamvalidator checks and some Apple devices /
+  // platforms refused to play.
+  // See https://apple.co/30n90DC 1.10 and
+  // https://github.com/google/shaka-packager/issues/587#issuecomment-489182182.
+  // Replaced with the corresponding formats with the parameter sets stored in
+  // the sample descriptions instead.
+  std::string adjusted_codec = codec;
+  std::string fourcc = codec.substr(0, 4);
+  if (fourcc == "avc3")
+    adjusted_codec = "avc1" + codec.substr(4);
+  else if (fourcc == "hev1")
+    adjusted_codec = "hvc1" + codec.substr(4);
+  else if (fourcc == "dvhe")
+    adjusted_codec = "dvh1" + codec.substr(4);
+  if (adjusted_codec != codec) {
+    VLOG(1) << "Adusting video codec string from " << codec << " to "
+            << adjusted_codec;
+  }
+  return adjusted_codec;
+}
+
 // Duplicated from MpdUtils because:
 // 1. MpdUtils header depends on libxml header, which is not in the deps here
 // 2. GetLanguage depends on MediaInfo from packager/mpd/
@@ -83,7 +106,7 @@ std::string CreatePlaylistHeader(
     uint32_t target_duration,
     HlsPlaylistType type,
     MediaPlaylist::MediaPlaylistStreamType stream_type,
-    int media_sequence_number,
+    uint32_t media_sequence_number,
     int discontinuity_sequence_number) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
@@ -139,27 +162,30 @@ class SegmentInfoEntry : public HlsEntry {
   // after EXTINF.
   // It uses |previous_segment_end_offset| to determine if it has to also
   // specify the start byte offset in the tag.
-  // |duration| is duration in seconds.
+  // |start_time| is in timescale.
+  // |duration_seconds| is duration in seconds.
   SegmentInfoEntry(const std::string& file_name,
-                   double start_time,
-                   double duration,
+                   int64_t start_time,
+                   double duration_seconds,
                    bool use_byte_range,
                    uint64_t start_byte_offset,
                    uint64_t segment_file_size,
                    uint64_t previous_segment_end_offset);
 
   std::string ToString() override;
-  double start_time() const { return start_time_; }
-  double duration() const { return duration_; }
-  void set_duration(double duration) { duration_ = duration; }
+  int64_t start_time() const { return start_time_; }
+  double duration_seconds() const { return duration_seconds_; }
+  void set_duration_seconds(double duration_seconds) {
+    duration_seconds_ = duration_seconds;
+  }
 
  private:
   SegmentInfoEntry(const SegmentInfoEntry&) = delete;
   SegmentInfoEntry& operator=(const SegmentInfoEntry&) = delete;
 
   const std::string file_name_;
-  const double start_time_;
-  double duration_;
+  const int64_t start_time_;
+  double duration_seconds_;
   const bool use_byte_range_;
   const uint64_t start_byte_offset_;
   const uint64_t segment_file_size_;
@@ -167,8 +193,8 @@ class SegmentInfoEntry : public HlsEntry {
 };
 
 SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
-                                   double start_time,
-                                   double duration,
+                                   int64_t start_time,
+                                   double duration_seconds,
                                    bool use_byte_range,
                                    uint64_t start_byte_offset,
                                    uint64_t segment_file_size,
@@ -176,14 +202,14 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
     : HlsEntry(HlsEntry::EntryType::kExtInf),
       file_name_(file_name),
       start_time_(start_time),
-      duration_(duration),
+      duration_seconds_(duration_seconds),
       use_byte_range_(use_byte_range),
       start_byte_offset_(start_byte_offset),
       segment_file_size_(segment_file_size),
       previous_segment_end_offset_(previous_segment_end_offset) {}
 
 std::string SegmentInfoEntry::ToString() {
-  std::string result = base::StringPrintf("#EXTINF:%.3f,", duration_);
+  std::string result = base::StringPrintf("#EXTINF:%.3f,", duration_seconds_);
 
   if (use_byte_range_) {
     base::StringAppendF(&result, "\n#EXT-X-BYTERANGE:%" PRIu64,
@@ -305,19 +331,6 @@ std::string PlacementOpportunityEntry::ToString() {
   return "#EXT-X-PLACEMENT-OPPORTUNITY";
 }
 
-double LatestSegmentStartTime(
-    const std::list<std::unique_ptr<HlsEntry>>& entries) {
-  DCHECK(!entries.empty());
-  for (auto iter = entries.rbegin(); iter != entries.rend(); ++iter) {
-    if (iter->get()->type() == HlsEntry::EntryType::kExtInf) {
-      const SegmentInfoEntry* segment_info =
-          reinterpret_cast<SegmentInfoEntry*>(iter->get());
-      return segment_info->start_time();
-    }
-  }
-  return 0.0;
-}
-
 }  // namespace
 
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
@@ -330,7 +343,12 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
     : hls_params_(hls_params),
       file_name_(file_name),
       name_(name),
-      group_id_(group_id) {}
+      group_id_(group_id),
+      media_sequence_number_(hls_params_.media_sequence_number) {
+        // When there's a forced media_sequence_number, start with discontinuity
+        if (media_sequence_number_ > 0)
+          entries_.emplace_back(new DiscontinuityEntry());
+      }
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -347,6 +365,11 @@ void MediaPlaylist::SetLanguageForTesting(const std::string& language) {
   language_ = language;
 }
 
+void MediaPlaylist::SetCharacteristicsForTesting(
+    const std::vector<std::string>& characteristics) {
+  characteristics_ = characteristics;
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   const uint32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
@@ -356,7 +379,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
-    codec_ = media_info.video_info().codec();
+    codec_ = AdjustVideoCodec(media_info.video_info().codec());
   } else if (media_info.has_audio_info()) {
     stream_type_ = MediaPlaylistStreamType::kAudio;
     codec_ = media_info.audio_info().codec();
@@ -369,7 +392,16 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   media_info_ = media_info;
   language_ = GetLanguage(media_info);
   use_byte_range_ = !media_info_.has_segment_template_url();
+  characteristics_ =
+      std::vector<std::string>(media_info_.hls_characteristics().begin(),
+                               media_info_.hls_characteristics().end());
+
   return true;
+}
+
+void MediaPlaylist::SetSampleDuration(uint32_t sample_duration) {
+  if (media_info_.has_video_info())
+    media_info_.mutable_video_info()->set_frame_duration(sample_duration);
 }
 
 void MediaPlaylist::AddSegment(const std::string& file_name,
@@ -470,7 +502,7 @@ uint64_t MediaPlaylist::AvgBitrate() const {
 }
 
 double MediaPlaylist::GetLongestSegmentDuration() const {
-  return longest_segment_duration_;
+  return longest_segment_duration_seconds_;
 }
 
 void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
@@ -486,6 +518,18 @@ void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
 
 int MediaPlaylist::GetNumChannels() const {
   return media_info_.audio_info().num_channels();
+}
+
+int MediaPlaylist::GetEC3JocComplexity() const {
+  return media_info_.audio_info().codec_specific_data().ec3_joc_complexity();
+}
+
+bool MediaPlaylist::GetAC4ImsFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_ims_flag();
+}
+
+bool MediaPlaylist::GetAC4CbiFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_cbi_flag();
 }
 
 bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
@@ -506,6 +550,33 @@ bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
   return false;
 }
 
+std::string MediaPlaylist::GetVideoRange() const {
+  // Dolby Vision (dvh1 or dvhe) is always HDR.
+  if (codec_.find("dvh") == 0)
+    return "PQ";
+
+  // HLS specification:
+  // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-02#section-4.4.4.2
+  switch (media_info_.video_info().transfer_characteristics()) {
+    case 1:
+      return "SDR";
+    case 16:
+    case 18:
+      return "PQ";
+    default:
+      // Leave it empty if we do not have the transfer characteristics
+      // information.
+      return "";
+  }
+}
+
+double MediaPlaylist::GetFrameRate() const {
+  if (media_info_.video_info().frame_duration() == 0)
+    return 0;
+  return static_cast<double>(time_scale_) /
+         media_info_.video_info().frame_duration();
+}
+
 void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
                                         int64_t start_time,
                                         int64_t duration,
@@ -521,19 +592,37 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
     return;
   }
 
-  const double start_time_seconds =
-      static_cast<double>(start_time) / time_scale_;
+  // In order for the oldest segment to be accessible for at least
+  // |time_shift_buffer_depth| seconds, the latest segment should not be in the
+  // sliding window since the player could be playing any part of the latest
+  // segment. So the current segment duration is added to the sum of segment
+  // durations (in the manifest/playlist) after sliding the window.
+  SlideWindow();
+
   const double segment_duration_seconds =
       static_cast<double>(duration) / time_scale_;
-  longest_segment_duration_ =
-      std::max(longest_segment_duration_, segment_duration_seconds);
+  longest_segment_duration_seconds_ =
+      std::max(longest_segment_duration_seconds_, segment_duration_seconds);
   bandwidth_estimator_.AddBlock(size, segment_duration_seconds);
+  current_buffer_depth_ += segment_duration_seconds;
+
+  if (!entries_.empty() &&
+      entries_.back()->type() == HlsEntry::EntryType::kExtInf) {
+    const SegmentInfoEntry* segment_info =
+        static_cast<SegmentInfoEntry*>(entries_.back().get());
+    if (segment_info->start_time() > start_time) {
+      LOG(WARNING)
+          << "Insert a discontinuity tag after the segment with start time "
+          << segment_info->start_time() << " as the next segment starts at "
+          << start_time << ".";
+      entries_.emplace_back(new DiscontinuityEntry());
+    }
+  }
 
   entries_.emplace_back(new SegmentInfoEntry(
-      segment_file_name, start_time_seconds, segment_duration_seconds,
-      use_byte_range_, start_byte_offset, size, previous_segment_end_offset_));
+      segment_file_name, start_time, segment_duration_seconds, use_byte_range_,
+      start_byte_offset, size, previous_segment_end_offset_));
   previous_segment_end_offset_ = start_byte_offset + size - 1;
-  SlideWindow();
 }
 
 void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp) {
@@ -549,31 +638,35 @@ void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp) {
           reinterpret_cast<SegmentInfoEntry*>(iter->get());
 
       const double segment_duration_seconds =
-          next_timestamp_seconds - segment_info->start_time();
-      segment_info->set_duration(segment_duration_seconds);
-      longest_segment_duration_ =
-          std::max(longest_segment_duration_, segment_duration_seconds);
+          next_timestamp_seconds -
+          static_cast<double>(segment_info->start_time()) / time_scale_;
+      // It could be negative if timestamp messed up.
+      if (segment_duration_seconds > 0)
+        segment_info->set_duration_seconds(segment_duration_seconds);
+      longest_segment_duration_seconds_ =
+          std::max(longest_segment_duration_seconds_, segment_duration_seconds);
       break;
     }
   }
 }
 
+// TODO(kqyang): Right now this class manages the segments including the
+// deletion of segments when it is no longer needed. However, this class does
+// not have access to the segment file paths, which is already translated to
+// segment URLs by HlsNotifier. We have to re-generate segment file paths from
+// segment template here in order to delete the old segments.
+// To make the pipeline cleaner, we should move all file manipulations including
+// segment management to an intermediate layer between HlsNotifier and
+// MediaPlaylist.
 void MediaPlaylist::SlideWindow() {
-  DCHECK(!entries_.empty());
   if (hls_params_.time_shift_buffer_depth <= 0.0 ||
       hls_params_.playlist_type != HlsPlaylistType::kLive) {
     return;
   }
   DCHECK_GT(time_scale_, 0u);
 
-  // The start time of the latest segment is considered the current_play_time,
-  // and this should guarantee that the latest segment will stay in the list.
-  const double current_play_time = LatestSegmentStartTime(entries_);
-  if (current_play_time <= hls_params_.time_shift_buffer_depth)
+  if (current_buffer_depth_ <= hls_params_.time_shift_buffer_depth)
     return;
-
-  const double timeshift_limit =
-      current_play_time - hls_params_.time_shift_buffer_depth;
 
   // Temporary list to hold the EXT-X-KEYs. For example, this allows us to
   // remove <3> without removing <1> and <2> below (<1> and <2> are moved to the
@@ -598,12 +691,17 @@ void MediaPlaylist::SlideWindow() {
       ++discontinuity_sequence_number_;
     } else {
       DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
+
       const SegmentInfoEntry& segment_info =
           *reinterpret_cast<SegmentInfoEntry*>(last->get());
-      const double last_segment_end_time =
-          segment_info.start_time() + segment_info.duration();
-      if (timeshift_limit < last_segment_end_time)
+      // Remove the current segment only if it falls completely out of time
+      // shift buffer range.
+      const bool segment_within_time_shift_buffer =
+          current_buffer_depth_ - segment_info.duration_seconds() <
+          hls_params_.time_shift_buffer_depth;
+      if (segment_within_time_shift_buffer)
         break;
+      current_buffer_depth_ -= segment_info.duration_seconds();
       RemoveOldSegment(segment_info.start_time());
       media_sequence_number_++;
     }
@@ -627,7 +725,11 @@ void MediaPlaylist::RemoveOldSegment(int64_t start_time) {
   while (segments_to_be_removed_.size() >
          hls_params_.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();
-    File::Delete(segments_to_be_removed_.front().c_str());
+    if (!File::Delete(segments_to_be_removed_.front().c_str())) {
+      LOG(WARNING) << "Failed to delete " << segments_to_be_removed_.front()
+                   << "; Will retry later.";
+      break;
+    }
     segments_to_be_removed_.pop_front();
   }
 }

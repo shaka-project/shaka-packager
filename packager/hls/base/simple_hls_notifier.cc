@@ -184,14 +184,15 @@ base::Optional<MediaPlaylist::EncryptionMethod> StringToEncryptionMethod(
     const std::string& method) {
   if (method == "cenc") {
     return MediaPlaylist::EncryptionMethod::kSampleAesCenc;
-  } else if (method == "cbcs") {
+  }
+  if (method == "cbcs") {
     return MediaPlaylist::EncryptionMethod::kSampleAes;
-  } else if (method == "cbca") {
+  }
+  if (method == "cbca") {
     // cbca is a place holder for sample aes.
     return MediaPlaylist::EncryptionMethod::kSampleAes;
-  } else {
-    return base::nullopt;
   }
+  return base::nullopt;
 }
 
 void NotifyEncryptionToMediaPlaylist(
@@ -281,10 +282,16 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
       media_playlist_factory_(new MediaPlaylistFactory()) {
   const base::FilePath master_playlist_path(
       base::FilePath::FromUTF8Unsafe(hls_params.master_playlist_output));
-  output_dir_ = master_playlist_path.DirName().AsUTF8Unsafe();
+  master_playlist_dir_ = master_playlist_path.DirName().AsUTF8Unsafe();
+  const std::string& default_audio_langauge = hls_params.default_language;
+  const std::string& default_text_language =
+      hls_params.default_text_language.empty()
+          ? hls_params.default_language
+          : hls_params.default_text_language;
   master_playlist_.reset(
       new MasterPlaylist(master_playlist_path.BaseName().AsUTF8Unsafe(),
-                         hls_params.default_language));
+                         default_audio_langauge, default_text_language, 
+                         hls_params.is_independent_segments));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}
@@ -300,11 +307,14 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
                                         uint32_t* stream_id) {
   DCHECK(stream_id);
 
+  const std::string relative_playlist_path = MakePathRelative(
+      playlist_name, FilePath::FromUTF8Unsafe(master_playlist_dir_));
+
   std::unique_ptr<MediaPlaylist> media_playlist =
-      media_playlist_factory_->Create(hls_params(), playlist_name, name,
-                                      group_id);
+      media_playlist_factory_->Create(hls_params(), relative_playlist_path,
+                                      name, group_id);
   MediaInfo adjusted_media_info = MakeMediaInfoPathsRelativeToPlaylist(
-      media_info, hls_params().base_url, output_dir_,
+      media_info, hls_params().base_url, master_playlist_dir_,
       media_playlist->file_name());
   if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
@@ -334,6 +344,19 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   return true;
 }
 
+bool SimpleHlsNotifier::NotifySampleDuration(uint32_t stream_id,
+                                             uint32_t sample_duration) {
+  base::AutoLock auto_lock(lock_);
+  auto stream_iterator = stream_map_.find(stream_id);
+  if (stream_iterator == stream_map_.end()) {
+    LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
+    return false;
+  }
+  auto& media_playlist = stream_iterator->second->media_playlist;
+  media_playlist->SetSampleDuration(sample_duration);
+  return true;
+}
+
 bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          const std::string& segment_name,
                                          uint64_t start_time,
@@ -348,8 +371,8 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   }
   auto& media_playlist = stream_iterator->second->media_playlist;
   const std::string& segment_url =
-      GenerateSegmentUrl(segment_name, hls_params().base_url, output_dir_,
-                         media_playlist->file_name());
+      GenerateSegmentUrl(segment_name, hls_params().base_url,
+                         master_playlist_dir_, media_playlist->file_name());
   media_playlist->AddSegment(segment_url, start_time, duration,
                              start_byte_offset, size);
 
@@ -369,15 +392,15 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     if (target_duration_updated) {
       for (MediaPlaylist* playlist : media_playlists_) {
         playlist->SetTargetDuration(target_duration_);
-        if (!WriteMediaPlaylist(output_dir_, playlist))
+        if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
           return false;
       }
     } else {
-      if (!WriteMediaPlaylist(output_dir_, media_playlist.get()))
+      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get()))
         return false;
     }
-    if (!master_playlist_->WriteMasterPlaylist(hls_params().base_url,
-                                               output_dir_, media_playlists_)) {
+    if (!master_playlist_->WriteMasterPlaylist(
+            hls_params().base_url, master_playlist_dir_, media_playlists_)) {
       LOG(ERROR) << "Failed to write master playlist.";
       return false;
     }
@@ -451,7 +474,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
                                     iv, "identity", "", media_playlist.get());
     return true;
-  } else if (IsFairPlaySystemId(system_id)) {
+  }
+  if (IsFairPlaySystemId(system_id)) {
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
@@ -477,11 +501,11 @@ bool SimpleHlsNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
     playlist->SetTargetDuration(target_duration_);
-    if (!WriteMediaPlaylist(output_dir_, playlist))
+    if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
       return false;
   }
-  if (!master_playlist_->WriteMasterPlaylist(hls_params().base_url, output_dir_,
-                                             media_playlists_)) {
+  if (!master_playlist_->WriteMasterPlaylist(
+          hls_params().base_url, master_playlist_dir_, media_playlists_)) {
     LOG(ERROR) << "Failed to write master playlist.";
     return false;
   }

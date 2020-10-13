@@ -1,4 +1,10 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
 #if defined(__i386__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 .globl	sha256_block_data_order
 .hidden	sha256_block_data_order
@@ -5558,3 +5564,4 @@ sha256_block_data_order:
 	ret
 .size	sha256_block_data_order,.-.L_sha256_block_data_order_begin
 #endif
+.section	.note.GNU-stack,"",@progbits

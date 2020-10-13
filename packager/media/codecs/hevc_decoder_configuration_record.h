@@ -31,13 +31,13 @@ class HEVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
  private:
   bool ParseInternal() override;
 
-  uint8_t version_;
-  uint8_t general_profile_space_;
-  bool general_tier_flag_;
-  uint8_t general_profile_idc_;
-  uint32_t general_profile_compatibility_flags_;
+  uint8_t version_ = 0;
+  uint8_t general_profile_space_ = 0;
+  bool general_tier_flag_ = false;
+  uint8_t general_profile_idc_ = 0;
+  uint32_t general_profile_compatibility_flags_ = 0;
   std::vector<uint8_t> general_constraint_indicator_flags_;
-  uint8_t general_level_idc_;
+  uint8_t general_level_idc_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(HEVCDecoderConfigurationRecord);
 };

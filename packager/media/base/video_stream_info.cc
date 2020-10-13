@@ -24,6 +24,8 @@ std::string VideoCodecToString(Codec codec) {
       return "H264";
     case kCodecH265:
       return "H265";
+    case kCodecH265DolbyVision:
+      return "H265 Dolby Vision";
     case kCodecVP8:
       return "VP8";
     case kCodecVP9:
@@ -48,6 +50,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  uint16_t height,
                                  uint32_t pixel_width,
                                  uint32_t pixel_height,
+                                 uint8_t transfer_characteristics,
                                  uint32_t trick_play_factor,
                                  uint8_t nalu_length_size,
                                  const std::string& language,
@@ -67,6 +70,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       height_(height),
       pixel_width_(pixel_width),
       pixel_height_(pixel_height),
+      transfer_characteristics_(transfer_characteristics),
       trick_play_factor_(trick_play_factor),
       nalu_length_size_(nalu_length_size) {}
 

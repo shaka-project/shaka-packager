@@ -80,7 +80,7 @@ struct OnMediaEndParameters {
 };
 
 // Creates StreamInfo instance from VideoStreamInfoParameters.
-std::shared_ptr<StreamInfo> CreateVideoStreamInfo(
+std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(
     const VideoStreamInfoParameters& param);
 
 // Returns the "default" VideoStreamInfoParameters for testing.

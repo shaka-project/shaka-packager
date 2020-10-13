@@ -9,6 +9,7 @@
 
 import filecmp
 import glob
+import logging
 import os
 import re
 import shutil
@@ -132,11 +133,20 @@ class DiffFilesPolicy(object):
 
       output, error = self._GitDiff(expected_file, actual_file)
 
+      # If this is an MP4 file, get a better looking diff.
+      if ((output or error) and
+          os.path.splitext(actual_file)[1] in {'.mp4', '.m4s'}):
+        new_output, new_error = self._Mp4Diff(
+            out_dir, expected_file, actual_file)
+
+        output = new_output or output
+        error = new_error or error
+
       if output:
-        failure_messages += [output]
+        failure_messages += [output.decode('utf8')]
 
       if error:
-        failure_messages += [error]
+        failure_messages += [error.decode('utf8')]
 
     if self._exact:
       for diff_file in self._allowed_diff_files:
@@ -159,6 +169,23 @@ class DiffFilesPolicy(object):
     p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     return p.communicate()
 
+  def _Mp4Diff(self, out_dir, file_a, file_b):
+    dump_a = os.path.join(out_dir, os.path.basename(file_a) + '.dump.expected')
+    dump_b = os.path.join(out_dir, os.path.basename(file_b) + '.dump.actual')
+    try:
+      cmd = ['mp4dump', '--verbosity', '2', file_a]
+      with open(dump_a, 'w') as f:
+        subprocess.check_call(cmd, stdout=f)
+      cmd = ['mp4dump', '--verbosity', '2', file_b]
+      with open(dump_b, 'w') as f:
+        subprocess.check_call(cmd, stdout=f)
+    except (OSError, subprocess.CalledProcessError):
+      # If the program isn't available or returns an error, just ignore it and
+      # use the normal diff.
+      return None, None
+
+    return self._GitDiff(dump_a, dump_b)
+
   def _UpdateGold(self, out_dir, gold_dir):
     if os.path.exists(gold_dir):
       shutil.rmtree(gold_dir)
@@ -172,7 +199,7 @@ def _UpdateMediaInfoPaths(media_info_filepath):
   #   after:  media_file_name: "bear-640x360-audio.mp4"
 
   with open(media_info_filepath, 'rb') as f:
-    content = f.read()
+    content = f.read().decode()
 
   regex = 'media_file_name: "(.*)"'
   for path in re.findall(regex, content):
@@ -180,7 +207,7 @@ def _UpdateMediaInfoPaths(media_info_filepath):
     content = content.replace(path, short_path)
 
   with open(media_info_filepath, 'wb') as f:
-    f.write(content)
+    f.write(content.encode())
 
 
 def _UpdateMpdTimes(mpd_filepath):
@@ -192,14 +219,14 @@ def _UpdateMpdTimes(mpd_filepath):
     if m:
       old = m.group(0)
       out = str_in.replace(old, new)
-      print 'Replacing "%s" with "%s"' % (old, new)
+      logging.info('Replacing "%s" with "%s"', old, new)
     else:
       out = str_in
 
     return out
 
   with open(mpd_filepath, 'rb') as f:
-    content = f.read()
+    content = f.read().decode()
 
   content = _Replace(
       content,
@@ -212,7 +239,7 @@ def _UpdateMpdTimes(mpd_filepath):
       'publishTime="some_time"')
 
   with open(mpd_filepath, 'wb') as f:
-    f.write(content)
+    f.write(content.encode())
 
 
 def GetExtension(input_file_path, output_format):
@@ -233,6 +260,7 @@ def GetSegmentedExtension(base_extension):
 class PackagerAppTest(unittest.TestCase):
 
   def setUp(self):
+    super(PackagerAppTest, self).setUp()
     self.packager = packager_app.PackagerApp()
     self.tmp_dir = tempfile.mkdtemp()
     self.test_data_dir = os.path.join(test_env.SRC_DIR, 'packager', 'media',
@@ -254,6 +282,8 @@ class PackagerAppTest(unittest.TestCase):
     else:
       self.encryption_iv = '3334353637383930'
     self.widevine_content_id = '3031323334353637'
+    self.pssh = ('0000002070737368000000001077efecc0b24d02ace33c1e52e2fb4b000'
+                 '00000')
     # TS files may have a non-zero start, which could result in the first
     # segment to be less than 1 second. Set clear_lead to be less than 1
     # so only the first segment is left in clear.
@@ -262,6 +292,7 @@ class PackagerAppTest(unittest.TestCase):
   def tearDown(self):
     if test_env.options.remove_temp_files_after_test:
       shutil.rmtree(self.tmp_dir)
+    super(PackagerAppTest, self).tearDown()
 
   def _GetStream(self,
                  descriptor,
@@ -271,6 +302,11 @@ class PackagerAppTest(unittest.TestCase):
                  segmented=False,
                  using_time_specifier=False,
                  hls=False,
+                 hls_characteristics=None,
+                 hls_only=None,
+                 dash_accessibilities=None,
+                 dash_roles=None,
+                 dash_only=None,
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
@@ -290,23 +326,28 @@ class PackagerAppTest(unittest.TestCase):
       language: The language override for the input stream.
       output_file_prefix: The output file prefix. Default to empty if not
           specified.
-      output_format: Specify the format for the output.
+      output_format: The format for the output.
       segmented: Should the output use a segmented formatted. This will affect
           the output extensions and manifests.
       using_time_specifier: Use $Time$ in segment name instead of using
           $Number$. This flag is only relevant if segmented is True.
       hls: Should the output be for an HLS manifest.
+      hls_characteristics: CHARACTERISTICS attribute for the HLS stream.
+      hls_only: If set to true, will indicate that the stream is for HLS only.
+      dash_accessibilities: Accessibility element for the DASH stream.
+      dash_roles: Role element for the DASH stream.
+      dash_only: If set to true, will indicate that the stream is for DASH only.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
           same as not specifying a trick play factor.
-      drm_label: Sets the drm label for the stream.
+      drm_label: The drm label for the stream.
       skip_encryption: If set to true, the stream will not be encrypted.
       bandwidth: The expected bandwidth value that should be listed in the
           manifest.
       split_content_on_ad_cues: If set to true, the output file will be split
           into multiple files, with a total of NumAdCues + 1 files.
-      test_file: Specify the input file to use. If the input file is not
-          specify, a default file will be used.
+      test_file: The input file to use. If the input file is not specified, a
+          default file will be used.
 
 
     Returns:
@@ -347,6 +388,20 @@ class PackagerAppTest(unittest.TestCase):
       if base_ext in ['ts', 'mp4'] and descriptor == 'video':
         stream.Append('iframe_playlist_name',
                       output_file_name_base + '-iframe.m3u8')
+
+    if hls_characteristics:
+      stream.Append('hls_characteristics', hls_characteristics)
+
+    if hls_only:
+      stream.Append('hls_only', 1)
+
+    if dash_accessibilities:
+      stream.Append('dash_accessibilities', dash_accessibilities)
+    if dash_roles:
+      stream.Append('dash_roles', dash_roles)
+
+    if dash_only:
+      stream.Append('dash_only', 1)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt'
@@ -400,6 +455,8 @@ class PackagerAppTest(unittest.TestCase):
                 encryption=False,
                 protection_systems=None,
                 protection_scheme=None,
+                crypt_byte_block=None,
+                skip_byte_block=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
                 random_iv=False,
@@ -414,11 +471,12 @@ class PackagerAppTest(unittest.TestCase):
                 time_shift_buffer_depth=0.0,
                 preserved_segments_outside_live_window=0,
                 utc_timings=None,
-                generate_static_mpd=False,
+                generate_static_live_mpd=False,
                 ad_cues=None,
                 default_language=None,
                 segment_duration=1.0,
-                use_fake_clock=True):
+                use_fake_clock=True,
+                allow_codec_switching=False):
     flags = []
 
     if not strip_parameter_set_nalus:
@@ -452,6 +510,11 @@ class PackagerAppTest(unittest.TestCase):
 
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
+      if crypt_byte_block is not None and skip_byte_block is not None:
+        flags += [
+            '--crypt_byte_block={0}'.format(crypt_byte_block),
+            '--skip_byte_block={0}'.format(skip_byte_block)
+        ]
     if not vp9_subsample_encryption:
       flags += ['--vp9_subsample_encryption=false']
 
@@ -491,8 +554,11 @@ class PackagerAppTest(unittest.TestCase):
     if utc_timings:
       flags += ['--utc_timings', utc_timings]
 
-    if generate_static_mpd:
-      flags += ['--generate_static_mpd']
+    if generate_static_live_mpd:
+      flags += ['--generate_static_live_mpd']
+
+    if allow_codec_switching:
+      flags += ['--allow_codec_switching']
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -585,7 +651,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertEqual(self.packager.MpdGenerator(flags), 0)
 
   def testVersion(self):
-    self.assertRegexpMatches(
+    # To support python version 2, which does not have assertRegex.
+    if 'assertRegex' not in dir(self):
+      assert_regex = self.assertRegexpMatches
+    else:
+      assert_regex = self.assertRegex
+
+    assert_regex(
         self.packager.Version(), '^packager(.exe)? version '
         r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)[\r\n]+.*$')
 
@@ -630,6 +702,23 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']), self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video')
 
+  def testAudioVideoWithAccessibilitiesAndRoles(self):
+    streams = [
+        self._GetStream(
+            'audio',
+            dash_accessibilities='urn:tva:metadata:cs:AudioPurposeCS:2007=1',
+            dash_roles='alternate'),
+        self._GetStream('video'),
+    ]
+
+    streams += self._GetStreams(
+        ['text'],
+        test_files=['bear-english.vtt'],
+        dash_roles='caption')
+
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self._CheckTestResults('audio-video-with-accessibilities-and-roles')
+
   def testAudioVideoWithTrickPlay(self):
     streams = [
         self._GetStream('audio'),
@@ -664,6 +753,39 @@ class PackagerFunctionalTest(PackagerAppTest):
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
 
+  def testDashOnlyAndHlsOnlyWithCaptions(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
+    dash_text_stream = self._GetStreams(['text'],
+                                        test_files=['bear-english.vtt'],
+                                        output_format='mp4',
+                                        segmented=True,
+                                        dash_only=True)
+    hls_text_stream = self._GetStreams(['text'],
+                                       test_files=['bear-english.vtt'],
+                                       segmented=True,
+                                       hls_only=True)
+    streams = audio_video_streams + dash_text_stream + hls_text_stream
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      output_hls=True))
+    # Mpd cannot be validated right now since we don't generate deterministic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate deterministic mpd or at least validate mpd
+    #                   schema.
+    self._CheckTestResults(
+        'hls-only-dash-only-captions',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
+
+  def testDashOnlyAndHlsOnly(self):
+    streams = [
+        self._GetStream('video', hls_only=True),
+        self._GetStream('audio', dash_only=True),
+    ]
+    self.assertPackageSuccess(
+        streams,
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('hls-only-dash-only')
+
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], language='por', hls=True),
@@ -697,6 +819,34 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video'], language='por-BR', hls=True),
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
+
+  def testSegmentedWebVttWithLanguageOverride(self):
+    streams = self._GetStreams(
+        ['text'], language='por', dash_only=True, output_format='mp4',
+        test_files=['bear-english.vtt'], segmented=True)
+    streams += self._GetStreams(
+        ['text'], language='por', hls_only=True,
+        test_files=['bear-english.vtt'], segmented=True)
+
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-with-language-override')
+
+  def testMp4TrailingMoov(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         test_files=['bear-640x360-trailing-moov.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('mp4-trailing-moov')
+
+  def testVideoNonSquarePixel(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['video'],
+            test_files=['bear-640x360-non_square_pixel-with_pasp.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('video-non-square-pixel')
 
   def testAacHe(self):
     self.assertPackageSuccess(
@@ -922,6 +1072,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('encryption-multi-keys-with-stream-label')
 
+  def testExplicitPssh(self):
+    flags = self._GetFlags(encryption=True, output_dash=True) + [
+        '--pssh={0}'.format(self.pssh),
+    ]
+    self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
+    self._CheckTestResults('encryption-using-explicit-pssh')
+
   def testEncryptionOfOnlyVideoStream(self):
     streams = [
         self._GetStream('audio', skip_encryption=True),
@@ -998,12 +1155,35 @@ class PackagerFunctionalTest(PackagerAppTest):
             encryption=True, protection_scheme='cbcs', output_dash=True))
     self._CheckTestResults('encryption-cbcs', verify_decryption=True)
 
+  def testEncryptionCbcsWithFullProtection(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True,
+            protection_scheme='cbcs',
+            crypt_byte_block=10,
+            skip_byte_block=0,
+            output_dash=True))
+    self._CheckTestResults(
+        'encryption-cbcs-with-full-protection', verify_decryption=True)
+
   def testEncryptionAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),
         self._GetFlags(encryption=True, output_dash=True, output_hls=True,
                        ad_cues='1.5'))
     self._CheckTestResults('encryption-and-ad-cues')
+
+  def testEncryptionAndAdCuesAndDashTrickPlay(self):
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=1),
+    ]
+    self.assertPackageSuccess(
+        streams, self._GetFlags(
+            encryption=True, output_dash=True, ad_cues='1.5'))
+    self._CheckTestResults('encryption-and-ad-cues-and-dash-trick-play')
 
   def testEncryptionAndAdCuesSplitContent(self):
     self.assertPackageSuccess(
@@ -1036,7 +1216,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             output_format='mp4')
     ]
     flags = self._GetFlags(output_dash=True, output_hls=True,
-                           generate_static_mpd=True, ad_cues='1.5')
+                           generate_static_live_mpd=True, ad_cues='1.5')
     self.assertPackageSuccess(streams, flags)
     # Mpd cannot be validated right now since we don't generate determinstic
     # mpd with multiple inputs due to thread racing.
@@ -1162,6 +1342,33 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('hevc-with-encryption', verify_decryption=True)
+
+  def testHdr10WithEncryption(self):
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc-hdr10.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('hdr10-with-encryption')
+
+  def testDolbyVisionProfile5WithEncryption(self):
+    streams = [
+        self._GetStream('video', test_file='sparks_dovi_5.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-profile-5-with-encryption')
+
+  def testDolbyVisionProfile8WithEncryption(self):
+    streams = [
+        self._GetStream('video', test_file='sparks_dovi_8.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-profile-8-with-encryption')
 
   def testVp8Mp4WithEncryption(self):
     streams = [
@@ -1369,7 +1576,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testLiveStaticProfile(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
-        self._GetFlags(output_dash=True, generate_static_mpd=True))
+        self._GetFlags(output_dash=True, generate_static_live_mpd=True))
     self._CheckTestResults('live-static-profile')
 
   def testLiveStaticProfileWithTimeInSegmentName(self):
@@ -1377,8 +1584,53 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video'],
                          segmented=True,
                          using_time_specifier=True),
-        self._GetFlags(output_dash=True, generate_static_mpd=True))
+        self._GetFlags(output_dash=True, generate_static_live_mpd=True))
     self._CheckTestResults('live-static-profile-with-time-in-segment-name')
+
+  def testAllowCodecSwitching(self):
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True,
+                                             allow_codec_switching=True))
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    # See also https://github.com/google/shaka-packager/issues/177.
+    self._CheckTestResults(
+        'audio-video-with-codec-switching',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
+
+  def testAllowCodecSwitchingWithEncryptionAndTrickplay(self):
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4',
+                        trick_play_factor=1),
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True,
+                                             allow_codec_switching=True,
+                                             encryption=True))
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    # See also https://github.com/google/shaka-packager/issues/177.
+    self._CheckTestResults(
+        'audio-video-with-codec-switching-encryption-trick-play',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
@@ -1472,7 +1724,7 @@ class PackagerFunctionalTest(PackagerAppTest):
                          test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                                      'bear-320x180.mp4']), flags)
     with open(self.mpd_output, 'rb') as f:
-      print f.read()
+      logging.info(f.read())
       # TODO(kqyang): Add some validations.
 
   @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
@@ -1503,7 +1755,11 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = self._GetStreams(
         ['audio', 'video'], output_format='ts', segmented=True)
     streams += self._GetStreams(
-        ['text'], test_files=['bear-english.vtt'], segmented=True)
+        ['text'],
+        test_files=['bear-english.vtt'],
+        segmented=True,
+        hls_characteristics='public.accessibility.transcribes-spoken-dialog;'
+        'private.accessibility.widevine-special')
 
     flags = self._GetFlags(output_hls=True)
 
@@ -1686,6 +1942,17 @@ class PackagerCommandParsingTest(PackagerAppTest):
         (test_file, video_output_prefix, video_output_prefix),
     ], self._GetFlags())
     # Expect the test to fail but we do not expect a crash.
+    self.assertEqual(packaging_result, 1)
+
+  def testIncorrectEncryptionPattern(self):
+    packaging_result = self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True,
+            protection_scheme='cbcs',
+            crypt_byte_block=12,
+            skip_byte_block=13,
+            output_dash=True))
     self.assertEqual(packaging_result, 1)
 
 

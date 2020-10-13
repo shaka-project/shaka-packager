@@ -28,6 +28,7 @@ const uint16_t kWidth = 10u;
 const uint16_t kHeight = 20u;
 const uint32_t kPixelWidth = 2u;
 const uint32_t kPixelHeight = 3u;
+const uint8_t kTransferCharacteristics = 0;
 const int16_t kTrickPlayFactor = 0;
 const uint8_t kNaluLengthSize = 1u;
 const bool kEncrypted = true;
@@ -199,8 +200,8 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
   return std::unique_ptr<VideoStreamInfo>(new VideoStreamInfo(
       kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
       kCodecString, kCodecConfig, sizeof(kCodecConfig), width, height,
-      kPixelWidth, kPixelHeight, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      !kEncrypted));
+      kPixelWidth, kPixelHeight, kTransferCharacteristics, kTrickPlayFactor,
+      kNaluLengthSize, kLanguage, !kEncrypted));
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(

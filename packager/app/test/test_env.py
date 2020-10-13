@@ -26,9 +26,10 @@ SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--test_update_golden_files', default=0, type=int)
+parser.add_argument('--test_update_golden_files', action='store_true')
 
-parser.add_argument('--libpackager_type', default='static_library')
+parser.add_argument('--libpackager_type', default='static_library',
+                    choices=['static_library', 'shared_library'])
 
 parser.add_argument('--v')
 parser.add_argument('--vmodule')

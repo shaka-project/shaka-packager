@@ -35,7 +35,9 @@ using ::testing::WithParamInterface;
 
 namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
-const char kDefaultLanguage[] = "en";
+const char kDefaultAudioLanguage[] = "en";
+const char kDefaultTextLanguage[] = "fr";
+const bool kIsIndependentSegments = true;
 const char kEmptyKeyUri[] = "";
 const char kFairPlayKeyUri[] = "skd://www.license.com/getkey?key_id=testing";
 const char kIdentityKeyUri[] = "https://www.license.com/getkey?key_id=testing";
@@ -45,7 +47,10 @@ const HlsPlaylistType kLivePlaylist = HlsPlaylistType::kLive;
 class MockMasterPlaylist : public MasterPlaylist {
  public:
   MockMasterPlaylist()
-      : MasterPlaylist(kMasterPlaylistName, kDefaultLanguage) {}
+      : MasterPlaylist(kMasterPlaylistName,
+                       kDefaultAudioLanguage,
+                       kDefaultTextLanguage,
+                       kIsIndependentSegments) {}
 
   MOCK_METHOD3(WriteMasterPlaylist,
                bool(const std::string& prefix,
@@ -72,7 +77,6 @@ class MockMediaPlaylistFactory : public MediaPlaylistFactory {
 
 const double kTestTimeShiftBufferDepth = 1800.0;
 const char kTestPrefix[] = "http://testprefix.com/";
-const char kEmptyPrefix[] = "";
 const char kAnyOutputDir[] = "anything";
 
 const uint64_t kAnyStartTime = 10;
@@ -150,199 +154,6 @@ class SimpleHlsNotifierTest : public ::testing::Test {
 TEST_F(SimpleHlsNotifierTest, Init) {
   SimpleHlsNotifier notifier(hls_params_);
   EXPECT_TRUE(notifier.Init());
-}
-
-// Verify that relative paths can be handled.
-// For this test, since the prefix "anything/" matches, the prefix should be
-// stripped.
-TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
-  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
-      new MockMasterPlaylist());
-  std::unique_ptr<MockMediaPlaylistFactory> factory(
-      new MockMediaPlaylistFactory());
-
-  // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist("playlist.m3u8", "", "");
-
-  EXPECT_CALL(*mock_media_playlist,
-              SetMediaInfo(Property(&MediaInfo::init_segment_url, StrEq(""))))
-      .WillOnce(Return(true));
-
-  // Verify that the common prefix is stripped for AddSegment().
-  EXPECT_CALL(
-      *mock_media_playlist,
-      AddSegment("http://testprefix.com/path/to/media1.ts", _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
-                                   StrEq("name"), StrEq("groupid")))
-      .WillOnce(Return(mock_media_playlist));
-
-  SimpleHlsNotifier notifier(hls_params_);
-
-  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
-  InjectMediaPlaylistFactory(std::move(factory), &notifier);
-
-  EXPECT_TRUE(notifier.Init());
-  MediaInfo media_info;
-  uint32_t stream_id;
-  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
-                                       "name", "groupid", &stream_id));
-
-  EXPECT_TRUE(notifier.NotifyNewSegment(stream_id, "anything/path/to/media1.ts",
-                                        kAnyStartTime, kAnyDuration, 0,
-                                        kAnySize));
-}
-
-TEST_F(SimpleHlsNotifierTest, RebaseInitSegmentUrl) {
-  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
-      new MockMasterPlaylist());
-  std::unique_ptr<MockMediaPlaylistFactory> factory(
-      new MockMediaPlaylistFactory());
-
-  // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist("playlist.m3u8", "", "");
-
-  // Verify that the common prefix is stripped in init segment.
-  EXPECT_CALL(
-      *mock_media_playlist,
-      SetMediaInfo(Property(&MediaInfo::init_segment_url,
-                            StrEq("http://testprefix.com/path/to/init.mp4"))))
-      .WillOnce(Return(true));
-
-  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
-                                   StrEq("name"), StrEq("groupid")))
-      .WillOnce(Return(mock_media_playlist));
-
-  SimpleHlsNotifier notifier(hls_params_);
-
-  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
-  InjectMediaPlaylistFactory(std::move(factory), &notifier);
-
-  EXPECT_TRUE(notifier.Init());
-  MediaInfo media_info;
-  media_info.set_init_segment_name("anything/path/to/init.mp4");
-  uint32_t stream_id;
-  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
-                                       "name", "groupid", &stream_id));
-}
-
-TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
-  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
-      new MockMasterPlaylist());
-  std::unique_ptr<MockMediaPlaylistFactory> factory(
-      new MockMediaPlaylistFactory());
-
-  // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist("video/playlist.m3u8", "", "");
-
-  // Verify that the init segment URL is relative to playlist path.
-  EXPECT_CALL(*mock_media_playlist,
-              SetMediaInfo(Property(&MediaInfo::init_segment_url,
-                                    StrEq("path/to/init.mp4"))))
-      .WillOnce(Return(true));
-
-  // Verify that the segment URL is relative to playlist path.
-  EXPECT_CALL(*mock_media_playlist,
-              AddSegment(StrEq("path/to/media1.m4s"), _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(_, StrEq("video/playlist.m3u8"),
-                                   StrEq("name"), StrEq("groupid")))
-      .WillOnce(Return(mock_media_playlist));
-
-  hls_params_.base_url = kEmptyPrefix;
-  SimpleHlsNotifier notifier(hls_params_);
-
-  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
-  InjectMediaPlaylistFactory(std::move(factory), &notifier);
-
-  EXPECT_TRUE(notifier.Init());
-  MediaInfo media_info;
-  media_info.set_init_segment_name("anything/video/path/to/init.mp4");
-  uint32_t stream_id;
-  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video/playlist.m3u8",
-                                       "name", "groupid", &stream_id));
-  EXPECT_TRUE(
-      notifier.NotifyNewSegment(stream_id, "anything/video/path/to/media1.m4s",
-                                kAnyStartTime, kAnyDuration, 0, kAnySize));
-}
-
-// Verify that when segment path's prefix and output dir match, then the
-// prefix is stripped from segment path.
-TEST_F(SimpleHlsNotifierTest, RebaseAbsoluteSegmentPrefixAndOutputDirMatch) {
-  const char kAbsoluteOutputDir[] = "/tmp/something/";
-  hls_params_.master_playlist_output =
-      std::string(kAbsoluteOutputDir) + kMasterPlaylistName;
-  SimpleHlsNotifier test_notifier(hls_params_);
-
-  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
-      new MockMasterPlaylist());
-  std::unique_ptr<MockMediaPlaylistFactory> factory(
-      new MockMediaPlaylistFactory());
-
-  // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist("playlist.m3u8", "", "");
-
-  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-
-  // Verify that the output_dir is stripped and then kTestPrefix is prepended.
-  EXPECT_CALL(*mock_media_playlist,
-              AddSegment("http://testprefix.com/media1.ts", _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
-                                   StrEq("name"), StrEq("groupid")))
-      .WillOnce(Return(mock_media_playlist));
-
-  InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
-  InjectMediaPlaylistFactory(std::move(factory), &test_notifier);
-  EXPECT_TRUE(test_notifier.Init());
-  MediaInfo media_info;
-  uint32_t stream_id;
-  EXPECT_TRUE(test_notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
-                                            "name", "groupid", &stream_id));
-
-  EXPECT_TRUE(
-      test_notifier.NotifyNewSegment(stream_id, "/tmp/something/media1.ts",
-                                     kAnyStartTime, kAnyDuration, 0, kAnySize));
-}
-
-// If the paths don't match at all and they are both absolute and completely
-// different, then keep it as is.
-TEST_F(SimpleHlsNotifierTest,
-       RebaseAbsoluteSegmentCompletelyDifferentDirectory) {
-  const char kAbsoluteOutputDir[] = "/tmp/something/";
-  hls_params_.master_playlist_output =
-      std::string(kAbsoluteOutputDir) + kMasterPlaylistName;
-  SimpleHlsNotifier test_notifier(hls_params_);
-
-  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
-      new MockMasterPlaylist());
-  std::unique_ptr<MockMediaPlaylistFactory> factory(
-      new MockMediaPlaylistFactory());
-
-  // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist("playlist.m3u8", "", "");
-
-  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*mock_media_playlist,
-              AddSegment("http://testprefix.com//var/somewhereelse/media1.ts",
-                         _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
-                                   StrEq("name"), StrEq("groupid")))
-      .WillOnce(Return(mock_media_playlist));
-
-  InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
-  InjectMediaPlaylistFactory(std::move(factory), &test_notifier);
-  EXPECT_TRUE(test_notifier.Init());
-  MediaInfo media_info;
-  media_info.set_segment_template("/var/somewhereelse/media$Number$.ts");
-  uint32_t stream_id;
-  EXPECT_TRUE(test_notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
-                                            "name", "groupid", &stream_id));
-  EXPECT_TRUE(
-      test_notifier.NotifyNewSegment(stream_id, "/var/somewhereelse/media1.ts",
-                                     kAnyStartTime, kAnyDuration, 0, kAnySize));
 }
 
 TEST_F(SimpleHlsNotifierTest, Flush) {
@@ -561,6 +372,146 @@ TEST_F(SimpleHlsNotifierTest, NotifyCueEvent) {
   const uint64_t kCueEventTimestamp = 12345;
   EXPECT_TRUE(notifier.NotifyCueEvent(stream_id, kCueEventTimestamp));
 }
+
+struct RebaseUrlTestData {
+  // Base URL is the prefix of segment URL and media playlist URL if it is
+  // specified; otherwise, relative URL is used for the relavent URLs.
+  std::string base_url;
+  // A local path to a directory where the master playlist should output.
+  std::string master_playlist_dir;
+  // Media playlist path. This may be relative or absolute.
+  std::string playlist_path;
+  // Expected relative playlist path. It is path_relative_to(master_directory).
+  std::string expected_relative_playlist_path;
+  // Media segment path. This may be relative or absolute.
+  std::string segment_path;
+  // Expected segment URL in the media playlist:
+  //   - If |base_url| is specified, it is |base_url| +
+  //     |relative path of segment_path from master_playlist_dir|.
+  //   - Otherwise, it is
+  //     |relative path of segment_path from directory that contains
+  //     playlist_path|.
+  std::string expected_segment_url;
+  // Init media segment path. This may be relative or absolute.
+  std::string init_segment_path;
+  // Expected init segment URL in the media playlist:
+  //   - If |base_url| is specified, it is |base_url| +
+  //     |relative path of init_segment_path from master_playlist_dir|.
+  //   - Otherwise, it is
+  //     |relative path of init_segment_path from directory that contains
+  //     playlist_path|.
+  std::string expected_init_segment_url;
+};
+
+class SimpleHlsNotifierRebaseUrlTest
+    : public SimpleHlsNotifierTest,
+      public WithParamInterface<RebaseUrlTestData> {
+ protected:
+  void SetUp() override { test_data_ = GetParam(); }
+
+  RebaseUrlTestData test_data_;
+};
+
+TEST_P(SimpleHlsNotifierRebaseUrlTest, Test) {
+  hls_params_.base_url = test_data_.base_url;
+  hls_params_.master_playlist_output =
+      test_data_.master_playlist_dir + kMasterPlaylistName;
+  SimpleHlsNotifier test_notifier(hls_params_);
+
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(test_data_.expected_relative_playlist_path, "", "");
+
+  EXPECT_CALL(
+      *mock_media_playlist,
+      SetMediaInfo(Property(&MediaInfo::init_segment_url,
+                            StrEq(test_data_.expected_init_segment_url))))
+      .WillOnce(Return(true));
+
+  if (!test_data_.expected_segment_url.empty()) {
+    EXPECT_CALL(*mock_media_playlist,
+                AddSegment(test_data_.expected_segment_url, _, _, _, _));
+  }
+  EXPECT_CALL(*factory,
+              CreateMock(_, StrEq(test_data_.expected_relative_playlist_path),
+                         StrEq("name"), StrEq("groupid")))
+      .WillOnce(Return(mock_media_playlist));
+
+  InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &test_notifier);
+  EXPECT_TRUE(test_notifier.Init());
+
+  MediaInfo media_info;
+  if (!test_data_.init_segment_path.empty())
+    media_info.set_init_segment_name(test_data_.init_segment_path);
+  uint32_t stream_id;
+  EXPECT_TRUE(test_notifier.NotifyNewStream(
+      media_info, test_data_.playlist_path, "name", "groupid", &stream_id));
+  if (!test_data_.segment_path.empty()) {
+    EXPECT_TRUE(test_notifier.NotifyNewSegment(
+        stream_id, test_data_.segment_path, kAnyStartTime, kAnyDuration, 0,
+        kAnySize));
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(
+    RebaseUrl,
+    SimpleHlsNotifierRebaseUrlTest,
+    ::testing::Values(
+        // Verify relative segment path.
+        RebaseUrlTestData{"http://testprefix.com/", "master_directory/",
+                          "video_playlist.m3u8", "video_playlist.m3u8",
+                          "master_directory/path/to/media1.ts",
+                          "http://testprefix.com/path/to/media1.ts",
+                          "" /* init segment path */,
+                          "" /* expected init segment url */},
+        // Verify relative init segment path.
+        RebaseUrlTestData{"http://testprefix.com/", "master_directory/",
+                          "video_playlist.m3u8", "video_playlist.m3u8",
+                          "" /* segment path */, "" /* expected segment url */,
+                          "master_directory/path/to/init.mp4",
+                          "http://testprefix.com/path/to/init.mp4"},
+        // Verify segment url relative to playlist.
+        RebaseUrlTestData{
+            "" /* no base url */, "master_directory/",
+            "video/video_playlist.m3u8", "video/video_playlist.m3u8",
+            "master_directory/video/path/to/media1.m4s", "path/to/media1.m4s",
+            "master_directory/video/path/to/init.mp4", "path/to/init.mp4"},
+        // Verify absolute directory.
+        RebaseUrlTestData{
+            "http://testprefix.com/", "/tmp/something/", "video_playlist.m3u8",
+            "video_playlist.m3u8", "/tmp/something/media1.ts",
+            "http://testprefix.com/media1.ts", "" /* init segment path */,
+            "" /* expected init segment url */},
+        // Verify absolute directory, but media in a different directory.
+        // Note that we don't really expect this in practice.
+        RebaseUrlTestData{
+            "http://testprefix.com/", "/tmp/something/", "video_playlist.m3u8",
+            "video_playlist.m3u8", "/var/somewhereelse/media1.ts",
+            "http://testprefix.com//var/somewhereelse/media1.ts",
+            "" /* init segment path */, "" /* expected init segment url */
+        },
+        // Verify absolute directory, absolute media playlist path.
+        RebaseUrlTestData{
+            "http://testprefix.com/", "/tmp/something/",
+            "/tmp/something/video/video_playlist.m3u8",
+            "video/video_playlist.m3u8", "/tmp/something/video/media1.ts",
+            "http://testprefix.com/video/media1.ts", "" /* init segment path */,
+            "" /* expected init segment url */
+        },
+        // Same as above, but without base_url.
+        RebaseUrlTestData{
+            "" /* no base url */, "/tmp/something/",
+            "/tmp/something/video/video_playlist.m3u8",
+            "video/video_playlist.m3u8", "/tmp/something/video/media1.ts",
+            "media1.ts", "" /* init segment path */,
+            "" /* expected init segment url */
+        }));
 
 class LiveOrEventSimpleHlsNotifierTest
     : public SimpleHlsNotifierTest,

@@ -1,4 +1,10 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
 #if defined(__i386__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 .globl	bn_mul_add_words
 .hidden	bn_mul_add_words
@@ -1535,3 +1541,4 @@ bn_sub_part_words:
 	ret
 .size	bn_sub_part_words,.-.L_bn_sub_part_words_begin
 #endif
+.section	.note.GNU-stack,"",@progbits

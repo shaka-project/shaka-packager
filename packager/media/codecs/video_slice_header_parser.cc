@@ -35,13 +35,24 @@ bool H264VideoSliceHeaderParser::Initialize(
     const Nalu& nalu = config.nalu(i);
     if (nalu.type() == Nalu::H264_SPS) {
       RCHECK(parser_.ParseSps(nalu, &id) == H264Parser::kOk);
-    } else {
-      DCHECK_EQ(Nalu::H264_PPS, nalu.type());
+    } else if (nalu.type() == Nalu::H264_PPS) {
       RCHECK(parser_.ParsePps(nalu, &id) == H264Parser::kOk);
     }
   }
 
   return true;
+}
+
+bool H264VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
+  int id;
+  switch (nalu.type()) {
+    case Nalu::H264_SPS:
+      return parser_.ParseSps(nalu, &id) == H264Parser::kOk;
+    case Nalu::H264_PPS:
+      return parser_.ParsePps(nalu, &id) == H264Parser::kOk;
+    default:
+      return true;
+  }
 }
 
 int64_t H264VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {
@@ -77,6 +88,21 @@ bool H265VideoSliceHeaderParser::Initialize(
   }
 
   return true;
+}
+
+bool H265VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
+  int id;
+  switch (nalu.type()) {
+    case Nalu::H265_SPS:
+      return parser_.ParseSps(nalu, &id) == H265Parser::kOk;
+    case Nalu::H265_PPS:
+      return parser_.ParsePps(nalu, &id) == H265Parser::kOk;
+    case Nalu::H265_VPS:
+      // Ignore since it does not affect video slice header parsing.
+      return true;
+    default:
+      return true;
+  }
 }
 
 int64_t H265VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {

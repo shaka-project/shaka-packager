@@ -24,6 +24,7 @@ const uint8_t kAc3NumChannelsTable[] = {2, 1, 2, 3, 3, 4, 4, 5};
 // ATSC Standard A/52:2012 Table 5.18 Frame Size Code Table
 // (in words = 16 bits).
 const size_t kFrameSizeCodeTable[][3] = {
+    // {32kHz, 44.1kHz, 48kHz}
     {96, 69, 64},       {96, 70, 64},       {120, 87, 80},
     {120, 88, 80},      {144, 104, 96},     {144, 105, 96},
     {168, 121, 112},    {168, 122, 112},    {192, 139, 128},
@@ -38,6 +39,19 @@ const size_t kFrameSizeCodeTable[][3] = {
     {1536, 1115, 1024}, {1728, 1253, 1152}, {1728, 1254, 1152},
     {1920, 1393, 1280}, {1920, 1394, 1280},
 };
+
+// Calculate the size of the frame from the sample rate code and the
+// frame size code.
+// @return the size of the frame (header + payload).
+size_t CalcFrameSize(uint8_t fscod, uint8_t frmsizecod) {
+  const size_t kNumFscode = arraysize(kAc3SampleRateTable);
+  DCHECK_LT(fscod, kNumFscode);
+  DCHECK_LT(frmsizecod, arraysize(kFrameSizeCodeTable));
+  // The order of frequencies are reversed in |kFrameSizeCodeTable| compared to
+  // |kAc3SampleRateTable|.
+  const int index = kNumFscode - 1 - fscod;
+  return kFrameSizeCodeTable[frmsizecod][index] * 2;
+}
 
 }  // namespace
 
@@ -103,9 +117,15 @@ size_t Ac3Header::GetHeaderSize() const {
 }
 
 size_t Ac3Header::GetFrameSize() const {
-  DCHECK_LT(fscod_, arraysize(kAc3SampleRateTable));
-  DCHECK_LT(frmsizecod_, arraysize(kFrameSizeCodeTable));
-  return kFrameSizeCodeTable[frmsizecod_][fscod_] * 2;
+  return CalcFrameSize(fscod_, frmsizecod_);
+}
+
+size_t Ac3Header::GetFrameSizeWithoutParsing(const uint8_t* data,
+                                             size_t num_bytes) const {
+  DCHECK_GT(num_bytes, static_cast<size_t>(4));
+  uint8_t fscod = data[4] >> 6;
+  uint8_t frmsizecod = data[4] & 0x3f;
+  return CalcFrameSize(fscod, frmsizecod);
 }
 
 void Ac3Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {

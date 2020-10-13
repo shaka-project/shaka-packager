@@ -20,10 +20,14 @@ class MediaPlaylist;
 class MasterPlaylist {
  public:
   /// @param file_name is the file name of the master playlist.
-  /// @param default_language determines the rendition that should be tagged
-  ///        with 'DEFAULT'.
+  /// @param default_audio_language determines the audio rendition that should
+  ///        be tagged with 'DEFAULT'.
+  /// @param default_text_language determines the text rendition that should be
+  ///        tagged with 'DEFAULT'.
   MasterPlaylist(const std::string& file_name,
-                 const std::string& default_language);
+                 const std::string& default_audio_language,
+                 const std::string& default_text_language, 
+                 const bool is_independent_segments);
   virtual ~MasterPlaylist();
 
   /// Writes Master Playlist to output_dir + <name of playlist>.
@@ -45,7 +49,9 @@ class MasterPlaylist {
 
   std::string written_playlist_;
   const std::string file_name_;
-  const std::string default_language_;
+  const std::string default_audio_language_;
+  const std::string default_text_language_;
+  bool is_independent_segments_;
 };
 
 }  // namespace hls

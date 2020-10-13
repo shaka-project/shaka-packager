@@ -104,10 +104,10 @@ bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   // Reserved NAL units are not treated as valid NAL units here.
   if (type_ == Nalu::H264_Unspecified || type_ == Nalu::H264_Reserved17 ||
       type_ == Nalu::H264_Reserved18 || type_ >= Nalu::H264_Reserved22) {
-    LOG(WARNING) << "Unspecified or reserved nal_unit_type " << type_
-                 << " (header 0x" << std::hex << static_cast<int>(header)
-                 << ").";
-    return false;
+    VLOG(1) << "Unspecified or reserved nal_unit_type " << type_
+            << " (header 0x" << std::hex << static_cast<int>(header) << ").";
+    // Allow reserved NAL units. Some encoders and extended codecs use the
+    // reserved NAL units to carry their private data.
   } else if (type_ == Nalu::H264_IDRSlice || type_ == Nalu::H264_SPS ||
              type_ == Nalu::H264_SPSExtension ||
              type_ == Nalu::H264_SubsetSPS || type_ == Nalu::H264_PPS) {
@@ -174,9 +174,11 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
   if ((type_ >= Nalu::H265_RSV_VCL_N10 && type_ <= Nalu::H265_RSV_VCL_R15) ||
       (type_ >= Nalu::H265_RSV_IRAP_VCL22 && type_ < Nalu::H265_RSV_VCL31) ||
       (type_ >= Nalu::H265_RSV_NVCL41)) {
-    LOG(WARNING) << "Unspecified or reserved nal_unit_type " << type_
-                 << " (header 0x" << std::hex << header << ").";
-    return false;
+    VLOG(1) << "Unspecified or reserved nal_unit_type " << type_
+            << " (header 0x" << std::hex << header << ").";
+    // Allow reserved NAL units. Some encoders and extended codecs use the
+    // reserved NAL units to carry their private data. For example, Dolby Vision
+    // uses NAL unit type 62.
   } else if ((type_ >= Nalu::H265_BLA_W_LP &&
               type_ <= Nalu::H265_RSV_IRAP_VCL23) ||
              type_ == Nalu::H265_VPS || type_ == Nalu::H265_SPS ||
@@ -197,7 +199,7 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
   }
 
   is_aud_ = type_ == H265_AUD;
-  is_vcl_ = type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_CRA_NUT;
+  is_vcl_ = type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_RSV_VCL31;
   is_video_slice_ = is_vcl_;
   can_start_access_unit_ =
       nuh_layer_id_ == 0 &&

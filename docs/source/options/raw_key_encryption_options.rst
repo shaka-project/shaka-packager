@@ -17,7 +17,7 @@ Raw key encryption options
 
     **key_info_string** is of the form::
 
-        label=<label>:key_id=<key_id>:key=<key>
+        label=<label>:key_id=<key_id>:key=<key>[:iv=<initialization_vector>]
 
     *label* can be an arbitrary string or a predefined DRM label like AUDIO,
     SD, HD, etc. Label with an empty string indicates the default key and
@@ -26,6 +26,10 @@ Raw key encryption options
     by matching the *drm_label* with the *label* in key info.
 
     *key_id* and *key* should be 32-digit hex strings.
+
+    *initialization_vector* is an optional IV with the same format and semantics
+    as the parameter for the *--iv* option below. This is mutually exclusive with
+    that option.
 
 --iv <16-digit or 32-digit hex string>
 

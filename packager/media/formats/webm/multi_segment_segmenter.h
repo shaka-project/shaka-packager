@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_FORMATS_WEBM_MULTI_SEGMENT_SEGMENTER_H_
 
 #include <memory>
+
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/segmenter.h"
 #include "packager/status.h"
@@ -47,6 +48,7 @@ class MultiSegmentSegmenter : public Segmenter {
 
   std::unique_ptr<MkvWriter> writer_;
   uint32_t num_segment_;
+  std::string temp_file_name_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiSegmentSegmenter);
 };

@@ -1,4 +1,10 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
 #if defined(__i386__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 .globl	gcm_gmult_4bit_mmx
 .hidden	gcm_gmult_4bit_mmx
@@ -1066,3 +1072,4 @@ gcm_ghash_clmul:
 .byte	112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62
 .byte	0
 #endif
+.section	.note.GNU-stack,"",@progbits

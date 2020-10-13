@@ -83,6 +83,7 @@ const uint32_t kWidth = 1280;
 const uint32_t kHeight = 720;
 const uint32_t kPixelWidth = 1;
 const uint32_t kPixelHeight = 1;
+const uint8_t kTransferCharacteristics = 0;
 const uint16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 1;
 const bool kIsEncrypted = false;
@@ -112,7 +113,10 @@ class MockNalUnitToByteStreamConverter : public NalUnitToByteStreamConverter {
 class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
  public:
   MOCK_METHOD1(Parse, bool(const std::vector<uint8_t>& data));
-  MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));
+  MOCK_CONST_METHOD3(ConvertToADTS,
+                     bool(const uint8_t* data,
+                          size_t data_size,
+                          std::vector<uint8_t>* audio_frame));
 };
 
 std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
@@ -120,7 +124,8 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
       kTrackId, kTimeScale, kDuration, codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
       arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   return stream_info;
 }
 
@@ -307,8 +312,8 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
       new MockAACAudioSpecificConfig());
-  EXPECT_CALL(*mock, ConvertToADTS(_))
-      .WillOnce(DoAll(SetArgPointee<0>(expected_data), Return(true)));
+  EXPECT_CALL(*mock, ConvertToADTS(sample->data(), sample->data_size(), _))
+      .WillOnce(DoAll(SetArgPointee<2>(expected_data), Return(true)));
 
   UseMockAACAudioSpecificConfig(std::move(mock));
 
@@ -335,7 +340,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
       new MockAACAudioSpecificConfig());
-  EXPECT_CALL(*mock, ConvertToADTS(_)).WillOnce(Return(false));
+  EXPECT_CALL(*mock, ConvertToADTS(_, _, _)).WillOnce(Return(false));
 
   UseMockAACAudioSpecificConfig(std::move(mock));
 
@@ -352,7 +357,8 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
       kTrackId, kTestTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
       arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      kIsEncrypted));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());

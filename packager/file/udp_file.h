@@ -47,6 +47,10 @@ class UdpFile : public File {
 
  private:
   SOCKET socket_;
+#if defined(OS_WIN)
+  // For Winsock in Windows.
+  bool wsa_started_ = false;
+#endif  // defined(OS_WIN)
 
   DISALLOW_COPY_AND_ASSIGN(UdpFile);
 };

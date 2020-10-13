@@ -29,7 +29,7 @@ class XmlNode;
 /// AdaptationSets.
 class Period {
  public:
-  virtual ~Period() = default;
+  virtual ~Period();
 
   /// Check the existing AdaptationSets, if there is one matching the provided
   /// @a media_info, return it; otherwise a new AdaptationSet is created and
@@ -66,6 +66,12 @@ class Period {
     duration_seconds_ = duration_seconds;
   }
 
+  /// @return trickplay_cache.
+  const std::map<std::string, std::list<AdaptationSet*>>& trickplay_cache()
+      const {
+    return trickplay_cache_;
+  }
+
  protected:
   /// @param period_id is an ID number for this Period.
   /// @param start_time_in_seconds is the start time for this Period.
@@ -95,15 +101,26 @@ class Period {
       const std::string& language,
       const MediaInfo& media_info,
       const std::list<AdaptationSet*>& adaptation_sets,
+      bool content_protection_in_adaptation_set,
       AdaptationSet* new_adaptation_set);
 
-  // Gets the original AdaptationSet which the trick play video belongs to.
-  // It is assumed that the corresponding AdaptationSet has been created before
-  // the trick play AdaptationSet.
-  // Returns the original AdaptationSet if found, otherwise returns nullptr;
-  const AdaptationSet* FindOriginalAdaptationSetForTrickPlay(
-      const MediaInfo& media_info);
+  // If processing a trick play AdaptationSet, gets the original AdaptationSet
+  // which the trick play video belongs to.It is assumed that the corresponding
+  // AdaptationSet has been created before the trick play AdaptationSet.
+  // Returns the matching AdaptationSet if found, otherwise returns nullptr;
+  // If processing non-trick play AdaptationSet, gets the trick play
+  // AdaptationSet that belongs to current AdaptationSet from trick play cache.
+  // Returns nullptr if matching trick play AdaptationSet is not found.
+  AdaptationSet* FindMatchingAdaptationSetForTrickPlay(
+      const MediaInfo& media_info,
+      bool content_protection_in_adaptation_set,
+      std::string* adaptation_set_key);
 
+  // Returns AdaptationSet key without ':trickplay' in it for trickplay
+  // AdaptationSet.
+  std::string GetAdaptationSetKeyForTrickPlay(const MediaInfo& media_info);
+
+  // FindMatchingAdaptationSetForTrickPlay
   const uint32_t id_;
   const double start_time_in_seconds_;
   double duration_seconds_ = 0;
@@ -116,6 +133,10 @@ class Period {
   // if they contain identical ContentProtection elements. This map is only
   // useful when ContentProtection element is placed in AdaptationSet.
   std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
+  // Contains Trickplay AdaptationSets grouped by specific adaptation set
+  // grouping key. These AdaptationSets still have not found reference
+  // AdaptationSet.
+  std::map<std::string, std::list<AdaptationSet*>> trickplay_cache_;
 
   // Tracks ProtectedContent in AdaptationSet.
   class ProtectedAdaptationSetMap {
@@ -127,7 +148,8 @@ class Period {
     // Check if the protected content associated with |adaptation_set| matches
     // with the one in |media_info|.
     bool Match(const AdaptationSet& adaptation_set,
-               const MediaInfo& media_info);
+               const MediaInfo& media_info,
+               bool content_protection_in_adaptation_set);
     // Check if the two adaptation sets are switchable.
     bool Switchable(const AdaptationSet& adaptation_set_a,
                     const AdaptationSet& adaptation_set_b);

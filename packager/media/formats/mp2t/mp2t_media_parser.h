@@ -34,7 +34,8 @@ class Mp2tMediaParser : public MediaParser {
   /// @name MediaParser implementation overrides.
   /// @{
   void Init(const InitCB& init_cb,
-            const NewSampleCB& new_sample_cb,
+            const NewMediaSampleCB& new_media_sample_cb,
+            const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
   bool Flush() override WARN_UNUSED_RESULT;
   bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
@@ -74,7 +75,7 @@ class Mp2tMediaParser : public MediaParser {
 
   // List of callbacks.
   InitCB init_cb_;
-  NewSampleCB new_sample_cb_;
+  NewMediaSampleCB new_sample_cb_;
 
   bool sbr_in_mimetype_;
 

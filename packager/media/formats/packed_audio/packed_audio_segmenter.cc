@@ -18,6 +18,11 @@ namespace shaka {
 namespace media {
 namespace {
 std::string TimestampToString(uint64_t timestamp) {
+  // https://tools.ietf.org/html/rfc8216 The ID3 payload MUST be a 33-bit MPEG-2
+  // Program Elementary Stream timestamp expressed as a big-endian eight-octet
+  // number, with the upper 31 bits set to zero.
+  timestamp &= 0x1FFFFFFFFull;
+
   BufferWriter buffer;
   buffer.AppendInt(timestamp);
   return std::string(buffer.Buffer(), buffer.Buffer() + buffer.Size());
@@ -62,9 +67,9 @@ Status PackedAudioSegmenter::AddSample(const MediaSample& sample) {
   }
 
   if (adts_converter_) {
-    std::vector<uint8_t> audio_frame(sample.data(),
-                                     sample.data() + sample.data_size());
-    if (!adts_converter_->ConvertToADTS(&audio_frame))
+    std::vector<uint8_t> audio_frame;
+    if (!adts_converter_->ConvertToADTS(sample.data(), sample.data_size(),
+                                        &audio_frame))
       return Status(error::MUXER_FAILURE, "Failed to convert to ADTS.");
     segment_buffer_.AppendArray(audio_frame.data(), audio_frame.size());
   } else {

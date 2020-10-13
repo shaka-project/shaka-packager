@@ -256,11 +256,24 @@ inline bool operator==(const VideoSampleEntry& lhs,
          lhs.codec_configuration == rhs.codec_configuration;
 }
 
-inline bool operator==(const ESDescriptor& lhs, const ESDescriptor& rhs) {
-  return lhs.esid() == rhs.esid() && lhs.object_type() == rhs.object_type() &&
+inline bool operator==(const DecoderSpecificInfoDescriptor& lhs,
+                       const DecoderSpecificInfoDescriptor& rhs) {
+  return lhs.data() == rhs.data();
+}
+
+inline bool operator==(const DecoderConfigDescriptor& lhs,
+                       const DecoderConfigDescriptor& rhs) {
+  return lhs.buffer_size_db() == rhs.buffer_size_db() &&
          lhs.max_bitrate() == rhs.max_bitrate() &&
          lhs.avg_bitrate() == rhs.avg_bitrate() &&
-         lhs.decoder_specific_info() == rhs.decoder_specific_info();
+         lhs.object_type() == rhs.object_type() &&
+         lhs.decoder_specific_info_descriptor() ==
+             rhs.decoder_specific_info_descriptor();
+}
+
+inline bool operator==(const ESDescriptor& lhs, const ESDescriptor& rhs) {
+  return lhs.esid() == rhs.esid() &&
+         lhs.decoder_config_descriptor() == rhs.decoder_config_descriptor();
 }
 
 inline bool operator==(const ElementaryStreamDescriptor& lhs,

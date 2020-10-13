@@ -152,6 +152,20 @@
       'dependencies': ['packager'],
     },
     {
+      'target_name': 'pssh_box_py',
+      'type': 'none',
+      'copies': [{
+        'destination': '<(PRODUCT_DIR)',
+        'files': [
+          'tools/pssh/pssh-box.py',
+        ],
+      }],
+      'dependencies': [
+        'media/base/media_base.gyp:widevine_pssh_data_proto',
+        'third_party/protobuf/protobuf.gyp:py_proto',
+      ],
+    },
+    {
       'target_name': 'status',
       'type': '<(component)',
       'sources': [

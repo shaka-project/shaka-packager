@@ -21,6 +21,7 @@ namespace media {
 namespace {
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -62,6 +63,7 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
   const uint16_t kHeight = 20u;
   const uint32_t kPixelWidth = 2u;
   const uint32_t kPixelHeight = 3u;
+  const uint8_t kTransferCharacteristics = 0;
   const int16_t kTrickPlayFactor = 0;
   const uint8_t kNaluLengthSize = 1u;
 
@@ -80,11 +82,11 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
       // We do not care about the codec configs for other codecs in this file.
       break;
   }
-  return VideoStreamInfo(kTrackId, kTimeScale, kDuration, codec,
-                         H26xStreamFormat::kUnSpecified, kCodecString,
-                         codec_config, codec_config_size, kWidth, kHeight,
-                         kPixelWidth, kPixelHeight, kTrickPlayFactor,
-                         kNaluLengthSize, kLanguage, !kEncrypted);
+  return VideoStreamInfo(
+      kTrackId, kTimeScale, kDuration, codec, H26xStreamFormat::kUnSpecified,
+      kCodecString, codec_config, codec_config_size, kWidth, kHeight,
+      kPixelWidth, kPixelHeight, kTransferCharacteristics, kTrickPlayFactor,
+      kNaluLengthSize, kLanguage, !kEncrypted);
 }
 
 AudioStreamInfo GetAudioStreamInfo(Codec codec) {
@@ -123,6 +125,7 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
  public:
   MOCK_METHOD1(Initialize,
                bool(const std::vector<uint8_t>& decoder_configuration));
+  MOCK_METHOD1(ProcessNalu, bool(const Nalu& nalu));
   MOCK_METHOD1(GetHeaderSize, int64_t(const Nalu& nalu));
 };
 
@@ -290,6 +293,8 @@ TEST_P(SubsampleGeneratorTest, H264ParseFailed) {
 
   std::unique_ptr<MockVideoSliceHeaderParser> mock_video_slice_header_parser(
       new MockVideoSliceHeaderParser);
+  EXPECT_CALL(*mock_video_slice_header_parser, ProcessNalu(_))
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_video_slice_header_parser, GetHeaderSize(_))
       .WillOnce(Return(-1));
 
@@ -342,6 +347,9 @@ TEST_P(SubsampleGeneratorTest, H264SubsampleEncryption) {
 
   std::unique_ptr<MockVideoSliceHeaderParser> mock_video_slice_header_parser(
       new MockVideoSliceHeaderParser);
+  EXPECT_CALL(*mock_video_slice_header_parser, ProcessNalu(_))
+      .Times(AtLeast(2))
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_video_slice_header_parser, GetHeaderSize(_))
       .WillOnce(Return(kSliceHeaderSize[0]))
       .WillOnce(Return(kSliceHeaderSize[1]));
@@ -381,20 +389,31 @@ TEST_P(SubsampleGeneratorTest, AV1SubsampleEncryption) {
   ASSERT_OK(
       generator.Initialize(protection_scheme_, GetVideoStreamInfo(kCodecAV1)));
 
-  constexpr size_t kFrameSize = 50;
+  constexpr size_t kFrameSize = 70;
   constexpr uint8_t kFrame[kFrameSize] = {};
-  constexpr size_t kTileOffsets[] = {4, 11};
-  constexpr size_t kTileSizes[] = {6, 33};
+  constexpr size_t kTileOffsets[] = {4, 11, 44};
+  constexpr size_t kTileSizes[] = {6, 33, 20};
+  constexpr int kNumTiles = 3;
   // AV1 block align protected data for all protection schemes.
-  const SubsampleEntry kExpectedSubsamples[] = {
-      // {4,6},{11-4-6,33},{50-11-33,0} block aligned => {10,0},{2,32},{6,0}.
+  const SubsampleEntry kExpectedSubsamplesCbcs[] = {
+      // {4,6},{11-4-6,33},{44-11-33,20},{70-44-20,0}
+      // Always starts on the first byte and ends on the last byte of the tiles.
+      {4, 6},
+      {1, 33},
+      {0, 20},
+      {6, 0},
+  };
+  const SubsampleEntry kExpectedSubsamplesNonCbcs[] = {
+      // {4,6},{11-4-6,33},{44-11-33,20},{70-44-20,0} block aligned =>
+      // {10,0},{2,32},{4,16},{6,0}.
       // Then merge consecutive clear-only subsamples.
       {12, 32},
+      {4, 16},
       {6, 0},
   };
 
-  std::vector<AV1Parser::Tile> tiles(2);
-  for (int i = 0; i < 2; i++) {
+  std::vector<AV1Parser::Tile> tiles(kNumTiles);
+  for (int i = 0; i < kNumTiles; i++) {
     tiles[i].start_offset_in_bytes = kTileOffsets[i];
     tiles[i].size_in_bytes = kTileSizes[i];
   }
@@ -407,7 +426,10 @@ TEST_P(SubsampleGeneratorTest, AV1SubsampleEncryption) {
 
   std::vector<SubsampleEntry> subsamples;
   ASSERT_OK(generator.GenerateSubsamples(kFrame, kFrameSize, &subsamples));
-  EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamples));
+  if (protection_scheme_ == FOURCC_cbcs)
+    EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamplesCbcs));
+  else
+    EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamplesNonCbcs));
 }
 
 TEST_P(SubsampleGeneratorTest, AACIsFullSampleEncrypted) {

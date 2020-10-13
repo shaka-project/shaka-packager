@@ -21,11 +21,13 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     bool iframes_only,
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
+    const std::vector<std::string>& characteristics,
     hls::HlsNotifier* hls_notifier)
     : playlist_name_(playlist_name),
       iframes_only_(iframes_only),
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
+      characteristics_(characteristics),
       hls_notifier_(hls_notifier) {
   DCHECK(hls_notifier);
 }
@@ -90,6 +92,10 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
+  if (!characteristics_.empty()) {
+    for (const std::string& characteristic : characteristics_)
+      media_info->add_hls_characteristics(characteristic);
+  }
   if (protection_scheme_ != FOURCC_NULL) {
     internal::SetContentProtectionFields(protection_scheme_, next_key_id_,
                                          next_key_system_infos_,
@@ -119,7 +125,25 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
+void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+  if (stream_id_) {
+    // This happens in live mode.
+    hls_notifier_->NotifySampleDuration(stream_id_.value(), sample_duration);
+    return;
+  }
+
+  if (!media_info_) {
+    LOG(WARNING) << "Got sample duration " << sample_duration
+                 << " but no media was specified.";
+    return;
+  }
+  if (!media_info_->has_video_info()) {
+    // If non video, don't worry about it (at the moment).
+    return;
+  }
+
+  media_info_->mutable_video_info()->set_frame_duration(sample_duration);
+}
 
 void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {

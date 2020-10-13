@@ -5,7 +5,6 @@
 #include "packager/media/formats/mp4/mp4_media_parser.h"
 
 #include <algorithm>
-#include <limits>
 
 #include "packager/base/callback.h"
 #include "packager/base/callback_helpers.h"
@@ -21,10 +20,13 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/base/video_util.h"
 #include "packager/media/codecs/ac3_audio_util.h"
 #include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/dovi_decoder_configuration_record.h"
 #include "packager/media/codecs/ec3_audio_util.h"
+#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
@@ -46,13 +48,13 @@ uint64_t Rescale(uint64_t time_in_old_scale,
 H26xStreamFormat GetH26xStreamFormat(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_avc1:
-      return H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
-    case FOURCC_avc3:
-      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
-    case FOURCC_hev1:
-      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
+    case FOURCC_dvh1:
     case FOURCC_hvc1:
       return H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
+    case FOURCC_avc3:
+    case FOURCC_dvhe:
+    case FOURCC_hev1:
+      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
     default:
       return H26xStreamFormat::kUnSpecified;
   }
@@ -65,6 +67,9 @@ Codec FourCCToCodec(FourCC fourcc) {
     case FOURCC_avc1:
     case FOURCC_avc3:
       return kCodecH264;
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
+      return kCodecH265DolbyVision;
     case FOURCC_hev1:
     case FOURCC_hvc1:
       return kCodecH265;
@@ -90,6 +95,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecAC3;
     case FOURCC_ec_3:
       return kCodecEAC3;
+    case FOURCC_ac_4:
+      return kCodecAC4;
     case FOURCC_fLaC:
       return kCodecFlac;
     default:
@@ -115,6 +122,50 @@ Codec ObjectTypeToCodec(ObjectType object_type) {
   }
 }
 
+std::vector<uint8_t> GetDOVIDecoderConfig(
+    const std::vector<CodecConfiguration>& configs) {
+  for (const CodecConfiguration& config : configs) {
+    if (config.box_type == FOURCC_dvcC || config.box_type == FOURCC_dvvC) {
+      return config.data;
+    }
+  }
+  return std::vector<uint8_t>();
+}
+
+bool UpdateCodecStringForDolbyVision(
+    FourCC actual_format,
+    const std::vector<CodecConfiguration>& configs,
+    std::string* codec_string) {
+  DOVIDecoderConfigurationRecord dovi_config;
+  if (!dovi_config.Parse(GetDOVIDecoderConfig(configs))) {
+    LOG(ERROR) << "Failed to parse Dolby Vision decoder "
+                  "configuration record.";
+    return false;
+  }
+  switch (actual_format) {
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
+      // Non-Backward compatibility mode. Replace the code string with
+      // Dolby Vision only.
+      *codec_string = dovi_config.GetCodecString(actual_format);
+      break;
+    case FOURCC_hev1:
+      // Backward compatibility mode. Two codecs are signalled: base codec
+      // without Dolby Vision and HDR with Dolby Vision.
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvhe);
+      break;
+    case FOURCC_hvc1:
+      // See above.
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvh1);
+      break;
+    default:
+      LOG(ERROR) << "Unsupported format with extra codec "
+                 << FourCCToString(actual_format);
+      return false;
+  }
+  return true;
+}
+
 const uint64_t kNanosecondsPerSecond = 1000000000ull;
 
 }  // namespace
@@ -128,16 +179,17 @@ MP4MediaParser::MP4MediaParser()
 MP4MediaParser::~MP4MediaParser() {}
 
 void MP4MediaParser::Init(const InitCB& init_cb,
-                          const NewSampleCB& new_sample_cb,
+                          const NewMediaSampleCB& new_media_sample_cb,
+                          const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
 
   ChangeState(kParsingBoxes);
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_sample_cb_ = new_media_sample_cb;
   decryption_key_source_ = decryption_key_source;
   if (decryption_key_source)
     decryptor_source_.reset(new DecryptorSource(decryption_key_source));
@@ -392,11 +444,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       std::vector<uint8_t> codec_config;
 
       switch (actual_format) {
-        case FOURCC_mp4a:
-          max_bitrate = entry.esds.es_descriptor.max_bitrate();
-          avg_bitrate = entry.esds.es_descriptor.avg_bitrate();
+        case FOURCC_mp4a: {
+          const DecoderConfigDescriptor& decoder_config =
+              entry.esds.es_descriptor.decoder_config_descriptor();
+          max_bitrate = decoder_config.max_bitrate();
+          avg_bitrate = decoder_config.avg_bitrate();
 
-          codec = ObjectTypeToCodec(entry.esds.es_descriptor.object_type());
+          codec = ObjectTypeToCodec(decoder_config.object_type());
           if (codec == kCodecAAC) {
             const AACAudioSpecificConfig& aac_audio_specific_config =
                 entry.esds.aac_audio_specific_config;
@@ -404,18 +458,19 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             sampling_frequency =
                 aac_audio_specific_config.GetSamplesPerSecond();
             audio_object_type = aac_audio_specific_config.GetAudioObjectType();
-            codec_config = entry.esds.es_descriptor.decoder_specific_info();
+            codec_config =
+                decoder_config.decoder_specific_info_descriptor().data();
           } else if (codec == kUnknownCodec) {
             // Intentionally not to fail in the parser as there may be multiple
             // streams in the source content, which allows the supported stream
             // to be packaged. An error will be returned if the unsupported
             // stream is passed to the muxer.
             LOG(WARNING) << "Unsupported audio object type "
-                         << static_cast<int>(
-                                entry.esds.es_descriptor.object_type())
+                         << static_cast<int>(decoder_config.object_type())
                          << " in stsd.es_desriptor.";
           }
           break;
+        }
         case FOURCC_dtsc:
           FALLTHROUGH_INTENDED;
         case FOURCC_dtse:
@@ -436,6 +491,16 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_ec_3:
           codec_config = entry.dec3.data;
           num_channels = static_cast<uint8_t>(GetEc3NumChannels(codec_config));
+          break;
+        case FOURCC_ac_4:
+          codec_config = entry.dac4.data;
+          // Stop the process if have errors when parsing AC-4 dac4 box,
+          // bitstream version 0 (has beed deprecated) and contains multiple
+          // presentations in single AC-4 stream (only used for broadcast).
+          if (!GetAc4CodecInfo(codec_config, &audio_object_type)) {
+            LOG(ERROR) << "Failed to parse dac4.";
+            return false;
+          }
           break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;
@@ -512,11 +577,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint32_t pixel_width = entry.pixel_aspect.h_spacing;
       uint32_t pixel_height = entry.pixel_aspect.v_spacing;
       if (pixel_width == 0 && pixel_height == 0) {
-        pixel_width = 1;
-        pixel_height = 1;
+        DerivePixelWidthHeight(coded_width, coded_height, track->header.width,
+                               track->header.height, &pixel_width,
+                               &pixel_height);
       }
       std::string codec_string;
       uint8_t nalu_length_size = 0;
+      uint8_t transfer_characteristics = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
@@ -539,34 +606,45 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           codec_string = avc_config.GetCodecString(actual_format);
           nalu_length_size = avc_config.nalu_length_size();
+          transfer_characteristics = avc_config.transfer_characteristics();
 
-          if (coded_width != avc_config.coded_width() ||
-              coded_height != avc_config.coded_height()) {
-            LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
-                         << "," << coded_height
-                         << ") does not match with resolution in "
-                            "AVCDecoderConfigurationRecord ("
-                         << avc_config.coded_width() << ","
-                         << avc_config.coded_height()
-                         << "). Use AVCDecoderConfigurationRecord.";
-            coded_width = avc_config.coded_width();
-            coded_height = avc_config.coded_height();
-          }
+          // Use configurations from |avc_config| if it is valid.
+          if (avc_config.coded_width() != 0) {
+            DCHECK_NE(avc_config.coded_height(), 0u);
+            if (coded_width != avc_config.coded_width() ||
+                coded_height != avc_config.coded_height()) {
+              LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
+                           << "," << coded_height
+                           << ") does not match with resolution in "
+                              "AVCDecoderConfigurationRecord ("
+                           << avc_config.coded_width() << ","
+                           << avc_config.coded_height()
+                           << "). Use AVCDecoderConfigurationRecord.";
+              coded_width = avc_config.coded_width();
+              coded_height = avc_config.coded_height();
+            }
 
-          if (pixel_width != avc_config.pixel_width() ||
-              pixel_height != avc_config.pixel_height()) {
-            LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
-                << "Pixel aspect ratio in PASP box (" << pixel_width << ","
-                << pixel_height
-                << ") does not match with SAR in AVCDecoderConfigurationRecord "
-                   "("
-                << avc_config.pixel_width() << "," << avc_config.pixel_height()
-                << "). Use AVCDecoderConfigurationRecord.";
-            pixel_width = avc_config.pixel_width();
-            pixel_height = avc_config.pixel_height();
+            DCHECK_NE(avc_config.pixel_width(), 0u);
+            DCHECK_NE(avc_config.pixel_height(), 0u);
+            if (pixel_width != avc_config.pixel_width() ||
+                pixel_height != avc_config.pixel_height()) {
+              LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
+                  << "Pixel aspect ratio in PASP box (" << pixel_width << ","
+                  << pixel_height
+                  << ") does not match with SAR in "
+                     "AVCDecoderConfigurationRecord "
+                     "("
+                  << avc_config.pixel_width() << ","
+                  << avc_config.pixel_height()
+                  << "). Use AVCDecoderConfigurationRecord.";
+              pixel_width = avc_config.pixel_width();
+              pixel_height = avc_config.pixel_height();
+            }
           }
           break;
         }
+        case FOURCC_dvh1:
+        case FOURCC_dvhe:
         case FOURCC_hev1:
         case FOURCC_hvc1: {
           HEVCDecoderConfigurationRecord hevc_config;
@@ -576,6 +654,15 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           codec_string = hevc_config.GetCodecString(actual_format);
           nalu_length_size = hevc_config.nalu_length_size();
+          transfer_characteristics = hevc_config.transfer_characteristics();
+
+          if (!entry.extra_codec_configs.empty()) {
+            // |extra_codec_configs| is present only for Dolby Vision.
+            if (!UpdateCodecStringForDolbyVision(
+                    actual_format, entry.extra_codec_configs, &codec_string)) {
+              return false;
+            }
+          }
           break;
         }
         case FOURCC_vp08:
@@ -617,8 +704,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           GetH26xStreamFormat(actual_format), codec_string,
           codec_configuration_data.data(), codec_configuration_data.size(),
           coded_width, coded_height, pixel_width, pixel_height,
+          transfer_characteristics,
           0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
+      video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());
 
       // Set pssh raw data if it has.
       if (moov_->pssh.size() > 0) {

@@ -13,6 +13,9 @@
 #include <gflags/gflags.h>
 
 DECLARE_string(protection_scheme);
+DECLARE_int32(crypt_byte_block);
+DECLARE_int32(skip_byte_block);
 DECLARE_bool(vp9_subsample_encryption);
+DECLARE_string(playready_extra_header_data);
 
 #endif  // PACKAGER_APP_CRYPTO_FLAGS_H_

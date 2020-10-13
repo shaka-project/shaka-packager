@@ -29,13 +29,13 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  /// @param protection_systems_flags is the flags indicating which PSSH should
+  /// @param protection_systems is the enum indicating which PSSH should
   ///        be included.
   /// @param protection_scheme is the Protection Scheme to be used for
   ///        encryption. It needs to be signalled in Widevine PSSH. This
   ///        argument can be ignored if Widevine PSSH is not generated.
   WidevineKeySource(const std::string& server_url,
-                    int protection_systems_flags,
+                    ProtectionSystem protection_systems,
                     FourCC protection_scheme);
 
   ~WidevineKeySource() override;
@@ -48,6 +48,7 @@ class WidevineKeySource : public KeySource {
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
+                            uint32_t crypto_period_duration_in_seconds,
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}
@@ -129,6 +130,7 @@ class WidevineKeySource : public KeySource {
   bool key_production_started_ = false;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_ = 0;
+  uint32_t crypto_period_duration_in_seconds_ = 0;
   std::vector<uint8_t> group_id_;
   bool enable_entitlement_license_ = false;
   std::unique_ptr<EncryptionKeyQueue> key_pool_;

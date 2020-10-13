@@ -42,7 +42,7 @@ struct Variant {
   const std::string* audio_group_id = nullptr;
   const std::string* text_group_id = nullptr;
   // The bitrates should be the sum of audio bitrate and text bitrate.
-  // However, given the contraints and assumptions, it makes sense to exclude
+  // However, given the constraints and assumptions, it makes sense to exclude
   // text bitrate out of the calculation:
   // - Text streams usually have a very small negligible bitrate.
   // - Text does not have constant bitrates. To avoid fluctuation, an arbitrary
@@ -192,6 +192,7 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
   std::string tag_name;
   switch (playlist.stream_type()) {
+    case MediaPlaylist::MediaPlaylistStreamType::kAudio:
     case MediaPlaylist::MediaPlaylistStreamType::kVideo:
       tag_name = "#EXT-X-STREAM-INF";
       break;
@@ -219,8 +220,23 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
   uint32_t width;
   uint32_t height;
-  CHECK(playlist.GetDisplayResolution(&width, &height));
-  tag.AddNumberPair("RESOLUTION", width, 'x', height);
+  if (playlist.GetDisplayResolution(&width, &height)) {
+    tag.AddNumberPair("RESOLUTION", width, 'x', height);
+
+    // Right now the frame-rate returned may not be accurate in some scenarios.
+    // TODO(kqyang): Fix frame-rate computation.
+    const bool is_iframe_playlist = playlist.stream_type() == 
+               MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
+    if (!is_iframe_playlist) {
+      const double frame_rate = playlist.GetFrameRate();
+      if (frame_rate > 0)
+        tag.AddFloat("FRAME-RATE", frame_rate);
+    }
+
+    const std::string video_range = playlist.GetVideoRange();
+    if (!video_range.empty())
+      tag.AddString("VIDEO-RANGE", video_range);
+  }
 
   if (variant.audio_group_id) {
     tag.AddQuotedString("AUDIO", *variant.audio_group_id);
@@ -248,7 +264,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
                    bool is_autoselect,
                    const std::string& base_url,
                    std::string* out) {
-  // Tag attribures should follow the order as defined in
+  // Tag attributes should follow the order as defined in
   // https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-3.5
 
   Tag tag("#EXT-X-MEDIA", out);
@@ -287,13 +303,40 @@ void BuildMediaTag(const MediaPlaylist& playlist,
     tag.AddString("AUTOSELECT", "YES");
   }
 
+  const std::vector<std::string>& characteristics = playlist.characteristics();
+  if (!characteristics.empty()) {
+    tag.AddQuotedString("CHARACTERISTICS",
+                        base::JoinString(characteristics, ","));
+  }
+
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
-    std::string channel_string = std::to_string(playlist.GetNumChannels());
-    tag.AddQuotedString("CHANNELS", channel_string);
+    if (playlist.GetEC3JocComplexity() != 0) {
+      // HLS Authoring Specification for Apple Devices Appendices documents how
+      // to handle Dolby Digital Plus JOC content.
+      // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
+      std::string channel_string =
+        std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
+      // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
+      // CBI without object-based audio) for Dolby internal use only. IMSA is
+      // not included in any publicly-available specifications as of June, 2020.
+      std::string channel_string =
+        std::to_string(playlist.GetNumChannels()) + "/IMSA";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else {
+      // According to HLS spec:
+      // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
+      // CHANNELS is a quoted-string that specifies an ordered,
+      // slash-separated ("/") list of parameters. The first parameter is a
+      // count of audio channels, and the second parameter identifies the
+      // encoding of object-based audio used by the Rendition.
+      std::string channel_string = std::to_string(playlist.GetNumChannels());
+      tag.AddQuotedString("CHANNELS", channel_string);
+    }
   }
-
   out->append("\n");
 }
 
@@ -337,7 +380,8 @@ void BuildMediaTags(
   }
 }
 
-void AppendPlaylists(const std::string& default_language,
+void AppendPlaylists(const std::string& default_audio_language,
+                     const std::string& default_text_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
@@ -368,12 +412,13 @@ void AppendPlaylists(const std::string& default_language,
 
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(audio_playlist_groups, default_language, base_url, content);
+    BuildMediaTags(audio_playlist_groups, default_audio_language, base_url,
+                   content);
   }
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(subtitle_playlist_groups, default_language, base_url,
+    BuildMediaTags(subtitle_playlist_groups, default_text_language, base_url,
                    content);
   }
 
@@ -395,13 +440,36 @@ void AppendPlaylists(const std::string& default_language,
       BuildStreamInfTag(*playlist, Variant(), base_url, content);
     }
   }
+
+  // Generate audio-only master playlist when there are no videos and subtitles.
+  if (!audio_playlist_groups.empty() && video_playlists.empty() &&
+      subtitle_playlist_groups.empty()) {
+    content->append("\n");
+    for (const auto& playlist_group : audio_playlist_groups) {
+      Variant variant;
+      // Populate |audio_group_id|, which will be propagated to "AUDIO" field.
+      // Leaving other fields, e.g. xxx_audio_bitrate in |Variant|, as
+      // null/empty/zero intentionally as the information is already available
+      // in audio |playlist|.
+      variant.audio_group_id = &playlist_group.first;
+      for (const auto& playlist : playlist_group.second) {
+        BuildStreamInfTag(*playlist, variant, base_url, content);
+      }
+    }
+  }
 }
 
 }  // namespace
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
-                               const std::string& default_language)
-    : file_name_(file_name), default_language_(default_language) {}
+                               const std::string& default_audio_language,
+                               const std::string& default_text_language,
+                               bool is_independent_segments)
+    : file_name_(file_name),
+      default_audio_language_(default_audio_language),
+      default_text_language_(default_text_language),
+      is_independent_segments_(is_independent_segments) {}
+
 MasterPlaylist::~MasterPlaylist() {}
 
 bool MasterPlaylist::WriteMasterPlaylist(
@@ -410,7 +478,12 @@ bool MasterPlaylist::WriteMasterPlaylist(
     const std::list<MediaPlaylist*>& playlists) {
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
-  AppendPlaylists(default_language_, base_url, playlists, &content);
+  
+  if (is_independent_segments_) {
+    content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
+  }
+  AppendPlaylists(default_audio_language_, default_text_language_, base_url,
+                  playlists, &content);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)
