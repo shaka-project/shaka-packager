@@ -24,6 +24,7 @@
 /packager/third_party/gflags/src/
 /packager/third_party/gold/
 /packager/third_party/icu/
+/packager/third_party/libpng/src/
 /packager/third_party/libwebm/src/
 /packager/third_party/llvm-build/
 /packager/third_party/modp_b64/

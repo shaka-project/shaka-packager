@@ -55,6 +55,9 @@ deps = {
   "src/packager/third_party/icu":
     Var("chromium_git") + "/chromium/deps/icu@ef5c735307d0f86c7622f69620994c9468beba99",
 
+  "src/packager/third_party/libpng/src":
+    Var("github") + "/glennrp/libpng@a40189cf881e9f0db80511c382292a5604c3c3d1",
+
   "src/packager/third_party/libwebm/src":
     Var("chromium_git") + "/webm/libwebm@d6af52a1e688fade2e2d22b6d9b0c82f10d38e0b",
 
