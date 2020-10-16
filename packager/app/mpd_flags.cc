@@ -98,3 +98,50 @@ ABSL_FLAG(
     "https://shaka-project.github.io/shaka-packager/html/tutorials/low_latency.html "
     // clang-format on
     "for more information.");
+ABSL_FLAG(std::string,
+          sbd_url_all,
+          "",
+          "Comma separated URLs of sbd document.Add to all adaptation sets.");
+ABSL_FLAG(std::string,
+          sbd_template_all,
+          "",
+          "Comma separated template used to create URL query.");
+ABSL_FLAG(std::string,
+          sbd_key_all,
+          "",
+          "Comma separated SBD keys to fetch from sbd client.");
+ABSL_FLAG(
+    std::string,
+    sbd_url_video,
+    "",
+    "Comma separated URL of sbd document. Add to all video adaptation sets");
+ABSL_FLAG(std::string,
+          sbd_template_video,
+          "",
+          "Comma separated template used to create URL query.");
+ABSL_FLAG(std::string, sbd_key_video, "", "SBD keys to fetch from sbd client.");
+ABSL_FLAG(std::string,
+          sbd_url_audio,
+          "",
+          "Comma separated URL of sbd document.Add to all adaptation sets.");
+ABSL_FLAG(std::string,
+          sbd_template_audio,
+          "",
+          "Comma separated Template used to create URL query.");
+ABSL_FLAG(std::string,
+          sbd_key_audio,
+          "",
+          "Comma separated SBD keys to fetch from sbd client.");
+ABSL_FLAG(
+    std::string,
+    sbd_url_text,
+    "",
+    "Comma separated URL of sbd document. Add to all text adapatation sets.");
+ABSL_FLAG(std::string,
+          sbd_template_text,
+          "",
+          "Comma separated Template used to create URL query.");
+ABSL_FLAG(std::string,
+          sbd_key_text,
+          "",
+          "Comma separated SBD key-value pairs.");

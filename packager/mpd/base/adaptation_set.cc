@@ -346,10 +346,37 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
                            ? tp_adaptation_set->index_.value()
                            : tp_adaptation_set->id());
   }
+
   if (!trick_play_reference_ids.empty() &&
       !adaptation_set.AddEssentialProperty(
-          "http://dashif.org/guidelines/trickmode", trick_play_reference_ids)) {
+          "http://dashif.org/guidelines/trickmode", trick_play_reference_ids,
+          mpd_options_)) {
     return std::nullopt;
+  }
+
+  // Add sbd essential property here
+  //  video
+  if (!mpd_options_.mpd_params.sbd_adaptation_set_video.empty() &&
+      content_type_ == "video") {
+    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "video",
+                                        mpd_options_);
+  }
+  // audio
+  if (!mpd_options_.mpd_params.sbd_adaptation_set_audio.empty() &&
+      content_type_ == "audio") {
+    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "audio",
+                                        mpd_options_);
+  }
+  // text
+  if (!mpd_options_.mpd_params.sbd_adaptation_set_text.empty() &&
+      content_type_ == "text") {
+    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "text",
+                                        mpd_options_);
+  }
+  // all
+  if (!mpd_options_.mpd_params.sbd_adaptation_set_all.empty()) {
+    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "all",
+                                        mpd_options_);
   }
 
   std::string switching_ids;

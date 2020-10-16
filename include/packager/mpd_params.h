@@ -102,6 +102,17 @@ struct MpdParams {
   /// and is greatly influnced by the player.
   /// This parameter is required by DASH-IF Low Latency standards.
   double target_latency_seconds = 1;
+
+  /// Session Based Description Document flags.
+  struct SBD {
+    std::string url_;
+    std::string template_;
+    std::vector<std::pair<std::string, std::string>> sbd_keys_;
+  };
+  std::vector<SBD> sbd_adaptation_set_video;
+  std::vector<SBD> sbd_adaptation_set_audio;
+  std::vector<SBD> sbd_adaptation_set_text;
+  std::vector<SBD> sbd_adaptation_set_all;
 };
 
 }  // namespace shaka
