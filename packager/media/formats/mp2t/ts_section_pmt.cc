@@ -75,15 +75,14 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // The end of the PID map if 4 bytes away from the end of the section
   // (4 bytes = size of the CRC).
   int pid_map_end_marker = section_start_marker - section_length + 4;
-  std::map<int, int> pid_map;
+  std::map<int, uint8_t> pid_map;
   while (static_cast<int>(bit_reader->bits_available()) >
          8 * pid_map_end_marker) {
-    int stream_type;
-    int reserved;
+    uint8_t stream_type;
     int pid_es;
     int es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));
-    RCHECK(bit_reader->ReadBits(3, &reserved));
+    RCHECK(bit_reader->SkipBits(3));  // reserved
     RCHECK(bit_reader->ReadBits(13, &pid_es));
     RCHECK(bit_reader->ReadBits(4, &reserved));
     RCHECK(bit_reader->ReadBits(12, &es_info_length));
@@ -91,7 +90,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
     // Do not register the PID right away.
     // Wait for the end of the section to be fully parsed
     // to make sure there is no error.
-    pid_map.insert(std::pair<int, int>(pid_es, stream_type));
+    pid_map.emplace(pid_es, stream_type);
 
     // Read the ES info descriptors.
     // Defined in section 2.6 of ISO-13818.
@@ -103,9 +102,8 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Once the PMT has been proved to be correct, register the PIDs.
-  for (std::map<int, int>::iterator it = pid_map.begin();
-       it != pid_map.end(); ++it)
-    register_pes_cb_.Run(it->first, it->second);
+  for (auto& pair : pid_map)
+    register_pes_cb_.Run(pair.first, pair.second);
 
   return true;
 }
