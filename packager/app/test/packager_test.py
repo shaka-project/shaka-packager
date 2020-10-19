@@ -848,6 +848,14 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('single-file-webvtt-text')
 
+  def testSegmentedWebVttMp4(self):
+    streams = self._GetStreams(['text'], test_files=['bear-english.vtt'],
+                               output_format='mp4', segmented=True)
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-mp4')
+
   def testMp4TrailingMoov(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'],

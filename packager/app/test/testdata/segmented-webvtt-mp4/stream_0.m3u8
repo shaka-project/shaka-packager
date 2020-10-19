@@ -1,0 +1,17 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:1
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="bear-english-text-init.mp4"
+#EXTINF:1.000,
+bear-english-text-1.m4s
+#EXTINF:1.000,
+bear-english-text-2.m4s
+#EXTINF:1.000,
+bear-english-text-3.m4s
+#EXTINF:1.000,
+bear-english-text-4.m4s
+#EXTINF:1.000,
+bear-english-text-5.m4s
+#EXT-X-ENDLIST
