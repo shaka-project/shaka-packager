@@ -12,6 +12,7 @@
 #include "packager/app/libcrypto_threading.h"
 #include "packager/app/muxer_factory.h"
 #include "packager/app/packager_util.h"
+#include "packager/app/single_thread_job_manager.h"
 #include "packager/app/stream_descriptor.h"
 #include "packager/base/at_exit.h"
 #include "packager/base/files/file_path.h"
@@ -56,6 +57,7 @@ using media::Demuxer;
 using media::JobManager;
 using media::KeySource;
 using media::MuxerOptions;
+using media::SingleThreadJobManager;
 using media::SyncPointQueue;
 
 namespace media {
@@ -837,7 +839,12 @@ Status Packager::Initialize(
     sync_points.reset(
         new SyncPointQueue(packaging_params.ad_cue_generator_params));
   }
-  internal->job_manager.reset(new JobManager(std::move(sync_points)));
+  if (packaging_params.single_threaded) {
+    internal->job_manager.reset(
+        new SingleThreadJobManager(std::move(sync_points)));
+  } else {
+    internal->job_manager.reset(new JobManager(std::move(sync_points)));
+  }
 
   std::vector<StreamDescriptor> streams_for_jobs;
 

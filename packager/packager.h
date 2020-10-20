@@ -53,6 +53,9 @@ struct PackagingParams {
   /// Create a human readable format of MediaInfo. The output file name will be
   /// the name specified by output flag, suffixed with `.media_info`.
   bool output_media_info = false;
+  /// Only use a single thread to generate output.  This is useful in tests to
+  /// avoid non-deterministic outputs.
+  bool single_threaded = false;
   /// DASH MPD related parameters.
   MpdParams mpd_params;
   /// HLS related parameters.
