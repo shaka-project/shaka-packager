@@ -16,7 +16,7 @@ class HttpFileTest : public testing::Test {};
 
 TEST_F(HttpFileTest, PutChunkedTranser) {
   std::unique_ptr<File, FileCloser> writer(
-      File::Open("put+http://127.0.0.1:8080/test_out", "w"));
+      File::Open("http://127.0.0.1:8080/test_out", "w"));
   ASSERT_TRUE(writer);
   ASSERT_EQ(kWriteBufferSize, writer->Write(kWriteBuffer, kWriteBufferSize));
   writer.release()->Close();
