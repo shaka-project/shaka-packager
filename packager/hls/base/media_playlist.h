@@ -221,6 +221,15 @@ class MediaPlaylist {
     return characteristics_;
   }
 
+  bool is_dvs() const {
+    // HLS Authoring Specification for Apple Devices
+    // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
+    // Section 2.12.
+    const char DVS_CHARACTERISTICS[] = "public.accessibility.describes-video";
+    return characteristics_.size() == 1 &&
+           characteristics_[0] == DVS_CHARACTERISTICS;
+  }
+
  private:
   // Add a SegmentInfoEntry (#EXTINF).
   void AddSegmentInfoEntry(const std::string& segment_file_name,

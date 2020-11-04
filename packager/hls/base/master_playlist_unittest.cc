@@ -523,6 +523,51 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
   ASSERT_EQ(expected, actual);
 }
 
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {
+  // Video, sd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  // DVS Audio, dvs_eng.m3u8.
+  std::unique_ptr<MockMediaPlaylist> dvs_audio = CreateAudioPlaylist(
+      "dvs_eng.m3u8", "DVS english", "audiogroup", "audiocodec", "en", 2, 50000,
+      30000, kEC3JocComplexityZero, !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
+  dvs_audio->SetCharacteristicsForTesting(
+      std::vector<std::string>{"public.accessibility.describes-video"});
+
+  // Normal Audio, eng.m3u8.
+  std::unique_ptr<MockMediaPlaylist> audio = CreateAudioPlaylist(
+      "eng.m3u8", "english", "audiogroup", "audiocodec", "en", 2, 50000, 30000,
+      kEC3JocComplexityZero, !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), dvs_audio.get(), audio.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/dvs_eng.m3u8\","
+      "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"DVS english\","
+      "AUTOSELECT=YES,CHARACTERISTICS=\"public.accessibility.describes-video\","
+      "CHANNELS=\"2\"\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"english\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
+      "CODECS=\"sdvideocodec,audiocodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audiogroup\"\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video =

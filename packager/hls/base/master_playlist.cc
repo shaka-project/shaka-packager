@@ -366,12 +366,20 @@ void BuildMediaTags(
       bool is_default = false;
       bool is_autoselect = false;
 
-      const std::string language = playlist->language();
-      if (languages.find(language) == languages.end()) {
-        is_default = !language.empty() && language == default_language;
+      if (playlist->is_dvs()) {
+        // According to HLS Authoring Specification for Apple Devices
+        // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
+        // section 2.13 If you provide DVS, the AUTOSELECT attribute MUST have
+        //              a value of "YES".
         is_autoselect = true;
+      } else {
+        const std::string language = playlist->language();
+        if (languages.find(language) == languages.end()) {
+          is_default = !language.empty() && language == default_language;
+          is_autoselect = true;
 
-        languages.insert(language);
+          languages.insert(language);
+        }
       }
 
       BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,
