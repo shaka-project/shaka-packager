@@ -144,54 +144,41 @@ bool CompareNodes(xmlNodePtr node1, xmlNodePtr node2) {
 bool XmlEqual(const std::string& xml1, const std::string& xml2) {
   xml::scoped_xml_ptr<xmlDoc> xml1_doc(GetDocFromString(xml1));
   xml::scoped_xml_ptr<xmlDoc> xml2_doc(GetDocFromString(xml2));
-  return XmlEqual(xml1_doc.get(), xml2_doc.get());
-}
-
-bool XmlEqual(const std::string& xml1, xmlDocPtr xml2) {
-  xml::scoped_xml_ptr<xmlDoc> xml1_doc(GetDocFromString(xml1));
-  return XmlEqual(xml1_doc.get(), xml2);
-}
-
-bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2) {
-  if (!xml1 || !xml2) {
-    LOG(ERROR) << "xml1 and/or xml2 are not valid XML.";
+  if (!xml1_doc || !xml2_doc) {
+    LOG(ERROR) << "xml1/xml2 is not valid XML.";
     return false;
   }
 
-  xmlNodePtr xml1_root_element = xmlDocGetRootElement(xml1);
-  xmlNodePtr xml2_root_element = xmlDocGetRootElement(xml2);
+  xmlNodePtr xml1_root_element = xmlDocGetRootElement(xml1_doc.get());
+  xmlNodePtr xml2_root_element = xmlDocGetRootElement(xml2_doc.get());
   if (!xml1_root_element || !xml2_root_element)
-    return xml1_root_element == xml2_root_element;
-
+    return false;
   return CompareNodes(xml1_root_element, xml2_root_element);
 }
 
-bool XmlEqual(const std::string& xml1, xmlNodePtr xml2) {
+bool XmlEqual(const std::string& xml1,
+              const base::Optional<xml::XmlNode>& xml2) {
+  return xml2 && XmlEqual(xml1, *xml2);
+}
+
+bool XmlEqual(const std::string& xml1, const xml::XmlNode& xml2) {
   xml::scoped_xml_ptr<xmlDoc> xml1_doc(GetDocFromString(xml1));
   if (!xml1_doc) {
-    LOG(ERROR) << "xml1 are not valid XML.";
+    LOG(ERROR) << "xml1 is not valid XML.";
     return false;
   }
   xmlNodePtr xml1_root_element = xmlDocGetRootElement(xml1_doc.get());
   if (!xml1_root_element)
     return false;
-  return CompareNodes(xml1_root_element, xml2);
+  return CompareNodes(xml1_root_element, xml2.GetRawPtr());
 }
 
-std::string XmlNodeToString(xmlNodePtr xml_node) {
-  // Create an xmlDoc from xmlNodePtr. The node is copied so ownership does not
-  // transfer.
-  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
-  xmlDocSetRootElement(doc.get(), xmlCopyNode(xml_node, true));
+std::string XmlNodeToString(const base::Optional<xml::XmlNode>& xml_node) {
+  return xml_node ? XmlNodeToString(*xml_node) : "$ERROR$";
+}
 
-  // Format the xmlDoc to string.
-  static const int kNiceFormat = 1;
-  int doc_str_size = 0;
-  xmlChar* doc_str = nullptr;
-  xmlDocDumpFormatMemoryEnc(doc.get(), &doc_str, &doc_str_size, "UTF-8",
-                            kNiceFormat);
-  std::string output(doc_str, doc_str + doc_str_size);
-  xmlFree(doc_str);
+std::string XmlNodeToString(const xml::XmlNode& xml_node) {
+  std::string output = xml_node.ToString(/* comment= */ "");
 
   // Remove the first line from the formatted string:
   //   <?xml version="" encoding="UTF-8"?>

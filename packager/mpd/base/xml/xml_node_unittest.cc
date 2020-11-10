@@ -145,14 +145,14 @@ TEST(XmlNodeTest, ExtractReferencedNamespaces) {
 
   XmlNode child("child1");
   child.SetContent("child1 content");
-  child.AddChild(grand_child_with_namespace.PassScopedPtr());
+  ASSERT_TRUE(child.AddChild(std::move(grand_child_with_namespace)));
 
   XmlNode child_with_namespace("child_ns:child2");
   child_with_namespace.SetContent("child2 content");
 
   XmlNode root("root");
-  root.AddChild(child.PassScopedPtr());
-  root.AddChild(child_with_namespace.PassScopedPtr());
+  ASSERT_TRUE(root.AddChild(std::move(child)));
+  ASSERT_TRUE(root.AddChild(std::move(child_with_namespace)));
 
   EXPECT_THAT(root.ExtractReferencedNamespaces(),
               ElementsAre("child_ns", "grand_ns"));
@@ -160,13 +160,13 @@ TEST(XmlNodeTest, ExtractReferencedNamespaces) {
 
 TEST(XmlNodeTest, ExtractReferencedNamespacesFromAttributes) {
   XmlNode child("child");
-  child.SetStringAttribute("child_attribute_ns:attribute",
-                           "child attribute value");
+  ASSERT_TRUE(child.SetStringAttribute("child_attribute_ns:attribute",
+                                       "child attribute value"));
 
   XmlNode root("root");
-  root.AddChild(child.PassScopedPtr());
-  root.SetStringAttribute("root_attribute_ns:attribute",
-                          "root attribute value");
+  ASSERT_TRUE(root.AddChild(std::move(child)));
+  ASSERT_TRUE(root.SetStringAttribute("root_attribute_ns:attribute",
+                                      "root attribute value"));
 
   EXPECT_THAT(root.ExtractReferencedNamespaces(),
               ElementsAre("child_attribute_ns", "root_attribute_ns"));
@@ -195,9 +195,9 @@ TEST(XmlNodeTest, AddContentProtectionElements) {
   content_protections.push_back(content_protection_clearkey);
 
   RepresentationXmlNode representation;
-  representation.AddContentProtectionElements(content_protections);
+  ASSERT_TRUE(representation.AddContentProtectionElements(content_protections));
   EXPECT_THAT(
-      representation.GetRawPtr(),
+      representation,
       XmlNodeEqual(
           "<Representation>\n"
           " <ContentProtection\n"
@@ -220,9 +220,9 @@ TEST(XmlNodeTest, AddEC3AudioInfo) {
       0xFFFFFFFF);
 
   RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
   EXPECT_THAT(
-      representation.GetRawPtr(),
+      representation,
       XmlNodeEqual(
           "<Representation audioSamplingRate=\"48000\">\n"
           "  <AudioChannelConfiguration\n"
@@ -240,16 +240,14 @@ TEST(XmlNodeTest, AddEC3AudioInfoMPEGScheme) {
   audio_info.mutable_codec_specific_data()->set_channel_mpeg_value(6);
 
   RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
-  EXPECT_THAT(
-      representation.GetRawPtr(),
-      XmlNodeEqual(
-          "<Representation audioSamplingRate=\"48000\">\n"
-          "  <AudioChannelConfiguration\n"
-          "   schemeIdUri=\n"
-          "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
-          "   value=\"6\"/>\n"
-          "</Representation>\n"));
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(representation,
+              XmlNodeEqual("<Representation audioSamplingRate=\"48000\">\n"
+                           "  <AudioChannelConfiguration\n"
+                           "   schemeIdUri=\n"
+                           "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
+                           "   value=\"6\"/>\n"
+                           "</Representation>\n"));
 }
 
 TEST(XmlNodeTest, AddEC3AudioInfoMPEGSchemeJOC) {
@@ -261,9 +259,9 @@ TEST(XmlNodeTest, AddEC3AudioInfoMPEGSchemeJOC) {
   audio_info.mutable_codec_specific_data()->set_ec3_joc_complexity(16);
 
   RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
   EXPECT_THAT(
-      representation.GetRawPtr(),
+      representation,
       XmlNodeEqual(
           "<Representation audioSamplingRate=\"48000\">\n"
           "  <AudioChannelConfiguration\n"
@@ -292,16 +290,16 @@ TEST(XmlNodeTest, AddAC4AudioInfo) {
   codec_data->set_ac4_cbi_flag(false);
 
   RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
   EXPECT_THAT(
-    representation.GetRawPtr(),
-    XmlNodeEqual(
-      "<Representation audioSamplingRate=\"48000\">\n"
-      "  <AudioChannelConfiguration\n"
-      "   schemeIdUri=\n"
-      "    \"tag:dolby.com,2015:dash:audio_channel_configuration:2015\"\n"
-      "   value=\"0000C7\"/>\n"
-      "</Representation>\n"));
+      representation,
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dolby.com,2015:dash:audio_channel_configuration:2015\"\n"
+          "   value=\"0000C7\"/>\n"
+          "</Representation>\n"));
 }
 
 TEST(XmlNodeTest, AddAC4AudioInfoMPEGScheme) {
@@ -315,16 +313,14 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGScheme) {
   codec_data->set_ac4_cbi_flag(false);
 
   RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
-  EXPECT_THAT(
-    representation.GetRawPtr(),
-    XmlNodeEqual(
-      "<Representation audioSamplingRate=\"48000\">\n"
-      "  <AudioChannelConfiguration\n"
-      "   schemeIdUri=\n"
-      "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
-      "   value=\"2\"/>\n"
-      "</Representation>\n"));
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(representation,
+              XmlNodeEqual("<Representation audioSamplingRate=\"48000\">\n"
+                           "  <AudioChannelConfiguration\n"
+                           "   schemeIdUri=\n"
+                           "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
+                           "   value=\"2\"/>\n"
+                           "</Representation>\n"));
 }
 
 TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
@@ -338,20 +334,19 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
   codec_data->set_ac4_cbi_flag(false);
 
   RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
   EXPECT_THAT(
-    representation.GetRawPtr(),
-    XmlNodeEqual(
-      "<Representation audioSamplingRate=\"48000\">\n"
-      "  <AudioChannelConfiguration\n"
-      "   schemeIdUri=\n"
-      "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
-      "   value=\"2\"/>\n"
-      "  <SupplementalProperty\n"
-      "   schemeIdUri=\n"
-      "    \"tag:dolby.com,2016:dash:virtualized_content:2016\"\n"
-      "   value=\"1\"/>\n"
-      "</Representation>\n"));
+      representation,
+      XmlNodeEqual("<Representation audioSamplingRate=\"48000\">\n"
+                   "  <AudioChannelConfiguration\n"
+                   "   schemeIdUri=\n"
+                   "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
+                   "   value=\"2\"/>\n"
+                   "  <SupplementalProperty\n"
+                   "   schemeIdUri=\n"
+                   "    \"tag:dolby.com,2016:dash:virtualized_content:2016\"\n"
+                   "   value=\"1\"/>\n"
+                   "</Representation>\n"));
 }
 
 class LiveSegmentTimelineTest : public ::testing::Test {
@@ -380,7 +375,7 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
-      representation.GetRawPtr(),
+      representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate media=\"$Number$.m4s\" "
                    "                   startNumber=\"1\" duration=\"100\"/>"
@@ -400,7 +395,7 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
   ASSERT_TRUE(
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
-  EXPECT_THAT(representation.GetRawPtr(),
+  EXPECT_THAT(representation,
               XmlNodeEqual(
                   "<Representation>"
                   "  <SegmentTemplate media=\"$Number$.m4s\" startNumber=\"1\">"
@@ -425,7 +420,7 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
-      representation.GetRawPtr(),
+      representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate media=\"$Number$.m4s\" "
                    "                   startNumber=\"6\" duration=\"100\"/>"
@@ -452,7 +447,7 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
-      representation.GetRawPtr(),
+      representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate media=\"$Number$.m4s\" "
                    "                   startNumber=\"1\" duration=\"100\"/>"
@@ -478,7 +473,7 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
   ASSERT_TRUE(
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
-  EXPECT_THAT(representation.GetRawPtr(),
+  EXPECT_THAT(representation,
               XmlNodeEqual(
                   "<Representation>"
                   "  <SegmentTemplate media=\"$Number$.m4s\" startNumber=\"1\">"
@@ -510,7 +505,7 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
   ASSERT_TRUE(
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
-  EXPECT_THAT(representation.GetRawPtr(),
+  EXPECT_THAT(representation,
               XmlNodeEqual(
                   "<Representation>"
                   "  <SegmentTemplate media=\"$Number$.m4s\" startNumber=\"1\">"
@@ -522,31 +517,31 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
                   "</Representation>"));
 }
 
-TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {        
-  const uint32_t kStartNumber = 1;                                              
-  const uint64_t kStartTime = 0;                                                
-  const uint64_t kDuration = 100;                                               
-  const uint64_t kRepeat = 9;                                                   
-                                                                                
-  std::list<SegmentInfo> segment_infos = {                                      
-      {kStartTime, kDuration, kRepeat},                                         
-  };                                                                            
-  RepresentationXmlNode representation;                                         
-  FLAGS_dash_add_last_segment_number_when_needed = true;                       
-                                                                                
-  ASSERT_TRUE(                                                                  
+TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
+  const uint32_t kStartNumber = 1;
+  const uint64_t kStartTime = 0;
+  const uint64_t kDuration = 100;
+  const uint64_t kRepeat = 9;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartTime, kDuration, kRepeat},
+  };
+  RepresentationXmlNode representation;
+  FLAGS_dash_add_last_segment_number_when_needed = true;
+
+  ASSERT_TRUE(
       representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
-                                                                                
-  EXPECT_THAT(                                                                  
-      representation.GetRawPtr(),                                               
-      XmlNodeEqual("<Representation>"                                           
-                   "<SupplementalProperty schemeIdUri=\"http://dashif.org/"     
-                   "guidelines/last-segment-number\" value=\"10\"/>"            
-                   "  <SegmentTemplate media=\"$Number$.m4s\" "                 
-                   "                   startNumber=\"1\" duration=\"100\"/>"    
-                   "</Representation>"));                                       
-  FLAGS_dash_add_last_segment_number_when_needed = false;                                                                                                      
-}                      
+
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation>"
+                   "<SupplementalProperty schemeIdUri=\"http://dashif.org/"
+                   "guidelines/last-segment-number\" value=\"10\"/>"
+                   "  <SegmentTemplate media=\"$Number$.m4s\" "
+                   "                   startNumber=\"1\" duration=\"100\"/>"
+                   "</Representation>"));
+  FLAGS_dash_add_last_segment_number_when_needed = false;
+}
 
 }  // namespace xml
 }  // namespace shaka

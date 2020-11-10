@@ -17,8 +17,11 @@
 #include <memory>
 #include <string>
 
+#include "packager/base/compiler_specific.h"
+#include "packager/base/optional.h"
 #include "packager/base/time/clock.h"
 #include "packager/mpd/base/mpd_options.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 // TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
 // the MPD (XML) generation functions take care of assigning an ID to each
@@ -28,10 +31,6 @@ namespace shaka {
 class AdaptationSet;
 class MediaInfo;
 class Period;
-
-namespace xml {
-class XmlNode;
-}  // namespace xml
 
 /// This class generates DASH MPDs (Media Presentation Descriptions).
 class MpdBuilder {
@@ -57,7 +56,7 @@ class MpdBuilder {
   /// @param[out] output is an output string where the MPD gets written.
   /// @return true on success, false otherwise.
   // TODO(kqyang): Handle file IO in this class as in HLS media_playlist?
-  virtual bool ToString(std::string* output);
+  virtual bool ToString(std::string* output) WARN_UNUSED_RESULT;
 
   /// Adjusts the fields of MediaInfo so that paths are relative to the
   /// specified MPD path.
@@ -86,21 +85,21 @@ class MpdBuilder {
   // Returns the document pointer to the MPD. This must be freed by the caller
   // using appropriate xmlDocPtr freeing function.
   // On failure, this returns NULL.
-  xmlDocPtr GenerateMpd();
+  base::Optional<xml::XmlNode> GenerateMpd();
 
   // Set MPD attributes common to all profiles. Uses non-zero |mpd_options_| to
   // set attributes for the MPD.
-  void AddCommonMpdInfo(xml::XmlNode* mpd_node);
+  bool AddCommonMpdInfo(xml::XmlNode* mpd_node) WARN_UNUSED_RESULT;
 
   // Adds 'static' MPD attributes and elements to |mpd_node|. This assumes that
   // the first child element is a Period element.
-  void AddStaticMpdInfo(xml::XmlNode* mpd_node);
+  bool AddStaticMpdInfo(xml::XmlNode* mpd_node) WARN_UNUSED_RESULT;
 
   // Same as AddStaticMpdInfo() but for 'dynamic' MPDs.
-  void AddDynamicMpdInfo(xml::XmlNode* mpd_node);
+  bool AddDynamicMpdInfo(xml::XmlNode* mpd_node) WARN_UNUSED_RESULT;
 
   // Add UTCTiming element if utc timing is provided.
-  void AddUtcTiming(xml::XmlNode* mpd_node);
+  bool AddUtcTiming(xml::XmlNode* mpd_node) WARN_UNUSED_RESULT;
 
   float GetStaticMpdDuration();
 
@@ -110,7 +109,7 @@ class MpdBuilder {
 
   // Gets the earliest, normalized segment timestamp. Returns true if
   // successful, false otherwise.
-  bool GetEarliestTimestamp(double* timestamp_seconds);
+  bool GetEarliestTimestamp(double* timestamp_seconds) WARN_UNUSED_RESULT;
 
   // Update Period durations and presentation timestamps.
   void UpdatePeriodDurationAndPresentationTimestamp();

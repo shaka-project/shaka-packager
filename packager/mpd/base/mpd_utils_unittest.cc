@@ -72,7 +72,7 @@ TEST_F(MpdUtilsTest, ContentProtectionGeneral) {
       "  <Representation id='0' bandwidth='0' codecs='avc1'"
       "   mimeType='video/mp4'/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 TEST_F(MpdUtilsTest, ContentProtectionMarlin) {
@@ -114,7 +114,7 @@ TEST_F(MpdUtilsTest, ContentProtectionMarlin) {
       "  <Representation id='0' bandwidth='0' codecs='avc1'"
       "   mimeType='video/mp4'/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr) {
@@ -162,14 +162,16 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr) {
         "  <ContentProtection value='MSPR 2.0'"
         "      schemeIdUri='urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95'>"
         "    <cenc:pssh>"
-        "AAAAOHBzc2gBAAAAmgTweZhAQoarkuZb4IhflQAAAAERIjNEVWZ3iJkAqrvM3e7/AAAABDAxMjM="
+        "AAAAOHBzc2gBAAAAmgTweZhAQoarkuZb4IhflQAAAAERIjNEVWZ3iJkAqrvM3e7/"
+        "AAAABDAxMjM="
         "    </cenc:pssh>"
         "    <mspr:pro>MDEyMw==</mspr:pro>"
         "  </ContentProtection>"
-        "  <Representation id='0' bandwidth='0' codecs='avc1' mimeType='video/mp4'/>"
+        "  <Representation id='0' bandwidth='0' codecs='avc1' "
+        "mimeType='video/mp4'/>"
         "</AdaptationSet>";
 
-    EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
+    EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
@@ -223,7 +225,7 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
         "  <Representation id='0' bandwidth='0' codecs='avc1' mimeType='video/mp4'/>"
         "</AdaptationSet>";
 
-    EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
+    EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 }  // namespace shaka
