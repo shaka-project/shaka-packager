@@ -298,8 +298,9 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   std::string trick_play_reference_ids;
   for (const AdaptationSet* adaptation_set : trick_play_references_) {
+    // Should be a whitespace-separated list, see DASH-IOP 3.2.9.
     if (!trick_play_reference_ids.empty())
-      trick_play_reference_ids += ',';
+      trick_play_reference_ids += ' ';
     CHECK(adaptation_set->has_id());
     trick_play_reference_ids += std::to_string(adaptation_set->id());
   }
@@ -310,6 +311,7 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   std::string switching_ids;
   for (const AdaptationSet* adaptation_set : switchable_adaptation_sets_) {
+    // Should be a comma-separated list, see DASH-IOP 3.8.
     if (!switching_ids.empty())
       switching_ids += ',';
     CHECK(adaptation_set->has_id());
