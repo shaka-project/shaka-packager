@@ -16,49 +16,7 @@
 #include "packager/status.h"
 
 namespace shaka {
-
-// Scoped CURL implementation which cleans up itself when goes out of scope.
-// Stolen from `http_key_fetcher.cc`.
-class ScopedCurl {
- public:
-  ScopedCurl() { ptr_ = curl_easy_init(); }
-
-  ~ScopedCurl() {
-    if (ptr_)
-      curl_easy_cleanup(ptr_);
-  }
-
-  CURL* get() { return ptr_; }
-
- private:
-  CURL* ptr_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedCurl);
-};
-
-class LibCurlInitializer {
- public:
-  LibCurlInitializer() : initialized_(false) {
-    base::AutoLock lock(lock_);
-    if (!initialized_) {
-      curl_global_init(CURL_GLOBAL_DEFAULT);
-      initialized_ = true;
-    }
-  }
-
-  ~LibCurlInitializer() {
-    base::AutoLock lock(lock_);
-    if (initialized_) {
-      curl_global_cleanup();
-      initialized_ = false;
-    }
-  }
-
- private:
-  base::Lock lock_;
-  bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
-};
+using ScopedCurl = std::unique_ptr<CURL, decltype(&curl_easy_cleanup)>;
 
 /// HttpFile delegates write calls to HTTP PUT requests.
 ///
@@ -125,7 +83,7 @@ class HttpFile : public File {
 
   std::string method_as_text(HttpMethod method);
 
-  const char* file_mode_;
+  std::string file_mode_;
   std::string resource_url_;
   std::string user_agent_;
   std::string ca_file_;
@@ -135,10 +93,7 @@ class HttpFile : public File {
 
   const uint32_t timeout_in_seconds_;
   IoCache cache_;
-
   ScopedCurl scoped_curl;
-  CURL* curl_ = nullptr;
-
   std::string response_body_;
 
   // Signaled when the "curl easy perform" task completes.

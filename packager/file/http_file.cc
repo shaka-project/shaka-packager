@@ -50,6 +50,20 @@ size_t AppendToString(char* ptr,
 
 }  // namespace
 
+class LibCurlInitializer {
+ public:
+  LibCurlInitializer() {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+  }
+
+  ~LibCurlInitializer() {
+    curl_global_cleanup();
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
+};
+
 /// Create a HTTP/HTTPS client
 HttpFile::HttpFile(const char* file_name, const char* mode, bool https)
     : File(file_name),
@@ -61,6 +75,7 @@ HttpFile::HttpFile(const char* file_name, const char* mode, bool https)
       cert_private_key_pass_(FLAGS_https_cert_private_key_password),
       timeout_in_seconds_(0),
       cache_(FLAGS_io_cache_size),
+      scoped_curl(curl_easy_init(), &curl_easy_cleanup),
       task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                        base::WaitableEvent::InitialState::NOT_SIGNALED) {
   if (https) {
@@ -72,8 +87,7 @@ HttpFile::HttpFile(const char* file_name, const char* mode, bool https)
   static LibCurlInitializer lib_curl_initializer;
 
   // Setup libcurl scope
-  curl_ = scoped_curl.get();
-  if (!curl_) {
+  if (!scoped_curl.get()) {
     LOG(ERROR) << "curl_easy_init() failed.";
     // return Status(error::HTTP_FAILURE, "curl_easy_init() failed.");
     delete this;
@@ -94,7 +108,7 @@ bool HttpFile::Open() {
   // Ignore read requests as they would truncate the target
   // file by propagating as zero-length PUT requests.
   // See also https://github.com/google/shaka-packager/issues/149#issuecomment-437203701
-  if (std::string(file_mode_) == "r") {
+  if (file_mode_ == "r") {
     VLOG(1) << "HttpFile only supports write mode, skipping further operations";
     task_exit_event_.Signal();
     return false;
@@ -196,7 +210,7 @@ Status HttpFile::Request(HttpMethod http_method,
   SetupRequestData(data);
 
   // Perform HTTP request
-  CURLcode res = curl_easy_perform(curl_);
+  CURLcode res = curl_easy_perform(scoped_curl.get());
 
   // Assume successful request
   Status status = Status::OK;
@@ -209,7 +223,7 @@ Status HttpFile::Request(HttpMethod http_method,
         url.c_str(), curl_easy_strerror(res));
     if (res == CURLE_HTTP_RETURNED_ERROR) {
       long response_code = 0;
-      curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code);
+      curl_easy_getinfo(scoped_curl.get(), CURLINFO_RESPONSE_CODE, &response_code);
       error_message +=
           base::StringPrintf(" Response code: %ld.", response_code);
     }
@@ -239,56 +253,56 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   // Configure HTTP request method/verb
   switch (http_method) {
     case GET:
-      curl_easy_setopt(curl_, CURLOPT_HTTPGET, 1L);
+      curl_easy_setopt(scoped_curl.get(), CURLOPT_HTTPGET, 1L);
       break;
     case POST:
-      curl_easy_setopt(curl_, CURLOPT_POST, 1L);
+      curl_easy_setopt(scoped_curl.get(), CURLOPT_POST, 1L);
       break;
     case PUT:
-      curl_easy_setopt(curl_, CURLOPT_PUT, 1L);
+      curl_easy_setopt(scoped_curl.get(), CURLOPT_PUT, 1L);
       break;
     case PATCH:
-      curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "PATCH");
+      curl_easy_setopt(scoped_curl.get(), CURLOPT_CUSTOMREQUEST, "PATCH");
       break;
   }
 
   // Configure HTTP request
-  curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_URL, url.c_str());
 
   if (user_agent_.empty()) {
-    curl_easy_setopt(curl_, CURLOPT_USERAGENT, kUserAgentString);
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_USERAGENT, kUserAgentString);
   } else {
-    curl_easy_setopt(curl_, CURLOPT_USERAGENT, user_agent_.data());
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_USERAGENT, user_agent_.data());
   }
 
-  curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_in_seconds_);
-  curl_easy_setopt(curl_, CURLOPT_FAILONERROR, 1L);
-  curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
-  curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, AppendToString);
-  curl_easy_setopt(curl_, CURLOPT_WRITEDATA, response);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_TIMEOUT, timeout_in_seconds_);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_FAILONERROR, 1L);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_WRITEFUNCTION, AppendToString);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_WRITEDATA, response);
 
   // HTTPS
   if (!cert_private_key_file_.empty() && !cert_file_.empty()) {
-    curl_easy_setopt(curl_, CURLOPT_SSLKEY,
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_SSLKEY,
                      cert_private_key_file_.data());
 
     if (!cert_private_key_pass_.empty()) {
-      curl_easy_setopt(curl_, CURLOPT_KEYPASSWD,
+      curl_easy_setopt(scoped_curl.get(), CURLOPT_KEYPASSWD,
                        cert_private_key_pass_.data());
     }
 
-    curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, "PEM");
-    curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, "PEM");
-    curl_easy_setopt(curl_, CURLOPT_SSLCERT, cert_file_.data());
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_SSLKEYTYPE, "PEM");
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_SSLCERTTYPE, "PEM");
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_SSLCERT, cert_file_.data());
   }
   if (!ca_file_.empty()) {
     // Host validation needs to be off when using self-signed certificates.
-    curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
-    curl_easy_setopt(curl_, CURLOPT_CAINFO, ca_file_.data());
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(scoped_curl.get(), CURLOPT_CAINFO, ca_file_.data());
   }
 
   // Propagate log level indicated by "--libcurl_verbosity" to libcurl.
-  curl_easy_setopt(curl_, CURLOPT_VERBOSE, FLAGS_libcurl_verbosity);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_VERBOSE, FLAGS_libcurl_verbosity);
 
 }
 
@@ -323,12 +337,12 @@ void HttpFile::SetupRequestData(const std::string& data) {
   headers = curl_slist_append(headers, "Expect:");
 
   // Enable progressive upload with chunked transfer encoding.
-  curl_easy_setopt(curl_, CURLOPT_READFUNCTION, read_callback);
-  curl_easy_setopt(curl_, CURLOPT_READDATA, &cache_);
-  curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_READFUNCTION, read_callback);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_READDATA, &cache_);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_UPLOAD, 1L);
 
   // Add HTTP request headers.
-  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(scoped_curl.get(), CURLOPT_HTTPHEADER, headers);
 }
 
 // Return HTTP request method (verb) as string
