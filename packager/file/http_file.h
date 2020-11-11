@@ -8,6 +8,7 @@
 #define PACKAGER_FILE_HTTP_H_
 
 #include <curl/curl.h>
+#include <memory>
 
 #include "packager/base/compiler_specific.h"
 #include "packager/base/synchronization/waitable_event.h"
