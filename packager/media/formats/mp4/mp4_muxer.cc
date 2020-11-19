@@ -181,7 +181,7 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::AddSample(size_t stream_id, const MediaSample& sample) {
+Status MP4Muxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
   if (to_be_initialized_) {
     RETURN_IF_ERROR(UpdateEditListOffsetFromSample(sample));
     RETURN_IF_ERROR(DelayInitializeMuxer());
@@ -206,8 +206,9 @@ Status MP4Muxer::DelayInitializeMuxer() {
   std::unique_ptr<FileType> ftyp(new FileType);
   std::unique_ptr<Movie> moov(new Movie);
 
-  ftyp->major_brand = FOURCC_isom;
+  ftyp->major_brand = FOURCC_mp41;
   ftyp->compatible_brands.push_back(FOURCC_iso8);
+  ftyp->compatible_brands.push_back(FOURCC_isom);
   ftyp->compatible_brands.push_back(FOURCC_mp41);
   ftyp->compatible_brands.push_back(FOURCC_dash);
 
@@ -578,7 +579,7 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
     webvtt.config.config = "WEBVTT";
     // The spec does not define a way to carry STYLE and REGION information in
     // the mp4 container.
-    if (!text_info->codec_config().empty()) {
+    if (!text_info->regions().empty() || !text_info->css_styles().empty()) {
       LOG(INFO) << "Skipping possible style / region configuration as the spec "
                    "does not define a way to carry them inside ISO-BMFF files.";
     }

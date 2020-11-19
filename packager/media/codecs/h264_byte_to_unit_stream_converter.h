@@ -42,6 +42,7 @@ class H264ByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
 
   std::vector<uint8_t> last_sps_;
   std::vector<uint8_t> last_pps_;
+  std::vector<uint8_t> last_sps_ext_;
 
   DISALLOW_COPY_AND_ASSIGN(H264ByteToUnitStreamConverter);
 };

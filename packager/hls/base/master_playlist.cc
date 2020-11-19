@@ -225,9 +225,13 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
     // Right now the frame-rate returned may not be accurate in some scenarios.
     // TODO(kqyang): Fix frame-rate computation.
-    const double frame_rate = playlist.GetFrameRate();
-    if (frame_rate > 0)
-      tag.AddFloat("FRAME-RATE", frame_rate);
+    const bool is_iframe_playlist = playlist.stream_type() == 
+               MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
+    if (!is_iframe_playlist) {
+      const double frame_rate = playlist.GetFrameRate();
+      if (frame_rate > 0)
+        tag.AddFloat("FRAME-RATE", frame_rate);
+    }
 
     const std::string video_range = playlist.GetVideoRange();
     if (!video_range.empty())
@@ -362,12 +366,20 @@ void BuildMediaTags(
       bool is_default = false;
       bool is_autoselect = false;
 
-      const std::string language = playlist->language();
-      if (languages.find(language) == languages.end()) {
-        is_default = !language.empty() && language == default_language;
+      if (playlist->is_dvs()) {
+        // According to HLS Authoring Specification for Apple Devices
+        // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
+        // section 2.13 If you provide DVS, the AUTOSELECT attribute MUST have
+        //              a value of "YES".
         is_autoselect = true;
+      } else {
+        const std::string language = playlist->language();
+        if (languages.find(language) == languages.end()) {
+          is_default = !language.empty() && language == default_language;
+          is_autoselect = true;
 
-        languages.insert(language);
+          languages.insert(language);
+        }
       }
 
       BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,
@@ -459,10 +471,12 @@ void AppendPlaylists(const std::string& default_audio_language,
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
                                const std::string& default_audio_language,
-                               const std::string& default_text_language)
+                               const std::string& default_text_language,
+                               bool is_independent_segments)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
-      default_text_language_(default_text_language) {}
+      default_text_language_(default_text_language),
+      is_independent_segments_(is_independent_segments) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -472,6 +486,10 @@ bool MasterPlaylist::WriteMasterPlaylist(
     const std::list<MediaPlaylist*>& playlists) {
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
+  
+  if (is_independent_segments_) {
+    content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
+  }
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
                   playlists, &content);
 

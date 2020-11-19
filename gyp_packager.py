@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
   # If we didn't get a gyp file, then fall back to assuming 'packager.gyp' from
   # the same directory as the script.
-  if [arg.endswith('.gyp') for arg in args].count(True) == 0:
+  if not any(arg.endswith('.gyp') for arg in args):
     args.append(os.path.join(src_dir, 'packager.gyp'))
 
   # Always include Chromium's common.gypi and our common.gypi.
@@ -66,26 +66,24 @@ if __name__ == '__main__':
 
   # Set these default GYP_DEFINES if user does not set the value explicitly.
   _DEFAULT_DEFINES = {'test_isolation_mode': 'noop',
+                      'use_custom_libcxx': 0,
                       'use_glib': 0,
                       'use_openssl': 1,
+                      'use_sysroot': 0,
                       'use_x11': 0,
                       'linux_use_bundled_binutils': 0,
                       'linux_use_bundled_gold': 0,
                       'linux_use_gold_flags': 0,
                       'clang_use_chrome_plugins': 0}
 
-  gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES') else
-                 '')
-  for key in _DEFAULT_DEFINES:
+  gyp_defines = os.environ.get('GYP_DEFINES', '')
+  for key, value in _DEFAULT_DEFINES.items():
     if key not in gyp_defines:
-      gyp_defines += ' {0}={1}'.format(key, _DEFAULT_DEFINES[key])
-  # Somehow gcc don't like use_sysroot.
-  if 'clang=0' in gyp_defines and 'use_sysroot' not in gyp_defines:
-    gyp_defines += ' use_sysroot=0'
+      gyp_defines += ' {0}={1}'.format(key, value)
   os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
   # Default to ninja, but only if no generator has explicitly been set.
-  if not os.environ.get('GYP_GENERATORS'):
+  if 'GYP_GENERATORS' not in os.environ:
     os.environ['GYP_GENERATORS'] = 'ninja'
 
   # There shouldn't be a circular dependency relationship between .gyp files,
@@ -98,11 +96,10 @@ if __name__ == '__main__':
 
   # TODO(kqyang): Find a better way to handle the depth. This workaround works
   # only if this script is executed in 'src' directory.
-  if ['--depth' in arg for arg in args].count(True) == 0:
+  if not any('--depth' in arg for arg in args):
     args.append('--depth=packager')
 
-  if (not os.environ.get('GYP_GENERATOR_FLAGS') or
-      ('output_dir=' not in os.environ.get('GYP_GENERATOR_FLAGS'))):
+  if 'output_dir=' not in os.environ.get('GYP_GENERATOR_FLAGS', ''):
     output_dir = os.path.join(checkout_dir, 'out')
     gyp_generator_flags = 'output_dir="' + output_dir + '"'
     if os.environ.get('GYP_GENERATOR_FLAGS'):

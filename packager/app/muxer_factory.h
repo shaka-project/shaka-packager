@@ -42,13 +42,17 @@ class MuxerFactory {
   /// this will replace the clock for all muxers created after this call.
   void OverrideClock(base::Clock* clock);
 
+  void SetTsStreamOffset(uint32_t offset_ms) {
+    transport_stream_timestamp_offset_ms_ = offset_ms;
+  }
+
  private:
   MuxerFactory(const MuxerFactory&) = delete;
   MuxerFactory& operator=(const MuxerFactory&) = delete;
 
   const Mp4OutputParams mp4_params_;
-  const uint32_t transport_stream_timestamp_offset_ms_ = 0;
   const std::string temp_dir_;
+  uint32_t transport_stream_timestamp_offset_ms_ = 0;
   base::Clock* clock_ = nullptr;
 };
 

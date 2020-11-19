@@ -20,6 +20,7 @@ namespace media {
 class KeySource;
 class MediaSample;
 class StreamInfo;
+class TextSample;
 
 class MediaParser {
  public:
@@ -39,18 +40,31 @@ class MediaParser {
   /// @return true if the sample is accepted, false if something was wrong
   ///         with the sample and a parsing error should be signaled.
   typedef base::Callback<bool(uint32_t track_id,
-                              const std::shared_ptr<MediaSample>& media_sample)>
-      NewSampleCB;
+                              std::shared_ptr<MediaSample> media_sample)>
+      NewMediaSampleCB;
+
+  /// Called when a new text sample has been parsed.
+  /// @param track_id is the track id of the new sample.
+  /// @param text_sample is the new text sample.
+  /// @return true if the sample is accepted, false if something was wrong
+  ///         with the sample and a parsing error should be signaled.
+  typedef base::Callback<bool(uint32_t track_id,
+                              std::shared_ptr<TextSample> text_sample)>
+      NewTextSampleCB;
 
   /// Initialize the parser with necessary callbacks. Must be called before any
   /// data is passed to Parse().
   /// @param init_cb will be called once enough data has been parsed to
   ///        determine the initial stream configurations.
-  /// @param new_sample_cb will be called each time a new media sample is
-  ///        available from the parser. May be NULL, and caller retains
-  ///        ownership.
+  /// @param new_media_sample_cb will be called each time a new media sample is
+  ///        available from the parser.
+  /// @param new_text_sample_cb will be called each time a new text sample is
+  ///        available from the parser.
+  /// @param decryption_key_source the key source to decrypt the frames.  May be
+  ///        NULL, and caller retains ownership.
   virtual void Init(const InitCB& init_cb,
-                    const NewSampleCB& new_sample_cb,
+                    const NewMediaSampleCB& new_media_sample_cb,
+                    const NewTextSampleCB& new_text_sample_cb,
                     KeySource* decryption_key_source) = 0;
 
   /// Flush data currently in the parser and put the parser in a state where it

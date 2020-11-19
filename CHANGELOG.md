@@ -1,3 +1,8 @@
+## [2.4.3] - 2020-08-04
+### Fixed
+- Fix playback issue of HEVC content with cbcs encryption in AVplayer (#717).
+- Fix possible incorrect resolutions with avc3 (#750).
+
 ## [2.4.2] - 2020-03-30
 ### Fixed
 - Fix truncation of timestamp to 32bits in segment file names for MPEG2-TS
@@ -509,6 +514,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.4.3]: https://github.com/google/shaka-packager/compare/v2.4.2...v2.4.3
 [2.4.2]: https://github.com/google/shaka-packager/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/google/shaka-packager/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/google/shaka-packager/compare/v2.3.0...v2.4.0

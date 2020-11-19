@@ -149,17 +149,17 @@ Mp2tMediaParser::Mp2tMediaParser()
 
 Mp2tMediaParser::~Mp2tMediaParser() {}
 
-void Mp2tMediaParser::Init(
-    const InitCB& init_cb,
-    const NewSampleCB& new_sample_cb,
-    KeySource* decryption_key_source) {
+void Mp2tMediaParser::Init(const InitCB& init_cb,
+                           const NewMediaSampleCB& new_media_sample_cb,
+                           const NewTextSampleCB& new_text_sample_cb,
+                           KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
 
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_sample_cb_ = new_media_sample_cb;
 }
 
 bool Mp2tMediaParser::Flush() {
@@ -181,7 +181,7 @@ bool Mp2tMediaParser::Flush() {
 }
 
 bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
-  DVLOG(1) << "Mp2tMediaParser::Parse size=" << size;
+  DVLOG(2) << "Mp2tMediaParser::Parse size=" << size;
 
   // Add the data to the parser state.
   ts_byte_queue_.Push(buf, size);
@@ -274,37 +274,33 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                   int pes_pid,
                                   int stream_type) {
-  DVLOG(1) << "RegisterPes:"
-           << " pes_pid=" << pes_pid
-           << " stream_type=" << std::hex << stream_type << std::dec;
   std::map<int, std::unique_ptr<PidState>>::iterator it = pids_.find(pes_pid);
   if (it != pids_.end())
     return;
+  DVLOG(1) << "RegisterPes:"
+           << " pes_pid=" << pes_pid << " stream_type=" << std::hex
+           << stream_type << std::dec;
 
   // Create a stream parser corresponding to the stream type.
   bool is_audio = false;
   std::unique_ptr<EsParser> es_parser;
+  auto on_new_stream = base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
+                                  base::Unretained(this), pes_pid);
+  auto on_emit =
+      base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this));
   switch (static_cast<TsStreamType>(stream_type)) {
     case TsStreamType::kAvc:
-      es_parser.reset(new EsParserH264(
-          pes_pid,
-          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
+      es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit));
       break;
     case TsStreamType::kHevc:
-      es_parser.reset(new EsParserH265(
-          pes_pid,
-          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
+      es_parser.reset(new EsParserH265(pes_pid, on_new_stream, on_emit));
       break;
     case TsStreamType::kAdtsAac:
     case TsStreamType::kMpeg1Audio:
     case TsStreamType::kAc3:
-      es_parser.reset(new EsParserAudio(
-          pes_pid, static_cast<TsStreamType>(stream_type),
-          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this)),
-          sbr_in_mimetype_));
+      es_parser.reset(
+          new EsParserAudio(pes_pid, static_cast<TsStreamType>(stream_type),
+                            on_new_stream, on_emit, sbr_in_mimetype_));
       is_audio = true;
       break;
     default: {
@@ -330,19 +326,26 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(
+    uint32_t pes_pid,
     const std::shared_ptr<StreamInfo>& new_stream_info) {
-  DCHECK(new_stream_info);
-  DVLOG(1) << "OnVideoConfigChanged for pid=" << new_stream_info->track_id();
+  DCHECK(!new_stream_info || new_stream_info->track_id() == pes_pid);
+  DVLOG(1) << "OnVideoConfigChanged for pid=" << pes_pid
+           << ", has_info=" << (new_stream_info ? "true" : "false");
 
-  PidMap::iterator pid_state = pids_.find(new_stream_info->track_id());
+  PidMap::iterator pid_state = pids_.find(pes_pid);
   if (pid_state == pids_.end()) {
     LOG(ERROR) << "PID State for new stream not found (pid = "
                << new_stream_info->track_id() << ").";
     return;
   }
 
-  // Set the stream configuration information for the PID.
-  pid_state->second->set_config(new_stream_info);
+  if (new_stream_info) {
+    // Set the stream configuration information for the PID.
+    pid_state->second->set_config(new_stream_info);
+  } else {
+    LOG(WARNING) << "Ignoring unsupported stream with pid=" << pes_pid;
+    pid_state->second->Disable();
+  }
 
   // Finish initialization if all streams have configs.
   FinishInitializationIfNeeded();
@@ -361,8 +364,9 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   uint32_t num_es(0);
   for (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();
        ++iter) {
-    if (((iter->second->pid_type() == PidState::kPidAudioPes) ||
-         (iter->second->pid_type() == PidState::kPidVideoPes))) {
+    if ((iter->second->pid_type() == PidState::kPidAudioPes ||
+         iter->second->pid_type() == PidState::kPidVideoPes) &&
+        iter->second->IsEnabled()) {
       ++num_es;
       if (iter->second->config())
         all_stream_info.push_back(iter->second->config());

@@ -477,7 +477,7 @@ class PackagerAppTest(unittest.TestCase):
                 segment_duration=1.0,
                 use_fake_clock=True,
                 allow_codec_switching=False):
-    flags = []
+    flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
       flags += ['--strip_parameter_set_nalus=false']
@@ -767,14 +767,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = audio_video_streams + dash_text_stream + hls_text_stream
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
                                                       output_hls=True))
-    # Mpd cannot be validated right now since we don't generate deterministic
-    # mpd with multiple inputs due to thread racing.
-    # TODO(b/73349711): Generate deterministic mpd or at least validate mpd
-    #                   schema.
-    self._CheckTestResults(
-        'hls-only-dash-only-captions',
-        diff_files_policy=DiffFilesPolicy(
-            allowed_diff_files=['output.mpd'], exact=False))
+    self._CheckTestResults('hls-only-dash-only-captions')
 
   def testDashOnlyAndHlsOnly(self):
     streams = [
@@ -819,6 +812,42 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video'], language='por-BR', hls=True),
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
+
+  def testSegmentedWebVttWithLanguageOverride(self):
+    streams = self._GetStreams(
+        ['text'], language='por', dash_only=True, output_format='mp4',
+        test_files=['bear-english.vtt'], segmented=True)
+    streams += self._GetStreams(
+        ['text'], language='por', hls_only=True,
+        test_files=['bear-english.vtt'], segmented=True)
+
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-with-language-override')
+
+  def testSegmentedWebVttText(self):
+    streams = self._GetStreams(
+        ['text'], test_files=['bear-english.vtt'], segmented=True)
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-text')
+
+  def testSingleFileWebVttText(self):
+    streams = self._GetStreams(['text'], test_files=['bear-english.vtt'])
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('single-file-webvtt-text')
+
+  def testSegmentedWebVttMp4(self):
+    streams = self._GetStreams(['text'], test_files=['bear-english.vtt'],
+                               output_format='mp4', segmented=True)
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-mp4')
 
   def testMp4TrailingMoov(self):
     self.assertPackageSuccess(
@@ -1205,14 +1234,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(output_dash=True, output_hls=True,
                            generate_static_live_mpd=True, ad_cues='1.5')
     self.assertPackageSuccess(streams, flags)
-    # Mpd cannot be validated right now since we don't generate determinstic
-    # mpd with multiple inputs due to thread racing.
-    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
-    #                   schema.
-    self._CheckTestResults(
-        'vtt-text-to-mp4-with-ad-cues',
-        diff_files_policy=DiffFilesPolicy(
-            allowed_diff_files=['output.mpd'], exact=False))
+    self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
 
   def testWebmSubsampleEncryption(self):
     streams = [
@@ -1585,15 +1607,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams,
                               self._GetFlags(output_dash=True,
                                              allow_codec_switching=True))
-    # Mpd cannot be validated right now since we don't generate determinstic
-    # mpd with multiple inputs due to thread racing.
-    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
-    #                   schema.
-    # See also https://github.com/google/shaka-packager/issues/177.
-    self._CheckTestResults(
-        'audio-video-with-codec-switching',
-        diff_files_policy=DiffFilesPolicy(
-            allowed_diff_files=['output.mpd'], exact=False))
+    self._CheckTestResults('audio-video-with-codec-switching')
 
   def testAllowCodecSwitchingWithEncryptionAndTrickplay(self):
     streams = [
@@ -1609,15 +1623,8 @@ class PackagerFunctionalTest(PackagerAppTest):
                               self._GetFlags(output_dash=True,
                                              allow_codec_switching=True,
                                              encryption=True))
-    # Mpd cannot be validated right now since we don't generate determinstic
-    # mpd with multiple inputs due to thread racing.
-    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
-    #                   schema.
-    # See also https://github.com/google/shaka-packager/issues/177.
     self._CheckTestResults(
-        'audio-video-with-codec-switching-encryption-trick-play',
-        diff_files_policy=DiffFilesPolicy(
-            allowed_diff_files=['output.mpd'], exact=False))
+        'audio-video-with-codec-switching-encryption-trick-play')
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
@@ -1639,14 +1646,8 @@ class PackagerFunctionalTest(PackagerAppTest):
                          test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                                      'bear-320x180.mp4']),
         self._GetFlags(encryption=True, output_dash=True))
-    # Mpd cannot be validated right now since we don't generate determinstic
-    # mpd with multiple inputs due to thread racing.
-    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
-    #                   schema.
     self._CheckTestResults(
-        'live-profile-and-encryption-and-mult-files',
-        diff_files_policy=DiffFilesPolicy(
-            allowed_diff_files=['output.mpd'], exact=False))
+        'live-profile-and-encryption-and-mult-files')
 
   def testLiveProfileAndKeyRotation(self):
     self.assertPackageSuccess(
@@ -1917,7 +1918,8 @@ class PackagerCommandParsingTest(PackagerAppTest):
     packaging_result = self.packager.Package(audio_video_stream + text_stream,
                                              self._GetFlags())
     # Expect the test to fail but we do not expect a crash.
-    self.assertEqual(packaging_result, 1)
+    self.assertNotEqual(packaging_result, 0)
+    self.assertLess(packaging_result, 10)
 
   def testInconsistentOutputAndSegmentTemplateFormat(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')

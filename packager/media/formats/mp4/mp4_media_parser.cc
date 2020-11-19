@@ -179,16 +179,17 @@ MP4MediaParser::MP4MediaParser()
 MP4MediaParser::~MP4MediaParser() {}
 
 void MP4MediaParser::Init(const InitCB& init_cb,
-                          const NewSampleCB& new_sample_cb,
+                          const NewMediaSampleCB& new_media_sample_cb,
+                          const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
 
   ChangeState(kParsingBoxes);
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_sample_cb_ = new_media_sample_cb;
   decryption_key_source_ = decryption_key_source;
   if (decryption_key_source)
     decryptor_source_.reset(new DecryptorSource(decryption_key_source));

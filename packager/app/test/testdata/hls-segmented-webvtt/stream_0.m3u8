@@ -3,14 +3,10 @@
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXTINF:1.000,
-bear-english-text-1.vtt
-#EXTINF:1.000,
-bear-english-text-2.vtt
-#EXTINF:1.000,
-bear-english-text-3.vtt
-#EXTINF:1.000,
-bear-english-text-4.vtt
-#EXTINF:1.000,
-bear-english-text-5.vtt
+#EXTINF:1.045,
+bear-640x360-audio-1.ts
+#EXTINF:0.998,
+bear-640x360-audio-2.ts
+#EXTINF:0.720,
+bear-640x360-audio-3.ts
 #EXT-X-ENDLIST

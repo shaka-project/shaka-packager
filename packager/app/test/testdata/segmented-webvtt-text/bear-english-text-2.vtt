@@ -1,0 +1,9 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:9000
+
+STYLE
+::cue { color:lime }
+
+00:00:01.000 --> 00:00:04.700
+He 's... um... doing bear-like stuff.
+

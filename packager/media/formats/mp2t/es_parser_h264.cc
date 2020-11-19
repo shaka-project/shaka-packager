@@ -52,20 +52,29 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
     case Nalu::H264_SPS: {
       DVLOG(LOG_LEVEL_ES) << "Nalu: SPS";
       int sps_id;
-      if (h264_parser_->ParseSps(nalu, &sps_id) != H264Parser::kOk)
+      auto status = h264_parser_->ParseSps(nalu, &sps_id);
+      if (status == H264Parser::kOk)
+        decoder_config_check_pending_ = true;
+      else if (status == H264Parser::kUnsupportedStream)
+        // Indicate the stream can't be parsed.
+        new_stream_info_cb_.Run(nullptr);
+      else
         return false;
-      decoder_config_check_pending_ = true;
       break;
     }
     case Nalu::H264_PPS: {
       DVLOG(LOG_LEVEL_ES) << "Nalu: PPS";
       int pps_id;
-      if (h264_parser_->ParsePps(nalu, &pps_id) != H264Parser::kOk) {
+      auto status = h264_parser_->ParsePps(nalu, &pps_id);
+      if (status == H264Parser::kOk) {
+        decoder_config_check_pending_ = true;
+      } else if (status == H264Parser::kUnsupportedStream) {
+        // Indicate the stream can't be parsed.
+        new_stream_info_cb_.Run(nullptr);
+      } else {
         // Allow PPS parsing to fail if waiting for SPS.
         if (last_video_decoder_config_)
           return false;
-      } else {
-        decoder_config_check_pending_ = true;
       }
       break;
     }
@@ -74,16 +83,20 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
       const bool is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);
       DVLOG(LOG_LEVEL_ES) << "Nalu: slice IDR=" << is_key_frame;
       H264SliceHeader shdr;
-      if (h264_parser_->ParseSliceHeader(nalu, &shdr) != H264Parser::kOk) {
-        // Only accept an invalid SPS/PPS at the beginning when the stream
-        // does not necessarily start with an SPS/PPS/IDR.
-        if (last_video_decoder_config_)
-          return false;
-      } else {
+      auto status = h264_parser_->ParseSliceHeader(nalu, &shdr);
+      if (status == H264Parser::kOk) {
         video_slice_info->valid = true;
         video_slice_info->is_key_frame = is_key_frame;
         video_slice_info->frame_num = shdr.frame_num;
         video_slice_info->pps_id = shdr.pic_parameter_set_id;
+      } else if (status == H264Parser::kUnsupportedStream) {
+        // Indicate the stream can't be parsed.
+        new_stream_info_cb_.Run(nullptr);
+      } else {
+        // Only accept an invalid SPS/PPS at the beginning when the stream
+        // does not necessarily start with an SPS/PPS/IDR.
+        if (last_video_decoder_config_)
+          return false;
       }
       break;
     }

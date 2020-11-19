@@ -45,8 +45,10 @@ Status TextPadder::OnTextSample(std::unique_ptr<StreamData> data) {
   // sample right away. If there will be one, create an empty sample that will
   // fill in that gap.
   if (sample.start_time() > max_end_time_ms_) {
-    std::shared_ptr<TextSample> filler = std::make_shared<TextSample>();
-    filler->SetTime(max_end_time_ms_, sample.start_time());
+    const std::string kNoId = "";
+    auto filler = std::make_shared<TextSample>(kNoId, max_end_time_ms_,
+                                               sample.start_time(),
+                                               TextSettings{}, TextFragment{});
     RETURN_IF_ERROR(
         MediaHandler::DispatchTextSample(kStreamIndex, std::move(filler)));
   }

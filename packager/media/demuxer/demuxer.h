@@ -94,12 +94,15 @@ class Demuxer : public OriginHandler {
   Demuxer(const Demuxer&) = delete;
   Demuxer& operator=(const Demuxer&) = delete;
 
+  template <typename T>
   struct QueuedSample {
-    QueuedSample(uint32_t track_id, std::shared_ptr<MediaSample> sample);
-    ~QueuedSample();
+    QueuedSample(uint32_t track_id, std::shared_ptr<T> sample)
+        : track_id(track_id), sample(sample) {}
+
+    ~QueuedSample() {}
 
     uint32_t track_id;
-    std::shared_ptr<MediaSample> sample;
+    std::shared_ptr<T> sample;
   };
 
   // Initialize the parser. This method primes the demuxer by parsing portions
@@ -112,11 +115,13 @@ class Demuxer : public OriginHandler {
   // Parser new sample event handler. Queues the samples if init event has not
   // been received, otherwise calls PushSample() to push the sample to
   // corresponding stream.
-  bool NewSampleEvent(uint32_t track_id,
-                      const std::shared_ptr<MediaSample>& sample);
+  bool NewMediaSampleEvent(uint32_t track_id,
+                           std::shared_ptr<MediaSample> sample);
+  bool NewTextSampleEvent(uint32_t track_id,
+                          std::shared_ptr<TextSample> sample);
   // Helper function to push the sample to corresponding stream.
-  bool PushSample(uint32_t track_id,
-                  const std::shared_ptr<MediaSample>& sample);
+  bool PushMediaSample(uint32_t track_id, std::shared_ptr<MediaSample> sample);
+  bool PushTextSample(uint32_t track_id, std::shared_ptr<TextSample> sample);
 
   // Read from the source and send it to the parser.
   Status Parse();
@@ -126,7 +131,8 @@ class Demuxer : public OriginHandler {
   // A stream is considered ready after receiving the stream info.
   bool all_streams_ready_ = false;
   // Queued samples received in NewSampleEvent() before ParserInitEvent().
-  std::deque<QueuedSample> queued_samples_;
+  std::deque<QueuedSample<MediaSample>> queued_media_samples_;
+  std::deque<QueuedSample<TextSample>> queued_text_samples_;
   std::unique_ptr<MediaParser> parser_;
   // TrackId -> StreamIndex map.
   std::map<uint32_t, size_t> track_id_to_stream_index_map_;

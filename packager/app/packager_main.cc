@@ -48,6 +48,9 @@ DEFINE_bool(use_fake_clock_for_muxer,
 DEFINE_string(test_packager_version,
               "",
               "Packager version for testing. Should be used for testing only.");
+DEFINE_bool(single_threaded,
+            false,
+            "If enabled, only use one thread when generating content.");
 
 namespace shaka {
 namespace {
@@ -311,6 +314,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
   packaging_params.temp_dir = FLAGS_temp_dir;
+  packaging_params.single_threaded = FLAGS_single_threaded;
 
   AdCueGeneratorParams& ad_cue_generator_params =
       packaging_params.ad_cue_generator_params;

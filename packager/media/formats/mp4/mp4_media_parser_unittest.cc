@@ -82,18 +82,22 @@ class MP4MediaParserTest : public testing::Test {
     num_samples_ = 0;
   }
 
-  bool NewSampleF(uint32_t track_id,
-                  const std::shared_ptr<MediaSample>& sample) {
+  bool NewSampleF(uint32_t track_id, std::shared_ptr<MediaSample> sample) {
     DVLOG(2) << "Track Id: " << track_id << " "
              << sample->ToString();
     ++num_samples_;
     return true;
   }
 
+  bool NewTextSampleF(uint32_t track_id, std::shared_ptr<TextSample> sample) {
+    return false;
+  }
+
   void InitializeParser(KeySource* decryption_key_source) {
     parser_->Init(
         base::Bind(&MP4MediaParserTest::InitF, base::Unretained(this)),
         base::Bind(&MP4MediaParserTest::NewSampleF, base::Unretained(this)),
+        base::Bind(&MP4MediaParserTest::NewTextSampleF, base::Unretained(this)),
         decryption_key_source);
   }
 

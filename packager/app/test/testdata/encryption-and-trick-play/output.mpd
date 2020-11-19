@@ -9,8 +9,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="977743" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video.mp4</BaseURL>
-        <SegmentBase indexRange="1127-1194" timescale="30000">
-          <Initialization range="0-1126"/>
+        <SegmentBase indexRange="1131-1198" timescale="30000">
+          <Initialization range="0-1130"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -22,8 +22,8 @@
       <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="0"/>
       <Representation id="1" bandwidth="212297" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" maxPlayoutRate="30" codingDependency="false">
         <BaseURL>bear-640x360-video-trick_play_factor_1.mp4</BaseURL>
-        <SegmentBase indexRange="1127-1194" timescale="30000">
-          <Initialization range="0-1126"/>
+        <SegmentBase indexRange="1131-1198" timescale="30000">
+          <Initialization range="0-1130"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -35,8 +35,8 @@
       <Representation id="2" bandwidth="133663" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
-        <SegmentBase indexRange="1003-1070" timescale="44100">
-          <Initialization range="0-1002"/>
+        <SegmentBase indexRange="1007-1074" timescale="44100">
+          <Initialization range="0-1006"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

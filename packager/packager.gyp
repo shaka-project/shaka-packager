@@ -22,6 +22,8 @@
         'app/libcrypto_threading.h',
         'app/packager_util.cc',
         'app/packager_util.h',
+        'app/single_thread_job_manager.cc',
+        'app/single_thread_job_manager.h',
         'packager.cc',
         'packager.h',
       ],
