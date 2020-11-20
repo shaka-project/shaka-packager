@@ -80,7 +80,7 @@ struct TextFragmentStyle {
 };
 
 /// Represents a recursive structure of styled blocks of text.  Only one of
-/// sub_fragments, body, or newline will be set.
+/// sub_fragments, body, image, or newline will be set.
 struct TextFragment {
   TextFragment() {}
   TextFragment(const TextFragmentStyle& style,
@@ -90,6 +90,9 @@ struct TextFragment {
       : style(style), body(body) {}
   TextFragment(const TextFragmentStyle& style, const std::string& body)
       : style(style), body(body) {}
+  TextFragment(const TextFragmentStyle& style,
+               const std::vector<uint8_t>& image)
+      : style(style), image(image) {}
   TextFragment(const TextFragmentStyle& style, bool newline)
       : style(style), newline(newline) {}
 
@@ -97,6 +100,8 @@ struct TextFragment {
 
   std::vector<TextFragment> sub_fragments;
   std::string body;
+  /// PNG image data.
+  std::vector<uint8_t> image;
   bool newline = false;
 
   bool is_empty() const;

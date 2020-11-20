@@ -322,6 +322,32 @@ TEST_F(TtmlMuxerTest, HandlesReset) {
   ASSERT_EQ(results, kExpectedOutput2);
 }
 
+TEST_F(TtmlMuxerTest, HandlesImage) {
+  const char* kExpectedOutput =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<tt xmlns=\"http://www.w3.org/ns/ttml\" "
+      "xmlns:tts=\"http://www.w3.org/ns/ttml#styling\" xml:lang=\"\" "
+      "xmlns:smpte=\"http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt\">\n"
+      "  <head/>\n"
+      "  <metadata>\n"
+      "    <smpte:image imagetype=\"PNG\" encoding=\"Base64\" xml:id=\"img_1\">"
+      "AQID</smpte:image>\n"
+      "  </metadata>\n"
+      "  <body>\n"
+      "    <div>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
+      "end=\"00:00:06.00\" smpte:backgroundImage=\"#img_1\" xml:id=\"foo\"/>\n"
+      "    </div>\n"
+      "  </body>\n"
+      "</tt>\n";
+
+  TestProperties properties;
+  properties.id = "foo";
+  properties.body.image = {1, 2, 3};
+
+  ParseSingleCue(kExpectedOutput, properties);
+}
+
 }  // namespace ttml
 }  // namespace media
 }  // namespace shaka

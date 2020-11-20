@@ -35,9 +35,14 @@ class TtmlGenerator {
   bool Dump(std::string* result) const;
 
  private:
-  bool AddSampleToXml(const TextSample& sample, xml::XmlNode* body) const;
+  bool AddSampleToXml(const TextSample& sample,
+                      xml::XmlNode* body,
+                      xml::XmlNode* metadata,
+                      size_t* image_count) const;
   bool ConvertFragmentToXml(const TextFragment& fragment,
-                            xml::XmlNode* parent) const;
+                            xml::XmlNode* parent,
+                            xml::XmlNode* metadata,
+                            size_t* image_count) const;
 
   std::list<TextSample> samples_;
   std::map<std::string, TextRegion> regions_;

@@ -6,6 +6,7 @@
 
 #include "packager/media/formats/ttml/ttml_generator.h"
 
+#include "packager/base/base64.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/rcheck.h"
 
@@ -87,12 +88,19 @@ bool TtmlGenerator::Dump(std::string* result) const {
   }
   RCHECK(root.AddChild(std::move(head)));
 
+  size_t image_count = 0;
+  xml::XmlNode metadata("metadata");
   xml::XmlNode body("body");
   xml::XmlNode div("div");
   for (const auto& sample : samples_) {
-    RCHECK(AddSampleToXml(sample, &div));
+    RCHECK(AddSampleToXml(sample, &div, &metadata, &image_count));
   }
   RCHECK(body.AddChild(std::move(div)));
+  if (image_count > 0) {
+    RCHECK(root.SetStringAttribute(
+        "xmlns:smpte", "http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"));
+    RCHECK(root.AddChild(std::move(metadata)));
+  }
   RCHECK(root.AddChild(std::move(body)));
 
   *result = root.ToString(/* comment= */ "");
@@ -100,14 +108,16 @@ bool TtmlGenerator::Dump(std::string* result) const {
 }
 
 bool TtmlGenerator::AddSampleToXml(const TextSample& sample,
-                                   xml::XmlNode* body) const {
+                                   xml::XmlNode* body,
+                                   xml::XmlNode* metadata,
+                                   size_t* image_count) const {
   xml::XmlNode p("p");
   RCHECK(p.SetStringAttribute("xml:space", "preserve"));
   RCHECK(p.SetStringAttribute("begin",
                               ToTtmlTime(sample.start_time(), time_scale_)));
   RCHECK(
       p.SetStringAttribute("end", ToTtmlTime(sample.EndTime(), time_scale_)));
-  RCHECK(ConvertFragmentToXml(sample.body(), &p));
+  RCHECK(ConvertFragmentToXml(sample.body(), &p, metadata, image_count));
   if (!sample.id().empty())
     RCHECK(p.SetStringAttribute("xml:id", sample.id()));
 
@@ -151,7 +161,9 @@ bool TtmlGenerator::AddSampleToXml(const TextSample& sample,
 }
 
 bool TtmlGenerator::ConvertFragmentToXml(const TextFragment& body,
-                                         xml::XmlNode* parent) const {
+                                         xml::XmlNode* parent,
+                                         xml::XmlNode* metadata,
+                                         size_t* image_count) const {
   if (body.newline) {
     xml::XmlNode br("br");
     return parent->AddChild(std::move(br));
@@ -179,9 +191,23 @@ bool TtmlGenerator::ConvertFragmentToXml(const TextFragment& body,
 
   if (!body.body.empty()) {
     node->AddContent(body.body);
+  } else if (!body.image.empty()) {
+    std::string image_data(body.image.begin(), body.image.end());
+    std::string base64_data;
+    base::Base64Encode(image_data, &base64_data);
+    std::string id = "img_" + std::to_string(++*image_count);
+
+    xml::XmlNode image_xml("smpte:image");
+    RCHECK(image_xml.SetStringAttribute("imagetype", "PNG"));
+    RCHECK(image_xml.SetStringAttribute("encoding", "Base64"));
+    RCHECK(image_xml.SetStringAttribute("xml:id", id));
+    image_xml.SetContent(base64_data);
+    RCHECK(metadata->AddChild(std::move(image_xml)));
+
+    RCHECK(node->SetStringAttribute("smpte:backgroundImage", "#" + id));
   } else {
     for (const auto& frag : body.sub_fragments) {
-      if (!ConvertFragmentToXml(frag, node))
+      if (!ConvertFragmentToXml(frag, node, metadata, image_count))
         return false;
     }
   }

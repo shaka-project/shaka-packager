@@ -17,7 +17,7 @@ namespace media {
 bool TextFragment::is_empty() const {
   return std::all_of(sub_fragments.begin(), sub_fragments.end(),
                      std::mem_fn(&TextFragment::is_empty)) &&
-         body.empty();
+         body.empty() && image.empty();
 }
 
 TextSample::TextSample(const std::string& id,
