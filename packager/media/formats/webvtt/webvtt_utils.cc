@@ -215,14 +215,17 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
       LOG(WARNING) << "WebVTT only supports percent position settings";
     }
   }
-  if (settings.size) {
-    if (settings.size->type == TextUnitType::kPercent) {
+  if (settings.width) {
+    if (settings.width->type == TextUnitType::kPercent) {
       ret += " size:";
-      ret += base::DoubleToString(settings.size->value);
+      ret += base::DoubleToString(settings.width->value);
       ret += "%";
     } else {
-      LOG(WARNING) << "WebVTT only supports percent size settings";
+      LOG(WARNING) << "WebVTT only supports percent width settings";
     }
+  }
+  if (settings.height) {
+    LOG(WARNING) << "WebVTT doesn't support cue heights";
   }
   if (settings.writing_direction != WritingDirection::kHorizontal) {
     ret += " direction:";

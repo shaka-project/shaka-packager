@@ -16,6 +16,8 @@ namespace ttml {
 
 namespace {
 
+constexpr const char* kRegionIdPrefix = "_shaka_region_";
+
 std::string ToTtmlTime(int64_t time, uint32_t timescale) {
   int64_t remaining = time * 1000 / timescale;
 
@@ -122,15 +124,31 @@ bool TtmlGenerator::AddSampleToXml(const TextSample& sample,
     RCHECK(p.SetStringAttribute("xml:id", sample.id()));
 
   const auto& settings = sample.settings();
-  if (!settings.region.empty())
-    RCHECK(p.SetStringAttribute("region", settings.region));
-  if (settings.line || settings.position) {
+  if (settings.line || settings.position || settings.width || settings.height) {
+    // TTML positioning needs to be from a region.
+    if (!settings.region.empty()) {
+      LOG(WARNING)
+          << "Using both text regions and positioning isn't supported in TTML";
+    }
+
     const auto origin = ToTtmlSize(
         settings.position.value_or(TextNumber(0, TextUnitType::kPixels)),
         settings.line.value_or(TextNumber(0, TextUnitType::kPixels)));
+    const auto extent = ToTtmlSize(
+        settings.width.value_or(TextNumber(100, TextUnitType::kPercent)),
+        settings.height.value_or(TextNumber(100, TextUnitType::kPercent)));
 
-    RCHECK(p.SetStringAttribute("tts:origin", origin));
+    const std::string id = kRegionIdPrefix + std::to_string(region_id_++);
+    xml::XmlNode region("region");
+    RCHECK(region.SetStringAttribute("xml:id", id));
+    RCHECK(region.SetStringAttribute("tts:origin", origin));
+    RCHECK(region.SetStringAttribute("tts:extent", extent));
+    RCHECK(p.SetStringAttribute("region", id));
+    RCHECK(body->AddChild(std::move(region)));
+  } else if (!settings.region.empty()) {
+    RCHECK(p.SetStringAttribute("region", settings.region));
   }
+
   if (settings.writing_direction != WritingDirection::kHorizontal) {
     const char* dir =
         settings.writing_direction == WritingDirection::kVerticalGrowingLeft
