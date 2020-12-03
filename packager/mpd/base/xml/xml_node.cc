@@ -377,7 +377,10 @@ bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
 }
 
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
-  if (media_info.has_media_file_url()) {
+  const bool use_segment_list_text =
+      media_info.has_text_info() && media_info.has_presentation_time_offset();
+
+  if (media_info.has_media_file_url() && !use_segment_list_text) {
     XmlNode base_url("BaseURL");
     base_url.SetContent(media_info.media_file_url());
 
@@ -387,22 +390,23 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
   const bool need_segment_base =
       media_info.has_index_range() || media_info.has_init_range() ||
       (media_info.has_reference_time_scale() && !media_info.has_text_info());
+  DCHECK(!need_segment_base || !use_segment_list_text);
 
-  if (need_segment_base) {
-    XmlNode segment_base("SegmentBase");
+  if (need_segment_base || use_segment_list_text) {
+    XmlNode child(need_segment_base ? "SegmentBase" : "SegmentList");
     if (media_info.has_index_range()) {
-      RCHECK(segment_base.SetStringAttribute(
-          "indexRange", RangeToString(media_info.index_range())));
+      RCHECK(child.SetStringAttribute("indexRange",
+                                      RangeToString(media_info.index_range())));
     }
 
     if (media_info.has_reference_time_scale()) {
-      RCHECK(segment_base.SetIntegerAttribute(
-          "timescale", media_info.reference_time_scale()));
+      RCHECK(child.SetIntegerAttribute("timescale",
+                                       media_info.reference_time_scale()));
     }
 
     if (media_info.has_presentation_time_offset()) {
-      RCHECK(segment_base.SetIntegerAttribute(
-          "presentationTimeOffset", media_info.presentation_time_offset()));
+      RCHECK(child.SetIntegerAttribute("presentationTimeOffset",
+                                       media_info.presentation_time_offset()));
     }
 
     if (media_info.has_init_range()) {
@@ -410,10 +414,17 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
       RCHECK(initialization.SetStringAttribute(
           "range", RangeToString(media_info.init_range())));
 
-      RCHECK(segment_base.AddChild(std::move(initialization)));
+      RCHECK(child.AddChild(std::move(initialization)));
     }
 
-    RCHECK(AddChild(std::move(segment_base)));
+    if (use_segment_list_text) {
+      XmlNode media_url("SegmentURL");
+      RCHECK(
+          media_url.SetStringAttribute("media", media_info.media_file_url()));
+      RCHECK(child.AddChild(std::move(media_url)));
+    }
+
+    RCHECK(AddChild(std::move(child)));
   }
 
   return true;
