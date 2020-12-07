@@ -351,6 +351,14 @@ Status ValidateParams(const PackagingParams& packaging_params,
                   "(not using segment_template).");
   }
 
+  if (on_demand_dash_profile &&
+      !packaging_params.mpd_params.mpd_output.empty() &&
+      !packaging_params.mp4_output_params.generate_sidx_in_media_segments) {
+    return Status(error::UNIMPLEMENTED,
+                  "--generate_sidx_in_media_segments is required for DASH "
+                  "on-demand profile (not using segment_template).");
+  }
+
   return Status::OK;
 }
 
