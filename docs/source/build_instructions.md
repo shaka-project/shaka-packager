@@ -26,6 +26,11 @@ Note that `Git` must be v1.7.5 or above.
 
     to check whether you have it.
 
+*   Note that there is a known problem with 10.15 SDK or later right now. You
+    can workaround it by using 10.14 SDK. See
+    [#660](https://github.com/google/shaka-packager/issues/660#issuecomment-552576341)
+    for details.
+
 ## Windows system requirements
 
 * Visual Studio 2015 Update 3, see below (no other version is supported).
