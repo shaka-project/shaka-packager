@@ -36,7 +36,7 @@ class EsParserAudio : public EsParser {
 
   // EsParser implementation.
   bool Parse(const uint8_t* buf, int size, int64_t pts, int64_t dts) override;
-  void Flush() override;
+  bool Flush() override;
   void Reset() override;
 
  private:

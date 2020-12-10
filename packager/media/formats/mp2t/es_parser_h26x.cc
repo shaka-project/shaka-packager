@@ -77,7 +77,7 @@ bool EsParserH26x::Parse(const uint8_t* buf,
   return ParseInternal();
 }
 
-void EsParserH26x::Flush() {
+bool EsParserH26x::Flush() {
   DVLOG(1) << "EsParserH26x::Flush";
 
   // Simulate two additional AUDs to force emitting the last access unit
@@ -95,7 +95,7 @@ void EsParserH26x::Flush() {
     es_queue_->Push(aud, sizeof(aud));
   }
 
-  CHECK(ParseInternal());
+  RCHECK(ParseInternal());
 
   if (pending_sample_) {
     // Flush pending sample.
@@ -103,6 +103,7 @@ void EsParserH26x::Flush() {
     pending_sample_->set_duration(pending_sample_duration_);
     emit_sample_cb_.Run(std::move(pending_sample_));
   }
+  return true;
 }
 
 void EsParserH26x::Reset() {

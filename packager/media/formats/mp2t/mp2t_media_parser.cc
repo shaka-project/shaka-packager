@@ -45,7 +45,7 @@ class PidState {
 
   // Flush the PID state (possibly emitting some pending frames)
   // and reset its state.
-  void Flush();
+  bool Flush();
 
   // Enable/disable the PID.
   // Disabling a PID will reset its state and ignore any further incoming TS
@@ -119,9 +119,10 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   return status;
 }
 
-void PidState::Flush() {
-  section_parser_->Flush();
+bool PidState::Flush() {
+  RCHECK(section_parser_->Flush());
   ResetState();
+  return true;
 }
 
 void PidState::Enable() {
@@ -174,7 +175,7 @@ bool Mp2tMediaParser::Flush() {
   for (const auto& pair : pids_) {
     DVLOG(1) << "Flushing PID: " << pair.first;
     PidState* pid_state = pair.second.get();
-    pid_state->Flush();
+    RCHECK(pid_state->Flush());
   }
   bool result = EmitRemainingSamples();
   pids_.clear();

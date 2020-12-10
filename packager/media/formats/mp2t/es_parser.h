@@ -35,7 +35,7 @@ class EsParser {
                      int64_t dts) = 0;
 
   // Flush any pending buffer.
-  virtual void Flush() = 0;
+  virtual bool Flush() = 0;
 
   // Reset the state of the ES parser.
   virtual void Reset() = 0;

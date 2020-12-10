@@ -182,7 +182,9 @@ bool EsParserAudio::Parse(const uint8_t* buf,
   return true;
 }
 
-void EsParserAudio::Flush() {}
+bool EsParserAudio::Flush() {
+  return true;
+}
 
 void EsParserAudio::Reset() {
   es_byte_queue_.Reset();
