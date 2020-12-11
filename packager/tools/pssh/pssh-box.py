@@ -124,7 +124,7 @@ class Pssh(object):
           lines.extend(['      ' + x for x in extra])
         # pylint: disable=broad-except
         except Exception as e:
-          lines.append('      ERROR: ' + e.message)
+          lines.append('      ERROR: ' + str(e))
       else:
         lines.extend([
             '    Raw Data (base64):',
@@ -148,7 +148,7 @@ def _create_bin_int(value):
 
 def _create_uuid(data):
   """Creates a human readable UUID string from the given binary string."""
-  ret = base64.b16encode(data).lower()
+  ret = base64.b16encode(data).decode().lower()
   return (ret[:8] + '-' + ret[8:12] + '-' + ret[12:16] + '-' + ret[16:20] +
           '-' + ret[20:])
 
@@ -180,7 +180,7 @@ def _parse_widevine_data(data):
   if wv.HasField('provider'):
     ret.append('Provider: ' + wv.provider)
   if wv.HasField('content_id'):
-    ret.append('Content ID: ' + base64.b16encode(wv.content_id))
+    ret.append('Content ID: ' + base64.b16encode(wv.content_id).decode())
   if wv.HasField('policy'):
     ret.append('Policy: ' + wv.policy)
   if wv.HasField('crypto_period_index'):
