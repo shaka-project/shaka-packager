@@ -22,7 +22,9 @@ class EsParserDvb : public EsParser {
  public:
   EsParserDvb(uint32_t pid,
               const NewStreamInfoCB& new_stream_info_cb,
-              const EmitTextSampleCB& emit_sample_cb);
+              const EmitTextSampleCB& emit_sample_cb,
+              const uint8_t* descriptor,
+              size_t descriptor_length);
   ~EsParserDvb() override;
 
   // EsParser implementation.
@@ -44,6 +46,8 @@ class EsParserDvb : public EsParser {
 
   // A map of page_id to parser.
   std::unordered_map<uint16_t, DvbSubParser> parsers_;
+  // A map of page_id to language.
+  std::unordered_map<uint16_t, std::string> languages_;
   bool sent_info_ = false;
 };
 

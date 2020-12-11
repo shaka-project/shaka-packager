@@ -50,7 +50,11 @@ class Mp2tMediaParser : public MediaParser {
   // Possible values for |media_type| are defined in:
   // ISO-13818.1 / ITU H.222 Table 2.34 "Media type assignments".
   // |pes_pid| is part of the Program Map Table refered by |pmt_pid|.
-  void RegisterPes(int pmt_pid, int pes_pid, TsStreamType media_type);
+  void RegisterPes(int pmt_pid,
+                   int pes_pid,
+                   TsStreamType media_type,
+                   const uint8_t* descriptor,
+                   size_t descriptor_length);
 
   // Callback invoked each time the audio/video decoder configuration is
   // changed.

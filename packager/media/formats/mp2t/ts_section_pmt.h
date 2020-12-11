@@ -19,7 +19,8 @@ class TsSectionPmt : public TsSectionPsi {
   // RegisterPesCb::Run(int pes_pid, int stream_type);
   // Stream type is defined in
   // "Table 2-34 – Stream type assignments" in H.222
-  typedef base::Callback<void(int, TsStreamType)> RegisterPesCb;
+  typedef base::Callback<void(int, TsStreamType, const uint8_t*, size_t)>
+      RegisterPesCb;
 
   explicit TsSectionPmt(const RegisterPesCb& register_pes_cb);
   ~TsSectionPmt() override;

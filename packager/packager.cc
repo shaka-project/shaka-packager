@@ -26,6 +26,7 @@
 #include "packager/file/file.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/simple_hls_notifier.h"
+#include "packager/media/base/cc_stream_filter.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
@@ -677,6 +678,11 @@ Status CreateAudioVideoJobs(
     if (stream.trick_play_factor) {
       handlers.emplace_back(
           std::make_shared<TrickPlayHandler>(stream.trick_play_factor));
+    }
+
+    if (stream.cc_index >= 0) {
+      handlers.emplace_back(
+          std::make_shared<CcStreamFilter>(stream.language, stream.cc_index));
     }
 
     if (is_text &&

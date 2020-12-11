@@ -93,6 +93,9 @@ class BitReader {
   /// @return The current bit position.
   size_t bit_position() const { return 8 * initial_size_ - bits_available(); }
 
+  /// @return A pointer to the current byte.
+  const uint8_t* current_byte_ptr() const { return data_ - 1; }
+
  private:
   // Help function used by ReadBits to avoid inlining the bit reading logic.
   bool ReadBitsInternal(size_t num_bits, uint64_t* out);

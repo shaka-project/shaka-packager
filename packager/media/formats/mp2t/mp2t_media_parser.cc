@@ -275,7 +275,9 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                   int pes_pid,
-                                  TsStreamType stream_type) {
+                                  TsStreamType stream_type,
+                                  const uint8_t* descriptor,
+                                  size_t descriptor_length) {
   if (pids_.count(pes_pid) != 0)
     return;
   DVLOG(1) << "RegisterPes:"
@@ -307,7 +309,8 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
       pid_type = PidState::kPidAudioPes;
       break;
     case TsStreamType::kDvbSubtitles:
-      es_parser.reset(new EsParserDvb(pes_pid, on_new_stream, on_emit_text));
+      es_parser.reset(new EsParserDvb(pes_pid, on_new_stream, on_emit_text,
+                                      descriptor, descriptor_length));
       pid_type = PidState::kPidTextPes;
       break;
     default: {

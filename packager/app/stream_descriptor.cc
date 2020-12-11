@@ -22,6 +22,7 @@ enum FieldType {
   kSegmentTemplateField,
   kBandwidthField,
   kLanguageField,
+  kCcIndexField,
   kOutputFormatField,
   kHlsNameField,
   kHlsGroupIdField,
@@ -57,6 +58,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"bitrate", kBandwidthField},
     {"language", kLanguageField},
     {"lang", kLanguageField},
+    {"cc_index", kCcIndexField},
     {"output_format", kOutputFormatField},
     {"format", kOutputFormatField},
     {"hls_name", kHlsNameField},
@@ -131,6 +133,15 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
       }
       case kLanguageField: {
         descriptor.language = iter->second;
+        break;
+      }
+      case kCcIndexField: {
+        unsigned index;
+        if (!base::StringToUint(iter->second, &index)) {
+          LOG(ERROR) << "Non-numeric cc_index specified.";
+          return base::nullopt;
+        }
+        descriptor.cc_index = index;
         break;
       }
       case kOutputFormatField: {

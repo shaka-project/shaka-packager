@@ -15,12 +15,50 @@ namespace shaka {
 namespace media {
 namespace mp2t {
 
+namespace {
+
+bool ParseSubtitlingDescriptor(
+    const uint8_t* descriptor,
+    size_t size,
+    std::unordered_map<uint16_t, std::string>* langs) {
+  // See ETSI EN 300 468 Section 6.2.41.
+  BitReader reader(descriptor, size);
+  size_t data_size;
+  RCHECK(reader.SkipBits(8));  // descriptor_tag
+  RCHECK(reader.ReadBits(8, &data_size));
+  RCHECK(data_size + 2 <= size);
+  for (size_t i = 0; i < data_size; i += 8) {
+    uint32_t lang_code;
+    uint16_t page;
+    RCHECK(reader.ReadBits(24, &lang_code));
+    RCHECK(reader.SkipBits(8));  // subtitling_type
+    RCHECK(reader.ReadBits(16, &page));
+    RCHECK(reader.SkipBits(16));  // ancillary_page_id
+
+    // The lang code is a ISO 639-2 code coded in Latin-1.
+    std::string lang(3, '\0');
+    lang[0] = (lang_code >> 16) & 0xff;
+    lang[1] = (lang_code >> 8) & 0xff;
+    lang[2] = (lang_code >> 0) & 0xff;
+    langs->emplace(page, std::move(lang));
+  }
+  return true;
+}
+
+}  // namespace
+
 EsParserDvb::EsParserDvb(uint32_t pid,
                          const NewStreamInfoCB& new_stream_info_cb,
-                         const EmitTextSampleCB& emit_sample_cb)
+                         const EmitTextSampleCB& emit_sample_cb,
+                         const uint8_t* descriptor,
+                         size_t descriptor_length)
     : EsParser(pid),
       new_stream_info_cb_(new_stream_info_cb),
-      emit_sample_cb_(emit_sample_cb) {}
+      emit_sample_cb_(emit_sample_cb) {
+  if (!ParseSubtitlingDescriptor(descriptor, descriptor_length, &languages_)) {
+    LOG(WARNING) << "Error parsing subtitling descriptor";
+  }
+}
 
 EsParserDvb::~EsParserDvb() {}
 
@@ -30,10 +68,14 @@ bool EsParserDvb::Parse(const uint8_t* buf,
                         int64_t dts) {
   if (!sent_info_) {
     sent_info_ = true;
-    std::shared_ptr<StreamInfo> info = std::make_shared<TextStreamInfo>(
+    std::shared_ptr<TextStreamInfo> info = std::make_shared<TextStreamInfo>(
         pid(), kMpeg2Timescale, kInfiniteDuration, kCodecText,
         /* codec_string= */ "", /* codec_config= */ "", /* width= */ 0,
         /* height= */ 0, /* language= */ "");
+    for (const auto& pair : languages_) {
+      info->AddSubStream(pair.first, {pair.second});
+    }
+
     new_stream_info_cb_.Run(info);
   }
 
@@ -47,8 +89,10 @@ bool EsParserDvb::Flush() {
     std::vector<std::shared_ptr<TextSample>> samples;
     RCHECK(pair.second.Flush(&samples));
 
-    for (auto sample : samples)
+    for (auto sample : samples) {
+      sample->set_sub_stream_index(pair.first);
       emit_sample_cb_.Run(sample);
+    }
   }
   return true;
 }
@@ -81,8 +125,10 @@ bool EsParserDvb::ParseInternal(const uint8_t* data, size_t size, int64_t pts) {
     std::vector<std::shared_ptr<TextSample>> samples;
     RCHECK(parsers_[page_id].Parse(segment_type, pts, payload, segment_length,
                                    &samples));
-    for (auto sample : samples)
+    for (auto sample : samples) {
+      sample->set_sub_stream_index(page_id);
       emit_sample_cb_.Run(sample);
+    }
 
     RCHECK(reader.SkipBytes(segment_length));
   }

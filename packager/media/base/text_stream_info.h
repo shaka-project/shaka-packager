@@ -40,6 +40,12 @@ struct TextRegion {
   bool scroll = false;
 };
 
+/// Contains info about a sub-stream within a text stream.  Depending on the
+/// format, some info may not be available.  This info doesn't affect output.
+struct TextSubStreamInfo {
+  std::string language;
+};
+
 class TextStreamInfo : public StreamInfo {
  public:
   /// No encryption supported.
@@ -64,6 +70,7 @@ class TextStreamInfo : public StreamInfo {
 
   bool IsValidConfig() const override;
 
+  std::string ToString() const override;
   std::unique_ptr<StreamInfo> Clone() const override;
 
   uint16_t width() const { return width_; }
@@ -75,8 +82,16 @@ class TextStreamInfo : public StreamInfo {
   const std::string& css_styles() const { return css_styles_; }
   void set_css_styles(const std::string& styles) { css_styles_ = styles; }
 
+  void AddSubStream(uint16_t index, TextSubStreamInfo info) {
+    sub_streams_.emplace(index, std::move(info));
+  }
+  const std::map<uint16_t, TextSubStreamInfo>& sub_streams() const {
+    return sub_streams_;
+  }
+
  private:
   std::map<std::string, TextRegion> regions_;
+  std::map<uint16_t, TextSubStreamInfo> sub_streams_;
   std::string css_styles_;
   uint16_t width_;
   uint16_t height_;

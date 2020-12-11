@@ -63,6 +63,13 @@ These are the available fields:
     sampling rate among key frames. If specified, the output is a trick play
     stream.
 
+:cc_index:
+
+    Optional value which specifies the index/ID of the subtitle stream to use
+    for formats where multiple exist within the same stream. For example,
+    CEA allows specifying up to 4 streams within a single video stream. If not
+    specified, all subtitles will be merged together.
+
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/dash_stream_descriptors.rst
 .. include:: /options/hls_stream_descriptors.rst
