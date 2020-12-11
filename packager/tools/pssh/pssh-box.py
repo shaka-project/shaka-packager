@@ -141,9 +141,9 @@ def _split_list_on(elems, sep):
 
 
 def _create_bin_int(value):
-  """Creates a 4-byte binary string from the given integer."""
+  """Creates a binary string as 4-byte array from the given integer."""
   return (chr(value >> 24) + chr((value >> 16) & 0xff) +
-          chr((value >> 8) & 0xff) + chr(value & 0xff))
+          chr((value >> 8) & 0xff) + chr(value & 0xff)).encode()
 
 
 def _create_uuid(data):
@@ -423,11 +423,11 @@ def main(all_args):
     for box in boxes:
       print(box.human_string())
   else:
-    box_data = ''.join([x.binary_string() for x in boxes])
+    box_data = b''.join([x.binary_string() for x in boxes])
     if output_format == 'hex':
-      print(base64.b16encode(box_data))
+      print(base64.b16encode(box_data).decode())
     else:
-      print(base64.b64encode(box_data))
+      print(base64.b64encode(box_data).decode())
 
 
 if __name__ == '__main__':
