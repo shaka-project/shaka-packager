@@ -1,7 +1,7 @@
-FROM pritunl/archlinux:2018-08-11
+FROM archlinux:20200908
 
 # Update, and install basic packages.
-RUN pacman -S --needed --noconfirm python2 git curl gcc gcc-libs make
+RUN pacman -Sy --needed --noconfirm python2 git curl gcc gcc-libs make
 
 # depot_tools uses python2 instead of python3.
 RUN ln -sf python2 /usr/bin/python

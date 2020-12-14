@@ -267,7 +267,7 @@ export GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none
 Instead of running `sudo apt-get install` to install build dependencies, run:
 
 ```shell
-$ sudo pacman -S --needed python2 git curl gcc gcc-libs make
+$ sudo pacman -Sy --needed python2 git curl gcc gcc-libs make
 $ sudo ln -sf python2 /usr/bin/python
 ```
 
@@ -305,7 +305,7 @@ $ su -c 'yum install -y git python git curl gcc-c++ findutils bzip2 \
 Use `zypper` command to install dependencies:
 
 ```shell
-sudo zypper in git python python-xml git curl gcc-c++ tar
+sudo zypper in git python python-xml git curl gcc-c++ tar libncurses5
 ```
 
 ## Tips, tricks, and troubleshooting
