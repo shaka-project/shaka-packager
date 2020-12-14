@@ -11,6 +11,8 @@ function docker_run() {
 
 for docker_file in ${SCRIPT_DIR}/*_Dockerfile ; do
   docker build -t my_container -f ${docker_file} ${SCRIPT_DIR}
+  docker_run rm -rf out/Release
   docker_run gclient runhooks
   docker_run ninja -C out/Release
+  docker_run out/Release/packager_test.py -v
 done
