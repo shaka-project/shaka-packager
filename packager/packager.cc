@@ -184,6 +184,19 @@ MediaContainerName GetTextOutputCodec(const StreamDescriptor& descriptor) {
   }
 }
 
+bool IsTextStream(const StreamDescriptor& stream) {
+  if (stream.stream_selector == "text")
+    return true;
+  if (base::EqualsCaseInsensitiveASCII(stream.output_format, "vtt+mp4") ||
+      base::EqualsCaseInsensitiveASCII(stream.output_format, "webvtt+mp4") ||
+      base::EqualsCaseInsensitiveASCII(stream.output_format, "ttml+mp4")) {
+    return true;
+  }
+
+  auto output_format = GetOutputFormat(stream);
+  return output_format == CONTAINER_WEBVTT || output_format == CONTAINER_TTML;
+}
+
 Status ValidateStreamDescriptor(bool dump_stream_info,
                                 const StreamDescriptor& stream) {
   if (stream.input.empty()) {
@@ -616,8 +629,7 @@ Status CreateAudioVideoJobs(
     const bool new_input_file = stream.input != previous_input;
     const bool new_stream =
         new_input_file || previous_selector != stream.stream_selector;
-    // TODO(modmaker): Use a better detector of text streams.
-    const bool is_text = stream.stream_selector == "text";
+    const bool is_text = IsTextStream(stream);
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
 
