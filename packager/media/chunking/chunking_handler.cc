@@ -60,7 +60,8 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
-  RETURN_IF_ERROR(EndSegmentIfStarted());
+  current_segment_index_++;
+  RETURN_IF_ERROR(EndSegmentIfStarted(false));
   return FlushDownstream(kStreamIndex);
 }
 
@@ -74,7 +75,9 @@ Status ChunkingHandler::OnStreamInfo(std::shared_ptr<const StreamInfo> info) {
 }
 
 Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
-  RETURN_IF_ERROR(EndSegmentIfStarted());
+  num_segments_before_last_cue_ += current_segment_index_ + 1;
+
+  RETURN_IF_ERROR(EndSegmentIfStarted(true));
   const double event_time_in_seconds = event->time_in_seconds;
   RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
 
@@ -105,7 +108,7 @@ Status ChunkingHandler::OnMediaSample(
       // Reset subsegment index.
       current_subsegment_index_ = 0;
 
-      RETURN_IF_ERROR(EndSegmentIfStarted());
+      RETURN_IF_ERROR(EndSegmentIfStarted(false));
       segment_start_time_ = timestamp;
       subsegment_start_time_ = timestamp;
       max_segment_time_ = timestamp + sample->duration();
@@ -144,13 +147,17 @@ Status ChunkingHandler::OnMediaSample(
   return DispatchMediaSample(kStreamIndex, std::move(sample));
 }
 
-Status ChunkingHandler::EndSegmentIfStarted() const {
+Status ChunkingHandler::EndSegmentIfStarted(bool fromCueEvent) const {
   if (!segment_start_time_)
     return Status::OK;
 
   auto segment_info = std::make_shared<SegmentInfo>();
   segment_info->start_timestamp = segment_start_time_.value();
   segment_info->duration = max_segment_time_ - segment_start_time_.value();
+  // If fromCueEvent then current_segment_index_ is already added to the
+  // number of segments before last cue.
+  segment_info->segment_index = ((fromCueEvent) ? 0 : current_segment_index_) +
+                                num_segments_before_last_cue_ - 1;
   return DispatchSegmentInfo(kStreamIndex, std::move(segment_info));
 }
 
