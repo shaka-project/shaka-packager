@@ -44,6 +44,8 @@ const char kOutputFile[] = "memory://test.aac";
 const char kSegmentTemplate[] = "memory://test_$Number$.aac";
 const char kSegment124Name[] = "memory://test_124.aac";
 const char kSegment125Name[] = "memory://test_125.aac";
+const int64_t kSegmentIndex123 = 123;
+const int64_t kSegmentIndex124 = 124;
 
 class MockPackedAudioSegmenter : public PackedAudioSegmenter {
  public:
@@ -147,7 +149,8 @@ TEST_P(PackedAudioWriterTest, OneSegment) {
       *mock_muxer_listener_ptr_,
       OnNewSegment(is_single_segment_mode_ ? kOutputFile : kSegment124Name,
                    kTimestamp * kMockTimescaleScale,
-                   kDuration * kMockTimescaleScale, kSegmentDataSize, 123));
+                   kDuration * kMockTimescaleScale, kSegmentDataSize,
+                   kSegmentIndex123));
 
   EXPECT_CALL(*mock_segmenter_ptr_, TimescaleScale())
       .WillRepeatedly(Return(kMockTimescaleScale));
@@ -206,12 +209,13 @@ TEST_P(PackedAudioWriterTest, TwoSegments) {
       OnNewSegment(is_single_segment_mode_ ? kOutputFile : kSegment124Name,
                    kTimestamp * kMockTimescaleScale,
                    kDuration * kMockTimescaleScale,
-                   sizeof(kMockSegment1Data) - 1, 123));
+                   sizeof(kMockSegment1Data) - 1, kSegmentIndex123));
   EXPECT_CALL(
       *mock_muxer_listener_ptr_,
       OnNewSegment(is_single_segment_mode_ ? kOutputFile : kSegment125Name,
                    (kTimestamp + kDuration) * kMockTimescaleScale,
-                   kDuration * kMockTimescaleScale, kSegment2DataSize, 124));
+                   kDuration * kMockTimescaleScale, kSegment2DataSize,
+                   kSegmentIndex124));
 
   EXPECT_CALL(*mock_segmenter_ptr_, TimescaleScale())
       .WillRepeatedly(Return(kMockTimescaleScale));
