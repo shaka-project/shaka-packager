@@ -66,7 +66,7 @@ Status MultiSegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status MultiSegmentSegmenter::DoFinalizeSegment(uint64_t segment_index) {
+Status MultiSegmentSegmenter::DoFinalizeSegment(int64_t segment_index) {
   return WriteSegment(segment_index);
 }
 
@@ -86,7 +86,7 @@ Status MultiSegmentSegmenter::WriteInitSegment() {
   return buffer->WriteToFile(file.get());
 }
 
-Status MultiSegmentSegmenter::WriteSegment(uint64_t segment_index) {
+Status MultiSegmentSegmenter::WriteSegment(int64_t segment_index) {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);

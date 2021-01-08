@@ -35,7 +35,6 @@ Status TextChunker::OnFlushRequest(size_t input_stream_index) {
   // Keep outputting segments until all the samples leave the system. Calling
   // |DispatchSegment| will remove samples over time.
   while (samples_in_current_segment_.size()) {
-    segment_index_++;
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
@@ -59,15 +58,14 @@ Status TextChunker::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 
   // Convert the event's time to be scaled to the time of each sample.
   const int64_t event_time = ScaleTime(event->time_in_seconds);
-
   // Output all full segments before the segment that the cue event interupts.
   while (segment_start_ + segment_duration_ < event_time) {
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
   const int64_t shorten_duration = event_time - segment_start_;
-
   RETURN_IF_ERROR(DispatchSegment(shorten_duration));
+  num_cues_++;
   return DispatchCueEvent(kStreamIndex, std::move(event));
 }
 
@@ -108,11 +106,7 @@ Status TextChunker::DispatchSegment(int64_t duration) {
   std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
   info->start_timestamp = segment_start_;
   info->duration = duration;
-
-  if (((segment_start_ / segment_duration_) + 1) > segment_index_) {
-    segment_index_ = (segment_start_ / segment_duration_) + 1;
-  }
-  info->segment_index = segment_index_ - 1;
+  info->segment_index = (segment_start_ / segment_duration_) + num_cues_;
 
   RETURN_IF_ERROR(DispatchSegmentInfo(kStreamIndex, std::move(info)));
 

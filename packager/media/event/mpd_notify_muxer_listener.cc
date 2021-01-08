@@ -183,7 +183,7 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           int64_t start_time,
                                           int64_t duration,
                                           uint64_t segment_file_size,
-					                      uint64_t segment_index) {
+                                          int64_t segment_index) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifyNewSegment(notification_id_.value(), start_time,
                                     duration, segment_file_size, segment_index);

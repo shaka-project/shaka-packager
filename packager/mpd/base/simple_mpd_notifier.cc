@@ -87,7 +87,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
                                          uint64_t start_time,
                                          uint64_t duration,
                                          uint64_t size,
-					                     uint64_t segment_index) {
+                                         int64_t segment_index) {
   base::AutoLock auto_lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {

@@ -129,7 +129,7 @@ class MuxerListener {
                             int64_t start_time,
                             int64_t duration,
                             uint64_t segment_file_size,
-			                uint64_t segment_index) = 0;
+                            int64_t segment_index) = 0;
 
   /// Called when there is a new key frame. For Video only. Note that it should
   /// be called before OnNewSegment is called on the containing segment.

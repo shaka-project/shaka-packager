@@ -16,6 +16,8 @@ const uint32_t kTimeScale = 1000000;
 const uint32_t kTimecodeScale = 1000000;
 const int64_t kSecondsToNs = 1000000000L;
 const uint64_t kDuration = 1000000;
+const int64_t kSegmentIndex0 = 0;
+const int64_t kSegmentIndex1 = 1;
 const bool kSubsegment = true;
 
 const uint8_t kBasicSupportData[] = {
@@ -163,7 +165,8 @@ TEST_F(SingleSegmentSegmenterTest, BasicSupport) {
         CreateSample(kKeyFrame, kDuration, side_data_flag);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment, 0));
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment,
+                                        kSegmentIndex0));
   ASSERT_OK(segmenter_->Finalize());
 
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);
@@ -176,14 +179,15 @@ TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegment) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
     if (i == 5) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment, 0));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment,
+                                            kSegmentIndex0));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(
-      segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration, !kSubsegment, 1));
+  ASSERT_OK(segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration,
+                                        !kSubsegment, kSegmentIndex1));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -201,13 +205,15 @@ TEST_F(SingleSegmentSegmenterTest, IgnoresSubsegment) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
     if (i == 5) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment, 0));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment,
+                                            kSegmentIndex0));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment, 1));
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment,
+                                        kSegmentIndex1));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.

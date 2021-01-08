@@ -76,7 +76,10 @@ class MockRepresentation : public Representation {
   MOCK_METHOD2(UpdateContentProtectionPssh,
                void(const std::string& drm_uuid, const std::string& pssh));
   MOCK_METHOD4(AddNewSegment,
-               void(int64_t start_time, int64_t duration, uint64_t size, uint64_t segment_index));
+               void(int64_t start_time,
+                    int64_t duration,
+                    uint64_t size,
+                    int64_t segment_index));
   MOCK_METHOD1(SetSampleDuration, void(uint32_t sample_duration));
   MOCK_CONST_METHOD0(GetMediaInfo, const MediaInfo&());
 };

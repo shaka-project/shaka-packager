@@ -61,7 +61,7 @@ class TsSegmenter {
   // as the segment start timestamp and duration could be tracked locally.
   Status FinalizeSegment(uint64_t start_timestamp,
                          uint64_t duration,
-                         uint64_t segment_index);
+                         int64_t segment_index);
 
   /// Only for testing.
   void InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer);
