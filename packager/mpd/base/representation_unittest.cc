@@ -835,7 +835,7 @@ TEST_P(ApproximateSegmentTimelineTest,
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
-                  expected_s_elements, (kStartTime / kDurationSmaller) + 1)));
+                    expected_s_elements, (kStartTime / kDurationSmaller) + 1)));
 }
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
