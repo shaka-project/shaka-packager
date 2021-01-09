@@ -32,6 +32,7 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
                                              std::unique_ptr<Movie> moov)
     : Segmenter(options, std::move(ftyp), std::move(moov)),
       styp_(new SegmentType) {
+  num_segments_ = options.mp4_params.initial_sequence_number;
   // Use the same brands for styp as ftyp.
   styp_->major_brand = Segmenter::ftyp()->major_brand;
   styp_->compatible_brands = Segmenter::ftyp()->compatible_brands;
@@ -112,9 +113,18 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_index) {
                                              options().output_file_name);
     }
   } else {
-    file_name = GetSegmentName(options().segment_template,
+
+    // Get segment name from num_segments if valid.
+    if (num_segments_ == -1) {
+      file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
                                segment_index, options().bandwidth);
+    } else {
+      file_name = GetSegmentName(options().segment_template,
+                               sidx()->earliest_presentation_time,
+                               num_segments_-1, options().bandwidth);
+    }
+
     file.reset(File::Open(file_name.c_str(), "w"));
     if (!file) {
       return Status(error::FILE_FAILURE,
@@ -159,9 +169,18 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_index) {
   UpdateProgress(segment_duration);
   if (muxer_listener()) {
     muxer_listener()->OnSampleDurationReady(sample_duration());
+    if (num_segments_ == -1) {
     muxer_listener()->OnNewSegment(
         file_name, sidx()->earliest_presentation_time, segment_duration,
         segment_size, segment_index);
+    } else {
+    muxer_listener()->OnNewSegment(
+        file_name, sidx()->earliest_presentation_time, segment_duration,
+        segment_size, num_segments_-1);
+     
+        num_segments_++;
+
+    }
   }
 
   return Status::OK;

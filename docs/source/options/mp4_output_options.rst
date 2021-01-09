@@ -17,3 +17,8 @@ MP4 output options
     template).
 
     Default enabled.
+
+--mp4_initial_sequence_number
+
+    MP4 only: Sets the initialize sequence number in the mp4 moof->mfhd.
+              Otherwise defaults to -1.

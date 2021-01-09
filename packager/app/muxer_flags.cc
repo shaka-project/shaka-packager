@@ -73,3 +73,8 @@ ABSL_FLAG(
     "If the first sample comes after default_text_zero_bias_ms then the start "
     "of the stream will not be padded as we cannot assume the start time of "
     "the stream.");
+ABSL_FLAG(int32_t,
+     mp4_initial_sequence_number,
+     -1,
+     "Sets the initialize sequence number in the mp4 moof->mfhd. "
+     "Otherwise defaults to -1.");

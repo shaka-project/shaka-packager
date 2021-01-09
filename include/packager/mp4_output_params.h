@@ -26,6 +26,8 @@ struct Mp4OutputParams {
   /// and mdat atom. Each chunk is uploaded immediately upon creation,
   /// decoupling latency from segment duration.
   bool low_latency_dash_mode = false;
+  /// Indicates the initial sequence number to generate segments.
+  int initial_sequence_number = -1;
 };
 
 }  // namespace shaka
