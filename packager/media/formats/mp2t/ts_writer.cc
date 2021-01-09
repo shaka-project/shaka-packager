@@ -188,7 +188,7 @@ void TsWriter::SignalEncrypted() {
 }
 
 bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet,
-		            BufferWriter* buffer) {
+                            BufferWriter* buffer) {
 
   if (!WritePesToBuffer(*pes_packet, &elementary_stream_continuity_counter_,
                         buffer)) {

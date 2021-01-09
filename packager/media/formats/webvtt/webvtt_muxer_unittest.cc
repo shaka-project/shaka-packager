@@ -64,14 +64,17 @@ class WebVttMuxerTest : public MediaHandlerTestBase {
 };
 
 TEST_F(WebVttMuxerTest, WithNoSegmentAndWithNoSamples) {
-  EXPECT_CALL(*muxer_listener_, OnNewSegment(_, _, _, _)).Times(0);
+  EXPECT_CALL(*muxer_listener_, OnNewSegment(_, _, _, _, _)).Times(0);
 
   {
     // No segments should  have be created as there were no samples.
 
     testing::InSequence s;
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
-    EXPECT_CALL(*muxer_listener_, OnMediaEndMock(_, _, _, _, _, _, _, _, _));
+
+    const float kMediaDuration = 0 * kSegmentDuration / kMillisecondsPerSecond;
+    EXPECT_CALL(*muxer_listener_,
+                OnMediaEndMock(_, _, _, _, _, _, _, _, kMediaDuration));
   }
 
   ASSERT_OK(Input(kInputIndex)
@@ -95,7 +98,7 @@ TEST_F(WebVttMuxerTest, WithOneSegmentAndWithOneSample) {
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput1, kSegmentStart,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
 
     const float kMediaDuration = 1 * kSegmentDuration / kMillisecondsPerSecond;
     EXPECT_CALL(*muxer_listener_,
@@ -142,10 +145,10 @@ TEST_F(WebVttMuxerTest, WithTwoSegmentAndWithOneSample) {
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput1, kSegment1Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput2, kSegment2Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
 
     const float kMediaDuration = 2 * kSegmentDuration / kMillisecondsPerSecond;
     EXPECT_CALL(*muxer_listener_,
@@ -202,10 +205,10 @@ TEST_F(WebVttMuxerTest, WithAnEmptySegment) {
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput1, kSegment1Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput2, kSegment2Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
 
     const float kMediaDuration = 2 * kSegmentDuration / kMillisecondsPerSecond;
     EXPECT_CALL(*muxer_listener_,

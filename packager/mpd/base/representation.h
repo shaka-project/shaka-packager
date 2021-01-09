@@ -99,9 +99,11 @@ class Representation {
   /// @param size of the segment in bytes. In the low latency case, this size is
   /// that of the
   ///        first chunk because the full size is not yet known.
+  /// @param segment_index is the current segment index.
   virtual void AddNewSegment(int64_t start_time,
                              int64_t duration,
-                             uint64_t size);
+                             uint64_t size,
+                             int64_t segment_index);
 
   /// Update a media segment in the Representation.
   /// In the low latency case, the segment duration will not be ready until the
@@ -198,7 +200,9 @@ class Representation {
 
   // Add a SegmentInfo. This function may insert an adjusted SegmentInfo if
   // |allow_approximate_segment_timeline_| is set.
-  void AddSegmentInfo(int64_t start_time, int64_t duration);
+  void AddSegmentInfo(int64_t start_time,
+                      int64_t duration,
+                      int64_t segment_index);
 
   // Update the current SegmentInfo. This method is used to update the duration
   // value after a low latency segment is complete, and the full segment
@@ -248,9 +252,7 @@ class Representation {
   BandwidthEstimator bandwidth_estimator_;
   const MpdOptions& mpd_options_;
 
-  // startNumber attribute for SegmentTemplate.
-  // Starts from 1.
-  uint32_t start_number_ = 1;
+  bool stream_just_started_ = false;
 
   // If this is not null, then Representation is responsible for calling the
   // right methods at right timings.

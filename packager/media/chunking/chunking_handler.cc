@@ -77,6 +77,9 @@ Status ChunkingHandler::OnStreamInfo(std::shared_ptr<const StreamInfo> info) {
 }
 
 Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
+  num_segments_before_last_cue_ += current_segment_index_ + 1;
+  current_segment_index_ = -1;
+
   RETURN_IF_ERROR(EndSegmentIfStarted());
   const double event_time_in_seconds = event->time_in_seconds;
   RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
@@ -104,11 +107,10 @@ Status ChunkingHandler::OnMediaSample(
                                 : (timestamp - cue_offset_) / segment_duration_;
     if (!segment_start_time_ ||
         IsNewSegmentIndex(segment_index, current_segment_index_)) {
+      RETURN_IF_ERROR(EndSegmentIfStarted());
       current_segment_index_ = segment_index;
       // Reset subsegment index.
       current_subsegment_index_ = 0;
-
-      RETURN_IF_ERROR(EndSegmentIfStarted());
       segment_start_time_ = timestamp;
       subsegment_start_time_ = timestamp;
       max_segment_time_ = timestamp + sample->duration();
@@ -170,10 +172,15 @@ Status ChunkingHandler::EndSegmentIfStarted() const {
   auto segment_info = std::make_shared<SegmentInfo>();
   segment_info->start_timestamp = segment_start_time_.value();
   segment_info->duration = max_segment_time_ - segment_start_time_.value();
+
+  segment_info->segment_index =
+      current_segment_index_ + num_segments_before_last_cue_;
+
   if (chunking_params_.low_latency_dash_mode) {
     segment_info->is_chunk = true;
     segment_info->is_final_chunk_in_seg = true;
   }
+
   return DispatchSegmentInfo(kStreamIndex, std::move(segment_info));
 }
 

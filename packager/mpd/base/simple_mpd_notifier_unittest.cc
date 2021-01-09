@@ -218,6 +218,8 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
   SimpleMpdNotifier notifier(empty_mpd_option_);
 
   const uint32_t kRepresentationId = 447834u;
+  const int64_t kSegmentIndex0 = 0;
+
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
@@ -238,10 +240,10 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
   const int32_t kSegmentDuration = 100;
   const uint64_t kSegmentSize = 123456u;
   EXPECT_CALL(*mock_representation,
-              AddNewSegment(kStartTime, kSegmentDuration, kSegmentSize));
+              AddNewSegment(kStartTime, kSegmentDuration, kSegmentSize, kSegmentIndex0));
 
   EXPECT_TRUE(notifier.NotifyNewSegment(kRepresentationId, kStartTime,
-                                        kSegmentDuration, kSegmentSize));
+                                        kSegmentDuration, kSegmentSize, kSegmentIndex0));
 }
 
 TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {
