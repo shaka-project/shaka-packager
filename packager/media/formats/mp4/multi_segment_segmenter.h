@@ -46,6 +46,8 @@ class MultiSegmentSegmenter : public Segmenter {
 
   std::unique_ptr<SegmentType> styp_;
 
+  int32_t num_segments_;
+
   DISALLOW_COPY_AND_ASSIGN(MultiSegmentSegmenter);
 };
 

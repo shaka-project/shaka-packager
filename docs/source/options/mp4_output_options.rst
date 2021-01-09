@@ -15,3 +15,8 @@ MP4 output options
     For MP4 with DASH live profile only: Indicates whether to generate 'sidx'
     box in media segments. Note that it is reuqired by spec if segment template
     contains $Time$ specifier.
+
+--mp4_initial_sequence_number
+
+    MP4 only: Sets the initialize sequence number in the mp4 moof->mfhd.
+              Otherwise defaults to -1.

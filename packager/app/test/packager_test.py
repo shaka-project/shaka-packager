@@ -478,7 +478,8 @@ class PackagerAppTest(unittest.TestCase):
                 default_language=None,
                 segment_duration=1.0,
                 use_fake_clock=True,
-                allow_codec_switching=False):
+                allow_codec_switching=False,
+                mp4_initial_sequence_number=-1):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -561,7 +562,11 @@ class PackagerAppTest(unittest.TestCase):
 
     if allow_codec_switching:
       flags += ['--allow_codec_switching']
-
+    
+    if mp4_initial_sequence_number != -1:
+      flags += ['--mp4_initial_sequence_number={0}'.format(
+                 mp4_initial_sequence_number)]
+    
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
 
@@ -771,6 +776,13 @@ class PackagerFunctionalTest(PackagerAppTest):
                                                       output_hls=True))
     self._CheckTestResults('hls-only-dash-only-captions')
 
+  def testMp4InitialSequenceNumber(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
+    streams = audio_video_streams
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                               mp4_initial_sequence_number=15))
+    self._CheckTestResults('dash-mp4-initial-sequence-number')
+  
   def testDashOnlyAndHlsOnly(self):
     streams = [
         self._GetStream('video', hls_only=True),
