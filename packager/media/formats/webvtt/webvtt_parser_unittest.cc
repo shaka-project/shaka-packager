@@ -201,7 +201,8 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   const auto& settings = samples_[0]->settings();
   EXPECT_FALSE(settings.line);
   EXPECT_FALSE(settings.position);
-  EXPECT_FALSE(settings.size);
+  EXPECT_FALSE(settings.width);
+  EXPECT_FALSE(settings.height);
   EXPECT_EQ(settings.region, "");
   EXPECT_EQ(settings.writing_direction, WritingDirection::kHorizontal);
   EXPECT_EQ(settings.text_alignment, TextAlignment::kCenter);
@@ -320,9 +321,9 @@ TEST_F(WebVttParserTest, ParseSettingSize) {
 
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
-  ASSERT_TRUE(samples_[0]->settings().size);
-  EXPECT_EQ(samples_[0]->settings().size->type, TextUnitType::kPercent);
-  EXPECT_EQ(samples_[0]->settings().size->value, 50.0f);
+  ASSERT_TRUE(samples_[0]->settings().width);
+  EXPECT_EQ(samples_[0]->settings().width->type, TextUnitType::kPercent);
+  EXPECT_EQ(samples_[0]->settings().width->value, 50.0f);
 }
 
 TEST_F(WebVttParserTest, ParseOneCueWithManySettings) {
@@ -343,7 +344,7 @@ TEST_F(WebVttParserTest, ParseOneCueWithManySettings) {
   EXPECT_EQ(samples_[0]->settings().writing_direction,
             WritingDirection::kVerticalGrowingRight);
   EXPECT_EQ(samples_[0]->settings().text_alignment, TextAlignment::kRight);
-  EXPECT_FALSE(samples_[0]->settings().size);
+  EXPECT_FALSE(samples_[0]->settings().width);
   ASSERT_TRUE(samples_[0]->settings().position);
   EXPECT_EQ(samples_[0]->settings().position->type, TextUnitType::kPercent);
   EXPECT_EQ(samples_[0]->settings().position->value, 20.0f);

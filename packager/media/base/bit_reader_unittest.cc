@@ -70,6 +70,7 @@ TEST(BitReaderTest, SkipBitsTest) {
   EXPECT_EQ(13, value8);
   EXPECT_FALSE(reader1.SkipBits(100));
   EXPECT_TRUE(reader1.SkipBits(0));
+  EXPECT_TRUE(reader1.SkipBytes(0));
   EXPECT_FALSE(reader1.SkipBits(1));
 }
 

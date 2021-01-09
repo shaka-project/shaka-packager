@@ -5,6 +5,7 @@
 #include "packager/media/formats/mp4/box_definitions.h"
 
 #include <gflags/gflags.h>
+#include <algorithm>
 #include <limits>
 
 #include "packager/base/logging.h"
@@ -2747,10 +2748,22 @@ bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {
       buffer->ReadWriteUInt64NBytes(&earliest_presentation_time, num_bytes) &&
       buffer->ReadWriteUInt64NBytes(&first_offset, num_bytes));
 
-  uint16_t reference_count = static_cast<uint16_t>(references.size());
+  uint16_t reference_count;
+  if (references.size() <= std::numeric_limits<uint16_t>::max()) {
+    reference_count = static_cast<uint16_t>(references.size());
+  } else {
+    reference_count = std::numeric_limits<uint16_t>::max();
+    LOG(WARNING) << "Seeing " << references.size()
+                 << " subsegment references, but at most " << reference_count
+                 << " references can be stored in 'sidx' box."
+                 << " The extra references are truncated.";
+    LOG(WARNING) << "The stream will not play to the end in DASH.";
+    LOG(WARNING) << "A possible workaround is to increase segment duration.";
+  }
   RCHECK(buffer->IgnoreBytes(2) &&  // reserved.
          buffer->ReadWriteUInt16(&reference_count));
-  references.resize(reference_count);
+  if (buffer->Reading())
+    references.resize(reference_count);
 
   uint32_t reference_type_size;
   uint32_t sap;
@@ -2782,7 +2795,10 @@ size_t SegmentIndex::ComputeSizeInternal() {
   version = IsFitIn32Bits(earliest_presentation_time, first_offset) ? 0 : 1;
   return HeaderSize() + sizeof(reference_id) + sizeof(timescale) +
          sizeof(uint32_t) * (1 + version) * 2 + 2 * sizeof(uint16_t) +
-         3 * sizeof(uint32_t) * references.size();
+         3 * sizeof(uint32_t) *
+             std::min(
+                 references.size(),
+                 static_cast<size_t>(std::numeric_limits<uint16_t>::max()));
 }
 
 MediaData::MediaData() = default;

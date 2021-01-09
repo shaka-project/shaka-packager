@@ -48,6 +48,8 @@ class TtmlGenerator {
   std::map<std::string, TextRegion> regions_;
   std::string language_;
   uint32_t time_scale_;
+  // This is modified in "const" methods to create unique IDs.
+  mutable uint32_t region_id_ = 0;
 };
 
 }  // namespace ttml

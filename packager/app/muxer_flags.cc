@@ -36,9 +36,9 @@ DEFINE_bool(fragment_sap_aligned,
             "implies segment_sap_aligned.");
 DEFINE_bool(generate_sidx_in_media_segments,
             true,
-            "For ISO BMFF with DASH live profile only. Indicates whether to "
-            "generate 'sidx' box in media segments. Note that it is required "
-            "by spec if segment template contains $Time$ specifier.");
+            "Indicates whether to generate 'sidx' box in media segments. Note "
+            "that it is required for DASH on-demand profile (not using segment "
+            "template).");
 DEFINE_string(temp_dir,
               "",
               "Specify a directory in which to store temporary (intermediate) "

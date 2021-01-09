@@ -190,8 +190,10 @@ TEST_F(TtmlMuxerTest, HandlesPosition) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
+      "      <region xml:id=\"_shaka_region_0\" tts:origin=\"30% 4em\" "
+      "tts:extent=\"100px 1em\"/>\n"
       "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" tts:origin=\"30% 4em\">bar</p>\n"
+      "end=\"00:00:06.00\" region=\"_shaka_region_0\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -199,6 +201,8 @@ TEST_F(TtmlMuxerTest, HandlesPosition) {
   TestProperties properties;
   properties.settings.position.emplace(30, TextUnitType::kPercent);
   properties.settings.line.emplace(4, TextUnitType::kLines);
+  properties.settings.width.emplace(100, TextUnitType::kPixels);
+  properties.settings.height.emplace(1, TextUnitType::kLines);
   properties.body.body = "bar";
 
   ParseSingleCue(kExpectedOutput, properties);

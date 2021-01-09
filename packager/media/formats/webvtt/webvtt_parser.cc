@@ -169,7 +169,7 @@ void ParseSettings(const std::string& id,
   } else if (id == "size") {
     float temp;
     if (ParsePercent(value, &temp)) {
-      settings->size.emplace(temp, TextUnitType::kPercent);
+      settings->width.emplace(temp, TextUnitType::kPercent);
     } else {
       LOG(WARNING) << "Invalid WebVTT size: " << value;
     }
