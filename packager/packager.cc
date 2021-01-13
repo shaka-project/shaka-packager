@@ -645,8 +645,8 @@ Status CreateAudioVideoJobs(
       if (!is_text) {
         handlers.emplace_back(std::make_shared<ChunkingHandler>(
             packaging_params.chunking_params));
-        handlers.emplace_back(CreateEncryptionHandler(packaging_params,
-            stream, encryption_key_source));
+        handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
+                                                      encryption_key_source));
       }
 
       replicator = std::make_shared<Replicator>();
