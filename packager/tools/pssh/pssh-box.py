@@ -142,8 +142,7 @@ def _split_list_on(elems, sep):
 
 def _create_bin_int(value):
   """Creates a binary string as 4-byte array from the given integer."""
-  return (chr(value >> 24) + chr((value >> 16) & 0xff) +
-          chr((value >> 8) & 0xff) + chr(value & 0xff)).encode()
+  return struct.pack('>i', value)
 
 
 def _create_uuid(data):
