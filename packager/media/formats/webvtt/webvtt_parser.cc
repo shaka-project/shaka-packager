@@ -176,7 +176,7 @@ void ParseSettings(const std::string& id,
   } else if (id == "align") {
     if (value == "start") {
       settings->text_alignment = TextAlignment::kStart;
-    } else if (value == "center") {
+    } else if (value == "center" || value == "middle") {
       settings->text_alignment = TextAlignment::kCenter;
     } else if (value == "end") {
       settings->text_alignment = TextAlignment::kEnd;
