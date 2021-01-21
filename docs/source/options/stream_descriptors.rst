@@ -57,6 +57,9 @@ These are the available fields:
     If not specified, it will be derived from the file extension of the output
     file.
 
+    For subtitles in MP4, you can specify 'vtt+mp4' or 'ttml+mp4' to control
+    which text format is used.
+
 :trick_play_factor (tpf):
 
     Optional value which specifies the trick play, a.k.a. trick mode, stream
