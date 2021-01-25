@@ -9,6 +9,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {
@@ -75,10 +76,10 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // The end of the PID map if 4 bytes away from the end of the section
   // (4 bytes = size of the CRC).
   int pid_map_end_marker = section_start_marker - section_length + 4;
-  std::map<int, uint8_t> pid_map;
+  std::map<int, TsStreamType> pid_map;
   while (static_cast<int>(bit_reader->bits_available()) >
          8 * pid_map_end_marker) {
-    uint8_t stream_type;
+    TsStreamType stream_type;
     int pid_es;
     int es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));
