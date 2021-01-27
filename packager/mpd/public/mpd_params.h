@@ -87,6 +87,15 @@ struct MpdParams {
   /// <ContentProtection ...> element alongside with <cenc:pssh>
   /// when using PlayReady protection system.
   bool include_mspr_pro = true;
+  ///Uses SegmentList instead of SegmentBase. Use this if the
+  ///content is huge and the total number of (sub)segment references
+  ///is greater than what the sidx atom allows (65535).
+  ///Note that this needs to be used with the
+  ///--generate_sidx_in_media_segments options since
+  ///sidx generation needs to be skipped if SegmentList is used
+  ///(the extra references are truncated and the stream would not play
+  ///until the end).
+  bool use_segment_list = false;
 };
 
 }  // namespace shaka

@@ -265,7 +265,9 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
   }
 
   if (HasVODOnlyFields(media_info_) &&
-      !representation.AddVODOnlyInfo(media_info_)) {
+      !representation.AddVODOnlyInfo(
+          media_info_, mpd_options_.mpd_params.use_segment_list,
+          mpd_options_.mpd_params.target_segment_duration)) {
     LOG(ERROR) << "Failed to add VOD info.";
     return base::nullopt;
   }

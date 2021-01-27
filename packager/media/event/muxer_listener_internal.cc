@@ -270,6 +270,12 @@ bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
              media_info->mutable_index_range());
   }
 
+  for (unsigned long i = 0; i < media_ranges.subsegment_ranges.size(); ++i) {
+    SetRange(media_ranges.subsegment_ranges[i].start,
+             media_ranges.subsegment_ranges[i].end,
+             media_info->add_subsegment_ranges());
+  }
+
   media_info->set_media_duration_seconds(duration_seconds);
 
   return true;
