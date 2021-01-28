@@ -151,7 +151,7 @@ TEST(WebVttUtilsTest, SettingsToString) {
   settings.region = "foo";
   settings.line = TextNumber(27, TextUnitType::kPercent);
   settings.position = TextNumber(42, TextUnitType::kPercent);
-  settings.size = TextNumber(54, TextUnitType::kPercent);
+  settings.width = TextNumber(54, TextUnitType::kPercent);
   settings.writing_direction = WritingDirection::kVerticalGrowingLeft;
   settings.text_alignment = TextAlignment::kEnd;
 

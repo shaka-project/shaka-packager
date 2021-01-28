@@ -59,9 +59,14 @@ struct TextSettings {
   /// The position offset of the cue.  For horizontal cues, this is the
   /// horizontal offset.  Percent units are relative to the window.
   base::Optional<TextNumber> position;
-  /// The size of the space used to draw text.  For horizontal cues, this is the
-  /// width.  Percent units are relative to the window.
-  base::Optional<TextNumber> size;
+  /// For horizontal cues, this is the width of the area to draw cues.  For
+  /// vertical cues, this is the height.  Percent units are relative to the
+  /// window.
+  base::Optional<TextNumber> width;
+  /// For horizontal cues, this is the height of the area to draw cues.  For
+  /// vertical cues, this is the width.  Percent units are relative to the
+  /// window.
+  base::Optional<TextNumber> height;
 
   /// The region to draw the cue in.
   std::string region;
@@ -80,7 +85,7 @@ struct TextFragmentStyle {
 };
 
 /// Represents a recursive structure of styled blocks of text.  Only one of
-/// sub_fragments, body, or newline will be set.
+/// sub_fragments, body, image, or newline will be set.
 struct TextFragment {
   TextFragment() {}
   TextFragment(const TextFragmentStyle& style,
@@ -90,6 +95,9 @@ struct TextFragment {
       : style(style), body(body) {}
   TextFragment(const TextFragmentStyle& style, const std::string& body)
       : style(style), body(body) {}
+  TextFragment(const TextFragmentStyle& style,
+               const std::vector<uint8_t>& image)
+      : style(style), image(image) {}
   TextFragment(const TextFragmentStyle& style, bool newline)
       : style(style), newline(newline) {}
 
@@ -97,6 +105,8 @@ struct TextFragment {
 
   std::vector<TextFragment> sub_fragments;
   std::string body;
+  /// PNG image data.
+  std::vector<uint8_t> image;
   bool newline = false;
 
   bool is_empty() const;

@@ -14,15 +14,15 @@ namespace media {
 
 class MediaSample;
 class StreamInfo;
+class TextSample;
 
 namespace mp2t {
 
 class EsParser {
  public:
-  typedef base::Callback<void(const std::shared_ptr<StreamInfo>&)>
-      NewStreamInfoCB;
-  typedef base::Callback<void(uint32_t, const std::shared_ptr<MediaSample>&)>
-      EmitSampleCB;
+  typedef base::Callback<void(std::shared_ptr<StreamInfo>)> NewStreamInfoCB;
+  typedef base::Callback<void(std::shared_ptr<MediaSample>)> EmitSampleCB;
+  typedef base::Callback<void(std::shared_ptr<TextSample>)> EmitTextSampleCB;
 
   EsParser(uint32_t pid) : pid_(pid) {}
   virtual ~EsParser() {}
@@ -35,7 +35,7 @@ class EsParser {
                      int64_t dts) = 0;
 
   // Flush any pending buffer.
-  virtual void Flush() = 0;
+  virtual bool Flush() = 0;
 
   // Reset the state of the ES parser.
   virtual void Reset() = 0;

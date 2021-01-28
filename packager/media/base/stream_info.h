@@ -58,6 +58,7 @@ enum Codec {
 
   kCodecText = 300,
   kCodecWebVtt = kCodecText,
+  kCodecTtml,
 };
 
 /// Abstract class holds stream information.

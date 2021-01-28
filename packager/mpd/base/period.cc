@@ -120,7 +120,7 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   return adaptation_set_ptr;
 }
 
-xml::scoped_xml_ptr<xmlNode> Period::GetXml(bool output_period_duration) {
+base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   adaptation_sets_.sort(
       [](const std::unique_ptr<AdaptationSet>& adaptation_set_a,
          const std::unique_ptr<AdaptationSet>& adaptation_set_b) {
@@ -134,22 +134,27 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml(bool output_period_duration) {
   xml::XmlNode period("Period");
 
   // Required for 'dynamic' MPDs.
-  period.SetId(id_);
+  if (!period.SetId(id_))
+    return base::nullopt;
   // Iterate thru AdaptationSets and add them to one big Period element.
   for (const auto& adaptation_set : adaptation_sets_) {
-    xml::scoped_xml_ptr<xmlNode> child(adaptation_set->GetXml());
-    if (!child || !period.AddChild(std::move(child)))
-      return nullptr;
+    auto child = adaptation_set->GetXml();
+    if (!child || !period.AddChild(std::move(*child)))
+      return base::nullopt;
   }
 
   if (output_period_duration) {
-    period.SetStringAttribute("duration",
-                              SecondsToXmlDuration(duration_seconds_));
+    if (!period.SetStringAttribute("duration",
+                                   SecondsToXmlDuration(duration_seconds_))) {
+      return base::nullopt;
+    }
   } else if (mpd_options_.mpd_type == MpdType::kDynamic) {
-    period.SetStringAttribute("start",
-                              SecondsToXmlDuration(start_time_in_seconds_));
+    if (!period.SetStringAttribute(
+            "start", SecondsToXmlDuration(start_time_in_seconds_))) {
+      return base::nullopt;
+    }
   }
-  return period.PassScopedPtr();
+  return period;
 }
 
 const std::list<AdaptationSet*> Period::GetAdaptationSets() const {

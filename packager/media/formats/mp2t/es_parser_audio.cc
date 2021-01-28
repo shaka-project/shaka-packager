@@ -167,7 +167,7 @@ bool EsParserAudio::Parse(const uint8_t* buf,
     sample->set_pts(current_pts);
     sample->set_dts(current_pts);
     sample->set_duration(frame_duration);
-    emit_sample_cb_.Run(pid(), sample);
+    emit_sample_cb_.Run(sample);
 
     // Update the PTS of the next frame.
     audio_timestamp_helper_->AddFrames(audio_header_->GetSamplesPerFrame());
@@ -182,7 +182,9 @@ bool EsParserAudio::Parse(const uint8_t* buf,
   return true;
 }
 
-void EsParserAudio::Flush() {}
+bool EsParserAudio::Flush() {
+  return true;
+}
 
 void EsParserAudio::Reset() {
   es_byte_queue_.Reset();

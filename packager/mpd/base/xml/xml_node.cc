@@ -7,6 +7,7 @@
 #include "packager/mpd/base/xml/xml_node.h"
 
 #include <gflags/gflags.h>
+#include <libxml/tree.h>
 
 #include <limits>
 #include <set>
@@ -15,9 +16,11 @@
 #include "packager/base/macros.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/sys_byteorder.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/segment_info.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 DEFINE_bool(segment_template_constant_duration,
             false,
@@ -77,12 +80,12 @@ bool PopulateSegmentTimeline(const std::list<SegmentInfo>& segment_infos,
                              XmlNode* segment_timeline) {
   for (const SegmentInfo& segment_info : segment_infos) {
     XmlNode s_element("S");
-    s_element.SetIntegerAttribute("t", segment_info.start_time);
-    s_element.SetIntegerAttribute("d", segment_info.duration);
+    RCHECK(s_element.SetIntegerAttribute("t", segment_info.start_time));
+    RCHECK(s_element.SetIntegerAttribute("d", segment_info.duration));
     if (segment_info.repeat > 0)
-      s_element.SetIntegerAttribute("r", segment_info.repeat);
+      RCHECK(s_element.SetIntegerAttribute("r", segment_info.repeat));
 
-    CHECK(segment_timeline->AddChild(s_element.PassScopedPtr()));
+    RCHECK(segment_timeline->AddChild(std::move(s_element)));
   }
 
   return true;
@@ -118,22 +121,30 @@ void TraverseNodesAndCollectNamespaces(const xmlNode* node,
 
 namespace xml {
 
-XmlNode::XmlNode(const char* name) : node_(xmlNewNode(NULL, BAD_CAST name)) {
-  DCHECK(name);
-  DCHECK(node_);
+class XmlNode::Impl {
+ public:
+  scoped_xml_ptr<xmlNode> node;
+};
+
+XmlNode::XmlNode(const std::string& name) : impl_(new Impl) {
+  impl_->node.reset(xmlNewNode(NULL, BAD_CAST name.c_str()));
+  DCHECK(impl_->node);
 }
+
+XmlNode::XmlNode(XmlNode&&) = default;
 
 XmlNode::~XmlNode() {}
 
-bool XmlNode::AddChild(scoped_xml_ptr<xmlNode> child) {
-  DCHECK(node_);
-  DCHECK(child);
-  if (!xmlAddChild(node_.get(), child.get()))
-    return false;
+XmlNode& XmlNode::operator=(XmlNode&&) = default;
 
-  // Reaching here means the ownership of |child| transfered to |node_|.
+bool XmlNode::AddChild(XmlNode child) {
+  DCHECK(impl_->node);
+  DCHECK(child.impl_->node);
+  RCHECK(xmlAddChild(impl_->node.get(), child.impl_->node.get()));
+
+  // Reaching here means the ownership of |child| transfered to |node|.
   // Release the pointer so that it doesn't get destructed in this scope.
-  ignore_result(child.release());
+  ignore_result(child.impl_->node.release());
   return true;
 }
 
@@ -141,12 +152,12 @@ bool XmlNode::AddElements(const std::vector<Element>& elements) {
   for (size_t element_index = 0; element_index < elements.size();
        ++element_index) {
     const Element& child_element = elements[element_index];
-    XmlNode child_node(child_element.name.c_str());
+    XmlNode child_node(child_element.name);
     for (std::map<std::string, std::string>::const_iterator attribute_it =
              child_element.attributes.begin();
          attribute_it != child_element.attributes.end(); ++attribute_it) {
-      child_node.SetStringAttribute(attribute_it->first.c_str(),
-                                    attribute_it->second);
+      RCHECK(child_node.SetStringAttribute(attribute_it->first,
+                                           attribute_it->second));
     }
 
     // Note that somehow |SetContent| needs to be called before |AddElements|
@@ -154,114 +165,133 @@ bool XmlNode::AddElements(const std::vector<Element>& elements) {
     child_node.SetContent(child_element.content);
 
     // Recursively set children for the child.
-    if (!child_node.AddElements(child_element.subelements))
-      return false;
+    RCHECK(child_node.AddElements(child_element.subelements));
 
-    if (!xmlAddChild(node_.get(), child_node.GetRawPtr())) {
+    if (!xmlAddChild(impl_->node.get(), child_node.impl_->node.get())) {
       LOG(ERROR) << "Failed to set child " << child_element.name
                  << " to parent element "
-                 << reinterpret_cast<const char*>(node_->name);
+                 << reinterpret_cast<const char*>(impl_->node->name);
       return false;
     }
-    // Reaching here means the ownership of |child_node| transfered to |node_|.
+    // Reaching here means the ownership of |child_node| transfered to |node|.
     // Release the pointer so that it doesn't get destructed in this scope.
-    ignore_result(child_node.Release());
+    child_node.impl_->node.release();
   }
   return true;
 }
 
-void XmlNode::SetStringAttribute(const char* attribute_name,
+bool XmlNode::SetStringAttribute(const std::string& attribute_name,
                                  const std::string& attribute) {
-  DCHECK(node_);
-  DCHECK(attribute_name);
-  xmlSetProp(node_.get(), BAD_CAST attribute_name, BAD_CAST attribute.c_str());
+  DCHECK(impl_->node);
+  return xmlSetProp(impl_->node.get(), BAD_CAST attribute_name.c_str(),
+                    BAD_CAST attribute.c_str()) != nullptr;
 }
 
-void XmlNode::SetIntegerAttribute(const char* attribute_name, uint64_t number) {
-  DCHECK(node_);
-  DCHECK(attribute_name);
-  xmlSetProp(node_.get(),
-             BAD_CAST attribute_name,
-             BAD_CAST (base::Uint64ToString(number).c_str()));
+bool XmlNode::SetIntegerAttribute(const std::string& attribute_name,
+                                  uint64_t number) {
+  DCHECK(impl_->node);
+  return xmlSetProp(impl_->node.get(), BAD_CAST attribute_name.c_str(),
+                    BAD_CAST(base::Uint64ToString(number).c_str())) != nullptr;
 }
 
-void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
+bool XmlNode::SetFloatingPointAttribute(const std::string& attribute_name,
                                         double number) {
-  DCHECK(node_);
-  DCHECK(attribute_name);
-  xmlSetProp(node_.get(), BAD_CAST attribute_name,
-             BAD_CAST(base::DoubleToString(number).c_str()));
+  DCHECK(impl_->node);
+  return xmlSetProp(impl_->node.get(), BAD_CAST attribute_name.c_str(),
+                    BAD_CAST(base::DoubleToString(number).c_str())) != nullptr;
 }
 
-void XmlNode::SetId(uint32_t id) {
-  SetIntegerAttribute("id", id);
+bool XmlNode::SetId(uint32_t id) {
+  return SetIntegerAttribute("id", id);
+}
+
+void XmlNode::AddContent(const std::string& content) {
+  DCHECK(impl_->node);
+  xmlNodeAddContent(impl_->node.get(), BAD_CAST content.c_str());
 }
 
 void XmlNode::SetContent(const std::string& content) {
-  DCHECK(node_);
-  xmlNodeSetContent(node_.get(), BAD_CAST content.c_str());
+  DCHECK(impl_->node);
+  xmlNodeSetContent(impl_->node.get(), BAD_CAST content.c_str());
 }
 
-std::set<std::string> XmlNode::ExtractReferencedNamespaces() {
+std::set<std::string> XmlNode::ExtractReferencedNamespaces() const {
   std::set<std::string> namespaces;
-  TraverseNodesAndCollectNamespaces(node_.get(), &namespaces);
+  TraverseNodesAndCollectNamespaces(impl_->node.get(), &namespaces);
   return namespaces;
 }
 
-scoped_xml_ptr<xmlNode> XmlNode::PassScopedPtr() {
-  DVLOG(2) << "Passing node_.";
-  DCHECK(node_);
-  return std::move(node_);
+std::string XmlNode::ToString(const std::string& comment) const {
+  // Create an xmlDoc from xmlNodePtr. The node is copied so ownership does not
+  // transfer.
+  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST "1.0"));
+  if (comment.empty()) {
+    xmlDocSetRootElement(doc.get(), xmlCopyNode(impl_->node.get(), true));
+  } else {
+    xml::scoped_xml_ptr<xmlNode> comment_xml(
+        xmlNewDocComment(doc.get(), BAD_CAST comment.c_str()));
+    xmlDocSetRootElement(doc.get(), comment_xml.get());
+    xmlAddSibling(comment_xml.release(), xmlCopyNode(impl_->node.get(), true));
+  }
+
+  // Format the xmlDoc to string.
+  static const int kNiceFormat = 1;
+  int doc_str_size = 0;
+  xmlChar* doc_str = nullptr;
+  xmlDocDumpFormatMemoryEnc(doc.get(), &doc_str, &doc_str_size, "UTF-8",
+                            kNiceFormat);
+  std::string output(doc_str, doc_str + doc_str_size);
+  xmlFree(doc_str);
+  return output;
 }
 
-xmlNodePtr XmlNode::Release() {
-  DVLOG(2) << "Releasing node_.";
-  DCHECK(node_);
-  return node_.release();
+bool XmlNode::GetAttribute(const std::string& name, std::string* value) const {
+  xml::scoped_xml_ptr<xmlChar> str(
+      xmlGetProp(impl_->node.get(), BAD_CAST name.c_str()));
+  if (!str)
+    return false;
+  *value = reinterpret_cast<const char*>(str.get());
+  return true;
 }
 
-xmlNodePtr XmlNode::GetRawPtr() {
-  return node_.get();
+xmlNode* XmlNode::GetRawPtr() const {
+  return impl_->node.get();
 }
 
-RepresentationBaseXmlNode::RepresentationBaseXmlNode(const char* name)
+RepresentationBaseXmlNode::RepresentationBaseXmlNode(const std::string& name)
     : XmlNode(name) {}
 RepresentationBaseXmlNode::~RepresentationBaseXmlNode() {}
 
 bool RepresentationBaseXmlNode::AddContentProtectionElements(
     const std::list<ContentProtectionElement>& content_protection_elements) {
-  std::list<ContentProtectionElement>::const_iterator content_protection_it =
-      content_protection_elements.begin();
-  for (; content_protection_it != content_protection_elements.end();
-       ++content_protection_it) {
-    if (!AddContentProtectionElement(*content_protection_it))
-      return false;
+  for (const auto& elem : content_protection_elements) {
+    RCHECK(AddContentProtectionElement(elem));
   }
 
   return true;
 }
 
-void RepresentationBaseXmlNode::AddSupplementalProperty(
+bool RepresentationBaseXmlNode::AddSupplementalProperty(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  AddDescriptor("SupplementalProperty", scheme_id_uri, value);
+  return AddDescriptor("SupplementalProperty", scheme_id_uri, value);
 }
 
-void RepresentationBaseXmlNode::AddEssentialProperty(
+bool RepresentationBaseXmlNode::AddEssentialProperty(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  AddDescriptor("EssentialProperty", scheme_id_uri, value);
+  return AddDescriptor("EssentialProperty", scheme_id_uri, value);
 }
 
 bool RepresentationBaseXmlNode::AddDescriptor(
     const std::string& descriptor_name,
     const std::string& scheme_id_uri,
     const std::string& value) {
-  XmlNode descriptor(descriptor_name.c_str());
-  descriptor.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  XmlNode descriptor(descriptor_name);
+  RCHECK(descriptor.SetStringAttribute("schemeIdUri", scheme_id_uri));
   if (!value.empty())
-    descriptor.SetStringAttribute("value", value);
-  return AddChild(descriptor.PassScopedPtr());
+    RCHECK(descriptor.SetStringAttribute("value", value));
+  return AddChild(std::move(descriptor));
 }
 
 bool RepresentationBaseXmlNode::AddContentProtectionElement(
@@ -270,43 +300,34 @@ bool RepresentationBaseXmlNode::AddContentProtectionElement(
 
   // @value is an optional attribute.
   if (!content_protection_element.value.empty()) {
-    content_protection_node.SetStringAttribute(
-        "value", content_protection_element.value);
+    RCHECK(content_protection_node.SetStringAttribute(
+        "value", content_protection_element.value));
   }
-  content_protection_node.SetStringAttribute(
-      "schemeIdUri", content_protection_element.scheme_id_uri);
+  RCHECK(content_protection_node.SetStringAttribute(
+      "schemeIdUri", content_protection_element.scheme_id_uri));
 
-  typedef std::map<std::string, std::string> AttributesMapType;
-  const AttributesMapType& additional_attributes =
-      content_protection_element.additional_attributes;
-
-  AttributesMapType::const_iterator attributes_it =
-      additional_attributes.begin();
-  for (; attributes_it != additional_attributes.end(); ++attributes_it) {
-    content_protection_node.SetStringAttribute(attributes_it->first.c_str(),
-                                               attributes_it->second);
+  for (const auto& pair : content_protection_element.additional_attributes) {
+    RCHECK(content_protection_node.SetStringAttribute(pair.first, pair.second));
   }
 
-  if (!content_protection_node.AddElements(
-          content_protection_element.subelements)) {
-    return false;
-  }
-  return AddChild(content_protection_node.PassScopedPtr());
+  RCHECK(content_protection_node.AddElements(
+      content_protection_element.subelements));
+  return AddChild(std::move(content_protection_node));
 }
 
 AdaptationSetXmlNode::AdaptationSetXmlNode()
     : RepresentationBaseXmlNode("AdaptationSet") {}
 AdaptationSetXmlNode::~AdaptationSetXmlNode() {}
 
-void AdaptationSetXmlNode::AddAccessibilityElement(
+bool AdaptationSetXmlNode::AddAccessibilityElement(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  AddDescriptor("Accessibility", scheme_id_uri, value);
+  return AddDescriptor("Accessibility", scheme_id_uri, value);
 }
 
-void AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
+bool AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
                                           const std::string& value) {
-  AddDescriptor("Role", scheme_id_uri, value);
+  return AddDescriptor("Role", scheme_id_uri, value);
 }
 
 RepresentationXmlNode::RepresentationXmlNode()
@@ -323,82 +344,87 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info,
   }
 
   if (video_info.has_pixel_width() && video_info.has_pixel_height()) {
-    SetStringAttribute("sar", base::IntToString(video_info.pixel_width()) +
-                                  ":" +
-                                  base::IntToString(video_info.pixel_height()));
+    RCHECK(SetStringAttribute(
+        "sar", base::IntToString(video_info.pixel_width()) + ":" +
+                   base::IntToString(video_info.pixel_height())));
   }
 
   if (set_width)
-    SetIntegerAttribute("width", video_info.width());
+    RCHECK(SetIntegerAttribute("width", video_info.width()));
   if (set_height)
-    SetIntegerAttribute("height", video_info.height());
+    RCHECK(SetIntegerAttribute("height", video_info.height()));
   if (set_frame_rate) {
-    SetStringAttribute("frameRate",
-                       base::IntToString(video_info.time_scale()) + "/" +
-                           base::IntToString(video_info.frame_duration()));
+    RCHECK(SetStringAttribute(
+        "frameRate", base::IntToString(video_info.time_scale()) + "/" +
+                         base::IntToString(video_info.frame_duration())));
   }
 
   if (video_info.has_playback_rate()) {
-    SetStringAttribute("maxPlayoutRate",
-                       base::IntToString(video_info.playback_rate()));
+    RCHECK(SetStringAttribute("maxPlayoutRate",
+                              base::IntToString(video_info.playback_rate())));
     // Since the trick play stream contains only key frames, there is no coding
     // dependency on the main stream. Simply set the codingDependency to false.
     // TODO(hmchen): propagate this attribute up to the AdaptationSet, since
     // all are set to false.
-    SetStringAttribute("codingDependency", "false");
+    RCHECK(SetStringAttribute("codingDependency", "false"));
   }
   return true;
 }
 
 bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
-  if (!AddAudioChannelInfo(audio_info))
-    return false;
-
-  AddAudioSamplingRateInfo(audio_info);
-  return true;
+  return AddAudioChannelInfo(audio_info) &&
+         AddAudioSamplingRateInfo(audio_info);
 }
 
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
-  if (media_info.has_media_file_url()) {
+  const bool use_segment_list_text =
+      media_info.has_text_info() && media_info.has_presentation_time_offset();
+
+  if (media_info.has_media_file_url() && !use_segment_list_text) {
     XmlNode base_url("BaseURL");
     base_url.SetContent(media_info.media_file_url());
 
-    if (!AddChild(base_url.PassScopedPtr()))
-      return false;
+    RCHECK(AddChild(std::move(base_url)));
   }
 
   const bool need_segment_base =
       media_info.has_index_range() || media_info.has_init_range() ||
       (media_info.has_reference_time_scale() && !media_info.has_text_info());
+  DCHECK(!need_segment_base || !use_segment_list_text);
 
-  if (need_segment_base) {
-    XmlNode segment_base("SegmentBase");
+  if (need_segment_base || use_segment_list_text) {
+    XmlNode child(need_segment_base ? "SegmentBase" : "SegmentList");
     if (media_info.has_index_range()) {
-      segment_base.SetStringAttribute("indexRange",
-                                      RangeToString(media_info.index_range()));
+      RCHECK(child.SetStringAttribute("indexRange",
+                                      RangeToString(media_info.index_range())));
     }
 
     if (media_info.has_reference_time_scale()) {
-      segment_base.SetIntegerAttribute("timescale",
-                                       media_info.reference_time_scale());
+      RCHECK(child.SetIntegerAttribute("timescale",
+                                       media_info.reference_time_scale()));
     }
 
     if (media_info.has_presentation_time_offset()) {
-      segment_base.SetIntegerAttribute("presentationTimeOffset",
-                                       media_info.presentation_time_offset());
+      RCHECK(child.SetIntegerAttribute("presentationTimeOffset",
+                                       media_info.presentation_time_offset()));
     }
 
     if (media_info.has_init_range()) {
       XmlNode initialization("Initialization");
-      initialization.SetStringAttribute("range",
-                                        RangeToString(media_info.init_range()));
+      RCHECK(initialization.SetStringAttribute(
+          "range", RangeToString(media_info.init_range())));
 
-      if (!segment_base.AddChild(initialization.PassScopedPtr()))
-        return false;
+      RCHECK(child.AddChild(std::move(initialization)));
     }
 
-    if (!AddChild(segment_base.PassScopedPtr()))
-      return false;
+    if (use_segment_list_text) {
+      XmlNode media_url("SegmentURL");
+      RCHECK(
+          media_url.SetStringAttribute("media", media_info.media_file_url()));
+      RCHECK(child.AddChild(std::move(media_url)));
+    }
+
+    RCHECK(AddChild(std::move(child)));
   }
 
   return true;
@@ -410,50 +436,48 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     uint32_t start_number) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
-    segment_template.SetIntegerAttribute("timescale",
-                                         media_info.reference_time_scale());
+    RCHECK(segment_template.SetIntegerAttribute(
+        "timescale", media_info.reference_time_scale()));
   }
 
   if (media_info.has_presentation_time_offset()) {
-    segment_template.SetIntegerAttribute("presentationTimeOffset",
-                                         media_info.presentation_time_offset());
+    RCHECK(segment_template.SetIntegerAttribute(
+        "presentationTimeOffset", media_info.presentation_time_offset()));
   }
 
   if (media_info.has_init_segment_url()) {
-    segment_template.SetStringAttribute("initialization",
-                                        media_info.init_segment_url());
+    RCHECK(segment_template.SetStringAttribute("initialization",
+                                               media_info.init_segment_url()));
   }
 
   if (media_info.has_segment_template_url()) {
-    segment_template.SetStringAttribute("media",
-                                        media_info.segment_template_url());
-    segment_template.SetIntegerAttribute("startNumber", start_number);
+    RCHECK(segment_template.SetStringAttribute(
+        "media", media_info.segment_template_url()));
+    RCHECK(segment_template.SetIntegerAttribute("startNumber", start_number));
   }
 
   if (!segment_infos.empty()) {
     // Don't use SegmentTimeline if all segments except the last one are of
     // the same duration.
     if (IsTimelineConstantDuration(segment_infos, start_number)) {
-      segment_template.SetIntegerAttribute("duration",
-                                           segment_infos.front().duration);
+      RCHECK(segment_template.SetIntegerAttribute(
+          "duration", segment_infos.front().duration));
       if (FLAGS_dash_add_last_segment_number_when_needed) {
         uint32_t last_segment_number = start_number - 1;
         for (const auto& segment_info_element : segment_infos)
           last_segment_number += segment_info_element.repeat + 1;
 
-        AddSupplementalProperty(
+        RCHECK(AddSupplementalProperty(
             "http://dashif.org/guidelines/last-segment-number",
-            std::to_string(last_segment_number));
+            std::to_string(last_segment_number)));
       }
     } else {
       XmlNode segment_timeline("SegmentTimeline");
-      if (!PopulateSegmentTimeline(segment_infos, &segment_timeline) ||
-          !segment_template.AddChild(segment_timeline.PassScopedPtr())) {
-        return false;
-      }
+      RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
+      RCHECK(segment_template.AddChild(std::move(segment_timeline)));
     }
   }
-  return AddChild(segment_template.PassScopedPtr());
+  return AddChild(std::move(segment_template));
 }
 
 bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
@@ -549,10 +573,11 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
 
 // MPD expects one number for sampling frequency, or if it is a range it should
 // be space separated.
-void RepresentationXmlNode::AddAudioSamplingRateInfo(
+bool RepresentationXmlNode::AddAudioSamplingRateInfo(
     const AudioInfo& audio_info) {
-  if (audio_info.has_sampling_frequency())
-    SetIntegerAttribute("audioSamplingRate", audio_info.sampling_frequency());
+  return !audio_info.has_sampling_frequency() ||
+         SetIntegerAttribute("audioSamplingRate",
+                             audio_info.sampling_frequency());
 }
 
 }  // namespace xml

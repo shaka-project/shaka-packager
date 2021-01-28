@@ -128,13 +128,13 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
   return (parse_result && Emit(false));
 }
 
-void TsSectionPes::Flush() {
+bool TsSectionPes::Flush() {
   // Try emitting a packet since we might have a pending PES packet
   // with an undefined size.
-  Emit(true);
+  RCHECK(Emit(true));
 
   // Flush the underlying ES parser.
-  es_parser_->Flush();
+  return es_parser_->Flush();
 }
 
 void TsSectionPes::Reset() {

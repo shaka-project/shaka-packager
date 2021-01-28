@@ -30,7 +30,7 @@ class TsSection {
 
   // Process bytes that have not been processed yet (pending buffers in the
   // pipe). Flush might thus results in frame emission, as an example.
-  virtual void Flush() = 0;
+  virtual bool Flush() = 0;
 
   // Reset the state of the parser to its initial state.
   virtual void Reset() = 0;

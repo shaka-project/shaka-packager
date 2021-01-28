@@ -124,13 +124,13 @@ class EsParserH264Test : public testing::Test {
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
 
-  void EmitSample(uint32_t pid, const std::shared_ptr<MediaSample>& sample) {
+  void EmitSample(std::shared_ptr<MediaSample> sample) {
     sample_count_++;
     if (sample_count_ == 1)
       first_frame_is_key_frame_ = sample->is_key_frame();
   }
 
-  void NewVideoConfig(const std::shared_ptr<StreamInfo>& config) {
+  void NewVideoConfig(std::shared_ptr<StreamInfo> config) {
     DVLOG(1) << config->ToString();
     stream_map_[config->track_id()] = config;
   }

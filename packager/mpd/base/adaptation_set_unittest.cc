@@ -69,7 +69,7 @@ TEST_F(AdaptationSetTest, AddAdaptationSetSwitching) {
       "   schemeIdUri=\"urn:mpeg:dash:adaptation-set-switching:2016\" "
       "   value=\"1,2,8\"/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 // Verify that content type is set correctly if video info is present in
@@ -89,8 +89,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetVideoContentType) {
 
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
-  EXPECT_THAT(adaptation_set->GetXml().get(),
-              AttributeEqual("contentType", "video"));
+  EXPECT_THAT(adaptation_set->GetXml(), AttributeEqual("contentType", "video"));
 }
 
 // Verify that content type is set correctly if audio info is present in
@@ -107,8 +106,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetAudioContentType) {
 
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
-  EXPECT_THAT(adaptation_set->GetXml().get(),
-              AttributeEqual("contentType", "audio"));
+  EXPECT_THAT(adaptation_set->GetXml(), AttributeEqual("contentType", "audio"));
 }
 
 // Verify that content type is set correctly if text info is present in
@@ -123,8 +121,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetTextContentType) {
 
   auto adaptation_set = CreateAdaptationSet("en");
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
-  EXPECT_THAT(adaptation_set->GetXml().get(),
-              AttributeEqual("contentType", "text"));
+  EXPECT_THAT(adaptation_set->GetXml(), AttributeEqual("contentType", "text"));
 }
 
 TEST_F(AdaptationSetTest, CopyRepresentation) {
@@ -152,14 +149,14 @@ TEST_F(AdaptationSetTest, CopyRepresentation) {
 // Verify that language passed to the constructor sets the @lang field is set.
 TEST_F(AdaptationSetTest, CheckLanguageAttributeSet) {
   auto adaptation_set = CreateAdaptationSet("en");
-  EXPECT_THAT(adaptation_set->GetXml().get(), AttributeEqual("lang", "en"));
+  EXPECT_THAT(adaptation_set->GetXml(), AttributeEqual("lang", "en"));
 }
 
 TEST_F(AdaptationSetTest, CheckAdaptationSetId) {
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   const uint32_t kAdaptationSetId = 42;
   adaptation_set->set_id(kAdaptationSetId);
-  EXPECT_THAT(adaptation_set->GetXml().get(),
+  EXPECT_THAT(adaptation_set->GetXml(),
               AttributeEqual("id", std::to_string(kAdaptationSetId)));
 }
 
@@ -176,7 +173,7 @@ TEST_F(AdaptationSetTest, AddAccessibilityElement) {
       "  <Accessibility schemeIdUri=\"urn:tva:metadata:cs:AudioPurposeCS:2007\""
       "                 value=\"2\"/>\n"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 // Verify AdaptationSet::AddRole() works for "main" role.
@@ -190,7 +187,7 @@ TEST_F(AdaptationSetTest, AdaptationAddRoleElementMain) {
       "<AdaptationSet contentType=\"\">\n"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 // Add Role, ContentProtection, and Representation elements. Verify that
@@ -211,7 +208,6 @@ TEST_F(AdaptationSetTest, CheckContentProtectionRoleRepresentationOrder) {
       "container_type: 1\n";
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
   const char kExpectedOutput[] =
       "<AdaptationSet contentType=\"audio\">\n"
       "  <ContentProtection schemeIdUri=\"any_scheme\"/>\n"
@@ -224,7 +220,7 @@ TEST_F(AdaptationSetTest, CheckContentProtectionRoleRepresentationOrder) {
       "     value=\"2\"/>\n"
       "  </Representation>\n"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 // Verify that if all video Representations in an AdaptationSet have the same
@@ -254,9 +250,9 @@ TEST_F(AdaptationSetTest, AdapatationSetFrameRate) {
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo2)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("frameRate", "10/3"));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("maxFrameRate")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("frameRate", "10/3"));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("maxFrameRate")));
 }
 
 // Verify that if there are videos with different frame rates, the maxFrameRate
@@ -287,10 +283,9 @@ TEST_F(AdaptationSetTest, AdapatationSetMaxFrameRate) {
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kVideoMediaInfo15fps)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(),
-              AttributeEqual("maxFrameRate", "3000/100"));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("frameRate")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("maxFrameRate", "3000/100"));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("frameRate")));
 }
 
 // Verify that (max)FrameRate can be set by calling
@@ -331,9 +326,9 @@ TEST_F(AdaptationSetTest,
 
   // First, make sure that maxFrameRate nor frameRate are set because
   // frame durations were not provided in the MediaInfo.
-  xml::scoped_xml_ptr<xmlNode> no_frame_rate(adaptation_set->GetXml());
-  EXPECT_THAT(no_frame_rate.get(), Not(AttributeSet("maxFrameRate")));
-  EXPECT_THAT(no_frame_rate.get(), Not(AttributeSet("frameRate")));
+  auto no_frame_rate = adaptation_set->GetXml();
+  EXPECT_THAT(no_frame_rate, Not(AttributeSet("maxFrameRate")));
+  EXPECT_THAT(no_frame_rate, Not(AttributeSet("frameRate")));
 
   // Then set same frame duration for the representations. (Given that the
   // time scales match).
@@ -341,9 +336,9 @@ TEST_F(AdaptationSetTest,
   representation_480p->SetSampleDuration(kSameFrameDuration);
   representation_360p->SetSampleDuration(kSameFrameDuration);
 
-  xml::scoped_xml_ptr<xmlNode> same_frame_rate(adaptation_set->GetXml());
-  EXPECT_THAT(same_frame_rate.get(), Not(AttributeSet("maxFrameRate")));
-  EXPECT_THAT(same_frame_rate.get(), AttributeEqual("frameRate", "10/3"));
+  auto same_frame_rate = adaptation_set->GetXml();
+  EXPECT_THAT(same_frame_rate, Not(AttributeSet("maxFrameRate")));
+  EXPECT_THAT(same_frame_rate, AttributeEqual("frameRate", "10/3"));
 
   // Then set 480p to be 5fps (10/2) so that maxFrameRate is set.
   const uint32_t k5FPSFrameDuration = 2;
@@ -351,9 +346,9 @@ TEST_F(AdaptationSetTest,
                 "frame_duration_must_be_shorter_for_max_frame_rate");
   representation_480p->SetSampleDuration(k5FPSFrameDuration);
 
-  xml::scoped_xml_ptr<xmlNode> max_frame_rate(adaptation_set->GetXml());
-  EXPECT_THAT(max_frame_rate.get(), AttributeEqual("maxFrameRate", "10/2"));
-  EXPECT_THAT(max_frame_rate.get(), Not(AttributeSet("frameRate")));
+  auto max_frame_rate = adaptation_set->GetXml();
+  EXPECT_THAT(max_frame_rate, AttributeEqual("maxFrameRate", "10/2"));
+  EXPECT_THAT(max_frame_rate, Not(AttributeSet("frameRate")));
 }
 
 // Verify that if the picture aspect ratio of all the Representations are the
@@ -417,8 +412,8 @@ TEST_F(AdaptationSetTest, AdaptationSetParAllSame) {
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pVideoInfo)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("par", "16:9"));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("par", "16:9"));
 }
 
 // Verify that adding Representations with different par will generate
@@ -454,8 +449,8 @@ TEST_F(AdaptationSetTest, AdaptationSetParDifferent) {
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k2by1VideoInfo)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("par")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("par")));
 }
 
 // Verify that adding Representation without pixel_width and pixel_height will
@@ -475,8 +470,8 @@ TEST_F(AdaptationSetTest, AdaptationSetParUnknown) {
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kUknownPixelWidthAndHeight)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("par")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("par")));
 }
 
 // Catch the case where it ends up wrong if integer division is used to check
@@ -509,9 +504,9 @@ TEST_F(AdaptationSetTest, AdapatationSetMaxFrameRateIntegerDivisionEdgeCase) {
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo2)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("maxFrameRate", "11/3"));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("frameRate")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("maxFrameRate", "11/3"));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("frameRate")));
 }
 
 // Attribute values that are common to all the children Representations should
@@ -571,35 +566,34 @@ TEST_F(AdaptationSetTest, BubbleUpAttributesToAdaptationSet) {
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(ConvertToMediaInfo(k1080p)));
 
-  xml::scoped_xml_ptr<xmlNode> all_attributes_on_adaptation_set(
-      adaptation_set->GetXml());
-  EXPECT_THAT(all_attributes_on_adaptation_set.get(),
+  auto all_attributes_on_adaptation_set = adaptation_set->GetXml();
+  EXPECT_THAT(all_attributes_on_adaptation_set,
               AttributeEqual("width", "1920"));
-  EXPECT_THAT(all_attributes_on_adaptation_set.get(),
+  EXPECT_THAT(all_attributes_on_adaptation_set,
               AttributeEqual("height", "1080"));
-  EXPECT_THAT(all_attributes_on_adaptation_set.get(),
+  EXPECT_THAT(all_attributes_on_adaptation_set,
               AttributeEqual("frameRate", "30/1"));
 
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kDifferentWidth)));
-  xml::scoped_xml_ptr<xmlNode> width_not_set(adaptation_set->GetXml());
-  EXPECT_THAT(width_not_set.get(), Not(AttributeSet("width")));
-  EXPECT_THAT(width_not_set.get(), AttributeEqual("height", "1080"));
-  EXPECT_THAT(width_not_set.get(), AttributeEqual("frameRate", "30/1"));
+  auto width_not_set = adaptation_set->GetXml();
+  EXPECT_THAT(width_not_set, Not(AttributeSet("width")));
+  EXPECT_THAT(width_not_set, AttributeEqual("height", "1080"));
+  EXPECT_THAT(width_not_set, AttributeEqual("frameRate", "30/1"));
 
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kDifferentHeight)));
-  xml::scoped_xml_ptr<xmlNode> width_height_not_set(adaptation_set->GetXml());
-  EXPECT_THAT(width_height_not_set.get(), Not(AttributeSet("width")));
-  EXPECT_THAT(width_height_not_set.get(), Not(AttributeSet("height")));
-  EXPECT_THAT(width_height_not_set.get(), AttributeEqual("frameRate", "30/1"));
+  auto width_height_not_set = adaptation_set->GetXml();
+  EXPECT_THAT(width_height_not_set, Not(AttributeSet("width")));
+  EXPECT_THAT(width_height_not_set, Not(AttributeSet("height")));
+  EXPECT_THAT(width_height_not_set, AttributeEqual("frameRate", "30/1"));
 
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kDifferentFrameRate)));
-  xml::scoped_xml_ptr<xmlNode> no_common_attributes(adaptation_set->GetXml());
-  EXPECT_THAT(no_common_attributes.get(), Not(AttributeSet("width")));
-  EXPECT_THAT(no_common_attributes.get(), Not(AttributeSet("height")));
-  EXPECT_THAT(no_common_attributes.get(), Not(AttributeSet("frameRate")));
+  auto no_common_attributes = adaptation_set->GetXml();
+  EXPECT_THAT(no_common_attributes, Not(AttributeSet("width")));
+  EXPECT_THAT(no_common_attributes, Not(AttributeSet("height")));
+  EXPECT_THAT(no_common_attributes, Not(AttributeSet("frameRate")));
 }
 
 TEST_F(AdaptationSetTest, GetRepresentations) {
@@ -694,21 +688,20 @@ TEST_F(OnDemandAdaptationSetTest, SubsegmentAlignment) {
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
   representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
 
-  xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
-  EXPECT_THAT(aligned.get(), AttributeEqual("subsegmentAlignment", "true"));
+  auto aligned = adaptation_set->GetXml();
+  EXPECT_THAT(aligned, AttributeEqual("subsegmentAlignment", "true"));
 
   // Unknown because 480p has an extra subsegments.
   representation_480p->AddNewSegment(11, 20, kAnySize);
-  xml::scoped_xml_ptr<xmlNode> alignment_unknown(adaptation_set->GetXml());
-  EXPECT_THAT(alignment_unknown.get(),
-              Not(AttributeSet("subsegmentAlignment")));
+  auto alignment_unknown = adaptation_set->GetXml();
+  EXPECT_THAT(alignment_unknown, Not(AttributeSet("subsegmentAlignment")));
 
   // Add segments that make them not aligned.
   representation_360p->AddNewSegment(10, 1, kAnySize);
   representation_360p->AddNewSegment(11, 19, kAnySize);
 
-  xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
-  EXPECT_THAT(unaligned.get(), Not(AttributeSet("subsegmentAlignment")));
+  auto unaligned = adaptation_set->GetXml();
+  EXPECT_THAT(unaligned, Not(AttributeSet("subsegmentAlignment")));
 }
 
 // Verify that subsegmentAlignment can be force set to true.
@@ -749,13 +742,13 @@ TEST_F(OnDemandAdaptationSetTest, ForceSetsubsegmentAlignment) {
   const uint64_t kAnySize = 19834u;
   representation_480p->AddNewSegment(kStartTime1, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime2, kDuration, kAnySize);
-  xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
-  EXPECT_THAT(unaligned.get(), Not(AttributeSet("subsegmentAlignment")));
+  auto unaligned = adaptation_set->GetXml();
+  EXPECT_THAT(unaligned, Not(AttributeSet("subsegmentAlignment")));
 
   // Then force set the segment alignment attribute to true.
   adaptation_set->ForceSetSegmentAlignment(true);
-  xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
-  EXPECT_THAT(aligned.get(), AttributeEqual("subsegmentAlignment", "true"));
+  auto aligned = adaptation_set->GetXml();
+  EXPECT_THAT(aligned, AttributeEqual("subsegmentAlignment", "true"));
 }
 
 // Verify that segmentAlignment is set to true if all the Representations
@@ -800,16 +793,16 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignmentDynamicMpd) {
 
   representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
-  xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
-  EXPECT_THAT(aligned.get(), AttributeEqual("segmentAlignment", "true"));
+  auto aligned = adaptation_set->GetXml();
+  EXPECT_THAT(aligned, AttributeEqual("segmentAlignment", "true"));
 
   // Add segments that make them not aligned.
   representation_480p->AddNewSegment(11, 20, kAnySize);
   representation_360p->AddNewSegment(10, 1, kAnySize);
   representation_360p->AddNewSegment(11, 19, kAnySize);
 
-  xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
-  EXPECT_THAT(unaligned.get(), Not(AttributeSet("segmentAlignment")));
+  auto unaligned = adaptation_set->GetXml();
+  EXPECT_THAT(unaligned, Not(AttributeSet("segmentAlignment")));
 }
 
 // Verify that segmentAlignment is set to true if all the Representations
@@ -862,8 +855,8 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignmentStaticMpd) {
   representation_360p->AddNewSegment(kStartTime + kDuration, kDuration,
                                      kAnySize);
 
-  xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
-  EXPECT_THAT(aligned.get(), AttributeEqual("segmentAlignment", "true"));
+  auto aligned = adaptation_set->GetXml();
+  EXPECT_THAT(aligned, AttributeEqual("segmentAlignment", "true"));
 }
 
 // Verify that the width and height attribute are set if all the video
@@ -894,11 +887,11 @@ TEST_F(OnDemandAdaptationSetTest, AdapatationSetWidthAndHeight) {
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo2)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("width", "1280"));
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("height", "720"));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("maxWidth")));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("maxHeight")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("width", "1280"));
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("height", "720"));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("maxWidth")));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("maxHeight")));
 }
 
 // Verify that the maxWidth and maxHeight attribute are set if there are
@@ -928,11 +921,11 @@ TEST_F(OnDemandAdaptationSetTest, AdaptationSetMaxWidthAndMaxHeight) {
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kVideoMediaInfo720p)));
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("maxWidth", "1920"));
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("maxHeight", "1080"));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("width")));
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("height")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("maxWidth", "1920"));
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("maxHeight", "1080"));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("width")));
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("height")));
 }
 
 // Verify that Representation::SetSampleDuration() works by checking that
@@ -955,12 +948,12 @@ TEST_F(AdaptationSetTest, SetSampleDuration) {
       adaptation_set->AddRepresentation(video_media_info);
   EXPECT_TRUE(representation->Init());
 
-  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
-  EXPECT_THAT(adaptation_set_xml.get(), Not(AttributeSet("frameRate")));
+  auto adaptation_set_xml = adaptation_set->GetXml();
+  EXPECT_THAT(adaptation_set_xml, Not(AttributeSet("frameRate")));
 
   representation->SetSampleDuration(2u);
   adaptation_set_xml = adaptation_set->GetXml();
-  EXPECT_THAT(adaptation_set_xml.get(), AttributeEqual("frameRate", "3000/2"));
+  EXPECT_THAT(adaptation_set_xml, AttributeEqual("frameRate", "3000/2"));
 }
 
 // Verify that AdaptationSet::AddContentProtection() and
@@ -1000,7 +993,7 @@ TEST_F(AdaptationSetTest, AdaptationSetAddContentProtectionAndUpdate) {
       "  <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
       "   mimeType=\"video/mp4\"/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput1));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput1));
 
   adaptation_set->UpdateContentProtectionPssh(
       "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed", "new pssh value");
@@ -1018,7 +1011,7 @@ TEST_F(AdaptationSetTest, AdaptationSetAddContentProtectionAndUpdate) {
       "  <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
       "   mimeType=\"video/mp4\"/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput2));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput2));
 }
 
 // Verify that if the ContentProtection element for the DRM without <cenc:pssh>
@@ -1055,7 +1048,7 @@ TEST_F(AdaptationSetTest, UpdateToRemovePsshElement) {
       "  <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
       "   mimeType=\"video/mp4\"/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput1));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput1));
 
   adaptation_set->UpdateContentProtectionPssh(
       "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed", "added pssh value");
@@ -1073,7 +1066,7 @@ TEST_F(AdaptationSetTest, UpdateToRemovePsshElement) {
       "  <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
       "   mimeType=\"video/mp4\"/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput2));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput2));
 }
 
 // MPD schema has strict ordering. AudioChannelConfiguration must appear before
@@ -1132,7 +1125,7 @@ TEST_F(OnDemandAdaptationSetTest,
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kTestMediaInfo));
   ASSERT_TRUE(audio_representation);
   audio_representation->AddContentProtectionElement(content_protection);
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 // Verify that a text path works.
@@ -1163,7 +1156,7 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
   ASSERT_TRUE(text_representation);
 
-  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 }  // namespace shaka

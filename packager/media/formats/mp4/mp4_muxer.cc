@@ -24,6 +24,7 @@
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
+#include "packager/media/formats/ttml/ttml_generator.h"
 #include "packager/status_macros.h"
 
 namespace shaka {
@@ -592,6 +593,17 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
         trak->media.information.sample_table.description;
     sample_description.type = kText;
     sample_description.text_entries.push_back(webvtt);
+    return true;
+  } else if (text_info->codec_string() == "ttml") {
+    // Handle TTML.
+    TextSampleEntry ttml;
+    ttml.format = FOURCC_stpp;
+    ttml.namespace_ = ttml::TtmlGenerator::kTtNamespace;
+
+    SampleDescription& sample_description =
+        trak->media.information.sample_table.description;
+    sample_description.type = kSubtitle;
+    sample_description.text_entries.push_back(ttml);
     return true;
   }
   NOTIMPLEMENTED() << text_info->codec_string()

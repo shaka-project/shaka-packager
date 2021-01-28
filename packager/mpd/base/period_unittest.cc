@@ -137,7 +137,7 @@ TEST_F(PeriodTest, GetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
 }
 
@@ -169,7 +169,7 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
 }
 
@@ -202,7 +202,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
   const char kExpectedXmlSuppressDuration[] =
       "<Period id=\"9\">"
@@ -210,7 +210,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXmlSuppressDuration));
 }
 
@@ -551,7 +551,7 @@ TEST_F(PeriodTest, OrderedByAdaptationSetId) {
       R"(  <AdaptationSet id="1" contentType=""/>)"
       R"(  <AdaptationSet id="2" contentType=""/>)"
       R"(</Period>)";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
 }
 

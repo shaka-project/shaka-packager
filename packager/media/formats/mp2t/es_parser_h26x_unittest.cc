@@ -168,7 +168,7 @@ class EsParserH26xTest : public testing::Test {
                                                      const H26xNaluType* types,
                                                      size_t types_count);
 
-  void EmitSample(uint32_t pid, const std::shared_ptr<MediaSample>& sample) {
+  void EmitSample(std::shared_ptr<MediaSample> sample) {
     size_t sample_id = sample_count_;
     sample_count_++;
     if (sample_count_ == 1) {
@@ -181,7 +181,7 @@ class EsParserH26xTest : public testing::Test {
     EXPECT_EQ(samples_[sample_id], sample_data);
   }
 
-  void NewVideoConfig(const std::shared_ptr<StreamInfo>& config) {
+  void NewVideoConfig(std::shared_ptr<StreamInfo> config) {
     has_stream_info_ = true;
   }
 

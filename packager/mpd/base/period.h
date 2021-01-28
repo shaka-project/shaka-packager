@@ -15,15 +15,11 @@
 #include "packager/base/optional.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 namespace shaka {
 
 struct MpdOptions;
-
-namespace xml {
-class XmlNode;
-}  // namespace xml
 
 /// Period class maps to <Period> element and provides methods to add
 /// AdaptationSets.
@@ -50,7 +46,7 @@ class Period {
   /// Generates <Period> xml element with its child AdaptationSet elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  xml::scoped_xml_ptr<xmlNode> GetXml(bool output_period_duration);
+  base::Optional<xml::XmlNode> GetXml(bool output_period_duration);
 
   /// @return The list of AdaptationSets in this Period.
   const std::list<AdaptationSet*> GetAdaptationSets() const;

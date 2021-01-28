@@ -61,10 +61,10 @@ void BitReader::SkipToNextByte() {
 }
 
 bool BitReader::SkipBytes(size_t num_bytes) {
-  if (num_remaining_bits_in_curr_byte_ != 8)
-    return false;
   if (num_bytes == 0)
     return true;
+  if (num_remaining_bits_in_curr_byte_ != 8)
+    return false;
 
   data_ += num_bytes - 1;  // One additional byte in curr_byte_.
   if (num_bytes > bytes_left_ + 1)

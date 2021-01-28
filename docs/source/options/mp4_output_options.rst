@@ -12,6 +12,8 @@ MP4 output options
 --generate_sidx_in_media_segments
 --nogenerate_sidx_in_media_segments
 
-    For MP4 with DASH live profile only: Indicates whether to generate 'sidx'
-    box in media segments. Note that it is reuqired by spec if segment template
-    contains $Time$ specifier.
+    Indicates whether to generate 'sidx' box in media segments. Note
+    that it is required for DASH on-demand profile (not using segment
+    template).
+
+    Default enabled.
