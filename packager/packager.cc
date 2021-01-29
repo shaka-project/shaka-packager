@@ -921,7 +921,7 @@ Status Packager::Initialize(
 
   media::MuxerListenerFactory muxer_listener_factory(
       packaging_params.output_media_info, internal->mpd_notifier.get(),
-      internal->hls_notifier.get());
+      internal->hls_notifier.get(), packaging_params.mpd_params.use_segment_list);
 
   RETURN_IF_ERROR(media::CreateAllJobs(
       streams_for_jobs, packaging_params, internal->mpd_notifier.get(),

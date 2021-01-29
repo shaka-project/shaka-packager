@@ -27,7 +27,7 @@ namespace media {
 
 class VodMediaInfoDumpMuxerListener : public MuxerListener {
  public:
-  VodMediaInfoDumpMuxerListener(const std::string& output_file_name);
+  VodMediaInfoDumpMuxerListener(const std::string& output_file_name, bool use_segment_list);
   ~VodMediaInfoDumpMuxerListener() override;
 
   /// @name MuxerListener implementation overrides.
@@ -63,6 +63,8 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   static bool WriteMediaInfoToFile(const MediaInfo& media_info,
                                    const std::string& output_file_path);
 
+  void set_use_segment_list(bool value) {use_segment_list_ = value;}
+
  private:
   std::string output_file_name_;
   std::unique_ptr<MediaInfo> media_info_;
@@ -73,6 +75,8 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   FourCC protection_scheme_;
   std::vector<uint8_t> default_key_id_;
   std::vector<ProtectionSystemSpecificInfo> key_system_info_;
+
+  bool use_segment_list_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListener);
 };

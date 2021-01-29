@@ -42,7 +42,8 @@ bool IsMediaInfoCompatible(const MediaInfo& media_info1,
 /// @return true on success, false otherwise.
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
                        float duration_seconds,
-                       MediaInfo* media_info);
+                       MediaInfo* media_info,
+                       bool use_segment_list);
 
 /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
 ///        'cbc1', 'cbcs'.

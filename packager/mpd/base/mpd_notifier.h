@@ -113,6 +113,9 @@ class MpdNotifier {
   /// @return The mpd type for this object.
   MpdType mpd_type() const { return mpd_options_.mpd_type; }
 
+  ///@return The value of dash_force_segment_list flag
+  bool use_segment_list() const {return mpd_options_.mpd_params.use_segment_list; }
+
  private:
   const MpdOptions mpd_options_;
 
