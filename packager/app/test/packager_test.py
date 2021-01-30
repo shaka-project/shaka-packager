@@ -485,8 +485,7 @@ class PackagerAppTest(unittest.TestCase):
                 use_fake_clock=True,
                 allow_codec_switching=False,
                 dash_force_segment_list=False,
-                force_cl_index=None,
-                mp4_initial_sequence_number=-1):
+                force_cl_index=None):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -574,10 +573,6 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--force_cl_index']
     elif force_cl_index is False:
       flags += ['--noforce_cl_index']
-
-    if mp4_initial_sequence_number != -1:
-      flags += ['--mp4_initial_sequence_number={0}'.format(
-                 mp4_initial_sequence_number)]
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -793,13 +788,6 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
                                                       output_hls=True))
     self._CheckTestResults('hls-only-dash-only-captions')
-
-  def testMp4InitialSequenceNumber(self):
-    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
-    streams = audio_video_streams
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
-                                               mp4_initial_sequence_number=15))
-    self._CheckTestResults('dash-mp4-initial-sequence-number')
 
   def testDashOnlyAndHlsOnly(self):
     streams = [

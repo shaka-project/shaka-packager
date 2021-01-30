@@ -473,7 +473,6 @@ std::optional<PackagingParams> GetPackagingParams() {
   mp4_params.include_pssh_in_stream =
       absl::GetFlag(FLAGS_mp4_include_pssh_in_stream);
   mp4_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
-  mp4_params.initial_sequence_number = absl::GetFlag(FLAGS_mp4_initial_sequence_number);
 
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
