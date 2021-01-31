@@ -16,8 +16,10 @@ namespace {
 const size_t kStreamIndex = 0;
 }  // namespace
 
-TextChunker::TextChunker(double segment_duration_in_seconds)
-    : segment_duration_in_seconds_(segment_duration_in_seconds){};
+TextChunker::TextChunker(double segment_duration_in_seconds,
+                         int64_t start_segment_number)
+    : segment_duration_in_seconds_(segment_duration_in_seconds),
+      start_segment_number_(start_segment_number){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {
@@ -108,7 +110,8 @@ Status TextChunker::DispatchSegment(int64_t duration) {
   std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
   info->start_timestamp = segment_start_;
   info->duration = duration;
-  info->segment_index = (segment_start_ / segment_duration_) + num_cues_;
+  info->segment_index = (segment_start_ / segment_duration_) + num_cues_ +
+                        start_segment_number_ - 1;
 
   RETURN_IF_ERROR(DispatchSegmentInfo(kStreamIndex, std::move(info)));
 

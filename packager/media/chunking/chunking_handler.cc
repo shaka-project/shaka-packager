@@ -174,7 +174,7 @@ Status ChunkingHandler::EndSegmentIfStarted() const {
   segment_info->duration = max_segment_time_ - segment_start_time_.value();
 
   segment_info->segment_index =
-      current_segment_index_ + num_segments_before_last_cue_;
+      current_segment_index_ + num_segments_before_last_cue_ + chunking_params_.start_segment_number - 1;
 
   if (chunking_params_.low_latency_dash_mode) {
     segment_info->is_chunk = true;

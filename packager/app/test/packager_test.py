@@ -485,7 +485,8 @@ class PackagerAppTest(unittest.TestCase):
                 use_fake_clock=True,
                 allow_codec_switching=False,
                 dash_force_segment_list=False,
-                force_cl_index=None):
+                force_cl_index=None,
+                start_segment_number=-1):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -573,6 +574,10 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--force_cl_index']
     elif force_cl_index is False:
       flags += ['--noforce_cl_index']
+
+    if start_segment_number != -1:
+      flags += ['--start_segment_number={0}'.format(
+                 start_segment_number)]
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -821,6 +826,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
                                                       output_hls=True))
     self._CheckTestResults('forced-subtitle')
+
+  def testDashStartNumber(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
+    streams = audio_video_streams
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                               start_segment_number=0))
+    self._CheckTestResults('dash-start-number')
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(

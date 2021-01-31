@@ -20,7 +20,8 @@ namespace media {
 // is when a cue event is seen.
 class TextChunker : public MediaHandler {
  public:
-  explicit TextChunker(double segment_duration_in_seconds);
+  explicit TextChunker(double segment_duration_in_seconds,
+                       int64_t start_segment_number);
 
  private:
   TextChunker(const TextChunker&) = delete;
@@ -51,6 +52,8 @@ class TextChunker : public MediaHandler {
   // Time values are in scaled units.
   int64_t segment_start_ = -1;     // Set when the first sample comes in.
   int64_t segment_duration_ = -1;  // Set in OnStreamInfo.
+
+  int64_t start_segment_number_ = 1;
 
   int64_t num_cues_ = 0;
 
