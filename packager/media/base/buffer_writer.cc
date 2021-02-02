@@ -70,8 +70,8 @@ void BufferWriter::AppendBuffer(const BufferWriter& buffer) {
 Status BufferWriter::WriteToFile(File* file) {
   DCHECK(file);
   DCHECK(!buf_.empty());
+
   size_t remaining_size = buf_.size();
-  VLOG(1) << "BufferWriter::WriteToFile " << file->file_name() << " with " << remaining_size << " octets";
   const uint8_t* buf = &buf_[0];
   while (remaining_size > 0) {
     int64_t size_written = file->Write(buf, remaining_size);

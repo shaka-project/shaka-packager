@@ -100,11 +100,11 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
 }
 
 File* CreateHttpsFile(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, mode, true);
+  return new HttpFile(HttpMethod::kPut, std::string("https://") + file_name);
 }
 
 File* CreateHttpFile(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, mode, false);
+  return new HttpFile(HttpMethod::kPut, std::string("http://") + file_name);
 }
 
 File* CreateMemoryFile(const char* file_name, const char* mode) {
@@ -137,7 +137,6 @@ base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {
 
 const FileTypeInfo* GetFileTypeInfo(base::StringPiece file_name,
                                     base::StringPiece* real_file_name) {
-
   base::StringPiece file_type_prefix = GetFileTypePrefix(file_name);
   for (const FileTypeInfo& file_type : kFileTypeInfo) {
     if (file_type_prefix == file_type.type) {
@@ -297,7 +296,7 @@ bool File::WriteFileAtomically(const char* file_name,
 
 bool File::Copy(const char* from_file_name, const char* to_file_name) {
   std::string content;
-  VLOG(1) << "File::Copy from " << from_file_name << " to " << to_file_name;
+  VLOG(2) << "File::Copy from " << from_file_name << " to " << to_file_name;
   if (!ReadFileToString(from_file_name, &content)) {
     LOG(ERROR) << "Failed to open file " << from_file_name;
     return false;
@@ -341,7 +340,8 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
   if (max_copy < 0)
     max_copy = std::numeric_limits<int64_t>::max();
 
-  VLOG(1) << "File::CopyFile from " << source->file_name() << " to " << destination->file_name();
+  VLOG(2) << "File::CopyFile from " << source->file_name() << " to "
+          << destination->file_name();
 
   const int64_t kBufferSize = 0x40000;  // 256KB.
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[kBufferSize]);

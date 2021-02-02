@@ -387,12 +387,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
       PlayReadyEncryptionParams& playready = encryption_params.playready;
       playready.key_server_url = FLAGS_playready_server_url;
       playready.program_identifier = FLAGS_program_identifier;
-      playready.ca_file = FLAGS_ca_file;
-      playready.client_cert_file = FLAGS_client_cert_file;
-      playready.client_cert_private_key_file =
-          FLAGS_client_cert_private_key_file;
-      playready.client_cert_private_key_password =
-          FLAGS_client_cert_private_key_password;
       break;
     }
     case KeyProvider::kRawKey: {

@@ -73,19 +73,6 @@ PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url,
       encryption_key_(new EncryptionKey),
       server_url_(server_url) {}
 
-PlayReadyKeySource::PlayReadyKeySource(
-    const std::string& server_url,
-    const std::string& client_cert_file,
-    const std::string& client_cert_private_key_file,
-    const std::string& client_cert_private_key_password,
-    ProtectionSystem protection_systems)
-    // PlayReady PSSH is retrived from PlayReady server response.
-    : encryption_key_(new EncryptionKey),
-      server_url_(server_url),
-      client_cert_file_(client_cert_file),
-      client_cert_private_key_file_(client_cert_private_key_file),
-      client_cert_private_key_password_(client_cert_private_key_password) {}
-
 PlayReadyKeySource::~PlayReadyKeySource() = default;
 
 Status RetrieveTextInXMLElement(const std::string& element,
@@ -161,14 +148,6 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
     const std::string& program_identifier) {
   std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
   HttpKeyFetcher key_fetcher(kHttpFetchTimeout);
-  if (!client_cert_file_.empty() && !client_cert_private_key_file_.empty()) {
-    key_fetcher.SetClientCertInfo(client_cert_file_,
-                                  client_cert_private_key_file_,
-                                  client_cert_private_key_password_);
-  }
-  if (!ca_file_.empty()) {
-    key_fetcher.SetCaFile(ca_file_);
-  }
 
   std::string acquire_license_request = kAcquireLicenseRequest;
   base::ReplaceFirstSubstringAfterOffset(

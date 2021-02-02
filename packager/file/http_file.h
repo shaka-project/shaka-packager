@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2020 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,35 +7,47 @@
 #ifndef PACKAGER_FILE_HTTP_H_
 #define PACKAGER_FILE_HTTP_H_
 
-#include <curl/curl.h>
 #include <memory>
+#include <string>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/file/file.h"
 #include "packager/file/io_cache.h"
 #include "packager/status.h"
 
-namespace shaka {
-using ScopedCurl = std::unique_ptr<CURL, decltype(&curl_easy_cleanup)>;
+typedef void CURL;
+struct curl_slist;
 
-/// HttpFile delegates write calls to HTTP PUT requests.
+namespace shaka {
+
+enum class HttpMethod {
+  kGet,
+  kPost,
+  kPut,
+};
+
+/// HttpFile reads or writes network requests.
 ///
-/// About how to use this, please visit the corresponding documentation [1,2].
+/// Note that calling Flush will indicate EOF for the upload and no more can be
+/// uploaded.
+///
+/// About how to use this, please visit the corresponding documentation [1].
 ///
 /// [1] https://google.github.io/shaka-packager/html/tutorials/http_upload.html
-/// [2]
-/// https://github.com/3QSDN/shaka-packager/blob/http-upload/docs/source/tutorials/http_upload.rst
 ///
 class HttpFile : public File {
  public:
+  HttpFile(HttpMethod method, const std::string& url);
+  HttpFile(HttpMethod method,
+           const std::string& url,
+           const std::string& upload_content_type,
+           const std::vector<std::string>& headers,
+           uint32_t timeout_in_seconds);
 
-  /// Create a HTTP client
-  /// @param file_name contains the url of the resource to be accessed.
-  ///        Note that the file type prefix should be stripped off already.
-  /// @param mode contains file access mode. Implementation dependent.
-  HttpFile(const char* file_name, const char* mode, bool https);
-  HttpFile(const char* file_name, const char* mode);
+  HttpFile(const HttpFile&) = delete;
+  HttpFile& operator=(const HttpFile&) = delete;
+
+  Status CloseWithStatus();
 
   /// @name File implementation overrides.
   /// @{
@@ -46,56 +58,31 @@ class HttpFile : public File {
   bool Flush() override;
   bool Seek(uint64_t position) override;
   bool Tell(uint64_t* position) override;
+  bool Open() override;
   /// @}
 
-  /// @return The full resource url
-  const std::string& resource_url() const { return resource_url_; }
-
  protected:
-  // Destructor
   ~HttpFile() override;
 
-  bool Open() override;
-
  private:
-  enum HttpMethod {
-    GET,
-    POST,
-    PUT,
-    PATCH,
+  struct CurlDelete {
+    void operator()(CURL* curl);
+    void operator()(curl_slist* headers);
   };
 
-  HttpFile(const HttpFile&) = delete;
-  HttpFile& operator=(const HttpFile&) = delete;
+  void SetupRequest();
+  void ThreadMain();
 
-  // Internal implementation of HTTP functions, e.g. Get and Post.
-  Status Request(HttpMethod http_method,
-                 const std::string& url,
-                 const std::string& data,
-                 std::string* response);
-
-  void SetupRequestBase(HttpMethod http_method,
-                        const std::string& url,
-                        std::string* response);
-
-  void SetupRequestData(const std::string& data);
-
-  void CurlPut();
-
-  std::string method_as_text(HttpMethod method);
-
-  std::string file_mode_;
-  std::string resource_url_;
-  std::string user_agent_;
-  std::string ca_file_;
-  std::string cert_file_;
-  std::string cert_private_key_file_;
-  std::string cert_private_key_pass_;
-
+  const std::string url_;
+  const std::string upload_content_type_;
   const uint32_t timeout_in_seconds_;
-  IoCache cache_;
-  ScopedCurl scoped_curl;
-  std::string response_body_;
+  const HttpMethod method_;
+  IoCache download_cache_;
+  IoCache upload_cache_;
+  std::unique_ptr<CURL, CurlDelete> curl_;
+  // The headers need to remain alive for the duration of the request.
+  std::unique_ptr<curl_slist, CurlDelete> request_headers_;
+  Status status_;
 
   // Signaled when the "curl easy perform" task completes.
   base::WaitableEvent task_exit_event_;

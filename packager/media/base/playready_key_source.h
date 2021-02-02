@@ -25,19 +25,6 @@ class PlayReadyKeySource : public KeySource {
   ///        be included.
   PlayReadyKeySource(const std::string& server_url,
                      ProtectionSystem protection_systems);
-  /// Creates a new PlayReadyKeySource from the given packaging information.
-  /// @param server_url PlayReady packaging server url.
-  /// @param client_cert_file absolute path to a client certificate.
-  /// @param client_cert_private_key_file absolute path to the private file
-  ///     for the client certificate.
-  /// @param client_cert_private_key_password password for the private key.
-  /// @param protection_systems is the enum indicating which PSSH should
-  ///        be included.
-  PlayReadyKeySource(const std::string& server_url,
-                     const std::string& client_cert_file,
-                     const std::string& client_cert_private_key_file,
-                     const std::string& client_cert_private_key_password,
-                     ProtectionSystem protection_systems);
   ~PlayReadyKeySource() override;
 
   /// @name KeySource implementation overrides.
@@ -61,10 +48,6 @@ class PlayReadyKeySource : public KeySource {
   static std::unique_ptr<PlayReadyKeySource> CreateFromKeyAndKeyId(
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key);
-  /// Sets the Certificate Authority file for validating self-signed certificates.
-  void SetCaFile(const std::string& ca_file) {
-    ca_file_ = ca_file;
-  }
 
  private:
   Status GetKeyInternal();
@@ -75,10 +58,6 @@ class PlayReadyKeySource : public KeySource {
 
   std::unique_ptr<EncryptionKey> encryption_key_;
   std::string server_url_;
-  std::string ca_file_;
-  std::string client_cert_file_;
-  std::string client_cert_private_key_file_;
-  std::string client_cert_private_key_password_;
 
   DISALLOW_COPY_AND_ASSIGN(PlayReadyKeySource);
 };

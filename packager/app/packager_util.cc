@@ -100,26 +100,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         }
         std::unique_ptr<PlayReadyKeySource> playready_key_source;
         // private_key_password is allowed to be empty for unencrypted key.
-        if (!playready.client_cert_file.empty() ||
-            !playready.client_cert_private_key_file.empty()) {
-          if (playready.client_cert_file.empty() ||
-              playready.client_cert_private_key_file.empty()) {
-            LOG(ERROR) << "Either PlayReady client_cert_file or "
-                          "client_cert_private_key_file is not set.";
-            return nullptr;
-          }
-          playready_key_source.reset(new PlayReadyKeySource(
-              playready.key_server_url, playready.client_cert_file,
-              playready.client_cert_private_key_file,
-              playready.client_cert_private_key_password,
-              encryption_params.protection_systems));
-        } else {
-          playready_key_source.reset(new PlayReadyKeySource(
-              playready.key_server_url, encryption_params.protection_systems));
-        }
-        if (!playready.ca_file.empty()) {
-          playready_key_source->SetCaFile(playready.ca_file);
-        }
+        playready_key_source.reset(new PlayReadyKeySource(
+            playready.key_server_url, encryption_params.protection_systems));
         Status status = playready_key_source->FetchKeysWithProgramIdentifier(
             playready.program_identifier);
         if (!status.ok()) {

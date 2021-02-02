@@ -9,10 +9,7 @@
     contributions are always welcome.
 
     The discussion about this feature currently happens at
-    `Add HTTP PUT output #149 <https://github.com/google/shaka-packager/issues/149>`_,
-    its development on the
-    `http-upload <https://github.com/3QSDN/shaka-packager/tree/http-upload>`_ branch,
-    feel free to join us.
+    `Add HTTP PUT output #149 <https://github.com/google/shaka-packager/issues/149>`_.
 
 ###########
 HTTP upload
@@ -46,15 +43,10 @@ Documentation
 
 Getting started
 ===============
-For enabling the HTTP upload transfer mode, please populate
-the ``segment_template`` attribute in the ``stream_descriptor``
-parameter as well as the ``--hls_master_playlist_output`` parameter
-with appropriate URLs where the HTTP PUT requests will be issued to.
+To enable the HTTP upload transfer mode, use ``https:`` file paths for any
+output files (e.g. ``segment_template``).
 
-You can also supply the ``--user_agent`` flag to specify a custom
-User-Agent string for all HTTP PUT requests.
-
-For pragmatic reasons, all HTTP requests will be declared as
+All HTTP requests will be declared as
 ``Content-Type: application/octet-stream``.
 
 Synopsis
@@ -90,37 +82,24 @@ Configure and run packager::
         --hls_playlist_type LIVE \
         --vmodule=http_file=1
 
-*******
-HTTPS
-*******
-If your ingest uses HTTPS and requires specific certificates, these
-can be specified on the command line similar to how it's done for
-:doc:`playready`, with the following arguments:
+*********************
+Client Authentication
+*********************
+If your server requires client authentication, you can add the following
+arguments to enable it:
 
-- ``--https_ca_file``: Absolute path to the Certificate Authority file for the server cert. PEM format.
-- ``--https_cert_file``: Absolute path to client certificate file.
-- ``--https_cert_private_key_file``: Absolute path to the private Key file.
-- ``--https_cert_private_key_password``: Password to the private key file.
+- ``--ca_file``: (optional) Absolute path to the Certificate Authority file for
+  the server cert. PEM format.
+- ``--client_cert_file``: Absolute path to client certificate file.
+- ``--client_cert_private_key_file``: Absolute path to the private Key file.
+- ``--client_cert_private_key_password``: (optional) Password to the private
+  key file.
 
 *******
 Backlog
 *******
 Please note the HTTP upload feature still lacks some features
 probably important for production. Contributions are welcome!
-
-DASH
-====
-While the current implementation works for HLS_,
-we should also check DASH_.
-
-Basic Auth
-==========
-There's no support for authentication yet.
-
-HTTPS
-=====
-While there's already some code in place,
-HTTPS is currently not supported yet.
 
 HTTP DELETE
 ===========
@@ -146,9 +125,9 @@ Miscellaneous
 - Make ``io_cache_size`` configurable?
 
 
-*******
-Backend
-*******
+***************
+Example Backend
+***************
 
 HTTP PUT file uploads to Nginx
 ==============================
@@ -229,8 +208,6 @@ Grab and run `httpd-reflector.py`_ to use it as a dummy HTTP sink::
 
 
 ----
-
-Have fun!
 
 .. _HLS: https://en.wikipedia.org/wiki/HTTP_Live_Streaming
 .. _DASH: https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP
