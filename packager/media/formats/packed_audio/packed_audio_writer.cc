@@ -107,6 +107,7 @@ Status PackedAudioWriter::WriteSegment(const std::string& segment_path,
     range.end = range.start + segment_buffer->Size() - 1;
     media_ranges_.subsegment_ranges.push_back(range);
   } else {
+    VLOG(2) << "PackedAudioWriter::WriteSegment: File::Open(" << segment_path << ")";
     file.reset(File::Open(segment_path.c_str(), "w"));
     if (!file) {
       return Status(error::FILE_FAILURE,

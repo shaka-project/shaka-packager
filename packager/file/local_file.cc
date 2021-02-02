@@ -124,6 +124,10 @@ int64_t LocalFile::Read(void* buffer, uint64_t length) {
 }
 
 int64_t LocalFile::Write(const void* buffer, uint64_t length) {
+
+  base::FilePath file_path(base::FilePath::FromUTF8Unsafe(file_name()));
+  VLOG(2) << "Writing to " << file_path.AsUTF8Unsafe() << ", length=" << length;
+
   DCHECK(buffer != NULL);
   DCHECK(internal_file_ != NULL);
   size_t bytes_written = fwrite(buffer, sizeof(char), length, internal_file_);
