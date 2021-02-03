@@ -97,7 +97,7 @@ void WriteAdaptationField(bool has_pcr,
     const uint32_t most_significant_32bits_pcr =
         static_cast<uint32_t>(pcr_base >> 1);
     const uint16_t pcr_last_bit_reserved_and_pcr_extension =
-        ((pcr_base & 1) << 15);
+        ((pcr_base & 1) << 15) | 0x7e00;  // Set the 6 reserved bits to '1'
     writer->AppendInt(most_significant_32bits_pcr);
     writer->AppendInt(pcr_last_bit_reserved_and_pcr_extension);
     remaining_bytes -= kPcrFieldsSize;
