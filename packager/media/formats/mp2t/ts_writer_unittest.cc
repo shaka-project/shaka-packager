@@ -319,7 +319,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
       0x30,  // Adaptation field and payload are both present. counter = 0.
       0xA0,  // Adaptation Field length.
       0x10,  // pcr flag.
-      0x00, 0x00, 0x04, 0x80, 0x00, 0x00,  // PCR.
+      0x00, 0x00, 0x04, 0x80, 0x7e, 0x00,  // PCR.
   };
 
   const uint8_t kExpectedPayload[] = {
@@ -411,7 +411,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
       0x30,  // Adaptation field and payload are both present. counter = 0.
       0xA5,  // Adaptation Field length.
       0x10,  // pcr flag.
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // PCR.
+      0x00, 0x00, 0x00, 0x00, 0x7e, 0x00,  // PCR.
   };
 
   const uint8_t kExpectedPayload[] = {
