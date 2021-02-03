@@ -66,6 +66,10 @@ std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
     next_offset = r.end + 1;
     ranges.push_back(r);
   }
+  
+  // increment the last end offset of the last segment since there is no 
+  // next segment
+  ranges.back().end++;
   return ranges;
 }
 

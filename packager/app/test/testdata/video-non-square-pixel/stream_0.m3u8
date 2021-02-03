@@ -5,6 +5,6 @@
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-MAP:URI="bear-640x360-non_square_pixel-with_pasp-video.mp4",BYTERANGE="883@0"
 #EXTINF:1.001,
-#EXT-X-BYTERANGE:95246@927
+#EXT-X-BYTERANGE:95247@927
 bear-640x360-non_square_pixel-with_pasp-video.mp4
 #EXT-X-ENDLIST
