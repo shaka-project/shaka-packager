@@ -343,6 +343,29 @@ resolve the issue:
 $ brew install curl --with-openssl
 ```
 
+### Using an IDE
+
+No specific instructions are available.
+
+You might find Gyp generators helpful. Output is not guaranteed to work.
+Manual editing might be necessary.
+
+To generate CMakeLists.txt in out/Release and out/Debug use:
+
+```shell
+$ GYP_GENERATORS=cmake gclient runhooks
+```
+
+To generate IDE project files in out/Release and out/Debug use:
+
+```shell
+$ GYP_GENERATORS=eclipse gclient runhooks
+$ GYP_GENERATORS=xcode gclient runhooks
+$ GYP_GENERATORS=xcode_test gclient runhooks
+$ GYP_GENERATORS=msvs gclient runhooks
+$ GYP_GENERATORS=msvs_test gclient runhooks
+```
+
 ## Contributing
 
 If you have improvements or fixes, we would love to have your contributions.
