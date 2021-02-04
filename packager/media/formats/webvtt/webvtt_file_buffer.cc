@@ -73,10 +73,12 @@ void WebVttFileBuffer::Append(const TextSample& sample) {
   buffer_.append("\n");  // end of sample
 }
 
-bool WebVttFileBuffer::WriteTo(File* file) {
+bool WebVttFileBuffer::WriteTo(File* file, uint64_t* size) {
   DCHECK(file);
   DCHECK_GT(buffer_.size(), 0u) << "The buffer should at least have a header";
 
+  if (size)
+    *size = buffer_.size();
   const int written = file->Write(buffer_.c_str(), buffer_.size());
   if (written < 0) {
     return false;

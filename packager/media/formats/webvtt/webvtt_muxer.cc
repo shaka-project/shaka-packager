@@ -45,15 +45,12 @@ Status WebVttMuxer::WriteToFile(const std::string& filename, uint64_t* size) {
     return Status(error::FILE_FAILURE, "Failed to open " + filename);
   }
 
-  buffer_->WriteTo(file.get());
+  buffer_->WriteTo(file.get(), size);
   buffer_->Reset();
   if (!file.release()->Close()) {
     return Status(error::FILE_FAILURE, "Failed to close " + filename);
   }
 
-  if (size) {
-    *size = File::GetFileSize(filename.c_str());
-  }
   return Status::OK;
 }
 
