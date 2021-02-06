@@ -220,7 +220,6 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   [[nodiscard]] bool AddLiveOnlyInfo(
       const MediaInfo& media_info,
       const std::list<SegmentInfo>& segment_infos,
-      uint32_t start_number,
       bool low_latency_dash_mode);
 
  private:

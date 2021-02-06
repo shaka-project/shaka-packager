@@ -69,8 +69,8 @@ Status MultiSegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status MultiSegmentSegmenter::DoFinalizeSegment(int64_t segment_index) {
-  return WriteSegment(segment_index);
+Status MultiSegmentSegmenter::DoFinalizeSegment(int64_t segment_number) {
+  return WriteSegment(segment_number);
 }
 
 Status MultiSegmentSegmenter::WriteInitSegment() {
@@ -89,7 +89,7 @@ Status MultiSegmentSegmenter::WriteInitSegment() {
   return buffer->WriteToFile(file.get());
 }
 
-Status MultiSegmentSegmenter::WriteSegment(int64_t segment_index) {
+Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);
@@ -114,7 +114,7 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_index) {
   } else {
     file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
-                               segment_index, options().bandwidth);
+                               segment_number, options().bandwidth);
     file.reset(File::Open(file_name.c_str(), "w"));
     if (!file) {
       return Status(error::FILE_FAILURE,
@@ -161,7 +161,7 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_index) {
     muxer_listener()->OnSampleDurationReady(sample_duration());
     muxer_listener()->OnNewSegment(
         file_name, sidx()->earliest_presentation_time, segment_duration,
-        segment_size, segment_index);
+        segment_size, segment_number);
   }
 
   return Status::OK;

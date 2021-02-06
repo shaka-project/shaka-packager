@@ -166,7 +166,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_index) {
+Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_number) {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   // sidx() contains pre-generated segment references with one reference per
@@ -226,7 +226,7 @@ Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_index) {
     muxer_listener()->OnSampleDurationReady(sample_duration());
     muxer_listener()->OnNewSegment(
         options().output_file_name, vod_ref.earliest_presentation_time,
-        vod_ref.subsegment_duration, segment_size, segment_index);
+        vod_ref.subsegment_duration, segment_size, segment_number);
   }
   return Status::OK;
 }

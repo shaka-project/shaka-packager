@@ -133,12 +133,12 @@ class MuxerListener {
   /// @param duration is the duration of the segment, relative to the timescale
   ///        specified by MediaInfo passed to OnMediaStart().
   /// @param segment_file_size is the segment size in bytes.
-  /// @param segment_index is the segment index.
+  /// @param segment_number is the segment number.
   virtual void OnNewSegment(const std::string& segment_name,
                             int64_t start_time,
                             int64_t duration,
                             uint64_t segment_file_size,
-                            int64_t segment_index) = 0;
+                            int64_t segment_number) = 0;
 
   /// Called when a segment has been muxed and the entire file has been written.
   /// For Low Latency only. Note that it should be called after OnNewSegment.

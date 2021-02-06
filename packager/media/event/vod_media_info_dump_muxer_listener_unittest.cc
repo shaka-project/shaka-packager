@@ -102,8 +102,10 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   }
 
   void FireOnNewSegmentWithParams(const OnNewSegmentParameters& params) {
+    const int64_t kSegmentNumber = 0;
     listener_->OnNewSegment(params.file_name, params.start_time,
-                            params.duration, params.segment_file_size, 0);
+                            params.duration, params.segment_file_size,
+                            kSegmentNumber);
   }
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {

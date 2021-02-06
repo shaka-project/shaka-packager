@@ -275,6 +275,11 @@ Status ValidateParams(const PackagingParams& packaging_params,
                   "subsegment_sap_aligned to true is not allowed.");
   }
 
+  if (packaging_params.chunking_params.start_segment_number < 0) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Negative --start_segment_number is not allowed.");
+  }
+
   if (stream_descriptors.empty()) {
     return Status(error::INVALID_ARGUMENT,
                   "Stream descriptors cannot be empty.");

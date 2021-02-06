@@ -19,7 +19,7 @@ const size_t kStreamIndex = 0;
 TextChunker::TextChunker(double segment_duration_in_seconds,
                          int64_t start_segment_number)
     : segment_duration_in_seconds_(segment_duration_in_seconds),
-      start_segment_number_(start_segment_number){};
+      segment_number_(start_segment_number - 1){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {
@@ -69,7 +69,6 @@ Status TextChunker::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 
   const int64_t shorten_duration = event_time - segment_start_;
   RETURN_IF_ERROR(DispatchSegment(shorten_duration));
-  num_cues_++;
   return DispatchCueEvent(kStreamIndex, std::move(event));
 }
 
@@ -110,8 +109,7 @@ Status TextChunker::DispatchSegment(int64_t duration) {
   std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
   info->start_timestamp = segment_start_;
   info->duration = duration;
-  info->segment_index = (segment_start_ / segment_duration_) + num_cues_ +
-                        start_segment_number_ - 1;
+  info->segment_number = segment_number_++;
 
   RETURN_IF_ERROR(DispatchSegmentInfo(kStreamIndex, std::move(info)));
 

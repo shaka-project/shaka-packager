@@ -209,7 +209,7 @@ Status MP4Muxer::FinalizeSegment(size_t stream_id,
   DCHECK(segmenter_);
   VLOG(3) << "Finalizing " << (segment_info.is_subsegment ? "sub" : "")
           << "segment " << segment_info.start_timestamp << " duration "
-          << segment_info.duration << " index " << segment_info.segment_index;
+          << segment_info.duration << " index " << segment_info.segment_number;
   return segmenter_->FinalizeSegment(stream_id, segment_info);
 }
 

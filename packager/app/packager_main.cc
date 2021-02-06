@@ -363,11 +363,6 @@ std::optional<PackagingParams> GetPackagingParams() {
   chunking_params.start_segment_number =
       absl::GetFlag(FLAGS_start_segment_number);
 
-  if (chunking_params.start_segment_number < 0) {
-    LOG(ERROR) << "Negative --start_segment_number not allowed.";
-    return base::nullopt;
-  }
-
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
   if (absl::GetFlag(FLAGS_enable_widevine_encryption)) {

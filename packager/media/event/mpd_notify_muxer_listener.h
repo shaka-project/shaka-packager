@@ -53,7 +53,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
                     int64_t start_time,
                     int64_t duration,
                     uint64_t segment_file_size,
-                    int64_t segment_index) override;
+                    int64_t segment_number) override;
   void OnCompletedSegment(int64_t duration,
                           uint64_t segment_file_size) override;
   void OnKeyFrame(int64_t timestamp,

@@ -24,4 +24,4 @@ Chunking options
 
 --start_segment_number
 
-   Indicates the startNumber in DASH SegmentTemplate.
+   Indicates the startNumber in DASH SegmentTemplate and HLS segment name.

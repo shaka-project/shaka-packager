@@ -18,8 +18,8 @@ const int32_t kTimeScale = 1000000;
 const int64_t kDuration = 1000000;
 const bool kSubsegment = true;
 const uint8_t kPerSampleIvSize = 8u;
-const int64_t kSegmentIndex0 = 0;
-const int64_t kSegmentIndex1 = 1;
+const int64_t kSegmentNumber0 = 0;
+const int64_t kSegmentNumber1 = 1;
 
 const uint8_t kKeyId[] = {
     0x4c, 0x6f, 0x72, 0x65, 0x6d, 0x20, 0x69, 0x70,
@@ -233,7 +233,7 @@ TEST_F(EncryptedSegmenterTest, BasicSupport) {
   for (int i = 0; i < 5; i++) {
     if (i == 3) {
       ASSERT_OK(segmenter_->FinalizeSegment(0, 3 * kDuration, !kSubsegment,
-                                            kSegmentIndex0));
+                                            kSegmentNumber0));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
@@ -248,7 +248,7 @@ TEST_F(EncryptedSegmenterTest, BasicSupport) {
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
   ASSERT_OK(segmenter_->FinalizeSegment(3 * kDuration, 2 * kDuration,
-                                        !kSubsegment, kSegmentIndex1));
+                                        !kSubsegment, kSegmentNumber1));
   ASSERT_OK(segmenter_->Finalize());
 
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);

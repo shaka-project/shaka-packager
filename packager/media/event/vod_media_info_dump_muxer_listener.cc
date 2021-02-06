@@ -96,7 +96,7 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
                                                  int64_t start_time,
                                                  int64_t duration,
                                                  uint64_t segment_file_size,
-                                                 int64_t segment_index) {
+                                                 int64_t segment_number) {
   UNUSED(file_name);
   UNUSED(start_time);
   const double segment_duration_seconds =

@@ -199,7 +199,7 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
 Status Segmenter::FinalizeSegment(int64_t /*start_timestamp*/,
                                   int64_t /*duration_timestamp*/,
                                   bool is_subsegment,
-                                  int64_t segment_index) {
+                                  int64_t segment_number) {
   if (is_subsegment)
     new_subsegment_ = true;
   else
