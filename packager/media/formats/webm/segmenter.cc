@@ -150,7 +150,7 @@ Status Segmenter::Initialize(const StreamInfo& info,
 }
 
 Status Segmenter::Finalize() {
-  if (prev_sample_) {
+  if (prev_sample_ && !prev_sample_->end_of_stream()) {
     uint64_t duration =
         prev_sample_->pts() - first_timestamp_ + prev_sample_->duration();
     segment_info_.set_duration(FromBmffTimestamp(duration));

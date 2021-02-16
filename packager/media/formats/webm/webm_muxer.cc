@@ -47,7 +47,8 @@ Status WebMMuxer::InitializeMuxer() {
 }
 
 Status WebMMuxer::Finalize() {
-  DCHECK(segmenter_);
+  if (!segmenter_)
+    return Status::OK;
   Status segmenter_finalized = segmenter_->Finalize();
 
   if (!segmenter_finalized.ok())
