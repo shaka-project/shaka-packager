@@ -85,6 +85,13 @@ std::set<std::string> GetGroupCodecString(
   if (wvtt != codecs.end()) {
     codecs.erase(wvtt);
   }
+  // TTML is specified using 'stpp.ttml.im1t'; see section 5.10 of
+  // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices
+  auto ttml = codecs.find("ttml");
+  if (ttml != codecs.end()) {
+    codecs.erase(ttml);
+    codecs.insert("stpp.ttml.im1t");
+  }
 
   return codecs;
 }
@@ -225,8 +232,9 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
     // Right now the frame-rate returned may not be accurate in some scenarios.
     // TODO(kqyang): Fix frame-rate computation.
-    const bool is_iframe_playlist = playlist.stream_type() == 
-               MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
+    const bool is_iframe_playlist =
+        playlist.stream_type() ==
+        MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
     if (!is_iframe_playlist) {
       const double frame_rate = playlist.GetFrameRate();
       if (frame_rate > 0)
@@ -486,7 +494,7 @@ bool MasterPlaylist::WriteMasterPlaylist(
     const std::list<MediaPlaylist*>& playlists) {
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
-  
+
   if (is_independent_segments_) {
     content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
   }
