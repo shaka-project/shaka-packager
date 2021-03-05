@@ -4,6 +4,8 @@
 
 #include "packager/media/formats/mp4/box_definitions.h"
 
+#include <gflags/gflags.h>
+#include <algorithm>
 #include <limits>
 
 #include "packager/base/logging.h"
@@ -11,6 +13,11 @@
 #include "packager/media/base/macros.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
+
+DEFINE_bool(mvex_before_trak,
+            false,
+            "Android MediaExtractor requires mvex to be written before trak. "
+            "Set the flag to true to comply with the requirement.");
 
 namespace {
 const uint32_t kFourCCSize = 4;
@@ -27,6 +34,7 @@ const uint8_t kUnityMatrix[] = {0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0,
 const char kVideoHandlerName[] = "VideoHandler";
 const char kAudioHandlerName[] = "SoundHandler";
 const char kTextHandlerName[] = "TextHandler";
+const char kSubtitleHandlerName[] = "SubtitleHandler";
 
 // Default values for VideoSampleEntry box.
 const uint32_t kVideoResolution = 0x00480000;  // 72 dpi.
@@ -100,6 +108,8 @@ TrackType FourCCToTrackType(FourCC fourcc) {
       return kAudio;
     case FOURCC_text:
       return kText;
+    case FOURCC_subt:
+      return kSubtitle;
     default:
       return kInvalid;
   }
@@ -113,6 +123,8 @@ FourCC TrackTypeToFourCC(TrackType track_type) {
       return FOURCC_soun;
     case kText:
       return FOURCC_text;
+    case kSubtitle:
+      return FOURCC_subt;
     default:
       return FOURCC_NULL;
   }
@@ -622,6 +634,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
       count = static_cast<uint32_t>(audio_entries.size());
       break;
     case kText:
+    case kSubtitle:
       count = static_cast<uint32_t>(text_entries.size());
       break;
     default:
@@ -643,7 +656,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
     } else if (type == kAudio) {
       RCHECK(reader->ReadAllChildren(&audio_entries));
       RCHECK(audio_entries.size() == count);
-    } else if (type == kText) {
+    } else if (type == kText || type == kSubtitle) {
       RCHECK(reader->ReadAllChildren(&text_entries));
       RCHECK(text_entries.size() == count);
     }
@@ -655,7 +668,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
     } else if (type == kAudio) {
       for (uint32_t i = 0; i < count; ++i)
         RCHECK(buffer->ReadWriteChild(&audio_entries[i]));
-    } else if (type == kText) {
+    } else if (type == kText || type == kSubtitle) {
       for (uint32_t i = 0; i < count; ++i)
         RCHECK(buffer->ReadWriteChild(&text_entries[i]));
     } else {
@@ -673,7 +686,7 @@ size_t SampleDescription::ComputeSizeInternal() {
   } else if (type == kAudio) {
     for (uint32_t i = 0; i < audio_entries.size(); ++i)
       box_size += audio_entries[i].ComputeSize();
-  } else if (type == kText) {
+  } else if (type == kText || type == kSubtitle) {
     for (uint32_t i = 0; i < text_entries.size(); ++i)
       box_size += text_entries[i].ComputeSize();
   }
@@ -1053,7 +1066,12 @@ bool SampleGroupDescription::ReadWriteEntries(BoxBuffer* buffer,
 
   uint32_t count = static_cast<uint32_t>(entries->size());
   RCHECK(buffer->ReadWriteUInt32(&count));
-  RCHECK(count != 0);
+  if (buffer->Reading()) {
+    if (count == 0)
+      return true;
+  } else {
+    RCHECK(count != 0);
+  }
   entries->resize(count);
 
   for (T& entry : *entries) {
@@ -1282,6 +1300,11 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
         handler_name.assign(kTextHandlerName,
                             kTextHandlerName + arraysize(kTextHandlerName));
         break;
+      case FOURCC_subt:
+        handler_name.assign(
+            kSubtitleHandlerName,
+            kSubtitleHandlerName + arraysize(kSubtitleHandlerName));
+        break;
       case FOURCC_ID32:
         break;
       default:
@@ -1310,6 +1333,9 @@ size_t HandlerReference::ComputeSizeInternal() {
       break;
     case FOURCC_text:
       box_size += sizeof(kTextHandlerName);
+      break;
+    case FOURCC_subt:
+      box_size += sizeof(kSubtitleHandlerName);
       break;
     case FOURCC_ID32:
       break;
@@ -1761,6 +1787,27 @@ size_t EC3Specific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
+AC4Specific::AC4Specific() = default;
+AC4Specific::~AC4Specific() = default;
+
+FourCC AC4Specific::BoxType() const {
+  return FOURCC_dac4;
+}
+
+bool AC4Specific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t AC4Specific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 OpusSpecific::OpusSpecific() = default;
 OpusSpecific::~OpusSpecific() = default;
 
@@ -1872,6 +1919,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&ddts));
   RCHECK(buffer->TryReadWriteChild(&dac3));
   RCHECK(buffer->TryReadWriteChild(&dec3));
+  RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
   RCHECK(buffer->TryReadWriteChild(&dfla));
 
@@ -1899,6 +1947,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
+         dac4.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
@@ -1966,14 +2015,25 @@ bool TextSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     // TODO(rkuroiwa): Handle the optional MPEG4BitRateBox.
     RCHECK(buffer->PrepareChildren() && buffer->ReadWriteChild(&config) &&
            buffer->ReadWriteChild(&label));
+  } else if (format == FOURCC_stpp) {
+    // These are marked as "optional"; but they should still have the
+    // null-terminator, so this should still work.
+    RCHECK(buffer->ReadWriteCString(&namespace_) &&
+           buffer->ReadWriteCString(&schema_location));
   }
   return true;
 }
 
 size_t TextSampleEntry::ComputeSizeInternal() {
   // 6 for the (anonymous) reserved bytes for SampleEntry class.
-  return HeaderSize() + 6 + sizeof(data_reference_index) +
-         config.ComputeSize() + label.ComputeSize();
+  size_t ret = HeaderSize() + 6 + sizeof(data_reference_index);
+  if (format == FOURCC_wvtt) {
+    ret += config.ComputeSize() + label.ComputeSize();
+  } else if (format == FOURCC_stpp) {
+    // +2 for the two null terminators for these strings.
+    ret += namespace_.size() + schema_location.size() + 2;
+  }
+  return ret;
 }
 
 MediaHeader::MediaHeader() = default;
@@ -2043,6 +2103,21 @@ bool SoundMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
 
 size_t SoundMediaHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(balance) + sizeof(uint16_t);
+}
+
+NullMediaHeader::NullMediaHeader() = default;
+NullMediaHeader::~NullMediaHeader() = default;
+
+FourCC NullMediaHeader::BoxType() const {
+  return FOURCC_nmhd;
+}
+
+bool NullMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
+  return ReadWriteHeaderInternal(buffer);
+}
+
+size_t NullMediaHeader::ComputeSizeInternal() {
+  return HeaderSize();
 }
 
 SubtitleMediaHeader::SubtitleMediaHeader() = default;
@@ -2144,6 +2219,9 @@ bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&smhd));
       break;
     case kText:
+      RCHECK(buffer->TryReadWriteChild(&nmhd));
+      break;
+    case kSubtitle:
       RCHECK(buffer->TryReadWriteChild(&sthd));
       break;
     default:
@@ -2164,6 +2242,9 @@ size_t MediaInformation::ComputeSizeInternal() {
       box_size += smhd.ComputeSize();
       break;
     case kText:
+      box_size += nmhd.ComputeSize();
+      break;
+    case kSubtitle:
       box_size += sthd.ComputeSize();
       break;
     default:
@@ -2328,9 +2409,17 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
     // We do not care the content of metadata box in the source content, so just
     // skip reading the box.
     RCHECK(buffer->TryReadWriteChild(&metadata));
+    if (FLAGS_mvex_before_trak) {
+      // |extends| has to be written before |tracks| to workaround Android
+      // MediaExtractor bug which requires |mvex| to be placed before |trak|.
+      // See https://github.com/google/shaka-packager/issues/711 for details.
+      RCHECK(buffer->TryReadWriteChild(&extends));
+    }
     for (uint32_t i = 0; i < tracks.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&tracks[i]));
-    RCHECK(buffer->TryReadWriteChild(&extends));
+    if (!FLAGS_mvex_before_trak) {
+      RCHECK(buffer->TryReadWriteChild(&extends));
+    }
     for (uint32_t i = 0; i < pssh.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&pssh[i]));
   }
@@ -2659,10 +2748,22 @@ bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {
       buffer->ReadWriteUInt64NBytes(&earliest_presentation_time, num_bytes) &&
       buffer->ReadWriteUInt64NBytes(&first_offset, num_bytes));
 
-  uint16_t reference_count = static_cast<uint16_t>(references.size());
+  uint16_t reference_count;
+  if (references.size() <= std::numeric_limits<uint16_t>::max()) {
+    reference_count = static_cast<uint16_t>(references.size());
+  } else {
+    reference_count = std::numeric_limits<uint16_t>::max();
+    LOG(WARNING) << "Seeing " << references.size()
+                 << " subsegment references, but at most " << reference_count
+                 << " references can be stored in 'sidx' box."
+                 << " The extra references are truncated.";
+    LOG(WARNING) << "The stream will not play to the end in DASH.";
+    LOG(WARNING) << "A possible workaround is to increase segment duration.";
+  }
   RCHECK(buffer->IgnoreBytes(2) &&  // reserved.
          buffer->ReadWriteUInt16(&reference_count));
-  references.resize(reference_count);
+  if (buffer->Reading())
+    references.resize(reference_count);
 
   uint32_t reference_type_size;
   uint32_t sap;
@@ -2694,7 +2795,10 @@ size_t SegmentIndex::ComputeSizeInternal() {
   version = IsFitIn32Bits(earliest_presentation_time, first_offset) ? 0 : 1;
   return HeaderSize() + sizeof(reference_id) + sizeof(timescale) +
          sizeof(uint32_t) * (1 + version) * 2 + 2 * sizeof(uint16_t) +
-         3 * sizeof(uint32_t) * references.size();
+         3 * sizeof(uint32_t) *
+             std::min(
+                 references.size(),
+                 static_cast<size_t>(std::numeric_limits<uint16_t>::max()));
 }
 
 MediaData::MediaData() = default;

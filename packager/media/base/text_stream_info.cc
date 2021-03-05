@@ -6,6 +6,8 @@
 
 #include "packager/media/base/text_stream_info.h"
 
+#include "packager/base/strings/stringprintf.h"
+
 namespace shaka {
 namespace media {
 
@@ -26,6 +28,18 @@ TextStreamInfo::~TextStreamInfo() {}
 
 bool TextStreamInfo::IsValidConfig() const {
   return true;
+}
+
+std::string TextStreamInfo::ToString() const {
+  std::string ret = StreamInfo::ToString();
+  if (!sub_streams_.empty()) {
+    ret += " Sub Streams:";
+    for (auto& pair : sub_streams_) {
+      ret += base::StringPrintf("\n  ID: %u, Lang: %s", pair.first,
+                                pair.second.language.c_str());
+    }
+  }
+  return ret + "\n";
 }
 
 std::unique_ptr<StreamInfo> TextStreamInfo::Clone() const {

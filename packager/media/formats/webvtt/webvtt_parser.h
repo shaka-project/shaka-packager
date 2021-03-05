@@ -7,45 +7,51 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 
-#include <stdint.h>
-
+#include <map>
+#include <string>
 #include <vector>
 
+#include "packager/media/base/media_parser.h"
+#include "packager/media/base/text_sample.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/text_readers.h"
-#include "packager/media/origin/origin_handler.h"
 
 namespace shaka {
 namespace media {
 
 // Used to parse a WebVTT source into Cues that will be sent downstream.
-class WebVttParser : public OriginHandler {
+class WebVttParser : public MediaParser {
  public:
-  WebVttParser(std::unique_ptr<FileReader> source, const std::string& language);
+  WebVttParser();
 
-  Status Run() override;
-  void Cancel() override;
+  void Init(const InitCB& init_cb,
+            const NewMediaSampleCB& new_media_sample_cb,
+            const NewTextSampleCB& new_text_sample_cb,
+            KeySource* decryption_key_source) override;
+  bool Flush() override;
+  bool Parse(const uint8_t* buf, int size) override;
 
  private:
-  WebVttParser(const WebVttParser&) = delete;
-  WebVttParser& operator=(const WebVttParser&) = delete;
-
-  Status InitializeInternal() override;
-  bool ValidateOutputStreamIndex(size_t stream_index) const override;
-
   bool Parse();
+  bool ParseBlock(const std::vector<std::string>& block);
+  bool ParseRegion(const std::vector<std::string>& block);
   bool ParseCueWithNoId(const std::vector<std::string>& block);
   bool ParseCueWithId(const std::vector<std::string>& block);
-  Status ParseCue(const std::string& id,
-                  const std::string* block,
-                  size_t block_size);
+  bool ParseCue(const std::string& id,
+                const std::string* block,
+                size_t block_size);
 
-  Status DispatchTextStreamInfo();
+  void DispatchTextStreamInfo();
+
+  InitCB init_cb_;
+  NewTextSampleCB new_text_sample_cb_;
 
   BlockReader reader_;
-  std::string language_;
-  std::string style_region_config_;
+  std::map<std::string, TextRegion> regions_;
+  std::string css_styles_;
+  bool saw_cue_ = false;
   bool stream_info_dispatched_ = false;
-  bool keep_reading_ = true;
+  bool initialized_ = false;
 };
 
 }  // namespace media

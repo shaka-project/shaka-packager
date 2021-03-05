@@ -53,6 +53,9 @@ struct PackagingParams {
   /// Create a human readable format of MediaInfo. The output file name will be
   /// the name specified by output flag, suffixed with `.media_info`.
   bool output_media_info = false;
+  /// Only use a single thread to generate output.  This is useful in tests to
+  /// avoid non-deterministic outputs.
+  bool single_threaded = false;
   /// DASH MPD related parameters.
   MpdParams mpd_params;
   /// HLS related parameters.
@@ -106,6 +109,10 @@ struct StreamDescriptor {
   /// Optional value which contains a user-specified language tag. If specified,
   /// this value overrides any language metadata in the input stream.
   std::string language;
+  /// Optional value for the index of the sub-stream to use. For some text
+  /// formats, there are multiple "channels" in a single stream. This allows
+  /// selecting only one channel.
+  int32_t cc_index = -1;
 
   /// Required for audio when outputting HLS. It defines the name of the output
   /// stream, which is not necessarily the same as output. This is used as the
@@ -128,6 +135,11 @@ struct StreamDescriptor {
   std::vector<std::string> dash_accessiblities;
   /// Optional for DASH output. It defines Role elements of the stream.
   std::vector<std::string> dash_roles;
+
+  /// Set to true to indicate that the stream is for dash only.
+  bool dash_only = false;
+  /// Set to true to indicate that the stream is for hls only.
+  bool hls_only = false;
 };
 
 class SHAKA_EXPORT Packager {

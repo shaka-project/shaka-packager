@@ -68,6 +68,10 @@
                  # the code in CJK environment if there is non-ASCII characters
                  # in the file.
         ],
+        'cflags': [
+          # TODO(modmaker): Remove once Chromium base is removed.
+          '-Wno-deprecated-declarations',
+        ],
         'conditions': [
           ['clang==0', {
             'cflags': [

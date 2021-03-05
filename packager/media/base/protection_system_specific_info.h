@@ -12,13 +12,7 @@
 #include <vector>
 
 #include "packager/base/logging.h"
-
-#define NO_PROTECTION_SYSTEM_FLAG 0x00
-#define COMMON_PROTECTION_SYSTEM_FLAG 0x01
-#define PLAYREADY_PROTECTION_SYSTEM_FLAG 0x02
-#define WIDEVINE_PROTECTION_SYSTEM_FLAG 0x04
-#define FAIRPLAY_PROTECTION_SYSTEM_FLAG 0x08
-#define MARLIN_PROTECTION_SYSTEM_FLAG 0x10
+#include "packager/media/public/crypto_params.h"
 
 namespace shaka {
 namespace media {

@@ -486,6 +486,60 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {
   EXPECT_EQ(8, media_playlist_->GetNumChannels());
 }
 
+TEST_F(MediaPlaylistMultiSegmentTest, GetEC3JocComplexity) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns 0 by default if not audio.
+  EXPECT_EQ(0, media_playlist_->GetEC3JocComplexity());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ec3_joc_complexity(16);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(16, media_playlist_->GetEC3JocComplexity());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ec3_joc_complexity(6);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(6, media_playlist_->GetEC3JocComplexity());
+}
+
+TEST_F(MediaPlaylistMultiSegmentTest, GetAC4ImsFlag) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns false by default if not audio.
+  EXPECT_EQ(false, media_playlist_->GetAC4ImsFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_ims_flag(false);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(false, media_playlist_->GetAC4ImsFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_ims_flag(true);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(true, media_playlist_->GetAC4ImsFlag());
+}
+
+TEST_F(MediaPlaylistMultiSegmentTest, GetAC4CbiFlag) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns false by default if not audio.
+  EXPECT_EQ(false, media_playlist_->GetAC4CbiFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_cbi_flag(false);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(false, media_playlist_->GetAC4CbiFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_cbi_flag(true);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(true, media_playlist_->GetAC4CbiFlag());
+}
+
 TEST_F(MediaPlaylistMultiSegmentTest, Characteristics) {
   MediaInfo media_info;
   media_info.set_reference_time_scale(kTimeScale);

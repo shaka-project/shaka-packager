@@ -80,6 +80,13 @@ struct MpdParams {
   /// SegmentTimeline if it is enabled. It will be populated from segment
   /// duration specified in ChunkingParams if not specified.
   double target_segment_duration = 0;
+  /// If enabled, allow switching between different codecs, if they have the
+  /// same language, media type (audio, video etc) and container type.
+  bool allow_codec_switching = false;
+  /// If enabled, PlayReady Object <mspr:pro> will be inserted into
+  /// <ContentProtection ...> element alongside with <cenc:pssh>
+  /// when using PlayReady protection system.
+  bool include_mspr_pro = true;
 };
 
 }  // namespace shaka

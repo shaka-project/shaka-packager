@@ -6,12 +6,15 @@
 
 #include "packager/media/event/muxer_listener_factory.h"
 
+#include <list>
+
 #include "packager/base/memory/ptr_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
+#include "packager/media/event/multi_codec_muxer_listener.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/mpd/base/mpd_notifier.h"
@@ -87,25 +90,38 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
     const StreamData& stream) {
   const int stream_index = stream_index_++;
 
-  std::unique_ptr<CombinedMuxerListener> combined_listener(
-      new CombinedMuxerListener);
-
-  if (output_media_info_) {
-    combined_listener->AddListener(
-        CreateMediaInfoDumpListenerInternal(stream.media_info_output));
-  }
-  if (mpd_notifier_) {
-    combined_listener->AddListener(
-        CreateMpdListenerInternal(stream, mpd_notifier_));
-  }
-  if (hls_notifier_) {
-    for (auto& listener :
-         CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
-      combined_listener->AddListener(std::move(listener));
+  // Use a MultiCodecMuxerListener to handle possible DolbyVision profile 8
+  // stream which can be signalled as two different codecs.
+  std::unique_ptr<MultiCodecMuxerListener> multi_codec_listener(
+      new MultiCodecMuxerListener);
+  // Creates two child MuxerListeners. Both are used if the stream is a
+  // multi-codec stream (e.g. DolbyVision proifile 8); otherwise the second
+  // child is ignored. Right now the only use case is DolbyVision profile 8
+  // which contains two codecs.
+  for (int i = 0; i < 2; i++) {
+    std::unique_ptr<CombinedMuxerListener> combined_listener(
+        new CombinedMuxerListener);
+    if (output_media_info_) {
+      combined_listener->AddListener(
+          CreateMediaInfoDumpListenerInternal(stream.media_info_output));
     }
+
+    if (mpd_notifier_ && !stream.hls_only) {
+      combined_listener->AddListener(
+          CreateMpdListenerInternal(stream, mpd_notifier_));
+    }
+
+    if (hls_notifier_ && !stream.dash_only) {
+      for (auto& listener :
+           CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
+        combined_listener->AddListener(std::move(listener));
+      }
+    }
+
+    multi_codec_listener->AddListener(std::move(combined_listener));
   }
 
-  return std::move(combined_listener);
+  return std::move(multi_codec_listener);
 }
 
 std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateHlsListener(

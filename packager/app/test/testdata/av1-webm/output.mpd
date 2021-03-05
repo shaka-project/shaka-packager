@@ -5,8 +5,8 @@
     <AdaptationSet id="0" contentType="video" width="320" height="240" frameRate="1000000/33000" subsegmentAlignment="true" par="4:3">
       <Representation id="0" bandwidth="70752" codecs="av01.0.00M.08" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-av1-video.mp4</BaseURL>
-        <SegmentBase indexRange="798-841" timescale="1000000">
-          <Initialization range="0-797"/>
+        <SegmentBase indexRange="802-845" timescale="1000000">
+          <Initialization range="0-801"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

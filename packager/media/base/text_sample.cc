@@ -6,35 +6,33 @@
 
 #include "packager/media/base/text_sample.h"
 
+#include <algorithm>
+#include <functional>
+
 #include "packager/base/logging.h"
 
 namespace shaka {
 namespace media {
 
+bool TextFragment::is_empty() const {
+  return std::all_of(sub_fragments.begin(), sub_fragments.end(),
+                     std::mem_fn(&TextFragment::is_empty)) &&
+         body.empty() && image.empty();
+}
+
+TextSample::TextSample(const std::string& id,
+                       int64_t start_time,
+                       int64_t end_time,
+                       const TextSettings& settings,
+                       const TextFragment& body)
+    : id_(id),
+      start_time_(start_time),
+      duration_(end_time - start_time),
+      settings_(settings),
+      body_(body) {}
+
 int64_t TextSample::EndTime() const {
   return start_time_ + duration_;
-}
-
-void TextSample::SetTime(int64_t start_time, int64_t end_time) {
-  DCHECK_GE(start_time, 0);
-  DCHECK_GT(end_time, 0);
-  DCHECK_LT(start_time, end_time);
-  start_time_ = start_time;
-  duration_ = end_time - start_time;
-}
-
-void TextSample::AppendStyle(const std::string& style) {
-  if (settings_.length()) {
-    settings_ += " ";
-  }
-  settings_ += style;
-}
-
-void TextSample::AppendPayload(const std::string& payload) {
-  if (payload_.length()) {
-    payload_ += "\n";
-  }
-  payload_ += payload;
 }
 
 }  // namespace media

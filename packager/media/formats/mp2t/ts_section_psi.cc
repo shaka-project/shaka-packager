@@ -118,7 +118,8 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
   return status;
 }
 
-void TsSectionPsi::Flush() {
+bool TsSectionPsi::Flush() {
+  return true;
 }
 
 void TsSectionPsi::Reset() {

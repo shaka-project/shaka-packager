@@ -5,7 +5,7 @@
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <ContentProtection value="cbcs" schemeIdUri="urn:mpeg:dash:mp4protection:2011"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"/>
-      <Representation id="0" bandwidth="977527" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+      <Representation id="0" bandwidth="977559" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <SegmentTemplate timescale="30000" initialization="bear-640x360-video-init.mp4" media="bear-640x360-video-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
             <S t="0" d="30030" r="1"/>
@@ -17,7 +17,7 @@
     <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
       <ContentProtection value="cbcs" schemeIdUri="urn:mpeg:dash:mp4protection:2011"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"/>
-      <Representation id="1" bandwidth="134336" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="1" bandwidth="134368" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="44100" initialization="bear-640x360-audio-init.mp4" media="bear-640x360-audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>

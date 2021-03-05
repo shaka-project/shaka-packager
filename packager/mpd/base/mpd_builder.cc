@@ -16,11 +16,11 @@
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/time/default_clock.h"
 #include "packager/base/time/time.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/period.h"
 #include "packager/mpd/base/representation.h"
-#include "packager/mpd/base/xml/xml_node.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -30,7 +30,7 @@ using xml::XmlNode;
 
 namespace {
 
-void AddMpdNameSpaceInfo(XmlNode* mpd) {
+bool AddMpdNameSpaceInfo(XmlNode* mpd) {
   DCHECK(mpd);
 
   const std::set<std::string> namespaces = mpd->ExtractReferencedNamespaces();
@@ -41,29 +41,32 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
   static const char kDashSchemaMpd2011[] =
       "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd";
 
-  mpd->SetStringAttribute("xmlns", kXmlNamespace);
-  mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi);
-  mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
+  RCHECK(mpd->SetStringAttribute("xmlns", kXmlNamespace));
+  RCHECK(mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi));
+  RCHECK(mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011));
 
   static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
   static const char kMarlinNamespace[] =
       "urn:marlin:mas:1-0:services:schemas:mpd";
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
+  static const char kMsprNamespace[] = "urn:microsoft:playready";
 
   const std::map<std::string, std::string> uris = {
       {"cenc", kCencNamespace},
       {"mas", kMarlinNamespace},
       {"xlink", kXmlNamespaceXlink},
+      {"mspr", kMsprNamespace},
   };
 
   for (const std::string& namespace_name : namespaces) {
     auto iter = uris.find(namespace_name);
     CHECK(iter != uris.end()) << " unexpected namespace " << namespace_name;
 
-    mpd->SetStringAttribute(
+    RCHECK(mpd->SetStringAttribute(
         base::StringPrintf("xmlns:%s", namespace_name.c_str()).c_str(),
-        iter->second);
+        iter->second));
   }
+  return true;
 }
 
 bool Positive(double d) {
@@ -86,10 +89,9 @@ std::string XmlDateTimeNowWithOffset(
                             time_exploded.second);
 }
 
-void SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
-  if (Positive(value)) {
-    mpd->SetStringAttribute(attr_name, SecondsToXmlDuration(value));
-  }
+bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
+  return !Positive(value) ||
+         mpd->SetStringAttribute(attr_name, SecondsToXmlDuration(value));
 }
 
 std::string MakePathRelative(const std::string& media_path,
@@ -158,27 +160,21 @@ bool MpdBuilder::ToString(std::string* output) {
   DCHECK(output);
   static LibXmlInitializer lib_xml_initializer;
 
-  xml::scoped_xml_ptr<xmlDoc> doc(GenerateMpd());
-  if (!doc)
+  auto mpd = GenerateMpd();
+  if (!mpd)
     return false;
 
-  static const int kNiceFormat = 1;
-  int doc_str_size = 0;
-  xmlChar* doc_str = nullptr;
-  xmlDocDumpFormatMemoryEnc(doc.get(), &doc_str, &doc_str_size, "UTF-8",
-                            kNiceFormat);
-  output->assign(doc_str, doc_str + doc_str_size);
-  xmlFree(doc_str);
-
-  // Cleanup, free the doc.
-  doc.reset();
+  std::string version = GetPackagerVersion();
+  if (!version.empty()) {
+    version =
+        base::StringPrintf("Generated with %s version %s",
+                           GetPackagerProjectUrl().c_str(), version.c_str());
+  }
+  *output = mpd->ToString(version);
   return true;
 }
 
-xmlDocPtr MpdBuilder::GenerateMpd() {
-  // Setup nodes.
-  static const char kXmlVersion[] = "1.0";
-  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST kXmlVersion));
+base::Optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   XmlNode mpd("MPD");
 
   // Add baseurls to MPD.
@@ -186,8 +182,8 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
     XmlNode xml_base_url("BaseURL");
     xml_base_url.SetContent(base_url);
 
-    if (!mpd.AddChild(xml_base_url.PassScopedPtr()))
-      return nullptr;
+    if (!mpd.AddChild(std::move(xml_base_url)))
+      return base::nullopt;
   }
 
   bool output_period_duration = false;
@@ -200,13 +196,13 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   }
 
   for (const auto& period : periods_) {
-    xml::scoped_xml_ptr<xmlNode> period_node(
-        period->GetXml(output_period_duration));
-    if (!period_node || !mpd.AddChild(std::move(period_node)))
-      return nullptr;
+    auto period_node = period->GetXml(output_period_duration);
+    if (!period_node || !mpd.AddChild(std::move(*period_node)))
+      return base::nullopt;
   }
 
-  AddMpdNameSpaceInfo(&mpd);
+  if (!AddMpdNameSpaceInfo(&mpd))
+    return base::nullopt;
 
   static const char kOnDemandProfile[] =
       "urn:mpeg:dash:profile:isoff-on-demand:2011";
@@ -214,10 +210,12 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       "urn:mpeg:dash:profile:isoff-live:2011";
   switch (mpd_options_.dash_profile) {
     case DashProfile::kOnDemand:
-      mpd.SetStringAttribute("profiles", kOnDemandProfile);
+      if (!mpd.SetStringAttribute("profiles", kOnDemandProfile))
+        return base::nullopt;
       break;
     case DashProfile::kLive:
-      mpd.SetStringAttribute("profiles", kLiveProfile);
+      if (!mpd.SetStringAttribute("profiles", kLiveProfile))
+        return base::nullopt;
       break;
     default:
       NOTREACHED() << "Unknown DASH profile: "
@@ -225,69 +223,61 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       break;
   }
 
-  AddCommonMpdInfo(&mpd);
+  if (!AddCommonMpdInfo(&mpd))
+    return base::nullopt;
   switch (mpd_options_.mpd_type) {
     case MpdType::kStatic:
-      AddStaticMpdInfo(&mpd);
+      if (!AddStaticMpdInfo(&mpd))
+        return base::nullopt;
       break;
     case MpdType::kDynamic:
-      AddDynamicMpdInfo(&mpd);
+      if (!AddDynamicMpdInfo(&mpd))
+        return base::nullopt;
       // Must be after Period element.
-      AddUtcTiming(&mpd);
+      if (!AddUtcTiming(&mpd))
+        return base::nullopt;
       break;
     default:
       NOTREACHED() << "Unknown MPD type: "
                    << static_cast<int>(mpd_options_.mpd_type);
       break;
   }
-
-  DCHECK(doc);
-  const std::string version = GetPackagerVersion();
-  if (!version.empty()) {
-    std::string version_string =
-        base::StringPrintf("Generated with %s version %s",
-                           GetPackagerProjectUrl().c_str(), version.c_str());
-    xml::scoped_xml_ptr<xmlNode> comment(
-        xmlNewDocComment(doc.get(), BAD_CAST version_string.c_str()));
-    xmlDocSetRootElement(doc.get(), comment.get());
-    xmlAddSibling(comment.release(), mpd.Release());
-  } else {
-    xmlDocSetRootElement(doc.get(), mpd.Release());
-  }
-  return doc.release();
+  return mpd;
 }
 
-void MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
+bool MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
   if (Positive(mpd_options_.mpd_params.min_buffer_time)) {
-    mpd_node->SetStringAttribute(
+    RCHECK(mpd_node->SetStringAttribute(
         "minBufferTime",
-        SecondsToXmlDuration(mpd_options_.mpd_params.min_buffer_time));
+        SecondsToXmlDuration(mpd_options_.mpd_params.min_buffer_time)));
   } else {
     LOG(ERROR) << "minBufferTime value not specified.";
-    // TODO(tinskip): Propagate error.
+    return false;
   }
+  return true;
 }
 
-void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
+bool MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
   static const char kStaticMpdType[] = "static";
-  mpd_node->SetStringAttribute("type", kStaticMpdType);
-  mpd_node->SetStringAttribute("mediaPresentationDuration",
-                               SecondsToXmlDuration(GetStaticMpdDuration()));
+  return mpd_node->SetStringAttribute("type", kStaticMpdType) &&
+         mpd_node->SetStringAttribute(
+             "mediaPresentationDuration",
+             SecondsToXmlDuration(GetStaticMpdDuration()));
 }
 
-void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
+bool MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
 
   static const char kDynamicMpdType[] = "dynamic";
-  mpd_node->SetStringAttribute("type", kDynamicMpdType);
+  RCHECK(mpd_node->SetStringAttribute("type", kDynamicMpdType));
 
   // No offset from NOW.
-  mpd_node->SetStringAttribute("publishTime",
-                               XmlDateTimeNowWithOffset(0, clock_.get()));
+  RCHECK(mpd_node->SetStringAttribute(
+      "publishTime", XmlDateTimeNowWithOffset(0, clock_.get())));
 
   // 'availabilityStartTime' is required for dynamic profile. Calculate if
   // not already calculated.
@@ -302,36 +292,41 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
       // TODO(tinskip). Propagate an error.
     }
   }
-  if (!availability_start_time_.empty())
-    mpd_node->SetStringAttribute("availabilityStartTime",
-                                 availability_start_time_);
+  if (!availability_start_time_.empty()) {
+    RCHECK(mpd_node->SetStringAttribute("availabilityStartTime",
+                                        availability_start_time_));
+  }
 
   if (Positive(mpd_options_.mpd_params.minimum_update_period)) {
-    mpd_node->SetStringAttribute(
+    RCHECK(mpd_node->SetStringAttribute(
         "minimumUpdatePeriod",
-        SecondsToXmlDuration(mpd_options_.mpd_params.minimum_update_period));
+        SecondsToXmlDuration(mpd_options_.mpd_params.minimum_update_period)));
   } else {
     LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
                     "specified.";
   }
 
-  SetIfPositive("timeShiftBufferDepth",
-                mpd_options_.mpd_params.time_shift_buffer_depth, mpd_node);
-  SetIfPositive("suggestedPresentationDelay",
-                mpd_options_.mpd_params.suggested_presentation_delay, mpd_node);
+  return SetIfPositive("timeShiftBufferDepth",
+                       mpd_options_.mpd_params.time_shift_buffer_depth,
+                       mpd_node) &&
+         SetIfPositive("suggestedPresentationDelay",
+                       mpd_options_.mpd_params.suggested_presentation_delay,
+                       mpd_node);
 }
 
-void MpdBuilder::AddUtcTiming(XmlNode* mpd_node) {
+bool MpdBuilder::AddUtcTiming(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
 
   for (const MpdParams::UtcTiming& utc_timing :
        mpd_options_.mpd_params.utc_timings) {
     XmlNode utc_timing_node("UTCTiming");
-    utc_timing_node.SetStringAttribute("schemeIdUri", utc_timing.scheme_id_uri);
-    utc_timing_node.SetStringAttribute("value", utc_timing.value);
-    mpd_node->AddChild(utc_timing_node.PassScopedPtr());
+    RCHECK(utc_timing_node.SetStringAttribute("schemeIdUri",
+                                              utc_timing.scheme_id_uri));
+    RCHECK(utc_timing_node.SetStringAttribute("value", utc_timing.value));
+    RCHECK(mpd_node->AddChild(std::move(utc_timing_node)));
   }
+  return true;
 }
 
 float MpdBuilder::GetStaticMpdDuration() {

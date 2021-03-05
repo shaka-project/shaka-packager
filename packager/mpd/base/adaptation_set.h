@@ -18,7 +18,7 @@
 #include <vector>
 
 #include "packager/base/optional.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 namespace shaka {
 
@@ -27,10 +27,6 @@ class Representation;
 
 struct ContentProtectionElement;
 struct MpdOptions;
-
-namespace xml {
-class XmlNode;
-}  // namespace xml
 
 /// AdaptationSet class provides methods to add Representations and
 /// <ContentProtection> elements to the AdaptationSet element.
@@ -112,7 +108,7 @@ class AdaptationSet {
   /// and ContentProtection elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  xml::scoped_xml_ptr<xmlNode> GetXml();
+  base::Optional<xml::XmlNode> GetXml();
 
   /// Forces the (sub)segmentAlignment field to be set to @a segment_alignment.
   /// Use this if you are certain that the (sub)segments are alinged/unaligned
@@ -175,6 +171,13 @@ class AdaptationSet {
 
   /// @return true if it is a video AdaptationSet.
   bool IsVideo() const;
+
+  /// @return codec.
+  const std::string& codec() const { return codec_; }
+
+  /// Set AdaptationSet@codec.
+  /// @param codec is the new codec to be set.
+  void set_codec(const std::string& codec) { codec_ = codec; };
 
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
@@ -268,6 +271,9 @@ class AdaptationSet {
   // contentType attribute of AdaptationSet.
   // Determined by examining the MediaInfo passed to AddRepresentation().
   std::string content_type_;
+
+  // Codec of AdaptationSet.
+  std::string codec_;
 
   // This does not have to be a set, it could be a list or vector because all we
   // really care is whether there is more than one entry.

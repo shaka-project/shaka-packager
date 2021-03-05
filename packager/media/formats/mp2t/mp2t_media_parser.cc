@@ -5,11 +5,14 @@
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
 
 #include <memory>
+
 #include "packager/base/bind.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/base/text_sample.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 #include "packager/media/formats/mp2t/es_parser_audio.h"
+#include "packager/media/formats/mp2t/es_parser_dvb.h"
 #include "packager/media/formats/mp2t/es_parser_h264.h"
 #include "packager/media/formats/mp2t/es_parser_h265.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
@@ -31,6 +34,7 @@ class PidState {
     kPidPmt,
     kPidAudioPes,
     kPidVideoPes,
+    kPidTextPes,
   };
 
   PidState(int pid,
@@ -43,7 +47,7 @@ class PidState {
 
   // Flush the PID state (possibly emitting some pending frames)
   // and reset its state.
-  void Flush();
+  bool Flush();
 
   // Enable/disable the PID.
   // Disabling a PID will reset its state and ignore any further incoming TS
@@ -59,19 +63,20 @@ class PidState {
     config_ = config;
   }
 
-  SampleQueue& sample_queue() { return sample_queue_; }
-
  private:
+  friend Mp2tMediaParser;
   void ResetState();
 
   int pid_;
   PidType pid_type_;
   std::unique_ptr<TsSection> section_parser_;
 
+  std::deque<std::shared_ptr<MediaSample>> media_sample_queue_;
+  std::deque<std::shared_ptr<TextSample>> text_sample_queue_;
+
   bool enable_;
   int continuity_counter_;
   std::shared_ptr<StreamInfo> config_;
-  SampleQueue sample_queue_;
 };
 
 PidState::PidState(int pid,
@@ -96,7 +101,7 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   int expected_continuity_counter = (continuity_counter_ + 1) % 16;
   if (continuity_counter_ >= 0 &&
       ts_packet.continuity_counter() != expected_continuity_counter) {
-    DVLOG(1) << "TS discontinuity detected for pid: " << pid_;
+    LOG(ERROR) << "TS discontinuity detected for pid: " << pid_;
     // TODO(tinskip): Handle discontinuity better.
     return false;
   }
@@ -109,16 +114,17 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   // At the minimum, when parsing failed, auto reset the section parser.
   // Components that use the Mp2tMediaParser can take further action if needed.
   if (!status) {
-    DVLOG(1) << "Parsing failed for pid = " << pid_;
+    LOG(ERROR) << "Parsing failed for pid = " << pid_ << ", type=" << pid_type_;
     ResetState();
   }
 
   return status;
 }
 
-void PidState::Flush() {
-  section_parser_->Flush();
+bool PidState::Flush() {
+  RCHECK(section_parser_->Flush());
   ResetState();
+  return true;
 }
 
 void PidState::Enable() {
@@ -149,17 +155,19 @@ Mp2tMediaParser::Mp2tMediaParser()
 
 Mp2tMediaParser::~Mp2tMediaParser() {}
 
-void Mp2tMediaParser::Init(
-    const InitCB& init_cb,
-    const NewSampleCB& new_sample_cb,
-    KeySource* decryption_key_source) {
+void Mp2tMediaParser::Init(const InitCB& init_cb,
+                           const NewMediaSampleCB& new_media_sample_cb,
+                           const NewTextSampleCB& new_text_sample_cb,
+                           KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
+  DCHECK(!new_text_sample_cb.is_null());
 
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_media_sample_cb_ = new_media_sample_cb;
+  new_text_sample_cb_ = new_text_sample_cb;
 }
 
 bool Mp2tMediaParser::Flush() {
@@ -169,7 +177,7 @@ bool Mp2tMediaParser::Flush() {
   for (const auto& pair : pids_) {
     DVLOG(1) << "Flushing PID: " << pair.first;
     PidState* pid_state = pair.second.get();
-    pid_state->Flush();
+    RCHECK(pid_state->Flush());
   }
   bool result = EmitRemainingSamples();
   pids_.clear();
@@ -181,7 +189,7 @@ bool Mp2tMediaParser::Flush() {
 }
 
 bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
-  DVLOG(1) << "Mp2tMediaParser::Parse size=" << size;
+  DVLOG(2) << "Mp2tMediaParser::Parse size=" << size;
 
   // Add the data to the parser state.
   ts_byte_queue_.Push(buf, size);
@@ -215,8 +223,7 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
         << " start_unit=" << ts_packet->payload_unit_start_indicator();
 
     // Parse the section.
-    std::map<int, std::unique_ptr<PidState>>::iterator it =
-        pids_.find(ts_packet->pid());
+    auto it = pids_.find(ts_packet->pid());
     if (it == pids_.end() &&
         ts_packet->pid() == TsSection::kPidPat) {
       // Create the PAT state here if needed.
@@ -225,15 +232,11 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
       std::unique_ptr<PidState> pat_pid_state(new PidState(
           ts_packet->pid(), PidState::kPidPat, std::move(pat_section_parser)));
       pat_pid_state->Enable();
-      it = pids_
-               .insert(std::pair<int, std::unique_ptr<PidState>>(
-                   ts_packet->pid(), std::move(pat_pid_state)))
-               .first;
+      it = pids_.emplace(ts_packet->pid(), std::move(pat_pid_state)).first;
     }
 
     if (it != pids_.end()) {
-      if (!it->second->PushTsPacket(*ts_packet))
-        return false;
+      RCHECK(it->second->PushTsPacket(*ts_packet));
     } else {
       DVLOG(LOG_LEVEL_TS) << "Ignoring TS packet for pid: " << ts_packet->pid();
     }
@@ -267,50 +270,56 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   std::unique_ptr<PidState> pmt_pid_state(
       new PidState(pmt_pid, PidState::kPidPmt, std::move(pmt_section_parser)));
   pmt_pid_state->Enable();
-  pids_.insert(std::pair<int, std::unique_ptr<PidState>>(
-      pmt_pid, std::move(pmt_pid_state)));
+  pids_.emplace(pmt_pid, std::move(pmt_pid_state));
 }
 
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                   int pes_pid,
-                                  int stream_type) {
-  DVLOG(1) << "RegisterPes:"
-           << " pes_pid=" << pes_pid
-           << " stream_type=" << std::hex << stream_type << std::dec;
-  std::map<int, std::unique_ptr<PidState>>::iterator it = pids_.find(pes_pid);
-  if (it != pids_.end())
+                                  TsStreamType stream_type,
+                                  const uint8_t* descriptor,
+                                  size_t descriptor_length) {
+  if (pids_.count(pes_pid) != 0)
     return;
+  DVLOG(1) << "RegisterPes:"
+           << " pes_pid=" << pes_pid << " stream_type=" << std::hex
+           << static_cast<int>(stream_type) << std::dec;
 
   // Create a stream parser corresponding to the stream type.
-  bool is_audio = false;
+  PidState::PidType pid_type = PidState::kPidVideoPes;
   std::unique_ptr<EsParser> es_parser;
-  switch (static_cast<TsStreamType>(stream_type)) {
+  auto on_new_stream = base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
+                                  base::Unretained(this), pes_pid);
+  auto on_emit_media = base::Bind(&Mp2tMediaParser::OnEmitMediaSample,
+                                  base::Unretained(this), pes_pid);
+  auto on_emit_text = base::Bind(&Mp2tMediaParser::OnEmitTextSample,
+                                 base::Unretained(this), pes_pid);
+  switch (stream_type) {
     case TsStreamType::kAvc:
-      es_parser.reset(new EsParserH264(
-          pes_pid,
-          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
+      es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit_media));
       break;
     case TsStreamType::kHevc:
-      es_parser.reset(new EsParserH265(
-          pes_pid,
-          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
+      es_parser.reset(new EsParserH265(pes_pid, on_new_stream, on_emit_media));
       break;
     case TsStreamType::kAdtsAac:
+    case TsStreamType::kMpeg1Audio:
     case TsStreamType::kAc3:
-      es_parser.reset(new EsParserAudio(
-          pes_pid, static_cast<TsStreamType>(stream_type),
-          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this)),
-          sbr_in_mimetype_));
-      is_audio = true;
+      es_parser.reset(
+          new EsParserAudio(pes_pid, static_cast<TsStreamType>(stream_type),
+                            on_new_stream, on_emit_media, sbr_in_mimetype_));
+      pid_type = PidState::kPidAudioPes;
+      break;
+    case TsStreamType::kDvbSubtitles:
+      es_parser.reset(new EsParserDvb(pes_pid, on_new_stream, on_emit_text,
+                                      descriptor, descriptor_length));
+      pid_type = PidState::kPidTextPes;
       break;
     default: {
-      LOG_IF(ERROR, !stream_type_logged_once_[stream_type])
-          << "Ignore unsupported MPEG2TS stream type 0x" << std::hex
-          << stream_type << std::dec;
-      stream_type_logged_once_[stream_type] = true;
+      auto type = static_cast<int>(stream_type);
+      DCHECK(type <= 0xff);
+      LOG_IF(ERROR, !stream_type_logged_once_[type])
+          << "Ignore unsupported MPEG2TS stream type 0x" << std::hex << type
+          << std::dec;
+      stream_type_logged_once_[type] = true;
       return;
     }
   }
@@ -319,29 +328,33 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   DVLOG(1) << "Create a new PES state";
   std::unique_ptr<TsSection> pes_section_parser(
       new TsSectionPes(std::move(es_parser)));
-  PidState::PidType pid_type =
-      is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;
   std::unique_ptr<PidState> pes_pid_state(
       new PidState(pes_pid, pid_type, std::move(pes_section_parser)));
   pes_pid_state->Enable();
-  pids_.insert(std::pair<int, std::unique_ptr<PidState>>(
-      pes_pid, std::move(pes_pid_state)));
+  pids_.emplace(pes_pid, std::move(pes_pid_state));
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(
-    const std::shared_ptr<StreamInfo>& new_stream_info) {
-  DCHECK(new_stream_info);
-  DVLOG(1) << "OnVideoConfigChanged for pid=" << new_stream_info->track_id();
+    uint32_t pes_pid,
+    std::shared_ptr<StreamInfo> new_stream_info) {
+  DCHECK(!new_stream_info || new_stream_info->track_id() == pes_pid);
+  DVLOG(1) << "OnVideoConfigChanged for pid=" << pes_pid
+           << ", has_info=" << (new_stream_info ? "true" : "false");
 
-  PidMap::iterator pid_state = pids_.find(new_stream_info->track_id());
+  auto pid_state = pids_.find(pes_pid);
   if (pid_state == pids_.end()) {
     LOG(ERROR) << "PID State for new stream not found (pid = "
                << new_stream_info->track_id() << ").";
     return;
   }
 
-  // Set the stream configuration information for the PID.
-  pid_state->second->set_config(new_stream_info);
+  if (new_stream_info) {
+    // Set the stream configuration information for the PID.
+    pid_state->second->set_config(new_stream_info);
+  } else {
+    LOG(WARNING) << "Ignoring unsupported stream with pid=" << pes_pid;
+    pid_state->second->Disable();
+  }
 
   // Finish initialization if all streams have configs.
   FinishInitializationIfNeeded();
@@ -358,13 +371,14 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
 
   std::vector<std::shared_ptr<StreamInfo>> all_stream_info;
   uint32_t num_es(0);
-  for (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();
-       ++iter) {
-    if (((iter->second->pid_type() == PidState::kPidAudioPes) ||
-         (iter->second->pid_type() == PidState::kPidVideoPes))) {
+  for (const auto& pair : pids_) {
+    if ((pair.second->pid_type() == PidState::kPidAudioPes ||
+         pair.second->pid_type() == PidState::kPidVideoPes ||
+         pair.second->pid_type() == PidState::kPidTextPes) &&
+        pair.second->IsEnabled()) {
       ++num_es;
-      if (iter->second->config())
-        all_stream_info.push_back(iter->second->config());
+      if (pair.second->config())
+        all_stream_info.push_back(pair.second->config());
     }
   }
   if (num_es && (all_stream_info.size() == num_es)) {
@@ -377,29 +391,41 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   return true;
 }
 
-void Mp2tMediaParser::OnEmitSample(
+void Mp2tMediaParser::OnEmitMediaSample(
     uint32_t pes_pid,
-    const std::shared_ptr<MediaSample>& new_sample) {
+    std::shared_ptr<MediaSample> new_sample) {
   DCHECK(new_sample);
-  DVLOG(LOG_LEVEL_ES)
-      << "OnEmitSample: "
-      << " pid="
-      << pes_pid
-      << " size="
-      << new_sample->data_size()
-      << " dts="
-      << new_sample->dts()
-      << " pts="
-      << new_sample->pts();
+  DVLOG(LOG_LEVEL_ES) << "OnEmitMediaSample: "
+                      << " pid=" << pes_pid
+                      << " size=" << new_sample->data_size()
+                      << " dts=" << new_sample->dts()
+                      << " pts=" << new_sample->pts();
 
   // Add the sample to the appropriate PID sample queue.
-  PidMap::iterator pid_state = pids_.find(pes_pid);
+  auto pid_state = pids_.find(pes_pid);
+  if (pid_state == pids_.end()) {
+    LOG(ERROR) << "PID State for new sample not found (pid = " << pes_pid
+               << ").";
+    return;
+  }
+  pid_state->second->media_sample_queue_.push_back(std::move(new_sample));
+}
+
+void Mp2tMediaParser::OnEmitTextSample(uint32_t pes_pid,
+                                       std::shared_ptr<TextSample> new_sample) {
+  DCHECK(new_sample);
+  DVLOG(LOG_LEVEL_ES) << "OnEmitTextSample: "
+                      << " pid=" << pes_pid
+                      << " start=" << new_sample->start_time();
+
+  // Add the sample to the appropriate PID sample queue.
+  auto pid_state = pids_.find(pes_pid);
   if (pid_state == pids_.end()) {
     LOG(ERROR) << "PID State for new sample not found (pid = "
                << pes_pid << ").";
     return;
   }
-  pid_state->second->sample_queue().push_back(new_sample);
+  pid_state->second->text_sample_queue_.push_back(std::move(new_sample));
 }
 
 bool Mp2tMediaParser::EmitRemainingSamples() {
@@ -410,18 +436,16 @@ bool Mp2tMediaParser::EmitRemainingSamples() {
     return true;
 
   // Buffer emission.
-  for (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();
-       ++pid_iter) {
-    SampleQueue& sample_queue = pid_iter->second->sample_queue();
-    for (SampleQueue::iterator sample_iter = sample_queue.begin();
-         sample_iter != sample_queue.end();
-         ++sample_iter) {
-      if (!new_sample_cb_.Run(pid_iter->first, *sample_iter)) {
-        // Error processing sample. Propagate error condition.
-        return false;
-      }
+  for (const auto& pid_pair : pids_) {
+    for (auto sample : pid_pair.second->media_sample_queue_) {
+      RCHECK(new_media_sample_cb_.Run(pid_pair.first, sample));
     }
-    sample_queue.clear();
+    pid_pair.second->media_sample_queue_.clear();
+
+    for (auto sample : pid_pair.second->text_sample_queue_) {
+      RCHECK(new_text_sample_cb_.Run(pid_pair.first, sample));
+    }
+    pid_pair.second->text_sample_queue_.clear();
   }
 
   return true;

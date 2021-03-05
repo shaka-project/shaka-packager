@@ -14,6 +14,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/language_utils.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/representation.h"
@@ -142,7 +143,8 @@ std::string GetBaseCodec(const MediaInfo& media_info) {
   return codec;
 }
 
-std::string GetAdaptationSetKey(const MediaInfo& media_info) {
+std::string GetAdaptationSetKey(const MediaInfo& media_info,
+                                bool ignore_codec) {
   std::string key;
 
   if (media_info.has_video_info()) {
@@ -157,8 +159,10 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info) {
   }
 
   key.append(MediaInfo_ContainerType_Name(media_info.container_type()));
-  key.append(":");
-  key.append(GetBaseCodec(media_info));
+  if (!ignore_codec) {
+    key.append(":");
+    key.append(GetBaseCodec(media_info));
+  }
   key.append(":");
   key.append(GetLanguage(media_info));
 
@@ -321,6 +325,11 @@ const char kMarlinUUID[] = "5e629af5-38da-4063-8977-97ffbd9902d4";
 // Unofficial FairPlay system id extracted from
 // https://forums.developer.apple.com/thread/6185.
 const char kFairPlayUUID[] = "29701fe4-3cc7-4a34-8c5b-ae90c7439a47";
+// String representation of media::kPlayReadySystemId.
+const char kPlayReadyUUID[] = "9a04f079-9840-4286-ab92-e65be0885f95";
+// It is RECOMMENDED to include the @value attribute with name and version "MSPR 2.0".
+// See https://docs.microsoft.com/en-us/playready/specifications/mpeg-dash-playready#221-general.
+const char kContentProtectionValueMSPR20[] = "MSPR 2.0";
 
 Element GenerateMarlinContentIds(const std::string& key_id) {
   // See https://github.com/google/shaka-packager/issues/381 for details.
@@ -349,6 +358,29 @@ Element GenerateCencPsshElement(const std::string& pssh) {
   cenc_pssh.name = kPsshElementName;
   cenc_pssh.content = base64_encoded_pssh;
   return cenc_pssh;
+}
+
+// Extract MS PlayReady Object from given PSSH
+// and encode it in base64.
+Element GenerateMsprProElement(const std::string& pssh) {
+  std::unique_ptr<media::PsshBoxBuilder> b =
+    media::PsshBoxBuilder::ParseFromBox(
+        reinterpret_cast<const uint8_t*>(pssh.data()),
+        pssh.size()
+    );
+
+  const std::vector<uint8_t> *p_pssh = &b->pssh_data();
+  std::string base64_encoded_mspr;
+  base::Base64Encode(
+      base::StringPiece(
+          reinterpret_cast<const char*>(p_pssh->data()),
+          p_pssh->size()),
+      &base64_encoded_mspr
+  );
+  Element mspr_pro;
+  mspr_pro.name = kMsproElementName;
+  mspr_pro.content = base64_encoded_mspr;
+  return mspr_pro;
 }
 
 // Helper function. This works because Representation and AdaptationSet both
@@ -416,6 +448,11 @@ void AddContentProtectionElementsHelperTemplated(
       if (!entry.pssh().empty()) {
         drm_content_protection.subelements.push_back(
             GenerateCencPsshElement(entry.pssh()));
+        if(entry.uuid() == kPlayReadyUUID && protected_content.include_mspr_pro()) {
+          drm_content_protection.subelements.push_back(
+              GenerateMsprProElement(entry.pssh()));
+          drm_content_protection.value = kContentProtectionValueMSPR20;
+        }
       }
     }
 

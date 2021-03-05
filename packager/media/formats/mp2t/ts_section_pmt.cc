@@ -4,11 +4,12 @@
 
 #include "packager/media/formats/mp2t/ts_section_pmt.h"
 
-#include <map>
+#include <vector>
 
 #include "packager/base/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {
@@ -75,26 +76,43 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // The end of the PID map if 4 bytes away from the end of the section
   // (4 bytes = size of the CRC).
   int pid_map_end_marker = section_start_marker - section_length + 4;
-  std::map<int, int> pid_map;
+  struct Info {
+    int pid_es;
+    TsStreamType stream_type;
+    const uint8_t* descriptor;
+    size_t descriptor_length;
+  };
+  std::vector<Info> pid_info;
   while (static_cast<int>(bit_reader->bits_available()) >
          8 * pid_map_end_marker) {
-    int stream_type;
-    int reserved;
+    TsStreamType stream_type;
     int pid_es;
-    int es_info_length;
+    size_t es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));
-    RCHECK(bit_reader->ReadBits(3, &reserved));
+    RCHECK(bit_reader->SkipBits(3));  // reserved
     RCHECK(bit_reader->ReadBits(13, &pid_es));
     RCHECK(bit_reader->ReadBits(4, &reserved));
     RCHECK(bit_reader->ReadBits(12, &es_info_length));
+    const uint8_t* descriptor = bit_reader->current_byte_ptr();
 
     // Do not register the PID right away.
     // Wait for the end of the section to be fully parsed
     // to make sure there is no error.
-    pid_map.insert(std::pair<int, int>(pid_es, stream_type));
+    pid_info.push_back({pid_es, stream_type, descriptor, es_info_length});
 
     // Read the ES info descriptors.
     // Defined in section 2.6 of ISO-13818.
+    if (es_info_length > 0) {
+      uint8_t descriptor_tag;
+      RCHECK(bit_reader->ReadBits(8, &descriptor_tag));
+      es_info_length--;
+
+      // See ETSI EN 300 468 Section 6.1
+      if (stream_type == TsStreamType::kPesPrivateData &&
+          descriptor_tag == 0x59) {  // subtitling_descriptor
+        pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+      }
+    }
     RCHECK(bit_reader->SkipBits(8 * es_info_length));
   }
 
@@ -103,9 +121,10 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Once the PMT has been proved to be correct, register the PIDs.
-  for (std::map<int, int>::iterator it = pid_map.begin();
-       it != pid_map.end(); ++it)
-    register_pes_cb_.Run(it->first, it->second);
+  for (auto& info : pid_info) {
+    register_pes_cb_.Run(info.pid_es, info.stream_type, info.descriptor,
+                         info.descriptor_length);
+  }
 
   return true;
 }

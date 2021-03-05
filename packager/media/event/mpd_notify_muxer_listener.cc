@@ -73,12 +73,19 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
   for (const std::string& accessibility : accessibilities_)
     media_info->add_dash_accessibilities(accessibility);
-  for (const std::string& role : roles_)
-    media_info->add_dash_roles(role);
+  if (roles_.empty() && stream_info.stream_type() == kStreamText) {
+    // If there aren't any roles, default to "subtitle" since some apps may
+    // require it to distinguish between subtitle/caption.
+    media_info->add_dash_roles("subtitle");
+  } else {
+    for (const std::string& role : roles_)
+      media_info->add_dash_roles(role);
+  }
 
   if (is_encrypted_) {
     internal::SetContentProtectionFields(protection_scheme_, default_key_id_,
                                          key_system_info_, media_info.get());
+    media_info->mutable_protected_content()->set_include_mspr_pro(mpd_notifier_->include_mspr_pro());
   }
 
   // The content may be splitted into multiple files, but their MediaInfo

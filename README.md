@@ -40,8 +40,10 @@ Shaka Packager supports:
   |       VP9         |    I / O     |    I / O     |       -      |      -      |       -      |
   |       AV1         |    I / O     |    I / O     |       -      |      -      |       -      |
   |       AAC         |    I / O     |      -       |     I / O    |      I      |       O      |
+  |       MP3         |      O       |      -       |     I / O    |      -      |       O      |
   |    Dolby AC3      |    I / O     |      -       |     I / O    |      -      |       O      |
   |    Dolby EAC3     |    I / O     |      -       |       O      |      -      |       O      |
+  |    Dolby AC4      |    I / O     |      -       |       -      |      -      |       -      |
   |       DTS         |    I / O     |      -       |       -      |      -      |       -      |
   |       FLAC        |    I / O     |      -       |       -      |      -      |       -      |
   |       Opus        |    I / O³    |    I / O     |       -      |      -      |       -      |
@@ -52,8 +54,23 @@ Shaka Packager supports:
   - ²: https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-3.4
   - ³: Opus support in ISO-BMFF is experimental.
 - Subtitles
-  - WebVTT in both text form and embedded in MP4
-  - TTML in text form (DASH only)
+
+  |     Format    |  Input   | Output |
+  |:-------------:|:--------:|:------:|
+  |  Text WebVTT  |    Y     |    Y   |
+  | WebVTT in MP4 | [#405][] |    Y   |
+  |   Text TTML   |    ⁴     |    Y   |
+  |  TTML in MP4  |    -     |    Y   |
+  |    DVB-SUB    |    Y     |    -   |
+  |   Teletext    | [#272][] |    -   |
+
+  - ⁴: TTML input is only supported with TTML output (pass-through, DASH only),
+    see also [#584][].
+
+[#272]: https://github.com/google/shaka-packager/issues/272
+[#405]: https://github.com/google/shaka-packager/issues/405
+[#584]: https://github.com/google/shaka-packager/issues/584
+
 - Platforms
   - Linux
   - Mac

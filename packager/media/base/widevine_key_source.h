@@ -29,13 +29,13 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  /// @param protection_systems_flags is the flags indicating which PSSH should
+  /// @param protection_systems is the enum indicating which PSSH should
   ///        be included.
   /// @param protection_scheme is the Protection Scheme to be used for
   ///        encryption. It needs to be signalled in Widevine PSSH. This
   ///        argument can be ignored if Widevine PSSH is not generated.
   WidevineKeySource(const std::string& server_url,
-                    int protection_systems_flags,
+                    ProtectionSystem protection_systems,
                     FourCC protection_scheme);
 
   ~WidevineKeySource() override;

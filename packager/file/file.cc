@@ -21,6 +21,7 @@
 #include "packager/file/memory_file.h"
 #include "packager/file/threaded_io_file.h"
 #include "packager/file/udp_file.h"
+#include "packager/file/http_file.h"
 
 DEFINE_uint64(io_cache_size,
               32ULL << 20,
@@ -41,6 +42,9 @@ const char* kCallbackFilePrefix = "callback://";
 const char* kLocalFilePrefix = "file://";
 const char* kMemoryFilePrefix = "memory://";
 const char* kUdpFilePrefix = "udp://";
+const char* kHttpFilePrefix = "http://";
+const char* kHttpsFilePrefix = "https://";
+
 
 namespace {
 
@@ -95,6 +99,14 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
   return new UdpFile(file_name);
 }
 
+File* CreateHttpsFile(const char* file_name, const char* mode) {
+  return new HttpFile(HttpMethod::kPut, std::string("https://") + file_name);
+}
+
+File* CreateHttpFile(const char* file_name, const char* mode) {
+  return new HttpFile(HttpMethod::kPut, std::string("http://") + file_name);
+}
+
 File* CreateMemoryFile(const char* file_name, const char* mode) {
   return new MemoryFile(file_name, mode);
 }
@@ -114,6 +126,8 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kUdpFilePrefix, &CreateUdpFile, nullptr, nullptr},
     {kMemoryFilePrefix, &CreateMemoryFile, &DeleteMemoryFile, nullptr},
     {kCallbackFilePrefix, &CreateCallbackFile, nullptr, nullptr},
+    {kHttpFilePrefix, &CreateHttpFile, nullptr, nullptr},
+    {kHttpsFilePrefix, &CreateHttpsFile, nullptr, nullptr},
 };
 
 base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {
@@ -233,6 +247,7 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
 
 bool File::WriteStringToFile(const char* file_name,
                              const std::string& contents) {
+  VLOG(2) << "File::WriteStringToFile: " << file_name;
   std::unique_ptr<File, FileCloser> file(File::Open(file_name, "w"));
   if (!file) {
     LOG(ERROR) << "Failed to open file " << file_name;
@@ -261,6 +276,7 @@ bool File::WriteStringToFile(const char* file_name,
 
 bool File::WriteFileAtomically(const char* file_name,
                                const std::string& contents) {
+  VLOG(2) << "File::WriteFileAtomically: " << file_name;
   base::StringPiece real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
@@ -280,6 +296,7 @@ bool File::WriteFileAtomically(const char* file_name,
 
 bool File::Copy(const char* from_file_name, const char* to_file_name) {
   std::string content;
+  VLOG(2) << "File::Copy from " << from_file_name << " to " << to_file_name;
   if (!ReadFileToString(from_file_name, &content)) {
     LOG(ERROR) << "Failed to open file " << from_file_name;
     return false;
@@ -322,6 +339,9 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
   DCHECK(destination);
   if (max_copy < 0)
     max_copy = std::numeric_limits<int64_t>::max();
+
+  VLOG(2) << "File::CopyFile from " << source->file_name() << " to "
+          << destination->file_name();
 
   const int64_t kBufferSize = 0x40000;  // 256KB.
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[kBufferSize]);

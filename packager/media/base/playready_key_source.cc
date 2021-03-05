@@ -63,34 +63,15 @@ bool Base64StringToBytes(const std::string& base64_string,
 }
 
 PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url,
-                                       int protection_system_flags,
-                                       FourCC protection_scheme)
+                                       ProtectionSystem protection_systems)
     // PlayReady PSSH is retrived from PlayReady server response.
-    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG,
-                protection_scheme),
-      generate_playready_protection_system_(
+    : generate_playready_protection_system_(
           // Generate PlayReady protection system if there are no other
           // protection system specified.
-          protection_system_flags == NO_PROTECTION_SYSTEM_FLAG ||
-          protection_system_flags & PLAYREADY_PROTECTION_SYSTEM_FLAG),
+          protection_systems == ProtectionSystem::kNone ||
+          has_flag(protection_systems, ProtectionSystem::kPlayReady)),
       encryption_key_(new EncryptionKey),
       server_url_(server_url) {}
-
-PlayReadyKeySource::PlayReadyKeySource(
-    const std::string& server_url,
-    const std::string& client_cert_file,
-    const std::string& client_cert_private_key_file,
-    const std::string& client_cert_private_key_password,
-    int protection_system_flags,
-    FourCC protection_scheme)
-    // PlayReady PSSH is retrived from PlayReady server response.
-    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG,
-                protection_scheme),
-      encryption_key_(new EncryptionKey),
-      server_url_(server_url),
-      client_cert_file_(client_cert_file),
-      client_cert_private_key_file_(client_cert_private_key_file),
-      client_cert_private_key_password_(client_cert_private_key_password) {}
 
 PlayReadyKeySource::~PlayReadyKeySource() = default;
 
@@ -141,6 +122,7 @@ Status SetKeyInformationFromServerResponse(
     LOG(ERROR) << "Cannot parse key, " << key_data_b64;
     return Status(error::SERVER_ERROR, "Cannot parse key.");
   }
+  encryption_key->key_ids.emplace_back(encryption_key->key_id);
 
   if (generate_playready_protection_system) {
     std::string pssh_data_b64;
@@ -166,14 +148,6 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
     const std::string& program_identifier) {
   std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
   HttpKeyFetcher key_fetcher(kHttpFetchTimeout);
-  if (!client_cert_file_.empty() && !client_cert_private_key_file_.empty()) {
-    key_fetcher.SetClientCertInfo(client_cert_file_,
-                                  client_cert_private_key_file_,
-                                  client_cert_private_key_password_);
-  }
-  if (!ca_file_.empty()) {
-    key_fetcher.SetCaFile(ca_file_);
-  }
 
   std::string acquire_license_request = kAcquireLicenseRequest;
   base::ReplaceFirstSubstringAfterOffset(
@@ -189,11 +163,7 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
       encryption_key.get()));
 
   // PlayReady does not specify different streams.
-  const char kEmptyDrmLabel[] = "";
-  EncryptionKeyMap encryption_key_map;
-  encryption_key_map[kEmptyDrmLabel] = std::move(encryption_key);
-  RETURN_IF_ERROR(UpdateProtectionSystemInfo(&encryption_key_map));
-  encryption_key_ = std::move(encryption_key_map[kEmptyDrmLabel]);
+  encryption_key_ = std::move(encryption_key);
   return Status::OK;
 }
 

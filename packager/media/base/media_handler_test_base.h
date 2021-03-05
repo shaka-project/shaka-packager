@@ -43,6 +43,15 @@ bool TryMatch(const T& value,
   return true;
 }
 
+MATCHER_P(IsPsshInfoWithSystemId,
+          system_id,
+          std::string(negation ? "doesn't " : "") + " have system ID " +
+              testing::PrintToString(system_id)) {
+  *result_listener << "which is (" << testing::PrintToString(arg.system_id)
+                   << ")";
+  return arg.system_id == system_id;
+}
+
 MATCHER_P4(IsStreamInfo, stream_index, time_scale, encrypted, language, "") {
   if (!TryMatchStreamDataType(arg->stream_data_type,
                               StreamDataType::kStreamInfo, result_listener)) {
@@ -199,14 +208,7 @@ MATCHER_P5(IsMediaSample,
                   "is_key_frame");
 }
 
-MATCHER_P6(IsTextSample,
-           stream_index,
-           id,
-           start_time,
-           end_time,
-           settings,
-           payload,
-           "") {
+MATCHER_P4(IsTextSample, stream_index, id, start_time, end_time, "") {
   if (!TryMatchStreamDataType(arg->stream_data_type,
                               StreamDataType::kTextSample, result_listener)) {
     return false;
@@ -215,9 +217,7 @@ MATCHER_P6(IsTextSample,
   *result_listener << "which is (" << arg->stream_index << ", "
                    << ToPrettyString(arg->text_sample->id()) << ", "
                    << arg->text_sample->start_time() << ", "
-                   << arg->text_sample->EndTime() << ", "
-                   << ToPrettyString(arg->text_sample->settings()) << ", "
-                   << ToPrettyString(arg->text_sample->payload()) << ")";
+                   << arg->text_sample->EndTime() << ")";
 
   return TryMatch(arg->stream_index, stream_index, result_listener,
                   "stream_index") &&
@@ -225,11 +225,7 @@ MATCHER_P6(IsTextSample,
          TryMatch(arg->text_sample->start_time(), start_time, result_listener,
                   "start_time") &&
          TryMatch(arg->text_sample->EndTime(), end_time, result_listener,
-                  "EndTime") &&
-         TryMatch(arg->text_sample->settings(), settings, result_listener,
-                  "settings") &&
-         TryMatch(arg->text_sample->payload(), payload, result_listener,
-                  "payload");
+                  "EndTime");
 }
 
 MATCHER_P2(IsCueEvent, stream_index, time_in_seconds, "") {

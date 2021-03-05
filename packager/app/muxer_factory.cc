@@ -12,7 +12,9 @@
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/formats/packed_audio/packed_audio_writer.h"
+#include "packager/media/formats/ttml/ttml_muxer.h"
 #include "packager/media/formats/webm/webm_muxer.h"
+#include "packager/media/formats/webvtt/webvtt_muxer.h"
 #include "packager/packager.h"
 
 namespace shaka {
@@ -20,9 +22,9 @@ namespace media {
 
 MuxerFactory::MuxerFactory(const PackagingParams& packaging_params)
     : mp4_params_(packaging_params.mp4_output_params),
+      temp_dir_(packaging_params.temp_dir),
       transport_stream_timestamp_offset_ms_(
-          packaging_params.transport_stream_timestamp_offset_ms),
-      temp_dir_(packaging_params.temp_dir) {}
+          packaging_params.transport_stream_timestamp_offset_ms) {}
 
 std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
     MediaContainerName output_format,
@@ -40,12 +42,19 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
 
   switch (output_format) {
     case CONTAINER_AAC:
+    case CONTAINER_MP3:
     case CONTAINER_AC3:
     case CONTAINER_EAC3:
       muxer = std::make_shared<PackedAudioWriter>(options);
       break;
     case CONTAINER_WEBM:
       muxer = std::make_shared<webm::WebMMuxer>(options);
+      break;
+    case CONTAINER_TTML:
+      muxer = std::make_shared<ttml::TtmlMuxer>(options);
+      break;
+    case CONTAINER_WEBVTT:
+      muxer = std::make_shared<webvtt::WebVttMuxer>(options);
       break;
     case CONTAINER_MPEG2TS:
       muxer = std::make_shared<mp2t::TsMuxer>(options);

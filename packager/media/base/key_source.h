@@ -37,7 +37,10 @@ enum class EmeInitDataType {
 
 struct EncryptionKey {
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
+  /// The ID of this key.
   std::vector<uint8_t> key_id;
+  /// The IDs of the other keys to include in PSSH info.
+  std::vector<std::vector<uint8_t>> key_ids;
   std::vector<uint8_t> key;
   std::vector<uint8_t> iv;
 };
@@ -47,7 +50,7 @@ typedef std::map<std::string, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
 /// KeySource is responsible for encryption key acquisition.
 class KeySource {
  public:
-  KeySource(int protection_systems_flags, FourCC protection_scheme);
+  KeySource();
 
   virtual ~KeySource();
 
@@ -88,15 +91,7 @@ class KeySource {
                                     const std::string& stream_label,
                                     EncryptionKey* key) = 0;
 
- protected:
-  /// Update the protection sysmtem specific info for the encryption keys.
-  /// @param encryption_key_map is a map of encryption keys for all tracks.
-  Status UpdateProtectionSystemInfo(EncryptionKeyMap* encryption_key_map);
-
  private:
-  std::vector<std::unique_ptr<PsshGenerator>> pssh_generators_;
-  std::vector<std::vector<uint8_t>> no_pssh_systems_;
-
   DISALLOW_COPY_AND_ASSIGN(KeySource);
 };
 

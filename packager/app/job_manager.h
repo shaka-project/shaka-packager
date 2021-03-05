@@ -60,6 +60,8 @@ class JobManager {
   //        fails or is cancelled. It can be NULL.
   explicit JobManager(std::unique_ptr<SyncPointQueue> sync_points);
 
+  virtual ~JobManager() = default;
+
   // Create a new job entry by specifying the origin handler at the top of the
   // chain and a name for the thread. This will only register the job. To start
   // the job, you need to call |RunJobs|.
@@ -68,12 +70,12 @@ class JobManager {
   // Initialize all registered jobs. If any job fails to initialize, this will
   // return the error and it will not be safe to call |RunJobs| as not all jobs
   // will be properly initialized.
-  Status InitializeJobs();
+  virtual Status InitializeJobs();
 
   // Run all registered jobs. Before calling this make sure that
   // |InitializedJobs| returned |Status::OK|. This call is blocking and will
   // block until all jobs exit.
-  Status RunJobs();
+  virtual Status RunJobs();
 
   // Ask all jobs to stop running. This call is non-blocking and can be used to
   // unblock a call to |RunJobs|.
@@ -81,7 +83,7 @@ class JobManager {
 
   SyncPointQueue* sync_points() { return sync_points_.get(); }
 
- private:
+ protected:
   JobManager(const JobManager&) = delete;
   JobManager& operator=(const JobManager&) = delete;
 

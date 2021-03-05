@@ -18,6 +18,7 @@
 #include "packager/media/formats/mp2t/ac3_header.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mp2t/mpeg1_header.h"
 #include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
@@ -98,6 +99,8 @@ EsParserAudio::EsParserAudio(uint32_t pid,
       sbr_in_mimetype_(sbr_in_mimetype) {
   if (stream_type == TsStreamType::kAc3) {
     audio_header_.reset(new Ac3Header);
+  } else if (stream_type == TsStreamType::kMpeg1Audio) {
+    audio_header_.reset(new Mpeg1Header);
   } else {
     DCHECK_EQ(stream_type, TsStreamType::kAdtsAac);
     audio_header_.reset(new AdtsHeader);
@@ -164,7 +167,7 @@ bool EsParserAudio::Parse(const uint8_t* buf,
     sample->set_pts(current_pts);
     sample->set_dts(current_pts);
     sample->set_duration(frame_duration);
-    emit_sample_cb_.Run(pid(), sample);
+    emit_sample_cb_.Run(sample);
 
     // Update the PTS of the next frame.
     audio_timestamp_helper_->AddFrames(audio_header_->GetSamplesPerFrame());
@@ -179,7 +182,9 @@ bool EsParserAudio::Parse(const uint8_t* buf,
   return true;
 }
 
-void EsParserAudio::Flush() {}
+bool EsParserAudio::Flush() {
+  return true;
+}
 
 void EsParserAudio::Reset() {
   es_byte_queue_.Reset();
@@ -214,7 +219,9 @@ bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
                        : samples_per_second;
 
   const Codec codec =
-      stream_type_ == TsStreamType::kAc3 ? kCodecAC3 : kCodecAAC;
+      stream_type_ == TsStreamType::kAc3
+          ? kCodecAC3
+          : (stream_type_ == TsStreamType::kMpeg1Audio ? kCodecMP3 : kCodecAAC);
   last_audio_decoder_config_ = std::make_shared<AudioStreamInfo>(
       pid(), kMpeg2Timescale, kInfiniteDuration, codec,
       AudioStreamInfo::GetCodecString(codec, audio_header.GetObjectType()),

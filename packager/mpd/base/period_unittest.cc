@@ -137,7 +137,7 @@ TEST_F(PeriodTest, GetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
 }
 
@@ -169,7 +169,7 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
 }
 
@@ -202,7 +202,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
   const char kExpectedXmlSuppressDuration[] =
       "<Period id=\"9\">"
@@ -210,7 +210,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXmlSuppressDuration));
 }
 
@@ -279,6 +279,52 @@ TEST_F(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
                 content_protection_in_adaptation_set_));
 }
 
+TEST_F(PeriodTest, TrickPlayCacheWithMatchingAdaptationSet) {
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+  const char kTrickPlayMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "  playback_rate: 10\n"
+      "}\n"
+      "container_type: 1\n";
+
+  std::unique_ptr<StrictMock<MockAdaptationSet>> trick_play_adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* trick_play_adaptation_set_ptr = trick_play_adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(trick_play_adaptation_set))))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+
+  EXPECT_CALL(*trick_play_adaptation_set_ptr,
+              AddTrickPlayReference(Eq(default_adaptation_set_ptr_)));
+
+  ASSERT_EQ(trick_play_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kTrickPlayMediaInfo),
+                content_protection_in_adaptation_set_));
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVideoMediaInfo),
+                content_protection_in_adaptation_set_));
+}
+
 // Verify no AdaptationSet is returned on trickplay media info.
 TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
   const char kVideoMediaInfo[] =
@@ -316,10 +362,12 @@ TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVideoMediaInfo),
                 content_protection_in_adaptation_set_));
-  // A nullptr is returned if it is not able to find matching AdaptationSet.
-  ASSERT_FALSE(testable_period_.GetOrCreateAdaptationSet(
+
+  ASSERT_TRUE(testable_period_.GetOrCreateAdaptationSet(
       ConvertToMediaInfo(kVp9TrickPlayMediaInfo),
       content_protection_in_adaptation_set_));
+
+  ASSERT_TRUE(!testable_period_.trickplay_cache().empty());
 }
 
 // Don't put different audio languages or codecs in the same AdaptationSet.
@@ -503,7 +551,7 @@ TEST_F(PeriodTest, OrderedByAdaptationSetId) {
       R"(  <AdaptationSet id="1" contentType=""/>)"
       R"(  <AdaptationSet id="2" contentType=""/>)"
       R"(</Period>)";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
 }
 

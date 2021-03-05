@@ -20,7 +20,7 @@ Synopsis
 
 **key_info_string** is of the form::
 
-    label=<label>:key_id=<key_id>:key=<key>
+    label=<label>:key_id=<key_id>:key=<key>[:iv=<initialization_vector>]
 
 Custom PSSH(s) can be provided in *--pssh*. If neither --pssh nor
 --protection_systems is specified, `v1 common PSSH box <https://goo.gl/s8RIhr>`_
@@ -67,9 +67,8 @@ The examples below use the H264 streams created in :doc:`encoding`.
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
       --protection_scheme cbcs \
       --enable_raw_key_encryption \
-      --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
+      --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519:iv=11223344556677889900112233445566,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392:iv=22334455667788990011223344556677,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead:iv=33445566778899001122334455667788 \
       --protection_systems FairPlay \
-      --iv 11223344556677889900112233445566
       --hls_master_playlist_output h264_master.m3u8 \
       --hls_key_uri skd://testAssetID
 
@@ -84,6 +83,20 @@ The examples below use the H264 streams created in :doc:`encoding`.
       --enable_raw_key_encryption \
       --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
       --protection_systems Widevine,PlayReady \
+      --mpd_output h264.mpd
+
+* Example with LAURL::
+
+    $ packager \
+      in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
+      in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,drm_label=SD \
+      in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,drm_label=SD \
+      in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4,drm_label=HD \
+      in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
+      --enable_raw_key_encryption \
+      --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
+      --protection_systems PlayReady \
+      --playready_extra_header_data '<LAURL>https://example.com/pr</LAURL>' \
       --mpd_output h264.mpd
 
 .. note::
@@ -117,9 +130,7 @@ Test vectors used in this tutorial
 
 :Widevine PSSH:
 
-    000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964
-
-    The PSSH is generated using
+    The PSSH 00000031707373... is generated using
     `pssh-box script <https://github.com/google/shaka-packager/tree/master/packager/tools/pssh>`_::
 
         $ pssh-box.py --widevine-system-id \

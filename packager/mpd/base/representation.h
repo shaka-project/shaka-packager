@@ -9,25 +9,21 @@
 #ifndef PACKAGER_MPD_BASE_REPRESENTATION_H_
 #define PACKAGER_MPD_BASE_REPRESENTATION_H_
 
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
-
 #include <stdint.h>
 
 #include <list>
 #include <memory>
 
+#include "packager/base/optional.h"
+#include "packager/mpd/base/bandwidth_estimator.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/segment_info.h"
+#include "packager/mpd/base/xml/xml_node.h"
+
 namespace shaka {
 
 struct ContentProtectionElement;
 struct MpdOptions;
-
-namespace xml {
-class XmlNode;
-class RepresentationXmlNode;
-}  // namespace xml
 
 class RepresentationStateChangeListener {
  public:
@@ -116,7 +112,7 @@ class Representation {
   virtual const MediaInfo& GetMediaInfo() const;
 
   /// @return Copy of <Representation>.
-  xml::scoped_xml_ptr<xmlNode> GetXml();
+  base::Optional<xml::XmlNode> GetXml();
 
   /// By calling this methods, the next time GetXml() is
   /// called, the corresponding attributes will not be set.

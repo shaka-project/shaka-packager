@@ -32,7 +32,6 @@ const bool kSubSegment = true;
 const uint64_t kTimescaleMs = 1000;
 
 const char* kNoId = "";
-const char* kNoSettings = "";
 const char* kNoPayload = "";
 }  // namespace
 
@@ -70,13 +69,13 @@ TEST_F(TextChunkerTest, SegmentsStartAtFirstSample) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kOutput), OnProcess(IsStreamInfo(_, _, _, _)));
-    EXPECT_CALL(*Output(kOutput), OnProcess(IsTextSample(_, _, kSampleAStart,
-                                                         kSampleAEnd, _, _)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsTextSample(_, _, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(
         *Output(kOutput),
         OnProcess(IsSegmentInfo(_, kSegment0Start, kSegmentDurationMs, _, _)));
-    EXPECT_CALL(*Output(kOutput), OnProcess(IsTextSample(_, _, kSampleAStart,
-                                                         kSampleAEnd, _, _)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsTextSample(_, _, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(
         *Output(kOutput),
         OnProcess(IsSegmentInfo(_, kSegment1Start, kSegmentDurationMs, _, _)));
@@ -120,8 +119,7 @@ TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
                 OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -172,8 +170,7 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -181,8 +178,7 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -238,8 +234,7 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -253,8 +248,7 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
 
     // Segment Three
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -305,8 +299,7 @@ TEST_F(TextChunkerTest, SampleCrossesSegments) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -314,8 +307,7 @@ TEST_F(TextChunkerTest, SampleCrossesSegments) {
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -375,39 +367,39 @@ TEST_F(TextChunkerTest, PreservesOrder) {
                 OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Segment One
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleAId, kSampleAStart,
-                                       kSampleAEnd, kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleBId, kSampleBStart,
-                                       kSampleBEnd, kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleCId, kSampleCStart,
-                                       kSampleCEnd, kNoSettings, kNoPayload)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleAId, kSampleAStart, kSampleAEnd)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleBId, kSampleBStart, kSampleBEnd)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleCId, kSampleCStart, kSampleCEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
                                         !kEncrypted)));
 
     // Segment Two
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleAId, kSampleAStart,
-                                       kSampleAEnd, kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleBId, kSampleBStart,
-                                       kSampleBEnd, kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleCId, kSampleCStart,
-                                       kSampleCEnd, kNoSettings, kNoPayload)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleAId, kSampleAStart, kSampleAEnd)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleBId, kSampleBStart, kSampleBEnd)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleCId, kSampleCStart, kSampleCEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                         kSegmentDurationMs, !kSubSegment,
                                         !kEncrypted)));
 
     // Segment Two
-    EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kSampleCId, kSampleCStart,
-                                       kSampleCEnd, kNoSettings, kNoPayload)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsTextSample(_, kSampleCId, kSampleCStart, kSampleCEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -468,8 +460,7 @@ TEST_F(TextChunkerTest, NestedSamples) {
 
     // Segment 0
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -477,11 +468,9 @@ TEST_F(TextChunkerTest, NestedSamples) {
 
     // Segment 1
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -489,11 +478,9 @@ TEST_F(TextChunkerTest, NestedSamples) {
 
     // Segment 2
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -501,11 +488,9 @@ TEST_F(TextChunkerTest, NestedSamples) {
 
     // Segment 3
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment3Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -513,8 +498,7 @@ TEST_F(TextChunkerTest, NestedSamples) {
 
     // Segment 4
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment4Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -570,8 +554,7 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -579,8 +562,7 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -588,8 +570,7 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
 
     // Segment Three
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleBStart, kSampleBEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
                                         kSegmentDurationMs, !kSubSegment,
@@ -650,8 +631,7 @@ TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
 
     // Segment 0 and Cue 0
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
                                         kSegment0StartLength, !kSubSegment,
@@ -660,8 +640,7 @@ TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
 
     // Segment 1 and Cue 1
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                         kSegment1StartLength, !kSubSegment,
@@ -670,8 +649,7 @@ TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
 
     // Segment 2
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd,
-                                       kNoSettings, kNoPayload)));
+                OnProcess(IsTextSample(_, kNoId, kSampleAStart, kSampleAEnd)));
     EXPECT_CALL(*Output(kOutput),
                 OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
                                         kSegmentDurationMs, !kSubSegment,

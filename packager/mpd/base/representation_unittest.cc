@@ -169,7 +169,7 @@ TEST_F(RepresentationTest, CheckVideoInfoReflectedInXml) {
       " codecs=\"avc1\" mimeType=\"video/mp4\" "
       " sar=\"1:1\" width=\"1280\" height=\"720\" "
       " frameRate=\"10/10\"/>";
-  EXPECT_THAT(representation->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(representation->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 TEST_F(RepresentationTest, CheckVideoInfoVp8CodecInMp4) {
@@ -188,7 +188,7 @@ TEST_F(RepresentationTest, CheckVideoInfoVp8CodecInMp4) {
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp8),
                            kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(),
+  EXPECT_THAT(representation->GetXml(),
               AttributeEqual("codecs", "vp08.00.00.08.01.01.00.00"));
 }
 
@@ -210,7 +210,7 @@ TEST_F(RepresentationTest, CheckVideoInfoVp8CodecInWebm) {
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp8),
                            kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(), AttributeEqual("codecs", "vp8"));
+  EXPECT_THAT(representation->GetXml(), AttributeEqual("codecs", "vp8"));
 }
 
 TEST_F(RepresentationTest, CheckVideoInfoVp9CodecInWebm) {
@@ -229,7 +229,7 @@ TEST_F(RepresentationTest, CheckVideoInfoVp9CodecInWebm) {
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp9),
                            kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(),
+  EXPECT_THAT(representation->GetXml(),
               AttributeEqual("codecs", "vp09.00.00.08.01.01.00.00"));
 }
 
@@ -251,7 +251,7 @@ TEST_F(RepresentationTest, CheckVideoInfoLegacyVp9CodecInWebm) {
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp9),
                            kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(), AttributeEqual("codecs", "vp9"));
+  EXPECT_THAT(representation->GetXml(), AttributeEqual("codecs", "vp9"));
 }
 
 // Make sure RepresentationStateChangeListener::OnNewSegmentForRepresentation()
@@ -325,7 +325,7 @@ TEST_F(RepresentationTest, TtmlXmlMimeType) {
       CreateRepresentation(ConvertToMediaInfo(kTtmlXmlMediaInfo),
                            kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(),
+  EXPECT_THAT(representation->GetXml(),
               AttributeEqual("mimeType", "application/ttml+xml"));
 }
 
@@ -340,7 +340,7 @@ TEST_F(RepresentationTest, TtmlMp4MimeType) {
       CreateRepresentation(ConvertToMediaInfo(kTtmlMp4MediaInfo),
                            kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(),
+  EXPECT_THAT(representation->GetXml(),
               AttributeEqual("mimeType", "application/mp4"));
 }
 
@@ -354,8 +354,7 @@ TEST_F(RepresentationTest, WebVttMimeType) {
   auto representation = CreateRepresentation(
       ConvertToMediaInfo(kWebVttMediaInfo), kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(),
-              AttributeEqual("mimeType", "text/vtt"));
+  EXPECT_THAT(representation->GetXml(), AttributeEqual("mimeType", "text/vtt"));
 }
 
 // Verify that Suppress*() methods work.
@@ -376,22 +375,22 @@ TEST_F(RepresentationTest, SuppressRepresentationAttributes) {
       ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
 
   representation->SuppressOnce(Representation::kSuppressWidth);
-  xml::scoped_xml_ptr<xmlNode> no_width(representation->GetXml());
-  EXPECT_THAT(no_width.get(), Not(AttributeSet("width")));
-  EXPECT_THAT(no_width.get(), AttributeEqual("height", "480"));
-  EXPECT_THAT(no_width.get(), AttributeEqual("frameRate", "10/10"));
+  auto no_width = representation->GetXml();
+  EXPECT_THAT(no_width, Not(AttributeSet("width")));
+  EXPECT_THAT(no_width, AttributeEqual("height", "480"));
+  EXPECT_THAT(no_width, AttributeEqual("frameRate", "10/10"));
 
   representation->SuppressOnce(Representation::kSuppressHeight);
-  xml::scoped_xml_ptr<xmlNode> no_height(representation->GetXml());
-  EXPECT_THAT(no_height.get(), Not(AttributeSet("height")));
-  EXPECT_THAT(no_height.get(), AttributeEqual("width", "720"));
-  EXPECT_THAT(no_height.get(), AttributeEqual("frameRate", "10/10"));
+  auto no_height = representation->GetXml();
+  EXPECT_THAT(no_height, Not(AttributeSet("height")));
+  EXPECT_THAT(no_height, AttributeEqual("width", "720"));
+  EXPECT_THAT(no_height, AttributeEqual("frameRate", "10/10"));
 
   representation->SuppressOnce(Representation::kSuppressFrameRate);
-  xml::scoped_xml_ptr<xmlNode> no_frame_rate(representation->GetXml());
-  EXPECT_THAT(no_frame_rate.get(), Not(AttributeSet("frameRate")));
-  EXPECT_THAT(no_frame_rate.get(), AttributeEqual("width", "720"));
-  EXPECT_THAT(no_frame_rate.get(), AttributeEqual("height", "480"));
+  auto no_frame_rate = representation->GetXml();
+  EXPECT_THAT(no_frame_rate, Not(AttributeSet("frameRate")));
+  EXPECT_THAT(no_frame_rate, AttributeEqual("width", "720"));
+  EXPECT_THAT(no_frame_rate, AttributeEqual("height", "480"));
 }
 
 TEST_F(RepresentationTest, CheckRepresentationId) {
@@ -401,7 +400,7 @@ TEST_F(RepresentationTest, CheckRepresentationId) {
   auto representation =
       CreateRepresentation(video_media_info, kRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
-  EXPECT_THAT(representation->GetXml().get(),
+  EXPECT_THAT(representation->GetXml(),
               AttributeEqual("id", std::to_string(kRepresentationId)));
 }
 
@@ -508,7 +507,7 @@ TEST_F(SegmentTemplateTest, OneSegmentNormal) {
   AddSegments(kStartTime, kDuration, kSize, 0);
 
   expected_s_elements_ = "<S t=\"0\" d=\"10\"/>";
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 TEST_F(SegmentTemplateTest, RepresentationClone) {
@@ -533,8 +532,7 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
       "   media=\"$Number$.mp4\" startNumber=\"2\">\n"
       "  </SegmentTemplate>\n"
       "</Representation>\n";
-  EXPECT_THAT(cloned_representation->GetXml().get(),
-              XmlNodeEqual(kExpectedXml));
+  EXPECT_THAT(cloned_representation->GetXml(), XmlNodeEqual(kExpectedXml));
 }
 
 TEST_F(SegmentTemplateTest, PresentationTimeOffset) {
@@ -557,7 +555,7 @@ TEST_F(SegmentTemplateTest, PresentationTimeOffset) {
       "     </SegmentTimeline>\n"
       "  </SegmentTemplate>\n"
       "</Representation>\n";
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(kExpectedXml));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(kExpectedXml));
 }
 
 TEST_F(SegmentTemplateTest, GetStartAndEndTimestamps) {
@@ -597,7 +595,7 @@ TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {
   repeat = 0;
   AddSegments(start_time, duration, kSize, repeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
@@ -617,7 +615,7 @@ TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
   repeat = 3;
   AddSegments(start_time, duration, kSize, repeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 // Segments not starting from 0.
@@ -629,7 +627,7 @@ TEST_F(SegmentTemplateTest, NonZeroStartTime) {
   const int kRepeat = 1;
   AddSegments(kStartTime, kDuration, kSize, kRepeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 // There is a gap in the segments, but still valid.
@@ -643,7 +641,7 @@ TEST_F(SegmentTemplateTest, NonContiguousLiveInfo) {
   const int64_t kStartTimeOffset = 100;
   AddSegments(kDuration + kStartTimeOffset, kDuration, kSize, kRepeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 // Add segments out of order. Segments that start before the previous segment
@@ -658,7 +656,7 @@ TEST_F(SegmentTemplateTest, OutOfOrder) {
   AddSegments(kLaterStartTime, kDuration, kSize, kRepeat);
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 // No segments should be overlapping.
@@ -674,7 +672,7 @@ TEST_F(SegmentTemplateTest, OverlappingSegments) {
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
   AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 // Some segments can be overlapped due to rounding errors. As long as it falls
@@ -692,7 +690,7 @@ TEST_F(SegmentTemplateTest, OverlappingSegmentsWithinErrorRange) {
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
   AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
 }
 
 class SegmentTimelineTestBase : public SegmentTemplateTest {
@@ -782,7 +780,7 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentDurationAdjusted) {
     expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
                                              kStartTime, kDurationSmaller);
   }
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
@@ -803,7 +801,7 @@ TEST_P(ApproximateSegmentTimelineTest,
     expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
                                              kStartTime, kDurationSmaller);
   }
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
@@ -835,7 +833,7 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
                            kStartTime + kDurationSmaller + kDurationLarger,
                            kDurationSmaller);
   }
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
@@ -861,7 +859,7 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations2) {
     expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
                                              kDurationLarger, kNumSegments - 1);
   }
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
@@ -885,7 +883,7 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallGap) {
         base::StringPrintf(kSElementTemplate, kStartTime + kDuration + kGap,
                            kDuration, 1 /* repeat */);
   }
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
@@ -909,7 +907,7 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
         base::StringPrintf(kSElementTemplate, kStartTime + kDuration - kOverlap,
                            kDuration, 1 /* repeat */);
   }
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
@@ -946,7 +944,7 @@ TEST_P(ApproximateSegmentTimelineTest, NoSampleDuration) {
       "     </SegmentTimeline>\n"
       "  </SegmentTemplate>\n"
       "</Representation>\n";
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(kExpectedXml));
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(kExpectedXml));
 }
 
 INSTANTIATE_TEST_CASE_P(ApproximateSegmentTimelineTest,
@@ -996,7 +994,7 @@ TEST_P(TimeShiftBufferDepthTest, Normal) {
       initial_start_time_ + kDuration * (kRepeat - kExpectedRepeatsLeft),
       kDuration, kExpectedRepeatsLeft);
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(expected_s_element, kExpectedStartNumber)));
 }
 
@@ -1020,7 +1018,7 @@ TEST_P(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
   const std::string expected_s_element = base::StringPrintf(
       kSElementTemplate, initial_start_time_, kDuration, kRepeat);
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(expected_s_element, kDefaultStartNumber)));
 }
 
@@ -1053,7 +1051,7 @@ TEST_P(TimeShiftBufferDepthTest, Generic) {
 
   const int kExpectedRemovedSegments = kRepeat + 1;
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(
           expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments)));
 }
@@ -1095,7 +1093,7 @@ TEST_P(TimeShiftBufferDepthTest, MoreThanOneS) {
                          kTwoSecondDuration, kTwoSecondSegmentRepeat);
 
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(
           expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments)));
 }
@@ -1136,7 +1134,7 @@ TEST_P(TimeShiftBufferDepthTest, UseLastSegmentInS) {
   expected_s_element +=
       base::StringPrintf(kSElementTemplate, first_s_element_end_time,
                          kTwoSecondDuration, kTwoSecondSegmentRepeat);
-  EXPECT_THAT(representation_->GetXml().get(),
+  EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_element, 2)));
 }
 
@@ -1168,7 +1166,7 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
                                            gap_s_element_start_time, kDuration);
 
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(expected_s_element, kDefaultStartNumber)));
 }
 
@@ -1204,7 +1202,7 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
                          kSecondSElementRepeat);
   const int kExpectedRemovedSegments = kRepeat;
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(
           expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments)));
 }
@@ -1233,7 +1231,7 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
       initial_start_time_ + kExpectedRemovedSegments * kDuration, kDuration,
       kExpectedSegmentsRepeat);
   EXPECT_THAT(
-      representation_->GetXml().get(),
+      representation_->GetXml(),
       XmlNodeEqual(ExpectedXml(expected_s_element, kExpectedStartNumber)));
 }
 

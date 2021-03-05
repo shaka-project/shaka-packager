@@ -377,8 +377,7 @@ class WebMClusterParserTest : public testing::Test {
     streams_from_init_event_ = stream_info;
   }
 
-  bool NewSampleEvent(uint32_t track_id,
-                      const std::shared_ptr<MediaSample>& sample) {
+  bool NewSampleEvent(uint32_t track_id, std::shared_ptr<MediaSample> sample) {
     switch (track_id) {
       case kAudioTrackNum:
         audio_buffers_.push_back(sample);

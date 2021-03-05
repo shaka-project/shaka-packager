@@ -9,8 +9,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="317223" codecs="hvc1.2.4.L63.90" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-hevc-hdr10-video.mp4</BaseURL>
-        <SegmentBase indexRange="5227-5270" timescale="30000">
-          <Initialization range="0-5226"/>
+        <SegmentBase indexRange="5231-5274" timescale="30000">
+          <Initialization range="0-5230"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

@@ -13,10 +13,14 @@
 
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/common_pssh_generator.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/playready_pssh_generator.h"
+#include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/base/widevine_pssh_generator.h"
 #include "packager/media/crypto/aes_encryptor_factory.h"
 #include "packager/media/crypto/subsample_generator.h"
 #include "packager/status_macros.h"
@@ -63,6 +67,95 @@ std::string GetStreamLabelForEncryption(
 bool IsPatternEncryptionScheme(FourCC protection_scheme) {
   return protection_scheme == kAppleSampleAesProtectionScheme ||
          protection_scheme == FOURCC_cbcs || protection_scheme == FOURCC_cens;
+}
+
+void FillPsshGenerators(
+    const EncryptionParams& encryption_params,
+    std::vector<std::unique_ptr<PsshGenerator>>* pssh_generators,
+    std::vector<std::vector<uint8_t>>* no_pssh_systems) {
+  if (has_flag(encryption_params.protection_systems,
+               ProtectionSystem::kCommon)) {
+    pssh_generators->emplace_back(new CommonPsshGenerator());
+  }
+
+  if (has_flag(encryption_params.protection_systems,
+               ProtectionSystem::kPlayReady)) {
+    pssh_generators->emplace_back(new PlayReadyPsshGenerator(
+        encryption_params.playready_extra_header_data,
+        static_cast<FourCC>(encryption_params.protection_scheme)));
+  }
+
+  if (has_flag(encryption_params.protection_systems,
+               ProtectionSystem::kWidevine)) {
+    pssh_generators->emplace_back(new WidevinePsshGenerator(
+        static_cast<FourCC>(encryption_params.protection_scheme)));
+  }
+
+  if (has_flag(encryption_params.protection_systems,
+               ProtectionSystem::kFairPlay)) {
+    no_pssh_systems->emplace_back(std::begin(kFairPlaySystemId),
+                                  std::end(kFairPlaySystemId));
+  }
+  // We only support Marlin Adaptive Streaming Specification – Simple Profile
+  // with Implicit Content ID Mapping, which does not need a PSSH. Marlin
+  // specific PSSH with Explicit Content ID Mapping is not generated.
+  if (has_flag(encryption_params.protection_systems,
+               ProtectionSystem::kMarlin)) {
+    no_pssh_systems->emplace_back(std::begin(kMarlinSystemId),
+                                  std::end(kMarlinSystemId));
+  }
+
+  if (pssh_generators->empty() && no_pssh_systems->empty() &&
+      (encryption_params.key_provider != KeyProvider::kRawKey ||
+       encryption_params.raw_key.pssh.empty())) {
+    pssh_generators->emplace_back(new CommonPsshGenerator());
+  }
+}
+
+void AddProtectionSystemIfNotExist(
+    const ProtectionSystemSpecificInfo& pssh_info,
+    EncryptionConfig* encryption_config) {
+  for (const auto& info : encryption_config->key_system_info) {
+    if (info.system_id == pssh_info.system_id)
+      return;
+  }
+  encryption_config->key_system_info.push_back(pssh_info);
+}
+
+Status FillProtectionSystemInfo(const EncryptionParams& encryption_params,
+                                const EncryptionKey& encryption_key,
+                                EncryptionConfig* encryption_config) {
+  // If generating dummy keys for key rotation, don't generate PSSH info.
+  if (encryption_key.key_ids.empty())
+    return Status::OK;
+
+  std::vector<std::unique_ptr<PsshGenerator>> pssh_generators;
+  std::vector<std::vector<uint8_t>> no_pssh_systems;
+  FillPsshGenerators(encryption_params, &pssh_generators, &no_pssh_systems);
+
+  encryption_config->key_system_info = encryption_key.key_system_info;
+  for (const auto& pssh_generator : pssh_generators) {
+    const bool support_multiple_keys = pssh_generator->SupportMultipleKeys();
+    if (support_multiple_keys) {
+      ProtectionSystemSpecificInfo info;
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIds(
+          encryption_key.key_ids, &info));
+      AddProtectionSystemIfNotExist(info, encryption_config);
+    } else {
+      ProtectionSystemSpecificInfo info;
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIdAndKey(
+          encryption_key.key_id, encryption_key.key, &info));
+      AddProtectionSystemIfNotExist(info, encryption_config);
+    }
+  }
+
+  for (const auto& no_pssh_system : no_pssh_systems) {
+    ProtectionSystemSpecificInfo info;
+    info.system_id = no_pssh_system;
+    AddProtectionSystemIfNotExist(info, encryption_config);
+  }
+
+  return Status::OK;
 }
 
 }  // namespace
@@ -253,9 +346,8 @@ Status EncryptionHandler::ProcessMediaSample(
 void EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
   if (stream_type == kStreamVideo &&
       IsPatternEncryptionScheme(protection_scheme_)) {
-    // Use 1:9 pattern.
-    crypt_byte_block_ = 1u;
-    skip_byte_block_ = 9u;
+    crypt_byte_block_ = encryption_params_.crypt_byte_block;
+    skip_byte_block_ = encryption_params_.skip_byte_block;
   } else {
     // Audio stream in pattern encryption scheme does not use pattern; it uses
     // whole-block full sample encryption instead. Non-pattern encryption does
@@ -287,8 +379,9 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   }
 
   encryption_config_->key_id = encryption_key.key_id;
-  encryption_config_->key_system_info = encryption_key.key_system_info;
-  return true;
+  const auto status = FillProtectionSystemInfo(
+      encryption_params_, encryption_key, encryption_config_.get());
+  return status.ok();
 }
 
 void EncryptionHandler::EncryptBytes(const uint8_t* source,

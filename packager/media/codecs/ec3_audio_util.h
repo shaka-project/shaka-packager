@@ -27,6 +27,19 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
 ///         success; otherwise 0 is returned.
 size_t GetEc3NumChannels(const std::vector<uint8_t>& ec3_data);
 
+/// Parse data from EC3Specific box, calculate EC3 channel map and then
+/// obtain channel configuration descriptor value with MPEG scheme based on
+/// ETSI TS 102 366 V1.4.1 Digital Audio Compression (AC-3, Enhanced AC-3)
+/// Standard, Table I.1.1.
+bool CalculateEC3ChannelMPEGValue(const std::vector<uint8_t>& ec3_data,
+                                  uint32_t* ec3_channel_mpeg_value);
+
+/// Parse data from EC3Specific box and obtain Dolby Digital Plus JOC
+/// decoding complexity based on ETSI TS 103 420 v1.2.1 Backwards-compatible
+/// object audio carriage using Enhanced AC-3 Standard chapter C.3.1.
+bool GetEc3JocComplexity(const std::vector<uint8_t>& ec3_data,
+                         uint32_t* ec3_joc_complexity);
+
 }  // namespace media
 }  // namespace shaka
 

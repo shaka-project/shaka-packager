@@ -22,6 +22,7 @@ enum FieldType {
   kSegmentTemplateField,
   kBandwidthField,
   kLanguageField,
+  kCcIndexField,
   kOutputFormatField,
   kHlsNameField,
   kHlsGroupIdField,
@@ -33,6 +34,8 @@ enum FieldType {
   kHlsCharacteristicsField,
   kDashAccessiblitiesField,
   kDashRolesField,
+  kDashOnlyField,
+  kHlsOnlyField,
 };
 
 struct FieldNameToTypeMapping {
@@ -55,6 +58,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"bitrate", kBandwidthField},
     {"language", kLanguageField},
     {"lang", kLanguageField},
+    {"cc_index", kCcIndexField},
     {"output_format", kOutputFormatField},
     {"format", kOutputFormatField},
     {"hls_name", kHlsNameField},
@@ -77,6 +81,8 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"dash_role", kDashRolesField},
     {"roles", kDashRolesField},
     {"role", kDashRolesField},
+    {"dash_only", kDashOnlyField},
+    {"hls_only", kHlsOnlyField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -127,6 +133,15 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
       }
       case kLanguageField: {
         descriptor.language = iter->second;
+        break;
+      }
+      case kCcIndexField: {
+        unsigned index;
+        if (!base::StringToUint(iter->second, &index)) {
+          LOG(ERROR) << "Non-numeric cc_index specified.";
+          return base::nullopt;
+        }
+        descriptor.cc_index = index;
         break;
       }
       case kOutputFormatField: {
@@ -205,6 +220,32 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         descriptor.dash_roles =
             base::SplitString(iter->second, ";", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY);
+        break;
+      case kDashOnlyField:
+        unsigned dash_only_value;
+        if (!base::StringToUint(iter->second, &dash_only_value)) {
+          LOG(ERROR) << "Non-numeric option for dash_only field "
+                        "specified (" << iter->second << ").";
+          return base::nullopt;
+        }
+        if (dash_only_value > 1) {
+          LOG(ERROR) << "dash_only should be either 0 or 1.";
+          return base::nullopt;
+        }
+        descriptor.dash_only = dash_only_value > 0;
+        break;
+      case kHlsOnlyField:
+        unsigned hls_only_value;
+        if (!base::StringToUint(iter->second, &hls_only_value)) {
+          LOG(ERROR) << "Non-numeric option for hls_only field "
+                        "specified (" << iter->second << ").";
+          return base::nullopt;
+        }
+        if (hls_only_value > 1) {
+          LOG(ERROR) << "hls_only should be either 0 or 1.";
+          return base::nullopt;
+        }
+        descriptor.hls_only = hls_only_value > 0;
         break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first

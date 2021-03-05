@@ -27,7 +27,7 @@ class WebVttFileBuffer {
   void Reset();
   void Append(const TextSample& sample);
 
-  bool WriteTo(File* file);
+  bool WriteTo(File* file, uint64_t* size);
 
   // Get the number of samples that have been appended to this file.
   size_t sample_count() const { return sample_count_; }

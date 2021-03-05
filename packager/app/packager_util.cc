@@ -42,39 +42,11 @@ std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
   return request_signer;
 }
 
-int GetProtectionSystemsFlag(
-    const std::vector<EncryptionParams::ProtectionSystem>& protection_systems) {
-  int protection_systems_flags = 0;
-  for (const auto protection_system : protection_systems) {
-    switch (protection_system) {
-      case EncryptionParams::ProtectionSystem::kCommonSystem:
-        protection_systems_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
-        break;
-      case EncryptionParams::ProtectionSystem::kFairPlay:
-        protection_systems_flags |= FAIRPLAY_PROTECTION_SYSTEM_FLAG;
-        break;
-      case EncryptionParams::ProtectionSystem::kMarlin:
-        protection_systems_flags |= MARLIN_PROTECTION_SYSTEM_FLAG;
-        break;
-      case EncryptionParams::ProtectionSystem::kPlayReady:
-        protection_systems_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
-        break;
-      case EncryptionParams::ProtectionSystem::kWidevine:
-        protection_systems_flags |= WIDEVINE_PROTECTION_SYSTEM_FLAG;
-        break;
-    }
-  }
-  return protection_systems_flags;
-}
-
 }  // namespace
 
 std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
     const EncryptionParams& encryption_params) {
-  int protection_systems_flags =
-      GetProtectionSystemsFlag(encryption_params.protection_systems);
-
   std::unique_ptr<KeySource> encryption_key_source;
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
@@ -89,7 +61,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       }
       std::unique_ptr<WidevineKeySource> widevine_key_source(
           new WidevineKeySource(widevine.key_server_url,
-                                protection_systems_flags, protection_scheme));
+                                encryption_params.protection_systems,
+                                protection_scheme));
       if (!widevine.signer.signer_name.empty()) {
         std::unique_ptr<RequestSigner> request_signer(
             CreateSigner(widevine.signer));
@@ -112,9 +85,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      encryption_key_source =
-          RawKeySource::Create(encryption_params.raw_key,
-                               protection_systems_flags, protection_scheme);
+      encryption_key_source = RawKeySource::Create(encryption_params.raw_key);
       break;
     }
     case KeyProvider::kPlayReady: {
@@ -129,27 +100,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         }
         std::unique_ptr<PlayReadyKeySource> playready_key_source;
         // private_key_password is allowed to be empty for unencrypted key.
-        if (!playready.client_cert_file.empty() ||
-            !playready.client_cert_private_key_file.empty()) {
-          if (playready.client_cert_file.empty() ||
-              playready.client_cert_private_key_file.empty()) {
-            LOG(ERROR) << "Either PlayReady client_cert_file or "
-                          "client_cert_private_key_file is not set.";
-            return nullptr;
-          }
-          playready_key_source.reset(new PlayReadyKeySource(
-              playready.key_server_url, playready.client_cert_file,
-              playready.client_cert_private_key_file,
-              playready.client_cert_private_key_password,
-              protection_systems_flags, protection_scheme));
-        } else {
-          playready_key_source.reset(new PlayReadyKeySource(
-              playready.key_server_url, protection_systems_flags,
-              protection_scheme));
-        }
-        if (!playready.ca_file.empty()) {
-          playready_key_source->SetCaFile(playready.ca_file);
-        }
+        playready_key_source.reset(new PlayReadyKeySource(
+            playready.key_server_url, encryption_params.protection_systems));
         Status status = playready_key_source->FetchKeysWithProgramIdentifier(
             playready.program_identifier);
         if (!status.ok()) {
@@ -164,7 +116,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       }
       break;
     }
-    case KeyProvider::kNone:
+    default:
       break;
   }
   return encryption_key_source;
@@ -183,7 +135,7 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       std::unique_ptr<WidevineKeySource> widevine_key_source(
           new WidevineKeySource(
               widevine.key_server_url,
-              WIDEVINE_PROTECTION_SYSTEM_FLAG /* value does not matter here */,
+              ProtectionSystem::kWidevine /* value does not matter here */,
               FOURCC_NULL /* value does not matter here */));
       if (!widevine.signer.signer_name.empty()) {
         std::unique_ptr<RequestSigner> request_signer(
@@ -197,14 +149,10 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      decryption_key_source = RawKeySource::Create(
-          decryption_params.raw_key,
-          COMMON_PROTECTION_SYSTEM_FLAG /* value does not matter here */,
-          FOURCC_NULL /* value does not matter here */);
+      decryption_key_source = RawKeySource::Create(decryption_params.raw_key);
       break;
     }
-    case KeyProvider::kNone:
-    case KeyProvider::kPlayReady:
+    default:
       break;
   }
   return decryption_key_source;

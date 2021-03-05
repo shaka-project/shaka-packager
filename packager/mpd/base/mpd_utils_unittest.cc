@@ -9,6 +9,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
@@ -71,7 +72,7 @@ TEST_F(MpdUtilsTest, ContentProtectionGeneral) {
       "  <Representation id='0' bandwidth='0' codecs='avc1'"
       "   mimeType='video/mp4'/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 TEST_F(MpdUtilsTest, ContentProtectionMarlin) {
@@ -113,7 +114,118 @@ TEST_F(MpdUtilsTest, ContentProtectionMarlin) {
       "  <Representation id='0' bandwidth='0' codecs='avc1'"
       "   mimeType='video/mp4'/>"
       "</AdaptationSet>";
-  EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
+  EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
+}
+
+TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr) {
+    const std::string pssh_str("0000003870737368010000009A04F079"
+                               "98404286AB92E65BE0885F9500000001"
+                               "11223344556677889900AABBCCDDEEFF"
+                               "0000000430313233");
+    std::vector<uint8_t> pssh;
+    base::HexStringToBytes(pssh_str, &pssh);
+
+    const char kMediaInfoWithContentProtection[] =
+        "video_info {"
+        "  codec: 'avc1'"
+        "  width: 1920"
+        "  height: 1080"
+        "  time_scale: 3000"
+        "  frame_duration: 100"
+        "}"
+        "protected_content {"
+        "  protection_scheme: 'cenc'"
+        "  default_key_id: '0123456789\x3A\x3B\x3C\x3D\x3E\x3F'"
+        "  include_mspr_pro: 1"
+        "}"
+        "container_type: 1";
+
+    MediaInfo media_info =
+        ConvertToMediaInfo(kMediaInfoWithContentProtection);
+
+    MediaInfo::ProtectedContent * protected_content =
+        media_info.mutable_protected_content();
+    MediaInfo::ProtectedContent::ContentProtectionEntry* entry =
+        protected_content->add_content_protection_entry();
+    entry->set_uuid("9a04f079-9840-4286-ab92-e65be0885f95");
+    entry->set_pssh(pssh.data(), pssh.size());
+
+    AddContentProtectionElements(media_info, &adaptation_set_);
+    ASSERT_TRUE(adaptation_set_.AddRepresentation(media_info));
+
+    const char kExpectedOutput[] =
+        "<AdaptationSet contentType='video' width='1920'"
+        "    height='1080' frameRate='3000/100'>"
+        "  <ContentProtection value='cenc'"
+        "      schemeIdUri='urn:mpeg:dash:mp4protection:2011'"
+        "      cenc:default_KID='30313233-3435-3637-3839-3a3b3c3d3e3f'/>"
+        "  <ContentProtection value='MSPR 2.0'"
+        "      schemeIdUri='urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95'>"
+        "    <cenc:pssh>"
+        "AAAAOHBzc2gBAAAAmgTweZhAQoarkuZb4IhflQAAAAERIjNEVWZ3iJkAqrvM3e7/"
+        "AAAABDAxMjM="
+        "    </cenc:pssh>"
+        "    <mspr:pro>MDEyMw==</mspr:pro>"
+        "  </ContentProtection>"
+        "  <Representation id='0' bandwidth='0' codecs='avc1' "
+        "mimeType='video/mp4'/>"
+        "</AdaptationSet>";
+
+    EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
+}
+
+TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
+    const std::string pssh_str("0000003870737368010000009A04F079"
+        "98404286AB92E65BE0885F9500000001"
+        "11223344556677889900AABBCCDDEEFF"
+        "0000000430313233");
+    std::vector<uint8_t> pssh;
+    base::HexStringToBytes(pssh_str, &pssh);
+
+    const char kMediaInfoWithContentProtection[] =
+        "video_info {"
+        "  codec: 'avc1'"
+        "  width: 1920"
+        "  height: 1080"
+        "  time_scale: 3000"
+        "  frame_duration: 100"
+        "}"
+        "protected_content {"
+        "  protection_scheme: 'cenc'"
+        "  default_key_id: '0123456789\x3A\x3B\x3C\x3D\x3E\x3F'"
+        "  include_mspr_pro: 0"
+        "}"
+        "container_type: 1";
+
+    MediaInfo media_info =
+        ConvertToMediaInfo(kMediaInfoWithContentProtection);
+
+    MediaInfo::ProtectedContent * protected_content =
+        media_info.mutable_protected_content();
+    MediaInfo::ProtectedContent::ContentProtectionEntry* entry =
+        protected_content->add_content_protection_entry();
+    entry->set_uuid("9a04f079-9840-4286-ab92-e65be0885f95");
+    entry->set_pssh(pssh.data(), pssh.size());
+
+    AddContentProtectionElements(media_info, &adaptation_set_);
+    ASSERT_TRUE(adaptation_set_.AddRepresentation(media_info));
+
+    const char kExpectedOutput[] =
+        "<AdaptationSet contentType='video' width='1920'"
+        "    height='1080' frameRate='3000/100'>"
+        "  <ContentProtection value='cenc'"
+        "      schemeIdUri='urn:mpeg:dash:mp4protection:2011'"
+        "      cenc:default_KID='30313233-3435-3637-3839-3a3b3c3d3e3f'/>"
+        "  <ContentProtection"
+        "      schemeIdUri='urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95'>"
+        "    <cenc:pssh>"
+        "AAAAOHBzc2gBAAAAmgTweZhAQoarkuZb4IhflQAAAAERIjNEVWZ3iJkAqrvM3e7/AAAABDAxMjM="
+        "    </cenc:pssh>"
+        "  </ContentProtection>"
+        "  <Representation id='0' bandwidth='0' codecs='avc1' mimeType='video/mp4'/>"
+        "</AdaptationSet>";
+
+    EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
 }  // namespace shaka

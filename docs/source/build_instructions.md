@@ -26,6 +26,11 @@ Note that `Git` must be v1.7.5 or above.
 
     to check whether you have it.
 
+*   Note that there is a known problem with 10.15 SDK or later right now. You
+    can workaround it by using 10.14 SDK. See
+    [#660](https://github.com/google/shaka-packager/issues/660#issuecomment-552576341)
+    for details.
+
 ## Windows system requirements
 
 * Visual Studio 2015 Update 3, see below (no other version is supported).
@@ -262,7 +267,7 @@ export GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none
 Instead of running `sudo apt-get install` to install build dependencies, run:
 
 ```shell
-$ sudo pacman -S --needed python2 git curl gcc gcc-libs make
+$ sudo pacman -Sy --needed python2 git curl gcc gcc-libs make
 $ sudo ln -sf python2 /usr/bin/python
 ```
 
@@ -300,7 +305,7 @@ $ su -c 'yum install -y git python git curl gcc-c++ findutils bzip2 \
 Use `zypper` command to install dependencies:
 
 ```shell
-sudo zypper in git python python-xml git curl gcc-c++ tar
+sudo zypper in git python python-xml git curl gcc-c++ tar libncurses5
 ```
 
 ## Tips, tricks, and troubleshooting
@@ -336,6 +341,29 @@ resolve the issue:
 
 ```shell
 $ brew install curl --with-openssl
+```
+
+### Using an IDE
+
+No specific instructions are available.
+
+You might find Gyp generators helpful. Output is not guaranteed to work.
+Manual editing might be necessary.
+
+To generate CMakeLists.txt in out/Release and out/Debug use:
+
+```shell
+$ GYP_GENERATORS=cmake gclient runhooks
+```
+
+To generate IDE project files in out/Release and out/Debug use:
+
+```shell
+$ GYP_GENERATORS=eclipse gclient runhooks
+$ GYP_GENERATORS=xcode gclient runhooks
+$ GYP_GENERATORS=xcode_test gclient runhooks
+$ GYP_GENERATORS=msvs gclient runhooks
+$ GYP_GENERATORS=msvs_test gclient runhooks
 ```
 
 ## Contributing

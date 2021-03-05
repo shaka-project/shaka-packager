@@ -103,22 +103,6 @@ bool H264SliceHeader::IsSISlice() const {
   return (slice_type % 5 == kSISlice);
 }
 
-H264Sps::H264Sps() {
-  memset(this, 0, sizeof(*this));
-}
-
-H264Pps::H264Pps() {
-  memset(this, 0, sizeof(*this));
-}
-
-H264SliceHeader::H264SliceHeader() {
-  memset(this, 0, sizeof(*this));
-}
-
-H264SEIMessage::H264SEIMessage() {
-  memset(this, 0, sizeof(*this));
-}
-
 #define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \
     if (!br->ReadBits(num_bits, (out))) {                                  \
@@ -991,7 +975,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H26xBitReader* br = &reader;
 
-  memset(reinterpret_cast<void*>(shdr), 0, sizeof(*shdr));
+  *shdr = {};
 
   shdr->idr_pic_flag = (nalu.type() == 5);
   shdr->nal_ref_idc = nalu.ref_idc();
@@ -1137,7 +1121,7 @@ H264Parser::Result H264Parser::ParseSEI(const Nalu& nalu,
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H26xBitReader* br = &reader;
 
-  memset(reinterpret_cast<void*>(sei_msg), 0, sizeof(*sei_msg));
+  *sei_msg = {};
 
   READ_BITS_OR_RETURN(8, &byte);
   while (byte == 0xff) {

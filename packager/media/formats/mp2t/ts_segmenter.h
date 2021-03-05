@@ -68,14 +68,13 @@ class TsSegmenter {
       std::unique_ptr<PesPacketGenerator> generator);
 
   /// Only for testing.
-  void SetTsWriterFileOpenedForTesting(bool value);
+  void SetSegmentStartedForTesting(bool value);
 
  private:
-  Status OpenNewSegmentIfClosed(int64_t next_pts);
+  Status StartSegmentIfNeeded(int64_t next_pts);
 
-  // Writes PES packets (carried in TsPackets) to a file. If a file is not open,
-  // it will open one. This will not close the file.
-  Status WritePesPacketsToFile();
+  // Writes PES packets (carried in TsPackets) to a buffer.
+  Status WritePesPackets();
 
   const MuxerOptions& muxer_options_;
   MuxerListener* const listener_;
@@ -93,16 +92,15 @@ class TsSegmenter {
   uint64_t segment_number_ = 0;
 
   std::unique_ptr<TsWriter> ts_writer_;
-  // Set to true if TsWriter::NewFile() succeeds, set to false after
-  // TsWriter::FinalizeFile() succeeds.
-  bool ts_writer_file_opened_ = false;
+
+  BufferWriter segment_buffer_;
+
+  // Set to true if segment_buffer_ is initialized, set to false after
+  // FinalizeSegment() succeeds.
+  bool segment_started_ = false;
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
-  // For OnNewSegment().
-  // Path of the current segment so that File::GetFileSize() can be used after
-  // the segment has been finalized.
-  std::string current_segment_path_;
-
+  int64_t segment_start_timestamp_ = -1;
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
 };
 

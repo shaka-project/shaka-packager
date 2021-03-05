@@ -41,6 +41,10 @@ enum class TsStreamType {
   kEncryptedEac3 = 0xC2,
   kEncryptedAdtsAac = 0xCF,
   kEncryptedAvc = 0xDB,
+
+  // Below are internal values used to select other stream types based on other
+  // info in headers.
+  kDvbSubtitles = 0x100,
 };
 
 }  // namespace mp2t

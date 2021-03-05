@@ -145,6 +145,16 @@ class BoxBuffer {
     return true;
   }
 
+  bool ReadWriteCString(std::string* str) {
+    if (reader_)
+      return reader_->ReadCString(str);
+    // Cannot contain embedded nulls.
+    DCHECK_EQ(str->find('\0'), std::string::npos);
+    writer_->AppendString(*str);
+    writer_->AppendInt(static_cast<uint8_t>('\0'));
+    return true;
+  }
+
   bool ReadWriteFourCC(FourCC* fourcc) {
     if (reader_)
       return reader_->ReadFourCC(fourcc);

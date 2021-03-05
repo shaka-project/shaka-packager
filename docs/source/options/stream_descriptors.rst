@@ -57,11 +57,21 @@ These are the available fields:
     If not specified, it will be derived from the file extension of the output
     file.
 
+    For subtitles in MP4, you can specify 'vtt+mp4' or 'ttml+mp4' to control
+    which text format is used.
+
 :trick_play_factor (tpf):
 
     Optional value which specifies the trick play, a.k.a. trick mode, stream
     sampling rate among key frames. If specified, the output is a trick play
     stream.
+
+:cc_index:
+
+    Optional value which specifies the index/ID of the subtitle stream to use
+    for formats where multiple exist within the same stream. For example,
+    CEA allows specifying up to 4 streams within a single video stream. If not
+    specified, all subtitles will be merged together.
 
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/dash_stream_descriptors.rst

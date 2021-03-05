@@ -24,6 +24,7 @@ struct SegmentInfo;
 
 const char kEncryptedMp4Scheme[] = "urn:mpeg:dash:mp4protection:2011";
 const char kPsshElementName[] = "cenc:pssh";
+const char kMsproElementName[] = "mspr:pro";
 
 bool HasVODOnlyFields(const MediaInfo& media_info);
 
@@ -47,7 +48,7 @@ std::string GetCodecs(const MediaInfo& media_info);
 std::string GetBaseCodec(const MediaInfo& media_info);
 
 // Returns a key made from the characteristics that separate AdaptationSets.
-std::string GetAdaptationSetKey(const MediaInfo& media_info);
+std::string GetAdaptationSetKey(const MediaInfo& media_info, bool ignore_codec);
 
 std::string SecondsToXmlDuration(double seconds);
 

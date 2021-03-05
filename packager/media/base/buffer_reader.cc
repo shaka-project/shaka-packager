@@ -62,6 +62,18 @@ bool BufferReader::ReadToString(std::string* str, size_t size) {
   return true;
 }
 
+bool BufferReader::ReadCString(std::string* str) {
+  DCHECK(str);
+  for (size_t count = 0; pos_ + count < size_; count++) {
+    if (buf_[pos_ + count] == 0) {
+      str->assign(buf_ + pos_, buf_ + pos_ + count);
+      pos_ += count + 1;
+      return true;
+    }
+  }
+  return false;  // EOF
+}
+
 bool BufferReader::SkipBytes(size_t num_bytes) {
   if (!HasBytes(num_bytes))
     return false;

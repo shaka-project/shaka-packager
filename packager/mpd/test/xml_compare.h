@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "packager/base/optional.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 namespace shaka {
 
@@ -19,13 +21,13 @@ namespace shaka {
 /// @param xml2 is compared against @a xml1.
 /// @return true if @a xml1 and @a xml2 are equivalent, false otherwise.
 bool XmlEqual(const std::string& xml1, const std::string& xml2);
-bool XmlEqual(const std::string& xml1, xmlDocPtr xml2);
-bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2);
-bool XmlEqual(const std::string& xml1, xmlNodePtr xml2);
+bool XmlEqual(const std::string& xml1, const xml::XmlNode& xml2);
+bool XmlEqual(const std::string& xml1,
+              const base::Optional<xml::XmlNode>& xml2);
 
 /// Get string representation of the xml node.
-/// Note that the ownership is not transferred.
-std::string XmlNodeToString(xmlNodePtr xml_node);
+std::string XmlNodeToString(const xml::XmlNode& xml_node);
+std::string XmlNodeToString(const base::Optional<xml::XmlNode>& xml_node);
 
 /// Match an xmlNodePtr with an xml in string representation.
 MATCHER_P(XmlNodeEqual,
@@ -38,14 +40,16 @@ MATCHER_P(XmlNodeEqual,
 /// Match the attribute of an xmlNodePtr with expected value.
 /// Note that the ownership is not transferred.
 MATCHER_P2(AttributeEqual, attribute, expected_value, "") {
-  xml::scoped_xml_ptr<xmlChar> attribute_xml_str(
-      xmlGetProp(arg, BAD_CAST attribute));
-  if (!attribute_xml_str) {
+  if (!arg) {
+    *result_listener << "returned error";
+    return false;
+  }
+
+  std::string actual_value;
+  if (!arg->GetAttribute(attribute, &actual_value)) {
     *result_listener << "no attribute '" << attribute << "'";
     return false;
   }
-  std::string actual_value =
-      reinterpret_cast<const char*>(attribute_xml_str.get());
   *result_listener << actual_value;
   return expected_value == actual_value;
 }
@@ -53,9 +57,12 @@ MATCHER_P2(AttributeEqual, attribute, expected_value, "") {
 /// Check if the attribute is set in an xmlNodePtr.
 /// Note that the ownership is not transferred.
 MATCHER_P(AttributeSet, attribute, "") {
-  xml::scoped_xml_ptr<xmlChar> attribute_xml_str(
-      xmlGetProp(arg, BAD_CAST attribute));
-  return attribute_xml_str != nullptr;
+  if (!arg) {
+    *result_listener << "returned error";
+    return false;
+  }
+  std::string unused;
+  return arg->GetAttribute(attribute, &unused);
 }
 }  // namespace shaka
 

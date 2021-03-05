@@ -20,6 +20,7 @@ extern const char* kCallbackFilePrefix;
 extern const char* kLocalFilePrefix;
 extern const char* kMemoryFilePrefix;
 extern const char* kUdpFilePrefix;
+extern const char* kHttpFilePrefix;
 const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.

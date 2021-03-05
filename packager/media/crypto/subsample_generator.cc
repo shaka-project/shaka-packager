@@ -35,11 +35,6 @@ bool ShouldAlignProtectedData(Codec codec,
                               FourCC protection_scheme,
                               bool vp9_subsample_encryption) {
   switch (codec) {
-    case kCodecAV1:
-      // Per AV1 in ISO-BMFF spec [1], BytesOfProtectedData SHALL be a multiple
-      // of 16 bytes.
-      // [1] https://aomediacodec.github.io/av1-isobmff/#subsample-encryption
-      return true;
     case kCodecVP9:
       // "VP Codec ISO Media File Format Binding" document requires that the
       // encrypted bytes of each frame within the superframe must be block
@@ -58,6 +53,8 @@ bool ShouldAlignProtectedData(Codec codec,
       // CMAF requires 'cenc' scheme BytesOfProtectedData SHALL be a multiple of
       // 16 bytes; while 'cbcs' scheme BytesOfProtectedData SHALL start on the
       // first byte of video data following the slice header.
+      // https://aomediacodec.github.io/av1-isobmff/#subsample-encryption AV1
+      // has a similar clause.
       return protection_scheme == FOURCC_cbc1 ||
              protection_scheme == FOURCC_cens ||
              protection_scheme == FOURCC_cenc;

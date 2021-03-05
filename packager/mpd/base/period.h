@@ -15,21 +15,17 @@
 #include "packager/base/optional.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 namespace shaka {
 
 struct MpdOptions;
 
-namespace xml {
-class XmlNode;
-}  // namespace xml
-
 /// Period class maps to <Period> element and provides methods to add
 /// AdaptationSets.
 class Period {
  public:
-  virtual ~Period() = default;
+  virtual ~Period();
 
   /// Check the existing AdaptationSets, if there is one matching the provided
   /// @a media_info, return it; otherwise a new AdaptationSet is created and
@@ -50,7 +46,7 @@ class Period {
   /// Generates <Period> xml element with its child AdaptationSet elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  xml::scoped_xml_ptr<xmlNode> GetXml(bool output_period_duration);
+  base::Optional<xml::XmlNode> GetXml(bool output_period_duration);
 
   /// @return The list of AdaptationSets in this Period.
   const std::list<AdaptationSet*> GetAdaptationSets() const;
@@ -64,6 +60,12 @@ class Period {
   /// Set period duration.
   void set_duration_seconds(double duration_seconds) {
     duration_seconds_ = duration_seconds;
+  }
+
+  /// @return trickplay_cache.
+  const std::map<std::string, std::list<AdaptationSet*>>& trickplay_cache()
+      const {
+    return trickplay_cache_;
   }
 
  protected:
@@ -95,15 +97,26 @@ class Period {
       const std::string& language,
       const MediaInfo& media_info,
       const std::list<AdaptationSet*>& adaptation_sets,
+      bool content_protection_in_adaptation_set,
       AdaptationSet* new_adaptation_set);
 
-  // Gets the original AdaptationSet which the trick play video belongs to.
-  // It is assumed that the corresponding AdaptationSet has been created before
-  // the trick play AdaptationSet.
-  // Returns the original AdaptationSet if found, otherwise returns nullptr;
-  const AdaptationSet* FindOriginalAdaptationSetForTrickPlay(
-      const MediaInfo& media_info);
+  // If processing a trick play AdaptationSet, gets the original AdaptationSet
+  // which the trick play video belongs to.It is assumed that the corresponding
+  // AdaptationSet has been created before the trick play AdaptationSet.
+  // Returns the matching AdaptationSet if found, otherwise returns nullptr;
+  // If processing non-trick play AdaptationSet, gets the trick play
+  // AdaptationSet that belongs to current AdaptationSet from trick play cache.
+  // Returns nullptr if matching trick play AdaptationSet is not found.
+  AdaptationSet* FindMatchingAdaptationSetForTrickPlay(
+      const MediaInfo& media_info,
+      bool content_protection_in_adaptation_set,
+      std::string* adaptation_set_key);
 
+  // Returns AdaptationSet key without ':trickplay' in it for trickplay
+  // AdaptationSet.
+  std::string GetAdaptationSetKeyForTrickPlay(const MediaInfo& media_info);
+
+  // FindMatchingAdaptationSetForTrickPlay
   const uint32_t id_;
   const double start_time_in_seconds_;
   double duration_seconds_ = 0;
@@ -116,6 +129,10 @@ class Period {
   // if they contain identical ContentProtection elements. This map is only
   // useful when ContentProtection element is placed in AdaptationSet.
   std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
+  // Contains Trickplay AdaptationSets grouped by specific adaptation set
+  // grouping key. These AdaptationSets still have not found reference
+  // AdaptationSet.
+  std::map<std::string, std::list<AdaptationSet*>> trickplay_cache_;
 
   // Tracks ProtectedContent in AdaptationSet.
   class ProtectedAdaptationSetMap {
@@ -127,7 +144,8 @@ class Period {
     // Check if the protected content associated with |adaptation_set| matches
     // with the one in |media_info|.
     bool Match(const AdaptationSet& adaptation_set,
-               const MediaInfo& media_info);
+               const MediaInfo& media_info,
+               bool content_protection_in_adaptation_set);
     // Check if the two adaptation sets are switchable.
     bool Switchable(const AdaptationSet& adaptation_set_a,
                     const AdaptationSet& adaptation_set_b);

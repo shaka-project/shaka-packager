@@ -48,6 +48,9 @@ class MockMediaPlaylist : public MediaPlaylist {
   MOCK_CONST_METHOD0(GetLongestSegmentDuration, double());
   MOCK_METHOD1(SetTargetDuration, void(uint32_t target_duration));
   MOCK_CONST_METHOD0(GetNumChannels, int());
+  MOCK_CONST_METHOD0(GetEC3JocComplexity, int());
+  MOCK_CONST_METHOD0(GetAC4ImsFlag, bool());
+  MOCK_CONST_METHOD0(GetAC4CbiFlag, bool());
   MOCK_CONST_METHOD2(GetDisplayResolution,
                      bool(uint32_t* width, uint32_t* height));
   MOCK_CONST_METHOD0(GetFrameRate, double());

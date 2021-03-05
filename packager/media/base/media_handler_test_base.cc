@@ -266,12 +266,8 @@ std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
     int64_t start,
     int64_t end,
     const std::string& payload) const {
-  std::unique_ptr<TextSample> sample(new TextSample);
-  sample->set_id(id);
-  sample->SetTime(start, end);
-  sample->AppendPayload(payload);
-
-  return sample;
+  return std::unique_ptr<TextSample>{
+      new TextSample(id, start, end, {}, TextFragment{{}, payload})};
 }
 
 std::unique_ptr<CueEvent> MediaHandlerTestBase::GetCueEvent(

@@ -20,6 +20,7 @@
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
 #include "packager/media/formats/mp4/mp4_media_parser.h"
 #include "packager/media/formats/webm/webm_media_parser.h"
+#include "packager/media/formats/webvtt/webvtt_parser.h"
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 
 namespace {
@@ -147,12 +148,6 @@ void Demuxer::SetLanguageOverride(const std::string& stream_label,
   language_overrides_[stream_index] = language_override;
 }
 
-Demuxer::QueuedSample::QueuedSample(uint32_t local_track_id,
-                                    std::shared_ptr<MediaSample> local_sample)
-    : track_id(local_track_id), sample(local_sample) {}
-
-Demuxer::QueuedSample::~QueuedSample() {}
-
 Status Demuxer::InitializeParser() {
   DCHECK(!media_file_);
   DCHECK(!all_streams_ready_);
@@ -199,6 +194,9 @@ Status Demuxer::InitializeParser() {
     case CONTAINER_WEBM:
       parser_.reset(new WebMMediaParser());
       break;
+    case CONTAINER_WEBVTT:
+      parser_.reset(new WebVttParser());
+      break;
     case CONTAINER_UNKNOWN: {
       const int64_t kDumpSizeLimit = 512;
       LOG(ERROR) << "Failed to detect the container type from the buffer: "
@@ -213,9 +211,11 @@ Status Demuxer::InitializeParser() {
       return Status(error::UNIMPLEMENTED, "Container not supported.");
   }
 
-  parser_->Init(base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
-                base::Bind(&Demuxer::NewSampleEvent, base::Unretained(this)),
-                key_source_.get());
+  parser_->Init(
+      base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
+      base::Bind(&Demuxer::NewMediaSampleEvent, base::Unretained(this)),
+      base::Bind(&Demuxer::NewTextSampleEvent, base::Unretained(this)),
+      key_source_.get());
 
   // Handle trailing 'moov'.
   if (container_name_ == CONTAINER_MOV &&
@@ -294,31 +294,56 @@ void Demuxer::ParserInitEvent(
   all_streams_ready_ = true;
 }
 
-bool Demuxer::NewSampleEvent(uint32_t track_id,
-                             const std::shared_ptr<MediaSample>& sample) {
+bool Demuxer::NewMediaSampleEvent(uint32_t track_id,
+                                  std::shared_ptr<MediaSample> sample) {
   if (!all_streams_ready_) {
-    if (queued_samples_.size() >= kQueuedSamplesLimit) {
+    if (queued_media_samples_.size() >= kQueuedSamplesLimit) {
       LOG(ERROR) << "Queued samples limit reached: " << kQueuedSamplesLimit;
       return false;
     }
-    queued_samples_.push_back(QueuedSample(track_id, sample));
+    queued_media_samples_.emplace_back(track_id, sample);
     return true;
   }
   if (!init_event_status_.ok()) {
     return false;
   }
-  while (!queued_samples_.empty()) {
-    if (!PushSample(queued_samples_.front().track_id,
-                    queued_samples_.front().sample)) {
+
+  while (!queued_media_samples_.empty()) {
+    if (!PushMediaSample(queued_media_samples_.front().track_id,
+                         queued_media_samples_.front().sample)) {
       return false;
     }
-    queued_samples_.pop_front();
+    queued_media_samples_.pop_front();
   }
-  return PushSample(track_id, sample);
+  return PushMediaSample(track_id, sample);
 }
 
-bool Demuxer::PushSample(uint32_t track_id,
-                         const std::shared_ptr<MediaSample>& sample) {
+bool Demuxer::NewTextSampleEvent(uint32_t track_id,
+                                 std::shared_ptr<TextSample> sample) {
+  if (!all_streams_ready_) {
+    if (queued_text_samples_.size() >= kQueuedSamplesLimit) {
+      LOG(ERROR) << "Queued samples limit reached: " << kQueuedSamplesLimit;
+      return false;
+    }
+    queued_text_samples_.emplace_back(track_id, sample);
+    return true;
+  }
+  if (!init_event_status_.ok()) {
+    return false;
+  }
+
+  while (!queued_text_samples_.empty()) {
+    if (!PushTextSample(queued_text_samples_.front().track_id,
+                        queued_text_samples_.front().sample)) {
+      return false;
+    }
+    queued_text_samples_.pop_front();
+  }
+  return PushTextSample(track_id, sample);
+}
+
+bool Demuxer::PushMediaSample(uint32_t track_id,
+                              std::shared_ptr<MediaSample> sample) {
   auto stream_index_iter = track_id_to_stream_index_map_.find(track_id);
   if (stream_index_iter == track_id_to_stream_index_map_.end()) {
     LOG(ERROR) << "Track " << track_id << " not found.";
@@ -330,8 +355,27 @@ bool Demuxer::PushSample(uint32_t track_id,
   if (!status.ok()) {
     LOG(ERROR) << "Failed to process sample " << stream_index_iter->second
                << " " << status;
+    return false;
   }
-  return status.ok();
+  return true;
+}
+
+bool Demuxer::PushTextSample(uint32_t track_id,
+                             std::shared_ptr<TextSample> sample) {
+  auto stream_index_iter = track_id_to_stream_index_map_.find(track_id);
+  if (stream_index_iter == track_id_to_stream_index_map_.end()) {
+    LOG(ERROR) << "Track " << track_id << " not found.";
+    return false;
+  }
+  if (stream_index_iter->second == kInvalidStreamIndex)
+    return true;
+  Status status = DispatchTextSample(stream_index_iter->second, sample);
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to process sample " << stream_index_iter->second
+               << " " << status;
+    return false;
+  }
+  return true;
 }
 
 Status Demuxer::Parse() {

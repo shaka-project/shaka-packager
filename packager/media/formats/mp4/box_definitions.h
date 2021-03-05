@@ -26,6 +26,7 @@ enum TrackType {
   kAudio,
   kHint,
   kText,
+  kSubtitle,
 };
 
 class BoxBuffer;
@@ -333,6 +334,12 @@ struct EC3Specific : Box {
   std::vector<uint8_t> data;
 };
 
+struct AC4Specific : Box {
+  DECLARE_BOX_METHODS(AC4Specific);
+
+  std::vector<uint8_t> data;
+};
+
 struct OpusSpecific : Box {
   DECLARE_BOX_METHODS(OpusSpecific);
 
@@ -372,6 +379,7 @@ struct AudioSampleEntry : Box {
   DTSSpecific ddts;
   AC3Specific dac3;
   EC3Specific dec3;
+  AC4Specific dac4;
   OpusSpecific dops;
   FlacSpecific dfla;
 };
@@ -399,6 +407,11 @@ struct TextSampleEntry : Box {
   // data_reference_index is 1-based and "dref" box is mandatory so it is
   // always present.
   uint16_t data_reference_index = 1u;
+
+  // Sub fields for ttml text sample entry.
+  std::string namespace_;
+  std::string schema_location;
+  // Optional MPEG4BitRateBox.
 
   // Sub boxes for wvtt text sample entry.
   WebVTTConfigurationBox config;
@@ -590,6 +603,10 @@ struct SoundMediaHeader : FullBox {
   uint16_t balance = 0u;
 };
 
+struct NullMediaHeader : FullBox {
+  DECLARE_BOX_METHODS(NullMediaHeader);
+};
+
 struct SubtitleMediaHeader : FullBox {
   DECLARE_BOX_METHODS(SubtitleMediaHeader);
 };
@@ -621,6 +638,7 @@ struct MediaInformation : Box {
   // Exactly one specific meida header shall be present, vmhd, smhd, hmhd, nmhd.
   VideoMediaHeader vmhd;
   SoundMediaHeader smhd;
+  NullMediaHeader nmhd;
   SubtitleMediaHeader sthd;
 };
 

@@ -12,6 +12,7 @@
 #include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/base/mock_aes_cryptor.h"
+#include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/raw_key_source.h"
 #include "packager/media/crypto/aes_encryptor_factory.h"
 #include "packager/media/crypto/subsample_generator.h"
@@ -31,6 +32,7 @@ using ::testing::Mock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
+using ::testing::UnorderedElementsAre;
 using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
@@ -127,6 +129,7 @@ class EncryptionHandlerTest : public MediaHandlerGraphTestBase {
   EncryptionKey GetMockEncryptionKey() {
     EncryptionKey encryption_key;
     encryption_key.key_id.assign(kKeyId, kKeyId + sizeof(kKeyId));
+    encryption_key.key_ids.emplace_back(encryption_key.key_id);
     encryption_key.key.assign(kKey, kKey + sizeof(kKey));
     encryption_key.iv.assign(kIv, kIv + sizeof(kIv));
     return encryption_key;
@@ -600,6 +603,69 @@ TEST_F(EncryptionHandlerTrackTypeTest, VideoTrackType) {
             captured_stream_attributes.stream_type);
   EXPECT_EQ(captured_stream_attributes.oneof.video.width, kWidth);
   EXPECT_EQ(captured_stream_attributes.oneof.video.height, kHeight);
+}
+
+class EncryptionHandlerPsshTest : public EncryptionHandlerTest {};
+
+TEST_F(EncryptionHandlerPsshTest, GeneratesPssh) {
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = FOURCC_cenc;
+  encryption_params.protection_systems =
+      ProtectionSystem::kWidevine | ProtectionSystem::kPlayReady;
+  SetUpEncryptionHandler(encryption_params);
+
+  const EncryptionKey mock_encryption_key = GetMockEncryptionKey();
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(mock_encryption_key), Return(Status::OK)));
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+
+  EXPECT_THAT(GetOutputStreamDataVector(),
+              ElementsAre(IsStreamInfo(_, kTimeScale, kEncrypted, _)));
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+
+  std::vector<uint8_t> widevine_system_id(
+      kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+  std::vector<uint8_t> playready_system_id(
+      kPlayReadySystemId, kPlayReadySystemId + arraysize(kPlayReadySystemId));
+  ASSERT_THAT(
+      stream_info->encryption_config().key_system_info,
+      UnorderedElementsAre(IsPsshInfoWithSystemId(widevine_system_id),
+                           IsPsshInfoWithSystemId(playready_system_id)));
+}
+
+TEST_F(EncryptionHandlerPsshTest, UsesKeyInfoFirst) {
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = FOURCC_cenc;
+  encryption_params.protection_systems = ProtectionSystem::kWidevine;
+  SetUpEncryptionHandler(encryption_params);
+
+  std::vector<uint8_t> widevine_system_id(
+      kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+  EncryptionKey mock_encryption_key = GetMockEncryptionKey();
+  ProtectionSystemSpecificInfo protection_info;
+  protection_info.system_id = widevine_system_id;
+  mock_encryption_key.key_system_info.emplace_back(protection_info);
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(mock_encryption_key), Return(Status::OK)));
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+
+  EXPECT_THAT(GetOutputStreamDataVector(),
+              ElementsAre(IsStreamInfo(_, kTimeScale, kEncrypted, _)));
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+
+  ASSERT_THAT(stream_info->encryption_config().key_system_info,
+              ElementsAre(IsPsshInfoWithSystemId(widevine_system_id)));
+  // Should use above info, not generate new info.
+  ASSERT_TRUE(
+      stream_info->encryption_config().key_system_info[0].psshs.empty());
 }
 
 }  // namespace media

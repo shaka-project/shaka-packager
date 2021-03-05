@@ -68,7 +68,11 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
       return FinalizeSegment(stream_data->stream_index, segment_info);
     }
     case StreamDataType::kMediaSample:
-      return AddSample(stream_data->stream_index, *stream_data->media_sample);
+      return AddMediaSample(stream_data->stream_index,
+                            *stream_data->media_sample);
+    case StreamDataType::kTextSample:
+      return AddTextSample(stream_data->stream_index,
+                           *stream_data->text_sample);
     case StreamDataType::kCueEvent:
       if (muxer_listener_) {
         const int64_t time_scale =
@@ -97,6 +101,14 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
 
 Status Muxer::OnFlushRequest(size_t input_stream_index) {
   return Finalize();
+}
+
+Status Muxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
+  return Status::OK;
+}
+
+Status Muxer::AddTextSample(size_t stream_id, const TextSample& sample) {
+  return Status::OK;
 }
 
 Status Muxer::ReinitializeMuxer(int64_t timestamp) {

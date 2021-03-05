@@ -28,6 +28,9 @@ struct XmlDeleter {
   inline void operator()(xmlSchemaValidCtxtPtr ptr) const {
     xmlSchemaFreeValidCtxt(ptr);
   }
+  inline void operator()(xmlOutputBufferPtr ptr) const {
+    xmlOutputBufferClose(ptr);
+  }
   inline void operator()(xmlSchemaPtr ptr) const { xmlSchemaFree(ptr); }
   inline void operator()(xmlNodePtr ptr) const { xmlFreeNode(ptr); }
   inline void operator()(xmlDocPtr ptr) const { xmlFreeDoc(ptr); }

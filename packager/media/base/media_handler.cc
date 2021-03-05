@@ -61,10 +61,10 @@ Status MediaHandler::Initialize() {
 }
 
 Status MediaHandler::Chain(
-    std::initializer_list<std::shared_ptr<MediaHandler>> list) {
+    const std::vector<std::shared_ptr<MediaHandler>>& list) {
   std::shared_ptr<MediaHandler> previous;
 
-  for (auto& next : list) {
+  for (const auto& next : list) {
     // Skip null entries.
     if (!next) {
       continue;

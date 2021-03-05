@@ -99,8 +99,7 @@ class WvmMediaParserTest : public testing::Test {
     }
   }
 
-  bool OnNewSample(uint32_t track_id,
-                   const std::shared_ptr<MediaSample>& sample) {
+  bool OnNewSample(uint32_t track_id, std::shared_ptr<MediaSample> sample) {
     std::string stream_type;
     if (static_cast<int32_t>(track_id) != current_track_id_) {
       // onto next track.
@@ -138,11 +137,15 @@ class WvmMediaParserTest : public testing::Test {
     return true;
   }
 
+  bool OnNewTextSample(uint32_t track_id, std::shared_ptr<TextSample> sample) {
+    return false;
+  }
+
   void InitializeParser() {
     parser_->Init(
-        base::Bind(&WvmMediaParserTest::OnInit,
-                   base::Unretained(this)),
-        base::Bind(&WvmMediaParserTest::OnNewSample,
+        base::Bind(&WvmMediaParserTest::OnInit, base::Unretained(this)),
+        base::Bind(&WvmMediaParserTest::OnNewSample, base::Unretained(this)),
+        base::Bind(&WvmMediaParserTest::OnNewTextSample,
                    base::Unretained(this)),
         key_source_.get());
   }

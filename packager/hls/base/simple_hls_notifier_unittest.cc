@@ -37,6 +37,7 @@ namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
 const char kDefaultAudioLanguage[] = "en";
 const char kDefaultTextLanguage[] = "fr";
+const bool kIsIndependentSegments = true;
 const char kEmptyKeyUri[] = "";
 const char kFairPlayKeyUri[] = "skd://www.license.com/getkey?key_id=testing";
 const char kIdentityKeyUri[] = "https://www.license.com/getkey?key_id=testing";
@@ -48,7 +49,8 @@ class MockMasterPlaylist : public MasterPlaylist {
   MockMasterPlaylist()
       : MasterPlaylist(kMasterPlaylistName,
                        kDefaultAudioLanguage,
-                       kDefaultTextLanguage) {}
+                       kDefaultTextLanguage,
+                       kIsIndependentSegments) {}
 
   MOCK_METHOD3(WriteMasterPlaylist,
                bool(const std::string& prefix,

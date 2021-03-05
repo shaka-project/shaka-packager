@@ -76,39 +76,26 @@ Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   std::rotate(key->key.begin(),
               key->key.begin() + (crypto_period_index % key->key.size()),
               key->key.end());
-
-  // Clear |key->key_system_info| to prepare for update. The original
-  // |key_system_info| is saved as it may still be useful later.
-  std::vector<ProtectionSystemSpecificInfo> original_key_system_info;
-  key->key_system_info.swap(original_key_system_info);
-
-  EncryptionKeyMap encryption_key_map;
-  encryption_key_map[stream_label].reset(new EncryptionKey(*key));
-  RETURN_IF_ERROR(UpdateProtectionSystemInfo(&encryption_key_map));
-  key->key_system_info = encryption_key_map[stream_label]->key_system_info;
-
-  // It is possible that the generated |key_system_info| is empty. This happens
-  // when RawKeyParams.pssh is specified. Restore the original key system info
-  // in this case.
-  if (key->key_system_info.empty())
-    key->key_system_info.swap(original_key_system_info);
+  key->key_ids.clear();
+  key->key_ids.emplace_back(key->key_id);
 
   return Status::OK;
 }
 
-std::unique_ptr<RawKeySource> RawKeySource::Create(const RawKeyParams& raw_key,
-                                                   int protection_systems_flags,
-                                                   FourCC protection_scheme) {
+std::unique_ptr<RawKeySource> RawKeySource::Create(
+    const RawKeyParams& raw_key) {
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
-  bool pssh_provided = false;
   if (!raw_key.pssh.empty()) {
-    pssh_provided = true;
     if (!ProtectionSystemSpecificInfo::ParseBoxes(
             raw_key.pssh.data(), raw_key.pssh.size(), &key_system_info)) {
       LOG(ERROR) << "--pssh argument should be full PSSH boxes.";
       return std::unique_ptr<RawKeySource>();
     }
   }
+
+  std::vector<std::vector<uint8_t>> key_ids;
+  for (const auto& entry : raw_key.key_map)
+    key_ids.emplace_back(entry.second.key_id);
 
   EncryptionKeyMap encryption_key_map;
   for (const auto& entry : raw_key.key_map) {
@@ -126,36 +113,29 @@ std::unique_ptr<RawKeySource> RawKeySource::Create(const RawKeyParams& raw_key,
                  << "', must be 16 bytes.";
       return std::unique_ptr<RawKeySource>();
     }
+    if (!key_pair.iv.empty() && key_pair.iv.size() != 8 && key_pair.iv.size() != 16) {
+      LOG(ERROR) << "Invalid IV '" << key_pair.iv.size()
+                 << "', must be 8 or 16 bytes.";
+      return std::unique_ptr<RawKeySource>();
+    }
 
     std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
     encryption_key->key_id = key_pair.key_id;
+    encryption_key->key_ids = key_ids;
     encryption_key->key = key_pair.key;
-    encryption_key->iv = raw_key.iv;
+    encryption_key->iv = (key_pair.iv.empty()) ? raw_key.iv : key_pair.iv;
     encryption_key->key_system_info = key_system_info;
     encryption_key_map[drm_label] = std::move(encryption_key);
   }
 
-  // Generate common protection system if no other protection system is
-  // specified.
-  if (!pssh_provided && protection_systems_flags == NO_PROTECTION_SYSTEM_FLAG) {
-    protection_systems_flags = COMMON_PROTECTION_SYSTEM_FLAG;
-  }
-
   return std::unique_ptr<RawKeySource>(
-      new RawKeySource(std::move(encryption_key_map), protection_systems_flags,
-                       protection_scheme));
+      new RawKeySource(std::move(encryption_key_map)));
 }
 
-RawKeySource::RawKeySource()
-    : KeySource(NO_PROTECTION_SYSTEM_FLAG, FOURCC_NULL) {}
+RawKeySource::RawKeySource() {}
 
-RawKeySource::RawKeySource(EncryptionKeyMap&& encryption_key_map,
-                           int protection_systems_flags,
-                           FourCC protection_scheme)
-    : KeySource(protection_systems_flags, protection_scheme),
-      encryption_key_map_(std::move(encryption_key_map)) {
-  UpdateProtectionSystemInfo(&encryption_key_map_);
-}
+RawKeySource::RawKeySource(EncryptionKeyMap&& encryption_key_map)
+    : encryption_key_map_(std::move(encryption_key_map)) {}
 
 }  // namespace media
 }  // namespace shaka

@@ -69,8 +69,7 @@ class Mp2tMediaParserTest : public testing::Test {
     }
   }
 
-  bool OnNewSample(uint32_t track_id,
-                   const std::shared_ptr<MediaSample>& sample) {
+  bool OnNewSample(uint32_t track_id, std::shared_ptr<MediaSample> sample) {
     StreamMap::const_iterator stream = stream_map_.find(track_id);
     EXPECT_NE(stream_map_.end(), stream);
     if (stream != stream_map_.end()) {
@@ -97,11 +96,15 @@ class Mp2tMediaParserTest : public testing::Test {
     return true;
   }
 
+  bool OnNewTextSample(uint32_t track_id, std::shared_ptr<TextSample> sample) {
+    return false;
+  }
+
   void InitializeParser() {
     parser_->Init(
-        base::Bind(&Mp2tMediaParserTest::OnInit,
-                   base::Unretained(this)),
-        base::Bind(&Mp2tMediaParserTest::OnNewSample,
+        base::Bind(&Mp2tMediaParserTest::OnInit, base::Unretained(this)),
+        base::Bind(&Mp2tMediaParserTest::OnNewSample, base::Unretained(this)),
+        base::Bind(&Mp2tMediaParserTest::OnNewTextSample,
                    base::Unretained(this)),
         NULL);
   }

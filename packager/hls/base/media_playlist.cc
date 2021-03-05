@@ -391,7 +391,8 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   time_scale_ = time_scale;
   media_info_ = media_info;
   language_ = GetLanguage(media_info);
-  use_byte_range_ = !media_info_.has_segment_template_url();
+  use_byte_range_ = !media_info_.has_segment_template_url() &&
+                    media_info_.container_type() != MediaInfo::CONTAINER_TEXT;
   characteristics_ =
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
@@ -518,6 +519,18 @@ void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
 
 int MediaPlaylist::GetNumChannels() const {
   return media_info_.audio_info().num_channels();
+}
+
+int MediaPlaylist::GetEC3JocComplexity() const {
+  return media_info_.audio_info().codec_specific_data().ec3_joc_complexity();
+}
+
+bool MediaPlaylist::GetAC4ImsFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_ims_flag();
+}
+
+bool MediaPlaylist::GetAC4CbiFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_cbi_flag();
 }
 
 bool MediaPlaylist::GetDisplayResolution(uint32_t* width,

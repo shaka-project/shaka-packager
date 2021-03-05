@@ -26,8 +26,7 @@ class TsMuxer : public Muxer {
   // Muxer implementation.
   Status InitializeMuxer() override;
   Status Finalize() override;
-  Status AddSample(size_t stream_id,
-                   const MediaSample& sample) override;
+  Status AddMediaSample(size_t stream_id, const MediaSample& sample) override;
   Status FinalizeSegment(size_t stream_id,
                          const SegmentInfo& sample) override;
 
@@ -35,6 +34,8 @@ class TsMuxer : public Muxer {
   void FireOnMediaEndEvent();
 
   std::unique_ptr<TsSegmenter> segmenter_;
+  int64_t sample_durations_[2];
+  int64_t num_samples_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TsMuxer);
 };

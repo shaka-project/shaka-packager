@@ -24,6 +24,7 @@
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
+#include "packager/media/formats/ttml/ttml_generator.h"
 #include "packager/status_macros.h"
 
 namespace shaka {
@@ -67,6 +68,7 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
     case kCodecVP9:
       return FOURCC_vp09;
     case kCodecAAC:
+    case kCodecMP3:
       return FOURCC_mp4a;
     case kCodecAC3:
       return FOURCC_ac_3;
@@ -82,6 +84,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_dtsm;
     case kCodecEAC3:
       return FOURCC_ec_3;
+    case kCodecAC4:
+      return FOURCC_ac_4;
     case kCodecFlac:
       return FOURCC_fLaC;
     case kCodecOpus:
@@ -178,7 +182,7 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::AddSample(size_t stream_id, const MediaSample& sample) {
+Status MP4Muxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
   if (to_be_initialized_) {
     RETURN_IF_ERROR(UpdateEditListOffsetFromSample(sample));
     RETURN_IF_ERROR(DelayInitializeMuxer());
@@ -203,8 +207,9 @@ Status MP4Muxer::DelayInitializeMuxer() {
   std::unique_ptr<FileType> ftyp(new FileType);
   std::unique_ptr<Movie> moov(new Movie);
 
-  ftyp->major_brand = FOURCC_isom;
+  ftyp->major_brand = FOURCC_mp41;
   ftyp->compatible_brands.push_back(FOURCC_iso8);
+  ftyp->compatible_brands.push_back(FOURCC_isom);
   ftyp->compatible_brands.push_back(FOURCC_mp41);
   ftyp->compatible_brands.push_back(FOURCC_dash);
 
@@ -247,15 +252,15 @@ Status MP4Muxer::DelayInitializeMuxer() {
     switch (stream->stream_type()) {
       case kStreamVideo:
         generate_trak_result = GenerateVideoTrak(
-            static_cast<const VideoStreamInfo*>(stream), &trak, i + 1);
+            static_cast<const VideoStreamInfo*>(stream), &trak);
         break;
       case kStreamAudio:
         generate_trak_result = GenerateAudioTrak(
-            static_cast<const AudioStreamInfo*>(stream), &trak, i + 1);
+            static_cast<const AudioStreamInfo*>(stream), &trak);
         break;
       case kStreamText:
         generate_trak_result = GenerateTextTrak(
-            static_cast<const TextStreamInfo*>(stream), &trak, i + 1);
+            static_cast<const TextStreamInfo*>(stream), &trak);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
@@ -392,8 +397,7 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
 }
 
 bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
-                                 Track* trak,
-                                 uint32_t track_id) {
+                                 Track* trak) {
   InitializeTrak(video_info, trak);
 
   // width and height specify the track's visual presentation size as
@@ -446,8 +450,7 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
 }
 
 bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
-                                 Track* trak,
-                                 uint32_t track_id) {
+                                 Track* trak) {
   InitializeTrak(audio_info, trak);
 
   trak->header.volume = 0x100;
@@ -457,7 +460,6 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
   switch(audio_info->codec()){
     case kCodecAAC: {
-      audio.esds.es_descriptor.set_esid(track_id);
       DecoderConfigDescriptor* decoder_config =
           audio.esds.es_descriptor.mutable_decoder_config_descriptor();
       decoder_config->set_object_type(ObjectType::kISO_14496_3);  // MPEG4 AAC.
@@ -484,9 +486,30 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     case kCodecEAC3:
       audio.dec3.data = audio_info->codec_config();
       break;
+    case kCodecAC4:
+      audio.dac4.data = audio_info->codec_config();
+      break;
     case kCodecFlac:
       audio.dfla.data = audio_info->codec_config();
       break;
+    case kCodecMP3: {
+      DecoderConfigDescriptor* decoder_config =
+          audio.esds.es_descriptor.mutable_decoder_config_descriptor();
+      uint32_t samplerate = audio_info->sampling_frequency();
+      if (samplerate < 32000)
+        decoder_config->set_object_type(ObjectType::kISO_13818_3_MPEG1);
+      else
+        decoder_config->set_object_type(ObjectType::kISO_11172_3_MPEG1);
+      decoder_config->set_max_bitrate(audio_info->max_bitrate());
+      decoder_config->set_avg_bitrate(audio_info->avg_bitrate());
+
+      // For values of DecoderConfigDescriptor.objectTypeIndication
+      // that refer to streams complying with ISO/IEC 11172-3 or
+      // ISO/IEC 13818-3 the decoder specific information is empty
+      // since all necessary data is contained in the bitstream frames
+      // itself.
+      break;
+    }
     case kCodecOpus:
       audio.dops.opus_identification_header = audio_info->codec_config();
       break;
@@ -499,6 +522,12 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     // AC3 and EC3 does not fill in actual channel count and sample size in
     // sample description entry. Instead, two constants are used.
     audio.channelcount = 2;
+    audio.samplesize = 16;
+  } else if (audio_info->codec() == kCodecAC4) {
+    //ETSI TS 103 190-2, E.4.5 channelcount should be set to the total number of
+    //audio outputchannels of the default audio presentation of that track
+    audio.channelcount = audio_info->num_channels();
+    //ETSI TS 103 190-2, E.4.6 samplesize shall be set to 16.
     audio.samplesize = 16;
   } else {
     audio.channelcount = audio_info->num_channels();
@@ -536,8 +565,7 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
 }
 
 bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
-                                Track* trak,
-                                uint32_t track_id) {
+                                Track* trak) {
   InitializeTrak(text_info, trak);
 
   if (text_info->codec_string() == "wvtt") {
@@ -552,7 +580,7 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
     webvtt.config.config = "WEBVTT";
     // The spec does not define a way to carry STYLE and REGION information in
     // the mp4 container.
-    if (!text_info->codec_config().empty()) {
+    if (!text_info->regions().empty() || !text_info->css_styles().empty()) {
       LOG(INFO) << "Skipping possible style / region configuration as the spec "
                    "does not define a way to carry them inside ISO-BMFF files.";
     }
@@ -565,6 +593,17 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
         trak->media.information.sample_table.description;
     sample_description.type = kText;
     sample_description.text_entries.push_back(webvtt);
+    return true;
+  } else if (text_info->codec_string() == "ttml") {
+    // Handle TTML.
+    TextSampleEntry ttml;
+    ttml.format = FOURCC_stpp;
+    ttml.namespace_ = ttml::TtmlGenerator::kTtNamespace;
+
+    SampleDescription& sample_description =
+        trak->media.information.sample_table.description;
+    sample_description.type = kSubtitle;
+    sample_description.text_entries.push_back(ttml);
     return true;
   }
   NOTIMPLEMENTED() << text_info->codec_string()

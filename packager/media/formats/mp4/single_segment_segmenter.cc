@@ -45,15 +45,19 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
   // Index range is right after init range so the offset must be the size of
   // ftyp and moov.
   *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
-  *size = vod_sidx_->ComputeSize();
+  *size = options().mp4_params.generate_sidx_in_media_segments
+              ? vod_sidx_->ComputeSize()
+              : 0;
   return true;
 }
 
 std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
   std::vector<Range> ranges;
-  uint64_t next_offset =
-      ftyp()->ComputeSize() + moov()->ComputeSize() + vod_sidx_->ComputeSize() +
-      vod_sidx_->first_offset;
+  uint64_t next_offset = ftyp()->ComputeSize() + moov()->ComputeSize() +
+                         (options().mp4_params.generate_sidx_in_media_segments
+                              ? vod_sidx_->ComputeSize()
+                              : 0) +
+                         vod_sidx_->first_offset;
   for (const SegmentReference& segment_reference : vod_sidx_->references) {
     Range r;
     r.start = next_offset;
@@ -111,7 +115,10 @@ Status SingleSegmentSegmenter::DoFinalize() {
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
-  vod_sidx_->Write(buffer.get());
+
+  if (options().mp4_params.generate_sidx_in_media_segments)
+    vod_sidx_->Write(buffer.get());
+
   Status status = buffer->WriteToFile(file.get());
   if (!status.ok())
     return status;

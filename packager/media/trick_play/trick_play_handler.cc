@@ -143,18 +143,6 @@ Status TrickPlayHandler::OnMediaSample(const MediaSample& sample) {
       return OnTrickFrame(sample);
     }
   }
-
-  // Update this now as it may be sent out soon via the delay message queue.
-  if (total_trick_frames_ < 2) {
-    // At this point, video_info will be at the head of the delay message queue
-    // and can still be updated safely.
-
-    // The play back rate is determined by the number of frames between the
-    // first two trick play frames. The first trick play frame will be the
-    // first frame in the video.
-    video_info_->set_playback_rate(total_frames_);
-  }
-
   // If the frame is not a trick play frame, then take the duration of this
   // frame and add it to the previous trick play frame so that it will span the
   // gap created by not passing this frame through.
@@ -180,6 +168,17 @@ Status TrickPlayHandler::OnTrickFrame(const MediaSample& sample) {
   // downstream.
   if (total_trick_frames_ < 2) {
     return Status::OK;
+  }
+
+  // Update this now as it may be sent out soon via the delay message queue.
+  if (total_trick_frames_ == 2) {
+    // At this point, video_info will be at the head of the delay message queue
+    // and can still be updated safely.
+
+    // The play back rate is determined by the number of frames between the
+    // first two trick play frames. The first trick play frame will be the
+    // first frame in the video.
+    video_info_->set_playback_rate(total_frames_ - 1);
   }
 
   // Send out all delayed messages up until the new trick play frame we just

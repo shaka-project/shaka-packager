@@ -26,6 +26,7 @@
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/dovi_decoder_configuration_record.h"
 #include "packager/media/codecs/ec3_audio_util.h"
+#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
@@ -94,6 +95,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecAC3;
     case FOURCC_ec_3:
       return kCodecEAC3;
+    case FOURCC_ac_4:
+      return kCodecAC4;
     case FOURCC_fLaC:
       return kCodecFlac;
     default:
@@ -139,12 +142,26 @@ bool UpdateCodecStringForDolbyVision(
                   "configuration record.";
     return false;
   }
-  if (actual_format == FOURCC_dvh1 || actual_format == FOURCC_dvhe) {
-    // Non-Backward compatibility mode. Replace the code string with
-    // Dolby Vision only.
-    *codec_string = dovi_config.GetCodecString(actual_format);
-  } else {
-    // TODO(kqyang): Support backward compatible signaling.
+  switch (actual_format) {
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
+      // Non-Backward compatibility mode. Replace the code string with
+      // Dolby Vision only.
+      *codec_string = dovi_config.GetCodecString(actual_format);
+      break;
+    case FOURCC_hev1:
+      // Backward compatibility mode. Two codecs are signalled: base codec
+      // without Dolby Vision and HDR with Dolby Vision.
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvhe);
+      break;
+    case FOURCC_hvc1:
+      // See above.
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvh1);
+      break;
+    default:
+      LOG(ERROR) << "Unsupported format with extra codec "
+                 << FourCCToString(actual_format);
+      return false;
   }
   return true;
 }
@@ -162,16 +179,17 @@ MP4MediaParser::MP4MediaParser()
 MP4MediaParser::~MP4MediaParser() {}
 
 void MP4MediaParser::Init(const InitCB& init_cb,
-                          const NewSampleCB& new_sample_cb,
+                          const NewMediaSampleCB& new_media_sample_cb,
+                          const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!new_sample_cb.is_null());
+  DCHECK(!new_media_sample_cb.is_null());
 
   ChangeState(kParsingBoxes);
   init_cb_ = init_cb;
-  new_sample_cb_ = new_sample_cb;
+  new_sample_cb_ = new_media_sample_cb;
   decryption_key_source_ = decryption_key_source;
   if (decryption_key_source)
     decryptor_source_.reset(new DecryptorSource(decryption_key_source));
@@ -474,6 +492,16 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_config = entry.dec3.data;
           num_channels = static_cast<uint8_t>(GetEc3NumChannels(codec_config));
           break;
+        case FOURCC_ac_4:
+          codec_config = entry.dac4.data;
+          // Stop the process if have errors when parsing AC-4 dac4 box,
+          // bitstream version 0 (has beed deprecated) and contains multiple
+          // presentations in single AC-4 stream (only used for broadcast).
+          if (!GetAc4CodecInfo(codec_config, &audio_object_type)) {
+            LOG(ERROR) << "Failed to parse dac4.";
+            return false;
+          }
+          break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;
           break;
@@ -629,6 +657,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           transfer_characteristics = hevc_config.transfer_characteristics();
 
           if (!entry.extra_codec_configs.empty()) {
+            // |extra_codec_configs| is present only for Dolby Vision.
             if (!UpdateCodecStringForDolbyVision(
                     actual_format, entry.extra_codec_configs, &codec_string)) {
               return false;

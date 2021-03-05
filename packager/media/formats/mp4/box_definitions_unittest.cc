@@ -383,7 +383,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(ElementaryStreamDescriptor* esds) {
     const uint8_t kDecoderSpecificInfo[] = {18, 16};
-    esds->es_descriptor.set_esid(1);
     esds->es_descriptor.mutable_decoder_config_descriptor()->set_object_type(
         ObjectType::kISO_14496_3);
     std::vector<uint8_t> decoder_specific_info(
@@ -392,10 +391,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     esds->es_descriptor.mutable_decoder_config_descriptor()
         ->mutable_decoder_specific_info_descriptor()
         ->set_data(decoder_specific_info);
-  }
-
-  void Modify(ElementaryStreamDescriptor* esds) {
-    esds->es_descriptor.set_esid(2);
   }
 
   void Fill(DTSSpecific* ddts) {
@@ -1235,6 +1230,21 @@ TEST_F(BoxDefinitionsTest, EC3SampleEntry) {
   entry.samplesize = 16;
   entry.samplerate = 44100;
   Fill(&entry.dec3);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, AC4SampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_ac_4;
+  entry.data_reference_index = 2;
+  entry.channelcount = 6;
+  entry.samplesize = 16;
+  entry.samplerate = 48000;
+  Fill(&entry.dac4);
   entry.Write(this->buffer_.get());
 
   AudioSampleEntry entry_readback;

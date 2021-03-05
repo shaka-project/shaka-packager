@@ -48,6 +48,9 @@ DEFINE_bool(use_fake_clock_for_muxer,
 DEFINE_string(test_packager_version,
               "",
               "Packager version for testing. Should be used for testing only.");
+DEFINE_bool(single_threaded,
+            false,
+            "If enabled, only use one thread when generating content.");
 
 namespace shaka {
 namespace {
@@ -118,6 +121,7 @@ const char kUsage[] =
 const char kDrmLabelLabel[] = "label";
 const char kKeyIdLabel[] = "key_id";
 const char kKeyLabel[] = "key";
+const char kKeyIvLabel[] = "iv";
 
 enum ExitStatus {
   kSuccess = 0,
@@ -207,6 +211,17 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
                  << value_map[kKeyLabel];
       return false;
     }
+    if (!value_map[kKeyIvLabel].empty()) {
+      if (!raw_key->iv.empty()) {
+        LOG(ERROR) << "IV already specified with --iv";
+        return false;
+      }
+      if (!base::HexStringToBytes(value_map[kKeyIvLabel], &key_info.iv)) {
+        LOG(ERROR) << "Empty IV or invalid hex string for IV: "
+                   << value_map[kKeyIvLabel];
+        return false;
+      }
+    }
   }
   return true;
 }
@@ -268,18 +283,17 @@ bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
   return true;
 }
 
-bool ParseProtectionSystems(
-    const std::string& protection_systems_str,
-    std::vector<EncryptionParams::ProtectionSystem>* protection_systems) {
-  protection_systems->clear();
+bool ParseProtectionSystems(const std::string& protection_systems_str,
+                            ProtectionSystem* protection_systems) {
+  *protection_systems = ProtectionSystem::kNone;
 
-  std::map<std::string, EncryptionParams::ProtectionSystem> mapping = {
-      {"common", EncryptionParams::ProtectionSystem::kCommonSystem},
-      {"commonsystem", EncryptionParams::ProtectionSystem::kCommonSystem},
-      {"fairplay", EncryptionParams::ProtectionSystem::kFairPlay},
-      {"marlin", EncryptionParams::ProtectionSystem::kMarlin},
-      {"playready", EncryptionParams::ProtectionSystem::kPlayReady},
-      {"widevine", EncryptionParams::ProtectionSystem::kWidevine},
+  std::map<std::string, ProtectionSystem> mapping = {
+      {"common", ProtectionSystem::kCommon},
+      {"commonsystem", ProtectionSystem::kCommon},
+      {"fairplay", ProtectionSystem::kFairPlay},
+      {"marlin", ProtectionSystem::kMarlin},
+      {"playready", ProtectionSystem::kPlayReady},
+      {"widevine", ProtectionSystem::kWidevine},
   };
 
   for (const std::string& protection_system :
@@ -291,7 +305,7 @@ bool ParseProtectionSystems(
                  << protection_system;
       return false;
     }
-    protection_systems->push_back(iter->second);
+    *protection_systems |= iter->second;
   }
   return true;
 }
@@ -300,6 +314,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
   packaging_params.temp_dir = FLAGS_temp_dir;
+  packaging_params.single_threaded = FLAGS_single_threaded;
 
   AdCueGeneratorParams& ad_cue_generator_params =
       packaging_params.ad_cue_generator_params;
@@ -343,12 +358,17 @@ base::Optional<PackagingParams> GetPackagingParams() {
     encryption_params.clear_lead_in_seconds = FLAGS_clear_lead;
     if (!GetProtectionScheme(&encryption_params.protection_scheme))
       return base::nullopt;
+    encryption_params.crypt_byte_block = FLAGS_crypt_byte_block;
+    encryption_params.skip_byte_block = FLAGS_skip_byte_block;
+
     encryption_params.crypto_period_duration_in_seconds =
         FLAGS_crypto_period_duration;
     encryption_params.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;
     encryption_params.stream_label_func = std::bind(
         &Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
         FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);
+    encryption_params.playready_extra_header_data =
+        FLAGS_playready_extra_header_data;
   }
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
@@ -367,12 +387,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
       PlayReadyEncryptionParams& playready = encryption_params.playready;
       playready.key_server_url = FLAGS_playready_server_url;
       playready.program_identifier = FLAGS_program_identifier;
-      playready.ca_file = FLAGS_ca_file;
-      playready.client_cert_file = FLAGS_client_cert_file;
-      playready.client_cert_private_key_file =
-          FLAGS_client_cert_private_key_file;
-      playready.client_cert_private_key_password =
-          FLAGS_client_cert_private_key_password;
       break;
     }
     case KeyProvider::kRawKey: {
@@ -457,6 +471,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
       FLAGS_generate_dash_if_iop_compliant_mpd;
   mpd_params.allow_approximate_segment_timeline =
       FLAGS_allow_approximate_segment_timeline;
+  mpd_params.allow_codec_switching = FLAGS_allow_codec_switching;
+  mpd_params.include_mspr_pro = FLAGS_include_mspr_pro_for_playready;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {

@@ -6,8 +6,8 @@
       <Representation id="0" bandwidth="73677" codecs="mp4a.40.5" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-aac_he-silent_right-audio.mp4</BaseURL>
-        <SegmentBase indexRange="792-859" timescale="44100">
-          <Initialization range="0-791"/>
+        <SegmentBase indexRange="796-863" timescale="44100">
+          <Initialization range="0-795"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

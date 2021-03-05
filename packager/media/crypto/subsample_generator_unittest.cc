@@ -389,20 +389,31 @@ TEST_P(SubsampleGeneratorTest, AV1SubsampleEncryption) {
   ASSERT_OK(
       generator.Initialize(protection_scheme_, GetVideoStreamInfo(kCodecAV1)));
 
-  constexpr size_t kFrameSize = 50;
+  constexpr size_t kFrameSize = 70;
   constexpr uint8_t kFrame[kFrameSize] = {};
-  constexpr size_t kTileOffsets[] = {4, 11};
-  constexpr size_t kTileSizes[] = {6, 33};
+  constexpr size_t kTileOffsets[] = {4, 11, 44};
+  constexpr size_t kTileSizes[] = {6, 33, 20};
+  constexpr int kNumTiles = 3;
   // AV1 block align protected data for all protection schemes.
-  const SubsampleEntry kExpectedSubsamples[] = {
-      // {4,6},{11-4-6,33},{50-11-33,0} block aligned => {10,0},{2,32},{6,0}.
+  const SubsampleEntry kExpectedSubsamplesCbcs[] = {
+      // {4,6},{11-4-6,33},{44-11-33,20},{70-44-20,0}
+      // Always starts on the first byte and ends on the last byte of the tiles.
+      {4, 6},
+      {1, 33},
+      {0, 20},
+      {6, 0},
+  };
+  const SubsampleEntry kExpectedSubsamplesNonCbcs[] = {
+      // {4,6},{11-4-6,33},{44-11-33,20},{70-44-20,0} block aligned =>
+      // {10,0},{2,32},{4,16},{6,0}.
       // Then merge consecutive clear-only subsamples.
       {12, 32},
+      {4, 16},
       {6, 0},
   };
 
-  std::vector<AV1Parser::Tile> tiles(2);
-  for (int i = 0; i < 2; i++) {
+  std::vector<AV1Parser::Tile> tiles(kNumTiles);
+  for (int i = 0; i < kNumTiles; i++) {
     tiles[i].start_offset_in_bytes = kTileOffsets[i];
     tiles[i].size_in_bytes = kTileSizes[i];
   }
@@ -415,7 +426,10 @@ TEST_P(SubsampleGeneratorTest, AV1SubsampleEncryption) {
 
   std::vector<SubsampleEntry> subsamples;
   ASSERT_OK(generator.GenerateSubsamples(kFrame, kFrameSize, &subsamples));
-  EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamples));
+  if (protection_scheme_ == FOURCC_cbcs)
+    EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamplesCbcs));
+  else
+    EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamplesNonCbcs));
 }
 
 TEST_P(SubsampleGeneratorTest, AACIsFullSampleEncrypted) {

@@ -218,10 +218,10 @@ const MediaInfo& Representation::GetMediaInfo() const {
 // AddVideoInfo() (possibly adds FramePacking elements), AddAudioInfo() (Adds
 // AudioChannelConfig elements), AddContentProtectionElements*(), and
 // AddVODOnlyInfo() (Adds segment info).
-xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
+base::Optional<xml::XmlNode> Representation::GetXml() {
   if (!HasRequiredMediaInfoFields()) {
     LOG(ERROR) << "MediaInfo missing required fields.";
-    return xml::scoped_xml_ptr<xmlNode>();
+    return base::nullopt;
   }
 
   const uint64_t bandwidth = media_info_.has_bandwidth()
@@ -232,11 +232,13 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
 
   xml::RepresentationXmlNode representation;
   // Mandatory fields for Representation.
-  representation.SetId(id_);
-  representation.SetIntegerAttribute("bandwidth", bandwidth);
-  if (!codecs_.empty())
-    representation.SetStringAttribute("codecs", codecs_);
-  representation.SetStringAttribute("mimeType", mime_type_);
+  if (!representation.SetId(id_) ||
+      !representation.SetIntegerAttribute("bandwidth", bandwidth) ||
+      !(codecs_.empty() ||
+        representation.SetStringAttribute("codecs", codecs_)) ||
+      !representation.SetStringAttribute("mimeType", mime_type_)) {
+    return base::nullopt;
+  }
 
   const bool has_video_info = media_info_.has_video_info();
   const bool has_audio_info = media_info_.has_audio_info();
@@ -248,37 +250,37 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
           !(output_suppression_flags_ & kSuppressHeight),
           !(output_suppression_flags_ & kSuppressFrameRate))) {
     LOG(ERROR) << "Failed to add video info to Representation XML.";
-    return xml::scoped_xml_ptr<xmlNode>();
+    return base::nullopt;
   }
 
   if (has_audio_info &&
       !representation.AddAudioInfo(media_info_.audio_info())) {
     LOG(ERROR) << "Failed to add audio info to Representation XML.";
-    return xml::scoped_xml_ptr<xmlNode>();
+    return base::nullopt;
   }
 
   if (!representation.AddContentProtectionElements(
           content_protection_elements_)) {
-    return xml::scoped_xml_ptr<xmlNode>();
+    return base::nullopt;
   }
 
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
     LOG(ERROR) << "Failed to add VOD info.";
-    return xml::scoped_xml_ptr<xmlNode>();
+    return base::nullopt;
   }
 
   if (HasLiveOnlyFields(media_info_) &&
       !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
                                       start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
-    return xml::scoped_xml_ptr<xmlNode>();
+    return base::nullopt;
   }
   // TODO(rkuroiwa): It is likely that all representations have the exact same
   // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.
 
   output_suppression_flags_ = 0;
-  return representation.PassScopedPtr();
+  return std::move(representation);
 }
 
 void Representation::SuppressOnce(SuppressFlag flag) {

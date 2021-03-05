@@ -12,15 +12,52 @@
 #include <string>
 #include <vector>
 
+#include "packager/status.h"
+
 namespace shaka {
 
-/// Encryption / decryption key providers.
+/// Encryption key providers.  These provide keys to decrypt the content if the
+/// source content is encrypted, or used to encrypt the content.
 enum class KeyProvider {
-  kNone = 0,
-  kWidevine = 1,
-  kPlayReady = 2,
-  kRawKey = 3,
+  kNone,
+  kRawKey,
+  kWidevine,
+  kPlayReady,
 };
+
+/// Protection systems that handle decryption during playback.  This affects the
+/// protection info that is stored in the content.  Multiple protection systems
+/// can be combined using OR.
+enum class ProtectionSystem : uint16_t {
+  kNone = 0,
+  /// The common key system from EME: https://goo.gl/s8RIhr
+  kCommon = (1 << 0),
+  kWidevine = (1 << 1),
+  kPlayReady = (1 << 2),
+  kFairPlay = (1 << 3),
+  kMarlin = (1 << 4),
+};
+
+inline ProtectionSystem operator|(ProtectionSystem a, ProtectionSystem b) {
+  return static_cast<ProtectionSystem>(static_cast<uint16_t>(a) |
+                                       static_cast<uint16_t>(b));
+}
+inline ProtectionSystem& operator|=(ProtectionSystem& a, ProtectionSystem b) {
+  return a = a | b;
+}
+inline ProtectionSystem operator&(ProtectionSystem a, ProtectionSystem b) {
+  return static_cast<ProtectionSystem>(static_cast<uint16_t>(a) &
+                                       static_cast<uint16_t>(b));
+}
+inline ProtectionSystem& operator&=(ProtectionSystem& a, ProtectionSystem b) {
+  return a = a & b;
+}
+inline ProtectionSystem operator~(ProtectionSystem a) {
+  return static_cast<ProtectionSystem>(~static_cast<uint16_t>(a));
+}
+inline bool has_flag(ProtectionSystem value, ProtectionSystem flag) {
+  return (value & flag) == flag;
+}
 
 /// Signer credential for Widevine license server.
 struct WidevineSigner {
@@ -97,6 +134,7 @@ struct RawKeyParams {
   struct KeyInfo {
     std::vector<uint8_t> key_id;
     std::vector<uint8_t> key;
+    std::vector<uint8_t> iv;
   };
   /// Defines the KeyInfo for the streams. An empty `StreamLabel` indicates the
   /// default `KeyInfo`, which applies to all the `StreamLabels` not present in
@@ -115,16 +153,10 @@ struct EncryptionParams {
   PlayReadyEncryptionParams playready;
   RawKeyParams raw_key;
 
-  /// Supported protection systems.
-  enum class ProtectionSystem {
-    kCommonSystem,
-    kFairPlay,
-    kMarlin,
-    kPlayReady,
-    kWidevine,
-  };
-  /// Protection systems to be generated.
-  std::vector<ProtectionSystem> protection_systems;
+  /// The protection systems to generate, multiple can be OR'd together.
+  ProtectionSystem protection_systems;
+  /// Extra XML data to add to PlayReady data.
+  std::string playready_extra_header_data;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;
@@ -134,6 +166,16 @@ struct EncryptionParams {
   static constexpr uint32_t kProtectionSchemeCens = 0x63656E73;
   static constexpr uint32_t kProtectionSchemeCbcs = 0x63626373;
   uint32_t protection_scheme = kProtectionSchemeCenc;
+  /// The count of the encrypted blocks in the protection pattern, where each
+  /// block is of size 16-bytes. There are three common patterns
+  /// (crypt_byte_block:skip_byte_block): 1:9 (default), 5:5, 10:0.
+  /// Applies to video streams with "cbcs" and "cens" protection schemes only;
+  /// Ignored otherwise.
+  uint8_t crypt_byte_block = 1;
+  /// The count of the unencrypted blocks in the protection pattern.
+  /// Applies to video streams with "cbcs" and "cens" protection schemes only;
+  /// Ignored otherwise.
+  uint8_t skip_byte_block = 9;
   /// Crypto period duration in seconds. A positive value means key rotation is
   /// enabled, the key provider must support key rotation in this case.
   static constexpr double kNoKeyRotation = 0;

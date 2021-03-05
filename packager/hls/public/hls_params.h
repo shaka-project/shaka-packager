@@ -51,6 +51,9 @@ struct HlsParams {
   /// Same as above, but this overrides the default language for text tracks,
   /// i.e. subtitles or close-captions.
   std::string default_text_language;
+  // Indicates that all media samples in the media segments can be decoded
+  // without information from other segments.
+  bool is_independent_segments;
   /// This is the target segment duration requested by the user. The actual
   /// segment duration may be different to the target segment duration. It will
   /// be populated from segment duration specified in ChunkingParams if not

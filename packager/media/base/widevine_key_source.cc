@@ -84,16 +84,14 @@ ProtectionSystemSpecificInfo ProtectionSystemInfoFromPsshProto(
 }  // namespace
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
-                                     int protection_system_flags,
+                                     ProtectionSystem protection_systems,
                                      FourCC protection_scheme)
     // Widevine PSSH is fetched from Widevine license server.
-    : KeySource(protection_system_flags & ~WIDEVINE_PROTECTION_SYSTEM_FLAG,
-                protection_scheme),
-      generate_widevine_protection_system_(
+    : generate_widevine_protection_system_(
           // Generate Widevine protection system if there are no other
           // protection system specified.
-          protection_system_flags == NO_PROTECTION_SYSTEM_FLAG ||
-          protection_system_flags & WIDEVINE_PROTECTION_SYSTEM_FLAG),
+          protection_systems == ProtectionSystem::kNone ||
+          has_flag(protection_systems, ProtectionSystem::kWidevine)),
       key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
@@ -433,6 +431,12 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
   uint32_t current_crypto_period_index = first_crypto_period_index_;
 
+  std::vector<std::vector<uint8_t>> key_ids;
+  for (const auto& track : response_proto.tracks()) {
+    if (!widevine_classic)
+      key_ids.emplace_back(track.key_id().begin(), track.key_id().end());
+  }
+
   EncryptionKeyMap encryption_key_map;
   for (const auto& track : response_proto.tracks()) {
     VLOG(2) << "track " << track.ShortDebugString();
@@ -463,6 +467,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
       encryption_key->key_id.assign(track.key_id().begin(),
                                     track.key_id().end());
       encryption_key->iv.assign(track.iv().begin(), track.iv().end());
+      encryption_key->key_ids = key_ids;
 
       if (generate_widevine_protection_system_) {
         if (track.pssh_size() != 1) {
@@ -477,12 +482,6 @@ bool WidevineKeySource::ExtractEncryptionKey(
     encryption_key_map[stream_label] = std::move(encryption_key);
   }
 
-  if (!widevine_classic) {
-    if (!UpdateProtectionSystemInfo(&encryption_key_map).ok()) {
-      return false;
-    }
-  }
-
   DCHECK(!encryption_key_map.empty());
   if (!enable_key_rotation) {
     // Merge with previously requested keys.
@@ -490,6 +489,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
       encryption_key_map_[pair.first] = std::move(pair.second);
     return true;
   }
+
   return PushToKeyPool(&encryption_key_map);
 }
 
