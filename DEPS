@@ -100,7 +100,7 @@ hooks = [
     'name': 'sysroot',
     'pattern': '.',
     'action': ['python', 'src/packager/build/linux/sysroot_scripts/install-sysroot.py',
-               '--running-as-hook'],
+               '--arch', 'arm64'],
   },
   {
     # Update the Mac toolchain if necessary.
