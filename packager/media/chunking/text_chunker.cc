@@ -19,7 +19,7 @@ const size_t kStreamIndex = 0;
 TextChunker::TextChunker(double segment_duration_in_seconds,
                          int64_t start_segment_number)
     : segment_duration_in_seconds_(segment_duration_in_seconds),
-      segment_number_(start_segment_number - 1){};
+      segment_number_(start_segment_number){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {

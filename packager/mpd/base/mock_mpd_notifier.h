@@ -30,7 +30,7 @@ class MockMpdNotifier : public MpdNotifier {
                     int64_t start_time,
                     int64_t duration,
                     uint64_t size,
-                    int64_t segment_index));
+                    int64_t segment_number));
   MOCK_METHOD3(NotifyCompletedSegment,
                bool(uint32_t container_id, int64_t duration, uint64_t size));
   MOCK_METHOD1(NotifyAvailabilityTimeOffset, bool(uint32_t container_id));

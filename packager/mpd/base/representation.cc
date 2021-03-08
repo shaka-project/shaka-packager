@@ -407,7 +407,7 @@ void Representation::AddSegmentInfo(int64_t start_time,
         segment_infos_.push_back(
             {previous_segment_end_time,
              actual_segment_end_time - previous_segment_end_time, kNoRepeat,
-             segment_number + 1});
+             segment_number});
       }
       return;
     }
@@ -433,7 +433,7 @@ void Representation::AddSegmentInfo(int64_t start_time,
     }
   }
   segment_infos_.push_back(
-      {start_time, adjusted_duration, kNoRepeat, segment_number + 1});
+      {start_time, adjusted_duration, kNoRepeat, segment_number});
 }
 
 void Representation::UpdateSegmentInfo(int64_t duration) {
@@ -518,7 +518,7 @@ void Representation::RemoveOldSegment(SegmentInfo* segment_info) {
 
   segments_to_be_removed_.push_back(
       media::GetSegmentName(media_info_.segment_template(), segment_start_time,
-                            start_number - 1, media_info_.bandwidth()));
+                            start_number, media_info_.bandwidth()));
   while (segments_to_be_removed_.size() >
          mpd_options_.mpd_params.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();

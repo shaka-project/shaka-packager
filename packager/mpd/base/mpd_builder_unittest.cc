@@ -56,7 +56,7 @@ class MpdBuilderTest : public ::testing::Test {
     // Not relevant in this test.
     const bool kContentProtectionFlag = true;
     const size_t kBytes = 1000;
-    const int64_t kSegmentNumber = 0;
+    const int64_t kSegmentNumber = 1;
 
     AdaptationSet* adaptation_set =
         period->GetOrCreateAdaptationSet(media_info, kContentProtectionFlag);

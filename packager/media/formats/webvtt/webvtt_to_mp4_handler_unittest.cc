@@ -23,7 +23,7 @@ namespace {
 const size_t kStreamIndex = 0;
 const bool kSubSegment = true;
 const bool kEncrypted = true;
-const int64_t kSegmentNumber = 0;
+const int64_t kSegmentNumber = 1;
 
 const char* kId1 = "sample-id-1";
 const char* kId2 = "sample-id-2";

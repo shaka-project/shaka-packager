@@ -44,8 +44,8 @@ const char kOutputFile[] = "memory://test.aac";
 const char kSegmentTemplate[] = "memory://test_$Number$.aac";
 const char kSegment1Name[] = "memory://test_1.aac";
 const char kSegment2Name[] = "memory://test_2.aac";
-const int64_t kSegmentNumber0 = 0;
 const int64_t kSegmentNumber1 = 1;
+const int64_t kSegmentNumber2 = 2;
 
 class MockPackedAudioSegmenter : public PackedAudioSegmenter {
  public:
@@ -125,7 +125,7 @@ TEST_P(PackedAudioWriterTest, SubsegmentIgnored) {
   const bool kSubsegment = true;
   auto subsegment_stream_data = StreamData::FromSegmentInfo(
       kStreamIndex,
-      GetSegmentInfo(kTimestamp, kDuration, kSubsegment, kSegmentNumber0));
+      GetSegmentInfo(kTimestamp, kDuration, kSubsegment, kSegmentNumber1));
 
   EXPECT_CALL(*mock_muxer_listener_ptr_, OnNewSegment(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_segmenter_ptr_, FinalizeSegment()).Times(0);
@@ -141,7 +141,7 @@ TEST_P(PackedAudioWriterTest, OneSegment) {
   const bool kSubsegment = true;
   auto segment_stream_data = StreamData::FromSegmentInfo(
       kStreamIndex,
-      GetSegmentInfo(kTimestamp, kDuration, !kSubsegment, kSegmentNumber0));
+      GetSegmentInfo(kTimestamp, kDuration, !kSubsegment, kSegmentNumber1));
 
   const double kMockTimescaleScale = 10;
   const char kMockSegmentData[] = "hello segment 1";
@@ -152,7 +152,7 @@ TEST_P(PackedAudioWriterTest, OneSegment) {
       OnNewSegment(is_single_segment_mode_ ? kOutputFile : kSegment1Name,
                    kTimestamp * kMockTimescaleScale,
                    kDuration * kMockTimescaleScale, kSegmentDataSize,
-                   kSegmentNumber0));
+                   kSegmentNumber1));
 
   EXPECT_CALL(*mock_segmenter_ptr_, TimescaleScale())
       .WillRepeatedly(Return(kMockTimescaleScale));
@@ -196,10 +196,10 @@ TEST_P(PackedAudioWriterTest, TwoSegments) {
   const bool kSubsegment = true;
   auto segment1_stream_data = StreamData::FromSegmentInfo(
       kStreamIndex,
-      GetSegmentInfo(kTimestamp, kDuration, !kSubsegment, kSegmentNumber0));
+      GetSegmentInfo(kTimestamp, kDuration, !kSubsegment, kSegmentNumber1));
   auto segment2_stream_data = StreamData::FromSegmentInfo(
       kStreamIndex, GetSegmentInfo(kTimestamp + kDuration, kDuration,
-                                   !kSubsegment, kSegmentNumber1));
+                                   !kSubsegment, kSegmentNumber2));
 
   const double kMockTimescaleScale = 10;
   const char kMockSegment1Data[] = "hello segment 1";
@@ -212,13 +212,13 @@ TEST_P(PackedAudioWriterTest, TwoSegments) {
       OnNewSegment(is_single_segment_mode_ ? kOutputFile : kSegment1Name,
                    kTimestamp * kMockTimescaleScale,
                    kDuration * kMockTimescaleScale,
-                   sizeof(kMockSegment1Data) - 1, kSegmentNumber0));
+                   sizeof(kMockSegment1Data) - 1, kSegmentNumber1));
   EXPECT_CALL(
       *mock_muxer_listener_ptr_,
       OnNewSegment(is_single_segment_mode_ ? kOutputFile : kSegment2Name,
                    (kTimestamp + kDuration) * kMockTimescaleScale,
                    kDuration * kMockTimescaleScale, kSegment2DataSize,
-                   kSegmentNumber1));
+                   kSegmentNumber2));
 
   EXPECT_CALL(*mock_segmenter_ptr_, TimescaleScale())
       .WillRepeatedly(Return(kMockTimescaleScale));

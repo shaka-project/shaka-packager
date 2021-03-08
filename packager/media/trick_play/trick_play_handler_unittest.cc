@@ -24,7 +24,7 @@ const size_t kOutputCount = 1;
 const size_t kInputIndex = 0;
 const size_t kOutputIndex = 0;
 const size_t kStreamIndex = 0;
-const int64_t kSegmentNumber = 0;
+const int64_t kSegmentNumber = 1;
 
 // This value does not matter as trick play does not use it, but it is needed
 // to create the audio and video info.
