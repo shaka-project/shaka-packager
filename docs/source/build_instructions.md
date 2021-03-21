@@ -185,7 +185,8 @@ Also, unlike Linux / Mac, 32-bit is chosen by default even if the system is
 configured to `out/%CONFIGURATION%_x64`, i.e.:
 
 ```shell
-$ GYP_DEFINES='target_arch=x64' gclient runhooks
+$ SET GYP_DEFINES='target_arch=x64' 
+$ gclient runhooks
 $ ninja -C out/Release_x64
 ```
 
