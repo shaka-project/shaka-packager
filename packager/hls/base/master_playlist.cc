@@ -254,6 +254,13 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
     tag.AddQuotedString("SUBTITLES", *variant.text_group_id);
   }
 
+  // Since CEA captions in Shaka Packager are only an input format, but not
+  // supported as output, the HLS output should always indicate that there are
+  // no captions.  Explicitly signaling a lack of captions in HLS keeps Safari
+  // from assuming captions and showing a text track that doesn't exist.
+  // https://github.com/google/shaka-packager/issues/922#issuecomment-804304019
+  tag.AddString("CLOSED-CAPTIONS", "NONE");
+
   if (playlist.stream_type() ==
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
     tag.AddQuotedString("URI", base_url + playlist.file_name());
