@@ -6,6 +6,8 @@
 
 #include "packager/media/formats/dvb/dvb_sub_parser.h"
 
+#include <algorithm>
+
 #include "packager/base/logging.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
@@ -15,9 +17,15 @@ namespace media {
 namespace {
 
 RgbaColor ConvertYuv(uint8_t Y, uint8_t Cr, uint8_t Cb, uint8_t T) {
+  // Converts based on ITU-R BT.601.
   // See https://en.wikipedia.org/wiki/YCbCr
+  //
+  // Note that the T value should be interpolated based on a full transparency
+  // being 256.  This means that T=255 should not be fully transparent.  Y=0 is
+  // used to signal full transparency.
+  // Values for Y<16 (except Y=0) are invalid, so clamp to 16.
   RgbaColor color;
-  const double y_transform = 255.0 / 219 * (Y - 16);
+  const double y_transform = 255.0 / 219 * (std::max<uint8_t>(Y, 16) - 16);
   const double cb_transform = 255.0 / 244 * 1.772 * (Cb - 128);
   const double cr_transform = 255.0 / 244 * 1.402 * (Cr - 128);
   const double f1 = 0.114 / 0.587;
@@ -26,7 +34,7 @@ RgbaColor ConvertYuv(uint8_t Y, uint8_t Cr, uint8_t Cb, uint8_t T) {
   color.g =
       static_cast<uint8_t>(y_transform - cb_transform * f1 - cr_transform * f2);
   color.b = static_cast<uint8_t>(y_transform + cb_transform);
-  color.a = 255 - T;
+  color.a = Y == 0 ? 0 : (T == 0 ? 255 : 256 - T);
   return color;
 }
 
