@@ -73,11 +73,5 @@ DEFINE_bool(dash_force_segment_list,
             false,
             "Uses SegmentList instead of SegmentBase. Use this if the "
             "content is huge and the total number of (sub)segment references "
-            "is greater than what the sidx atom allows (65535). "
-            "Note that this needs to be used with the "
-            "--generate_sidx_in_media_segments options since "
-            "sidx generation needs to be skipped if SegmentList is used "
-            "(the extra references are truncated and the stream would not play "
-            "until the end).");
-
-
+            "is greater than what the sidx atom allows (65535). Currently "
+            "this flag is only supported in DASH ondemand profile.");

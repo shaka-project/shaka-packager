@@ -81,13 +81,13 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
 }  // namespace
 
 MuxerListenerFactory::MuxerListenerFactory(bool output_media_info,
+                                           bool use_segment_list,
                                            MpdNotifier* mpd_notifier,
-                                           hls::HlsNotifier* hls_notifier,
-                                           bool use_segment_list)
+                                           hls::HlsNotifier* hls_notifier)
     : output_media_info_(output_media_info),
       mpd_notifier_(mpd_notifier),
       hls_notifier_(hls_notifier),
-      use_segment_list_(use_segment_list){}
+      use_segment_list_(use_segment_list) {}
 
 std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
     const StreamData& stream) {

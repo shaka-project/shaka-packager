@@ -58,17 +58,17 @@ class MuxerListenerFactory {
   /// Create a new muxer listener.
   /// @param output_media_info must be true for the combined listener to include
   ///        a media info dump listener.
+  /// @param use_segment_list is set when mpd_notifier_ is null and
+  ///        --output_media_info is set. If mpd_notifer is non-null, this value
+  ///        is the same as mpd_notifier->use_segment_list().
   /// @param mpd_notifer must be non-null for the combined listener to include a
   ///        mpd listener.
   /// @param hls_notifier must be non-null for the combined listener to include
   ///        an HLS listener.
-  /// @param use_segment_list is set when mpd_notifier_ is null and
-  ///        --output_media_info is set. If mpd_notifer is non-null, this value
-  ///        is the same as mpd_notifier->use_segment_list().
   MuxerListenerFactory(bool output_media_info,
+                       bool use_segment_list,
                        MpdNotifier* mpd_notifier,
-                       hls::HlsNotifier* hls_notifier,
-                       bool use_segment_list);
+                       hls::HlsNotifier* hls_notifier);
 
   /// Create a listener for a stream.
   std::unique_ptr<MuxerListener> CreateListener(const StreamData& stream);
@@ -85,7 +85,7 @@ class MuxerListenerFactory {
   MpdNotifier* mpd_notifier_;
   hls::HlsNotifier* hls_notifier_;
 
-  /// This is set when mpd_notifier_ is NULL and --output_media_info is set
+  /// This is set when mpd_notifier_ is NULL and --output_media_info is set.
   bool use_segment_list_;
 
   // A counter to track which stream we are on.

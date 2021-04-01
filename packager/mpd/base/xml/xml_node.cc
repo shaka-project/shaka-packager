@@ -9,6 +9,7 @@
 #include <gflags/gflags.h>
 #include <libxml/tree.h>
 
+#include <cmath>
 #include <limits>
 #include <set>
 
@@ -379,98 +380,83 @@ bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
                                            bool use_segment_list,
                                            double target_segment_duration) {
-  const bool use_segment_list_text =
+  const bool use_single_segment_url_with_media =
       media_info.has_text_info() && media_info.has_presentation_time_offset();
 
-  if (media_info.has_media_file_url() && !use_segment_list_text) {
+  LOG(INFO) << "use_single_segment_url_with_media"
+            << use_single_segment_url_with_media << "'.";
+
+  const bool need_segment_base_or_list =
+      use_segment_list || media_info.has_index_range() ||
+      media_info.has_init_range() ||
+      (media_info.has_reference_time_scale() && !media_info.has_text_info()) ||
+      use_single_segment_url_with_media;
+
+  if (media_info.has_media_file_url() && !use_single_segment_url_with_media) {
     XmlNode base_url("BaseURL");
     base_url.SetContent(media_info.media_file_url());
 
     RCHECK(AddChild(std::move(base_url)));
   }
 
-
-  const bool need_segment_base = !use_segment_list && (
-      media_info.has_index_range() || media_info.has_init_range() ||
-      (media_info.has_reference_time_scale() && !media_info.has_text_info()));
-  DCHECK(!need_segment_base || !use_segment_list_text ||
-             use_segment_list);
-
-  if (need_segment_base || use_segment_list_text) {
-    XmlNode child(need_segment_base ? "SegmentBase" : "SegmentList");
-    if (media_info.has_index_range()) {
-      RCHECK(child.SetStringAttribute("indexRange",
-                                      RangeToString(media_info.index_range())));
-    }
-
-    if (media_info.has_reference_time_scale()) {
-      RCHECK(child.SetIntegerAttribute("timescale",
-                                       media_info.reference_time_scale()));
-    }
-
-    if (media_info.has_presentation_time_offset()) {
-      RCHECK(child.SetIntegerAttribute("presentationTimeOffset",
-                                       media_info.presentation_time_offset()));
-    }
-
-    if (media_info.has_init_range()) {
-      XmlNode initialization("Initialization");
-      RCHECK(initialization.SetStringAttribute(
-          "range", RangeToString(media_info.init_range())));
-
-      RCHECK(child.AddChild(std::move(initialization)));
-    }
-
-    if (use_segment_list_text) {
-      XmlNode media_url("SegmentURL");
-      RCHECK(
-          media_url.SetStringAttribute("media", media_info.media_file_url()));
-      RCHECK(child.AddChild(std::move(media_url)));
-    }
-
-    RCHECK(AddChild(std::move(child)));
+  if (!need_segment_base_or_list) {
+    return true;
   }
 
+  XmlNode child(use_segment_list || use_single_segment_url_with_media
+                    ? "SegmentList"
+                    : "SegmentBase");
+
+  // Forcing SegmentList for longer audio causes sidx atom to not be
+  // generated, therefore indexRange is not added to MPD if flag is set.
+  if (media_info.has_index_range() && !use_segment_list) {
+    RCHECK(child.SetStringAttribute("indexRange",
+                                    RangeToString(media_info.index_range())));
+  }
+
+  if (media_info.has_reference_time_scale()) {
+    RCHECK(child.SetIntegerAttribute("timescale",
+                                     media_info.reference_time_scale()));
+
+    if (use_segment_list) {
+      const uint64_t duration_seconds = static_cast<uint64_t>(
+          floor(target_segment_duration * media_info.reference_time_scale()));
+      RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
+    }
+  }
+
+  if (media_info.has_presentation_time_offset()) {
+    RCHECK(child.SetIntegerAttribute("presentationTimeOffset",
+                                     media_info.presentation_time_offset()));
+  }
+
+  if (media_info.has_init_range()) {
+    XmlNode initialization("Initialization");
+    RCHECK(initialization.SetStringAttribute(
+        "range", RangeToString(media_info.init_range())));
+
+    RCHECK(child.AddChild(std::move(initialization)));
+  }
+
+  if (use_single_segment_url_with_media && !use_segment_list) {
+    XmlNode media_url("SegmentURL");
+    RCHECK(media_url.SetStringAttribute("media", media_info.media_file_url()));
+    RCHECK(child.AddChild(std::move(media_url)));
+  }
+
+  // Since the SegmentURLs here do not have a @media element,
+  // BaseURL element is mapped to the @media attribute.
   if (use_segment_list) {
-    XmlNode child("SegmentList");
-    if (media_info.has_reference_time_scale()) {
-      RCHECK(child.SetIntegerAttribute("timescale",
-                                       media_info.reference_time_scale()));
-    }
-
-    if (media_info.has_reference_time_scale()) {
-      RCHECK(child.SetIntegerAttribute("timescale",
-                                       media_info.reference_time_scale()));
-
-      if (media_info.has_media_duration_seconds()) {
-        const uint64_t duration_seconds =
-            (uint64_t) (target_segment_duration * media_info.reference_time_scale());
-        RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
-      }
-    }
-
-    if (media_info.has_init_range()) {
-      XmlNode initialization("Initialization");
-      RCHECK(initialization.SetStringAttribute(
-          "range", RangeToString(media_info.init_range())));
-
-      RCHECK(child.AddChild(std::move(initialization)));
-    }
-
-    for (int i = 0; i < media_info.subsegment_ranges_size(); ++i) {
+    for (const Range& subsegment_range : media_info.subsegment_ranges()) {
       XmlNode subsegment("SegmentURL");
-      shaka::Range& subsegment_range =
-          const_cast<Range&>(media_info.subsegment_ranges(i));
-
-      RCHECK(subsegment.SetStringAttribute(
-          "mediaRange", RangeToString(subsegment_range)));
+      RCHECK(subsegment.SetStringAttribute("mediaRange",
+                                           RangeToString(subsegment_range)));
 
       RCHECK(child.AddChild(std::move(subsegment)));
     }
-
-    RCHECK(AddChild(std::move(child)));
   }
 
+  RCHECK(AddChild(std::move(child)));
   return true;
 }
 

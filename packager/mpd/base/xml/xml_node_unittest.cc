@@ -20,6 +20,9 @@
 DECLARE_bool(segment_template_constant_duration);
 DECLARE_bool(dash_add_last_segment_number_when_needed);
 
+#include <google/protobuf/text_format.h>
+#include "packager/mpd/base/media_info.pb.h"
+
 using ::testing::ElementsAre;
 
 namespace shaka {
@@ -541,6 +544,186 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
                    "                   startNumber=\"1\" duration=\"100\"/>"
                    "</Representation>"));
   FLAGS_dash_add_last_segment_number_when_needed = false;
+}
+
+class OnDemandVODSegmentTest : public ::testing::Test {
+ protected:
+  void SetUp() override {}
+
+  void TearDown() override {}
+
+  MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
+    MediaInfo media_info;
+    CHECK(::google::protobuf::TextFormat::ParseFromString(media_info_string,
+                                                          &media_info));
+    return media_info;
+  }
+};
+
+TEST_F(OnDemandVODSegmentTest, SegmentBase) {
+  const char kTestMediaInfo[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 44100\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 863\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 864\n"
+      "  end: 931\n"
+      "}\n"
+      "media_file_url: 'encrypted_audio.mp4'\n"
+      "media_duration_seconds: 24.009434\n"
+      "reference_time_scale: 44100\n"
+      "presentation_time_offset: 100\n";
+
+  const MediaInfo media_info = ConvertToMediaInfo(kTestMediaInfo);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddVODOnlyInfo(media_info, false, 100));
+  EXPECT_THAT(representation,
+              XmlNodeEqual("<Representation>"
+                           "<BaseURL>encrypted_audio.mp4</BaseURL>"
+                           "<SegmentBase indexRange=\"864-931\" "
+                           "timescale=\"44100\" presentationTimeOffset=\"100\">"
+                           "<Initialization range=\"0-863\"/>"
+                           "</SegmentBase>"
+                           "</Representation>"));
+}
+
+TEST_F(OnDemandVODSegmentTest, TextInfoBaseUrl) {
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  codec: 'ttml'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}\n"
+      "media_duration_seconds: 35\n"
+      "bandwidth: 1000\n"
+      "media_file_url: 'subtitle.xml'\n"
+      "container_type: CONTAINER_TEXT\n";
+
+  const MediaInfo media_info = ConvertToMediaInfo(kTextMediaInfo);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddVODOnlyInfo(media_info, false, 100));
+  EXPECT_THAT(representation, XmlNodeEqual("<Representation>"
+                                           "<BaseURL>subtitle.xml</BaseURL>"
+                                           "</Representation>"));
+}
+
+TEST_F(OnDemandVODSegmentTest, TextInfoWithPresentationOffset) {
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  codec: 'ttml'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}\n"
+      "media_duration_seconds: 35\n"
+      "bandwidth: 1000\n"
+      "media_file_url: 'subtitle.xml'\n"
+      "container_type: CONTAINER_TEXT\n"
+      "presentation_time_offset: 100\n";
+
+  const MediaInfo media_info = ConvertToMediaInfo(kTextMediaInfo);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddVODOnlyInfo(media_info, false, 100));
+
+  EXPECT_THAT(representation,
+              XmlNodeEqual("<Representation>"
+                           "<SegmentList presentationTimeOffset=\"100\">"
+                           "<SegmentURL media=\"subtitle.xml\"/>"
+                           "</SegmentList>"
+                           "</Representation>"));
+}
+
+TEST_F(OnDemandVODSegmentTest, SegmentListWithoutUrls) {
+  const char kTestMediaInfo[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 44100\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 863\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 864\n"
+      "  end: 931\n"
+      "}\n"
+      "media_file_url: 'encrypted_audio.mp4'\n"
+      "media_duration_seconds: 24.009434\n"
+      "reference_time_scale: 44100\n"
+      "presentation_time_offset: 100\n";
+
+  const MediaInfo media_info = ConvertToMediaInfo(kTestMediaInfo);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddVODOnlyInfo(media_info, true, 100));
+
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation>"
+                   "<BaseURL>encrypted_audio.mp4</BaseURL>"
+                   "<SegmentList timescale=\"44100\" duration=\"4410000\" "
+                   "presentationTimeOffset=\"100\">"
+                   "<Initialization range=\"0-863\"/>"
+                   "</SegmentList>"
+                   "</Representation>"));
+}
+
+TEST_F(OnDemandVODSegmentTest, SegmentUrlWithMediaRanges) {
+  const char kTextMediaInfo[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 44100\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 863\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 864\n"
+      "  end: 931\n"
+      "}\n"
+      "media_file_url: 'encrypted_audio.mp4'\n"
+      "media_duration_seconds: 24.009434\n"
+      "reference_time_scale: 44100\n"
+      "presentation_time_offset: 100\n"
+      "subsegment_ranges {\n"
+      "  begin: 932\n"
+      "  end: 9999\n"
+      "}\n"
+      "subsegment_ranges {\n"
+      "  begin: 10000\n"
+      "  end: 11000\n"
+      "}\n";
+
+  const MediaInfo media_info = ConvertToMediaInfo(kTextMediaInfo);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddVODOnlyInfo(media_info, true, 100));
+
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation>"
+                   "<BaseURL>encrypted_audio.mp4</BaseURL>"
+                   "<SegmentList timescale=\"44100\" duration=\"4410000\" "
+                   "presentationTimeOffset=\"100\">"
+                   "<Initialization range=\"0-863\"/>"
+                   "<SegmentURL mediaRange=\"932-9999\"/>"
+                   "<SegmentURL mediaRange=\"10000-11000\"/>"
+                   "</SegmentList>"
+                   "</Representation>"));
 }
 
 }  // namespace xml
