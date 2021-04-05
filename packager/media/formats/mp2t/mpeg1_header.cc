@@ -196,7 +196,16 @@ void Mpeg1Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
   DCHECK(buffer);
   buffer->clear();
   BitWriter config(buffer);
-  config.WriteBits(GetObjectType(), 5);
+
+  // ISO/IEC 14496:3 Table 1.16 Syntax of GetAudioObjetType()
+  auto object_type = GetObjectType();
+  if (object_type <= 31) {
+    config.WriteBits(object_type, 5);
+  } else {
+    config.WriteBits(31, 5);
+    config.WriteBits(object_type - 32, 6);
+  }
+
   config.WriteBits(cft_idx, 4);
   /*
    * NOTE: Number of channels matches channel_configuration index,
