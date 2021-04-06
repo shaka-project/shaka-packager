@@ -6,6 +6,7 @@
 
 #include <gflags/gflags.h>
 #include <gmock/gmock.h>
+#include <google/protobuf/text_format.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
 
@@ -13,15 +14,15 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
+#include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/xml_node.h"
+#include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
 
 DECLARE_bool(segment_template_constant_duration);
 DECLARE_bool(dash_add_last_segment_number_when_needed);
 
-#include <google/protobuf/text_format.h>
-#include "packager/mpd/base/media_info.pb.h"
 
 using ::testing::ElementsAre;
 
@@ -546,18 +547,8 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
   FLAGS_dash_add_last_segment_number_when_needed = false;
 }
 
+// Creating a separate Test Suite for RepresentationXmlNode::AddVODOnlyInfo
 class OnDemandVODSegmentTest : public ::testing::Test {
- protected:
-  void SetUp() override {}
-
-  void TearDown() override {}
-
-  MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
-    MediaInfo media_info;
-    CHECK(::google::protobuf::TextFormat::ParseFromString(media_info_string,
-                                                          &media_info));
-    return media_info;
-  }
 };
 
 TEST_F(OnDemandVODSegmentTest, SegmentBase) {

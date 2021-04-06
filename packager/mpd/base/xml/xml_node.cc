@@ -383,21 +383,18 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
   const bool use_single_segment_url_with_media =
       media_info.has_text_info() && media_info.has_presentation_time_offset();
 
-  LOG(INFO) << "use_single_segment_url_with_media"
-            << use_single_segment_url_with_media << "'.";
-
-  const bool need_segment_base_or_list =
-      use_segment_list || media_info.has_index_range() ||
-      media_info.has_init_range() ||
-      (media_info.has_reference_time_scale() && !media_info.has_text_info()) ||
-      use_single_segment_url_with_media;
-
   if (media_info.has_media_file_url() && !use_single_segment_url_with_media) {
     XmlNode base_url("BaseURL");
     base_url.SetContent(media_info.media_file_url());
 
     RCHECK(AddChild(std::move(base_url)));
   }
+
+  const bool need_segment_base_or_list =
+      use_segment_list || media_info.has_index_range() ||
+      media_info.has_init_range() ||
+      (media_info.has_reference_time_scale() && !media_info.has_text_info()) ||
+      use_single_segment_url_with_media;
 
   if (!need_segment_base_or_list) {
     return true;
@@ -418,7 +415,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
     RCHECK(child.SetIntegerAttribute("timescale",
                                      media_info.reference_time_scale()));
 
-    if (use_segment_list) {
+    if (use_segment_list && !use_single_segment_url_with_media) {
       const uint64_t duration_seconds = static_cast<uint64_t>(
           floor(target_segment_duration * media_info.reference_time_scale()));
       RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
@@ -438,7 +435,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
     RCHECK(child.AddChild(std::move(initialization)));
   }
 
-  if (use_single_segment_url_with_media && !use_segment_list) {
+  if (use_single_segment_url_with_media) {
     XmlNode media_url("SegmentURL");
     RCHECK(media_url.SetStringAttribute("media", media_info.media_file_url()));
     RCHECK(child.AddChild(std::move(media_url)));
