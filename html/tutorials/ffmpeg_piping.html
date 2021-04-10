@@ -1,22 +1,22 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FFmpeg piping &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Design" href="../design.html" />
+    <link rel="next" title="HTTP upload" href="http_upload.html" />
     <link rel="prev" title="Ad Insertion" href="ads.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -26,56 +26,16 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../design.html" title="Design"
+          <a href="http_upload.html" title="HTTP upload"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="ads.html" title="Ad Insertion"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FFmpeg piping</a></li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">FFmpeg piping</a><ul>
-<li><a class="reference internal" href="#piping-data-to-packager">Piping data to packager</a></li>
-<li><a class="reference internal" href="#encoding-capture-command">Encoding / capture command</a><ul>
-<li><a class="reference internal" href="#camera-capture">Camera capture</a></li>
-<li><a class="reference internal" href="#rtp-input">RTP input</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#example-packaging-command-in-dash">Example packaging command in DASH</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="ads.html"
-                        title="previous chapter">Ad Insertion</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="../design.html"
-                        title="next chapter">Design</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/tutorials/ffmpeg_piping.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -178,7 +138,49 @@ audio / video devices on the machine:</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FFmpeg piping</a><ul>
+<li><a class="reference internal" href="#piping-data-to-packager">Piping data to packager</a></li>
+<li><a class="reference internal" href="#encoding-capture-command">Encoding / capture command</a><ul>
+<li><a class="reference internal" href="#camera-capture">Camera capture</a></li>
+<li><a class="reference internal" href="#rtp-input">RTP input</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-packaging-command-in-dash">Example packaging command in DASH</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ads.html"
+                        title="previous chapter">Ad Insertion</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="http_upload.html"
+                        title="next chapter">HTTP upload</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/ffmpeg_piping.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -190,18 +192,19 @@ audio / video devices on the machine:</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../design.html" title="Design"
+          <a href="http_upload.html" title="HTTP upload"
              >next</a> |</li>
         <li class="right" >
           <a href="ads.html" title="Ad Insertion"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FFmpeg piping</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

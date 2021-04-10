@@ -1,19 +1,19 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>General encryption options &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
@@ -23,9 +23,65 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General encryption options</a></li> 
       </ul>
-    </div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="general-encryption-options">
+<h1>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h1>
+<dl class="option-list">
+<dt><kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></dt>
+<dd><p>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
+schemes ‘cens’ or ‘cbcs’.</p>
+</dd>
+<dt><kbd><span class="option">--crypt_byte_block</span></kbd></dt>
+<dd><p>Specify the count of the encrypted blocks in the protection pattern, where
+block is of size 16-bytes.</p>
+<p>There are three common patterns (crypt_byte_block:skip_byte_block):
+1:9 (default), 5:5, 10:0.</p>
+<p>Apply to video streams with ‘cbcs’ and ‘cens’ protection schemes only;
+ignored otherwise.</p>
+</dd>
+<dt><kbd><span class="option">--skip_byte_block</span></kbd></dt>
+<dd><p>Specify the count of the unencrypted blocks in the protection pattern.</p>
+<p>Apply to video streams with ‘cbcs’ and ‘cens’ protection schemes only;
+ignored otherwise.</p>
+</dd>
+<dt><kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></dt>
+<dd><p>Enable / disable VP9 subsample encryption. Enabled by default.</p>
+</dd>
+<dt><kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Clear lead in seconds if encryption is enabled.
+Shaka Packager does not support partial encrypted segments, all the
+segments including the partial segment overlapping with the initial
+‘clear_lead’ seconds are not encrypted, with all the following segments
+encrypted. If segment_duration is greater than ‘clear_lead’, then only the
+first segment is not encrypted.
+Default: 5</p>
+</dd>
+<dt><kbd><span class="option">--protection_systems</span></kbd></dt>
+<dd><p>Protection systems to be generated. Supported protection systems include
+Widevine, PlayReady, FairPlay, Marlin, and
+<a class="reference external" href="https://goo.gl/s8RIhr">CommonSystem</a>.</p>
+</dd>
+<dt><kbd><span class="option">--playready_extra_header_data <var>&lt;string&gt;</var></span></kbd></dt>
+<dd><p>Extra XML data to add to PlayReady PSSH data.  Can be specified even if
+using another key source.</p>
+</dd>
+</dl>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
@@ -44,44 +100,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="general-encryption-options">
-<h1>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h1>
-<dl class="option-list">
-<dt><kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></dt>
-<dd><p>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
-schemes ‘cens’ or ‘cbcs’.</p>
-</dd>
-<dt><kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></dt>
-<dd><p>Enable / disable VP9 subsample encryption. Enabled by default.</p>
-</dd>
-<dt><kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></dt>
-<dd><p>Clear lead in seconds if encryption is enabled.
-Shaka Packager does not support partial encrypted segments, all the
-segments including the partial segment overlapping with the initial
-‘clear_lead’ seconds are not encrypted, with all the following segments
-encrypted. If segment_duration is greater than ‘clear_lead’, then only the
-first segment is not encrypted.
-Default: 5</p>
-</dd>
-<dt><kbd><span class="option">--protection_systems</span></kbd></dt>
-<dd><p>Protection systems to be generated. Supported protection systems include
-Widevine, PlayReady, FairPlay, Marlin, and
-CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</p>
-</dd>
-</dl>
-</div>
-
-
-          </div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -92,12 +111,13 @@ CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https:/
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General encryption options</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text output formats &#8212; Shaka Packager  documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ad Insertion" href="ads.html" />
+    <link rel="prev" title="Using Raw Key" href="raw_key.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ads.html" title="Ad Insertion"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="raw_key.html" title="Using Raw Key"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Text output formats</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="text-output-formats">
+<h1>Text output formats<a class="headerlink" href="#text-output-formats" title="Permalink to this headline">¶</a></h1>
+<p>Shaka Packager supports several text/subtitle formats for both input and output.
+We only support certain formats for output, other formats are converted to the
+specified output format.  With the exception of TTML pass-through, there are no
+restrictions of input vs output formats.</p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>TTML pass-through:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager in=input.ttml,stream=text,output=output.ttml
+</pre></div>
+</div>
+</li>
+<li><p>Convert WebVTT to TTML:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager in=input.vtt,stream=text,output=output.ttml
+</pre></div>
+</div>
+</li>
+<li><p>Embed WebVTT in MP4 (single-file):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager in=input.vtt,stream=text,output=output.mp4
+</pre></div>
+</div>
+</li>
+<li><p>Embed WebVTT in MP4 (segmented):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &#39;in=input.vtt,stream=text,init_segment=init.mp4,segment_template=text_$Number$.mp4&#39;
+</pre></div>
+</div>
+</li>
+<li><p>Convert WebVTT to TTML in MP4:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager in=input.vtt,stream=text,format=ttml+mp4,output=output.mp4
+</pre></div>
+</div>
+</li>
+<li><p>Convert DVB-SUB to TTML in MP4:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager in=input.ts,stream=text,format=ttml+mp4,output=output.mp4
+$ packager &#39;in=input.ts,stream=text,format=ttml+mp4,init_segment=init.mp4,segment_template=text_$Number$.mp4&#39;
+</pre></div>
+</div>
+</li>
+<li><p>Get a single page from DVB-SUB and set language:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager in=input.ts,stream=text,cc_index=3,lang=en,format=ttml+mp4,output=output.mp4
+</pre></div>
+</div>
+</li>
+<li><p>Multiple languages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
+  in=in_en.vtt,stream=text,language=en,output=out_en.mp4 \
+  in=in_sp.vtt,stream=text,language=sp,output=out_sp.mp4 \
+  in=in_fr.vtt,stream=text,language=fr,output=out_fr.mp4
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Text output formats</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="raw_key.html"
+                        title="previous chapter">Using Raw Key</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ads.html"
+                        title="next chapter">Ad Insertion</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/text.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ads.html" title="Ad Insertion"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="raw_key.html" title="Using Raw Key"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Text output formats</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>

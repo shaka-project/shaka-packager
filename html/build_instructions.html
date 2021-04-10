@@ -1,19 +1,19 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Build Instructions &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Using Docker" href="docker_instructions.html" />
@@ -31,76 +31,10 @@
         <li class="right" >
           <a href="library.html" title="Shaka Packager Library"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Build Instructions</a></li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Build Instructions</a><ul>
-<li><a class="reference internal" href="#linux-build-dependencies">Linux build dependencies</a></li>
-<li><a class="reference internal" href="#mac-system-requirements">Mac system requirements</a></li>
-<li><a class="reference internal" href="#windows-system-requirements">Windows system requirements</a></li>
-<li><a class="reference internal" href="#install-depot-tools">Install <code class="docutils literal notranslate"><span class="pre">depot_tools</span></code></a><ul>
-<li><a class="reference internal" href="#linux-and-mac">Linux and Mac</a></li>
-<li><a class="reference internal" href="#windows">Windows</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#get-the-code">Get the code</a><ul>
-<li><a class="reference internal" href="#build-shaka-packager">Build Shaka Packager</a><ul>
-<li><a class="reference internal" href="#id1">Linux and Mac</a></li>
-<li><a class="reference internal" href="#id2">Windows</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#build-artifacts">Build artifacts</a></li>
-<li><a class="reference internal" href="#update-your-checkout">Update your checkout</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cross-compiling-for-arm-on-ubuntu-host">Cross compiling for ARM on Ubuntu host</a></li>
-<li><a class="reference internal" href="#notes-for-other-linux-distros">Notes for other linux distros</a><ul>
-<li><a class="reference internal" href="#alpine-linux">Alpine Linux</a></li>
-<li><a class="reference internal" href="#arch-linux">Arch Linux</a></li>
-<li><a class="reference internal" href="#debian">Debian</a></li>
-<li><a class="reference internal" href="#fedora">Fedora</a></li>
-<li><a class="reference internal" href="#opensuse">OpenSUSE</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#tips-tricks-and-troubleshooting">Tips, tricks, and troubleshooting</a><ul>
-<li><a class="reference internal" href="#xcode-license-agreement">Xcode license agreement</a></li>
-<li><a class="reference internal" href="#missing-curl-ca-bundle">Missing curl CA bundle</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#contributing">Contributing</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="library.html"
-                        title="previous chapter">Shaka Packager Library</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="docker_instructions.html"
-                        title="next chapter">Using Docker</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/build_instructions.md.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -131,6 +65,10 @@ sudo apt-get install build-essential curl git python
 </div>
 <p>to check whether you have it.</p>
 </li>
+<li><p>Note that there is a known problem with 10.15 SDK or later right now. You
+can workaround it by using 10.14 SDK. See
+<a class="reference external" href="https://github.com/google/shaka-packager/issues/660#issuecomment-552576341">#660</a>
+for details.</p></li>
 </ul>
 </div>
 <div class="section" id="windows-system-requirements">
@@ -167,12 +105,10 @@ in your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</
 <p>Download the
 <a class="reference external" href="https://storage.googleapis.com/chrome-infra/depot_tools.zip">depot_tools bundle</a>
 and extract it somewhere.</p>
-<p>*** note
-<strong>Warning:</strong> <strong>DO NOT</strong> use drag-n-drop or copy-n-paste extract from Explorer,
+<p><strong>WARNING: DO NOT</strong> use drag-n-drop or copy-n-paste extract from Explorer,
 this will not extract the hidden “.git” folder which is necessary for
 depot_tools to autoupdate itself. You can use “Extract all…” from the context
 menu though.</p>
-<hr class="docutils" />
 <p>Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:</p>
 <p>Control Panel → System and Security → System → Advanced system settings</p>
@@ -260,7 +196,8 @@ $ ninja -C out<span class="se">\R</span>elease
 <p>Also, unlike Linux / Mac, 32-bit is chosen by default even if the system is
 64-bit. 64-bit has to be enabled explicitly and the output directory is
 configured to <code class="docutils literal notranslate"><span class="pre">out/%CONFIGURATION%_x64</span></code>, i.e.:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;target_arch=x64&#39;</span> gclient runhooks
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ SET <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;target_arch=x64&#39;</span> 
+$ gclient runhooks
 $ ninja -C out/Release_x64
 </pre></div>
 </div>
@@ -329,7 +266,7 @@ dummy structure has to be defined in /usr/include/malloc.h, e.g.</p>
 <div class="section" id="arch-linux">
 <h3>Arch Linux<a class="headerlink" href="#arch-linux" title="Permalink to this headline">¶</a></h3>
 <p>Instead of running <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span></code> to install build dependencies, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo pacman -S --needed python2 git curl gcc gcc-libs make
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo pacman -Sy --needed python2 git curl gcc gcc-libs make
 $ sudo ln -sf python2 /usr/bin/python
 </pre></div>
 </div>
@@ -361,7 +298,7 @@ $ makepkg -si
 <div class="section" id="opensuse">
 <h3>OpenSUSE<a class="headerlink" href="#opensuse" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">zypper</span></code> command to install dependencies:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo zypper in git python python-xml git curl gcc-c++ tar
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo zypper in git python python-xml git curl gcc-c++ tar libncurses5
 </pre></div>
 </div>
 </div>
@@ -397,6 +334,24 @@ resolve the issue:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="using-an-ide">
+<h3>Using an IDE<a class="headerlink" href="#using-an-ide" title="Permalink to this headline">¶</a></h3>
+<p>No specific instructions are available.</p>
+<p>You might find Gyp generators helpful. Output is not guaranteed to work.
+Manual editing might be necessary.</p>
+<p>To generate CMakeLists.txt in out/Release and out/Debug use:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>cmake gclient runhooks
+</pre></div>
+</div>
+<p>To generate IDE project files in out/Release and out/Debug use:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>eclipse gclient runhooks
+$ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>xcode gclient runhooks
+$ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>xcode_test gclient runhooks
+$ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>msvs gclient runhooks
+$ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>msvs_test gclient runhooks
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
@@ -416,7 +371,76 @@ are run using the <code class="docutils literal notranslate"><span class="pre">-
 </div>
 
 
+            <div class="clearer"></div>
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Build Instructions</a><ul>
+<li><a class="reference internal" href="#linux-build-dependencies">Linux build dependencies</a></li>
+<li><a class="reference internal" href="#mac-system-requirements">Mac system requirements</a></li>
+<li><a class="reference internal" href="#windows-system-requirements">Windows system requirements</a></li>
+<li><a class="reference internal" href="#install-depot-tools">Install <code class="docutils literal notranslate"><span class="pre">depot_tools</span></code></a><ul>
+<li><a class="reference internal" href="#linux-and-mac">Linux and Mac</a></li>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#get-the-code">Get the code</a><ul>
+<li><a class="reference internal" href="#build-shaka-packager">Build Shaka Packager</a><ul>
+<li><a class="reference internal" href="#id1">Linux and Mac</a></li>
+<li><a class="reference internal" href="#id2">Windows</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#build-artifacts">Build artifacts</a></li>
+<li><a class="reference internal" href="#update-your-checkout">Update your checkout</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cross-compiling-for-arm-on-ubuntu-host">Cross compiling for ARM on Ubuntu host</a></li>
+<li><a class="reference internal" href="#notes-for-other-linux-distros">Notes for other linux distros</a><ul>
+<li><a class="reference internal" href="#alpine-linux">Alpine Linux</a></li>
+<li><a class="reference internal" href="#arch-linux">Arch Linux</a></li>
+<li><a class="reference internal" href="#debian">Debian</a></li>
+<li><a class="reference internal" href="#fedora">Fedora</a></li>
+<li><a class="reference internal" href="#opensuse">OpenSUSE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tips-tricks-and-troubleshooting">Tips, tricks, and troubleshooting</a><ul>
+<li><a class="reference internal" href="#xcode-license-agreement">Xcode license agreement</a></li>
+<li><a class="reference internal" href="#missing-curl-ca-bundle">Missing curl CA bundle</a></li>
+<li><a class="reference internal" href="#using-an-ide">Using an IDE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="library.html"
+                        title="previous chapter">Shaka Packager Library</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="docker_instructions.html"
+                        title="next chapter">Using Docker</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/build_instructions.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -433,12 +457,13 @@ are run using the <code class="docutils literal notranslate"><span class="pre">-
         <li class="right" >
           <a href="library.html" title="Shaka Packager Library"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Build Instructions</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

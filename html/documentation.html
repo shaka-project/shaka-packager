@@ -1,19 +1,19 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Packager Documentation &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorials" href="tutorials/tutorials.html" />
@@ -31,64 +31,10 @@
         <li class="right" >
           <a href="index.html" title="Welcome to Shaka Packager’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Packager Documentation</a></li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Packager Documentation</a><ul>
-<li><a class="reference internal" href="#getting-shaka-packager">Getting Shaka Packager</a></li>
-<li><a class="reference internal" href="#synopsis">Synopsis</a><ul>
-<li><a class="reference internal" href="#stream-descriptors">Stream descriptors</a></li>
-<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
-<li><a class="reference internal" href="#dash-specific-stream-descriptor-fields">DASH specific stream descriptor fields</a></li>
-<li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
-<li><a class="reference internal" href="#chunking-options">Chunking options</a></li>
-<li><a class="reference internal" href="#mp4-output-options">MP4 output options</a></li>
-<li><a class="reference internal" href="#transport-stream-output-options">Transport stream output options</a></li>
-<li><a class="reference internal" href="#dash-options">DASH options</a></li>
-<li><a class="reference internal" href="#hls-options">HLS options</a></li>
-<li><a class="reference internal" href="#ads-options">Ads options</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#encryption-decryption-options">Encryption / decryption options</a><ul>
-<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
-<li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
-<li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
-<li><a class="reference internal" href="#playready-encryption-options">PlayReady encryption options</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to Shaka Packager’s documentation!</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="tutorials/tutorials.html"
-                        title="next chapter">Tutorials</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/documentation.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -144,7 +90,7 @@ multiple different “files”.</p>
 </pre></div>
 </div>
 <p>These are the available fields:</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">input (in)</dt>
 <dd class="field-odd"><p>input/source media “file” path, which can be regular files, pipes, udp
 streams. See <a class="reference internal" href="options/udp_file_options.html"><span class="doc">UDP file options</span></a> on additional options for UDP
@@ -183,11 +129,19 @@ this value overrides any language metadata in the input stream.</p>
 <dd class="field-even"><p>Optional value which specifies the format of the output files (MP4 or WebM).
 If not specified, it will be derived from the file extension of the output
 file.</p>
+<p>For subtitles in MP4, you can specify ‘vtt+mp4’ or ‘ttml+mp4’ to control
+which text format is used.</p>
 </dd>
 <dt class="field-odd">trick_play_factor (tpf)</dt>
 <dd class="field-odd"><p>Optional value which specifies the trick play, a.k.a. trick mode, stream
 sampling rate among key frames. If specified, the output is a trick play
 stream.</p>
+</dd>
+<dt class="field-even">cc_index</dt>
+<dd class="field-even"><p>Optional value which specifies the index/ID of the subtitle stream to use
+for formats where multiple exist within the same stream. For example,
+CEA allows specifying up to 4 streams within a single video stream. If not
+specified, all subtitles will be merged together.</p>
 </dd>
 </dl>
 </div>
@@ -289,9 +243,10 @@ duration. Actual fragment durations may not be exactly as requested.</p>
 <p>–generate_sidx_in_media_segments
 –nogenerate_sidx_in_media_segments</p>
 <blockquote>
-<div><p>For MP4 with DASH live profile only: Indicates whether to generate ‘sidx’
-box in media segments. Note that it is reuqired by spec if segment template
-contains $Time$ specifier.</p>
+<div><p>Indicates whether to generate ‘sidx’ box in media segments. Note
+that it is required for DASH on-demand profile (not using segment
+template).</p>
+<p>Default enabled.</p>
 </div></blockquote>
 </div>
 <div class="section" id="transport-stream-output-options">
@@ -360,7 +315,7 @@ accessible as they may still be accessed by the player.</p>
 </dd>
 <dt><kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></dt>
 <dd><p>Any audio/text tracks tagged with this language will have
-&lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
+&lt;Role … value=&quot;main&quot; /&gt; in the manifest.  This allows the player to
 choose the correct default language for the content.</p>
 <p>This applies to both audio and text tracks. The default language for text
 tracks can be overriden by  ‘default_text_language’.</p>
@@ -379,6 +334,17 @@ optimization to use <a class="reference external" href="mailto:SegmentTemplate&#
 SegmentTimeline completely.</p>
 <p>Ignored if $Time$ is used in segment template, since $Time$ requires
 accurate Segment Timeline.</p>
+</dd>
+</dl>
+<p>–dash_only=0|1</p>
+<blockquote>
+<div><p>Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
+stream is DASH only.</p>
+</div></blockquote>
+<dl class="option-list">
+<dt><kbd><span class="option">--allow_codec_switching</span></kbd></dt>
+<dd><p>If enabled, allow adaptive switching between different codecs, if they have
+the same language, media type (audio, video etc) and container type.</p>
 </dd>
 </dl>
 </div>
@@ -426,7 +392,31 @@ tracks can be overriden by  ‘default_text_language’.</p>
 <dd><p>Same as above, but this applies to text tracks only, and overrides the
 default language for text tracks.</p>
 </dd>
+<dt><kbd><span class="option">--hls_media_sequence_number <var>&lt;unsigned_number&gt;</var></span></kbd></dt>
+<dd><p>HLS uses the EXT-X-MEDIA-SEQUENCE tag at the start of a live playlist in
+order to specify the first segment sequence number. This is because any
+live playlist have a limited number of segments, and they also keep
+updating with new segments while removing old ones. When a player refreshes
+the playlist, this information is important for keeping track of segments
+positions.</p>
+<p>When the packager starts, it naturally starts this count from zero. However,
+there are many situations where the packager may be restarted, without this
+meaning starting this value from zero (but continuing a previous sequence).
+The most common situations are problems in the encoder feeding the packager.</p>
+<p>With those cases in mind, this parameter allows to set the initial
+EXT-X-MEDIA-SEQUENCE value. This way, it’s possible to continue the sequence
+number from previous packager run.</p>
+<p>For more information about the reasoning of this, please see issue
+<a class="reference external" href="https://github.com/google/shaka-packager/issues/691">#691</a>.</p>
+<p>The EXT-X-MEDIA-SEQUENCE documentation can be read here:
+<a class="reference external" href="https://tools.ietf.org/html/rfc8216#section-4.3.3.2">https://tools.ietf.org/html/rfc8216#section-4.3.3.2</a>.</p>
+</dd>
 </dl>
+<p>–hls_only=0|1</p>
+<blockquote>
+<div><p>Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
+stream is HLS only.</p>
+</div></blockquote>
 </div>
 <div class="section" id="ads-options">
 <h3>Ads options<a class="headerlink" href="#ads-options" title="Permalink to this headline">¶</a></h3>
@@ -468,6 +458,19 @@ media playlist.</p>
 <dd><p>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
 schemes ‘cens’ or ‘cbcs’.</p>
 </dd>
+<dt><kbd><span class="option">--crypt_byte_block</span></kbd></dt>
+<dd><p>Specify the count of the encrypted blocks in the protection pattern, where
+block is of size 16-bytes.</p>
+<p>There are three common patterns (crypt_byte_block:skip_byte_block):
+1:9 (default), 5:5, 10:0.</p>
+<p>Apply to video streams with ‘cbcs’ and ‘cens’ protection schemes only;
+ignored otherwise.</p>
+</dd>
+<dt><kbd><span class="option">--skip_byte_block</span></kbd></dt>
+<dd><p>Specify the count of the unencrypted blocks in the protection pattern.</p>
+<p>Apply to video streams with ‘cbcs’ and ‘cens’ protection schemes only;
+ignored otherwise.</p>
+</dd>
 <dt><kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></dt>
 <dd><p>Enable / disable VP9 subsample encryption. Enabled by default.</p>
 </dd>
@@ -483,7 +486,11 @@ Default: 5</p>
 <dt><kbd><span class="option">--protection_systems</span></kbd></dt>
 <dd><p>Protection systems to be generated. Supported protection systems include
 Widevine, PlayReady, FairPlay, Marlin, and
-CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</p>
+<a class="reference external" href="https://goo.gl/s8RIhr">CommonSystem</a>.</p>
+</dd>
+<dt><kbd><span class="option">--playready_extra_header_data <var>&lt;string&gt;</var></span></kbd></dt>
+<dd><p>Extra XML data to add to PlayReady PSSH data.  Can be specified even if
+using another key source.</p>
 </dd>
 </dl>
 </div>
@@ -502,7 +509,7 @@ systems automatically.</p>
 </dd>
 <dt><kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></dt>
 <dd><p><strong>key_info_string</strong> is of the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="p">[:</span><span class="n">iv</span><span class="o">=&lt;</span><span class="n">initialization_vector</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p><em>label</em> can be an arbitrary string or a predefined DRM label like AUDIO,
@@ -511,6 +518,9 @@ key_id. The <em>drm_label</em> in <a class="reference internal" href="options/st
 which can be implicit, determines which key info is applied to the stream
 by matching the <em>drm_label</em> with the <em>label</em> in key info.</p>
 <p><em>key_id</em> and <em>key</em> should be 32-digit hex strings.</p>
+<p><em>initialization_vector</em> is an optional IV with the same format and semantics
+as the parameter for the <em>–iv</em> option below. This is mutually exclusive with
+that option.</p>
 </dd>
 <dt><kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></dt>
 <dd><p>IV in hex string format. If not specified, a random IV will be generated.
@@ -620,7 +630,63 @@ configuration.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Packager Documentation</a><ul>
+<li><a class="reference internal" href="#getting-shaka-packager">Getting Shaka Packager</a></li>
+<li><a class="reference internal" href="#synopsis">Synopsis</a><ul>
+<li><a class="reference internal" href="#stream-descriptors">Stream descriptors</a></li>
+<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#dash-specific-stream-descriptor-fields">DASH specific stream descriptor fields</a></li>
+<li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
+<li><a class="reference internal" href="#chunking-options">Chunking options</a></li>
+<li><a class="reference internal" href="#mp4-output-options">MP4 output options</a></li>
+<li><a class="reference internal" href="#transport-stream-output-options">Transport stream output options</a></li>
+<li><a class="reference internal" href="#dash-options">DASH options</a></li>
+<li><a class="reference internal" href="#hls-options">HLS options</a></li>
+<li><a class="reference internal" href="#ads-options">Ads options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#encryption-decryption-options">Encryption / decryption options</a><ul>
+<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
+<li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
+<li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
+<li><a class="reference internal" href="#playready-encryption-options">PlayReady encryption options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Shaka Packager’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorials/tutorials.html"
+                        title="next chapter">Tutorials</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/documentation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -637,12 +703,13 @@ configuration.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to Shaka Packager’s documentation!"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Packager Documentation</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xmlnode',['XmlNode',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a52ffb838d25293eafbea9f05fb1c2d17',1,'shaka::xml::XmlNode']]]
+  ['xmlnode_1834',['XmlNode',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a99c8998d8f53f0d37c3c22aec0d693eb',1,'shaka::xml::XmlNode']]]
 ];

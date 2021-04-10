@@ -1,19 +1,19 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DRM &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Using Widevine Key Server" href="widevine.html" />
@@ -32,50 +32,10 @@
           <a href="live.html" title="Live"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DRM</a></li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">DRM</a><ul>
-<li><a class="reference internal" href="#configuration-options">Configuration options</a><ul>
-<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
-<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
-<li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
-<li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="live.html"
-                        title="previous chapter">Live</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="widevine.html"
-                        title="next chapter">Using Widevine Key Server</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/tutorials/drm.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -138,6 +98,19 @@ Note that it is case sensitive.</p>
 <dd><p>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
 schemes ‘cens’ or ‘cbcs’.</p>
 </dd>
+<dt><kbd><span class="option">--crypt_byte_block</span></kbd></dt>
+<dd><p>Specify the count of the encrypted blocks in the protection pattern, where
+block is of size 16-bytes.</p>
+<p>There are three common patterns (crypt_byte_block:skip_byte_block):
+1:9 (default), 5:5, 10:0.</p>
+<p>Apply to video streams with ‘cbcs’ and ‘cens’ protection schemes only;
+ignored otherwise.</p>
+</dd>
+<dt><kbd><span class="option">--skip_byte_block</span></kbd></dt>
+<dd><p>Specify the count of the unencrypted blocks in the protection pattern.</p>
+<p>Apply to video streams with ‘cbcs’ and ‘cens’ protection schemes only;
+ignored otherwise.</p>
+</dd>
 <dt><kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></dt>
 <dd><p>Enable / disable VP9 subsample encryption. Enabled by default.</p>
 </dd>
@@ -153,7 +126,11 @@ Default: 5</p>
 <dt><kbd><span class="option">--protection_systems</span></kbd></dt>
 <dd><p>Protection systems to be generated. Supported protection systems include
 Widevine, PlayReady, FairPlay, Marlin, and
-CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</p>
+<a class="reference external" href="https://goo.gl/s8RIhr">CommonSystem</a>.</p>
+</dd>
+<dt><kbd><span class="option">--playready_extra_header_data <var>&lt;string&gt;</var></span></kbd></dt>
+<dd><p>Extra XML data to add to PlayReady PSSH data.  Can be specified even if
+using another key source.</p>
 </dd>
 </dl>
 </div>
@@ -233,7 +210,7 @@ systems automatically.</p>
 </dd>
 <dt><kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></dt>
 <dd><p><strong>key_info_string</strong> is of the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="p">[:</span><span class="n">iv</span><span class="o">=&lt;</span><span class="n">initialization_vector</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p><em>label</em> can be an arbitrary string or a predefined DRM label like AUDIO,
@@ -242,6 +219,9 @@ key_id. The <em>drm_label</em> in <a class="reference internal" href="../options
 which can be implicit, determines which key info is applied to the stream
 by matching the <em>drm_label</em> with the <em>label</em> in key info.</p>
 <p><em>key_id</em> and <em>key</em> should be 32-digit hex strings.</p>
+<p><em>initialization_vector</em> is an optional IV with the same format and semantics
+as the parameter for the <em>–iv</em> option below. This is mutually exclusive with
+that option.</p>
 </dd>
 <dt><kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></dt>
 <dd><p>IV in hex string format. If not specified, a random IV will be generated.
@@ -259,7 +239,49 @@ flag nor –protection_systems is specified, a
 </div>
 
 
+            <div class="clearer"></div>
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DRM</a><ul>
+<li><a class="reference internal" href="#configuration-options">Configuration options</a><ul>
+<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
+<li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
+<li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="live.html"
+                        title="previous chapter">Live</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="widevine.html"
+                        title="next chapter">Using Widevine Key Server</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/drm.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -277,12 +299,13 @@ flag nor –protection_systems is specified, a
           <a href="live.html" title="Live"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DRM</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

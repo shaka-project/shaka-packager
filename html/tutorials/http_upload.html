@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTTP upload &#8212; Shaka Packager  documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Design" href="../design.html" />
+    <link rel="prev" title="FFmpeg piping" href="ffmpeg_piping.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../design.html" title="Design"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ffmpeg_piping.html" title="FFmpeg piping"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HTTP upload</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <blockquote>
+<div><p>🛠 Status: Work in progress</p>
+<p>The Shaka Packager HTTP upload feature is currently in development.
+It’s on the fast track to a working alpha, so we encourage you to use
+it and give us some feedback. However, there are things that haven’t
+been finalized yet so you can expect some changes.</p>
+<p>This document describes the current state of the implementation,
+contributions are always welcome.</p>
+<p>The discussion about this feature currently happens at
+<a class="reference external" href="https://github.com/google/shaka-packager/issues/149">Add HTTP PUT output #149</a>.</p>
+</div></blockquote>
+<div class="section" id="http-upload">
+<h1>HTTP upload<a class="headerlink" href="#http-upload" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Shaka Packager can upload produced artefacts to a HTTP server using
+HTTP PUT requests with chunked transfer encoding to improve live
+publishing performance when content is not served directly from
+the packaging output location. For talking HTTP, <a class="reference external" href="https://curl.haxx.se/libcurl/">libcurl</a> is used.</p>
+<p>The produced artefacts are:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> playlist files in <a class="reference external" href="https://en.wikipedia.org/wiki/M3U">M3U</a> Format encoded with UTF-8 (.m3u8)</p></li>
+<li><p>Chunked audio segments encoded with AAC (.aac)</p></li>
+<li><p>Chunked video segments encapsulated into the
+<a class="reference external" href="https://en.wikipedia.org/wiki/MPEG_transport_stream">MPEG transport stream</a> container format (.ts)</p></li>
+</ul>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">RFC 2616 about HTTP PUT</a></p></li>
+<li><p><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1">RFC 2616 about Chunked Transfer Coding</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="getting-started">
+<h3>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h3>
+<p>To enable the HTTP upload transfer mode, use <code class="docutils literal notranslate"><span class="pre">https:</span></code> file paths for any
+output files (e.g. <code class="docutils literal notranslate"><span class="pre">segment_template</span></code>).</p>
+<p>All HTTP requests will be declared as
+<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/octet-stream</span></code>.</p>
+</div>
+<div class="section" id="synopsis">
+<h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h3>
+<p>Here is a basic example. It is similar to the “live” example and also
+borrows features from “FFmpeg piping”, see <a class="reference internal" href="live.html"><span class="doc">Live</span></a> and <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FFmpeg piping</span></a>.</p>
+<p>Define UNIX pipe to connect ffmpeg with packager:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PIPE=/tmp/bigbuckbunny.fifo
+mkfifo ${PIPE}
+</pre></div>
+</div>
+<p>Acquire and transcode RTMP stream:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Steady
+ffmpeg -fflags nobuffer -threads 0 -y \
+    -i rtmp://184.72.239.149/vod/mp4:bigbuckbunny_450.mp4 \
+    -pix_fmt yuv420p -vcodec libx264 -preset:v superfast -acodec aac \
+    -f mpegts pipe: &gt; ${PIPE}
+</pre></div>
+</div>
+<p>Configure and run packager:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define upload URL</span>
+<span class="n">export</span> <span class="n">UPLOAD_URL</span><span class="o">=</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">6767</span><span class="o">/</span><span class="n">hls</span><span class="o">-</span><span class="n">live</span>
+
+<span class="c1"># Go</span>
+<span class="n">packager</span> \
+    <span class="s2">&quot;input=$</span><span class="si">{PIPE}</span><span class="s2">,stream=audio,segment_template=$</span><span class="si">{UPLOAD_URL}</span><span class="s2">/bigbuckbunny-audio-aac-\$Number</span><span class="si">%04d</span><span class="s2">\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio&quot;</span> \
+    <span class="s2">&quot;input=$</span><span class="si">{PIPE}</span><span class="s2">,stream=video,segment_template=$</span><span class="si">{UPLOAD_URL}</span><span class="s2">/bigbuckbunny-video-h264-450-\$Number</span><span class="si">%04d</span><span class="s2">\$.ts,playlist_name=bigbuckbunny-video-450.m3u8&quot;</span> \
+    <span class="o">--</span><span class="n">io_block_size</span> <span class="mi">65536</span> <span class="o">--</span><span class="n">fragment_duration</span> <span class="mi">2</span> <span class="o">--</span><span class="n">segment_duration</span> <span class="mi">2</span> \
+    <span class="o">--</span><span class="n">time_shift_buffer_depth</span> <span class="mi">3600</span> <span class="o">--</span><span class="n">preserved_segments_outside_live_window</span> <span class="mi">7200</span> \
+    <span class="o">--</span><span class="n">hls_master_playlist_output</span> <span class="s2">&quot;$</span><span class="si">{UPLOAD_URL}</span><span class="s2">/bigbuckbunny.m3u8&quot;</span> \
+    <span class="o">--</span><span class="n">hls_playlist_type</span> <span class="n">LIVE</span> \
+    <span class="o">--</span><span class="n">vmodule</span><span class="o">=</span><span class="n">http_file</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="client-authentication">
+<h2>Client Authentication<a class="headerlink" href="#client-authentication" title="Permalink to this headline">¶</a></h2>
+<p>If your server requires client authentication, you can add the following
+arguments to enable it:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--ca_file</span></code>: (optional) Absolute path to the Certificate Authority file for
+the server cert. PEM format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--client_cert_file</span></code>: Absolute path to client certificate file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--client_cert_private_key_file</span></code>: Absolute path to the private Key file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--client_cert_private_key_password</span></code>: (optional) Password to the private
+key file.</p></li>
+</ul>
+</div>
+<div class="section" id="backlog">
+<h2>Backlog<a class="headerlink" href="#backlog" title="Permalink to this headline">¶</a></h2>
+<p>Please note the HTTP upload feature still lacks some features
+probably important for production. Contributions are welcome!</p>
+<div class="section" id="http-delete">
+<h3>HTTP DELETE<a class="headerlink" href="#http-delete" title="Permalink to this headline">¶</a></h3>
+<p>Nothing has be done to support this yet:</p>
+<blockquote>
+<div><p>Packager supports removing old segments automatically.
+See <code class="docutils literal notranslate"><span class="pre">preserved_segments_outside_live_window</span></code> option in
+<a class="reference external" href="https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP">DASH</a> options or <a class="reference external" href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> options for details.</p>
+</div></blockquote>
+</div>
+<div class="section" id="software-tests">
+<h3>Software tests<a class="headerlink" href="#software-tests" title="Permalink to this headline">¶</a></h3>
+<p>We should do some minimal QA, check whether the test
+suite breaks and maybe add some tests covering new code.</p>
+</div>
+<div class="section" id="network-timeouts">
+<h3>Network timeouts<a class="headerlink" href="#network-timeouts" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://curl.haxx.se/libcurl/">libcurl</a> can apply network timeout settings. However,
+we haven’t addressed this yet.</p>
+</div>
+<div class="section" id="miscellaneous">
+<h3>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Address all things TODO and FIXME</p></li>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">io_cache_size</span></code> configurable?</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="example-backend">
+<h2>Example Backend<a class="headerlink" href="#example-backend" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="http-put-file-uploads-to-nginx">
+<h3>HTTP PUT file uploads to Nginx<a class="headerlink" href="#http-put-file-uploads-to-nginx" title="Permalink to this headline">¶</a></h3>
+<p>The receiver is based on the native <a class="reference external" href="http://nginx.org/">Nginx</a> module “<a class="reference external" href="http://nginx.org/en/docs/http/ngx_http_dav_module.html">ngx_http_dav_module</a>”,
+it handles HTTP PUT requests with chunked transfer encoding
+like emitted by Shaka Packager.</p>
+<p>The configuration is very simple:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+    listen 6767 default_server;
+
+    access_log  /dev/stdout combined;
+    error_log   /dev/stdout info;
+
+    root /var/spool;
+    location ~ ^/hls-live/(.+)$ {
+
+        dav_methods PUT;
+        create_full_put_path on;
+
+        proxy_buffering off;
+        client_max_body_size 20m;
+
+    }
+
+}
+</pre></div>
+</div>
+<p>Run Nginx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>nginx -p `pwd` -c nginx.conf -g &quot;daemon off;&quot;
+</pre></div>
+</div>
+</div>
+<div class="section" id="http-put-file-uploads-to-caddy">
+<h3>HTTP PUT file uploads to Caddy<a class="headerlink" href="#http-put-file-uploads-to-caddy" title="Permalink to this headline">¶</a></h3>
+<p>The receiver is based on the <a class="reference external" href="https://caddyserver.com/">Caddy</a> webserver, it handles HTTP PUT
+requests with chunked transfer encoding like emitted by Shaka Packager.</p>
+<p>Put this configuration into a <cite>Caddyfile</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bind address</span>
+<span class="p">:</span><span class="mi">6767</span>
+
+<span class="c1"># Enable logging</span>
+<span class="n">log</span> <span class="n">stdout</span>
+
+<span class="c1"># Web server root with autoindex</span>
+<span class="n">root</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">spool</span>
+<span class="n">redir</span> <span class="o">/</span><span class="n">hls</span><span class="o">-</span><span class="n">live</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">{</span><span class="n">path</span><span class="p">}</span> <span class="ow">is</span> <span class="s2">&quot;/&quot;</span>
+<span class="p">}</span>
+<span class="n">browse</span>
+
+<span class="c1"># Enable upload with HTTP PUT</span>
+<span class="n">upload</span> <span class="o">/</span><span class="n">hls</span><span class="o">-</span><span class="n">live</span> <span class="p">{</span>
+    <span class="n">to</span> <span class="s2">&quot;/var/spool/hls-live&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Run Caddy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">caddy</span> <span class="o">-</span><span class="n">conf</span> <span class="n">Caddyfile</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="development-and-debugging">
+<h2>Development and debugging<a class="headerlink" href="#development-and-debugging" title="Permalink to this headline">¶</a></h2>
+<p>Watch the network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ngrep</span> <span class="o">-</span><span class="n">Wbyline</span> <span class="o">-</span><span class="n">dlo</span> <span class="n">port</span> <span class="mi">6767</span>
+</pre></div>
+</div>
+<p>Grab and run <a class="reference external" href="https://gist.github.com/amotl/3ed38e461af743aeeade5a5a106c1296">httpd-reflector.py</a> to use it as a dummy HTTP sink:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ready</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gist</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">amotl</span><span class="o">/</span><span class="mi">3</span><span class="n">ed38e461af743aeeade5a5a106c1296</span><span class="o">/</span><span class="n">raw</span><span class="o">/</span><span class="n">httpd</span><span class="o">-</span><span class="n">reflector</span><span class="o">.</span><span class="n">py</span>
+<span class="n">chmod</span> <span class="o">+</span><span class="n">x</span> <span class="n">httpd</span><span class="o">-</span><span class="n">reflector</span><span class="o">.</span><span class="n">py</span>
+<span class="o">./</span><span class="n">httpd</span><span class="o">-</span><span class="n">reflector</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span> <span class="mi">6767</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">HTTP upload</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#client-authentication">Client Authentication</a></li>
+<li><a class="reference internal" href="#backlog">Backlog</a><ul>
+<li><a class="reference internal" href="#http-delete">HTTP DELETE</a></li>
+<li><a class="reference internal" href="#software-tests">Software tests</a></li>
+<li><a class="reference internal" href="#network-timeouts">Network timeouts</a></li>
+<li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-backend">Example Backend</a><ul>
+<li><a class="reference internal" href="#http-put-file-uploads-to-nginx">HTTP PUT file uploads to Nginx</a></li>
+<li><a class="reference internal" href="#http-put-file-uploads-to-caddy">HTTP PUT file uploads to Caddy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#development-and-debugging">Development and debugging</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ffmpeg_piping.html"
+                        title="previous chapter">FFmpeg piping</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../design.html"
+                        title="next chapter">Design</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/http_upload.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../design.html" title="Design"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ffmpeg_piping.html" title="FFmpeg piping"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HTTP upload</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+    </div>
+  </body>
+</html>

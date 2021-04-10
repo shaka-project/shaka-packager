@@ -51,3 +51,32 @@ HLS options
 
     Same as above, but this applies to text tracks only, and overrides the
     default language for text tracks.
+
+--hls_media_sequence_number <unsigned_number>
+
+    HLS uses the EXT-X-MEDIA-SEQUENCE tag at the start of a live playlist in
+    order to specify the first segment sequence number. This is because any
+    live playlist have a limited number of segments, and they also keep
+    updating with new segments while removing old ones. When a player refreshes
+    the playlist, this information is important for keeping track of segments
+    positions.
+
+    When the packager starts, it naturally starts this count from zero. However,
+    there are many situations where the packager may be restarted, without this
+    meaning starting this value from zero (but continuing a previous sequence).
+    The most common situations are problems in the encoder feeding the packager.
+
+    With those cases in mind, this parameter allows to set the initial
+    EXT-X-MEDIA-SEQUENCE value. This way, it's possible to continue the sequence
+    number from previous packager run.
+
+    For more information about the reasoning of this, please see issue
+    `#691 <https://github.com/google/shaka-packager/issues/691>`_.
+
+    The EXT-X-MEDIA-SEQUENCE documentation can be read here:
+    https://tools.ietf.org/html/rfc8216#section-4.3.3.2.
+
+--hls_only=0|1
+
+    Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
+    stream is HLS only.

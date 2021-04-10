@@ -1,19 +1,19 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shaka Packager Library &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Build Instructions" href="build_instructions.html" />
@@ -31,36 +31,10 @@
         <li class="right" >
           <a href="design.html" title="Design"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Shaka Packager Library</a></li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="design.html"
-                        title="previous chapter">Design</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="build_instructions.html"
-                        title="next chapter">Build Instructions</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/library.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -72,12 +46,12 @@
 <p>Documentation for the top level Shaka packager library. See
 <a class="reference external" href="https://google.github.io/shaka-packager/docs/annotated.html">Internal API</a>
 for documentation on internal APIs.</p>
-<dl class="class">
+<dl class="cpp class">
 <dt id="_CPPv4N5shaka8PackagerE">
-<span id="_CPPv3N5shaka8PackagerE"></span><span id="_CPPv2N5shaka8PackagerE"></span><span id="shaka::Packager"></span><span class="target" id="db/dd0/classshaka_1_1Packager"></span><em class="property">class </em><code class="sig-name descname">Packager</code><a class="headerlink" href="#_CPPv4N5shaka8PackagerE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5shaka8PackagerE"></span><span id="_CPPv2N5shaka8PackagerE"></span><span id="shaka::Packager"></span><span class="target" id="db/dd0/classshaka_1_1Packager"></span><em class="property">class </em><code class="sig-prename descclassname">shaka<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Packager</code><a class="headerlink" href="#_CPPv4N5shaka8PackagerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Functions</p>
-<dl class="function">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
 <dt id="_CPPv4N5shaka8Packager10InitializeERK15PackagingParamsRKNSt6vectorI16StreamDescriptorEE">
 <span id="_CPPv3N5shaka8Packager10InitializeERK15PackagingParamsRKNSt6vectorI16StreamDescriptorEE"></span><span id="_CPPv2N5shaka8Packager10InitializeERK15PackagingParamsRKNSt6vectorI16StreamDescriptorEE"></span><span id="shaka::Packager::Initialize__PackagingParamsCR.std::vector:StreamDescriptor:CR"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1ae40969a98da3a27a0b1633927afb3ce2"></span><a class="reference internal" href="library_details.html#_CPPv4N5shaka6StatusE" title="shaka::Status">Status</a> <code class="sig-name descname">Initialize</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="library_details.html#_CPPv4N5shaka15PackagingParamsE" title="shaka::PackagingParams">PackagingParams</a> &amp;<em>packaging_params</em>, <em class="property">const</em> std::vector&lt;<a class="reference internal" href="library_details.html#_CPPv4N5shaka16StreamDescriptorE" title="shaka::StreamDescriptor">StreamDescriptor</a>&gt; &amp;<em>stream_descriptors</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager10InitializeERK15PackagingParamsRKNSt6vectorI16StreamDescriptorEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Initialize packaging pipeline. <dl class="simple">
@@ -92,7 +66,7 @@ for documentation on internal APIs.</p>
 </p>
 </dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N5shaka8Packager3RunEv">
 <span id="_CPPv3N5shaka8Packager3RunEv"></span><span id="_CPPv2N5shaka8Packager3RunEv"></span><span id="shaka::Packager::Run"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1a48275206bc7032eb69607081ac0ada08"></span><a class="reference internal" href="library_details.html#_CPPv4N5shaka6StatusE" title="shaka::Status">Status</a> <code class="sig-name descname">Run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager3RunEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Run the pipeline to completion (or failed / been cancelled). Note that it blocks until completion. <dl class="simple">
@@ -102,7 +76,7 @@ for documentation on internal APIs.</p>
 </p>
 </dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N5shaka8Packager6CancelEv">
 <span id="_CPPv3N5shaka8Packager6CancelEv"></span><span id="_CPPv2N5shaka8Packager6CancelEv"></span><span id="shaka::Packager::Cancel"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1a5323e6dc242b1cdd6208cd6ea77dd0c7"></span>void <code class="sig-name descname">Cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager6CancelEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Cancel packaging. Note that it has to be called from another thread. </p>
@@ -110,10 +84,10 @@ for documentation on internal APIs.</p>
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
-<dl class="function">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
 <dt id="_CPPv4N5shaka8Packager17GetLibraryVersionEv">
-<span id="_CPPv3N5shaka8Packager17GetLibraryVersionEv"></span><span id="_CPPv2N5shaka8Packager17GetLibraryVersionEv"></span><span id="shaka::Packager::GetLibraryVersion"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1a7bae5b5c202a716f5d890e70afae51b2"></span>std::string <code class="sig-name descname">GetLibraryVersion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager17GetLibraryVersionEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5shaka8Packager17GetLibraryVersionEv"></span><span id="_CPPv2N5shaka8Packager17GetLibraryVersionEv"></span><span id="shaka::Packager::GetLibraryVersion"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1a7bae5b5c202a716f5d890e70afae51b2"></span><em class="property">static</em> std::string <code class="sig-name descname">GetLibraryVersion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager17GetLibraryVersionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>The version of the library. </p>
 </dd>
@@ -121,9 +95,9 @@ for documentation on internal APIs.</p>
 </p>
 </dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv4N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE">
-<span id="_CPPv3N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE"></span><span id="_CPPv2N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE"></span><span id="shaka::Packager::DefaultStreamLabelFunction__i.i.i.EncryptionParams::EncryptedStreamAttributesCR"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1a59fec4e3f33138081e5222d3553ab948"></span>std::string <code class="sig-name descname">DefaultStreamLabelFunction</code><span class="sig-paren">(</span>int <em>max_sd_pixels</em>, int <em>max_hd_pixels</em>, int <em>max_uhd1_pixels</em>, <em class="property">const</em> <a class="reference internal" href="library_details.html#_CPPv4N5shaka16EncryptionParamsE" title="shaka::EncryptionParams">EncryptionParams</a>::<a class="reference internal" href="library_details.html#_CPPv4N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="shaka::EncryptionParams::EncryptedStreamAttributes">EncryptedStreamAttributes</a> &amp;<em>stream_attributes</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE"></span><span id="_CPPv2N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE"></span><span id="shaka::Packager::DefaultStreamLabelFunction__i.i.i.EncryptionParams::EncryptedStreamAttributesCR"></span><span class="target" id="db/dd0/classshaka_1_1Packager_1a59fec4e3f33138081e5222d3553ab948"></span><em class="property">static</em> std::string <code class="sig-name descname">DefaultStreamLabelFunction</code><span class="sig-paren">(</span>int <em>max_sd_pixels</em>, int <em>max_hd_pixels</em>, int <em>max_uhd1_pixels</em>, <em class="property">const</em> <a class="reference internal" href="library_details.html#_CPPv4N5shaka16EncryptionParamsE" title="shaka::EncryptionParams">EncryptionParams</a>::<a class="reference internal" href="library_details.html#_CPPv4N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="shaka::EncryptionParams::EncryptedStreamAttributes">EncryptedStreamAttributes</a> &amp;<em>stream_attributes</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Default stream label function implementation. <dl class="simple">
 <dt><strong>Return</strong></dt><dd><p>the stream label associated with <code class="docutils literal notranslate"><span class="pre">stream_info</span></code>. Can be “AUDIO”, “SD”, “HD”, “UHD1” or “UHD2”. </p>
 </dd>
@@ -139,6 +113,11 @@ for documentation on internal APIs.</p>
 </dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt id="_CPPv4N5shaka8Packager16PackagerInternalE">
+<span id="_CPPv3N5shaka8Packager16PackagerInternalE"></span><span id="_CPPv2N5shaka8Packager16PackagerInternalE"></span><span id="shaka::Packager::PackagerInternal"></span><span class="target" id="dc/d33/structshaka_1_1Packager_1_1PackagerInternal"></span><em class="property">struct </em><code class="sig-name descname">PackagerInternal</code><a class="headerlink" href="#_CPPv4N5shaka8Packager16PackagerInternalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <p>Sample code:</p>
@@ -171,7 +150,35 @@ for documentation on internal APIs.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="design.html"
+                        title="previous chapter">Design</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="build_instructions.html"
+                        title="next chapter">Build Instructions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/library.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -188,12 +195,13 @@ for documentation on internal APIs.</p>
         <li class="right" >
           <a href="design.html" title="Design"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Shaka Packager Library</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>
