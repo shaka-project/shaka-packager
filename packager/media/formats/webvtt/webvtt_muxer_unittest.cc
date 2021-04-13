@@ -83,8 +83,7 @@ TEST_F(WebVttMuxerTest, WithOneSegmentAndWithOneSample) {
   const char* kExpectedOutput =
       "WEBVTT\n"
       "\n"
-      "00:00:05.000 --> 00:00:06.000\n"
-      "align:center\n"
+      "00:00:05.000 --> 00:00:06.000 align:center\n"
       "payload\n"
       "\n";
 
@@ -123,16 +122,14 @@ TEST_F(WebVttMuxerTest, WithTwoSegmentAndWithOneSample) {
   const char* kExpectedOutput1 =
       "WEBVTT\n"
       "\n"
-      "00:00:05.000 --> 00:00:06.000\n"
-      "align:center\n"
+      "00:00:05.000 --> 00:00:06.000 align:center\n"
       "payload 1\n"
       "\n";
 
   const char* kExpectedOutput2 =
       "WEBVTT\n"
       "\n"
-      "00:00:15.000 --> 00:00:16.000\n"
-      "align:center\n"
+      "00:00:15.000 --> 00:00:16.000 align:center\n"
       "payload 2\n"
       "\n";
 
@@ -192,8 +189,7 @@ TEST_F(WebVttMuxerTest, WithAnEmptySegment) {
   const char* kExpectedOutput2 =
       "WEBVTT\n"
       "\n"
-      "00:00:15.000 --> 00:00:16.000\n"
-      "align:center\n"
+      "00:00:15.000 --> 00:00:16.000 align:center\n"
       "payload 2\n"
       "\n";
 
