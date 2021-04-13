@@ -84,6 +84,7 @@ TEST_F(WebVttMuxerTest, WithOneSegmentAndWithOneSample) {
       "WEBVTT\n"
       "\n"
       "00:00:05.000 --> 00:00:06.000\n"
+      "align:center\n"
       "payload\n"
       "\n";
 
@@ -123,6 +124,7 @@ TEST_F(WebVttMuxerTest, WithTwoSegmentAndWithOneSample) {
       "WEBVTT\n"
       "\n"
       "00:00:05.000 --> 00:00:06.000\n"
+      "align:center\n"
       "payload 1\n"
       "\n";
 
@@ -130,6 +132,7 @@ TEST_F(WebVttMuxerTest, WithTwoSegmentAndWithOneSample) {
       "WEBVTT\n"
       "\n"
       "00:00:15.000 --> 00:00:16.000\n"
+      "align:center\n"
       "payload 2\n"
       "\n";
 
@@ -190,6 +193,7 @@ TEST_F(WebVttMuxerTest, WithAnEmptySegment) {
       "WEBVTT\n"
       "\n"
       "00:00:15.000 --> 00:00:16.000\n"
+      "align:center\n"
       "payload 2\n"
       "\n";
 
