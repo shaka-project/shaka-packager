@@ -174,7 +174,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       "test\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
-      "CODECS=\"avc1\",RESOLUTION=800x600\n"
+      "CODECS=\"avc1\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -209,7 +209,7 @@ TEST_F(MasterPlaylistTest,
       "\n#EXT-X-INDEPENDENT-SEGMENTS\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
-      "CODECS=\"avc1\",RESOLUTION=800x600\n"
+      "CODECS=\"avc1\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -237,7 +237,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideoWithFrameRate) {
       "test\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
-      "CODECS=\"avc1\",RESOLUTION=800x600,FRAME-RATE=60.000\n"
+      "CODECS=\"avc1\",RESOLUTION=800x600,FRAME-RATE=60.000,"
+      "CLOSED-CAPTIONS=NONE\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -264,7 +265,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
       "test\n"
       "\n"
       "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
-      "CODECS=\"avc1\",RESOLUTION=800x600,"
+      "CODECS=\"avc1\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE,"
       "URI=\"http://myplaylistdomain.com/media1.m3u8\"\n";
 
   ASSERT_EQ(expected, actual);
@@ -327,11 +328,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=360000,AVERAGE-BANDWIDTH=240000,"
       "CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
+      "RESOLUTION=800x600,AUDIO=\"audiogroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=760000,AVERAGE-BANDWIDTH=440000,"
       "CODECS=\"hdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
+      "RESOLUTION=800x600,AUDIO=\"audiogroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/hd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -387,12 +388,12 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=270000,"
       "CODECS=\"videocodec,audiocodec_hi\","
-      "RESOLUTION=800x600,AUDIO=\"audio_hi\"\n"
+      "RESOLUTION=800x600,AUDIO=\"audio_hi\",CLOSED-CAPTIONS=NONE\n"
       "http://anydomain.com/video.m3u8\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=240000,"
       "CODECS=\"videocodec,audiocodec_lo\","
-      "RESOLUTION=800x600,AUDIO=\"audio_lo\"\n"
+      "RESOLUTION=800x600,AUDIO=\"audio_lo\",CLOSED-CAPTIONS=NONE\n"
       "http://anydomain.com/video.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -432,7 +433,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\",CHANNELS=\"8\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=280000,"
-      "CODECS=\"videocodec,audiocodec\",RESOLUTION=800x600,AUDIO=\"audio\"\n"
+      "CODECS=\"videocodec,audiocodec\",RESOLUTION=800x600,AUDIO=\"audio\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://anydomain.com/video.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -477,11 +479,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
-      "SUBTITLES=\"textgroup\"\n"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=600000,AVERAGE-BANDWIDTH=500000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
-      "SUBTITLES=\"textgroup\"\n"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/hd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -517,7 +519,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
-      "SUBTITLES=\"textgroup\"\n"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -562,7 +564,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
       "CODECS=\"sdvideocodec,audiocodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audiogroup\"\n"
+      "AUDIO=\"audiogroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -603,12 +605,12 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
-      "SUBTITLES=\"en-text-group\"\n"
+      "SUBTITLES=\"en-text-group\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
-      "SUBTITLES=\"fr-text-group\"\n"
+      "SUBTITLES=\"fr-text-group\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -650,7 +652,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audiogroup\",SUBTITLES=\"textgroup\"\n"
+      "AUDIO=\"audiogroup\",SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -729,45 +731,53 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
-      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\","
+      "CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
       "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,AVERAGE-BANDWIDTH=80000,"
-      "CODECS=\"sdvideocodec\",RESOLUTION=800x600,"
+      "CODECS=\"sdvideocodec\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE,"
       "URI=\"http://playlists.org/iframe-1.m3u8\"\n"
       "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,AVERAGE-BANDWIDTH=80000,"
-      "CODECS=\"sdvideocodec\",RESOLUTION=800x600,"
+      "CODECS=\"sdvideocodec\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE,"
       "URI=\"http://playlists.org/iframe-2.m3u8\"\n";
 
   ASSERT_EQ(expected, actual);
@@ -816,10 +826,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
       "AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-      "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\"\n"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/audio-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-      "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\"\n"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/audio-2.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -856,23 +866,23 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyJOC) {
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
-    "#EXTM3U\n"
-    "## Generated with https://github.com/google/shaka-packager version "
-    "test\n"
-    "\n"
-    "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
-    "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
-    "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"6\"\n"
-    "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
-    "GROUP-ID=\"audio-group-2\",LANGUAGE=\"en\",NAME=\"audio 2\","
-    "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"16/JOC\"\n"
-    "\n"
-    "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-    "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\"\n"
-    "http://playlists.org/audio-1.m3u8\n"
-    "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-    "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\"\n"
-    "http://playlists.org/audio-2.m3u8\n";
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
+      "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"6\"\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
+      "GROUP-ID=\"audio-group-2\",LANGUAGE=\"en\",NAME=\"audio 2\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"16/JOC\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/audio-1.m3u8\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/audio-2.m3u8\n";
 
   ASSERT_EQ(expected, actual);
 }
@@ -920,10 +930,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4IMS) {
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-      "CODECS=\"audio1codec\",AUDIO=\"audio-group-1\"\n"
+      "CODECS=\"audio1codec\",AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/audio-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-      "CODECS=\"audio2codec\",AUDIO=\"audio-group-2\"\n"
+      "CODECS=\"audio2codec\",AUDIO=\"audio-group-2\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/audio-2.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -973,10 +983,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4CBI) {
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"8/IMSA\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-      "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\"\n"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/audio-1.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
-      "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\"\n"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\",CLOSED-CAPTIONS=NONE\n"
       "http://playlists.org/audio-2.m3u8\n";
 
   ASSERT_EQ(expected, actual);

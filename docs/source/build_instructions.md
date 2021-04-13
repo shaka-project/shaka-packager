@@ -67,12 +67,10 @@ Download the
 [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
 and extract it somewhere.
 
-*** note
-**Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
+**WARNING: DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
 this will not extract the hidden “.git” folder which is necessary for
 depot_tools to autoupdate itself. You can use “Extract all…” from the context
 menu though.
-***
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
