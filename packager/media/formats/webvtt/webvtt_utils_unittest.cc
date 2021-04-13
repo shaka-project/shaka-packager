@@ -163,7 +163,7 @@ TEST(WebVttUtilsTest, SettingsToString) {
 TEST(WebVttUtilsTest, SettingsToString_IgnoresDefaults) {
   TextSettings settings;
   settings.region = "foo";
-  settings.text_alignment = TextAlignment::kCenter
+  settings.text_alignment = TextAlignment::kCenter;
 
   const auto actual = WebVttSettingsToString(settings);
   EXPECT_EQ(actual, "region:foo align:center");
