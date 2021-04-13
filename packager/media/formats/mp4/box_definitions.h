@@ -328,6 +328,18 @@ struct AC3Specific : Box {
   std::vector<uint8_t> data;
 };
 
+struct Mhm1Specific : Box {
+  DECLARE_BOX_METHODS(Mhm1Specific);
+
+  std::vector<uint8_t> data;
+};
+
+struct Mha1Specific : Box {
+  DECLARE_BOX_METHODS(Mha1Specific);
+
+  std::vector<uint8_t> extra_data;
+};
+
 struct EC3Specific : Box {
   DECLARE_BOX_METHODS(EC3Specific);
 
@@ -382,6 +394,13 @@ struct AudioSampleEntry : Box {
   AC4Specific dac4;
   OpusSpecific dops;
   FlacSpecific dfla;
+  Mha1Specific mhac;
+
+  //23008-3 decoder specific config
+  CodecConfiguration codec_configuration;
+
+  // Returns the box type of codec configuration box from audio format.
+  FourCC GetCodecConfigurationBoxType(FourCC format) const;
 };
 
 struct WebVTTConfigurationBox : Box {

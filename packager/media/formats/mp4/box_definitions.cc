@@ -1709,6 +1709,56 @@ size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 
+Mha1Specific::Mha1Specific() = default;
+Mha1Specific::~Mha1Specific() = default;
+
+FourCC Mha1Specific::BoxType() const {
+  return FOURCC_mhaC;
+}
+
+bool Mha1Specific::ReadWriteInternal(BoxBuffer* buffer) {
+
+  if (buffer->Reading()) {
+    RCHECK(ReadWriteHeaderInternal(buffer));
+    size_t size = buffer->Reading() ? buffer->BytesLeft() : extra_data.size();
+    RCHECK(buffer->ReadWriteVector(&extra_data, size));
+  } else {
+    uint32_t size = extra_data.size() + HeaderSize();
+    uint32_t fcc = FOURCC_mhaC;
+    buffer->ReadWriteUInt32(&size); //size of mhac + phac
+    buffer->ReadWriteUInt32(&fcc); //mhac header itself
+    RCHECK(buffer->ReadWriteVector(&extra_data, extra_data.size()));
+  }
+  return true;
+}
+
+size_t Mha1Specific::ComputeSizeInternal() {
+  if (extra_data.empty())
+    return 0;
+  return HeaderSize() + extra_data.size();
+}
+
+Mhm1Specific::Mhm1Specific() = default;
+Mhm1Specific::~Mhm1Specific() = default;
+
+FourCC Mhm1Specific::BoxType() const {
+  return FOURCC_mhm1;
+}
+
+bool Mhm1Specific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteVector(
+             &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
+  return true;
+}
+
+size_t Mhm1Specific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 DTSSpecific::DTSSpecific() = default;
 DTSSpecific::~DTSSpecific() = default;
 ;
@@ -1922,6 +1972,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
   RCHECK(buffer->TryReadWriteChild(&dfla));
+  RCHECK(buffer->TryReadWriteChild(&mhac));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of AudioSampleEntry. See
@@ -1937,6 +1988,10 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&sinf));
     }
   }
+  if (format == FOURCC_mha1) {
+    codec_configuration.box_type = FOURCC_mhaC;
+    codec_configuration.data = mhac.extra_data;
+  }
   return true;
 }
 
@@ -1947,10 +2002,20 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
-         dac4.ComputeSize() +
+         dac4.ComputeSize() + mhac.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
+}
+
+FourCC AudioSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
+  switch (format) {
+    case FOURCC_mha1:
+      return FOURCC_mhaC;
+    default:
+      LOG(ERROR) << FourCCToString(format) << " is not supported.";
+      return FOURCC_NULL;
+  }
 }
 
 WebVTTConfigurationBox::WebVTTConfigurationBox() = default;

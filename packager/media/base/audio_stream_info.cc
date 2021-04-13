@@ -139,6 +139,10 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "mp3";
     case kCodecVorbis:
       return "vorbis";
+    case kCodecMha1:
+      return "mha1";
+    case kCodecMhm1:
+      return "mhm1";
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";
