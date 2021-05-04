@@ -67,12 +67,10 @@ Download the
 [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
 and extract it somewhere.
 
-*** note
-**Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
+**WARNING: DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
 this will not extract the hidden “.git” folder which is necessary for
 depot_tools to autoupdate itself. You can use “Extract all…” from the context
 menu though.
-***
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
@@ -185,7 +183,8 @@ Also, unlike Linux / Mac, 32-bit is chosen by default even if the system is
 configured to `out/%CONFIGURATION%_x64`, i.e.:
 
 ```shell
-$ GYP_DEFINES='target_arch=x64' gclient runhooks
+$ SET GYP_DEFINES='target_arch=x64' 
+$ gclient runhooks
 $ ninja -C out/Release_x64
 ```
 

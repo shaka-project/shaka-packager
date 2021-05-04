@@ -16,8 +16,6 @@ add these directories to sys.path here. If the directory is relative to the
 documentation root, use os.path.abspath to make it absolute, like shown here.
 """
 
-from recommonmark.parser import CommonMarkParser
-
 # sys.path.append('breathe/')
 
 # -- General configuration ------------------------------------------------
@@ -36,6 +34,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.githubpages',
               'sphinxcontrib.plantuml',
+              'recommonmark',
               'cloud_sptheme.ext.table_styling',
               'breathe']
 
@@ -46,10 +45,6 @@ breathe_default_members = ('members',)
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-
-source_parsers = {
-    '.md': CommonMarkParser,
-}
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

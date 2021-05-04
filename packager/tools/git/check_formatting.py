@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2017 Google Inc. All rights reserved.
 #
@@ -41,7 +41,7 @@ if __name__ == '__main__':
   is_pre_commit_hook = len(sys.argv) == 1
   if not is_pre_commit_hook:
     output = subprocess.check_output(['git', 'log', '--pretty=full', '-1'])
-    if 'disable-clang-format' in output:
+    if b'disable-clang-format' in output:
       sys.exit(0)
 
   command = ['git', 'clang-format', '--style', 'Chromium']
@@ -49,7 +49,8 @@ if __name__ == '__main__':
   output = subprocess.check_output(command + ['--diff'])
 
   if output not in [
-      'no modified files to format\n', 'clang-format did not modify any files\n'
+      b'no modified files to format\n',
+      b'clang-format did not modify any files\n'
   ]:
     print(output)
     print()
