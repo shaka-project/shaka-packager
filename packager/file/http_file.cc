@@ -16,6 +16,8 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/worker_pool.h"
 
+DEFINE_string(user_agent, "",
+              "Set a custom User-Agent string for HTTP requests.");
 DEFINE_string(ca_file,
               "",
               "Absolute path to the Certificate Authority file for the "
@@ -45,8 +47,14 @@ constexpr const int kMinLogLevelForCurlDebugFunction = 2;
 
 size_t CurlWriteCallback(char* buffer, size_t size, size_t nmemb, void* user) {
   IoCache* cache = reinterpret_cast<IoCache*>(user);
-  size_t length = cache->Write(buffer, size * nmemb);
-  VLOG(3) << "CurlWriteCallback length=" << length;
+  size_t length = size * nmemb;
+  if (cache) {
+    length = cache->Write(buffer, length);
+    VLOG(3) << "CurlWriteCallback length=" << length;
+  } else {
+    // For the case of HTTP Put, the returned data may not be consumed. Return
+    // the size of the data to avoid curl errors.
+  }
   return length;
 }
 
@@ -159,6 +167,7 @@ HttpFile::HttpFile(HttpMethod method,
       upload_cache_(FLAGS_io_cache_size),
       curl_(curl_easy_init()),
       status_(Status::OK),
+      user_agent_(FLAGS_user_agent),
       task_exit_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                        base::WaitableEvent::InitialState::NOT_SIGNALED) {
   static LibCurlInitializer lib_curl_initializer;
@@ -236,7 +245,7 @@ int64_t HttpFile::Write(const void* buffer, uint64_t length) {
 }
 
 int64_t HttpFile::Size() {
-  LOG(ERROR) << "HttpFile does not support Size().";
+  VLOG(1) << "HttpFile does not support Size().";
   return -1;
 }
 
@@ -279,12 +288,14 @@ void HttpFile::SetupRequest() {
   }
 
   curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, kUserAgent);
+  curl_easy_setopt(curl, CURLOPT_USERAGENT,
+                   user_agent_.empty() ? kUserAgent : user_agent_.data());
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteCallback);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &download_cache_);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA,
+                   method_ == HttpMethod::kPut ? nullptr : &download_cache_);
   if (method_ != HttpMethod::kGet) {
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, &CurlReadCallback);
     curl_easy_setopt(curl, CURLOPT_READDATA, &upload_cache_);
