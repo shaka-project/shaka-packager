@@ -179,6 +179,21 @@ TEST(WebVttUtilsTest, FragmentToString_PreservesTags) {
   EXPECT_EQ(WebVttFragmentToString(frag), "<i>Foobar</i>");
 }
 
+TEST(WebVttUtilsTest, FragmentToString_ConsecutiveLeadingWhitespaces) {
+  TextFragment frag(kNoStyle, "\r\n\t \r\nFoobar");
+  EXPECT_EQ(WebVttFragmentToString(frag), " Foobar");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_ConsecutiveTrailingWhitespaces) {
+  TextFragment frag(kNoStyle, "Foobar\r\n\t \r\n");
+  EXPECT_EQ(WebVttFragmentToString(frag), "Foobar ");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_ConsecutiveInternalWhitespaces) {
+  TextFragment frag(kNoStyle, "Hello\r\n\t \r\nWorld");
+  EXPECT_EQ(WebVttFragmentToString(frag), "Hello World");
+}
+
 TEST(WebVttUtilsTest, FragmentToString_HandlesNestedFragments) {
   TextFragment frag;
   frag.sub_fragments.emplace_back(kNoStyle, "Hello ");
