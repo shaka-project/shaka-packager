@@ -83,6 +83,7 @@ class HttpFile : public File {
   // The headers need to remain alive for the duration of the request.
   std::unique_ptr<curl_slist, CurlDelete> request_headers_;
   Status status_;
+  std::string user_agent_;
 
   // Signaled when the "curl easy perform" task completes.
   base::WaitableEvent task_exit_event_;
