@@ -249,6 +249,7 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
       ret += " align:right";
       break;
     case TextAlignment::kCenter:
+      ret += " align:center";
       break;
   }
 
