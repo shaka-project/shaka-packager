@@ -1719,9 +1719,9 @@ FourCC Mha1Specific::BoxType() const {
 bool Mha1Specific::ReadWriteInternal(BoxBuffer* buffer) {
 
   if (buffer->Reading()) {
-    RCHECK(ReadWriteHeaderInternal(buffer));
-    size_t size = buffer->Reading() ? buffer->BytesLeft() : extra_data.size();
-    RCHECK(buffer->ReadWriteVector(&extra_data, size));
+    RCHECK(ReadWriteHeaderInternal(buffer) &&
+           buffer->ReadWriteVector(
+               &extra_data, buffer->Reading() ? buffer->BytesLeft() : extra_data.size()));
   } else {
     uint32_t size = extra_data.size() + HeaderSize();
     uint32_t fcc = FOURCC_mhaC;
@@ -1729,6 +1729,7 @@ bool Mha1Specific::ReadWriteInternal(BoxBuffer* buffer) {
     buffer->ReadWriteUInt32(&fcc); //mhac header itself
     RCHECK(buffer->ReadWriteVector(&extra_data, extra_data.size()));
   }
+
   return true;
 }
 

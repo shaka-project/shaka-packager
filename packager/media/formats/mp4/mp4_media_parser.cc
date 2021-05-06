@@ -516,7 +516,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           break;
         case FOURCC_mha1:
         {
-          const AudioSampleEntry& entry = samp_descr.audio_entries[desc_idx];
           codec_config = entry.codec_configuration.data;
           break;
         }
