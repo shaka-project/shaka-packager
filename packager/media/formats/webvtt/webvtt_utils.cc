@@ -9,11 +9,12 @@
 #include <ctype.h>
 #include <inttypes.h>
 
-#include <regex>
+#include <algorithm>
 #include <unordered_set>
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 
 namespace shaka {
@@ -67,6 +68,31 @@ std::string GetCloseTag(StyleTagKind tag) {
   return "";  // Not reached, but Windows doesn't like NOTREACHED.
 }
 
+bool IsWhitespace(char c) {
+  return c == '\t' || c == '\r' || c == '\n' || c == ' ';
+}
+
+// Replace consecutive whitespaces with a single whitespace.
+std::string CollapseWhitespace(const std::string& data) {
+  std::string output;
+  output.resize(data.size());
+  size_t chars_written = 0;
+  bool in_whitespace = false;
+  for (char c : data) {
+    if (IsWhitespace(c)) {
+      if (!in_whitespace) {
+        in_whitespace = true;
+        output[chars_written++] = ' ';
+      }
+    } else {
+      in_whitespace = false;
+      output[chars_written++] = c;
+    }
+  }
+  output.resize(chars_written);
+  return output;
+}
+
 std::string WriteFragment(const TextFragment& fragment,
                           std::list<StyleTagKind>* tags) {
   std::string ret;
@@ -115,8 +141,7 @@ std::string WriteFragment(const TextFragment& fragment,
       // Replace newlines and consecutive whitespace with a single space.  If
       // the user wanted an explicit newline, they should use the "newline"
       // field.
-      std::regex whitespace("\\s+", std::regex_constants::ECMAScript);
-      ret += std::regex_replace(fragment.body, whitespace, std::string(" "));
+      ret += CollapseWhitespace(fragment.body);
     } else {
       for (const auto& frag : fragment.sub_fragments) {
         ret += WriteFragment(frag, tags);
@@ -249,6 +274,7 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
       ret += " align:right";
       break;
     case TextAlignment::kCenter:
+      ret += " align:center";
       break;
   }
 

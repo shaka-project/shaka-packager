@@ -21,7 +21,7 @@
     </AdaptationSet>
     <AdaptationSet id="2" contentType="text" subsegmentAlignment="true">
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="subtitle"/>
-      <Representation id="2" bandwidth="273" mimeType="text/vtt">
+      <Representation id="2" bandwidth="317" mimeType="text/vtt">
         <BaseURL>bear-english-text.vtt</BaseURL>
       </Representation>
     </AdaptationSet>

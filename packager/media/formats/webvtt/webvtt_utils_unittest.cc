@@ -163,9 +163,10 @@ TEST(WebVttUtilsTest, SettingsToString) {
 TEST(WebVttUtilsTest, SettingsToString_IgnoresDefaults) {
   TextSettings settings;
   settings.region = "foo";
+  settings.text_alignment = TextAlignment::kCenter;
 
   const auto actual = WebVttSettingsToString(settings);
-  EXPECT_EQ(actual, "region:foo");
+  EXPECT_EQ(actual, "region:foo align:center");
 }
 
 TEST(WebVttUtilsTest, FragmentToString) {
@@ -176,6 +177,21 @@ TEST(WebVttUtilsTest, FragmentToString) {
 TEST(WebVttUtilsTest, FragmentToString_PreservesTags) {
   TextFragment frag(kNoStyle, "<i>Foobar</i>");
   EXPECT_EQ(WebVttFragmentToString(frag), "<i>Foobar</i>");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_ConsecutiveLeadingWhitespaces) {
+  TextFragment frag(kNoStyle, "\r\n\t \r\nFoobar");
+  EXPECT_EQ(WebVttFragmentToString(frag), " Foobar");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_ConsecutiveTrailingWhitespaces) {
+  TextFragment frag(kNoStyle, "Foobar\r\n\t \r\n");
+  EXPECT_EQ(WebVttFragmentToString(frag), "Foobar ");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_ConsecutiveInternalWhitespaces) {
+  TextFragment frag(kNoStyle, "Hello\r\n\t \r\nWorld");
+  EXPECT_EQ(WebVttFragmentToString(frag), "Hello World");
 }
 
 TEST(WebVttUtilsTest, FragmentToString_HandlesNestedFragments) {
