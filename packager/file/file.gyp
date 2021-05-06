@@ -41,6 +41,7 @@
         '../packager.gyp:status',
         '../third_party/gflags/gflags.gyp:gflags',
         '../third_party/curl/curl.gyp:libcurl',
+        '../version/version.gyp:version',
       ],
     },
     {
@@ -61,6 +62,7 @@
         '../testing/gtest.gyp:gtest',
         '../third_party/gflags/gflags.gyp:gflags',
         '../third_party/curl/curl.gyp:libcurl',
+        '../version/version.gyp:version',
         'file',
       ],
     },
