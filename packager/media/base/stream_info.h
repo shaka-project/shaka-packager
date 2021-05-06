@@ -36,8 +36,6 @@ enum Codec {
   kCodecVP8,
   kCodecVP9,
   kCodecVideoMaxPlusOne,
-  kCodecMha1,
-  kCodecMhm1,
 
   kCodecAudio = 200,
   kCodecAAC = kCodecAudio,
