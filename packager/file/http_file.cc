@@ -171,6 +171,9 @@ HttpFile::HttpFile(HttpMethod method,
       task_exit_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                        base::WaitableEvent::InitialState::NOT_SIGNALED) {
   static LibCurlInitializer lib_curl_initializer;
+  if (user_agent_.empty()) {
+    user_agent_ += "ShakaPackager/" + GetPackagerVersion();
+  }
 
   // We will have at least one header, so use a null header to signal error
   // to Open.
@@ -288,9 +291,7 @@ void HttpFile::SetupRequest() {
   }
 
   curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent_.empty() ?
-                   (std::string("ShakaPackager/") + shaka::GetPackagerVersion()).c_str() :
-                   user_agent_.data());
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent_.c_str());
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
