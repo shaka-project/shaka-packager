@@ -15,6 +15,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/worker_pool.h"
+#include "packager/version/version.h"
 
 DEFINE_string(user_agent, "",
               "Set a custom User-Agent string for HTTP requests.");
@@ -42,7 +43,6 @@ namespace shaka {
 namespace {
 
 constexpr const char* kBinaryContentType = "application/octet-stream";
-constexpr const char* kUserAgent = "shaka-packager-http-fetch/1.0";
 constexpr const int kMinLogLevelForCurlDebugFunction = 2;
 
 size_t CurlWriteCallback(char* buffer, size_t size, size_t nmemb, void* user) {
@@ -171,6 +171,9 @@ HttpFile::HttpFile(HttpMethod method,
       task_exit_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                        base::WaitableEvent::InitialState::NOT_SIGNALED) {
   static LibCurlInitializer lib_curl_initializer;
+  if (user_agent_.empty()) {
+    user_agent_ += "ShakaPackager/" + GetPackagerVersion();
+  }
 
   // We will have at least one header, so use a null header to signal error
   // to Open.
@@ -288,8 +291,7 @@ void HttpFile::SetupRequest() {
   }
 
   curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
-  curl_easy_setopt(curl, CURLOPT_USERAGENT,
-                   user_agent_.empty() ? kUserAgent : user_agent_.data());
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent_.c_str());
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
