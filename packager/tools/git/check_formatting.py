@@ -19,7 +19,7 @@ Steps to install clang-format on your system if you don't have it already:
     Mac:   brew install clang-format
 
 2. Download git-clang-format from
-   https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/git-clang-format
+   https://github.com/llvm-mirror/clang/blob/master/tools/clang-format/git-clang-format
 
 3. Move the script somewhere in your path, e.g.
    sudo mv git-clang-format /usr/bin/
