@@ -198,6 +198,7 @@ static const ElementIdInfo kVideoIds[] = {
   {BINARY, kWebMIdColorSpace},
   {FLOAT, kWebMIdFrameRate},
   {LIST, kWebMIdColor},
+  {LIST, kWebMIdProjection},
 };
 
 static const ElementIdInfo kColorIds[] = {
@@ -215,6 +216,10 @@ static const ElementIdInfo kColorIds[] = {
   {UINT, kWebMIdColorMaxCLL},
   {UINT, kWebMIdColorMaxFALL},
   {LIST, kWebMIdColorMasteringMetadata},
+};
+
+static const ElementIdInfo kProjectionIds[] = {
+    {UINT, kWebMIdProjectionType},
 };
 
 static const ElementIdInfo kAudioIds[] = {
@@ -401,6 +406,7 @@ static const ListElementInfo kListElementInfo[] = {
   LIST_ELEMENT_INFO(kWebMIdTrackTranslate, 3, kTrackTranslateIds),
   LIST_ELEMENT_INFO(kWebMIdVideo, 3, kVideoIds),
   LIST_ELEMENT_INFO(kWebMIdColor, 4, kColorIds),
+  LIST_ELEMENT_INFO(kWebMIdProjection, 4, kProjectionIds),
   LIST_ELEMENT_INFO(kWebMIdAudio, 3, kAudioIds),
   LIST_ELEMENT_INFO(kWebMIdTrackOperation, 3, kTrackOperationIds),
   LIST_ELEMENT_INFO(kWebMIdTrackCombinePlanes, 4, kTrackCombinePlanesIds),
