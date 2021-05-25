@@ -6,7 +6,6 @@
 
 #include <gflags/gflags.h>
 #include <gmock/gmock.h>
-#include <google/protobuf/text_format.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
 
@@ -14,7 +13,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
