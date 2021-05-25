@@ -287,7 +287,10 @@ bool File::WriteFileAtomically(const char* file_name,
 
   // Skip the warning message for memory files, which is meant for testing
   // anyway..
-  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0) {
+  // Also check for http files, as they can't do atomic writes.
+  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0
+      && strncmp(file_name, kHttpFilePrefix, strlen(kHttpFilePrefix)) != 0
+      && strncmp(file_name, kHttpsFilePrefix, strlen(kHttpsFilePrefix)) != 0) {
     LOG(WARNING) << "Writing to " << file_name
                  << " is not guaranteed to be atomic.";
   }
