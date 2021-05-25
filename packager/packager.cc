@@ -367,10 +367,11 @@ Status ValidateParams(const PackagingParams& packaging_params,
 
   if (on_demand_dash_profile &&
       !packaging_params.mpd_params.mpd_output.empty() &&
-      !packaging_params.mp4_output_params.generate_sidx_in_media_segments) {
+      !packaging_params.mp4_output_params.generate_sidx_in_media_segments &&
+      !packaging_params.mpd_params.use_segment_list) {
     return Status(error::UNIMPLEMENTED,
                   "--generate_sidx_in_media_segments is required for DASH "
-                  "on-demand profile (not using segment_template).");
+                  "on-demand profile (not using segment_template or segment list).");
   }
 
   return Status::OK;
@@ -937,8 +938,9 @@ Status Packager::Initialize(
   }
 
   media::MuxerListenerFactory muxer_listener_factory(
-      packaging_params.output_media_info, internal->mpd_notifier.get(),
-      internal->hls_notifier.get());
+      packaging_params.output_media_info,
+      packaging_params.mpd_params.use_segment_list,
+      internal->mpd_notifier.get(), internal->hls_notifier.get());
 
   RETURN_IF_ERROR(media::CreateAllJobs(
       streams_for_jobs, packaging_params, internal->mpd_notifier.get(),
