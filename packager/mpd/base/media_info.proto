@@ -172,6 +172,7 @@ message MediaInfo {
   optional Range init_range = 6;
   optional Range index_range = 7;
   optional string media_file_name = 8;
+  repeated Range subsegment_ranges = 23;
   // END VOD only.
 
   // VOD and static LIVE.

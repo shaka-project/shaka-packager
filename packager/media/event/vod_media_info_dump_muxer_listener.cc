@@ -22,8 +22,9 @@ namespace shaka {
 namespace media {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
-    const std::string& output_file_path)
-    : output_file_name_(output_file_path) {}
+    const std::string& output_file_path, bool use_segment_list)
+    : output_file_name_(output_file_path),
+      use_segment_list_(use_segment_list) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -78,7 +79,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                                float duration_seconds) {
   DCHECK(media_info_);
   if (!internal::SetVodInformation(media_ranges, duration_seconds,
-                                   media_info_.get())) {
+                                   use_segment_list_, media_info_.get())) {
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;
   }

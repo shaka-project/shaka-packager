@@ -251,6 +251,7 @@ bool IsMediaInfoCompatible(const MediaInfo& media_info1,
 
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
                        float duration_seconds,
+                       bool use_segment_lists,
                        MediaInfo* media_info) {
   DCHECK(media_info);
 
@@ -268,6 +269,12 @@ bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
   if (media_ranges.index_range) {
     SetRange(media_ranges.index_range->start, media_ranges.index_range->end,
              media_info->mutable_index_range());
+  }
+
+  if (use_segment_lists) {
+    for (const auto& range : media_ranges.subsegment_ranges) {
+      SetRange(range.start, range.end, media_info->add_subsegment_ranges());
+    }
   }
 
   media_info->set_media_duration_seconds(duration_seconds);

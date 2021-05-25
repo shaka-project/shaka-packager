@@ -1,0 +1,40 @@
+bandwidth: 133663
+audio_info {
+  codec: "mp4a.40.2"
+  sampling_frequency: 44100
+  time_scale: 44100
+  num_channels: 2
+  decoder_config: "\022\020V\345\000"
+}
+init_range {
+  begin: 0
+  end: 1006
+}
+index_range {
+  begin: 1007
+  end: 1006
+}
+media_file_name: "bear-640x360-audio.mp4"
+media_duration_seconds: 2.76317453
+reference_time_scale: 44100
+container_type: CONTAINER_MP4
+protected_content {
+  default_key_id: "1234567890123456"
+  content_protection_entry {
+    uuid: "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"
+    pssh: "\000\000\0004pssh\001\000\000\000\020w\357\354\300\262M\002\254\343<\036R\342\373K\000\000\000\0011234567890123456\000\000\000\000"
+  }
+  protection_scheme: "cenc"
+}
+subsegment_ranges {
+  begin: 1007
+  end: 18034
+}
+subsegment_ranges {
+  begin: 18035
+  end: 34716
+}
+subsegment_ranges {
+  begin: 34717
+  end: 44575
+}
