@@ -25,11 +25,12 @@ namespace {
 const char kMediaInfoSuffix[] = ".media_info";
 
 std::unique_ptr<MuxerListener> CreateMediaInfoDumpListenerInternal(
-    const std::string& output) {
+    const std::string& output,
+    bool use_segment_list) {
   DCHECK(!output.empty());
 
   std::unique_ptr<MuxerListener> listener(
-      new VodMediaInfoDumpMuxerListener(output + kMediaInfoSuffix));
+      new VodMediaInfoDumpMuxerListener(output + kMediaInfoSuffix, use_segment_list));
   return listener;
 }
 
@@ -80,11 +81,13 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
 }  // namespace
 
 MuxerListenerFactory::MuxerListenerFactory(bool output_media_info,
+                                           bool use_segment_list,
                                            MpdNotifier* mpd_notifier,
                                            hls::HlsNotifier* hls_notifier)
     : output_media_info_(output_media_info),
       mpd_notifier_(mpd_notifier),
-      hls_notifier_(hls_notifier) {}
+      hls_notifier_(hls_notifier),
+      use_segment_list_(use_segment_list) {}
 
 std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
     const StreamData& stream) {
@@ -103,7 +106,8 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
         new CombinedMuxerListener);
     if (output_media_info_) {
       combined_listener->AddListener(
-          CreateMediaInfoDumpListenerInternal(stream.media_info_output));
+          CreateMediaInfoDumpListenerInternal(stream.media_info_output,
+                                              use_segment_list_));
     }
 
     if (mpd_notifier_ && !stream.hls_only) {

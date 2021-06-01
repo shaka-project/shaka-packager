@@ -451,6 +451,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
   mpd_params.preserved_segments_outside_live_window =
       FLAGS_preserved_segments_outside_live_window;
+  mpd_params.use_segment_list = FLAGS_dash_force_segment_list;
 
   if (!FLAGS_utc_timings.empty()) {
     base::StringPairs pairs;

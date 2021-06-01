@@ -142,6 +142,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 
   DCHECK(media_info_);
   if (!internal::SetVodInformation(media_ranges, duration_seconds,
+                                   mpd_notifier_->use_segment_list(),
                                    media_info_.get())) {
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;

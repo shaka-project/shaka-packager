@@ -205,8 +205,15 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   /// Adds fields that are specific to VOD. This ignores @a media_info fields
   /// for Live.
   /// @param media_info is a MediaInfo with VOD information.
+  /// @param use_segment_list is a param that instructs the xml writer to
+  ///        use SegmentList instead of SegmentBase.
+  /// @param target_segment_duration is a param that specifies the target
+  //         duration of media segments. This is only used when use_segment_list
+  //         is true.
   /// @return true on success, false otherwise.
-  bool AddVODOnlyInfo(const MediaInfo& media_info) WARN_UNUSED_RESULT;
+  bool AddVODOnlyInfo(const MediaInfo& media_info,
+                      bool use_segment_list,
+                      double target_segment_duration) WARN_UNUSED_RESULT;
 
   /// @param segment_infos is a set of SegmentInfos. This method assumes that
   ///        SegmentInfos are sorted by its start time.
