@@ -518,12 +518,8 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.dops.opus_identification_header = audio_info->codec_config();
       break;
     case kCodecMha1:
-      audio.codec_configuration.data = audio_info->codec_config();
-      audio.mhac.extra_data = audio_info->codec_config();
-      break;
     case kCodecMhm1:
-      //audio.codec_configuration.data = audio_info->codec_config();
-      LOG(WARNING) << "Mux for mhm1" ;
+      audio.mhac.extra_data = audio_info->codec_config();
       break;
     default:
       NOTIMPLEMENTED() << " Unsupported audio codec " << audio_info->codec();

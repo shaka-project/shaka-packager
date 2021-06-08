@@ -140,9 +140,9 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
     case kCodecVorbis:
       return "vorbis";
     case kCodecMha1:
-      return "mha1";
+      return base::StringPrintf("%s.0x%02x", ToFourCC(codec), audio_object_type);
     case kCodecMhm1:
-      return "mhm1";
+      return base::StringPrintf("%s.0x%02x", ToFourCC(codec), audio_object_type);
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";

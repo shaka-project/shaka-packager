@@ -1709,51 +1709,25 @@ size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 
-Mha1Specific::Mha1Specific() = default;
-Mha1Specific::~Mha1Specific() = default;
+MHAConfiguration::MHAConfiguration() = default;
+MHAConfiguration::~MHAConfiguration() = default;
 
-FourCC Mha1Specific::BoxType() const {
+FourCC MHAConfiguration::BoxType() const {
   return FOURCC_mhaC;
 }
 
-bool Mha1Specific::ReadWriteInternal(BoxBuffer* buffer) {
-
-  if (buffer->Reading()) {
-    RCHECK(ReadWriteHeaderInternal(buffer) &&
-           buffer->ReadWriteVector(
-               &extra_data, buffer->Reading() ? buffer->BytesLeft() : extra_data.size()));
-  } else {
-    uint32_t size = extra_data.size() + HeaderSize();
-    uint32_t fcc = FOURCC_mhaC;
-    buffer->ReadWriteUInt32(&size); //size of mhac + phac
-    buffer->ReadWriteUInt32(&fcc); //mhac header itself
-    RCHECK(buffer->ReadWriteVector(&extra_data, extra_data.size()));
-  }
-
-  return true;
-}
-
-size_t Mha1Specific::ComputeSizeInternal() {
-  if (extra_data.empty())
-    return 0;
-  return HeaderSize() + extra_data.size();
-}
-
-Mhm1Specific::Mhm1Specific() = default;
-Mhm1Specific::~Mhm1Specific() = default;
-
-FourCC Mhm1Specific::BoxType() const {
-  return FOURCC_mhm1;
-}
-
-bool Mhm1Specific::ReadWriteInternal(BoxBuffer* buffer) {
+bool MHAConfiguration::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteVector(
              &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
+  if (!buffer->Reading()) {
+    RCHECK(data.size() > 1);
+    mpeg_h_3da_profile_level_indication = data[1];
+  }
   return true;
 }
 
-size_t Mhm1Specific::ComputeSizeInternal() {
+size_t MHAConfiguration::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (data.empty())
     return 0;
@@ -1988,10 +1962,6 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
       DCHECK(IsProtectionSchemeSupported(sinf.type.type));
       RCHECK(buffer->ReadWriteChild(&sinf));
     }
-  }
-  if (format == FOURCC_mha1) {
-    codec_configuration.box_type = FOURCC_mhaC;
-    codec_configuration.data = mhac.extra_data;
   }
   return true;
 }

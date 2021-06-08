@@ -515,11 +515,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
               entry.dops.preskip * kNanosecondsPerSecond / sampling_frequency;
           break;
         case FOURCC_mha1:
-        {
-          codec_config = entry.codec_configuration.data;
-          break;
-        }
         case FOURCC_mhm1:
+          codec_config = entry.mhac.extra_data;
           break;
         default:
           // Intentionally not to fail in the parser as there may be multiple
