@@ -139,6 +139,18 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "mp3";
     case kCodecVorbis:
       return "vorbis";
+    case kCodecMha1:
+      // The signalling of the codecs parameters is according to RFC6381 [11] and ISO/IEC 23008-3 clause 21 [7].
+      // The value consists of the following two parts separated by a dot:
+      //  - the sample entry 4CC code ('mha1', 'mha2', 'mhm1', 'mhm2')
+      //  - ‘0x’ followed by the hex value of the profile-levelid, as defined in in ISO/IEC 23008-3 [7]
+      return base::StringPrintf("mha1.0x%02x", audio_object_type);
+    case kCodecMhm1:
+      // The signalling of the codecs parameters is according to RFC6381 [11] and ISO/IEC 23008-3 clause 21 [7].
+      // The value consists of the following two parts separated by a dot:
+      //  - the sample entry 4CC code ('mha1', 'mha2', 'mhm1', 'mhm2')
+      //  - ‘0x’ followed by the hex value of the profile-levelid, as defined in in ISO/IEC 23008-3 [7]
+      return base::StringPrintf("mhm1.0x%02x", audio_object_type);
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";
