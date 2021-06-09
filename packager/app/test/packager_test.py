@@ -1533,12 +1533,16 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testEncryptionAndOutputMediaInfoAndMpdFromMediaInfoSegmentList(self):
     self.assertPackageSuccess(
-      # The order is not deterministic if there are more than one
-      # AdaptationSets, so only one is included here.
-      self._GetStreams(['audio']),
-      self._GetFlags(encryption=True, output_media_info=True, dash_force_segment_list=True, output_dash=True))
+        # The order is not deterministic if there are more than one
+        # AdaptationSets, so only one is included here.
+        self._GetStreams(['audio']),
+        self._GetFlags(
+            encryption=True,
+            output_media_info=True,
+            dash_force_segment_list=True,
+            output_dash=True))
     self._CheckTestResults(
-      'encryption-and-output-media-info-and-mpd-from-media-info-segmentlist')
+        'encryption-and-output-media-info-and-mpd-from-media-info-segmentlist')
 
   def testHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(
