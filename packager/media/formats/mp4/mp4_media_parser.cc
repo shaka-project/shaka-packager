@@ -517,6 +517,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_mha1:
         case FOURCC_mhm1:
           codec_config = entry.mhac.data;
+          audio_object_type = entry.mhac.mpeg_h_3da_profile_level_indication;
           break;
         default:
           // Intentionally not to fail in the parser as there may be multiple
