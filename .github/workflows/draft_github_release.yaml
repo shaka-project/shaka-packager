@@ -1,0 +1,85 @@
+name: Draft GitHub Release
+
+# Runs when a new tag is created that looks like a version number.
+#
+# Creates a draft release on GitHub with the latest release notes, then chains
+# to the build_and_test workflow and the publish_github_release workflow.
+#
+# Collectively, this will build and tests on all OSes, attach release artifacts
+# to the release, and fully publish the release.
+#
+# Publishing the release then triggers additional workflows for NPM, Docker
+# Hub, and GitHub Pages.
+#
+# Can also be run manually for debugging purposes.
+on:
+  push:
+    tags:
+      - "v*.*"
+  # For manual debugging:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "An existing tag to release."
+        required: True
+
+jobs:
+  draft_release:
+    name: Draft GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: src
+
+      - name: Compute ref
+        # We could be building from a workflow dispatch (manual run)
+        # or from a pushed tag.  If triggered from a pushed tag, we would like
+        # to strip refs/tags/ off of the incoming ref and just use the tag
+        # name.  Subsequent steps can refer to $TARGET_REF to determine the
+        # correct ref in all cases.
+        run: |
+          echo "TARGET_REF=${{ github.event.inputs.tag || github.ref }}" | \
+              sed -e 's@refs/tags/@@' >> $GITHUB_ENV
+
+      - name: Extract release notes
+        run: |
+          cd src
+          packager/tools/extract_from_changelog.py --release_notes \
+              | tee ../RELEASE_NOTES.md
+          # This check prevents releases without appropriate changelog updates.
+          VERSION=$(packager/tools/extract_from_changelog.py --version)
+          if [[ "$VERSION" != "$TARGET_REF" ]]; then
+            echo ""
+            echo ""
+            echo "***** ***** *****"
+            echo ""
+            echo "Version mismatch!"
+            echo "Workflow is targetting $TARGET_REF,"
+            echo "but CHANGELOG.md contains $VERSION!"
+            exit 1
+          fi
+
+      - name: Draft release
+        id: draft_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
+        with:
+          tag_name: ${{ env.TARGET_REF }}
+          release_name: ${{ env.TARGET_REF }}
+          body_path: RELEASE_NOTES.md
+          draft: true
+
+      - name: Start build and test, then publish
+        run: |
+          cd src
+          gh workflow run build_and_test.yaml \
+              -f 'ref=${{ env.TARGET_REF }}' \
+              -f 'release_id=${{ steps.draft_release.outputs.id }}' \
+              -f 'next_workflow=publish_github_release.yaml' \
+              -f 'next_workflow_payload={ "release_id": "${{ steps.draft_release.outputs.id }}" }'
+          echo "Triggered build_and_test workflow for release ID ${{ steps.draft_release.outputs.id }}."
+        env:
+          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
