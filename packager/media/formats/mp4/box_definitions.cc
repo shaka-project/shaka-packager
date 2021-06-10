@@ -9,7 +9,6 @@
 #include <limits>
 
 #include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/base/rcheck.h"
