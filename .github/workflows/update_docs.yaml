@@ -1,0 +1,76 @@
+name: Update Docs
+
+# Runs when a new release is published on GitHub, or when a pull request is
+# opened.
+#
+# Pushes updated docs to GitHub Pages if triggered from a release workflow.
+#
+# Can also be run manually for debugging purposes.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  release:
+    types: [published]
+  # For manual debugging:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref to build docs from."
+        required: True
+
+jobs:
+  publish_docs:
+    name: Publish updated docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute ref
+        id: ref
+        # We could be building from a workflow dispatch (manual run), release
+        # event, or pull request.  Subsequent steps can refer to $TARGET_REF to
+        # determine the correct ref in all cases.
+        run: |
+          echo "TARGET_REF=${{ github.event.inputs.ref || github.event.release.tag_name || github.ref }}" >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: src
+          ref: ${{ env.TARGET_REF }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          pip install wheel
+          pip install sphinxcontrib.plantuml
+          pip install recommonmark
+          pip install cloud_sptheme
+          pip install breathe
+          sudo apt-get install -y doxygen
+
+      - name: Generate docs
+        run: |
+          mkdir gh-pages
+          cd src
+          mkdir out
+          # Doxygen must run before Sphinx.  Sphinx will refer to
+          # Doxygen-generated output when it builds its own docs.
+          doxygen docs/Doxyfile
+          # Now build the Sphinx-based docs.
+          make -C docs/ html
+          # Now move the generated outputs.
+          mv out/sphinx/html ../gh-pages/html
+          mv out/doxygen/html ../gh-pages/docs
+          cp docs/index.html ../gh-pages/index.html
+
+      - name: Deploy to gh-pages branch (releases only)
+        # This is skipped when testing a PR
+        if: github.event_name != 'pull_request'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.SHAKA_BOT_TOKEN }}
+          publish_dir: gh-pages
+          full_commit_message: Generate docs for ${{ env.TARGET_REF }}
