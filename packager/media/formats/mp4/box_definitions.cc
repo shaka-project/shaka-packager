@@ -1721,7 +1721,6 @@ bool MHAConfiguration::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteVector(
              &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
-  LOG(DEBUG) << "mpeg_h_3da_profile_level_indication: " << base::StringPrintf("%02x", data[1]);
   RCHECK(data.size() > 1);
   mpeg_h_3da_profile_level_indication = data[1];
   return true;
