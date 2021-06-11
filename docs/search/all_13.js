@@ -8,5 +8,6 @@ var searchData=
   ['updateiv_873',['UpdateIv',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a812dfc641212f8eb877ab153de7fbb37',1,'shaka::media::AesCryptor']]],
   ['updateprogress_874',['UpdateProgress',['../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#afd8bb3584c984c711615800ad93642a3',1,'shaka::media::mp4::Segmenter::UpdateProgress()'],['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2',1,'shaka::media::webm::Segmenter::UpdateProgress()']]],
   ['use_5fconstant_5fiv_875',['use_constant_iv',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a94d868d19deb5bdc8083328d3e5da6a8',1,'shaka::media::AesCryptor']]],
-  ['utctiming_876',['UtcTiming',['../d3/d6e/structshaka_1_1MpdParams_1_1UtcTiming.html',1,'shaka::MpdParams']]]
+  ['use_5fsegment_5flist_876',['use_segment_list',['../df/ddc/structshaka_1_1MpdParams.html#a32f74783f0055bff430910defb2c5a3b',1,'shaka::MpdParams::use_segment_list()'],['../d3/dd0/classshaka_1_1MpdNotifier.html#a0c44f9156ecc3dcef724b891aae65b24',1,'shaka::MpdNotifier::use_segment_list()']]],
+  ['utctiming_877',['UtcTiming',['../d3/d6e/structshaka_1_1MpdParams_1_1UtcTiming.html',1,'shaka::MpdParams']]]
 ];

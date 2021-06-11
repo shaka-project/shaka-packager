@@ -213,92 +213,94 @@ $(function() {
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  DCHECK(media_info_);</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordflow">if</span> (!internal::SetVodInformation(media_ranges, duration_seconds,</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                                   media_info_.get())) {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to generate VOD information from input.&quot;</span>;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  }</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">if</span> (notification_id_) {</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">NotifyMediaInfoUpdate</a>(notification_id_.value(),</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                         *media_info_);</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">if</span> (!NotifyNewContainer())</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    DCHECK(notification_id_);</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  }</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="comment">// TODO(rkuroiwa): Use media_ranges.subsegment_ranges instead of caching the</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="comment">// subsegments.</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; event_info : event_info_) {</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordflow">switch</span> (event_info.type) {</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;      <span class="keywordflow">case</span> EventInfoType::kSegment:</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a100236a249477afcda4f50e4914f0eee">NotifyNewSegment</a>(</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            notification_id_.value(), event_info.segment_info.start_time,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            event_info.segment_info.duration,</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            event_info.segment_info.segment_file_size);</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;      <span class="keywordflow">case</span> EventInfoType::kKeyFrame:</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="comment">// NO-OP for DASH.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keywordflow">case</span> EventInfoType::kCue:</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a74fed9807b9584387e5da5f0fd28d54d">NotifyCueEvent</a>(notification_id_.value(),</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                                      event_info.cue_event_info.timestamp);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    }</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  }</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  event_info_.clear();</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a>();</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;}</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
-<div class="line"><a name="l00181"></a><span class="lineno"><a class="line" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">  181</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">MpdNotifyMuxerListener::OnNewSegment</a>(<span class="keyword">const</span> std::string&amp; file_name,</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                                          int64_t start_time,</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                                          int64_t duration,</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                                          uint64_t segment_file_size) {</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">if</span> (mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">dash_profile</a>() == DashProfile::kLive) {</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a100236a249477afcda4f50e4914f0eee">NotifyNewSegment</a>(notification_id_.value(), start_time,</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                                    duration, segment_file_size);</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordflow">if</span> (mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a050bde7afb601661a5db508152ffc508">mpd_type</a>() == MpdType::kDynamic)</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;      mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a>();</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <a class="code" href="../../db/d49/structshaka_1_1media_1_1EventInfo.html">EventInfo</a> event_info;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    event_info.type = EventInfoType::kSegment;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    event_info.segment_info = {start_time, duration, segment_file_size};</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    event_info_.push_back(event_info);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  }</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;}</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno"><a class="line" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">  198</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">MpdNotifyMuxerListener::OnKeyFrame</a>(int64_t timestamp,</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                                        uint64_t start_byte_offset,</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                                        uint64_t size) {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="comment">// NO-OP for DASH.</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;}</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00204"></a><span class="lineno"><a class="line" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">  204</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">MpdNotifyMuxerListener::OnCueEvent</a>(int64_t timestamp,</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                                        <span class="keyword">const</span> std::string&amp; cue_data) {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="comment">// Not using |cue_data| at this moment.</span></div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="keywordflow">if</span> (mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">dash_profile</a>() == DashProfile::kLive) {</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a74fed9807b9584387e5da5f0fd28d54d">NotifyCueEvent</a>(notification_id_.value(), timestamp);</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <a class="code" href="../../db/d49/structshaka_1_1media_1_1EventInfo.html">EventInfo</a> event_info;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    event_info.type = EventInfoType::kCue;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    event_info.cue_event_info = {timestamp};</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    event_info_.push_back(event_info);</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  }</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;}</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160; </div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keywordtype">bool</span> MpdNotifyMuxerListener::NotifyNewContainer() {</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  uint32_t notification_id;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  <span class="keywordflow">if</span> (!mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae10c06fe6022a1020fc889de389be430">NotifyNewContainer</a>(*media_info_, &amp;notification_id)) {</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to notify MpdNotifier.&quot;</span>;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  }</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  notification_id_ = notification_id;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160; </div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                                   mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a0c44f9156ecc3dcef724b891aae65b24">use_segment_list</a>(),</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                                   media_info_.get())) {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to generate VOD information from input.&quot;</span>;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  }</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="keywordflow">if</span> (notification_id_) {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">NotifyMediaInfoUpdate</a>(notification_id_.value(),</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                                         *media_info_);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordflow">if</span> (!NotifyNewContainer())</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    DCHECK(notification_id_);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  }</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="comment">// TODO(rkuroiwa): Use media_ranges.subsegment_ranges instead of caching the</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="comment">// subsegments.</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; event_info : event_info_) {</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keywordflow">switch</span> (event_info.type) {</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;      <span class="keywordflow">case</span> EventInfoType::kSegment:</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a100236a249477afcda4f50e4914f0eee">NotifyNewSegment</a>(</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            notification_id_.value(), event_info.segment_info.start_time,</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;            event_info.segment_info.duration,</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;            event_info.segment_info.segment_file_size);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      <span class="keywordflow">case</span> EventInfoType::kKeyFrame:</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="comment">// NO-OP for DASH.</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      <span class="keywordflow">case</span> EventInfoType::kCue:</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a74fed9807b9584387e5da5f0fd28d54d">NotifyCueEvent</a>(notification_id_.value(),</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                                      event_info.cue_event_info.timestamp);</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    }</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  }</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  event_info_.clear();</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a>();</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;}</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
+<div class="line"><a name="l00182"></a><span class="lineno"><a class="line" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">  182</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">MpdNotifyMuxerListener::OnNewSegment</a>(<span class="keyword">const</span> std::string&amp; file_name,</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                                          int64_t start_time,</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                                          int64_t duration,</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                                          uint64_t segment_file_size) {</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordflow">if</span> (mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">dash_profile</a>() == DashProfile::kLive) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a100236a249477afcda4f50e4914f0eee">NotifyNewSegment</a>(notification_id_.value(), start_time,</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                                    duration, segment_file_size);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">if</span> (mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a050bde7afb601661a5db508152ffc508">mpd_type</a>() == MpdType::kDynamic)</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a>();</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <a class="code" href="../../db/d49/structshaka_1_1media_1_1EventInfo.html">EventInfo</a> event_info;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    event_info.type = EventInfoType::kSegment;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    event_info.segment_info = {start_time, duration, segment_file_size};</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    event_info_.push_back(event_info);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  }</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;}</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
+<div class="line"><a name="l00199"></a><span class="lineno"><a class="line" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">  199</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">MpdNotifyMuxerListener::OnKeyFrame</a>(int64_t timestamp,</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                                        uint64_t start_byte_offset,</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                                        uint64_t size) {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="comment">// NO-OP for DASH.</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;}</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; </div>
+<div class="line"><a name="l00205"></a><span class="lineno"><a class="line" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">  205</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">MpdNotifyMuxerListener::OnCueEvent</a>(int64_t timestamp,</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                                        <span class="keyword">const</span> std::string&amp; cue_data) {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="comment">// Not using |cue_data| at this moment.</span></div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <span class="keywordflow">if</span> (mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">dash_profile</a>() == DashProfile::kLive) {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a74fed9807b9584387e5da5f0fd28d54d">NotifyCueEvent</a>(notification_id_.value(), timestamp);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <a class="code" href="../../db/d49/structshaka_1_1media_1_1EventInfo.html">EventInfo</a> event_info;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    event_info.type = EventInfoType::kCue;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    event_info.cue_event_info = {timestamp};</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    event_info_.push_back(event_info);</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  }</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;}</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160; </div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="keywordtype">bool</span> MpdNotifyMuxerListener::NotifyNewContainer() {</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  uint32_t notification_id;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordflow">if</span> (!mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae10c06fe6022a1020fc889de389be430">NotifyNewContainer</a>(*media_info_, &amp;notification_id)) {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to notify MpdNotifier.&quot;</span>;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  }</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  notification_id_ = notification_id;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;}</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html">shaka::MpdNotifier</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00027">mpd_notifier.h:27</a></div></div>
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html_a050bde7afb601661a5db508152ffc508"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a050bde7afb601661a5db508152ffc508">shaka::MpdNotifier::mpd_type</a></div><div class="ttdeci">MpdType mpd_type() const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00114">mpd_notifier.h:114</a></div></div>
+<div class="ttc" id="aclassshaka_1_1MpdNotifier_html_a0c44f9156ecc3dcef724b891aae65b24"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a0c44f9156ecc3dcef724b891aae65b24">shaka::MpdNotifier::use_segment_list</a></div><div class="ttdeci">bool use_segment_list() const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00117">mpd_notifier.h:117</a></div></div>
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html_a100236a249477afcda4f50e4914f0eee"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a100236a249477afcda4f50e4914f0eee">shaka::MpdNotifier::NotifyNewSegment</a></div><div class="ttdeci">virtual bool NotifyNewSegment(uint32_t container_id, uint64_t start_time, uint64_t duration, uint64_t size)=0</div></div>
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html_a28714ebd081aa9244aca2beb85c78d37"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">shaka::MpdNotifier::dash_profile</a></div><div class="ttdeci">DashProfile dash_profile() const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00111">mpd_notifier.h:111</a></div></div>
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html_a4d55e7b557c624954b4e05edf6bd83d1"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">shaka::MpdNotifier::NotifyMediaInfoUpdate</a></div><div class="ttdeci">virtual bool NotifyMediaInfoUpdate(uint32_t container_id, const MediaInfo &amp;media_info)=0</div></div>
@@ -309,14 +311,14 @@ $(function() {
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html_ae926a171d926eb142f0e8cffe64bb2a2"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae926a171d926eb142f0e8cffe64bb2a2">shaka::MpdNotifier::include_mspr_pro</a></div><div class="ttdeci">bool include_mspr_pro() const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00108">mpd_notifier.h:108</a></div></div>
 <div class="ttc" id="aclassshaka_1_1MpdNotifier_html_af8149126f4793506bef385d067561dbf"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">shaka::MpdNotifier::Flush</a></div><div class="ttdeci">virtual bool Flush()=0</div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a10071445982f736bb1e6e04133dd60cb"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a10071445982f736bb1e6e04133dd60cb">shaka::media::MpdNotifyMuxerListener::OnEncryptionInfoReady</a></div><div class="ttdeci">void OnEncryptionInfoReady(bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; ProtectionSystemSpecificInfo &gt; &amp;key_system_info) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00031">mpd_notify_muxer_listener.cc:31</a></div></div>
-<div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a1837b4ff54c1eef191448c49bb3ccc56"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">shaka::media::MpdNotifyMuxerListener::OnCueEvent</a></div><div class="ttdeci">void OnCueEvent(int64_t timestamp, const std::string &amp;cue_data) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00204">mpd_notify_muxer_listener.cc:204</a></div></div>
+<div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a1837b4ff54c1eef191448c49bb3ccc56"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">shaka::media::MpdNotifyMuxerListener::OnCueEvent</a></div><div class="ttdeci">void OnCueEvent(int64_t timestamp, const std::string &amp;cue_data) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00205">mpd_notify_muxer_listener.cc:205</a></div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a3b0457b0147310ba07169cf84cfce2aa"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a3b0457b0147310ba07169cf84cfce2aa">shaka::media::MpdNotifyMuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">void OnSampleDurationReady(uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00111">mpd_notify_muxer_listener.cc:111</a></div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a56ccf04196458894f31d0db102153334"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a56ccf04196458894f31d0db102153334">shaka::media::MpdNotifyMuxerListener::OnEncryptionStart</a></div><div class="ttdeci">void OnEncryptionStart() override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00058">mpd_notify_muxer_listener.cc:58</a></div></div>
-<div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a5d9681e36de82c75c99631a55863d2fb"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">shaka::media::MpdNotifyMuxerListener::OnNewSegment</a></div><div class="ttdeci">void OnNewSegment(const std::string &amp;file_name, int64_t start_time, int64_t duration, uint64_t segment_file_size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00181">mpd_notify_muxer_listener.cc:181</a></div></div>
+<div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a5d9681e36de82c75c99631a55863d2fb"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">shaka::media::MpdNotifyMuxerListener::OnNewSegment</a></div><div class="ttdeci">void OnNewSegment(const std::string &amp;file_name, int64_t start_time, int64_t duration, uint64_t segment_file_size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00182">mpd_notify_muxer_listener.cc:182</a></div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_a6912e6cfc341c1a768d214ce08bb0f82"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a6912e6cfc341c1a768d214ce08bb0f82">shaka::media::MpdNotifyMuxerListener::MpdNotifyMuxerListener</a></div><div class="ttdeci">MpdNotifyMuxerListener(MpdNotifier *mpd_notifier)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00022">mpd_notify_muxer_listener.cc:22</a></div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_aa42f5472d5450d897f036ff582a31612"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#aa42f5472d5450d897f036ff582a31612">shaka::media::MpdNotifyMuxerListener::OnMediaEnd</a></div><div class="ttdeci">void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00132">mpd_notify_muxer_listener.cc:132</a></div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_ad0aeb94e2e1fe1b5ead506b690e6f70f"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#ad0aeb94e2e1fe1b5ead506b690e6f70f">shaka::media::MpdNotifyMuxerListener::OnMediaStart</a></div><div class="ttdeci">void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00060">mpd_notify_muxer_listener.cc:60</a></div></div>
-<div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_af18042e753bda8897128b0e091cf9999"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">shaka::media::MpdNotifyMuxerListener::OnKeyFrame</a></div><div class="ttdeci">void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00198">mpd_notify_muxer_listener.cc:198</a></div></div>
+<div class="ttc" id="aclassshaka_1_1media_1_1MpdNotifyMuxerListener_html_af18042e753bda8897128b0e091cf9999"><div class="ttname"><a href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">shaka::media::MpdNotifyMuxerListener::OnKeyFrame</a></div><div class="ttdeci">void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00199">mpd_notify_muxer_listener.cc:199</a></div></div>
 <div class="ttc" id="aclassshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information.</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00065">stream_info.h:65</a></div></div>
 <div class="ttc" id="anamespaceshaka_html"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html">shaka</a></div><div class="ttdoc">All the methods that are virtual are virtual for mocking.</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d15/gflags__hex__bytes_8cc_source.html#l00011">gflags_hex_bytes.cc:11</a></div></div>
 <div class="ttc" id="astructshaka_1_1media_1_1EventInfo_html"><div class="ttname"><a href="../../db/d49/structshaka_1_1media_1_1EventInfo.html">shaka::media::EventInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d4b/event__info_8h_source.html#l00044">event_info.h:44</a></div></div>
@@ -326,7 +328,7 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 9 2021 21:00:12 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Thu Jun 10 2021 21:44:25 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

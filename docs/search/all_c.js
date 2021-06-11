@@ -65,6 +65,6 @@ var searchData=
   ['muxerfactory_526',['MuxerFactory',['../da/d2a/classshaka_1_1media_1_1MuxerFactory.html',1,'shaka::media']]],
   ['muxerlistener_527',['MuxerListener',['../dd/d7a/classshaka_1_1media_1_1MuxerListener.html',1,'shaka::media']]],
   ['muxerlistenerat_528',['MuxerListenerAt',['../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a9098555ce57c631f6cf0998e62fcc68b',1,'shaka::media::CombinedMuxerListener']]],
-  ['muxerlistenerfactory_529',['MuxerListenerFactory',['../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html#acca820fdaa838f08770b58e57d97f7e3',1,'shaka::media::MuxerListenerFactory::MuxerListenerFactory()'],['../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html',1,'shaka::media::MuxerListenerFactory']]],
+  ['muxerlistenerfactory_529',['MuxerListenerFactory',['../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html#ae72549917a0dc982f3fe44c4a961da91',1,'shaka::media::MuxerListenerFactory::MuxerListenerFactory()'],['../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html',1,'shaka::media::MuxerListenerFactory']]],
   ['muxeroptions_530',['MuxerOptions',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html',1,'shaka::media']]]
 ];

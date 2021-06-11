@@ -85,9 +85,12 @@ Inheritance diagram for shaka::media::VodMediaInfoDumpMuxerListener:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a26b9f8b1d8b9e363b67ded33cd5bf25c"><td class="memItemLeft" align="right" valign="top"><a id="a26b9f8b1d8b9e363b67ded33cd5bf25c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VodMediaInfoDumpMuxerListener</b> (const std::string &amp;output_file_name)</td></tr>
-<tr class="separator:a26b9f8b1d8b9e363b67ded33cd5bf25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3e12c033b073f65fad082ec6921351b"><td class="memItemLeft" align="right" valign="top"><a id="ad3e12c033b073f65fad082ec6921351b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VodMediaInfoDumpMuxerListener</b> (const std::string &amp;output_file_name, bool use_segment_list)</td></tr>
+<tr class="separator:ad3e12c033b073f65fad082ec6921351b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef8590df97ea22acd00c7a1bc8d7cb8a"><td class="memItemLeft" align="right" valign="top"><a id="aef8590df97ea22acd00c7a1bc8d7cb8a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_use_segment_list</b> (bool value)</td></tr>
+<tr class="separator:aef8590df97ea22acd00c7a1bc8d7cb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
 <tr class="memitem:a683882564ac762e2e94795964f8be4b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a683882564ac762e2e94795964f8be4b8">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;default_key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
 <tr class="separator:a683882564ac762e2e94795964f8be4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,7 +176,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aa9d6d113d7a0b58fffc1abac99013757">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00107">107</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00108">108</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -240,7 +243,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab521acca727bbe01aa15c751325c0001">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00030">30</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -270,7 +273,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00068">68</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -324,7 +327,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ade7b35913ba90256e567085af1649138">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00103">103</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00104">104</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -371,7 +374,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00077">77</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00078">78</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -432,7 +435,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -493,7 +496,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aaf755e05c40fdadcca6113164f0585c6">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00090">90</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00091">91</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -529,7 +532,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00069">69</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00070">70</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -575,7 +578,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00113">113</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00114">114</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -586,7 +589,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 9 2021 21:00:14 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Thu Jun 10 2021 21:44:28 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

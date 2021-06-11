@@ -126,6 +126,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:a6462a0b4d325e183c4f20ead905c5f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b9e838af6d1a602e7eaee30a0a9c979"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#a0b9e838af6d1a602e7eaee30a0a9c979">include_mspr_pro</a> = true</td></tr>
 <tr class="separator:a0b9e838af6d1a602e7eaee30a0a9c979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32f74783f0055bff430910defb2c5a3b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#a32f74783f0055bff430910defb2c5a3b">use_segment_list</a> = false</td></tr>
+<tr class="separator:a32f74783f0055bff430910defb2c5a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -366,13 +368,30 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a32f74783f0055bff430910defb2c5a3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32f74783f0055bff430910defb2c5a3b">&#9670;&nbsp;</a></span>use_segment_list</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::MpdParams::use_segment_list = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Uses SegmentList instead of SegmentBase. Use this if the content is huge and the total number of (sub)segment references is greater than what the sidx atom allows (65535). </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00093">93</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>packager/mpd/public/<a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 9 2021 21:00:13 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Thu Jun 10 2021 21:44:26 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

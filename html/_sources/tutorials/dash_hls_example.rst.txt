@@ -12,7 +12,7 @@
 The above packaging command creates five single file MP4 streams, and HLS
 playlists as well as DASH manifests.
 
-* Output DASH + HLS with dash_only and hls_only options
+* Output DASH + HLS with dash_only and hls_only options::
 
     $ packager \
       'in=h264_baseline_360p_600.mp4,stream=audio,init_segment=audio/init.mp4,segment_template=audio/$Number$.m4s' \

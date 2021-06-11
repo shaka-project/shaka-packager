@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vp9_5fsubsample_5fencryption_1946',['vp9_subsample_encryption',['../dc/da0/structshaka_1_1EncryptionParams.html#a48d415f17d51306ce7e1931fd954c37c',1,'shaka::EncryptionParams']]]
+  ['use_5fsegment_5flist_1948',['use_segment_list',['../df/ddc/structshaka_1_1MpdParams.html#a32f74783f0055bff430910defb2c5a3b',1,'shaka::MpdParams']]]
 ];

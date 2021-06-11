@@ -358,144 +358,147 @@ $(function() {
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; </div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="comment">// Skip the warning message for memory files, which is meant for testing</span></div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// anyway..</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keywordflow">if</span> (strncmp(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0) {</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Writing to &quot;</span> &lt;&lt; <a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot; is not guaranteed to be atomic.&quot;</span>;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  }</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#a483ce187d628385d342748315d72f8ab">WriteStringToFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, contents);</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; </div>
-<div class="line"><a name="l00297"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#af2cbec5c6dc1c97ada010acd83b9728a">  297</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#af2cbec5c6dc1c97ada010acd83b9728a">File::Copy</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* from_file_name, <span class="keyword">const</span> <span class="keywordtype">char</span>* to_file_name) {</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  std::string content;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  VLOG(2) &lt;&lt; <span class="stringliteral">&quot;File::Copy from &quot;</span> &lt;&lt; from_file_name &lt;&lt; <span class="stringliteral">&quot; to &quot;</span> &lt;&lt; to_file_name;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">ReadFileToString</a>(from_file_name, &amp;content)) {</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to open file &quot;</span> &lt;&lt; from_file_name;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; output_file(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">File::Open</a>(to_file_name, <span class="stringliteral">&quot;w&quot;</span>));</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keywordflow">if</span> (!output_file) {</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write to &quot;</span> &lt;&lt; to_file_name;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  }</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  uint64_t bytes_left = content.size();</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  uint64_t total_bytes_written = 0;</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* content_cstr = content.c_str();</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="keywordflow">while</span> (bytes_left &gt; total_bytes_written) {</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="keyword">const</span> int64_t bytes_written =</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        output_file-&gt;Write(content_cstr + total_bytes_written, bytes_left);</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keywordflow">if</span> (bytes_written &lt; 0) {</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure while writing to &quot;</span> &lt;&lt; to_file_name;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    }</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160; </div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    total_bytes_written += bytes_written;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  }</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="keywordflow">if</span> (!output_file.release()-&gt;Close()) {</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    LOG(ERROR)</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Failed to close file &#39;&quot;</span> &lt;&lt; to_file_name</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;&#39;, possibly file permission issue or running out of disk space.&quot;</span>;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  }</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;}</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160; </div>
-<div class="line"><a name="l00333"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">  333</a></span>&#160;int64_t <a class="code" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">File::CopyFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* source, <a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* destination) {</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">CopyFile</a>(source, destination, kWholeFile);</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;}</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
-<div class="line"><a name="l00337"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a07e2d2f98597320f71fb96dff74cfcb2">  337</a></span>&#160;int64_t <a class="code" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">File::CopyFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* source, <a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* destination, int64_t max_copy) {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  DCHECK(source);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  DCHECK(destination);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="keywordflow">if</span> (max_copy &lt; 0)</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    max_copy = std::numeric_limits&lt;int64_t&gt;::max();</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  VLOG(2) &lt;&lt; <span class="stringliteral">&quot;File::CopyFile from &quot;</span> &lt;&lt; source-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>() &lt;&lt; <span class="stringliteral">&quot; to &quot;</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;          &lt;&lt; destination-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>();</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="comment">// Also check for http files, as they can&#39;t do atomic writes.</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordflow">if</span> (strncmp(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      &amp;&amp; strncmp(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, kHttpFilePrefix, strlen(kHttpFilePrefix)) != 0</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      &amp;&amp; strncmp(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, kHttpsFilePrefix, strlen(kHttpsFilePrefix)) != 0) {</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Writing to &quot;</span> &lt;&lt; <a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot; is not guaranteed to be atomic.&quot;</span>;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  }</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#a483ce187d628385d342748315d72f8ab">WriteStringToFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, contents);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;}</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160; </div>
+<div class="line"><a name="l00300"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#af2cbec5c6dc1c97ada010acd83b9728a">  300</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#af2cbec5c6dc1c97ada010acd83b9728a">File::Copy</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* from_file_name, <span class="keyword">const</span> <span class="keywordtype">char</span>* to_file_name) {</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  std::string content;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  VLOG(2) &lt;&lt; <span class="stringliteral">&quot;File::Copy from &quot;</span> &lt;&lt; from_file_name &lt;&lt; <span class="stringliteral">&quot; to &quot;</span> &lt;&lt; to_file_name;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">ReadFileToString</a>(from_file_name, &amp;content)) {</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to open file &quot;</span> &lt;&lt; from_file_name;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  }</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160; </div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; output_file(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">File::Open</a>(to_file_name, <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="keywordflow">if</span> (!output_file) {</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write to &quot;</span> &lt;&lt; to_file_name;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  }</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160; </div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  uint64_t bytes_left = content.size();</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  uint64_t total_bytes_written = 0;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* content_cstr = content.c_str();</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="keywordflow">while</span> (bytes_left &gt; total_bytes_written) {</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keyword">const</span> int64_t bytes_written =</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        output_file-&gt;Write(content_cstr + total_bytes_written, bytes_left);</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">if</span> (bytes_written &lt; 0) {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure while writing to &quot;</span> &lt;&lt; to_file_name;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    }</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    total_bytes_written += bytes_written;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  }</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keywordflow">if</span> (!output_file.release()-&gt;Close()) {</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    LOG(ERROR)</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Failed to close file &#39;&quot;</span> &lt;&lt; to_file_name</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;&#39;, possibly file permission issue or running out of disk space.&quot;</span>;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  }</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;}</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160; </div>
+<div class="line"><a name="l00336"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">  336</a></span>&#160;int64_t <a class="code" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">File::CopyFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* source, <a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* destination) {</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">CopyFile</a>(source, destination, kWholeFile);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;}</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
+<div class="line"><a name="l00340"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a07e2d2f98597320f71fb96dff74cfcb2">  340</a></span>&#160;int64_t <a class="code" href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">File::CopyFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* source, <a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* destination, int64_t max_copy) {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  DCHECK(source);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  DCHECK(destination);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keywordflow">if</span> (max_copy &lt; 0)</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    max_copy = std::numeric_limits&lt;int64_t&gt;::max();</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="keyword">const</span> int64_t kBufferSize = 0x40000;  <span class="comment">// 256KB.</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  std::unique_ptr&lt;uint8_t[]&gt; buffer(<span class="keyword">new</span> uint8_t[kBufferSize]);</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  int64_t bytes_copied = 0;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="keywordflow">while</span> (bytes_copied &lt; max_copy) {</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keyword">const</span> int64_t size = std::min(kBufferSize, max_copy - bytes_copied);</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keyword">const</span> int64_t bytes_read = source-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a6e1ecb2904b609554d332290f20fde0a">Read</a>(buffer.get(), size);</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    <span class="keywordflow">if</span> (bytes_read &lt; 0)</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      <span class="keywordflow">return</span> bytes_read;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordflow">if</span> (bytes_read == 0)</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    int64_t total_bytes_written = 0;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <span class="keywordflow">while</span> (total_bytes_written &lt; bytes_read) {</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      <span class="keyword">const</span> int64_t bytes_written = destination-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a8c498531ecbd205fceb0be3478361801">Write</a>(</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;          buffer.get() + total_bytes_written, bytes_read - total_bytes_written);</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keywordflow">if</span> (bytes_written &lt; 0)</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        <span class="keywordflow">return</span> bytes_written;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160; </div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      total_bytes_written += bytes_written;</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    }</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  VLOG(2) &lt;&lt; <span class="stringliteral">&quot;File::CopyFile from &quot;</span> &lt;&lt; source-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>() &lt;&lt; <span class="stringliteral">&quot; to &quot;</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;          &lt;&lt; destination-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>();</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160; </div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="keyword">const</span> int64_t kBufferSize = 0x40000;  <span class="comment">// 256KB.</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  std::unique_ptr&lt;uint8_t[]&gt; buffer(<span class="keyword">new</span> uint8_t[kBufferSize]);</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  int64_t bytes_copied = 0;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="keywordflow">while</span> (bytes_copied &lt; max_copy) {</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="keyword">const</span> int64_t size = std::min(kBufferSize, max_copy - bytes_copied);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keyword">const</span> int64_t bytes_read = source-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a6e1ecb2904b609554d332290f20fde0a">Read</a>(buffer.get(), size);</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keywordflow">if</span> (bytes_read &lt; 0)</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;      <span class="keywordflow">return</span> bytes_read;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    <span class="keywordflow">if</span> (bytes_read == 0)</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    int64_t total_bytes_written = 0;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordflow">while</span> (total_bytes_written &lt; bytes_read) {</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      <span class="keyword">const</span> int64_t bytes_written = destination-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a8c498531ecbd205fceb0be3478361801">Write</a>(</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;          buffer.get() + total_bytes_written, bytes_read - total_bytes_written);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      <span class="keywordflow">if</span> (bytes_written &lt; 0)</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;        <span class="keywordflow">return</span> bytes_written;</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    DCHECK_EQ(total_bytes_written, bytes_read);</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    bytes_copied += bytes_read;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  }</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160; </div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  <span class="keywordflow">return</span> bytes_copied;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;}</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      total_bytes_written += bytes_written;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    }</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160; </div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    DCHECK_EQ(total_bytes_written, bytes_read);</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    bytes_copied += bytes_read;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  }</div>
 <div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160; </div>
-<div class="line"><a name="l00374"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a8eb71689f5456ba0b1a401c57386caaf">  374</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#a8eb71689f5456ba0b1a401c57386caaf">File::IsLocalRegularFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name) {</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  base::StringPiece real_file_name;</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;  <span class="keyword">const</span> FileTypeInfo* file_type = GetFileTypeInfo(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, &amp;real_file_name);</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  DCHECK(file_type);</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <span class="keywordflow">if</span> (file_type-&gt;type != kLocalFilePrefix)</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="preprocessor">#if defined(OS_WIN)</span></div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  <span class="keyword">const</span> base::FilePath file_path(</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      base::FilePath::FromUTF8Unsafe(real_file_name));</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;  <span class="keyword">const</span> DWORD fileattr = GetFileAttributes(file_path.value().c_str());</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  <span class="keywordflow">if</span> (fileattr == INVALID_FILE_ATTRIBUTES) {</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to GetFileAttributes of &quot;</span> &lt;&lt; file_path.value();</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  }</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordflow">return</span> (fileattr &amp; FILE_ATTRIBUTE_DIRECTORY) == 0;</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  <span class="keyword">struct </span>stat info;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="keywordflow">if</span> (stat(real_file_name.data(), &amp;info) != 0) {</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to run stat on &quot;</span> &lt;&lt; real_file_name;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  }</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <span class="keywordflow">return</span> S_ISREG(info.st_mode);</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;}</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
-<div class="line"><a name="l00399"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae">  399</a></span>&#160;std::string <a class="code" href="../../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae">File::MakeCallbackFileName</a>(</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a>&amp; callback_params,</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    <span class="keyword">const</span> std::string&amp; name) {</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  <span class="keywordflow">if</span> (name.empty())</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(<span class="stringliteral">&quot;%s%&quot;</span> PRIdPTR <span class="stringliteral">&quot;/%s&quot;</span>, kCallbackFilePrefix,</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;                            <span class="keyword">reinterpret_cast&lt;</span>intptr_t<span class="keyword">&gt;</span>(&amp;callback_params),</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;                            name.c_str());</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;}</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
-<div class="line"><a name="l00409"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#ae87642f9661588e47479721cd101bf7d">  409</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#ae87642f9661588e47479721cd101bf7d">File::ParseCallbackFileName</a>(<span class="keyword">const</span> std::string&amp; callback_file_name,</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;                                 <span class="keyword">const</span> <a class="code" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a>** callback_params,</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;                                 std::string* name) {</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  <span class="keywordtype">size_t</span> pos = callback_file_name.find(<span class="stringliteral">&quot;/&quot;</span>);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  int64_t callback_address = 0;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  <span class="keywordflow">if</span> (pos == std::string::npos ||</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;      !base::StringToInt64(callback_file_name.substr(0, pos),</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;                           &amp;callback_address)) {</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting CallbackFile with name like &quot;</span></div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;                  <span class="stringliteral">&quot;&#39;&lt;callback address&gt;/&lt;entity name&gt;&#39;, but seeing &quot;</span></div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;               &lt;&lt; callback_file_name;</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  }</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  *callback_params = <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a>*<span class="keyword">&gt;</span>(callback_address);</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  *name = callback_file_name.substr(pos + 1);</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;}</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160; </div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="keywordflow">return</span> bytes_copied;</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;}</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
+<div class="line"><a name="l00377"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a8eb71689f5456ba0b1a401c57386caaf">  377</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#a8eb71689f5456ba0b1a401c57386caaf">File::IsLocalRegularFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name) {</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  base::StringPiece real_file_name;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="keyword">const</span> FileTypeInfo* file_type = GetFileTypeInfo(<a class="code" href="../../d3/d73/classshaka_1_1File.html#a4b06e08bb0295cb89fca45f9356ecbae">file_name</a>, &amp;real_file_name);</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  DCHECK(file_type);</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  <span class="keywordflow">if</span> (file_type-&gt;type != kLocalFilePrefix)</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="preprocessor">#if defined(OS_WIN)</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  <span class="keyword">const</span> base::FilePath file_path(</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      base::FilePath::FromUTF8Unsafe(real_file_name));</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <span class="keyword">const</span> DWORD fileattr = GetFileAttributes(file_path.value().c_str());</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <span class="keywordflow">if</span> (fileattr == INVALID_FILE_ATTRIBUTES) {</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to GetFileAttributes of &quot;</span> &lt;&lt; file_path.value();</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  }</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="keywordflow">return</span> (fileattr &amp; FILE_ATTRIBUTE_DIRECTORY) == 0;</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="keyword">struct </span>stat info;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  <span class="keywordflow">if</span> (stat(real_file_name.data(), &amp;info) != 0) {</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to run stat on &quot;</span> &lt;&lt; real_file_name;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  }</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  <span class="keywordflow">return</span> S_ISREG(info.st_mode);</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;}</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160; </div>
+<div class="line"><a name="l00402"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae">  402</a></span>&#160;std::string <a class="code" href="../../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae">File::MakeCallbackFileName</a>(</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a>&amp; callback_params,</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    <span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;  <span class="keywordflow">if</span> (name.empty())</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(<span class="stringliteral">&quot;%s%&quot;</span> PRIdPTR <span class="stringliteral">&quot;/%s&quot;</span>, kCallbackFilePrefix,</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;                            <span class="keyword">reinterpret_cast&lt;</span>intptr_t<span class="keyword">&gt;</span>(&amp;callback_params),</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;                            name.c_str());</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;}</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160; </div>
+<div class="line"><a name="l00412"></a><span class="lineno"><a class="line" href="../../d3/d73/classshaka_1_1File.html#ae87642f9661588e47479721cd101bf7d">  412</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/d73/classshaka_1_1File.html#ae87642f9661588e47479721cd101bf7d">File::ParseCallbackFileName</a>(<span class="keyword">const</span> std::string&amp; callback_file_name,</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;                                 <span class="keyword">const</span> <a class="code" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a>** callback_params,</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;                                 std::string* name) {</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordtype">size_t</span> pos = callback_file_name.find(<span class="stringliteral">&quot;/&quot;</span>);</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  int64_t callback_address = 0;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;  <span class="keywordflow">if</span> (pos == std::string::npos ||</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;      !base::StringToInt64(callback_file_name.substr(0, pos),</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;                           &amp;callback_address)) {</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting CallbackFile with name like &quot;</span></div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;                  <span class="stringliteral">&quot;&#39;&lt;callback address&gt;/&lt;entity name&gt;&#39;, but seeing &quot;</span></div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;               &lt;&lt; callback_file_name;</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  }</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  *callback_params = <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a>*<span class="keyword">&gt;</span>(callback_address);</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  *name = callback_file_name.substr(pos + 1);</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160; </div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="aclassshaka_1_1File_html"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html">shaka::File</a></div><div class="ttdoc">Define an abstract file interface.</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00027">file.h:27</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a0a50526352bd6e946c4f33d3e8431b2d"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a0a50526352bd6e946c4f33d3e8431b2d">shaka::File::OpenWithNoBuffering</a></div><div class="ttdeci">static File * OpenWithNoBuffering(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00201">file.cc:201</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a383c9f670511961f334569fd1a7a103b"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a383c9f670511961f334569fd1a7a103b">shaka::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00212">file.cc:212</a></div></div>
@@ -504,17 +507,17 @@ $(function() {
 <div class="ttc" id="aclassshaka_1_1File_html_a4b5280fe058359b5991037f90dde2b77"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a4b5280fe058359b5991037f90dde2b77">shaka::File::WriteFileAtomically</a></div><div class="ttdeci">static bool WriteFileAtomically(const char *file_name, const std::string &amp;contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00277">file.cc:277</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a68a15f623c2a1601879f291f93a1f464"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">shaka::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly.</div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a6e1ecb2904b609554d332290f20fde0a"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a6e1ecb2904b609554d332290f20fde0a">shaka::File::Read</a></div><div class="ttdeci">virtual int64_t Read(void *buffer, uint64_t length)=0</div></div>
-<div class="ttc" id="aclassshaka_1_1File_html_a7a90ebd27f7728a7075cf3ba97396cae"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae">shaka::File::MakeCallbackFileName</a></div><div class="ttdeci">static std::string MakeCallbackFileName(const BufferCallbackParams &amp;callback_params, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00399">file.cc:399</a></div></div>
-<div class="ttc" id="aclassshaka_1_1File_html_a85633ec9f051eb9f32b07ff7e7740d1c"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">shaka::File::CopyFile</a></div><div class="ttdeci">static int64_t CopyFile(File *source, File *destination)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00333">file.cc:333</a></div></div>
+<div class="ttc" id="aclassshaka_1_1File_html_a7a90ebd27f7728a7075cf3ba97396cae"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae">shaka::File::MakeCallbackFileName</a></div><div class="ttdeci">static std::string MakeCallbackFileName(const BufferCallbackParams &amp;callback_params, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00402">file.cc:402</a></div></div>
+<div class="ttc" id="aclassshaka_1_1File_html_a85633ec9f051eb9f32b07ff7e7740d1c"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a85633ec9f051eb9f32b07ff7e7740d1c">shaka::File::CopyFile</a></div><div class="ttdeci">static int64_t CopyFile(File *source, File *destination)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00336">file.cc:336</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a8c498531ecbd205fceb0be3478361801"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a8c498531ecbd205fceb0be3478361801">shaka::File::Write</a></div><div class="ttdeci">virtual int64_t Write(const void *buffer, uint64_t length)=0</div></div>
-<div class="ttc" id="aclassshaka_1_1File_html_a8eb71689f5456ba0b1a401c57386caaf"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a8eb71689f5456ba0b1a401c57386caaf">shaka::File::IsLocalRegularFile</a></div><div class="ttdeci">static bool IsLocalRegularFile(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00374">file.cc:374</a></div></div>
+<div class="ttc" id="aclassshaka_1_1File_html_a8eb71689f5456ba0b1a401c57386caaf"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a8eb71689f5456ba0b1a401c57386caaf">shaka::File::IsLocalRegularFile</a></div><div class="ttdeci">static bool IsLocalRegularFile(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00377">file.cc:377</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a932666ed1d6a565bf387a9d8b39a8948"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a932666ed1d6a565bf387a9d8b39a8948">shaka::File::Close</a></div><div class="ttdeci">virtual bool Close()=0</div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_ac7b5143f9b8c3e786762fe4ada2b8dcf"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ac7b5143f9b8c3e786762fe4ada2b8dcf">shaka::File::Open</a></div><div class="ttdeci">static File * Open(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00190">file.cc:190</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_ac978d5c0585850d4d9948fdf39b33292"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ac978d5c0585850d4d9948fdf39b33292">shaka::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00221">file.cc:221</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_ac9a19cb5fc45664ca440996bf1201c30"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">shaka::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00230">file.cc:230</a></div></div>
-<div class="ttc" id="aclassshaka_1_1File_html_ae87642f9661588e47479721cd101bf7d"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ae87642f9661588e47479721cd101bf7d">shaka::File::ParseCallbackFileName</a></div><div class="ttdeci">static bool ParseCallbackFileName(const std::string &amp;callback_file_name, const BufferCallbackParams **callback_params, std::string *name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00409">file.cc:409</a></div></div>
+<div class="ttc" id="aclassshaka_1_1File_html_ae87642f9661588e47479721cd101bf7d"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ae87642f9661588e47479721cd101bf7d">shaka::File::ParseCallbackFileName</a></div><div class="ttdeci">static bool ParseCallbackFileName(const std::string &amp;callback_file_name, const BufferCallbackParams **callback_params, std::string *name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00412">file.cc:412</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_aeb98b64a05f141140e110170bef1bc55"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#aeb98b64a05f141140e110170bef1bc55">shaka::File::Size</a></div><div class="ttdeci">virtual int64_t Size()=0</div></div>
-<div class="ttc" id="aclassshaka_1_1File_html_af2cbec5c6dc1c97ada010acd83b9728a"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#af2cbec5c6dc1c97ada010acd83b9728a">shaka::File::Copy</a></div><div class="ttdeci">static bool Copy(const char *from_file_name, const char *to_file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00297">file.cc:297</a></div></div>
+<div class="ttc" id="aclassshaka_1_1File_html_af2cbec5c6dc1c97ada010acd83b9728a"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#af2cbec5c6dc1c97ada010acd83b9728a">shaka::File::Copy</a></div><div class="ttdeci">static bool Copy(const char *from_file_name, const char *to_file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00300">file.cc:300</a></div></div>
 <div class="ttc" id="aclassshaka_1_1LocalFile_html_a7eb47bb6ceff52c57e3eb4a21fb0ba8d"><div class="ttname"><a href="../../d7/dbd/classshaka_1_1LocalFile.html#a7eb47bb6ceff52c57e3eb4a21fb0ba8d">shaka::LocalFile::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00199">local_file.cc:199</a></div></div>
 <div class="ttc" id="aclassshaka_1_1MemoryFile_html_a3ac9c9e8e3a31ef8f70a904384f89bed"><div class="ttname"><a href="../../de/dad/classshaka_1_1MemoryFile.html#a3ac9c9e8e3a31ef8f70a904384f89bed">shaka::MemoryFile::Delete</a></div><div class="ttdeci">static void Delete(const std::string &amp;file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d87/memory__file_8cc_source.html#l00190">memory_file.cc:190</a></div></div>
 <div class="ttc" id="anamespaceshaka_html"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html">shaka</a></div><div class="ttdoc">All the methods that are virtual are virtual for mocking.</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d15/gflags__hex__bytes_8cc_source.html#l00011">gflags_hex_bytes.cc:11</a></div></div>
@@ -523,7 +526,7 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 9 2021 21:00:12 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Thu Jun 10 2021 21:44:25 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

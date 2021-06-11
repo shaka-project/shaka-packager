@@ -83,8 +83,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:acca820fdaa838f08770b58e57d97f7e3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html#acca820fdaa838f08770b58e57d97f7e3">MuxerListenerFactory</a> (bool output_media_info, <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html">MpdNotifier</a> *mpd_notifier, <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html">hls::HlsNotifier</a> *hls_notifier)</td></tr>
-<tr class="separator:acca820fdaa838f08770b58e57d97f7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae72549917a0dc982f3fe44c4a961da91"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html#ae72549917a0dc982f3fe44c4a961da91">MuxerListenerFactory</a> (bool output_media_info, bool use_segment_list, <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html">MpdNotifier</a> *mpd_notifier, <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html">hls::HlsNotifier</a> *hls_notifier)</td></tr>
+<tr class="separator:ae72549917a0dc982f3fe44c4a961da91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8eb1eaf0b57ef7d491353ba57792f071"><td class="memItemLeft" align="right" valign="top"><a id="a8eb1eaf0b57ef7d491353ba57792f071"></a>
 std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/classshaka_1_1media_1_1MuxerListenerFactory.html#a8eb1eaf0b57ef7d491353ba57792f071">CreateListener</a> (const <a class="el" href="../../de/db5/structshaka_1_1media_1_1MuxerListenerFactory_1_1StreamData.html">StreamData</a> &amp;stream)</td></tr>
 <tr class="memdesc:a8eb1eaf0b57ef7d491353ba57792f071"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a listener for a stream. <br /></td></tr>
@@ -102,8 +102,8 @@ std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1Muxe
 
 <p class="definition">Definition at line <a class="el" href="../../dc/da4/muxer__listener__factory_8h_source.html#l00033">33</a> of file <a class="el" href="../../dc/da4/muxer__listener__factory_8h_source.html">muxer_listener_factory.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="acca820fdaa838f08770b58e57d97f7e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acca820fdaa838f08770b58e57d97f7e3">&#9670;&nbsp;</a></span>MuxerListenerFactory()</h2>
+<a id="ae72549917a0dc982f3fe44c4a961da91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae72549917a0dc982f3fe44c4a961da91">&#9670;&nbsp;</a></span>MuxerListenerFactory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -113,6 +113,12 @@ std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1Muxe
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>output_media_info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>use_segment_list</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -136,13 +142,14 @@ std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1Muxe
 <p>Create a new muxer listener. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">output_media_info</td><td>must be true for the combined listener to include a media info dump listener. </td></tr>
+    <tr><td class="paramname">use_segment_list</td><td>is set when mpd_notifier_ is null and &ndash;output_media_info is set. If mpd_notifer is non-null, this value is the same as mpd_notifier-&gt;use_segment_list(). </td></tr>
     <tr><td class="paramname">mpd_notifer</td><td>must be non-null for the combined listener to include a mpd listener. </td></tr>
     <tr><td class="paramname">hls_notifier</td><td>must be non-null for the combined listener to include an HLS listener. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html#l00082">82</a> of file <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html">muxer_listener_factory.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html#l00083">83</a> of file <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html">muxer_listener_factory.cc</a>.</p>
 
 </div>
 </div>
@@ -164,7 +171,7 @@ std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1Muxe
 </div><div class="memdoc">
 <p>Create an HLS listener if possible. If it is not possible to create an HLS listener, this method will return null. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html#l00127">127</a> of file <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html">muxer_listener_factory.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html#l00131">131</a> of file <a class="el" href="../../d0/d05/muxer__listener__factory_8cc_source.html">muxer_listener_factory.cc</a>.</p>
 
 </div>
 </div>
@@ -175,7 +182,7 @@ std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1Muxe
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 9 2021 21:00:14 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Thu Jun 10 2021 21:44:28 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

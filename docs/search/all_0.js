@@ -46,7 +46,7 @@ var searchData=
   ['addthread_43',['AddThread',['../d0/dea/classshaka_1_1media_1_1SyncPointQueue.html#a84f1c4ad047ffa4bd75d5d1426bf9cd2',1,'shaka::media::SyncPointQueue']]],
   ['addtrickplayreference_44',['AddTrickPlayReference',['../d8/d8e/classshaka_1_1AdaptationSet.html#a834d1c61e34db517169b802b8a11eeda',1,'shaka::AdaptationSet']]],
   ['addvideoinfo_45',['AddVideoInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a11457f5b89522919b61d83cc0bbd51dc',1,'shaka::xml::RepresentationXmlNode']]],
-  ['addvodonlyinfo_46',['AddVODOnlyInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a5141fe43e6a15233d6214bc05eb52f0d',1,'shaka::xml::RepresentationXmlNode']]],
+  ['addvodonlyinfo_46',['AddVODOnlyInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#aed9603fb7d1ca1b283060e2a39590be9',1,'shaka::xml::RepresentationXmlNode']]],
   ['adtsheader_47',['AdtsHeader',['../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html',1,'shaka::media::mp2t']]],
   ['advance_48',['Advance',['../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a',1,'shaka::media::NaluReader']]],
   ['advancechunk_49',['AdvanceChunk',['../d9/d57/classshaka_1_1media_1_1mp4_1_1ChunkInfoIterator.html#aacde1d08a3ce21cf187a1dff4fe031b4',1,'shaka::media::mp4::ChunkInfoIterator']]],

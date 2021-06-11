@@ -336,272 +336,274 @@ $(function() {
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  }</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160; </div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="keywordflow">if</span> (HasVODOnlyFields(media_info_) &amp;&amp;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      !representation.<a class="code" href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a5141fe43e6a15233d6214bc05eb52f0d">AddVODOnlyInfo</a>(media_info_)) {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add VOD info.&quot;</span>;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="keywordflow">return</span> base::nullopt;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="keywordflow">if</span> (HasLiveOnlyFields(media_info_) &amp;&amp;</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      !representation.<a class="code" href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#ac9a4d8ed5a9710408904ca0f7c13b66e">AddLiveOnlyInfo</a>(media_info_, segment_infos_,</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                                      start_number_)) {</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add Live info.&quot;</span>;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    <span class="keywordflow">return</span> base::nullopt;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  }</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="comment">// TODO(rkuroiwa): It is likely that all representations have the exact same</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="comment">// SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.</span></div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160; </div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  output_suppression_flags_ = 0;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="keywordflow">return</span> std::move(representation);</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;}</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160; </div>
-<div class="line"><a name="l00286"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed">  286</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed">Representation::SuppressOnce</a>(SuppressFlag flag) {</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  output_suppression_flags_ |= flag;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;}</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
-<div class="line"><a name="l00290"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#aa93fd6cd965d3091a280debc93656d57">  290</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html#aa93fd6cd965d3091a280debc93656d57">Representation::SetPresentationTimeOffset</a>(</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordtype">double</span> presentation_time_offset) {</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  int64_t pto = presentation_time_offset * media_info_.reference_time_scale();</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="keywordflow">if</span> (pto &lt;= 0)</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  media_info_.set_presentation_time_offset(pto);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
-<div class="line"><a name="l00298"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#a94fcb546e555637d33286515c1a44545">  298</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html#a94fcb546e555637d33286515c1a44545">Representation::GetStartAndEndTimestamps</a>(</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keywordtype">double</span>* start_timestamp_seconds,</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordtype">double</span>* end_timestamp_seconds)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="keywordflow">if</span> (segment_infos_.empty())</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160; </div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">if</span> (start_timestamp_seconds) {</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    *start_timestamp_seconds =</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(segment_infos_.begin()-&gt;start_time) /</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        GetTimeScale(media_info_);</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  }</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="keywordflow">if</span> (end_timestamp_seconds) {</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    *end_timestamp_seconds =</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(segment_infos_.rbegin()-&gt;start_time +</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                            segment_infos_.rbegin()-&gt;duration *</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                                (segment_infos_.rbegin()-&gt;repeat + 1)) /</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        GetTimeScale(media_info_);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  }</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;}</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="keywordtype">bool</span> Representation::HasRequiredMediaInfoFields()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  <span class="keywordflow">if</span> (HasVODOnlyFields(media_info_) &amp;&amp; HasLiveOnlyFields(media_info_)) {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo cannot have both VOD and Live fields.&quot;</span>;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  }</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="keywordflow">if</span> (!media_info_.has_container_type()) {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo missing required field: container_type.&quot;</span>;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  }</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160; </div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;}</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160; </div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="keywordtype">void</span> Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keyword">const</span> uint64_t kNoRepeat = 0;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  <span class="keyword">const</span> int64_t adjusted_duration = AdjustDuration(duration);</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keywordflow">if</span> (!segment_infos_.empty()) {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="comment">// Contiguous segment.</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keyword">const</span> SegmentInfo&amp; previous = segment_infos_.back();</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="keyword">const</span> int64_t previous_segment_end_time =</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        previous.start_time + previous.duration * (previous.repeat + 1);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="comment">// Make it continuous if the segment start time is close to previous segment</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <span class="comment">// end time.</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    <span class="keywordflow">if</span> (ApproximiatelyEqual(previous_segment_end_time, start_time)) {</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      <span class="keyword">const</span> int64_t segment_end_time_for_same_duration =</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;          previous_segment_end_time + previous.duration;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;      <span class="keyword">const</span> int64_t actual_segment_end_time = start_time + duration;</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;      <span class="comment">// Consider the segments having identical duration if the segment end time</span></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;      <span class="comment">// is close to calculated segment end time by assuming identical duration.</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      <span class="keywordflow">if</span> (ApproximiatelyEqual(segment_end_time_for_same_duration,</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;                              actual_segment_end_time)) {</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        ++segment_infos_.back().repeat;</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        segment_infos_.push_back(</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;            {previous_segment_end_time,</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;             actual_segment_end_time - previous_segment_end_time, kNoRepeat});</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;      }</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;      <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    }</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160; </div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="comment">// A gap since previous.</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    <span class="keyword">const</span> int64_t kRoundingErrorGrace = 5;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="keywordflow">if</span> (previous_segment_end_time + kRoundingErrorGrace &lt; start_time) {</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      LOG(WARNING) &lt;&lt; RepresentationAsString() &lt;&lt; <span class="stringliteral">&quot; Found a gap of size &quot;</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;                   &lt;&lt; (start_time - previous_segment_end_time)</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot; &gt; kRoundingErrorGrace (&quot;</span> &lt;&lt; kRoundingErrorGrace</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot;). The new segment starts at &quot;</span> &lt;&lt; start_time</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot; but the previous segment ends at &quot;</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                   &lt;&lt; previous_segment_end_time &lt;&lt; <span class="stringliteral">&quot;.&quot;</span>;</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    }</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="comment">// No overlapping segments.</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="keywordflow">if</span> (start_time &lt; previous_segment_end_time - kRoundingErrorGrace) {</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;      LOG(WARNING)</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;          &lt;&lt; RepresentationAsString()</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;          &lt;&lt; <span class="stringliteral">&quot; Segments should not be overlapping. The new segment starts at &quot;</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;          &lt;&lt; start_time &lt;&lt; <span class="stringliteral">&quot; but the previous segment ends at &quot;</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;          &lt;&lt; previous_segment_end_time &lt;&lt; <span class="stringliteral">&quot;.&quot;</span>;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    }</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  }</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160; </div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  segment_infos_.push_back({start_time, adjusted_duration, kNoRepeat});</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;}</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160; </div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="keywordtype">bool</span> Representation::ApproximiatelyEqual(int64_t time1, int64_t time2)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <span class="keywordflow">if</span> (!allow_approximate_segment_timeline_)</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    <span class="keywordflow">return</span> time1 == time2;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160; </div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <span class="comment">// It is not always possible to align segment duration to target duration</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  <span class="comment">// exactly. For example, for AAC with sampling rate of 44100, there are always</span></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="comment">// 1024 audio samples per frame, so the frame duration is 1024/44100. For a</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <span class="comment">// target duration of 2 seconds, the closest segment duration would be 1.984</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="comment">// or 2.00533.</span></div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160; </div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <span class="comment">// An arbitrary error threshold cap. This makes sure that the error is not too</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <span class="comment">// large for large samples.</span></div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> kErrorThresholdSeconds = 0.05;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  <span class="comment">// So we consider two times equal if they differ by less than one sample.</span></div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  <span class="keyword">const</span> uint32_t error_threshold =</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;      std::min(frame_duration_,</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;               <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(kErrorThresholdSeconds *</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;                                     media_info_.reference_time_scale()));</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  <span class="keywordflow">return</span> std::abs(time1 - time2) &lt;= error_threshold;</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;}</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160; </div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;int64_t Representation::AdjustDuration(int64_t duration)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;  <span class="keywordflow">if</span> (!allow_approximate_segment_timeline_)</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    <span class="keywordflow">return</span> duration;</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <span class="keyword">const</span> int64_t scaled_target_duration =</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;      mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a88b8d28e263b2dcb36909869d3c2ceca">target_segment_duration</a> *</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;      media_info_.reference_time_scale();</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  <span class="keywordflow">return</span> ApproximiatelyEqual(scaled_target_duration, duration)</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;             ? scaled_target_duration</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;             : duration;</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;}</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160; </div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;<span class="keywordtype">void</span> Representation::SlideWindow() {</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  <span class="keywordflow">if</span> (mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032">time_shift_buffer_depth</a> &lt;= 0.0 ||</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;      mpd_options_.mpd_type == MpdType::kStatic)</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  <span class="keyword">const</span> uint32_t time_scale = GetTimeScale(media_info_);</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  DCHECK_GT(time_scale, 0u);</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160; </div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  <span class="keyword">const</span> int64_t time_shift_buffer_depth = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;      mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032">time_shift_buffer_depth</a> * time_scale);</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;  <span class="keywordflow">if</span> (current_buffer_depth_ &lt;= time_shift_buffer_depth)</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator first = segment_infos_.begin();</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator last = first;</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  <span class="keywordflow">for</span> (; last != segment_infos_.end(); ++last) {</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    <span class="comment">// Remove the current segment only if it falls completely out of time shift</span></div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    <span class="comment">// buffer range.</span></div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    <span class="keywordflow">while</span> (last-&gt;repeat &gt;= 0 &amp;&amp;</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;           current_buffer_depth_ - last-&gt;duration &gt;= time_shift_buffer_depth) {</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;      current_buffer_depth_ -= last-&gt;duration;</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;      RemoveOldSegment(&amp;*last);</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;      start_number_++;</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    }</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    <span class="keywordflow">if</span> (last-&gt;repeat &gt;= 0)</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  }</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;  segment_infos_.erase(first, last);</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;}</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160; </div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;<span class="keywordtype">void</span> Representation::RemoveOldSegment(SegmentInfo* segment_info) {</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;  int64_t segment_start_time = segment_info-&gt;start_time;</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  segment_info-&gt;start_time += segment_info-&gt;duration;</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  segment_info-&gt;repeat--;</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160; </div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  <span class="keywordflow">if</span> (mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a84378ed480ed2e9b8915afd9c349b458">preserved_segments_outside_live_window</a> == 0)</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160; </div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;  segments_to_be_removed_.push_back(</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;      media::GetSegmentName(media_info_.segment_template(), segment_start_time,</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;                            start_number_ - 1, media_info_.bandwidth()));</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  <span class="keywordflow">while</span> (segments_to_be_removed_.size() &gt;</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;         mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a84378ed480ed2e9b8915afd9c349b458">preserved_segments_outside_live_window</a>) {</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    VLOG(2) &lt;&lt; <span class="stringliteral">&quot;Deleting &quot;</span> &lt;&lt; segments_to_be_removed_.front();</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d73/classshaka_1_1File.html#a383c9f670511961f334569fd1a7a103b">File::Delete</a>(segments_to_be_removed_.front().c_str())) {</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;      LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to delete &quot;</span> &lt;&lt; segments_to_be_removed_.front()</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot;; Will retry later.&quot;</span>;</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    }</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;    segments_to_be_removed_.pop_front();</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  }</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;}</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160; </div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;std::string Representation::GetVideoMimeType()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;video&quot;</span>, media_info_.container_type());</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;}</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160; </div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;std::string Representation::GetAudioMimeType()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;audio&quot;</span>, media_info_.container_type());</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;}</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160; </div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;std::string Representation::GetTextMimeType()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  CHECK(media_info_.has_text_info());</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().codec() == <span class="stringliteral">&quot;ttml&quot;</span>) {</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;    <span class="keywordflow">switch</span> (media_info_.container_type()) {</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_TEXT:</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/ttml+xml&quot;</span>;</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_MP4:</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/mp4&quot;</span>;</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for TTML container: &quot;</span></div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;                   &lt;&lt; media_info_.container_type();</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;    }</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;  }</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().codec() == <span class="stringliteral">&quot;wvtt&quot;</span>) {</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    <span class="keywordflow">if</span> (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;text/vtt&quot;</span>;</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (media_info_.container_type() == MediaInfo::CONTAINER_MP4) {</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/mp4&quot;</span>;</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    }</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for VTT container: &quot;</span></div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;               &lt;&lt; media_info_.container_type();</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  }</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160; </div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;  LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot determine MIME type for format: &quot;</span></div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;             &lt;&lt; media_info_.text_info().codec()</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;             &lt;&lt; <span class="stringliteral">&quot; container: &quot;</span> &lt;&lt; media_info_.container_type();</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;}</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160; </div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;std::string Representation::RepresentationAsString()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;  std::string s = base::StringPrintf(<span class="stringliteral">&quot;Representation (id=%d,&quot;</span>, id_);</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;  <span class="keywordflow">if</span> (media_info_.has_video_info()) {</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;    <span class="keyword">const</span> MediaInfo_VideoInfo&amp; video_info = media_info_.video_info();</div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;    base::StringAppendF(&amp;s, <span class="stringliteral">&quot;codec=&#39;%s&#39;,width=%d,height=%d&quot;</span>,</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;                        video_info.codec().c_str(), video_info.width(),</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;                        video_info.height());</div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (media_info_.has_audio_info()) {</div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;    <span class="keyword">const</span> MediaInfo_AudioInfo&amp; audio_info = media_info_.audio_info();</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;    base::StringAppendF(</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;        &amp;s, <span class="stringliteral">&quot;codec=&#39;%s&#39;,frequency=%d,language=&#39;%s&#39;&quot;</span>, audio_info.codec().c_str(),</div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;        audio_info.sampling_frequency(), audio_info.language().c_str());</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (media_info_.has_text_info()) {</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;    <span class="keyword">const</span> MediaInfo_TextInfo&amp; text_info = media_info_.text_info();</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;    base::StringAppendF(&amp;s, <span class="stringliteral">&quot;codec=&#39;%s&#39;,language=&#39;%s&#39;&quot;</span>,</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;                        text_info.codec().c_str(),</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;                        text_info.language().c_str());</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;  }</div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;  base::StringAppendF(&amp;s, <span class="stringliteral">&quot;)&quot;</span>);</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;  <span class="keywordflow">return</span> s;</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;}</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160; </div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      !representation.<a class="code" href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#aed9603fb7d1ca1b283060e2a39590be9">AddVODOnlyInfo</a>(</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;          media_info_, mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a32f74783f0055bff430910defb2c5a3b">use_segment_list</a>,</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;          mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a88b8d28e263b2dcb36909869d3c2ceca">target_segment_duration</a>)) {</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add VOD info.&quot;</span>;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <span class="keywordflow">return</span> base::nullopt;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  }</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="keywordflow">if</span> (HasLiveOnlyFields(media_info_) &amp;&amp;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      !representation.<a class="code" href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#ac9a4d8ed5a9710408904ca0f7c13b66e">AddLiveOnlyInfo</a>(media_info_, segment_infos_,</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;                                      start_number_)) {</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add Live info.&quot;</span>;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keywordflow">return</span> base::nullopt;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  }</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="comment">// TODO(rkuroiwa): It is likely that all representations have the exact same</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="comment">// SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160; </div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  output_suppression_flags_ = 0;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="keywordflow">return</span> std::move(representation);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;}</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; </div>
+<div class="line"><a name="l00288"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed">  288</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed">Representation::SuppressOnce</a>(SuppressFlag flag) {</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  output_suppression_flags_ |= flag;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;}</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; </div>
+<div class="line"><a name="l00292"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#aa93fd6cd965d3091a280debc93656d57">  292</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html#aa93fd6cd965d3091a280debc93656d57">Representation::SetPresentationTimeOffset</a>(</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordtype">double</span> presentation_time_offset) {</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  int64_t pto = presentation_time_offset * media_info_.reference_time_scale();</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keywordflow">if</span> (pto &lt;= 0)</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  media_info_.set_presentation_time_offset(pto);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;}</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160; </div>
+<div class="line"><a name="l00300"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#a94fcb546e555637d33286515c1a44545">  300</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html#a94fcb546e555637d33286515c1a44545">Representation::GetStartAndEndTimestamps</a>(</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    <span class="keywordtype">double</span>* start_timestamp_seconds,</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordtype">double</span>* end_timestamp_seconds)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keywordflow">if</span> (segment_infos_.empty())</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160; </div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keywordflow">if</span> (start_timestamp_seconds) {</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    *start_timestamp_seconds =</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(segment_infos_.begin()-&gt;start_time) /</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        GetTimeScale(media_info_);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  <span class="keywordflow">if</span> (end_timestamp_seconds) {</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    *end_timestamp_seconds =</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(segment_infos_.rbegin()-&gt;start_time +</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                            segment_infos_.rbegin()-&gt;duration *</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                                (segment_infos_.rbegin()-&gt;repeat + 1)) /</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        GetTimeScale(media_info_);</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  }</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;}</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160; </div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="keywordtype">bool</span> Representation::HasRequiredMediaInfoFields()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  <span class="keywordflow">if</span> (HasVODOnlyFields(media_info_) &amp;&amp; HasLiveOnlyFields(media_info_)) {</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo cannot have both VOD and Live fields.&quot;</span>;</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  }</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160; </div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keywordflow">if</span> (!media_info_.has_container_type()) {</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo missing required field: container_type.&quot;</span>;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160; </div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;}</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="keywordtype">void</span> Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="keyword">const</span> uint64_t kNoRepeat = 0;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keyword">const</span> int64_t adjusted_duration = AdjustDuration(duration);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160; </div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  <span class="keywordflow">if</span> (!segment_infos_.empty()) {</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="comment">// Contiguous segment.</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keyword">const</span> SegmentInfo&amp; previous = segment_infos_.back();</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keyword">const</span> int64_t previous_segment_end_time =</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        previous.start_time + previous.duration * (previous.repeat + 1);</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    <span class="comment">// Make it continuous if the segment start time is close to previous segment</span></div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    <span class="comment">// end time.</span></div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keywordflow">if</span> (ApproximiatelyEqual(previous_segment_end_time, start_time)) {</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;      <span class="keyword">const</span> int64_t segment_end_time_for_same_duration =</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;          previous_segment_end_time + previous.duration;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;      <span class="keyword">const</span> int64_t actual_segment_end_time = start_time + duration;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      <span class="comment">// Consider the segments having identical duration if the segment end time</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      <span class="comment">// is close to calculated segment end time by assuming identical duration.</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      <span class="keywordflow">if</span> (ApproximiatelyEqual(segment_end_time_for_same_duration,</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;                              actual_segment_end_time)) {</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        ++segment_infos_.back().repeat;</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        segment_infos_.push_back(</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;            {previous_segment_end_time,</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;             actual_segment_end_time - previous_segment_end_time, kNoRepeat});</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      }</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;      <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    }</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160; </div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="comment">// A gap since previous.</span></div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    <span class="keyword">const</span> int64_t kRoundingErrorGrace = 5;</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="keywordflow">if</span> (previous_segment_end_time + kRoundingErrorGrace &lt; start_time) {</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;      LOG(WARNING) &lt;&lt; RepresentationAsString() &lt;&lt; <span class="stringliteral">&quot; Found a gap of size &quot;</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;                   &lt;&lt; (start_time - previous_segment_end_time)</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot; &gt; kRoundingErrorGrace (&quot;</span> &lt;&lt; kRoundingErrorGrace</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot;). The new segment starts at &quot;</span> &lt;&lt; start_time</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot; but the previous segment ends at &quot;</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;                   &lt;&lt; previous_segment_end_time &lt;&lt; <span class="stringliteral">&quot;.&quot;</span>;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    }</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160; </div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="comment">// No overlapping segments.</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    <span class="keywordflow">if</span> (start_time &lt; previous_segment_end_time - kRoundingErrorGrace) {</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;      LOG(WARNING)</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;          &lt;&lt; RepresentationAsString()</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;          &lt;&lt; <span class="stringliteral">&quot; Segments should not be overlapping. The new segment starts at &quot;</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;          &lt;&lt; start_time &lt;&lt; <span class="stringliteral">&quot; but the previous segment ends at &quot;</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;          &lt;&lt; previous_segment_end_time &lt;&lt; <span class="stringliteral">&quot;.&quot;</span>;</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    }</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  }</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160; </div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  segment_infos_.push_back({start_time, adjusted_duration, kNoRepeat});</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;}</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160; </div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="keywordtype">bool</span> Representation::ApproximiatelyEqual(int64_t time1, int64_t time2)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordflow">if</span> (!allow_approximate_segment_timeline_)</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    <span class="keywordflow">return</span> time1 == time2;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160; </div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="comment">// It is not always possible to align segment duration to target duration</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <span class="comment">// exactly. For example, for AAC with sampling rate of 44100, there are always</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="comment">// 1024 audio samples per frame, so the frame duration is 1024/44100. For a</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  <span class="comment">// target duration of 2 seconds, the closest segment duration would be 1.984</span></div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <span class="comment">// or 2.00533.</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160; </div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  <span class="comment">// An arbitrary error threshold cap. This makes sure that the error is not too</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  <span class="comment">// large for large samples.</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> kErrorThresholdSeconds = 0.05;</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160; </div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  <span class="comment">// So we consider two times equal if they differ by less than one sample.</span></div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  <span class="keyword">const</span> uint32_t error_threshold =</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;      std::min(frame_duration_,</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;               <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(kErrorThresholdSeconds *</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;                                     media_info_.reference_time_scale()));</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  <span class="keywordflow">return</span> std::abs(time1 - time2) &lt;= error_threshold;</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;}</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;int64_t Representation::AdjustDuration(int64_t duration)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <span class="keywordflow">if</span> (!allow_approximate_segment_timeline_)</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <span class="keywordflow">return</span> duration;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  <span class="keyword">const</span> int64_t scaled_target_duration =</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;      mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a88b8d28e263b2dcb36909869d3c2ceca">target_segment_duration</a> *</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;      media_info_.reference_time_scale();</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordflow">return</span> ApproximiatelyEqual(scaled_target_duration, duration)</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;             ? scaled_target_duration</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;             : duration;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;}</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160; </div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;<span class="keywordtype">void</span> Representation::SlideWindow() {</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">if</span> (mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032">time_shift_buffer_depth</a> &lt;= 0.0 ||</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;      mpd_options_.mpd_type == MpdType::kStatic)</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160; </div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keyword">const</span> uint32_t time_scale = GetTimeScale(media_info_);</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  DCHECK_GT(time_scale, 0u);</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160; </div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  <span class="keyword">const</span> int64_t time_shift_buffer_depth = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;      mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032">time_shift_buffer_depth</a> * time_scale);</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160; </div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;  <span class="keywordflow">if</span> (current_buffer_depth_ &lt;= time_shift_buffer_depth)</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160; </div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator first = segment_infos_.begin();</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator last = first;</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;  <span class="keywordflow">for</span> (; last != segment_infos_.end(); ++last) {</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    <span class="comment">// Remove the current segment only if it falls completely out of time shift</span></div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;    <span class="comment">// buffer range.</span></div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <span class="keywordflow">while</span> (last-&gt;repeat &gt;= 0 &amp;&amp;</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;           current_buffer_depth_ - last-&gt;duration &gt;= time_shift_buffer_depth) {</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;      current_buffer_depth_ -= last-&gt;duration;</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;      RemoveOldSegment(&amp;*last);</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;      start_number_++;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    }</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    <span class="keywordflow">if</span> (last-&gt;repeat &gt;= 0)</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;  }</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  segment_infos_.erase(first, last);</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;}</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160; </div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;<span class="keywordtype">void</span> Representation::RemoveOldSegment(SegmentInfo* segment_info) {</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  int64_t segment_start_time = segment_info-&gt;start_time;</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;  segment_info-&gt;start_time += segment_info-&gt;duration;</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  segment_info-&gt;repeat--;</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160; </div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  <span class="keywordflow">if</span> (mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a84378ed480ed2e9b8915afd9c349b458">preserved_segments_outside_live_window</a> == 0)</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160; </div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;  segments_to_be_removed_.push_back(</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;      media::GetSegmentName(media_info_.segment_template(), segment_start_time,</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;                            start_number_ - 1, media_info_.bandwidth()));</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  <span class="keywordflow">while</span> (segments_to_be_removed_.size() &gt;</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;         mpd_options_.mpd_params.<a class="code" href="../../df/ddc/structshaka_1_1MpdParams.html#a84378ed480ed2e9b8915afd9c349b458">preserved_segments_outside_live_window</a>) {</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;    VLOG(2) &lt;&lt; <span class="stringliteral">&quot;Deleting &quot;</span> &lt;&lt; segments_to_be_removed_.front();</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d73/classshaka_1_1File.html#a383c9f670511961f334569fd1a7a103b">File::Delete</a>(segments_to_be_removed_.front().c_str())) {</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;      LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to delete &quot;</span> &lt;&lt; segments_to_be_removed_.front()</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot;; Will retry later.&quot;</span>;</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    }</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    segments_to_be_removed_.pop_front();</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  }</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;}</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160; </div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;std::string Representation::GetVideoMimeType()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;video&quot;</span>, media_info_.container_type());</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;}</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160; </div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;std::string Representation::GetAudioMimeType()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;audio&quot;</span>, media_info_.container_type());</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;}</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160; </div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;std::string Representation::GetTextMimeType()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  CHECK(media_info_.has_text_info());</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().codec() == <span class="stringliteral">&quot;ttml&quot;</span>) {</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;    <span class="keywordflow">switch</span> (media_info_.container_type()) {</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_TEXT:</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/ttml+xml&quot;</span>;</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_MP4:</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/mp4&quot;</span>;</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for TTML container: &quot;</span></div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;                   &lt;&lt; media_info_.container_type();</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;    }</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  }</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().codec() == <span class="stringliteral">&quot;wvtt&quot;</span>) {</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    <span class="keywordflow">if</span> (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;text/vtt&quot;</span>;</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (media_info_.container_type() == MediaInfo::CONTAINER_MP4) {</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/mp4&quot;</span>;</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;    }</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for VTT container: &quot;</span></div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;               &lt;&lt; media_info_.container_type();</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;  }</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160; </div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;  LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot determine MIME type for format: &quot;</span></div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;             &lt;&lt; media_info_.text_info().codec()</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;             &lt;&lt; <span class="stringliteral">&quot; container: &quot;</span> &lt;&lt; media_info_.container_type();</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;}</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160; </div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;std::string Representation::RepresentationAsString()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;  std::string s = base::StringPrintf(<span class="stringliteral">&quot;Representation (id=%d,&quot;</span>, id_);</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  <span class="keywordflow">if</span> (media_info_.has_video_info()) {</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    <span class="keyword">const</span> MediaInfo_VideoInfo&amp; video_info = media_info_.video_info();</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;    base::StringAppendF(&amp;s, <span class="stringliteral">&quot;codec=&#39;%s&#39;,width=%d,height=%d&quot;</span>,</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;                        video_info.codec().c_str(), video_info.width(),</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;                        video_info.height());</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (media_info_.has_audio_info()) {</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;    <span class="keyword">const</span> MediaInfo_AudioInfo&amp; audio_info = media_info_.audio_info();</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;    base::StringAppendF(</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;        &amp;s, <span class="stringliteral">&quot;codec=&#39;%s&#39;,frequency=%d,language=&#39;%s&#39;&quot;</span>, audio_info.codec().c_str(),</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;        audio_info.sampling_frequency(), audio_info.language().c_str());</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (media_info_.has_text_info()) {</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;    <span class="keyword">const</span> MediaInfo_TextInfo&amp; text_info = media_info_.text_info();</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;    base::StringAppendF(&amp;s, <span class="stringliteral">&quot;codec=&#39;%s&#39;,language=&#39;%s&#39;&quot;</span>,</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;                        text_info.codec().c_str(),</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;                        text_info.language().c_str());</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;  }</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;  base::StringAppendF(&amp;s, <span class="stringliteral">&quot;)&quot;</span>);</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  <span class="keywordflow">return</span> s;</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;}</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160; </div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="aclassshaka_1_1BandwidthEstimator_html_a0df6c40f43a89d3d481392ac0298e37c"><div class="ttname"><a href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a0df6c40f43a89d3d481392ac0298e37c">shaka::BandwidthEstimator::Max</a></div><div class="ttdeci">uint64_t Max() const</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d86/bandwidth__estimator_8cc_source.html#l00059">bandwidth_estimator.cc:59</a></div></div>
 <div class="ttc" id="aclassshaka_1_1BandwidthEstimator_html_a53c67d33f000489d1ebb31a2bdd766a4"><div class="ttname"><a href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a53c67d33f000489d1ebb31a2bdd766a4">shaka::BandwidthEstimator::AddBlock</a></div><div class="ttdeci">void AddBlock(uint64_t size_in_bytes, double duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d86/bandwidth__estimator_8cc_source.html#l00021">bandwidth_estimator.cc:21</a></div></div>
 <div class="ttc" id="aclassshaka_1_1File_html_a383c9f670511961f334569fd1a7a103b"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a383c9f670511961f334569fd1a7a103b">shaka::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00212">file.cc:212</a></div></div>
@@ -609,25 +611,26 @@ $(function() {
 <div class="ttc" id="aclassshaka_1_1Representation_html_a11b32833166b9c4bea78cca2c6069d98"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a11b32833166b9c4bea78cca2c6069d98">shaka::Representation::SetSampleDuration</a></div><div class="ttdeci">virtual void SetSampleDuration(uint32_t sample_duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00196">representation.cc:196</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_a265d014093c9073b08505013886aaa8d"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a265d014093c9073b08505013886aaa8d">shaka::Representation::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00159">representation.cc:159</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_a3d17325903aa01f0c8ff7753d94ff330"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a3d17325903aa01f0c8ff7753d94ff330">shaka::Representation::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00165">representation.cc:165</a></div></div>
-<div class="ttc" id="aclassshaka_1_1Representation_html_a473e45dbbf64e6ab6ed670ccedac84ed"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed">shaka::Representation::SuppressOnce</a></div><div class="ttdeci">void SuppressOnce(SuppressFlag flag)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00286">representation.cc:286</a></div></div>
+<div class="ttc" id="aclassshaka_1_1Representation_html_a473e45dbbf64e6ab6ed670ccedac84ed"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed">shaka::Representation::SuppressOnce</a></div><div class="ttdeci">void SuppressOnce(SuppressFlag flag)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00288">representation.cc:288</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_a524291f7a968cb040fdce0ac1db5fbd3"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a524291f7a968cb040fdce0ac1db5fbd3">shaka::Representation::GetMediaInfo</a></div><div class="ttdeci">virtual const MediaInfo &amp; GetMediaInfo() const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00211">representation.cc:211</a></div></div>
-<div class="ttc" id="aclassshaka_1_1Representation_html_a94fcb546e555637d33286515c1a44545"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a94fcb546e555637d33286515c1a44545">shaka::Representation::GetStartAndEndTimestamps</a></div><div class="ttdeci">bool GetStartAndEndTimestamps(double *start_timestamp_seconds, double *end_timestamp_seconds) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00298">representation.cc:298</a></div></div>
+<div class="ttc" id="aclassshaka_1_1Representation_html_a94fcb546e555637d33286515c1a44545"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a94fcb546e555637d33286515c1a44545">shaka::Representation::GetStartAndEndTimestamps</a></div><div class="ttdeci">bool GetStartAndEndTimestamps(double *start_timestamp_seconds, double *end_timestamp_seconds) const</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00300">representation.cc:300</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_a997138fcaa5deef5151a64a2d7ce6aeb"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb">shaka::Representation::Representation</a></div><div class="ttdeci">Representation(const MediaInfo &amp;media_info, const MpdOptions &amp;mpd_options, uint32_t representation_id, std::unique_ptr&lt; RepresentationStateChangeListener &gt; state_change_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00085">representation.cc:85</a></div></div>
-<div class="ttc" id="aclassshaka_1_1Representation_html_aa93fd6cd965d3091a280debc93656d57"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#aa93fd6cd965d3091a280debc93656d57">shaka::Representation::SetPresentationTimeOffset</a></div><div class="ttdeci">void SetPresentationTimeOffset(double presentation_time_offset)</div><div class="ttdoc">Set @presentationTimeOffset in SegmentBase / SegmentTemplate.</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00290">representation.cc:290</a></div></div>
+<div class="ttc" id="aclassshaka_1_1Representation_html_aa93fd6cd965d3091a280debc93656d57"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#aa93fd6cd965d3091a280debc93656d57">shaka::Representation::SetPresentationTimeOffset</a></div><div class="ttdeci">void SetPresentationTimeOffset(double presentation_time_offset)</div><div class="ttdoc">Set @presentationTimeOffset in SegmentBase / SegmentTemplate.</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00292">representation.cc:292</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_ab4008b130a91b83198e769d15b3dfac3"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#ab4008b130a91b83198e769d15b3dfac3">shaka::Representation::GetXml</a></div><div class="ttdeci">base::Optional&lt; xml::XmlNode &gt; GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00221">representation.cc:221</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_ae998409ae94f3ba12909a96e8f3f4f7e"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#ae998409ae94f3ba12909a96e8f3f4f7e">shaka::Representation::Init</a></div><div class="ttdeci">bool Init()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00117">representation.cc:117</a></div></div>
 <div class="ttc" id="aclassshaka_1_1Representation_html_ae9b6536925d1107e3f22ad3130cb9fe9"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#ae9b6536925d1107e3f22ad3130cb9fe9">shaka::Representation::AddNewSegment</a></div><div class="ttdeci">virtual void AddNewSegment(int64_t start_time, int64_t duration, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d94/representation_8cc_source.html#l00171">representation.cc:171</a></div></div>
 <div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html">shaka::xml::RepresentationXmlNode</a></div><div class="ttdoc">RepresentationType in MPD.</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/de7/xml__node_8h_source.html#l00182">xml_node.h:182</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_a11457f5b89522919b61d83cc0bbd51dc"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a11457f5b89522919b61d83cc0bbd51dc">shaka::xml::RepresentationXmlNode::AddVideoInfo</a></div><div class="ttdeci">bool AddVideoInfo(const MediaInfo::VideoInfo &amp;video_info, bool set_width, bool set_height, bool set_frame_rate) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00337">xml_node.cc:337</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_a5141fe43e6a15233d6214bc05eb52f0d"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a5141fe43e6a15233d6214bc05eb52f0d">shaka::xml::RepresentationXmlNode::AddVODOnlyInfo</a></div><div class="ttdeci">bool AddVODOnlyInfo(const MediaInfo &amp;media_info) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00379">xml_node.cc:379</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_ac9a4d8ed5a9710408904ca0f7c13b66e"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#ac9a4d8ed5a9710408904ca0f7c13b66e">shaka::xml::RepresentationXmlNode::AddLiveOnlyInfo</a></div><div class="ttdeci">bool AddLiveOnlyInfo(const MediaInfo &amp;media_info, const std::list&lt; SegmentInfo &gt; &amp;segment_infos, uint32_t start_number) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00433">xml_node.cc:433</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_af22f2360db2e18d4ebee8034e01d58d8"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#af22f2360db2e18d4ebee8034e01d58d8">shaka::xml::RepresentationXmlNode::AddAudioInfo</a></div><div class="ttdeci">bool AddAudioInfo(const MediaInfo::AudioInfo &amp;audio_info) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00374">xml_node.cc:374</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1XmlNode_html_a8d216627fb556f526df48a61a921a115"><div class="ttname"><a href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a8d216627fb556f526df48a61a921a115">shaka::xml::XmlNode::SetIntegerAttribute</a></div><div class="ttdeci">bool SetIntegerAttribute(const std::string &amp;attribute_name, uint64_t number) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00190">xml_node.cc:190</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1XmlNode_html_aa30909ee27d10b448c6706ceba01ace7"><div class="ttname"><a href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#aa30909ee27d10b448c6706ceba01ace7">shaka::xml::XmlNode::SetStringAttribute</a></div><div class="ttdeci">bool SetStringAttribute(const std::string &amp;attribute_name, const std::string &amp;attribute) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00183">xml_node.cc:183</a></div></div>
-<div class="ttc" id="aclassshaka_1_1xml_1_1XmlNode_html_ad9f818024466c4dcce3026a9e7f439a3"><div class="ttname"><a href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ad9f818024466c4dcce3026a9e7f439a3">shaka::xml::XmlNode::SetId</a></div><div class="ttdeci">bool SetId(uint32_t id) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00204">xml_node.cc:204</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_a11457f5b89522919b61d83cc0bbd51dc"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a11457f5b89522919b61d83cc0bbd51dc">shaka::xml::RepresentationXmlNode::AddVideoInfo</a></div><div class="ttdeci">bool AddVideoInfo(const MediaInfo::VideoInfo &amp;video_info, bool set_width, bool set_height, bool set_frame_rate) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00338">xml_node.cc:338</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_ac9a4d8ed5a9710408904ca0f7c13b66e"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#ac9a4d8ed5a9710408904ca0f7c13b66e">shaka::xml::RepresentationXmlNode::AddLiveOnlyInfo</a></div><div class="ttdeci">bool AddLiveOnlyInfo(const MediaInfo &amp;media_info, const std::list&lt; SegmentInfo &gt; &amp;segment_infos, uint32_t start_number) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00460">xml_node.cc:460</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_aed9603fb7d1ca1b283060e2a39590be9"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#aed9603fb7d1ca1b283060e2a39590be9">shaka::xml::RepresentationXmlNode::AddVODOnlyInfo</a></div><div class="ttdeci">bool AddVODOnlyInfo(const MediaInfo &amp;media_info, bool use_segment_list, double target_segment_duration) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00380">xml_node.cc:380</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1RepresentationXmlNode_html_af22f2360db2e18d4ebee8034e01d58d8"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#af22f2360db2e18d4ebee8034e01d58d8">shaka::xml::RepresentationXmlNode::AddAudioInfo</a></div><div class="ttdeci">bool AddAudioInfo(const MediaInfo::AudioInfo &amp;audio_info) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00375">xml_node.cc:375</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1XmlNode_html_a8d216627fb556f526df48a61a921a115"><div class="ttname"><a href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a8d216627fb556f526df48a61a921a115">shaka::xml::XmlNode::SetIntegerAttribute</a></div><div class="ttdeci">bool SetIntegerAttribute(const std::string &amp;attribute_name, uint64_t number) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00191">xml_node.cc:191</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1XmlNode_html_aa30909ee27d10b448c6706ceba01ace7"><div class="ttname"><a href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#aa30909ee27d10b448c6706ceba01ace7">shaka::xml::XmlNode::SetStringAttribute</a></div><div class="ttdeci">bool SetStringAttribute(const std::string &amp;attribute_name, const std::string &amp;attribute) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00184">xml_node.cc:184</a></div></div>
+<div class="ttc" id="aclassshaka_1_1xml_1_1XmlNode_html_ad9f818024466c4dcce3026a9e7f439a3"><div class="ttname"><a href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ad9f818024466c4dcce3026a9e7f439a3">shaka::xml::XmlNode::SetId</a></div><div class="ttdeci">bool SetId(uint32_t id) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d96/xml__node_8cc_source.html#l00205">xml_node.cc:205</a></div></div>
 <div class="ttc" id="anamespaceshaka_html"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html">shaka</a></div><div class="ttdoc">All the methods that are virtual are virtual for mocking.</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d15/gflags__hex__bytes_8cc_source.html#l00011">gflags_hex_bytes.cc:11</a></div></div>
 <div class="ttc" id="astructshaka_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../da/d43/structshaka_1_1ContentProtectionElement.html">shaka::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
 <div class="ttc" id="astructshaka_1_1MpdOptions_html"><div class="ttname"><a href="../../d1/df3/structshaka_1_1MpdOptions.html">shaka::MpdOptions</a></div><div class="ttdoc">Defines Mpd Options.</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d60/mpd__options_8h_source.html#l00025">mpd_options.h:25</a></div></div>
+<div class="ttc" id="astructshaka_1_1MpdParams_html_a32f74783f0055bff430910defb2c5a3b"><div class="ttname"><a href="../../df/ddc/structshaka_1_1MpdParams.html#a32f74783f0055bff430910defb2c5a3b">shaka::MpdParams::use_segment_list</a></div><div class="ttdeci">bool use_segment_list</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d07/mpd__params_8h_source.html#l00093">mpd_params.h:93</a></div></div>
 <div class="ttc" id="astructshaka_1_1MpdParams_html_a84378ed480ed2e9b8915afd9c349b458"><div class="ttname"><a href="../../df/ddc/structshaka_1_1MpdParams.html#a84378ed480ed2e9b8915afd9c349b458">shaka::MpdParams::preserved_segments_outside_live_window</a></div><div class="ttdeci">size_t preserved_segments_outside_live_window</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d07/mpd__params_8h_source.html#l00046">mpd_params.h:46</a></div></div>
 <div class="ttc" id="astructshaka_1_1MpdParams_html_a88b8d28e263b2dcb36909869d3c2ceca"><div class="ttname"><a href="../../df/ddc/structshaka_1_1MpdParams.html#a88b8d28e263b2dcb36909869d3c2ceca">shaka::MpdParams::target_segment_duration</a></div><div class="ttdeci">double target_segment_duration</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d07/mpd__params_8h_source.html#l00082">mpd_params.h:82</a></div></div>
 <div class="ttc" id="astructshaka_1_1MpdParams_html_a95e4824708c8de4b882b86772f680032"><div class="ttname"><a href="../../df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032">shaka::MpdParams::time_shift_buffer_depth</a></div><div class="ttdeci">double time_shift_buffer_depth</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d07/mpd__params_8h_source.html#l00039">mpd_params.h:39</a></div></div>
@@ -635,7 +638,7 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 9 2021 21:00:12 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Thu Jun 10 2021 21:44:26 for Shaka Packager SDK by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>
