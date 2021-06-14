@@ -111,6 +111,8 @@ hooks = [
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
     "name": "clang",
+    # Skip clang updates on Windows, where we don't use clang.
+    "condition": "not checkout_win",
     "pattern": ".",
     "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],
   },
