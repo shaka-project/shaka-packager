@@ -33,7 +33,7 @@ Note that `Git` must be v1.7.5 or above.
 
 ## Windows system requirements
 
-* Visual Studio 2015 Update 3, see below (no other version is supported).
+* Visual Studio 2015 Update 3, 2017, or 2019. (See below.)
 * Windows 7 or newer.
 
 Install Visual Studio 2015 Update 3 or later - Community Edition should work if
@@ -42,6 +42,14 @@ its license is appropriate for you. Use the Custom Install option and select:
 - Visual C++, which will select three sub-categories including MFC
 - Universal Windows Apps Development Tools > Tools (1.4.1) and Windows 10 SDK
   (10.0.14393)
+
+If using VS 2017 or VS 2019, you must set the following environment variables,
+with versions and paths adjusted to match your actual system:
+
+```shell
+GYP_MSVS_VERSION="2019"
+GYP_MSVS_OVERRIDE_PATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community"
+```
 
 ## Install `depot_tools`
 
