@@ -13,6 +13,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/file/public/buffer_callback_params.h"
+#include "packager/status.h"
 
 namespace shaka {
 
@@ -24,7 +25,7 @@ extern const char* kHttpFilePrefix;
 const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.
-class File {
+class SHAKA_EXPORT File {
  public:
   /// Open the specified file.
   /// This is a file factory method, it opens a proper file automatically
