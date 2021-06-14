@@ -52,6 +52,8 @@
                  # the current code page. It typically happens when compiling
                  # the code in CJK environment if there is non-ASCII characters
                  # in the file.
+          4251,  # Warnings about private std::string in Status in a shared
+                 # library config on Windows.
         ],
       }, {
         # We do not have control over non-shaka code. Disable some warnings to
