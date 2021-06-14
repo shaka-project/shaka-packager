@@ -43,6 +43,14 @@
         '../third_party/curl/curl.gyp:libcurl',
         '../version/version.gyp:version',
       ],
+      'conditions': [
+        ['libpackager_type == "shared_library"', {
+          'defines': [
+            'SHARED_LIBRARY_BUILD',
+            'SHAKA_IMPLEMENTATION',
+          ],
+        }],
+      ],
     },
     {
       'target_name': 'file_unittest',
