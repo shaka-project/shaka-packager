@@ -129,6 +129,7 @@ jobs:
           if [[ '${{ matrix.os_name }}' == 'osx' ]]; then
             export DYLD_FALLBACK_LIBRARY_PATH=out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}
           fi
+          set -x  # So we can see what commands/tests are being executed
           for i in out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}/*test${{ matrix.exe_ext }}; do "$i" || exit 1; done
           python out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}/packager_test.py -v --libpackager_type=${{ matrix.lib_type }}_library
 
@@ -146,12 +147,13 @@ jobs:
           if [[ '${{ matrix.os_name }}' == 'win' ]]; then
             (
               cd src/out/Release${{ matrix.build_type_suffix }}
-              7z a ../../../pssh-box.py.zip pyproto pssh-box.py
+              7z a ../../../artifacts/pssh-box-${{ matrix.os_name }}.py.zip \
+                  pyproto pssh-box.py
             )
-            mv pssh-box.py.zip artifacts/pssh-box-${{ matrix.os_name }}.py.zip
           else
-            tar -czf pssh-box.py.tar.gz -C src/out/Release${{ matrix.build_type_suffix }} pyproto pssh-box.py
-            mv pssh-box.py.tar.gz artifacts/pssh-box-${{ matrix.os_name }}.py.tar.gz
+            tar -czf artifacts/pssh-box-${{ matrix.os_name }}.py.tar.gz \
+                -C src/out/Release${{ matrix.build_type_suffix }} \
+                pyproto pssh-box.py
           fi
 
       - name: Attach artifacts to release
