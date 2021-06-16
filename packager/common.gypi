@@ -12,11 +12,12 @@
       'shaka_code%': 0,
       # musl is a lightweight C standard library used in Alpine Linux.
       'musl%': 0,
+      'libpackager_type%': 'static_library',
     },
 
     'shaka_code%': '<(shaka_code)',
     'musl%': '<(musl)',
-    'libpackager_type%': 'static_library',
+    'libpackager_type%': '<(libpackager_type)',
 
     'conditions': [
       ['shaka_code==1', {
