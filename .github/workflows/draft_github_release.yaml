@@ -40,6 +40,7 @@ jobs:
         # name.  Subsequent steps can refer to $TARGET_REF to determine the
         # correct ref in all cases.
         run: |
+          # Strip refs/tags/ from the input to get the tag name.
           echo "TARGET_REF=${{ github.event.inputs.tag || github.ref }}" | \
               sed -e 's@refs/tags/@@' >> $GITHUB_ENV
 
