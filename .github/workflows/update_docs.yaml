@@ -20,7 +20,7 @@ on:
 
 jobs:
   publish_docs:
-    name: Publish updated docs
+    name: Build updated docs
     runs-on: ubuntu-latest
     steps:
       - name: Compute ref
