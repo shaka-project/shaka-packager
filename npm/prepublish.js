@@ -16,8 +16,13 @@ var commandNames = {
 var package = require(path.resolve(__dirname, 'package.json'));
 console.log('Preparing Shaka Packager v' + package.version);
 
+// Calculate the repo name.  In GitHub Actions context, this will pull binaries
+// correctly from a fork.  When run by hand, it will default to the official
+// repo.
+var repo = process.env.GITHUB_REPOSITORY || 'google/shaka-packager';
+
 // For fetching binaries from GitHub:
-var urlBase = 'https://github.com/google/shaka-packager/releases/download/v' +
+var urlBase = 'https://github.com/' + repo + '/releases/download/v' +
     package.version + '/';
 
 // For spawning curl subprocesses:
@@ -49,11 +54,11 @@ for (var platform in commandNames) {
 
 // Fetch LICENSE and README files from the same tag, and include them in the
 // package.
-var licenseUrl = 'https://raw.githubusercontent.com/google/shaka-packager/' +
+var licenseUrl = 'https://raw.githubusercontent.com/' + repo + '/' +
     'v' + package.version + '/LICENSE';
 download(licenseUrl, 'LICENSE');
 
-var readmeUrl = 'https://raw.githubusercontent.com/google/shaka-packager/' +
+var readmeUrl = 'https://raw.githubusercontent.com/' + repo + '/' +
     'v' + package.version + '/README.md';
 download(readmeUrl, 'README.md');
 

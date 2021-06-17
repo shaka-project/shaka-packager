@@ -33,10 +33,16 @@
  - `DOCKERHUB_CI_USERNAME`: The username of the Docker Hub CI account
  - `DOCKERHUB_CI_TOKEN`: An access token for Docker Hub
    - To generate, visit https://hub.docker.com/settings/security
+ - `DOCKERHUB_PACKAGE_NAME`: Not a true "secret", but stored here to avoid
+   someone pushing bogus packages to Docker Hub during CI testing from a fork
+   - In a fork, set to a private name which differs from the production one
  - `NPM_CI_TOKEN`: An "Automation"-type access token for NPM for the `shaka-bot`
    account
    - To generate, visit https://www.npmjs.com/settings/shaka-bot/tokens and
      select the "Automation" type
+ - `NPM_PACKAGE_NAME`: Not a true "secret", but stored here to avoid someone
+   pushing bogus packages to NPM during CI testing from a fork
+   - In a fork, set to a private name which differs from the production one
  - `SHAKA_BOT_TOKEN`: A GitHub personal access token for the `shaka-bot`
    account, with `workflow` scope
    - To generate, visit https://github.com/settings/tokens/new and select the
