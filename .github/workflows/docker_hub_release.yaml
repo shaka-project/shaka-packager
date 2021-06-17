@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "The tag to release to NPM."
+        description: "The tag to release to Docker Hub."
         required: True
 
 jobs:
