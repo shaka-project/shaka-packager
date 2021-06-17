@@ -1,16 +1,9 @@
-name: Build and Test
+name: Build and Test PR
 
 # Builds and tests on all combinations of OS, build type, and library type.
+# Also builds the docs.
 #
-# Runs when a pull request is opened, or triggered from other workflows.
-#
-# If triggered from another workflow, optionally attaches release artifacts to a
-# release, since those artifacts can't be accessed from another workflow later.
-#
-# If triggered from another workflow, optionally initiates another workflow
-# afterward, allowing for chaining of workflows.  This capability is used in the
-# release process, so that the relatively-complex build_and_test workflow can be
-# reused in the middle of the release process without duplication.
+# Runs when a pull request is opened or updated.
 #
 # Can also be run manually for debugging purposes.
 on:
@@ -21,16 +14,6 @@ on:
       ref:
         description: "The ref to build and test."
         required: False
-      release_id:
-        description: "The ID of a release to attach release artifacts."
-        required: False
-      next_workflow:
-        description: "The workflow to trigger next."
-        required: False
-      next_workflow_payload:
-        description: "JSON input parameters to send to the next workflow."
-        required: False
-        default: "{}"
 
 jobs:
   build_and_test:
@@ -57,126 +40,35 @@ jobs:
     name: Build and test ${{ matrix.os_name }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
     runs-on: ${{ matrix.os }}
 
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "10.10"
-      GYP_DEFINES: "target_arch=x64 libpackager_type=${{ matrix.lib_type }}_library"
-      DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
-      GYP_MSVS_VERSION: "2019"
-      GYP_MSVS_OVERRIDE_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise"
-
     steps:
-      - name: Compute ref
-        # We could be building from a workflow dispatch (manual run or triggered
-        # by another workflow), or from a pull request.  Subsequent steps can
-        # refer to $TARGET_REF to determine the correct ref in all cases.
-        run: |
-          echo "TARGET_REF=${{ github.event.inputs.ref || github.ref }}" >> $GITHUB_ENV
-
       - name: Configure git to preserve line endings
-        # Fix issues with CRLF in test outputs on Windows by explicitly setting
-        # this core.autocrlf config.  Without this, tests will later fail
-        # because the "golden" test outputs in the source code will not have
-        # the correct line endings.
-        run: |
-          git config --global core.autocrlf false
+        # Otherwise, tests fail on Windows because "golden" test outputs will not
+        # have the correct line endings.
+        run: git config --global core.autocrlf false
 
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           path: src
-          ref: ${{ env.TARGET_REF }}
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
-      - name: Install depot tools
-        # NOTE: can't use actions/checkout here because this is not hosted on
-        # GitHub.
-        run: |
-          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+      - name: Build docs (Linux only)
+        if: runner.os == 'Linux'
+        uses: ./src/.github/workflows/custom-actions/build-docs
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Build Packager
+        uses: ./src/.github/workflows/custom-actions/build-packager
         with:
-          python-version: 2.7
+          os_name: ${{ matrix.os_name }}
+          lib_type: ${{ matrix.lib_type }}
+          build_type: ${{ matrix.build_type }}
+          build_type_suffix: ${{ matrix.build_type_suffix }}
+          exe_ext: ${{ matrix.exe_ext }}
 
-      - name: Install macOS SDK 10.3 (macOS only)
-        if: matrix.os_name == 'osx'
-        # NOTE: macOS 11 doesn't work with our (old) version of Chromium build,
-        # and the latest Chromium build doesn't work with Packager's build
-        # system.  To work around this, we need an older SDK version, and to
-        # get that, we need an older XCode version.  XCode 10.3 has SDK 10.14,
-        # which works.
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Test Packager
+        uses: ./src/.github/workflows/custom-actions/test-packager
         with:
-          xcode-version: 10.3
-
-      - name: Configure gclient
-        run: |
-          depot_tools/gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
-
-      - name: Sync gclient
-        run: |
-          depot_tools/gclient sync
-
-      - name: Build
-        run: |
-          depot_tools/ninja -C src/out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}
-
-      - name: Test
-        shell: bash
-        run: |
-          # NOTE: Some of these tests must be run from the "src" directory.
-          cd src
-          if [[ '${{ matrix.os_name }}' == 'osx' ]]; then
-            export DYLD_FALLBACK_LIBRARY_PATH=out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}
-          fi
-          set -x  # So we can see what commands/tests are being executed
-          for i in out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}/*test${{ matrix.exe_ext }}; do "$i" || exit 1; done
-          python out/${{ matrix.build_type }}${{ matrix.build_type_suffix }}/packager_test.py -v --libpackager_type=${{ matrix.lib_type }}_library
-
-      - name: Prepare artifacts
-        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
-        shell: bash
-        run: |
-          mkdir artifacts
-          mv \
-            src/out/Release${{ matrix.build_type_suffix }}/packager${{ matrix.exe_ext }} \
-            artifacts/packager-${{ matrix.os_name }}${{ matrix.exe_ext }}
-          mv \
-            src/out/Release${{ matrix.build_type_suffix }}/mpd_generator${{ matrix.exe_ext }} \
-            artifacts/mpd_generator-${{ matrix.os_name }}${{ matrix.exe_ext }}
-          if [[ '${{ matrix.os_name }}' == 'win' ]]; then
-            (
-              cd src/out/Release${{ matrix.build_type_suffix }}
-              7z a ../../../artifacts/pssh-box-${{ matrix.os_name }}.py.zip \
-                  pyproto pssh-box.py
-            )
-          else
-            tar -czf artifacts/pssh-box-${{ matrix.os_name }}.py.tar.gz \
-                -C src/out/Release${{ matrix.build_type_suffix }} \
-                pyproto pssh-box.py
-          fi
-
-      - name: Attach artifacts to release
-        if: matrix.build_type == 'Release' && matrix.lib_type == 'static' && github.event.inputs.release_id
-        uses: dwenegar/upload-release-assets@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
-        with:
-          release_id: ${{ github.event.inputs.release_id }}
-          assets_path: artifacts
-
-  launch_next_workflow:
-    name: Launch next workflow
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.next_workflow
-    needs: build_and_test
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
-    steps:
-      - name: Launch next workflow
-        run: |
-          echo '${{ github.event.inputs.next_workflow_payload }}' | \
-              gh workflow \
-                  -R '${{ github.repository }}' \
-                  run '${{ github.event.inputs.next_workflow }}' \
-                  --json
+          lib_type: ${{ matrix.lib_type }}
+          build_type: ${{ matrix.build_type }}
+          build_type_suffix: ${{ matrix.build_type_suffix }}
+          exe_ext: ${{ matrix.exe_ext }}

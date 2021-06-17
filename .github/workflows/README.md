@@ -1,23 +1,33 @@
 # GitHub Actions CI
 
+## Actions
+ - `custom-actions/build-packager`:
+   Builds Shaka Packager.  Leaves build artifacts in the "artifacts" folder.
+   Requires OS-dependent and build-dependent inputs.
+ - `custom-actions/test-packager`:
+   Tests Shaka Packager.  Requires OS-dependent and build-dependent inputs.
+ - `custom-actions/build-docs`:
+   Builds Shaka Packager docs.
+
 ## Workflows
  - On PR:
-   - `build_and_test.yaml`: builds and tests all combinations of OS & build
-     settings
-   - `update_docs.yaml`: builds updated docs
+   - `build_and_test.yaml`:
+     Builds and tests all combinations of OS & build settings.  Also builds
+     docs.
  - On release tag:
-   - `draft_github_release.yaml`: creates a draft release on GitHub, triggers
-     common `build_and_test` workflow
-   - `build_and_test.yaml` builds and tests all combinations of OS & build
-     settings, attaches official binaries to the GitHub draft release, triggers
-     `publish_github_release` workflow
-   - `publish_github_release.yaml`: finalizes the draft and published the GitHub
-     release
-   - `docker_hub_release.yaml`: builds a Docker image to match the final GitHub
-     release and pushes it to Docker Hub
-   - `npm_release.yaml`: builds an NPM package to match the final GitHub release
-     and pushes it to NPM
-   - `update_docs.yaml`: builds updated docs, pushes them to the gh-pages branch
+   - `github_release.yaml`:
+     Creates a draft release on GitHub, builds and tests all combinations of OS
+     & build settings, builds docs on all OSes, attaches static release binaries
+     to the draft release, then fully publishes the release.
+ - On release published:
+   - `docker_hub_release.yaml`:
+     Builds a Docker image to match the published GitHub release, then pushes it
+     to Docker Hub.
+   - `npm_release.yaml`:
+     Builds an NPM package to match the published GitHub release, then pushes it
+     to NPM.
+   - `update_docs.yaml`:
+     Builds updated docs and pushes them to the gh-pages branch.
 
 ## Required Repo Secrets
  - `DOCKERHUB_CI_USERNAME`: The username of the Docker Hub CI account
