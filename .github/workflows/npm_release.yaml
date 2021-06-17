@@ -38,10 +38,12 @@ jobs:
         with:
           node-version: 10
 
-      - name: Set package version
+      - name: Set package name and version
         run: |
           cd src/npm
-          npm version ${{ env.TARGET_REF }}
+          sed package.json -i \
+              -e 's/"name": ""/"name": "${{ secrets.NPM_PACKAGE_NAME }}"/' \
+              -e 's/"version": ""/"version": "${{ env.TARGET_REF }}"/'
 
       - name: Publish NPM package
         uses: JS-DevTools/npm-publish@v1
@@ -49,3 +51,4 @@ jobs:
           token: ${{ secrets.NPM_CI_TOKEN }}
           package: src/npm/package.json
           check-version: false
+          access: public

@@ -44,4 +44,4 @@ jobs:
         with:
           push: true
           context: src/
-          tags: google/shaka-packager:latest,google/shaka-packager:${{ env.TARGET_REF }}
+          tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:latest,${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ env.TARGET_REF }}
