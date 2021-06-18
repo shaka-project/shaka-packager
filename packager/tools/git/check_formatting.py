@@ -52,7 +52,7 @@ if __name__ == '__main__':
       b'no modified files to format\n',
       b'clang-format did not modify any files\n'
   ]:
-    print(output)
+    print(output.decode('utf-8'))
     print()
     print('Code style is not correct. Please run {}.'.format(' '.join(command)))
     print()
