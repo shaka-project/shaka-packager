@@ -7,6 +7,10 @@
 
 """A utility to parse and generate PSSH boxes."""
 
+# This file itself is considered an invalid module name because of the dash in
+# the filename: pssh-box.py
+# pylint: disable=invalid-name
+
 from __future__ import print_function
 
 import argparse
@@ -26,7 +30,8 @@ assert os.path.exists(_proto_path), (
 sys.path.insert(0, _proto_path)
 sys.path.insert(0, _widevine_proto_path)
 
-import widevine_pssh_data_pb2  # pylint: disable=g-import-not-at-top
+# pylint: disable=wrong-import-position
+import widevine_pssh_data_pb2
 
 COMMON_SYSTEM_ID = base64.b16decode('1077EFECC0B24D02ACE33C1E52E2FB4B')
 WIDEVINE_SYSTEM_ID = base64.b16decode('EDEF8BA979D64ACEA3C827DCD51D21ED')

@@ -1,6 +1,10 @@
 # GitHub Actions CI
 
 ## Actions
+ - `custom-actions/lint-packager`:
+   Lints Shaka Packager.  You must pass `fetch-depth: 2` to `actions/checkout`
+   in order to provide enough history for the linter to tell which files have
+   changed.
  - `custom-actions/build-packager`:
    Builds Shaka Packager.  Leaves build artifacts in the "artifacts" folder.
    Requires OS-dependent and build-dependent inputs.
