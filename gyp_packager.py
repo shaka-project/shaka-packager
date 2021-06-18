@@ -39,7 +39,7 @@ checkout_dir = os.path.dirname(os.path.realpath(__file__))
 src_dir = os.path.join(checkout_dir, 'packager')
 
 # Workaround the dynamic path.
-# pylint: disable=g-import-not-at-top,g-bad-import-order
+# pylint: disable=wrong-import-position
 
 sys.path.insert(0, os.path.join(src_dir, 'build'))
 import gyp_helper
