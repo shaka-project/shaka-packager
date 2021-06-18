@@ -32,7 +32,7 @@ const std::string kPlayHeaderObject_4_0 =
     "version=\"4.0.0.0\"><DATA>"
     "<PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO>"
     "<KID>$0</KID><CHECKSUM>$1</CHECKSUM>"
-    "</DATA>$2</WRMHEADER>";
+    "$2</DATA></WRMHEADER>";
 
 // For PlayReady clients 4.0+ that support CBC keys.
 const std::string kPlayHeaderObject_4_3 =
@@ -40,7 +40,7 @@ const std::string kPlayHeaderObject_4_3 =
     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
     "version=\"4.3.0.0\"><DATA><PROTECTINFO><KIDS>"
     "<KID ALGID=\"AESCBC\" VALUE=\"$0\"></KID>"
-    "</KIDS></PROTECTINFO></DATA>$1</WRMHEADER>";
+    "</KIDS></PROTECTINFO>$1</DATA></WRMHEADER>";
 
 // Converts the key_id's endianness.
 std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
