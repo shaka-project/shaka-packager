@@ -17,6 +17,9 @@ runs:
         sudo install -m 755 git-clang-format /usr/local/bin/git-clang-format
         rm git-clang-format
         echo "::endgroup::"
+        echo "::group::Installing pylint"
+        python3 -m pip install --upgrade pylint
+        echo "::endgroup::"
         echo "::group::Check clang-format for C++ sources"
         # NOTE: --binary forces use of global clang-format (which works) instead
         # of depot_tools clang-format (which doesn't).
