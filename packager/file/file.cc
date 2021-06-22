@@ -210,12 +210,22 @@ File* File::OpenWithNoBuffering(const char* file_name, const char* mode) {
 }
 
 bool File::Delete(const char* file_name) {
+  static bool logged = false;
   base::StringPiece real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
-  return file_type->delete_function
-             ? file_type->delete_function(real_file_name.data())
-             : false;
+  if (file_type->delete_function) {
+    return file_type->delete_function(real_file_name.data());
+  } else {
+    if (!logged) {
+      logged = true;
+      LOG(WARNING) << "File::Delete: file type for "
+            << file_name
+            << " ('" << file_type->type << "') "
+            << "has no 'delete' function.";
+    }
+    return true;
+  }
 }
 
 int64_t File::GetFileSize(const char* file_name) {
