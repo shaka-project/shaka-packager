@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>DASH &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -42,7 +43,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="dash">
+  <section id="dash">
 <h1>DASH<a class="headerlink" href="#dash" title="Permalink to this headline">¶</a></h1>
 <p>Dynamic Adaptive Streaming over HTTP (DASH) is an adaptive bitrate streaming
 technique that enables high quality streaming of media content over HTTP.</p>
@@ -50,7 +51,7 @@ technique that enables high quality streaming of media content over HTTP.</p>
 packaging of VOD content without encryption. For live content packaging, see
 <a class="reference internal" href="live.html"><span class="doc">Live</span></a>; for content encryption, see <a class="reference internal" href="drm.html"><span class="doc">DRM</span></a>; for full documentation,
 see <a class="reference internal" href="../documentation.html"><span class="doc">Packager Documentation</span></a>.</p>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --mpd_output &lt;manifest_output_path&gt; \
@@ -64,8 +65,8 @@ see <a class="reference internal" href="../documentation.html"><span class="doc"
 <p>DASH and HLS options can both be specified to output DASH and HLS manifests
 at the same time. Note that it works only for MP4 outputs.</p>
 </div>
-</div>
-<div class="section" id="examples">
+</section>
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The examples below uses the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>. It can be
 applied to VP9 in the same way.</p>
@@ -155,10 +156,10 @@ playlists as well as DASH manifests.</p>
 <p>The above packaging command creates HLS playlists and DASH manifest while using
 dash_only for creating segmented WebVTT in mp4 format and hls_only option for
 creating WebVTT in text format.</p>
-</div>
-<div class="section" id="configuration-options">
+</section>
+<section id="configuration-options">
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="dash-specific-stream-descriptor-fields">
+<section id="dash-specific-stream-descriptor-fields">
 <h3>DASH specific stream descriptor fields<a class="headerlink" href="#dash-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">dash_accessibilities (accessibilities)</dt>
@@ -174,8 +175,8 @@ value should be one of: <strong>caption</strong>, <strong>subtitle</strong>, <st
 specification for details.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="dash-options">
+</section>
+<section id="dash-options">
 <h3>DASH options<a class="headerlink" href="#dash-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--generate_static_live_mpd</span></kbd></dt>
@@ -261,8 +262,8 @@ stream is DASH only.</p>
 the same language, media type (audio, video etc) and container type.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="segment-template-formatting">
+</section>
+<section id="segment-template-formatting">
 <h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
 <p>The implementation is based on <em>Template-based Segment URL construction</em>
 described in ISO/IEC 23009-1:2014.</p>
@@ -332,9 +333,9 @@ number, the result shall be padded with zeros. The value is not truncated even
 if the result is larger.</p>
 <p>Strings outside identifiers shall only contain characters that are permitted
 within URLs according to RFC 3986.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -404,7 +405,7 @@ within URLs according to RFC 3986.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

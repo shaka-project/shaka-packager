@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Design &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -41,11 +42,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="design">
+  <section id="design">
 <h1>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="architecture-diagram">
+<section id="architecture-diagram">
 <h2>Architecture diagram<a class="headerlink" href="#architecture-diagram" title="Permalink to this headline">¶</a></h2>
-<div class="graphviz"><img src="_images/graphviz-bf83f8f1c2843c664b6cd4bc1f27820dfd89c860.png" alt="digraph shaka_packager {
+digraph shaka_packager {
   label=&lt;&lt;u&gt;Shaka Packager Architecture&lt;/u&gt;&gt;
   labelloc=t
 
@@ -87,8 +88,7 @@
     {rank=same; MasterPlaylist, MpdBuilder}
     {rank=same; MediaPlaylist, Representation}
   }
-}" class="graphviz" /></div>
-<div class="graphviz"><img src="_images/graphviz-366b26625ec04fed330621f00c3a39700f74259e.png" alt="digraph shaka_packager {
+}digraph shaka_packager {
     subgraph cluster_demuxer {
       style=rounded
       label=&lt;&lt;u&gt; &lt;/u&gt;&gt;
@@ -107,8 +107,7 @@
       Muxer2 [label=&quot;Muxer&quot; shape=rectangle]
       Muxer2 -&gt; Mp4Muxer, WebMMuxer, Mp2tMuxer [dir=back arrowtail=onormal]
     }
-}" class="graphviz" /></div>
-<div class="graphviz"><img src="_images/graphviz-07af1c119c853656e59490991f24816ae8064016.png" alt="digraph shaka_packager {
+}digraph shaka_packager {
   subgraph cluster_legend {
     style=rounded
     label=&lt;&lt;u&gt;Legend&lt;/u&gt;&gt;
@@ -127,11 +126,10 @@
     &quot;Manifest Class&quot; [shape=trapezium]
     MediaHandler [shape=rectangle]
   }
-}" class="graphviz" /></div>
-</div>
-<div class="section" id="media-handler-data-flow">
+}</section>
+<section id="media-handler-data-flow">
 <h2>Media handler data flow<a class="headerlink" href="#media-handler-data-flow" title="Permalink to this headline">¶</a></h2>
-<div class="graphviz"><img src="_images/graphviz-8ed86a2355342a0020a62fc7db969063daa9597c.png" alt="digraph g {
+digraph g {
   rankdir=LR
 
   StreamData [
@@ -143,23 +141,8 @@
   MediaHandler [shape=rectangle]
   MediaHandler2 [shape=rectangle, label=MediaHandler]
   MediaHandler -&gt; StreamData -&gt; MediaHandler2
-}" class="graphviz" /></div>
-<p class="plantuml">
-<img src="_images/plantuml-d388f7ab1eb3f4d70c57feb299c189351a097db9.png" alt="MediaHandler -&gt; MediaHandler2 : StreamInfo
-MediaHandler -&gt; MediaHandler2 : MediaSample
-MediaHandler -&gt; MediaHandler2 : MediaSample
-MediaHandler -&gt; MediaHandler2 : ...
-MediaHandler -&gt; MediaHandler2 : MediaSample
-MediaHandler -&gt; MediaHandler2 : SegmentInfo
-MediaHandler -&gt; MediaHandler2 : MediaSample
-MediaHandler -&gt; MediaHandler2 : MediaSample
-MediaHandler -&gt; MediaHandler2 : ...
-MediaHandler -&gt; MediaHandler2 : MediaSample
-MediaHandler -&gt; MediaHandler2 : SegmentInfo
-MediaHandler -&gt; MediaHandler2 : ..."/>
-</p>
-</div>
-</div>
+}</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -222,7 +205,7 @@ MediaHandler -&gt; MediaHandler2 : ..."/>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

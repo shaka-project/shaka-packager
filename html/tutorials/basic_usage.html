@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Basic Usage &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -42,15 +43,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="basic-usage">
+  <section id="basic-usage">
 <h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="getting-help">
+<section id="getting-help">
 <h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager --help
 </pre></div>
 </div>
-</div>
-<div class="section" id="media-file-analysis">
+</section>
+<section id="media-file-analysis">
 <h2>Media file analysis<a class="headerlink" href="#media-file-analysis" title="Permalink to this headline">¶</a></h2>
 <p>Shaka Packager can be used to inspect the content of a media file and dump basic
 stream information:</p>
@@ -61,7 +62,7 @@ stream information:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="s2">&quot;some_content.mp4&quot;</span><span class="p">:</span>
 <span class="n">Found</span> <span class="mi">2</span> <span class="n">stream</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span>
 <span class="n">Stream</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Video</span>
- <span class="n">codec_string</span><span class="p">:</span> <span class="n">avc1</span><span class="o">.</span><span class="mi">4</span><span class="n">d001e</span>
+ <span class="n">codec_string</span><span class="p">:</span> <span class="n">avc1</span><span class="mf">.4</span><span class="n">d001e</span>
  <span class="n">time_scale</span><span class="p">:</span> <span class="mi">24000</span>
  <span class="n">duration</span><span class="p">:</span> <span class="mi">3002000</span> <span class="p">(</span><span class="mf">125.1</span> <span class="n">seconds</span><span class="p">)</span>
  <span class="n">is_encrypted</span><span class="p">:</span> <span class="n">false</span>
@@ -73,7 +74,7 @@ stream information:</p>
  <span class="n">nalu_length_size</span><span class="p">:</span> <span class="mi">4</span>
 
 <span class="n">Stream</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Audio</span>
- <span class="n">codec_string</span><span class="p">:</span> <span class="n">mp4a</span><span class="o">.</span><span class="mf">40.2</span>
+ <span class="n">codec_string</span><span class="p">:</span> <span class="n">mp4a</span><span class="mf">.40.2</span>
  <span class="n">time_scale</span><span class="p">:</span> <span class="mi">44100</span>
  <span class="n">duration</span><span class="p">:</span> <span class="mi">5517311</span> <span class="p">(</span><span class="mf">125.1</span> <span class="n">seconds</span><span class="p">)</span>
  <span class="n">is_encrypted</span><span class="p">:</span> <span class="n">false</span>
@@ -84,8 +85,8 @@ stream information:</p>
  <span class="n">language</span><span class="p">:</span> <span class="n">eng</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="basic-transmuxing">
+</section>
+<section id="basic-transmuxing">
 <h2>Basic transmuxing<a class="headerlink" href="#basic-transmuxing" title="Permalink to this headline">¶</a></h2>
 <p>Shaka Packager can be used to extract streams, optionally transmuxes the streams
 from one container format to another container format.</p>
@@ -97,8 +98,8 @@ from one container format to another container format.</p>
 <p>Shaka Packager is also capable of more complex tasks, such as applying
 encryption, packaging contents to DASH or HLS formats, etc. Refer to
 <a class="reference internal" href="tutorials.html"><span class="doc">Tutorials</span></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -163,7 +164,7 @@ encryption, packaging contents to DASH or HLS formats, etc. Refer to
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

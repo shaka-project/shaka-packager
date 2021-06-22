@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Build Instructions &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -41,10 +42,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="build-instructions">
+  <section id="build-instructions">
 <h1>Build Instructions<a class="headerlink" href="#build-instructions" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager supports building on Windows, Mac and Linux host systems.</p>
-<div class="section" id="linux-build-dependencies">
+<section id="linux-build-dependencies">
 <h2>Linux build dependencies<a class="headerlink" href="#linux-build-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Most development is done on Ubuntu (currently 14.04, Trusty Tahr). The
 dependencies mentioned here are only for Ubuntu. There are some instructions
@@ -54,8 +55,8 @@ sudo apt-get install build-essential curl git python
 </pre></div>
 </div>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">Git</span></code> must be v1.7.5 or above.</p>
-</div>
-<div class="section" id="mac-system-requirements">
+</section>
+<section id="mac-system-requirements">
 <h2>Mac system requirements<a class="headerlink" href="#mac-system-requirements" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p><a class="reference external" href="https://developer.apple.com/xcode">Xcode</a> 7.3+.</p></li>
@@ -70,11 +71,11 @@ can workaround it by using 10.14 SDK. See
 <a class="reference external" href="https://github.com/google/shaka-packager/issues/660#issuecomment-552576341">#660</a>
 for details.</p></li>
 </ul>
-</div>
-<div class="section" id="windows-system-requirements">
+</section>
+<section id="windows-system-requirements">
 <h2>Windows system requirements<a class="headerlink" href="#windows-system-requirements" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Visual Studio 2015 Update 3, see below (no other version is supported).</p></li>
+<li><p>Visual Studio 2015 Update 3, 2017, or 2019. (See below.)</p></li>
 <li><p>Windows 7 or newer.</p></li>
 </ul>
 <p>Install Visual Studio 2015 Update 3 or later - Community Edition should work if
@@ -84,10 +85,16 @@ its license is appropriate for you. Use the Custom Install option and select:</p
 <li><p>Universal Windows Apps Development Tools &gt; Tools (1.4.1) and Windows 10 SDK
 (10.0.14393)</p></li>
 </ul>
+<p>If using VS 2017 or VS 2019, you must set the following environment variables,
+with versions and paths adjusted to match your actual system:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">GYP_MSVS_VERSION</span><span class="o">=</span><span class="s2">&quot;2019&quot;</span>
+<span class="nv">GYP_MSVS_OVERRIDE_PATH</span><span class="o">=</span><span class="s2">&quot;C:/Program Files (x86)/Microsoft Visual Studio/2019/Community&quot;</span>
+</pre></div>
 </div>
-<div class="section" id="install-depot-tools">
+</section>
+<section id="install-depot-tools">
 <h2>Install <code class="docutils literal notranslate"><span class="pre">depot_tools</span></code><a class="headerlink" href="#install-depot-tools" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="linux-and-mac">
+<section id="linux-and-mac">
 <h3>Linux and Mac<a class="headerlink" href="#linux-and-mac" title="Permalink to this headline">¶</a></h3>
 <p>Clone the <code class="docutils literal notranslate"><span class="pre">depot_tools</span></code> repository from Chromium:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
@@ -99,8 +106,8 @@ in your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:/path/to/depot_tools&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="windows">
+</section>
+<section id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
 <p>Download the
 <a class="reference external" href="https://storage.googleapis.com/chrome-infra/depot_tools.zip">depot_tools bundle</a>
@@ -132,9 +139,9 @@ may not get installed correctly.</p></li>
 you may want to
 <a class="reference external" href="http://tortoisesvn.tigris.org/faq.html#cantmove2">disable Windows Indexing</a>.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="get-the-code">
+</section>
+</section>
+<section id="get-the-code">
 <h2>Get the code<a class="headerlink" href="#get-the-code" title="Permalink to this headline">¶</a></h2>
 <p>Create a <code class="docutils literal notranslate"><span class="pre">shaka_packager</span></code> directory for the checkout and change to it (you can
 call this whatever you like and put it wherever you like, as long as the full
@@ -164,9 +171,9 @@ instructions assume you have switched to the <code class="docutils literal notra
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> src
 </pre></div>
 </div>
-<div class="section" id="build-shaka-packager">
+<section id="build-shaka-packager">
 <h3>Build Shaka Packager<a class="headerlink" href="#build-shaka-packager" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id1">
+<section id="id1">
 <h4>Linux and Mac<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <p>Shaka Packager uses <a class="reference external" href="https://ninja-build.org">Ninja</a> as its main build tool,
 which is bundled in depot_tools.</p>
@@ -184,8 +191,8 @@ you can change build system to <code class="docutils literal notranslate"><span 
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;clang=0&#39;</span> gclient runhooks
 </pre></div>
 </div>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h4>Windows<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>The instructions are similar, except that Windows allows using either <code class="docutils literal notranslate"><span class="pre">/</span></code> or <code class="docutils literal notranslate"><span class="pre">\</span></code>
 as path separator:</p>
@@ -201,17 +208,17 @@ $ gclient runhooks
 $ ninja -C out/Release_x64
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="build-artifacts">
+</section>
+</section>
+<section id="build-artifacts">
 <h3>Build artifacts<a class="headerlink" href="#build-artifacts" title="Permalink to this headline">¶</a></h3>
 <p>After a successful build, you can find build artifacts including the main
 <code class="docutils literal notranslate"><span class="pre">packager</span></code> binary in build output directory (<code class="docutils literal notranslate"><span class="pre">out/Release</span></code> or <code class="docutils literal notranslate"><span class="pre">out/Release_x64</span></code>
 for release build).</p>
 <p>See <a class="reference external" href="https://google.github.io/shaka-packager/html/">Shaka Packager Documentation</a>
 on how to use <code class="docutils literal notranslate"><span class="pre">Shaka</span> <span class="pre">Packager</span></code>.</p>
-</div>
-<div class="section" id="update-your-checkout">
+</section>
+<section id="update-your-checkout">
 <h3>Update your checkout<a class="headerlink" href="#update-your-checkout" title="Permalink to this headline">¶</a></h3>
 <p>To update an existing checkout, you can run</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git pull origin master --rebase
@@ -223,9 +230,9 @@ top of tip-of-tree (aka the Git branch <code class="docutils literal notranslate
 common Git commands to update the repo.</p>
 <p>The second command syncs dependencies to the appropriate versions and re-runs
 hooks as needed.</p>
-</div>
-</div>
-<div class="section" id="cross-compiling-for-arm-on-ubuntu-host">
+</section>
+</section>
+<section id="cross-compiling-for-arm-on-ubuntu-host">
 <h2>Cross compiling for ARM on Ubuntu host<a class="headerlink" href="#cross-compiling-for-arm-on-ubuntu-host" title="Permalink to this headline">¶</a></h2>
 <p>The install-build-deps script can be used to install all the compiler
 and library dependencies directly from Ubuntu:</p>
@@ -240,10 +247,10 @@ and library dependencies directly from Ubuntu:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ninja -C out/Release
 </pre></div>
 </div>
-</div>
-<div class="section" id="notes-for-other-linux-distros">
+</section>
+<section id="notes-for-other-linux-distros">
 <h2>Notes for other linux distros<a class="headerlink" href="#notes-for-other-linux-distros" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="alpine-linux">
+<section id="alpine-linux">
 <h3>Alpine Linux<a class="headerlink" href="#alpine-linux" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">apk</span></code> command to install dependencies:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ apk add --no-cache bash build-base curl findutils git ninja python <span class="se">\</span>
@@ -262,8 +269,8 @@ dummy structure has to be defined in /usr/include/malloc.h, e.g.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="arch-linux">
+</section>
+<section id="arch-linux">
 <h3>Arch Linux<a class="headerlink" href="#arch-linux" title="Permalink to this headline">¶</a></h3>
 <p>Instead of running <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span></code> to install build dependencies, run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo pacman -Sy --needed python2 git curl gcc gcc-libs make
@@ -282,30 +289,30 @@ $ makepkg -si
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;clang=0&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="debian">
+</section>
+<section id="debian">
 <h3>Debian<a class="headerlink" href="#debian" title="Permalink to this headline">¶</a></h3>
 <p>Same as Ubuntu.</p>
-</div>
-<div class="section" id="fedora">
+</section>
+<section id="fedora">
 <h3>Fedora<a class="headerlink" href="#fedora" title="Permalink to this headline">¶</a></h3>
 <p>Instead of running <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span></code> to install build dependencies, run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ su -c <span class="s1">&#39;yum install -y git python git curl gcc-c++ findutils bzip2 \</span>
 <span class="s1">         ncurses-compat-libs&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="opensuse">
+</section>
+<section id="opensuse">
 <h3>OpenSUSE<a class="headerlink" href="#opensuse" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">zypper</span></code> command to install dependencies:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo zypper in git python python-xml git curl gcc-c++ tar libncurses5
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo zypper <span class="k">in</span> git python python-xml git curl gcc-c++ tar libncurses5
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="tips-tricks-and-troubleshooting">
+</section>
+</section>
+<section id="tips-tricks-and-troubleshooting">
 <h2>Tips, tricks, and troubleshooting<a class="headerlink" href="#tips-tricks-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="xcode-license-agreement">
+<section id="xcode-license-agreement">
 <h3>Xcode license agreement<a class="headerlink" href="#xcode-license-agreement" title="Permalink to this headline">¶</a></h3>
 <p>If you are getting the error</p>
 <blockquote>
@@ -321,8 +328,8 @@ user can do by running:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo xcodebuild -license
 </pre></div>
 </div>
-</div>
-<div class="section" id="missing-curl-ca-bundle">
+</section>
+<section id="missing-curl-ca-bundle">
 <h3>Missing curl CA bundle<a class="headerlink" href="#missing-curl-ca-bundle" title="Permalink to this headline">¶</a></h3>
 <p>If you are getting the error</p>
 <blockquote>
@@ -333,8 +340,8 @@ resolve the issue:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ brew install curl --with-openssl
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-an-ide">
+</section>
+<section id="using-an-ide">
 <h3>Using an IDE<a class="headerlink" href="#using-an-ide" title="Permalink to this headline">¶</a></h3>
 <p>No specific instructions are available.</p>
 <p>You might find Gyp generators helpful. Output is not guaranteed to work.
@@ -351,9 +358,9 @@ $ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>msvs gclient run
 $ <span class="nv">GYP_GENERATORS</span><span class="o">=</span>msvs_test gclient runhooks
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="contributing">
+</section>
+</section>
+<section id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
 <p>If you have improvements or fixes, we would love to have your contributions.
 See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for
@@ -367,8 +374,8 @@ are run using the <code class="docutils literal notranslate"><span class="pre">-
 </div>
 <p>You can find out more about GoogleTest at its
 <a class="reference external" href="https://github.com/google/googletest">GitHub page</a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -463,7 +470,7 @@ are run using the <code class="docutils literal notranslate"><span class="pre">-
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

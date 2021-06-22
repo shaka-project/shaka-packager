@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Using Raw Key &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -43,13 +44,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="using-raw-key">
+  <section id="using-raw-key">
 <h1>Using Raw Key<a class="headerlink" href="#using-raw-key" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager supports raw keys, for which keys and key_ids are provided to
 Shaka Packager directly.</p>
 <p>This is often used if you are managing the encryption keys yourself. It also
 allows you to support multi-DRM by providing custom PSSHs.</p>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --enable_raw_key_encryption \
@@ -65,8 +66,8 @@ allows you to support multi-DRM by providing custom PSSHs.</p>
 <p>Custom PSSH(s) can be provided in <em>–pssh</em>. If neither –pssh nor
 –protection_systems is specified, <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a>
 is generated.</p>
-</div>
-<div class="section" id="examples">
+</section>
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The examples below use the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
 <ul>
@@ -153,7 +154,7 @@ third_parties.</p>
 <p>Refer to
 <a class="reference external" href="https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html">player setup</a>
 on how to config the DRM in Shaka Player.</p>
-<div class="section" id="test-vectors-used-in-this-tutorial">
+<section id="test-vectors-used-in-this-tutorial">
 <h3>Test vectors used in this tutorial<a class="headerlink" href="#test-vectors-used-in-this-tutorial" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list">
 <dt class="field-odd">Key ID</dt>
@@ -181,11 +182,11 @@ on how to config the DRM in Shaka Player.</p>
 </div>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="configuration-options">
+</section>
+</section>
+<section id="configuration-options">
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="drm-related-stream-descriptor-fields">
+<section id="drm-related-stream-descriptor-fields">
 <h3>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">skip_encryption=0|1</dt>
@@ -200,8 +201,8 @@ DRM label is derived from stream type (video, audio), resolutions, etc.
 Note that it is case sensitive.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="general-encryption-options">
+</section>
+<section id="general-encryption-options">
 <h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></dt>
@@ -243,8 +244,8 @@ Widevine, PlayReady, FairPlay, Marlin, and
 using another key source.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="raw-key-encryption-options">
+</section>
+<section id="raw-key-encryption-options">
 <h3>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--enable_raw_key_encryption</span></kbd></dt>
@@ -283,13 +284,13 @@ flag nor –protection_systems is specified, a
 <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="pssh-box-utility-to-generate-pssh-boxes">
+</section>
+</section>
+<section id="pssh-box-utility-to-generate-pssh-boxes">
 <h2>pssh-box (Utility to generate PSSH boxes)<a class="headerlink" href="#pssh-box-utility-to-generate-pssh-boxes" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://github.com/google/shaka-packager/tree/master/packager/tools/pssh">https://github.com/google/shaka-packager/tree/master/packager/tools/pssh</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -364,7 +365,7 @@ flag nor –protection_systems is specified, a
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

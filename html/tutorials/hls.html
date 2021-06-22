@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>HLS &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -42,7 +43,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="hls">
+  <section id="hls">
 <h1>HLS<a class="headerlink" href="#hls" title="Permalink to this headline">¶</a></h1>
 <p>HTTP Live Streaming (also known as HLS) is an HTTP-based media streaming
 communications protocol implemented by Apple Inc. as part of its QuickTime,
@@ -59,7 +60,7 @@ available.</p>
 packaging of VOD content without encryption. For live content packaging, see
 <a class="reference internal" href="live.html"><span class="doc">Live</span></a>; for content encryption, see <a class="reference internal" href="drm.html"><span class="doc">DRM</span></a>; for full documentation,
 see <a class="reference internal" href="../documentation.html"><span class="doc">Packager Documentation</span></a>.</p>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --hls_master_playlist_output &lt;master_playlist_output_path&gt; \
@@ -75,8 +76,8 @@ stream descriptor fields.</p>
 <p>DASH and HLS options can both be specified to output DASH and HLS manifests
 at the same time. Note that it works only for MP4 outputs.</p>
 </div>
-</div>
-<div class="section" id="examples">
+</section>
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The examples below uses the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
 <ul>
@@ -162,10 +163,10 @@ playlists as well as DASH manifests.</p>
 <p>The above packaging command creates HLS playlists and DASH manifest while using
 dash_only for creating segmented WebVTT in mp4 format and hls_only option for
 creating WebVTT in text format.</p>
-</div>
-<div class="section" id="configuration-options">
+</section>
+<section id="configuration-options">
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="hls-specific-stream-descriptor-fields">
+<section id="hls-specific-stream-descriptor-fields">
 <h3>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">hls_name</dt>
@@ -194,8 +195,8 @@ CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
 <a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="hls-options">
+</section>
+<section id="hls-options">
 <h3>HLS options<a class="headerlink" href="#hls-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--hls_master_playlist_output <var>&lt;file_path&gt;</var></span></kbd></dt>
@@ -264,8 +265,8 @@ number from previous packager run.</p>
 <div><p>Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
 stream is HLS only.</p>
 </div></blockquote>
-</div>
-<div class="section" id="segment-template-formatting">
+</section>
+<section id="segment-template-formatting">
 <h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
 <p>The implementation is based on <em>Template-based Segment URL construction</em>
 described in ISO/IEC 23009-1:2014.</p>
@@ -335,9 +336,9 @@ number, the result shall be padded with zeros. The value is not truncated even
 if the result is larger.</p>
 <p>Strings outside identifiers shall only contain characters that are permitted
 within URLs according to RFC 3986.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -407,7 +408,7 @@ within URLs according to RFC 3986.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

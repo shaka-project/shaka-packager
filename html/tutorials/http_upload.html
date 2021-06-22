@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>HTTP upload &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -53,9 +54,9 @@ contributions are always welcome.</p>
 <p>The discussion about this feature currently happens at
 <a class="reference external" href="https://github.com/google/shaka-packager/issues/149">Add HTTP PUT output #149</a>.</p>
 </div></blockquote>
-<div class="section" id="http-upload">
+<section id="http-upload">
 <h1>HTTP upload<a class="headerlink" href="#http-upload" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Shaka Packager can upload produced artefacts to a HTTP server using
 HTTP PUT requests with chunked transfer encoding to improve live
@@ -68,24 +69,24 @@ the packaging output location. For talking HTTP, <a class="reference external" h
 <li><p>Chunked video segments encapsulated into the
 <a class="reference external" href="https://en.wikipedia.org/wiki/MPEG_transport_stream">MPEG transport stream</a> container format (.ts)</p></li>
 </ul>
-<div class="section" id="references">
+<section id="references">
 <h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">RFC 2616 about HTTP PUT</a></p></li>
 <li><p><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1">RFC 2616 about Chunked Transfer Coding</a></p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="documentation">
+</section>
+</section>
+<section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="getting-started">
+<section id="getting-started">
 <h3>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h3>
 <p>To enable the HTTP upload transfer mode, use <code class="docutils literal notranslate"><span class="pre">https:</span></code> file paths for any
 output files (e.g. <code class="docutils literal notranslate"><span class="pre">segment_template</span></code>).</p>
 <p>All HTTP requests will be declared as
 <code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/octet-stream</span></code>.</p>
-</div>
-<div class="section" id="synopsis">
+</section>
+<section id="synopsis">
 <h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h3>
 <p>Here is a basic example. It is similar to the “live” example and also
 borrows features from “FFmpeg piping”, see <a class="reference internal" href="live.html"><span class="doc">Live</span></a> and <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FFmpeg piping</span></a>.</p>
@@ -117,9 +118,9 @@ ffmpeg -fflags nobuffer -threads 0 -y \
     <span class="o">--</span><span class="n">vmodule</span><span class="o">=</span><span class="n">http_file</span><span class="o">=</span><span class="mi">1</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="client-authentication">
+</section>
+</section>
+<section id="client-authentication">
 <h2>Client Authentication<a class="headerlink" href="#client-authentication" title="Permalink to this headline">¶</a></h2>
 <p>If your server requires client authentication, you can add the following
 arguments to enable it:</p>
@@ -131,12 +132,12 @@ the server cert. PEM format.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--client_cert_private_key_password</span></code>: (optional) Password to the private
 key file.</p></li>
 </ul>
-</div>
-<div class="section" id="backlog">
+</section>
+<section id="backlog">
 <h2>Backlog<a class="headerlink" href="#backlog" title="Permalink to this headline">¶</a></h2>
 <p>Please note the HTTP upload feature still lacks some features
 probably important for production. Contributions are welcome!</p>
-<div class="section" id="http-delete">
+<section id="http-delete">
 <h3>HTTP DELETE<a class="headerlink" href="#http-delete" title="Permalink to this headline">¶</a></h3>
 <p>Nothing has be done to support this yet:</p>
 <blockquote>
@@ -144,28 +145,28 @@ probably important for production. Contributions are welcome!</p>
 See <code class="docutils literal notranslate"><span class="pre">preserved_segments_outside_live_window</span></code> option in
 <a class="reference external" href="https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP">DASH</a> options or <a class="reference external" href="https://en.wikipedia.org/wiki/HTTP_Live_Streaming">HLS</a> options for details.</p>
 </div></blockquote>
-</div>
-<div class="section" id="software-tests">
+</section>
+<section id="software-tests">
 <h3>Software tests<a class="headerlink" href="#software-tests" title="Permalink to this headline">¶</a></h3>
 <p>We should do some minimal QA, check whether the test
 suite breaks and maybe add some tests covering new code.</p>
-</div>
-<div class="section" id="network-timeouts">
+</section>
+<section id="network-timeouts">
 <h3>Network timeouts<a class="headerlink" href="#network-timeouts" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://curl.haxx.se/libcurl/">libcurl</a> can apply network timeout settings. However,
 we haven’t addressed this yet.</p>
-</div>
-<div class="section" id="miscellaneous">
+</section>
+<section id="miscellaneous">
 <h3>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Address all things TODO and FIXME</p></li>
 <li><p>Make <code class="docutils literal notranslate"><span class="pre">io_cache_size</span></code> configurable?</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="example-backend">
+</section>
+</section>
+<section id="example-backend">
 <h2>Example Backend<a class="headerlink" href="#example-backend" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="http-put-file-uploads-to-nginx">
+<section id="http-put-file-uploads-to-nginx">
 <h3>HTTP PUT file uploads to Nginx<a class="headerlink" href="#http-put-file-uploads-to-nginx" title="Permalink to this headline">¶</a></h3>
 <p>The receiver is based on the native <a class="reference external" href="http://nginx.org/">Nginx</a> module “<a class="reference external" href="http://nginx.org/en/docs/http/ngx_http_dav_module.html">ngx_http_dav_module</a>”,
 it handles HTTP PUT requests with chunked transfer encoding
@@ -195,8 +196,8 @@ like emitted by Shaka Packager.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>nginx -p `pwd` -c nginx.conf -g &quot;daemon off;&quot;
 </pre></div>
 </div>
-</div>
-<div class="section" id="http-put-file-uploads-to-caddy">
+</section>
+<section id="http-put-file-uploads-to-caddy">
 <h3>HTTP PUT file uploads to Caddy<a class="headerlink" href="#http-put-file-uploads-to-caddy" title="Permalink to this headline">¶</a></h3>
 <p>The receiver is based on the <a class="reference external" href="https://caddyserver.com/">Caddy</a> webserver, it handles HTTP PUT
 requests with chunked transfer encoding like emitted by Shaka Packager.</p>
@@ -224,9 +225,9 @@ requests with chunked transfer encoding like emitted by Shaka Packager.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">caddy</span> <span class="o">-</span><span class="n">conf</span> <span class="n">Caddyfile</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="development-and-debugging">
+</section>
+</section>
+<section id="development-and-debugging">
 <h2>Development and debugging<a class="headerlink" href="#development-and-debugging" title="Permalink to this headline">¶</a></h2>
 <p>Watch the network:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ngrep</span> <span class="o">-</span><span class="n">Wbyline</span> <span class="o">-</span><span class="n">dlo</span> <span class="n">port</span> <span class="mi">6767</span>
@@ -240,8 +241,8 @@ requests with chunked transfer encoding like emitted by Shaka Packager.</p>
 </pre></div>
 </div>
 <hr class="docutils" />
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -326,7 +327,7 @@ requests with chunked transfer encoding like emitted by Shaka Packager.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

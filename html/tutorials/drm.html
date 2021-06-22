@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>DRM &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -42,7 +43,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="drm">
+  <section id="drm">
 <h1>DRM<a class="headerlink" href="#drm" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager supports fetching encryption keys from Widevine Key Server and
 PlayReady Key Server. Shaka Packager also supports Raw Keys, for which keys are
@@ -73,9 +74,9 @@ provided to Shaka Packager directly.</p>
 <p>Regardless of which key server you are using, you can instruct Shaka Packager to
 generate other protection systems in additional to the native protection system
 from the key server. This allows generating multi-DRM contents easily.</p>
-<div class="section" id="configuration-options">
+<section id="configuration-options">
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="drm-related-stream-descriptor-fields">
+<section id="drm-related-stream-descriptor-fields">
 <h3>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">skip_encryption=0|1</dt>
@@ -90,8 +91,8 @@ DRM label is derived from stream type (video, audio), resolutions, etc.
 Note that it is case sensitive.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="general-encryption-options">
+</section>
+<section id="general-encryption-options">
 <h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></dt>
@@ -133,8 +134,8 @@ Widevine, PlayReady, FairPlay, Marlin, and
 using another key source.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="widevine-encryption-options">
+</section>
+<section id="widevine-encryption-options">
 <h3>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--enable_widevine_encryption</span></kbd></dt>
@@ -194,8 +195,8 @@ This option is exclusive with <em>aes_signing_key</em>.</p>
 <dd><p>Identifier for a group of licenses.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="raw-key-encryption-options">
+</section>
+<section id="raw-key-encryption-options">
 <h3>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--enable_raw_key_encryption</span></kbd></dt>
@@ -234,9 +235,9 @@ flag nor –protection_systems is specified, a
 <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -305,7 +306,7 @@ flag nor –protection_systems is specified, a
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

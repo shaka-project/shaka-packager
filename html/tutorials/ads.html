@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Ad Insertion &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -42,21 +43,21 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="ad-insertion">
+  <section id="ad-insertion">
 <h1>Ad Insertion<a class="headerlink" href="#ad-insertion" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager does not do Ad Insertion directly, but it can precondition
 content for <a class="reference external" href="http://bit.ly/2KK10DD">Dynamic Ad Insertion</a> with Google Ad
 Manager.</p>
 <p>Both DASH and HLS are supported.</p>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --ad_cues &lt;start_time[;start_time]...&gt; \
   [Other options, e.g. DRM options, DASH options, HLS options]
 </pre></div>
 </div>
-</div>
-<div class="section" id="examples">
+</section>
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The examples below use the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
 <p>Three midroll cue markers are inserted at 10 minutes, 30 minutes and 50 minutes
@@ -121,10 +122,10 @@ Use the below option if your player does not like it.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="configuration-options">
+</section>
+<section id="configuration-options">
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="ads-options">
+<section id="ads-options">
 <h3>Ads options<a class="headerlink" href="#ads-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--ad_cues <var>&lt;start_time[;start_time]…&gt;</var></span></kbd></dt>
@@ -139,9 +140,9 @@ terminated at the next key frame to the designated start times and
 media playlist.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -209,7 +210,7 @@ media playlist.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

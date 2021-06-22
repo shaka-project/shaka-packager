@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Live &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -42,13 +43,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="live">
+  <section id="live">
 <h1>Live<a class="headerlink" href="#live" title="Permalink to this headline">¶</a></h1>
 <p>A typical live source is UDP multicast, which is the only live protocol
 packager supports directly right now.</p>
 <p>For other unsupported protocols, you can use FFmpeg to pipe the input.
 See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FFmpeg piping</span></a> for details.</p>
-<div class="section" id="examples">
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The command is similar to the on-demand, see <a class="reference internal" href="dash.html"><span class="doc">DASH</span></a> and <a class="reference internal" href="hls.html"><span class="doc">HLS</span></a>.</p>
 <p>Here are some examples.</p>
@@ -102,10 +103,10 @@ manifest / playlists and media segments to content server:</p>
 </ol>
 </div></blockquote>
 </div>
-</div>
-<div class="section" id="configuration-options">
+</section>
+<section id="configuration-options">
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="udp-file-options">
+<section id="udp-file-options">
 <h3>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h3>
 <p>UDP file is of the form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>udp://&lt;ip&gt;:&lt;port&gt;[?&lt;option&gt;[&amp;&lt;option&gt;]...]
@@ -156,8 +157,8 @@ then try increasing <cite>buffer_size</cite> in
 system while <cite>io_cache_size</cite> defines the size of the internal circular
 buffer managed by <cite>Shaka Packager</cite>.</p>
 </div>
-</div>
-<div class="section" id="segment-template-formatting">
+</section>
+<section id="segment-template-formatting">
 <h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
 <p>The implementation is based on <em>Template-based Segment URL construction</em>
 described in ISO/IEC 23009-1:2014.</p>
@@ -227,9 +228,9 @@ number, the result shall be padded with zeros. The value is not truncated even
 if the result is larger.</p>
 <p>Strings outside identifiers shall only contain characters that are permitted
 within URLs according to RFC 3986.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -297,7 +298,7 @@ within URLs according to RFC 3986.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

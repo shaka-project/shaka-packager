@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Stream descriptors &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,7 +34,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="stream-descriptors">
+  <section id="stream-descriptors">
 <h1>Stream descriptors<a class="headerlink" href="#stream-descriptors" title="Permalink to this headline">¶</a></h1>
 <p>There can be multiple <em>stream_descriptor</em> with input from the same “file” or
 multiple different “files”.</p>
@@ -96,8 +97,8 @@ CEA allows specifying up to 4 streams within a single video stream. If not
 specified, all subtitles will be merged together.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="drm-related-stream-descriptor-fields">
+</section>
+<section id="drm-related-stream-descriptor-fields">
 <h1>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">skip_encryption=0|1</dt>
@@ -112,8 +113,8 @@ DRM label is derived from stream type (video, audio), resolutions, etc.
 Note that it is case sensitive.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="dash-specific-stream-descriptor-fields">
+</section>
+<section id="dash-specific-stream-descriptor-fields">
 <h1>DASH specific stream descriptor fields<a class="headerlink" href="#dash-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">dash_accessibilities (accessibilities)</dt>
@@ -129,8 +130,8 @@ value should be one of: <strong>caption</strong>, <strong>subtitle</strong>, <st
 specification for details.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="hls-specific-stream-descriptor-fields">
+</section>
+<section id="hls-specific-stream-descriptor-fields">
 <h1>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">hls_name</dt>
@@ -159,7 +160,7 @@ CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
 <a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</p>
 </dd>
 </dl>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -209,7 +210,7 @@ CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

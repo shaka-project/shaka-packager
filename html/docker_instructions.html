@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Using Docker &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -41,12 +42,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="using-docker">
+  <section id="using-docker">
 <h1>Using Docker<a class="headerlink" href="#using-docker" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://www.docker.com/whatisdocker">Docker</a> is a tool that can package an
 application and its dependencies in a virtual container to run on different
 host operating systems.</p>
-<div class="section" id="get-shaka-packager-from-dockerhub">
+<section id="get-shaka-packager-from-dockerhub">
 <h2>Get Shaka Packager from Dockerhub<a class="headerlink" href="#get-shaka-packager-from-dockerhub" title="Permalink to this headline">¶</a></h2>
 <p>To pull latest Shaka Packager:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ docker pull google/shaka-packager
@@ -58,8 +59,8 @@ host operating systems.</p>
 </div>
 <p>The full list of tags is available
 <a class="reference external" href="https://hub.docker.com/r/google/shaka-packager/tags/">here</a>.</p>
-</div>
-<div class="section" id="run-the-container">
+</section>
+<section id="run-the-container">
 <h2>Run the container<a class="headerlink" href="#run-the-container" title="Permalink to this headline">¶</a></h2>
 <p>Assume you have your media files stored in <code class="docutils literal notranslate"><span class="pre">host_media_path</span></code> in the host
 machine.</p>
@@ -80,8 +81,8 @@ the network explicitly. You may do this with <code class="docutils literal notra
 </pre></div>
 </div>
 <p>Outputs are available in the host’s media folder <code class="docutils literal notranslate"><span class="pre">host_media_path</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -144,7 +145,7 @@ the network explicitly. You may do this with <code class="docutils literal notra
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

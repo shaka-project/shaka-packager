@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Packager Documentation &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -41,7 +42,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="packager-documentation">
+  <section id="packager-documentation">
 <h1>Packager Documentation<a class="headerlink" href="#packager-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager is a tool and a media packaging SDK for DASH and HLS packaging
 and encryption. It can transmux input media files from one container to another
@@ -57,7 +58,7 @@ files, pipes, udp streams, etc.</p>
 <p>This page is the documentation on using the <em>packager</em> tool. If you are
 interested in integrating <em>packager</em> library into your own tool, please see
 <a class="reference internal" href="library.html"><span class="doc">Shaka Packager Library</span></a>.</p>
-<div class="section" id="getting-shaka-packager">
+<section id="getting-shaka-packager">
 <h2>Getting Shaka Packager<a class="headerlink" href="#getting-shaka-packager" title="Permalink to this headline">¶</a></h2>
 <p>There are several ways you can get Shaka Packager.</p>
 <ul class="simple">
@@ -67,8 +68,8 @@ Instructions are available at <a class="reference internal" href="docker_instruc
 <a class="reference external" href="https://github.com/google/shaka-packager/releases">release</a>.</p></li>
 <li><p>Built from source, see <a class="reference internal" href="build_instructions.html"><span class="doc">Build Instructions</span></a> for details.</p></li>
 </ul>
-</div>
-<div class="section" id="synopsis">
+</section>
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
            [--dump_stream_info] \
@@ -81,7 +82,7 @@ Instructions are available at <a class="reference internal" href="docker_instruc
            [Ads options]
 </pre></div>
 </div>
-<div class="section" id="stream-descriptors">
+<section id="stream-descriptors">
 <h3>Stream descriptors<a class="headerlink" href="#stream-descriptors" title="Permalink to this headline">¶</a></h3>
 <p>There can be multiple <em>stream_descriptor</em> with input from the same “file” or
 multiple different “files”.</p>
@@ -144,8 +145,8 @@ CEA allows specifying up to 4 streams within a single video stream. If not
 specified, all subtitles will be merged together.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="drm-related-stream-descriptor-fields">
+</section>
+<section id="drm-related-stream-descriptor-fields">
 <h3>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">skip_encryption=0|1</dt>
@@ -160,8 +161,8 @@ DRM label is derived from stream type (video, audio), resolutions, etc.
 Note that it is case sensitive.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="dash-specific-stream-descriptor-fields">
+</section>
+<section id="dash-specific-stream-descriptor-fields">
 <h3>DASH specific stream descriptor fields<a class="headerlink" href="#dash-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">dash_accessibilities (accessibilities)</dt>
@@ -177,8 +178,8 @@ value should be one of: <strong>caption</strong>, <strong>subtitle</strong>, <st
 specification for details.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="hls-specific-stream-descriptor-fields">
+</section>
+<section id="hls-specific-stream-descriptor-fields">
 <h3>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">hls_name</dt>
@@ -207,8 +208,8 @@ CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
 <a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="chunking-options">
+</section>
+<section id="chunking-options">
 <h3>Chunking options<a class="headerlink" href="#chunking-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--segment_duration <var>&lt;seconds&gt;</var></span></kbd></dt>
@@ -229,8 +230,8 @@ duration. Actual fragment durations may not be exactly as requested.</p>
 <em>segment_sap_aligned</em>. Default enabled.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="mp4-output-options">
+</section>
+<section id="mp4-output-options">
 <h3>MP4 output options<a class="headerlink" href="#mp4-output-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--mp4_include_pssh_in_stream</span></kbd></dt>
@@ -248,8 +249,8 @@ that it is required for DASH on-demand profile (not using segment
 template).</p>
 <p>Default enabled.</p>
 </div></blockquote>
-</div>
-<div class="section" id="transport-stream-output-options">
+</section>
+<section id="transport-stream-output-options">
 <h3>Transport stream output options<a class="headerlink" href="#transport-stream-output-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--transport_stream_timestamp_offset_ms</span></kbd></dt>
@@ -260,8 +261,8 @@ ISO-BMFF after adjusted by EditList could be negative. In transport streams,
 timestamps are not allowed to be less than zero. Default: 100ms.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="dash-options">
+</section>
+<section id="dash-options">
 <h3>DASH options<a class="headerlink" href="#dash-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--generate_static_live_mpd</span></kbd></dt>
@@ -347,8 +348,8 @@ stream is DASH only.</p>
 the same language, media type (audio, video etc) and container type.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="hls-options">
+</section>
+<section id="hls-options">
 <h3>HLS options<a class="headerlink" href="#hls-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--hls_master_playlist_output <var>&lt;file_path&gt;</var></span></kbd></dt>
@@ -417,8 +418,8 @@ number from previous packager run.</p>
 <div><p>Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
 stream is HLS only.</p>
 </div></blockquote>
-</div>
-<div class="section" id="ads-options">
+</section>
+<section id="ads-options">
 <h3>Ads options<a class="headerlink" href="#ads-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--ad_cues <var>&lt;start_time[;start_time]…&gt;</var></span></kbd></dt>
@@ -433,9 +434,9 @@ terminated at the next key frame to the designated start times and
 media playlist.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="encryption-decryption-options">
+</section>
+</section>
+<section id="encryption-decryption-options">
 <h2>Encryption / decryption options<a class="headerlink" href="#encryption-decryption-options" title="Permalink to this headline">¶</a></h2>
 <p>Shaka Packager supports three different types of key providers:</p>
 <ul class="simple">
@@ -451,7 +452,7 @@ media playlist.</p>
 <span class="p">[</span><span class="o">--</span><span class="n">enable_playready_encryption</span> <span class="o">&lt;</span><span class="n">PlayReady</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="general-encryption-options">
+<section id="general-encryption-options">
 <h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></dt>
@@ -493,8 +494,8 @@ Widevine, PlayReady, FairPlay, Marlin, and
 using another key source.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="raw-key-encryption-options">
+</section>
+<section id="raw-key-encryption-options">
 <h3>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--enable_raw_key_encryption</span></kbd></dt>
@@ -533,8 +534,8 @@ flag nor –protection_systems is specified, a
 <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="widevine-encryption-options">
+</section>
+<section id="widevine-encryption-options">
 <h3>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--enable_widevine_encryption</span></kbd></dt>
@@ -594,8 +595,8 @@ This option is exclusive with <em>aes_signing_key</em>.</p>
 <dd><p>Identifier for a group of licenses.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="playready-encryption-options">
+</section>
+<section id="playready-encryption-options">
 <h3>PlayReady encryption options<a class="headerlink" href="#playready-encryption-options" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd><span class="option">--enable_playready_encryption</span></kbd></dt>
@@ -625,9 +626,9 @@ configuration.</p>
 <dd><p>Password to the private key file. Optional, depends on server configuration.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -709,7 +710,7 @@ configuration.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>

@@ -4,13 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Media Encoding &#8212; Shaka Packager  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc_new.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -37,11 +38,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="media-encoding">
+  <section id="media-encoding">
 <h1>Media Encoding<a class="headerlink" href="#media-encoding" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager does not do transcoding internally. The contents need to be
 pre-encoded before passing to Shaka Packager.</p>
-<div class="section" id="general-guidelines-of-how-contents-should-be-encoded">
+<section id="general-guidelines-of-how-contents-should-be-encoded">
 <h2>General guidelines of how contents should be encoded<a class="headerlink" href="#general-guidelines-of-how-contents-should-be-encoded" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Encode multiple bitrates or resolutions of the same content. Shaka Packager
@@ -57,8 +58,8 @@ switching when network condition changes.</p></li>
 <li><p>In the same stream, the bitrate should be more or less the same in the
 inter-GOP level.</p></li>
 </ul>
-</div>
-<div class="section" id="sample-commands-to-generate-multi-bitrate-content">
+</section>
+<section id="sample-commands-to-generate-multi-bitrate-content">
 <h2>Sample commands to generate multi-bitrate content<a class="headerlink" href="#sample-commands-to-generate-multi-bitrate-content" title="Permalink to this headline">¶</a></h2>
 <p>Let us say we have a 1080p original content <cite>original.mp4</cite> containing an audio
 track in <cite>AAC</cite> and a video track in <cite>H264</cite>. The frame rate is 24. We want to
@@ -66,7 +67,7 @@ encode the contents into four resolutions: 360p, 480p, 720p and 1080p with GOP
 size 72, i.e. 3 seconds.</p>
 <p>We use <a class="reference external" href="https://www.ffmpeg.org/">ffmpeg</a> here, which is a common tool used for
 transcoding.</p>
-<div class="section" id="h264-encoding">
+<section id="h264-encoding">
 <h3>H264 encoding<a class="headerlink" href="#h264-encoding" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p>360p:</p>
@@ -110,8 +111,8 @@ transcoding.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="vp9-encoding">
+</section>
+<section id="vp9-encoding">
 <h3>VP9 encoding<a class="headerlink" href="#vp9-encoding" title="Permalink to this headline">¶</a></h3>
 <p>The audio is encoded into <cite>opus</cite>.</p>
 <ul>
@@ -168,9 +169,9 @@ transcoding.</p>
 </div>
 </li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -231,7 +232,7 @@ transcoding.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
     </div>
   </body>
 </html>
