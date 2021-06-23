@@ -401,7 +401,7 @@ class PackagerAppTest(unittest.TestCase):
 
     if dash_only:
       stream.Append('dash_only', 1)
-    
+
     if dash_label:
       stream.Append('dash_label', dash_label)
 
