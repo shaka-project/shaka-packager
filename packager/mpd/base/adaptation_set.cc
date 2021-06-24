@@ -359,7 +359,7 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
-  if (!label_.empty() && !adaptation_set.SetStringAttribute("Label", label_))
+  if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
     return base::nullopt;
 
   for (const auto& representation_pair : representation_map_) {
