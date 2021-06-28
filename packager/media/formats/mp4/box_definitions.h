@@ -332,7 +332,7 @@ struct MHAConfiguration : Box {
   DECLARE_BOX_METHODS(MHAConfiguration);
 
   std::vector<uint8_t> data;
-  std::uint8_t mpeg_h_3da_profile_level_indication;
+  uint8_t mpeg_h_3da_profile_level_indication;
 };
 
 struct EC3Specific : Box {
@@ -390,12 +390,6 @@ struct AudioSampleEntry : Box {
   OpusSpecific dops;
   FlacSpecific dfla;
   MHAConfiguration mhac;
-
-  //23008-3 decoder specific config
-  CodecConfiguration codec_configuration;
-
-  // Returns the box type of codec configuration box from audio format.
-  FourCC GetCodecConfigurationBoxType(FourCC format) const;
 };
 
 struct WebVTTConfigurationBox : Box {

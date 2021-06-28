@@ -1977,16 +1977,6 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          4;       // 4 bytes predefined.
 }
 
-FourCC AudioSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
-  switch (format) {
-    case FOURCC_mha1:
-      return FOURCC_mhaC;
-    default:
-      LOG(ERROR) << FourCCToString(format) << " is not supported.";
-      return FOURCC_NULL;
-  }
-}
-
 WebVTTConfigurationBox::WebVTTConfigurationBox() = default;
 WebVTTConfigurationBox::~WebVTTConfigurationBox() = default;
 
