@@ -99,6 +99,10 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecAC4;
     case FOURCC_fLaC:
       return kCodecFlac;
+    case FOURCC_mha1:
+      return kCodecMha1;
+    case FOURCC_mhm1:
+      return kCodecMhm1;
     default:
       return kUnknownCodec;
   }
@@ -509,6 +513,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_config = entry.dops.opus_identification_header;
           codec_delay_ns =
               entry.dops.preskip * kNanosecondsPerSecond / sampling_frequency;
+          break;
+        case FOURCC_mha1:
+        case FOURCC_mhm1:
+          codec_config = entry.mhac.data;
+          audio_object_type = entry.mhac.mpeg_h_3da_profile_level_indication;
           break;
         default:
           // Intentionally not to fail in the parser as there may be multiple
