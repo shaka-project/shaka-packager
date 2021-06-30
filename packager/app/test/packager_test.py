@@ -1030,12 +1030,6 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('av1-mp4')
 
-  def testMpegHMp4(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio'], test_files=['test-mpegh.mp4']),
-        self._GetFlags(output_dash=True, output_hls=True))
-    self._CheckTestResults('mpegh-mp4')
-
   def testAv1Mp4ToWebM(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'],
