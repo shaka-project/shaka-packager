@@ -1,0 +1,9 @@
+#EXTM3U
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+
+#EXT-X-INDEPENDENT-SEGMENTS
+
+#EXT-X-MEDIA:TYPE=AUDIO,URI="stream_0.m3u8",GROUP-ID="default-audio-group",NAME="stream_0",AUTOSELECT=YES,CHANNELS="0"
+
+#EXT-X-STREAM-INF:BANDWIDTH=727780,AVERAGE-BANDWIDTH=670224,CODECS="mha1.0x0d",AUDIO="default-audio-group",CLOSED-CAPTIONS=NONE
+stream_0.m3u8
