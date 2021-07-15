@@ -25,6 +25,9 @@ struct ChunkingParams {
   /// Setting to subsegment_sap_aligned to true but segment_sap_aligned to false
   /// is not allowed.
   bool subsegment_sap_aligned = true;
+  /// Use low latency dash streaming
+  /// TODO(Caitlin): Elaborate
+  bool is_low_latency_dash = false;
 };
 
 }  // namespace shaka

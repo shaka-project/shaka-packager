@@ -91,6 +91,9 @@ struct MpdParams {
   /// content is huge and the total number of (sub)segment references
   /// is greater than what the sidx atom allows (65535).
   bool use_segment_list = false;
+  /// Use low latency dash streaming
+  /// TODO(Caitlin): Elaborate
+  bool is_low_latency_dash = false;
 };
 
 }  // namespace shaka
