@@ -24,5 +24,6 @@ DECLARE_bool(allow_approximate_segment_timeline);
 DECLARE_bool(allow_codec_switching);
 DECLARE_bool(include_mspr_pro_for_playready);
 DECLARE_bool(dash_force_segment_list);
+DECLARE_bool(is_low_latency_dash);
 
 #endif  // APP_MPD_FLAGS_H_

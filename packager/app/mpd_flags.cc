@@ -75,3 +75,6 @@ DEFINE_bool(dash_force_segment_list,
             "content is huge and the total number of (sub)segment references "
             "is greater than what the sidx atom allows (65535). Currently "
             "this flag is only supported in DASH ondemand profile.");
+DEFINE_bool(is_low_latency_dash,
+            false,
+            "TODO(Caitlin): fill this out");

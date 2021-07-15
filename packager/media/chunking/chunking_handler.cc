@@ -113,17 +113,27 @@ Status ChunkingHandler::OnMediaSample(
     }
   }
   if (!started_new_segment && IsSubsegmentEnabled()) {
+    bool will_start_new_subsegment = chunking_params_.is_low_latency_dash;
     const bool can_start_new_subsegment =
         sample->is_key_frame() || !chunking_params_.subsegment_sap_aligned;
-    if (can_start_new_subsegment) {
+
+    // Determine whether we are creating a new subsegment or not.
+    // Update current_subsegment_index_ appropriately if we are
+    // creating a new subsegment.
+    if (will_start_new_subsegment) {
+      current_subsegment_index_++;
+    } else if (can_start_new_subsegment) {
       const int64_t subsegment_index =
           (timestamp - segment_start_time_.value()) / subsegment_duration_;
       if (IsNewSegmentIndex(subsegment_index, current_subsegment_index_)) {
+        will_start_new_subsegment = true;
         current_subsegment_index_ = subsegment_index;
-
-        RETURN_IF_ERROR(EndSubsegmentIfStarted());
-        subsegment_start_time_ = timestamp;
       }
+    } 
+
+    if (will_start_new_subsegment) {
+      RETURN_IF_ERROR(EndSubsegmentIfStarted());
+      subsegment_start_time_ = timestamp;
     }
   }
 
