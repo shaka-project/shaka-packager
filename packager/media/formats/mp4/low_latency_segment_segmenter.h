@@ -40,13 +40,16 @@ class LowLatencySegmentSegmenter : public Segmenter {
   Status DoInitialize() override;
   Status DoFinalize() override;
   Status DoFinalizeSegment() override;
+  Status DoFinalizeSubSegment() override;
 
   // Write segment to file.
   Status WriteInitSegment();
   Status WriteSegment();
+  Status WriteSubSegment();
 
   std::unique_ptr<SegmentType> styp_;
   uint32_t num_segments_;
+  bool is_first_subsegment_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(LowLatencySegmentSegmenter);
 };

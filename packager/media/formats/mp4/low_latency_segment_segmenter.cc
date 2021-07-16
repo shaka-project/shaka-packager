@@ -71,6 +71,10 @@ Status LowLatencySegmentSegmenter::DoFinalizeSegment() {
   return WriteSegment();
 }
 
+Status LowLatencySegmentSegmenter::DoFinalizeSubSegment() {
+  return WriteSubSegment();
+}
+
 Status LowLatencySegmentSegmenter::WriteInitSegment() {
   DCHECK(ftyp());
   DCHECK(moov());
@@ -116,16 +120,12 @@ Status LowLatencySegmentSegmenter::WriteSegment() {
     file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
                                num_segments_++, options().bandwidth);
-    file.reset(File::Open(file_name.c_str(), "w"));
+    file.reset(File::Open(file_name.c_str(), "a"));
     if (!file) {
       return Status(error::FILE_FAILURE,
                     "Cannot open file for write " + file_name);
     }
-    styp_->Write(buffer.get());
   }
-
-  if (options().mp4_params.generate_sidx_in_media_segments)
-    sidx()->Write(buffer.get());
 
   const size_t segment_header_size = buffer->Size();
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
@@ -158,11 +158,87 @@ Status LowLatencySegmentSegmenter::WriteSegment() {
     segment_duration += sidx()->references[i].subsegment_duration;
 
   UpdateProgress(segment_duration);
+
+  // Current segment is complete. Reset state in preparation for the next segment.
+  is_first_subsegment_ = true;
+  return Status::OK;
+}
+Status LowLatencySegmentSegmenter::WriteSubSegment() {
+  DCHECK(sidx());
+  DCHECK(fragment_buffer());
+  DCHECK(styp_);
+  
+  DCHECK(!sidx()->references.empty());
+  // earliest_presentation_time is the earliest presentation time of any access
+  // unit in the reference stream in the first subsegment.
+  sidx()->earliest_presentation_time =
+      sidx()->references[0].earliest_presentation_time;
+
+  std::unique_ptr<BufferWriter> buffer(new BufferWriter());
+  std::unique_ptr<File, FileCloser> file;
+  std::string file_name;
+  if (options().segment_template.empty()) {
+    // Append the segment to output file if segment template is not specified.
+    file_name = options().output_file_name.c_str();
+    file.reset(File::Open(file_name.c_str(), "a"));
+    if (!file) {
+      return Status(error::FILE_FAILURE, "Cannot open file for append " +
+                                             options().output_file_name);
+    }
+  } else {
+    file_name = GetSegmentName(options().segment_template,
+                               sidx()->earliest_presentation_time,
+                               num_segments_, options().bandwidth);
+    file.reset(File::Open(file_name.c_str(), "a"));
+    if (!file) {
+      return Status(error::FILE_FAILURE,
+                    "Cannot open file for append " + file_name);
+    }
+    if (is_first_subsegment_) {
+      // Write the styp header to the beginning of the segment.
+      styp_->Write(buffer.get());
+    }
+  }
+
+  const size_t segment_header_size = buffer->Size();
+  const size_t segment_size = segment_header_size + fragment_buffer()->Size();
+  DCHECK_NE(segment_size, 0u);
+
+  RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
   if (muxer_listener()) {
-    muxer_listener()->OnSampleDurationReady(sample_duration());
+    for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
+      muxer_listener()->OnKeyFrame(
+          key_frame_info.timestamp,
+          segment_header_size + key_frame_info.start_byte_offset,
+          key_frame_info.size);
+    }
+  }
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
+
+  // Close the file, which also does flushing, to make sure the file is written
+  // before manifest is updated.
+  if (!file.release()->Close()) {
+    return Status(
+        error::FILE_FAILURE,
+        "Cannot close file " + file_name +
+            ", possibly file permission issue or running out of disk space.");
+  }
+
+  uint64_t segment_duration = 0;
+  // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
+  // values of all Subsegment_duration fields in the first ‘sidx’ box.
+  for (size_t i = 0; i < sidx()->references.size(); ++i)
+    segment_duration += sidx()->references[i].subsegment_duration;
+
+  UpdateProgress(segment_duration);
+  if (muxer_listener() && is_first_subsegment_) {
+    // Add the current segment in the manifest. 
+    // Following subsegments will be appended to the segment file.
+    // The manifest does not need to update.
     muxer_listener()->OnNewSegment(file_name,
-                                   sidx()->earliest_presentation_time,
-                                   segment_duration, segment_size);
+                                  sidx()->earliest_presentation_time,
+                                  segment_duration, segment_size);
+    is_first_subsegment_ = false;
   }
 
   return Status::OK;
