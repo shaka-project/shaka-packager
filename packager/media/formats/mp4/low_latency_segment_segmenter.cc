@@ -235,6 +235,10 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
     // Add the current segment in the manifest. 
     // Following subsegments will be appended to the segment file.
     // The manifest does not need to update.
+    // TODO(Caitlin): Add logic so that sample duration and availability time offset
+    // are only set once.
+    muxer_listener()->OnSampleDurationReady(sample_duration());
+    muxer_listener()->OnAvailabilityOffsetReady();
     muxer_listener()->OnNewSegment(file_name,
                                   sidx()->earliest_presentation_time,
                                   segment_duration, segment_size);
