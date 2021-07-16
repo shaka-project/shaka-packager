@@ -460,11 +460,19 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32_t start_number) {
+    uint32_t start_number,
+    double target_segment_duration) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
         "timescale", media_info.reference_time_scale()));
+  }
+
+  // TODO(Caitlin): Improve logic to detect whether LL DASH or not. 
+  // if LL DASH
+  if (media_info.has_availability_time_offset()) {
+    const uint64_t duration = target_segment_duration * media_info.reference_time_scale();
+    RCHECK(segment_template.SetIntegerAttribute("duration", duration));
   }
 
   if (media_info.has_presentation_time_offset()) {
@@ -504,9 +512,13 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
             std::to_string(last_segment_number)));
       }
     } else {
-      XmlNode segment_timeline("SegmentTimeline");
-      RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
-      RCHECK(segment_template.AddChild(std::move(segment_timeline)));
+      // TODO(Caitlin): Improve logic to detect whether LL DASH or not. 
+      // if LL DASH
+      if (!media_info.has_availability_time_offset()){
+        XmlNode segment_timeline("SegmentTimeline");
+        RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
+        RCHECK(segment_template.AddChild(std::move(segment_timeline)));
+      }
     }
   }
   return AddChild(std::move(segment_template));
