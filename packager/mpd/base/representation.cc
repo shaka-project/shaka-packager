@@ -274,7 +274,8 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
 
   if (HasLiveOnlyFields(media_info_) &&
       !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
-                                      start_number_)) {
+                                      start_number_, 
+                                      mpd_options_.mpd_params.target_segment_duration)) {
     LOG(ERROR) << "Failed to add Live info.";
     return base::nullopt;
   }
