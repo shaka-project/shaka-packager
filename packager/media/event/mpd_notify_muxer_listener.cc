@@ -106,6 +106,11 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
 }
 
+// Record the availability time offset in media info for low latency mode.
+void MpdNotifyMuxerListener::OnAvailabilityOffsetReady() {
+  mpd_notifier_->NotifyChunkDuration(notification_id_.value());
+}
+
 // Record the sample duration in the media info for VOD so that OnMediaEnd, all
 // the information is in the media info.
 void MpdNotifyMuxerListener::OnSampleDurationReady(

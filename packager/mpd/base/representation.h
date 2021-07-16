@@ -127,6 +127,10 @@ class Representation {
   /// Set @presentationTimeOffset in SegmentBase / SegmentTemplate.
   void SetPresentationTimeOffset(double presentation_time_offset);
 
+  // TODO(Caitlin): add description
+  /// Set @availabilityTimeOffset when streaming Low Latency DASH.
+  void SetAvailabilityTimeOffset();
+
   /// Gets the start and end timestamps in seconds.
   /// @param start_timestamp_seconds contains the returned start timestamp in
   ///        seconds on success. It can be nullptr, which means that start

@@ -100,6 +100,9 @@ class MuxerListener {
                             uint32_t time_scale,
                             ContainerType container_type) = 0;
 
+  /// TODO(Caitlin): Write description
+  virtual void OnAvailabilityOffsetReady() {}
+
   /// Called when the average sample duration of the media is determined.
   /// @param sample_duration in timescale of the media.
   virtual void OnSampleDurationReady(uint32_t sample_duration) = 0;

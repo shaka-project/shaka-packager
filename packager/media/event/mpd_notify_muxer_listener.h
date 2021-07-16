@@ -44,6 +44,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
                     const StreamInfo& stream_info,
                     uint32_t time_scale,
                     ContainerType container_type) override;
+  void OnAvailabilityOffsetReady() override;
   void OnSampleDurationReady(uint32_t sample_duration) override;
   void OnMediaEnd(const MediaRanges& media_ranges,
                   float duration_seconds) override;

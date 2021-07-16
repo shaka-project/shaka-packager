@@ -43,6 +43,12 @@ void CombinedMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
+void CombinedMuxerListener::OnAvailabilityOffsetReady() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnAvailabilityOffsetReady();
+  }
+}
+
 void CombinedMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
   for (auto& listener : muxer_listeners_) {
     listener->OnSampleDurationReady(sample_duration);

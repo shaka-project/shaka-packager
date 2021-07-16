@@ -472,6 +472,11 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
         "presentationTimeOffset", media_info.presentation_time_offset()));
   }
 
+  if (media_info.has_availability_time_offset()) {
+    RCHECK(segment_template.SetFloatingPointAttribute(
+        "availabilityTimeOffset", media_info.availability_time_offset()));
+  }
+
   if (media_info.has_init_segment_url()) {
     RCHECK(segment_template.SetStringAttribute("initialization",
                                                media_info.init_segment_url()));

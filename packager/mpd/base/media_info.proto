@@ -204,4 +204,9 @@ message MediaInfo {
   // Role value defined in "urn:mpeg:dash:role:2011" scheme or in the format:
   // scheme_id_uri=value (to be implemented).
   repeated string dash_roles = 22;
+
+  // LOW LATENCY DASH only. Defines the availabilityTimeOffset in seconds.
+  // TODO(Caitlin): improve description.
+  // Equal to the segment time minus the chunk duration.
+  optional float availability_time_offset = 24;
 }

@@ -46,6 +46,9 @@ class MpdNotifier {
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* container_id) = 0;
 
+  /// TODO:(Caitlin): write description
+  virtual bool NotifyChunkDuration(uint32_t container_id) {return true;}
+
   /// Change the sample duration of container with @a container_id.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().

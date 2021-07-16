@@ -71,6 +71,17 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyChunkDuration(uint32_t container_id) {
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->SetAvailabilityTimeOffset();
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
                                              uint32_t sample_duration) {
   base::AutoLock auto_lock(lock_);
