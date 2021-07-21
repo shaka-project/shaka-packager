@@ -279,6 +279,10 @@ bool MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   RCHECK(mpd_node->SetStringAttribute(
       "publishTime", XmlDateTimeNowWithOffset(0, clock_.get())));
 
+  // std::string val;
+  // mpd_node->GetAttribute("publishTime", &val);
+  // LOG(INFO) << "PUBLISH TIME!!!! " << val;
+
   // 'availabilityStartTime' is required for dynamic profile. Calculate if
   // not already calculated.
   if (availability_start_time_.empty()) {
@@ -313,6 +317,19 @@ bool MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
                        mpd_options_.mpd_params.suggested_presentation_delay,
                        mpd_node);
 }
+
+// ServiceDescription
+// bool MpdBuilder::AddServiceDescription(XmlNode* mpd_node) {
+//   DCHECK(mpd_node);
+//   DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
+
+//   XmlNode service_description_node("ServiceDescription");
+//   RCHECK(service_description_node.SetIntegerAttribute("id", 0));
+//   RCHECK(mpd_node->AddChild(std::move(service_description_node)));
+
+//   return true;
+
+// }
 
 bool MpdBuilder::AddUtcTiming(XmlNode* mpd_node) {
   DCHECK(mpd_node);

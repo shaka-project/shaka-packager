@@ -136,6 +136,20 @@ base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   // Required for 'dynamic' MPDs.
   if (!period.SetId(id_))
     return base::nullopt;
+
+  // insert ServiceDescription into Period section 
+  // xml::XmlNode service_description_node("ServiceDescription");
+  // if (!service_description_node.SetIntegerAttribute("id", 0))
+  //   return base::nullopt;
+  // xml::XmlNode latency_node("Latency");
+  // if (!latency_node.SetIntegerAttribute("target", 3500))
+  //   return base::nullopt;
+  // if (!service_description_node.AddChild(std::move(latency_node)))
+  //   return base::nullopt;
+  // if (!period.AddChild(std::move(service_description_node)))
+  //   return base::nullopt;
+  
+
   // Iterate thru AdaptationSets and add them to one big Period element.
   for (const auto& adaptation_set : adaptation_sets_) {
     auto child = adaptation_set->GetXml();
