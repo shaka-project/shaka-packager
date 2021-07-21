@@ -9,6 +9,7 @@
 #include <gflags/gflags.h>
 
 #include <algorithm>
+#include <math.h> 
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
@@ -300,8 +301,9 @@ void Representation::SetPresentationTimeOffset(
 
 void Representation::SetAvailabilityTimeOffset() {
   // Adjust the frame duration to units of seconds to match target segment duration.
-  float frame_duration_sec = (float)frame_duration_ / (float)media_info_.reference_time_scale();
-  float ato = mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
+  const float frame_duration_sec = (float)frame_duration_ / (float)media_info_.reference_time_scale();
+  float tmp = mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
+  float ato = round(tmp * 1000) / 1000;
   if (ato <= 0)
     return;
   // TODO(Caitlin): Restrict availability time offset to the desired precision. 

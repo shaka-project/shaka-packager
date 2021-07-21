@@ -481,8 +481,9 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   }
 
   if (media_info.has_availability_time_offset()) {
+    // TODO(Caitlin): round availability time offset in only 1 location
     RCHECK(segment_template.SetFloatingPointAttribute(
-        "availabilityTimeOffset", media_info.availability_time_offset()));
+        "availabilityTimeOffset", round(media_info.availability_time_offset()*1000)/1000));
   }
 
   if (media_info.has_init_segment_url()) {
