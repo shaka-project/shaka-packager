@@ -213,6 +213,7 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
           key_frame_info.size);
     }
   }
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
   file.release();
 
