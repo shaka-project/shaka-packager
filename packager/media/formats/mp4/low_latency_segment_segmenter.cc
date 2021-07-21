@@ -120,7 +120,7 @@ Status LowLatencySegmentSegmenter::WriteSegment() {
     file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
                                num_segments_++, options().bandwidth);
-    file.reset(File::Open(file_name.c_str(), "a"));
+    file.reset(segment_file_);
     if (!file) {
       return Status(error::FILE_FAILURE,
                     "Cannot open file for write " + file_name);
@@ -163,6 +163,9 @@ Status LowLatencySegmentSegmenter::WriteSegment() {
   is_first_subsegment_ = true;
   return Status::OK;
 }
+
+// if first subsegment in segment --> make sure the file is created
+// otherwise, ship off and append data
 Status LowLatencySegmentSegmenter::WriteSubSegment() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
@@ -172,32 +175,29 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
   // earliest_presentation_time is the earliest presentation time of any access
   // unit in the reference stream in the first subsegment.
   sidx()->earliest_presentation_time =
-      sidx()->references[0].earliest_presentation_time;
+      sidx()->references[sidx()->references.size()-1].earliest_presentation_time;
 
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   std::unique_ptr<File, FileCloser> file;
   std::string file_name;
-  if (options().segment_template.empty()) {
-    // Append the segment to output file if segment template is not specified.
-    file_name = options().output_file_name.c_str();
-    file.reset(File::Open(file_name.c_str(), "a"));
-    if (!file) {
-      return Status(error::FILE_FAILURE, "Cannot open file for append " +
-                                             options().output_file_name);
-    }
-  } else {
-    file_name = GetSegmentName(options().segment_template,
-                               sidx()->earliest_presentation_time,
-                               num_segments_, options().bandwidth);
-    file.reset(File::Open(file_name.c_str(), "a"));
-    if (!file) {
+  file_name = GetSegmentName(options().segment_template,
+                              sidx()->earliest_presentation_time,
+                              num_segments_, options().bandwidth);
+  if (is_first_subsegment_) {
+    // if this is the first subsegment, we want to create the segment file
+    segment_file_ = File::Open(file_name.c_str(), "a");
+    if (!segment_file_) {
       return Status(error::FILE_FAILURE,
-                    "Cannot open file for append " + file_name);
+                  "Cannot open segment file: " + file_name);
     }
-    if (is_first_subsegment_) {
-      // Write the styp header to the beginning of the segment.
-      styp_->Write(buffer.get());
-    }
+  } 
+
+  // for subsequent subsegments, we want to write to the already open file
+  file.reset(segment_file_);
+
+  if (is_first_subsegment_) {
+    // Write the styp header to the beginning of the segment.
+    styp_->Write(buffer.get());
   }
 
   const size_t segment_header_size = buffer->Size();
@@ -213,16 +213,8 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
           key_frame_info.size);
     }
   }
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
-  // Close the file, which also does flushing, to make sure the file is written
-  // before manifest is updated.
-  if (!file.release()->Close()) {
-    return Status(
-        error::FILE_FAILURE,
-        "Cannot close file " + file_name +
-            ", possibly file permission issue or running out of disk space.");
-  }
+  file.release();
 
   uint64_t segment_duration = 0;
   // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the

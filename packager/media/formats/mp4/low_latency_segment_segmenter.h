@@ -9,6 +9,8 @@
 
 #include "packager/media/formats/mp4/segmenter.h"
 
+#include "packager/file/file.h"
+
 namespace shaka {
 namespace media {
 namespace mp4 {
@@ -50,6 +52,7 @@ class LowLatencySegmentSegmenter : public Segmenter {
   std::unique_ptr<SegmentType> styp_;
   uint32_t num_segments_;
   bool is_first_subsegment_ = true;
+  File* segment_file_;
 
   DISALLOW_COPY_AND_ASSIGN(LowLatencySegmentSegmenter);
 };
