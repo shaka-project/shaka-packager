@@ -12,14 +12,31 @@
       'shaka_code%': 0,
       # musl is a lightweight C standard library used in Alpine Linux.
       'musl%': 0,
+      'libpackager_type%': 'static_library',
     },
+
     'shaka_code%': '<(shaka_code)',
     'musl%': '<(musl)',
-    'libpackager_type%': 'static_library',
+    'libpackager_type%': '<(libpackager_type)',
+
     'conditions': [
       ['shaka_code==1', {
         # This enable warnings and warnings-as-errors.
         'chromium_code': 1,
+      }],
+      # These are some Chromium build settings that are normally keyed off of
+      # component=="shared_library".  We don't use component=="shared_library"
+      # because it would result in a shared lib for every single component, but
+      # we still need these settings for a shared library build of libpackager
+      # on Windows.
+      ['libpackager_type=="shared_library"', {
+        # Make sure we use a dynamic CRT to avoid issues with std::string in
+        # the library API on Windows.
+        'win_release_RuntimeLibrary': '2', # 2 = /MD (nondebug DLL)
+        'win_debug_RuntimeLibrary': '3',   # 3 = /MDd (debug DLL)
+        # Skip the Windows allocator shim on Windows.  Using this with a shared
+        # library results in build errors.
+        'win_use_allocator_shim': 0,
       }],
     ],
   },
@@ -52,6 +69,8 @@
                  # the current code page. It typically happens when compiling
                  # the code in CJK environment if there is non-ASCII characters
                  # in the file.
+          4251,  # Warnings about private std::string in Status in a shared
+                 # library config on Windows.
         ],
       }, {
         # We do not have control over non-shaka code. Disable some warnings to

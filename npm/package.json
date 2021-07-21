@@ -1,0 +1,25 @@
+{
+  "name": "",
+  "description": "A media packaging tool and SDK.",
+  "version": "",
+  "homepage": "https://github.com/google/shaka-packager",
+  "author": "Google",
+  "maintainers": [
+    {
+      "name": "Joey Parrish",
+      "email": "joeyparrish@google.com"
+    }
+  ],
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/google/shaka-packager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/google/shaka-packager/issues"
+  },
+  "license": "See LICENSE",
+  "scripts": {
+    "prepublishOnly": "node prepublish.js"
+  }
+}

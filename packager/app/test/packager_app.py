@@ -26,9 +26,9 @@ class PackagerApp(object):
     # Set this to empty for now in case GetCommandLine() is called before
     # Package().
     self.packaging_command_line = ''
-    assert os.path.exists(
-        self.packager_binary), ('Please run from output directory, '
-                                'e.g. out/Debug/packager_test.py')
+    assert os.path.exists(self.packager_binary), (
+        'Please run from output directory, e.g. out/Debug/packager_test.py\n'
+        '  Missing: ' + self.packager_binary)
 
   def _GetBinaryName(self, name):
     if platform.system() == 'Windows':

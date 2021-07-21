@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
 #define PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
 
+#include <deque>
 #include <list>
 
 #include "packager/media/base/media_handler.h"
@@ -73,7 +74,7 @@ class CueAlignmentHandler : public MediaHandler {
   Status RunThroughSamples(StreamState* stream);
 
   SyncPointQueue* const sync_points_ = nullptr;
-  std::vector<StreamState> stream_states_;
+  std::deque<StreamState> stream_states_;
 
   // A common hint used by all streams. When a new cue is given to all streams,
   // the hint will be updated. The hint will always be larger than any cue. The

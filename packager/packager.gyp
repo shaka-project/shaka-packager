@@ -100,12 +100,16 @@
       ],
       'dependencies': [
         'base/base.gyp:base',
-        'file/file.gyp:file',
         'libpackager',
         'third_party/gflags/gflags.gyp:gflags',
         'tools/license_notice.gyp:license_notice',
       ],
       'conditions': [
+        ['libpackager_type == "shared_library"', {
+          'defines': [
+            'SHARED_LIBRARY_BUILD',
+          ],
+        }],
         ['profiling==1', {
           'dependencies': [
             'base/allocator/allocator.gyp:allocator',
@@ -134,6 +138,13 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'packager_test.cc',
+      ],
+      'conditions': [
+        ['libpackager_type == "shared_library"', {
+          'defines': [
+            'SHARED_LIBRARY_BUILD',
+          ],
+        }],
       ],
       'dependencies': [
         'libpackager',

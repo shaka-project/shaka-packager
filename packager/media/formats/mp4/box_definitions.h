@@ -328,6 +328,13 @@ struct AC3Specific : Box {
   std::vector<uint8_t> data;
 };
 
+struct MHAConfiguration : Box {
+  DECLARE_BOX_METHODS(MHAConfiguration);
+
+  std::vector<uint8_t> data;
+  uint8_t mpeg_h_3da_profile_level_indication;
+};
+
 struct EC3Specific : Box {
   DECLARE_BOX_METHODS(EC3Specific);
 
@@ -382,6 +389,7 @@ struct AudioSampleEntry : Box {
   AC4Specific dac4;
   OpusSpecific dops;
   FlacSpecific dfla;
+  MHAConfiguration mhac;
 };
 
 struct WebVTTConfigurationBox : Box {
