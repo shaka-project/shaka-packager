@@ -43,6 +43,33 @@ const char kExpectedDefaultMediaInfo[] =
     "container_type: 1\n"
     "media_file_name: 'test_output_file_name.mp4'\n"
     "media_duration_seconds: 10.5\n";
+
+const char kExpectedDefaultMediaInfoSubsegmentRange[] =
+    "video_info {\n"
+    "  codec: 'avc1.010101'\n"
+    "  width: 720\n"
+    "  height: 480\n"
+    "  time_scale: 10\n"
+    "  pixel_width: 1\n"
+    "  pixel_height: 1\n"
+    "}\n"
+    "init_range {\n"
+    "  begin: 0\n"
+    "  end: 120\n"
+    "}\n"
+    "index_range {\n"
+    "  begin: 121\n"
+    "  end: 221\n"
+    "}\n"
+    "reference_time_scale: 1000\n"
+    "container_type: 1\n"
+    "media_file_name: 'test_output_file_name.mp4'\n"
+    "media_duration_seconds: 10.5\n"
+    "subsegment_ranges {\n"
+    "  begin: 222\n"
+    "  end: 9999\n"
+    "}\n";
+
 const uint32_t kDefaultReferenceTimeScale = 1000u;
 
 // Struct that gets passed for to CreateVideoStreamInfo() to create a

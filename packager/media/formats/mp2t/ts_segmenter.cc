@@ -147,13 +147,13 @@ Status TsSegmenter::WritePesPackets() {
 
     if (listener_ && IsVideoCodec(codec_) && pes_packet->is_key_frame()) {
 
-      uint64_t start_pos = segment_buffer_.Size();	    
+      uint64_t start_pos = segment_buffer_.Size();
       const int64_t timestamp = pes_packet->pts();
       if (!ts_writer_->AddPesPacket(std::move(pes_packet), &segment_buffer_))
         return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
 
       uint64_t end_pos = segment_buffer_.Size();
-      
+
       listener_->OnKeyFrame(timestamp, start_pos, end_pos - start_pos);
     } else {
       if (!ts_writer_->AddPesPacket(std::move(pes_packet), &segment_buffer_))
@@ -181,20 +181,20 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
                        segment_number_++, muxer_options_.bandwidth);
 
   const int64_t file_size = segment_buffer_.Size();
-  std::unique_ptr<File, FileCloser> segment_file;	  
+  std::unique_ptr<File, FileCloser> segment_file;
   segment_file.reset(File::Open(segment_path.c_str(), "w"));
   if (!segment_file) {
     return Status(error::FILE_FAILURE,
-                  "Cannot open file for write " + segment_path);  
+                  "Cannot open file for write " + segment_path);
   }
-  
+
   RETURN_IF_ERROR(segment_buffer_.WriteToFile(segment_file.get()));
 
   if (!segment_file.release()->Close()) {
     return Status(
         error::FILE_FAILURE,
         "Cannot close file " + segment_path +
-        ", possibly file permission issue or running out of disk space.");  
+        ", possibly file permission issue or running out of disk space.");
   }
 
   if (listener_) {
@@ -204,7 +204,7 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
                             duration * timescale_scale_, file_size);
   }
   segment_started_ = false;
-  
+
   return Status::OK;
 }
 

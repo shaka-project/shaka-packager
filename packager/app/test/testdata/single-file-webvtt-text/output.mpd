@@ -4,7 +4,7 @@
   <Period id="0">
     <AdaptationSet id="0" contentType="text" subsegmentAlignment="true">
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="subtitle"/>
-      <Representation id="0" bandwidth="353" mimeType="text/vtt">
+      <Representation id="0" bandwidth="397" mimeType="text/vtt">
         <BaseURL>bear-english-text.vtt</BaseURL>
       </Representation>
     </AdaptationSet>

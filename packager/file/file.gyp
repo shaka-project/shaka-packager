@@ -20,6 +20,8 @@
         'file_util.cc',
         'file_util.h',
         'file_closer.h',
+        'http_file.cc',
+        'http_file.h',
         'io_cache.cc',
         'io_cache.h',
         'local_file.cc',
@@ -36,7 +38,18 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
+        '../packager.gyp:status',
         '../third_party/gflags/gflags.gyp:gflags',
+        '../third_party/curl/curl.gyp:libcurl',
+        '../version/version.gyp:version',
+      ],
+      'conditions': [
+        ['libpackager_type == "shared_library"', {
+          'defines': [
+            'SHARED_LIBRARY_BUILD',
+            'SHAKA_IMPLEMENTATION',
+          ],
+        }],
       ],
     },
     {
@@ -49,12 +62,15 @@
         'io_cache_unittest.cc',
         'memory_file_unittest.cc',
         'udp_options_unittest.cc',
+        'http_file_unittest.cc',
       ],
       'dependencies': [
         '../media/test/media_test.gyp:run_tests_with_atexit_manager',
         '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
         '../third_party/gflags/gflags.gyp:gflags',
+        '../third_party/curl/curl.gyp:libcurl',
+        '../version/version.gyp:version',
         'file',
       ],
     },

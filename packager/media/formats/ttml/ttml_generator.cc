@@ -216,7 +216,7 @@ bool TtmlGenerator::ConvertFragmentToXml(const TextFragment& body,
     std::string id = "img_" + std::to_string(++*image_count);
 
     xml::XmlNode image_xml("smpte:image");
-    RCHECK(image_xml.SetStringAttribute("imagetype", "PNG"));
+    RCHECK(image_xml.SetStringAttribute("imageType", "PNG"));
     RCHECK(image_xml.SetStringAttribute("encoding", "Base64"));
     RCHECK(image_xml.SetStringAttribute("xml:id", id));
     image_xml.SetContent(base64_data);

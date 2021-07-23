@@ -157,6 +157,9 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
 }
 
 Status Fragmenter::FinalizeFragment() {
+  if (!fragment_initialized_)
+    return Status::OK;
+
   if (stream_info_->is_encrypted()) {
     Status status = FinalizeFragmentForEncryption();
     if (!status.ok())

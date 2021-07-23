@@ -87,7 +87,7 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   // Both the MSE and the HLS spec specifies that TS streams should convey
   // exactly one program.
   if (pmt_pid_count > 1) {
-    DVLOG(1) << "Multiple programs detected in the Mpeg2 TS stream";
+    LOG(ERROR) << "Multiple programs detected in the Mpeg2 TS stream";
     return false;
   }
 

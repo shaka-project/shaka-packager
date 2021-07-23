@@ -6,8 +6,6 @@
 
 #include "packager/media/formats/webvtt/webvtt_parser.h"
 
-#include <regex>
-
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
@@ -80,15 +78,13 @@ bool IsLikelyRegion(const std::string& line) {
 bool ParsePercent(const std::string& str, float* value) {
   // https://www.w3.org/TR/webvtt1/#webvtt-percentage
   // E.g. "4%" or "1.5%"
-  std::regex re(R"((\d+(?:\.\d+)?)%)");
-  std::smatch match;
-  if (!std::regex_match(str, match, re)) {
+  if (str[str.size() - 1] != '%') {
     return false;
   }
 
   double temp;
-  base::StringToDouble(match[1], &temp);
-  if (temp >= 100) {
+  if (!base::StringToDouble(str.substr(0, str.size() - 1), &temp) ||
+      temp >= 100) {
     return false;
   }
   *value = temp;
@@ -96,20 +92,18 @@ bool ParsePercent(const std::string& str, float* value) {
 }
 
 bool ParseDoublePercent(const std::string& str, float* a, float* b) {
-  std::regex re(R"((\d+(?:\.\d+)?)%,(\d+(?:\.\d+)?)%)");
-  std::smatch match;
-  if (!std::regex_match(str, match, re)) {
+  auto percents = base::SplitString(str, ",", base::TRIM_WHITESPACE,
+                                    base::SPLIT_WANT_NONEMPTY);
+  if (percents.size() != 2) {
     return false;
   }
-
-  double tempA, tempB;
-  base::StringToDouble(match[1], &tempA);
-  base::StringToDouble(match[2], &tempB);
-  if (tempA >= 100 || tempB >= 100) {
+  float temp_a, temp_b;
+  if (!ParsePercent(percents[0], &temp_a) ||
+      !ParsePercent(percents[1], &temp_b)) {
     return false;
   }
-  *a = tempA;
-  *b = tempB;
+  *a = temp_a;
+  *b = temp_b;
   return true;
 }
 

@@ -127,6 +127,9 @@ class TextSample {
   const TextFragment& body() const { return body_; }
   int64_t EndTime() const;
 
+  int32_t sub_stream_index() const { return sub_stream_index_; }
+  void set_sub_stream_index(int32_t idx) { sub_stream_index_ = idx; }
+
  private:
   // Allow the compiler generated copy constructor and assignment operator
   // intentionally. Since the text data is typically small, the performance
@@ -137,6 +140,7 @@ class TextSample {
   const int64_t duration_ = 0;
   const TextSettings settings_;
   const TextFragment body_;
+  int32_t sub_stream_index_ = -1;
 };
 
 }  // namespace media

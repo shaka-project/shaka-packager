@@ -387,12 +387,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
       PlayReadyEncryptionParams& playready = encryption_params.playready;
       playready.key_server_url = FLAGS_playready_server_url;
       playready.program_identifier = FLAGS_program_identifier;
-      playready.ca_file = FLAGS_ca_file;
-      playready.client_cert_file = FLAGS_client_cert_file;
-      playready.client_cert_private_key_file =
-          FLAGS_client_cert_private_key_file;
-      playready.client_cert_private_key_password =
-          FLAGS_client_cert_private_key_password;
       break;
     }
     case KeyProvider::kRawKey: {
@@ -457,6 +451,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
   mpd_params.preserved_segments_outside_live_window =
       FLAGS_preserved_segments_outside_live_window;
+  mpd_params.use_segment_list = FLAGS_dash_force_segment_list;
 
   if (!FLAGS_utc_timings.empty()) {
     base::StringPairs pairs;

@@ -109,6 +109,10 @@ struct StreamDescriptor {
   /// Optional value which contains a user-specified language tag. If specified,
   /// this value overrides any language metadata in the input stream.
   std::string language;
+  /// Optional value for the index of the sub-stream to use. For some text
+  /// formats, there are multiple "channels" in a single stream. This allows
+  /// selecting only one channel.
+  int32_t cc_index = -1;
 
   /// Required for audio when outputting HLS. It defines the name of the output
   /// stream, which is not necessarily the same as output. This is used as the

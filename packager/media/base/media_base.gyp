@@ -35,6 +35,8 @@
         'buffer_writer.h',
         'byte_queue.cc',
         'byte_queue.h',
+        'cc_stream_filter.cc',
+        'cc_stream_filter.h',
         'closure_thread.cc',
         'closure_thread.h',
         'common_pssh_generator.cc',

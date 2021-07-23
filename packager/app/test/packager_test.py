@@ -478,7 +478,8 @@ class PackagerAppTest(unittest.TestCase):
                 default_language=None,
                 segment_duration=1.0,
                 use_fake_clock=True,
-                allow_codec_switching=False):
+                allow_codec_switching=False,
+                dash_force_segment_list=False):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -567,6 +568,10 @@ class PackagerAppTest(unittest.TestCase):
 
     if default_language:
       flags += ['--default_language', default_language]
+
+    if dash_force_segment_list:
+      flags += ['--dash_force_segment_list']
+      flags += ['--generate_sidx_in_media_segments=false']
 
     flags.append('--segment_duration={0}'.format(segment_duration))
 
@@ -1518,13 +1523,26 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testEncryptionAndOutputMediaInfoAndMpdFromMediaInfo(self):
     self.assertPackageSuccess(
-        # The order is not determinstic if there are more than one
+        # The order is not deterministic if there are more than one
         # AdaptationSets, so only one is included here.
         self._GetStreams(['video']),
         self._GetFlags(encryption=True, output_media_info=True))
     self.assertMpdGeneratorSuccess()
     self._CheckTestResults(
         'encryption-and-output-media-info-and-mpd-from-media-info')
+
+  def testEncryptionAndOutputMediaInfoAndMpdFromMediaInfoSegmentList(self):
+    self.assertPackageSuccess(
+        # The order is not deterministic if there are more than one
+        # AdaptationSets, so only one is included here.
+        self._GetStreams(['audio']),
+        self._GetFlags(
+            encryption=True,
+            output_media_info=True,
+            dash_force_segment_list=True,
+            output_dash=True))
+    self._CheckTestResults(
+        'encryption-and-output-media-info-and-mpd-from-media-info-segmentlist')
 
   def testHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(

@@ -10,6 +10,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/media/base/timestamp.h"
 
 namespace shaka {
 namespace media {
@@ -56,12 +57,19 @@ StreamInfo::StreamInfo(StreamType stream_type,
 StreamInfo::~StreamInfo() {}
 
 std::string StreamInfo::ToString() const {
+  std::string duration;
+  if (duration_ == kInfiniteDuration) {
+    duration = "Infinite";
+  } else {
+    duration = base::StringPrintf("%" PRIu64 " (%.1f seconds)", duration_,
+                                  static_cast<double>(duration_) / time_scale_);
+  }
+
   return base::StringPrintf(
       "type: %s\n codec_string: %s\n time_scale: %d\n duration: "
-      "%" PRIu64 " (%.1f seconds)\n is_encrypted: %s\n",
-      (stream_type_ == kStreamAudio ? "Audio" : "Video"), codec_string_.c_str(),
-      time_scale_, duration_, static_cast<double>(duration_) / time_scale_,
-      is_encrypted_ ? "true" : "false");
+      "%s\n is_encrypted: %s\n",
+      StreamTypeToString(stream_type_).c_str(), codec_string_.c_str(),
+      time_scale_, duration.c_str(), is_encrypted_ ? "true" : "false");
 }
 
 }  // namespace media

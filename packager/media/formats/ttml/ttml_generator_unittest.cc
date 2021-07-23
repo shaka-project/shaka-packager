@@ -334,7 +334,7 @@ TEST_F(TtmlMuxerTest, HandlesImage) {
       "xmlns:smpte=\"http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt\">\n"
       "  <head/>\n"
       "  <metadata>\n"
-      "    <smpte:image imagetype=\"PNG\" encoding=\"Base64\" xml:id=\"img_1\">"
+      "    <smpte:image imageType=\"PNG\" encoding=\"Base64\" xml:id=\"img_1\">"
       "AQID</smpte:image>\n"
       "  </metadata>\n"
       "  <body>\n"

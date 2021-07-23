@@ -26,6 +26,7 @@
 #include "packager/file/file.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/simple_hls_notifier.h"
+#include "packager/media/base/cc_stream_filter.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
@@ -181,6 +182,19 @@ MediaContainerName GetTextOutputCodec(const StreamDescriptor& descriptor) {
     // Otherwise default to TTML since it has more features.
     return CONTAINER_TTML;
   }
+}
+
+bool IsTextStream(const StreamDescriptor& stream) {
+  if (stream.stream_selector == "text")
+    return true;
+  if (base::EqualsCaseInsensitiveASCII(stream.output_format, "vtt+mp4") ||
+      base::EqualsCaseInsensitiveASCII(stream.output_format, "webvtt+mp4") ||
+      base::EqualsCaseInsensitiveASCII(stream.output_format, "ttml+mp4")) {
+    return true;
+  }
+
+  auto output_format = GetOutputFormat(stream);
+  return output_format == CONTAINER_WEBVTT || output_format == CONTAINER_TTML;
 }
 
 Status ValidateStreamDescriptor(bool dump_stream_info,
@@ -353,10 +367,11 @@ Status ValidateParams(const PackagingParams& packaging_params,
 
   if (on_demand_dash_profile &&
       !packaging_params.mpd_params.mpd_output.empty() &&
-      !packaging_params.mp4_output_params.generate_sidx_in_media_segments) {
+      !packaging_params.mp4_output_params.generate_sidx_in_media_segments &&
+      !packaging_params.mpd_params.use_segment_list) {
     return Status(error::UNIMPLEMENTED,
                   "--generate_sidx_in_media_segments is required for DASH "
-                  "on-demand profile (not using segment_template).");
+                  "on-demand profile (not using segment_template or segment list).");
   }
 
   return Status::OK;
@@ -615,8 +630,7 @@ Status CreateAudioVideoJobs(
     const bool new_input_file = stream.input != previous_input;
     const bool new_stream =
         new_input_file || previous_selector != stream.stream_selector;
-    // TODO(modmaker): Use a better detector of text streams.
-    const bool is_text = stream.stream_selector == "text";
+    const bool is_text = IsTextStream(stream);
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
 
@@ -677,6 +691,11 @@ Status CreateAudioVideoJobs(
     if (stream.trick_play_factor) {
       handlers.emplace_back(
           std::make_shared<TrickPlayHandler>(stream.trick_play_factor));
+    }
+
+    if (stream.cc_index >= 0) {
+      handlers.emplace_back(
+          std::make_shared<CcStreamFilter>(stream.language, stream.cc_index));
     }
 
     if (is_text &&
@@ -919,8 +938,9 @@ Status Packager::Initialize(
   }
 
   media::MuxerListenerFactory muxer_listener_factory(
-      packaging_params.output_media_info, internal->mpd_notifier.get(),
-      internal->hls_notifier.get());
+      packaging_params.output_media_info,
+      packaging_params.mpd_params.use_segment_list,
+      internal->mpd_notifier.get(), internal->hls_notifier.get());
 
   RETURN_IF_ERROR(media::CreateAllJobs(
       streams_for_jobs, packaging_params, internal->mpd_notifier.get(),

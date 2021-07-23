@@ -74,7 +74,7 @@ deps = {
     Var("chromium_git") + "/chromium/src/tools/clang@723b25997f0aab45fe1776a0f74a14782e350f8f",  #513983
 
   "src/packager/tools/gyp":
-    Var("chromium_git") + "/external/gyp@e7079f0e0e14108ab0dba58728ff219637458563",
+    Var("chromium_git") + "/external/gyp@caa60026e223fc501e8b337fd5086ece4028b1c6",
 
   "src/packager/tools/valgrind":
     Var("chromium_git") + "/chromium/deps/valgrind@3a97aa8142b6e63f16789b22daafb42d202f91dc",
@@ -111,6 +111,8 @@ hooks = [
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
     "name": "clang",
+    # Skip clang updates on Windows, where we don't use clang.
+    "condition": "not checkout_win",
     "pattern": ".",
     "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],
   },

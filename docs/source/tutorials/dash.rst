@@ -60,7 +60,7 @@ The above packaging command creates five single track fragmented mp4 streams
       --mpd_output h264.mpd
 
 The above packaging command creates two extra trick play tracks, besides the files
-genereated with the previous command.
+generated with the previous command.
 
 * static-live::
 

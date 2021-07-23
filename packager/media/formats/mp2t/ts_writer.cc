@@ -166,7 +166,6 @@ TsWriter::TsWriter(std::unique_ptr<ProgramMapTableWriter> pmt_writer)
 TsWriter::~TsWriter() {}
 
 bool TsWriter::NewSegment(BufferWriter* buffer) {
-
   BufferWriter psi;
   WritePatToBuffer(kPat, arraysize(kPat), &pat_continuity_counter_, &psi);
   if (encrypted_) {

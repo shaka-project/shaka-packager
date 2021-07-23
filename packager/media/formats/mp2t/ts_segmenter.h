@@ -69,7 +69,7 @@ class TsSegmenter {
 
   /// Only for testing.
   void SetSegmentStartedForTesting(bool value);
-  
+
  private:
   Status StartSegmentIfNeeded(int64_t next_pts);
 
@@ -92,7 +92,7 @@ class TsSegmenter {
   uint64_t segment_number_ = 0;
 
   std::unique_ptr<TsWriter> ts_writer_;
- 
+
   BufferWriter segment_buffer_;
 
   // Set to true if segment_buffer_ is initialized, set to false after

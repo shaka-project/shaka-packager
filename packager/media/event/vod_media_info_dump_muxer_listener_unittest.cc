@@ -71,7 +71,12 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
     listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_
-                  .AsUTF8Unsafe()));
+                  .AsUTF8Unsafe(),false));
+
+  }
+
+  void SetSegmentListFlag() {
+    listener_->set_use_segment_list(true);
   }
 
   void TearDown() override {
@@ -228,6 +233,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
+
   EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
               FileContentEqualsProto(kExpectedProtobufOutput));
 }
@@ -270,6 +276,48 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
+  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
+              FileContentEqualsProto(kExpectedProtobufOutput));
+}
+
+// Equivalent tests with segment list flag on which writes subsegment ranges
+// to media info files
+
+TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal_SegmentList) {
+  SetSegmentListFlag();
+  std::shared_ptr<StreamInfo> stream_info =
+      CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
+
+  FireOnMediaStartWithDefaultMuxerOptions(*stream_info, !kEnableEncryption);
+  OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
+  FireOnMediaEndWithParams(media_end_param);
+
+  const char kExpectedProtobufOutput[] =
+      "bandwidth: 0\n"
+      "video_info {\n"
+      "  codec: 'avc1.010101'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 120\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 121\n"
+      "  end: 221\n"
+      "}\n"
+      "reference_time_scale: 1000\n"
+      "container_type: 1\n"
+      "media_file_name: 'test_output_file_name.mp4'\n"
+      "media_duration_seconds: 10.5\n"
+      "subsegment_ranges {\n"
+      "  begin: 222\n"
+      "  end: 9999\n"
+      "}\n";
   EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
               FileContentEqualsProto(kExpectedProtobufOutput));
 }

@@ -3,6 +3,6 @@ WEBVTT
 STYLE
 ::cue { color:lime }
 
-00:00:00.000 --> 00:00:00.800
+00:00:00.000 --> 00:00:00.800 align:center
 Yup, that's a bear, eh.
 

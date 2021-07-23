@@ -16,15 +16,6 @@ DEFINE_bool(enable_playready_encryption,
 DEFINE_string(playready_server_url, "", "PlayReady packaging server url.");
 DEFINE_string(program_identifier, "",
               "Program identifier for packaging request.");
-DEFINE_string(ca_file, "",
-              "Absolute path to the Certificate Authority file for the "
-              "server cert. PEM format");
-DEFINE_string(client_cert_file, "",
-              "Absolute path to client certificate file.");
-DEFINE_string(client_cert_private_key_file, "",
-              "Absolute path to the Private Key file.");
-DEFINE_string(client_cert_private_key_password, "",
-              "Password to the private key file.");
 
 namespace shaka {
 namespace {

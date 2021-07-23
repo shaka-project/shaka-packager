@@ -69,3 +69,9 @@ DEFINE_bool(include_mspr_pro_for_playready,
             "If enabled, PlayReady Object <mspr:pro> will be inserted into "
             "<ContentProtection ...> element alongside with <cenc:pssh> "
             "when using PlayReady protection system.");
+DEFINE_bool(dash_force_segment_list,
+            false,
+            "Uses SegmentList instead of SegmentBase. Use this if the "
+            "content is huge and the total number of (sub)segment references "
+            "is greater than what the sidx atom allows (65535). Currently "
+            "this flag is only supported in DASH ondemand profile.");
