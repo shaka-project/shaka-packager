@@ -111,11 +111,11 @@ hooks = [
                '--arch=arm'],
   },
   {
-    'name': 'sysroot_aarch64',
+    'name': 'sysroot_arm64',
     'pattern': '.',
-    'condition': 'checkout_linux and checkout_aarch64',
+    'condition': 'checkout_linux and checkout_arm64',
     'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
-               '--arch=aarch64'],
+               '--arch=arm64'],
   },
   {
     # Update the Mac toolchain if necessary.
