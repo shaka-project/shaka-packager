@@ -98,9 +98,24 @@ hooks = [
     # Downloads the current stable linux sysroot to build/linux/ if needed.
     # This script is a no-op except for linux.
     'name': 'sysroot',
+    'condition': 'checkout_linux and not checkout_arm',
     'pattern': '.',
     'action': ['python', 'src/packager/build/linux/sysroot_scripts/install-sysroot.py',
                '--running-as-hook'],
+  },
+  {
+    'name': 'sysroot_arm',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_arm',
+    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
+               '--arch=arm'],
+  },
+  {
+    'name': 'sysroot_arm64',
+    'pattern': '.',
+    'condition': 'checkout_linux and checkout_arm64',
+    'action': ['python3', 'src/build/linux/sysroot_scripts/install-sysroot.py',
+               '--arch=arm64'],
   },
   {
     # Update the Mac toolchain if necessary.
@@ -112,7 +127,7 @@ hooks = [
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
     "name": "clang",
     # Skip clang updates on Windows, where we don't use clang.
-    "condition": "not checkout_win",
+    "condition": "not checkout_win and not checkout_arm",
     "pattern": ".",
     "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],
   },
