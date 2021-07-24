@@ -24,7 +24,7 @@ ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 
 # Build shaka-packager
 WORKDIR shaka_packager
-RUN gclient config https://www.github.com/google/shaka-packager.git --name=src --unmanaged
+RUN gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
 COPY . src
 RUN gclient sync
 RUN cd src && ninja -C out/Release

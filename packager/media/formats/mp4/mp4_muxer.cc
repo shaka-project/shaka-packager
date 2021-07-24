@@ -90,6 +90,10 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_fLaC;
     case kCodecOpus:
       return FOURCC_Opus;
+    case kCodecMha1:
+      return FOURCC_mha1;
+    case kCodecMhm1:
+      return FOURCC_mhm1;
     default:
       return FOURCC_NULL;
   }
@@ -512,6 +516,10 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     }
     case kCodecOpus:
       audio.dops.opus_identification_header = audio_info->codec_config();
+      break;
+    case kCodecMha1:
+    case kCodecMhm1:
+      audio.mhac.data = audio_info->codec_config();
       break;
     default:
       NOTIMPLEMENTED() << " Unsupported audio codec " << audio_info->codec();

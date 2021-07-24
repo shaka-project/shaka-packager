@@ -1709,6 +1709,29 @@ size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 
+MHAConfiguration::MHAConfiguration() = default;
+MHAConfiguration::~MHAConfiguration() = default;
+
+FourCC MHAConfiguration::BoxType() const {
+  return FOURCC_mhaC;
+}
+
+bool MHAConfiguration::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteVector(
+             &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
+  RCHECK(data.size() > 1);
+  mpeg_h_3da_profile_level_indication = data[1];
+  return true;
+}
+
+size_t MHAConfiguration::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 DTSSpecific::DTSSpecific() = default;
 DTSSpecific::~DTSSpecific() = default;
 ;
@@ -1922,6 +1945,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
   RCHECK(buffer->TryReadWriteChild(&dfla));
+  RCHECK(buffer->TryReadWriteChild(&mhac));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of AudioSampleEntry. See
@@ -1947,7 +1971,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
-         dac4.ComputeSize() +
+         dac4.ComputeSize() + mhac.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
