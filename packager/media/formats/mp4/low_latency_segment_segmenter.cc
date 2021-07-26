@@ -72,6 +72,9 @@ Status LowLatencySegmentSegmenter::DoFinalizeSegment() {
 }
 
 Status LowLatencySegmentSegmenter::DoFinalizeSubSegment() {
+  if (is_initial_chunk_) {
+    return WriteInitialChunk();
+  }
   return WriteChunk(false);
 }
 
@@ -91,10 +94,7 @@ Status LowLatencySegmentSegmenter::WriteInitSegment() {
   return buffer->WriteToFile(file.get());
 }
 
-// TODO(Caitlin): 
-// Ship each chunk off as it is created rather than
-// waiting until the entire segment is complete.
-Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk) {
+Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);
@@ -120,113 +120,7 @@ Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk) {
     file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
                                num_segments_, options().bandwidth);
-    if (is_initial_chunk_) {
-      // if this is the first subsegment, we want to create the segment file
-      segment_file_ = File::Open(file_name.c_str(), "a");
-      if (!segment_file_) {
-        return Status(error::FILE_FAILURE,
-                    "Cannot open segment file: " + file_name);
-      }
-    }
-  }
-
-  // point to the already open segment file for writing
-  file.reset(segment_file_);
-  if (!file) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot open file for write " + file_name);
-  }
-
-  const size_t segment_header_size = buffer->Size();
-  const size_t segment_size = segment_header_size + fragment_buffer()->Size();
-
-  if (is_initial_chunk_) {
-    // Write the styp header to the beginning of the segment.
-    styp_->Write(buffer.get());
-
-    
-    DCHECK_NE(segment_size, 0u);
-    
-    LOG(INFO) << "WRITING A CHUNK";
-
-    RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
-    if (muxer_listener()) {
-      for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
-        LOG(INFO) << "HITTING KEY FRAME";
-        muxer_listener()->OnKeyFrame(
-            key_frame_info.timestamp,
-            segment_header_size + key_frame_info.start_byte_offset,
-            key_frame_info.size);
-      }
-    }
-  }
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
-
-  if (!is_final_chunk) {
-    file.release();
-  } else {
-    // Close the file after the final chunk has been written
-    if (!file.release()->Close()) {
-      return Status(
-          error::FILE_FAILURE,
-          "Cannot close file " + file_name +
-              ", possibly file permission issue or running out of disk space.");
-    }
-  }
-  
-
-  uint64_t segment_duration = 0;
-  // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
-  // values of all Subsegment_duration fields in the first ‘sidx’ box.
-  for (size_t i = 0; i < sidx()->references.size(); ++i)
-    segment_duration += sidx()->references[i].subsegment_duration;
-
-  LOG(INFO) << "Segment duration" << segment_duration;
-
-  UpdateProgress(segment_duration);
-
-  if (muxer_listener() && is_initial_chunk_) {
-    // Add the current segment in the manifest. 
-    // Following subsegments will be appended to the segment file.
-    // The manifest does not need to update.
-    // TODO(Caitlin): Add logic so that sample duration and availability time offset
-    // are only set once.
-    muxer_listener()->OnSampleDurationReady(sample_duration());
-    muxer_listener()->OnAvailabilityOffsetReady();
-    muxer_listener()->OnNewSegment(file_name,
-                                  sidx()->earliest_presentation_time,
-                                  segment_duration, segment_size);
-    is_initial_chunk_ = false;
-  } else if (is_final_chunk) {
-    // Current segment is complete. Reset state in preparation for the next segment.
-    is_initial_chunk_ = true;
-    num_segments_++;
-  }
-
-  return Status::OK;
-}
-
-// if first subsegment in segment --> make sure the file is created
-// otherwise, ship off and append data
-Status LowLatencySegmentSegmenter::WriteSubSegment() {
-  DCHECK(sidx());
-  DCHECK(fragment_buffer());
-  DCHECK(styp_);
-  
-  DCHECK(!sidx()->references.empty());
-  // earliest_presentation_time is the earliest presentation time of any access
-  // unit in the reference stream in the first subsegment.
-  sidx()->earliest_presentation_time =
-      sidx()->references[sidx()->references.size()-1].earliest_presentation_time;
-
-  std::unique_ptr<BufferWriter> buffer(new BufferWriter());
-  std::unique_ptr<File, FileCloser> file;
-  std::string file_name;
-  file_name = GetSegmentName(options().segment_template,
-                              sidx()->earliest_presentation_time,
-                              num_segments_, options().bandwidth);
-  if (is_initial_chunk_) {
-    // if this is the first subsegment, we want to create the segment file
+    // Create the segment file
     segment_file_ = File::Open(file_name.c_str(), "a");
     if (!segment_file_) {
       return Status(error::FILE_FAILURE,
@@ -234,13 +128,15 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
     }
   } 
 
-  // for subsequent subsegments, we want to write to the already open file
+  // Point to the already open segment file for writing
   file.reset(segment_file_);
-
-  if (is_initial_chunk_) {
-    // Write the styp header to the beginning of the segment.
-    styp_->Write(buffer.get());
+  if (!file) {
+    return Status(error::FILE_FAILURE,
+                  "Cannot open file for write " + file_name);
   }
+
+  // Write the styp header to the beginning of the segment.
+  styp_->Write(buffer.get());
 
   const size_t segment_header_size = buffer->Size();
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
@@ -255,18 +151,17 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
           key_frame_info.size);
     }
   }
+
+  // Write the chunk data to the file
   RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
+  // Release the file to be used by the next chunk
   file.release();
 
-  uint64_t segment_duration = 0;
-  // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
-  // values of all Subsegment_duration fields in the first ‘sidx’ box.
-  for (size_t i = 0; i < sidx()->references.size(); ++i)
-    segment_duration += sidx()->references[i].subsegment_duration;
-
+  uint64_t segment_duration = GetSegmentDuration();
   UpdateProgress(segment_duration);
-  if (muxer_listener() && is_initial_chunk_) {
+
+  if (muxer_listener()) {
     // Add the current segment in the manifest. 
     // Following subsegments will be appended to the segment file.
     // The manifest does not need to update.
@@ -281,6 +176,64 @@ Status LowLatencySegmentSegmenter::WriteSubSegment() {
   }
 
   return Status::OK;
+}
+
+Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk) {
+  DCHECK(sidx());
+  DCHECK(fragment_buffer());
+
+  std::unique_ptr<File, FileCloser> file;
+  std::string file_name;
+  if (options().segment_template.empty()) {
+    // Append the segment to output file if segment template is not specified.
+    file_name = options().output_file_name.c_str();
+  } else {
+    file_name = GetSegmentName(options().segment_template,
+                               sidx()->earliest_presentation_time,
+                               num_segments_, options().bandwidth);
+  }
+
+  // point to the already open segment file for writing
+  file.reset(segment_file_);
+  if (!file) {
+    return Status(error::FILE_FAILURE,
+                  "Cannot open file for write " + file_name);
+  }
+
+  // Write the chunk data to the file
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
+
+  if (!is_final_chunk) {
+    // Release the file to be used by the next chunk
+    file.release();
+  } else {
+    // Close the file after the final chunk has been written
+    if (!file.release()->Close()) {
+      return Status(
+          error::FILE_FAILURE,
+          "Cannot close file " + file_name +
+              ", possibly file permission issue or running out of disk space.");
+    }
+    // Current segment is complete. Reset state in preparation for the next segment.
+    is_initial_chunk_ = true;
+    num_segments_++;
+  }
+
+  UpdateProgress(GetSegmentDuration());
+
+  return Status::OK;
+}
+
+uint64_t LowLatencySegmentSegmenter::GetSegmentDuration() {
+  DCHECK(sidx());
+
+  uint64_t segment_duration = 0;
+  // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
+  // values of all Subsegment_duration fields in the first ‘sidx’ box.
+  for (size_t i = 0; i < sidx()->references.size(); ++i)
+    segment_duration += sidx()->references[i].subsegment_duration;
+
+  return segment_duration;
 }
 
 }  // namespace mp4

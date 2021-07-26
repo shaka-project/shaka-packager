@@ -47,7 +47,9 @@ class LowLatencySegmentSegmenter : public Segmenter {
   // Write segment to file.
   Status WriteInitSegment();
   Status WriteChunk(bool is_final_chunk);
-  Status WriteSubSegment();
+  Status WriteInitialChunk();
+
+  uint64_t GetSegmentDuration();
 
   std::unique_ptr<SegmentType> styp_;
   uint32_t num_segments_;
