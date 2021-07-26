@@ -39,6 +39,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   bool NotifyChunkDuration(uint32_t container_id) override;
   bool NotifySampleDuration(uint32_t container_id,
                             int32_t sample_duration) override;
+  bool NotifySegmentDuration(uint32_t container_id) override;
   bool NotifyNewSegment(uint32_t container_id,
                         int64_t start_time,
                         int64_t duration,

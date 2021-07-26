@@ -72,7 +72,7 @@ Status LowLatencySegmentSegmenter::DoFinalizeSegment() {
 }
 
 Status LowLatencySegmentSegmenter::DoFinalizeSubSegment() {
-  if (is_initial_chunk_) {
+  if (is_initial_chunk_in_seg) {
     return WriteInitialChunk();
   }
   return WriteChunk(false);
@@ -162,23 +162,25 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   UpdateProgress(segment_duration);
 
   if (muxer_listener()) {
+    if (!ll_dash_mpd_values_initialized_) {
+      // Set necessary values for LL-DASH mpd after the first chunk has been processed.
+      muxer_listener()->OnSampleDurationReady(sample_duration());
+      muxer_listener()->OnAvailabilityOffsetReady();
+      muxer_listener()->OnSegmentDurationReady();
+      ll_dash_mpd_values_initialized_ = true;
+    }
     // Add the current segment in the manifest. 
-    // Following subsegments will be appended to the segment file.
-    // The manifest does not need to update.
-    // TODO(Caitlin): Add logic so that sample duration and availability time offset
-    // are only set once.
-    muxer_listener()->OnSampleDurationReady(sample_duration());
-    muxer_listener()->OnAvailabilityOffsetReady();
+    // Following chunks will be appended to the open segment file.
     muxer_listener()->OnNewSegment(file_name,
                                   sidx()->earliest_presentation_time,
                                   segment_duration, segment_size);
-    is_initial_chunk_ = false;
+    is_initial_chunk_in_seg = false;
   }
 
   return Status::OK;
 }
 
-Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk) {
+Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk_in_seg) {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
 
@@ -203,7 +205,7 @@ Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk) {
   // Write the chunk data to the file
   RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
-  if (!is_final_chunk) {
+  if (!is_final_chunk_in_seg) {
     // Release the file to be used by the next chunk
     file.release();
   } else {
@@ -215,7 +217,7 @@ Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk) {
               ", possibly file permission issue or running out of disk space.");
     }
     // Current segment is complete. Reset state in preparation for the next segment.
-    is_initial_chunk_ = true;
+    is_initial_chunk_in_seg = true;
     num_segments_++;
   }
 
