@@ -137,18 +137,25 @@ base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   if (!period.SetId(id_))
     return base::nullopt;
 
-  // insert ServiceDescription into Period section 
-  // xml::XmlNode service_description_node("ServiceDescription");
-  // if (!service_description_node.SetIntegerAttribute("id", 0))
-  //   return base::nullopt;
-  // xml::XmlNode latency_node("Latency");
-  // if (!latency_node.SetIntegerAttribute("target", 3500))
-  //   return base::nullopt;
-  // if (!service_description_node.AddChild(std::move(latency_node)))
-  //   return base::nullopt;
-  // if (!period.AddChild(std::move(service_description_node)))
-  //   return base::nullopt;
-  
+  // Required for LL-DASH MPDs.
+  if (mpd_options_.mpd_params.is_low_latency_dash) {
+    // Create ServiceDescription element. 
+    xml::XmlNode service_description_node("ServiceDescription");
+    if (!service_description_node.SetIntegerAttribute("id", id_))
+      return base::nullopt;
+    
+    // Insert Latency into ServiceDescription element. 
+    xml::XmlNode latency_node("Latency");
+    uint64_t target_latency_ms = mpd_options_.mpd_params.target_latency_seconds * 1000;
+    if (!latency_node.SetIntegerAttribute("target", target_latency_ms))
+      return base::nullopt;
+    if (!service_description_node.AddChild(std::move(latency_node)))
+      return base::nullopt;
+    
+    // Insert ServiceDescription into Period element. 
+    if (!period.AddChild(std::move(service_description_node)))
+      return base::nullopt;
+  }
 
   // Iterate thru AdaptationSets and add them to one big Period element.
   for (const auto& adaptation_set : adaptation_sets_) {

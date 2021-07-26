@@ -94,6 +94,11 @@ struct MpdParams {
   /// Use low latency dash streaming
   /// TODO(Caitlin): Elaborate
   bool is_low_latency_dash = false;
+  /// This is the target latency in seconds requested by the user. The actual 
+  /// latency may be different to the target latency 
+  /// and is greatly influnced by the player.
+  /// This parameter is required by DASH-IF Low Latency standards.
+  double target_latency_seconds = 1;
 };
 
 }  // namespace shaka
