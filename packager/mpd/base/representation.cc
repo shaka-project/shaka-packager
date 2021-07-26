@@ -209,6 +209,13 @@ void Representation::SetSampleDuration(uint32_t frame_duration) {
   }
 }
 
+void Representation::SetSegmentDuration(double segment_duration) {
+  int64_t sd = segment_duration * media_info_.reference_time_scale();
+  if (sd <= 0)
+    return;
+  media_info_.set_segment_duration(sd);
+}
+
 const MediaInfo& Representation::GetMediaInfo() const {
   return media_info_;
 }

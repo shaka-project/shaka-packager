@@ -55,6 +55,12 @@ void CombinedMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
   }
 }
 
+void CombinedMuxerListener::OnSegmentDurationReady() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnSegmentDurationReady();
+  }
+}
+
 void CombinedMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                        float duration_seconds) {
   for (auto& listener : muxer_listeners_) {

@@ -94,6 +94,17 @@ bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifySegmentDuration(uint32_t container_id) {
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->SetSegmentDuration(target_segment_duration());
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
                                          uint64_t start_time,
                                          uint64_t duration,

@@ -468,11 +468,9 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
         "timescale", media_info.reference_time_scale()));
   }
 
-  // TODO(Caitlin): Improve logic to detect whether LL DASH or not. 
-  // if LL DASH
-  if (media_info.has_availability_time_offset()) {
-    const uint64_t duration = target_segment_duration * media_info.reference_time_scale();
-    RCHECK(segment_template.SetIntegerAttribute("duration", duration));
+  if (media_info.has_segment_duration()) {
+    RCHECK(segment_template.SetIntegerAttribute(
+        "duration", media_info.segment_duration()));
   }
 
   if (media_info.has_presentation_time_offset()) {

@@ -106,7 +106,7 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
 }
 
-// Record the availability time offset in media info for low latency mode.
+// Record the availability time offset for low latency manifests.
 void MpdNotifyMuxerListener::OnAvailabilityOffsetReady() {
   mpd_notifier_->NotifyChunkDuration(notification_id_.value());
 }
@@ -132,6 +132,11 @@ void MpdNotifyMuxerListener::OnSampleDurationReady(
   }
 
   media_info_->mutable_video_info()->set_frame_duration(sample_duration);
+}
+
+// Record the segment duration for low latency manifests.
+void MpdNotifyMuxerListener::OnSegmentDurationReady() {
+  mpd_notifier_->NotifySegmentDuration(notification_id_.value());
 }
 
 void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
