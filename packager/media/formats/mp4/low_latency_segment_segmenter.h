@@ -42,7 +42,7 @@ class LowLatencySegmentSegmenter : public Segmenter {
   Status DoInitialize() override;
   Status DoFinalize() override;
   Status DoFinalizeSegment() override;
-  Status DoFinalizeSubSegment() override;
+  Status DoFinalizeChunk() override;
 
   // Write segment to file.
   Status WriteInitSegment();
