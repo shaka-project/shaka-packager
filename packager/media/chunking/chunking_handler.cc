@@ -112,28 +112,33 @@ Status ChunkingHandler::OnMediaSample(
       started_new_segment = true;
     }
   }
+
+  // This handles the LL-DASH case.
+  // The subsegment index is equivalent to the chunk sequenceNumber.
+  // On each media sample, we must increment the sequenceNumber
+  // and dispatch a notification to hit FinalizeSegment() within Segmenter.
+  if (!started_new_segment && chunking_params_.is_low_latency_dash) {
+    current_subsegment_index_++;
+    
+    RETURN_IF_ERROR(EndSubsegmentIfStarted());
+    subsegment_start_time_ = timestamp;
+  }
+
+  // Here, a subsegment refers to a fragment that is within a segment.
+  // This fragment size can be set with the 'fragment_duration' cmd arg.
+  // This is NOT for the LL-DASH case.
   if (!started_new_segment && IsSubsegmentEnabled()) {
-    bool will_start_new_subsegment = chunking_params_.is_low_latency_dash;
     const bool can_start_new_subsegment =
         sample->is_key_frame() || !chunking_params_.subsegment_sap_aligned;
-
-    // Determine whether we are creating a new subsegment or not.
-    // Update current_subsegment_index_ appropriately if we are
-    // creating a new subsegment.
-    if (will_start_new_subsegment) {
-      current_subsegment_index_++;
-    } else if (can_start_new_subsegment) {
+    if (can_start_new_subsegment) {
       const int64_t subsegment_index =
           (timestamp - segment_start_time_.value()) / subsegment_duration_;
       if (IsNewSegmentIndex(subsegment_index, current_subsegment_index_)) {
-        will_start_new_subsegment = true;
         current_subsegment_index_ = subsegment_index;
-      }
-    } 
 
-    if (will_start_new_subsegment) {
-      RETURN_IF_ERROR(EndSubsegmentIfStarted());
-      subsegment_start_time_ = timestamp;
+        RETURN_IF_ERROR(EndSubsegmentIfStarted());
+        subsegment_start_time_ = timestamp;
+      }
     }
   }
 
@@ -161,6 +166,10 @@ Status ChunkingHandler::EndSegmentIfStarted() const {
   auto segment_info = std::make_shared<SegmentInfo>();
   segment_info->start_timestamp = segment_start_time_.value();
   segment_info->duration = max_segment_time_ - segment_start_time_.value();
+  if (chunking_params_.is_low_latency_dash) {
+    segment_info->is_chunk = true;
+    segment_info->is_final_chunk_in_seg = true;
+  }
   return DispatchSegmentInfo(kStreamIndex, std::move(segment_info));
 }
 
@@ -173,6 +182,8 @@ Status ChunkingHandler::EndSubsegmentIfStarted() const {
   subsegment_info->duration =
       max_segment_time_ - subsegment_start_time_.value();
   subsegment_info->is_subsegment = true;
+  if (chunking_params_.is_low_latency_dash)
+    subsegment_info->is_chunk = true;
   return DispatchSegmentInfo(kStreamIndex, std::move(subsegment_info));
 }
 
