@@ -68,14 +68,14 @@ Status LowLatencySegmentSegmenter::DoFinalize() {
 }
 
 Status LowLatencySegmentSegmenter::DoFinalizeSegment() {
-  return WriteChunk(true);
+  return FinalizeSegment();
 }
 
 Status LowLatencySegmentSegmenter::DoFinalizeChunk() {
-  if (is_initial_chunk_in_seg) {
+  if (is_initial_chunk_in_seg_) {
     return WriteInitialChunk();
   }
-  return WriteChunk(false);
+  return WriteChunk();
 }
 
 Status LowLatencySegmentSegmenter::WriteInitSegment() {
@@ -170,13 +170,13 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
     muxer_listener()->OnNewSegment(file_name_,
                                   sidx()->earliest_presentation_time,
                                   segment_duration, segment_size);
-    is_initial_chunk_in_seg = false;
+    is_initial_chunk_in_seg_ = false;
   }
 
   return Status::OK;
 }
 
-Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk_in_seg) {
+Status LowLatencySegmentSegmenter::WriteChunk() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
 
@@ -192,26 +192,29 @@ Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk_in_seg) {
   // Write the chunk data to the file
   RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
-  if (!is_final_chunk_in_seg) {
-    // Release the file to be used by the next chunk
-    // The release will cause the file's buffer to flush, 
-    // uploading the data to the server
-    file.release();
-  } else {
-    // Close the file now that the final chunk has been written
-    if (!file.release()->Close()) {
-      return Status(
-          error::FILE_FAILURE,
-          "Cannot close file " + file_name_ +
-              ", possibly file permission issue or running out of disk space.");
-    }
-    // Current segment is complete. Reset state in preparation for the next segment.
-    is_initial_chunk_in_seg = true;
-    num_segments_++;
-  }
+  // Release the file to be used by the next chunk
+  // The release will cause the file's buffer to flush, 
+  // uploading the data to the server
+  file.release();
 
   UpdateProgress(GetSegmentDuration());
 
+  return Status::OK;
+}
+
+Status LowLatencySegmentSegmenter::FinalizeSegment() {
+  // Close the file now that the final chunk has been written
+  if (!segment_file_->Close()) {
+    return Status(
+        error::FILE_FAILURE,
+        "Cannot close file " + file_name_ +
+            ", possibly file permission issue or running out of disk space.");
+  }
+
+  // Current segment is complete. Reset state in preparation for the next segment.
+  is_initial_chunk_in_seg_ = true;
+  num_segments_++;
+  
   return Status::OK;
 }
 

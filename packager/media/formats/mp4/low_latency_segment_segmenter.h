@@ -46,14 +46,15 @@ class LowLatencySegmentSegmenter : public Segmenter {
 
   // Write segment to file.
   Status WriteInitSegment();
-  Status WriteChunk(bool is_final_chunk_in_seg);
+  Status WriteChunk();
   Status WriteInitialChunk();
+  Status FinalizeSegment();
 
   uint64_t GetSegmentDuration();
 
   std::unique_ptr<SegmentType> styp_;
   uint32_t num_segments_;
-  bool is_initial_chunk_in_seg = true;
+  bool is_initial_chunk_in_seg_ = true;
   bool ll_dash_mpd_values_initialized_ = false;
   File* segment_file_;
   std::string file_name_;
