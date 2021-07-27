@@ -132,11 +132,6 @@ class MpdNotifier {
     return mpd_options_.mpd_params.use_segment_list;
   }
 
-  /// @return The value of target_segment_duration flag
-  double target_segment_duration() const {
-    return mpd_options_.mpd_params.target_segment_duration;
-  }
-
  private:
   const MpdOptions mpd_options_;
 
