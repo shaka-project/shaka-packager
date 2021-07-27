@@ -225,14 +225,19 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
   for (std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
     fragmenter->ClearFragmentFinalized();
   if (!segment_info.is_subsegment) {
+    // NOTE: The final chunk in a Low Latency segment marks the end of 
+    // a segment and is NOT classified as a subsegment.
+    // Thus, it will trigger DoFinalizeSegment.
+
+    // Finalize the segment.
     Status status = DoFinalizeSegment();
     // Reset segment information to initial state.
     sidx_->references.clear();
     key_frame_infos_.clear();
     return status;
   } else if (options_.mp4_params.is_low_latency_dash) {
-    // Finalize the finished chunk for the low latency case
-    return DoFinalizeSubSegment();
+    // Finalize the completed chunk for the Low Latency case.
+    return DoFinalizeChunk();
   }
   return Status::OK;
 }

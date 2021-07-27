@@ -297,11 +297,6 @@ void HttpFile::SetupRequest() {
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-  CURLcode res = curl_easy_setopt(curl, CURLOPT_APPEND, 1L);
-  if (res != CURLE_OK) {
-    std::string error_message = curl_easy_strerror(res);
-    LOG(INFO) << error_message;
-  }
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteCallback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA,
                 method_ == HttpMethod::kPost ? nullptr : &download_cache_);

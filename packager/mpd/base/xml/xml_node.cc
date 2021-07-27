@@ -461,7 +461,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
     uint32_t start_number,
-    double target_segment_duration) {
+    bool is_low_latency_dash) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
@@ -479,7 +479,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   }
 
   if (media_info.has_availability_time_offset()) {
-    // TODO(Caitlin): round availability time offset in only 1 location
+    // Set the availabilityTimeOffset to the precision of 3 decimal places.
     RCHECK(segment_template.SetFloatingPointAttribute(
         "availabilityTimeOffset", round(media_info.availability_time_offset()*1000)/1000));
   }
@@ -511,9 +511,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
             std::to_string(last_segment_number)));
       }
     } else {
-      // TODO(Caitlin): Improve logic to detect whether LL DASH or not. 
-      // if LL DASH
-      if (!media_info.has_availability_time_offset()){
+      if (!is_low_latency_dash){
         XmlNode segment_timeline("SegmentTimeline");
         RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
         RCHECK(segment_template.AddChild(std::move(segment_timeline)));

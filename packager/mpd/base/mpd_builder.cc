@@ -279,10 +279,6 @@ bool MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   RCHECK(mpd_node->SetStringAttribute(
       "publishTime", XmlDateTimeNowWithOffset(0, clock_.get())));
 
-  // std::string val;
-  // mpd_node->GetAttribute("publishTime", &val);
-  // LOG(INFO) << "PUBLISH TIME!!!! " << val;
-
   // 'availabilityStartTime' is required for dynamic profile. Calculate if
   // not already calculated.
   if (availability_start_time_.empty()) {
