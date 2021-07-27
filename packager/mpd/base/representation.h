@@ -133,7 +133,7 @@ class Representation {
 
   /// Set @duration in SegmentTemplate.
   /// This is necessary for Low Latency DASH streaming.
-  void SetSegmentDuration(double segment_duration);
+  void SetSegmentDuration();
 
   /// Gets the start and end timestamps in seconds.
   /// @param start_timestamp_seconds contains the returned start timestamp in

@@ -101,7 +101,7 @@ bool SimpleMpdNotifier::NotifySegmentDuration(uint32_t container_id) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  it->second->SetSegmentDuration(target_segment_duration());
+  it->second->SetSegmentDuration();
   return true;
 }
 
