@@ -105,34 +105,30 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   sidx()->earliest_presentation_time =
       sidx()->references[0].earliest_presentation_time;
 
-  std::unique_ptr<BufferWriter> buffer(new BufferWriter());
-  std::unique_ptr<File, FileCloser> file;
-  std::string file_name;
   if (options().segment_template.empty()) {
     // Append the segment to output file if segment template is not specified.
-    file_name = options().output_file_name.c_str();
-    segment_file_ = File::Open(file_name.c_str(), "a");
-    if (!segment_file_) {
-      return Status(error::FILE_FAILURE, "Cannot open file for append " +
-                                             options().output_file_name);
-    }
+    file_name_ = options().output_file_name.c_str();
   } else {
-    file_name = GetSegmentName(options().segment_template,
+    file_name_ = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
                                num_segments_, options().bandwidth);
-    // Create the segment file
-    segment_file_ = File::Open(file_name.c_str(), "a");
-    if (!segment_file_) {
-      return Status(error::FILE_FAILURE,
-                  "Cannot open segment file: " + file_name);
-    }
-  } 
+  }
+
+  // Create the segment file
+  segment_file_ = File::Open(file_name_.c_str(), "a");
+  if (!segment_file_) {
+    return Status(error::FILE_FAILURE, "Cannot open segment file: " +
+                                            file_name_);
+  }
+
+  std::unique_ptr<BufferWriter> buffer(new BufferWriter());
+  std::unique_ptr<File, FileCloser> file;
 
   // Point to the already open segment file for writing
   file.reset(segment_file_);
   if (!file) {
     return Status(error::FILE_FAILURE,
-                  "Cannot open file for write " + file_name);
+                  "Cannot access the file to write " + file_name_);
   }
 
   // Write the styp header to the beginning of the segment.
@@ -171,7 +167,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
     }
     // Add the current segment in the manifest. 
     // Following chunks will be appended to the open segment file.
-    muxer_listener()->OnNewSegment(file_name,
+    muxer_listener()->OnNewSegment(file_name_,
                                   sidx()->earliest_presentation_time,
                                   segment_duration, segment_size);
     is_initial_chunk_in_seg = false;
@@ -185,21 +181,12 @@ Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk_in_seg) {
   DCHECK(fragment_buffer());
 
   std::unique_ptr<File, FileCloser> file;
-  std::string file_name;
-  if (options().segment_template.empty()) {
-    // Append the segment to output file if segment template is not specified.
-    file_name = options().output_file_name.c_str();
-  } else {
-    file_name = GetSegmentName(options().segment_template,
-                               sidx()->earliest_presentation_time,
-                               num_segments_, options().bandwidth);
-  }
 
   // point to the already open segment file for writing
   file.reset(segment_file_);
   if (!file) {
     return Status(error::FILE_FAILURE,
-                  "Cannot open file for write " + file_name);
+                  "Cannot access the file to write " + file_name_);
   }
 
   // Write the chunk data to the file
@@ -207,13 +194,15 @@ Status LowLatencySegmentSegmenter::WriteChunk(bool is_final_chunk_in_seg) {
 
   if (!is_final_chunk_in_seg) {
     // Release the file to be used by the next chunk
+    // The release will cause the file's buffer to flush, 
+    // uploading the data to the server
     file.release();
   } else {
-    // Close the file after the final chunk has been written
+    // Close the file now that the final chunk has been written
     if (!file.release()->Close()) {
       return Status(
           error::FILE_FAILURE,
-          "Cannot close file " + file_name +
+          "Cannot close file " + file_name_ +
               ", possibly file permission issue or running out of disk space.");
     }
     // Current segment is complete. Reset state in preparation for the next segment.

@@ -56,6 +56,7 @@ class LowLatencySegmentSegmenter : public Segmenter {
   bool is_initial_chunk_in_seg = true;
   bool ll_dash_mpd_values_initialized_ = false;
   File* segment_file_;
+  std::string file_name_;
 
   DISALLOW_COPY_AND_ASSIGN(LowLatencySegmentSegmenter);
 };
