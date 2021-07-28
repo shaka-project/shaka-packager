@@ -1,0 +1,93 @@
+name: Build and Test PR
+
+# Builds and tests on all combinations of OS, build type, and library type.
+# Also builds the docs.
+#
+# Runs when a pull request is opened or updated.
+#
+# Can also be run manually for debugging purposes.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref to build and test."
+        required: False
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: src
+          ref: ${{ github.event.inputs.ref || github.ref }}
+          # This makes the merge base available for the C++ linter, so that it
+          # can tell which files have changed.
+          fetch-depth: 2
+
+      - name: Lint
+        uses: ./src/.github/workflows/custom-actions/lint-packager
+
+  build_and_test:
+    # Doesn't really "need" it, but let's not waste time on an expensive matrix
+    # build step just to cancel it because of a linter error.
+    needs: lint
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        build_type: ["Debug", "Release"]
+        lib_type: ["static", "shared"]
+        include:
+          - os: ubuntu-latest
+            os_name: linux
+            exe_ext: ""
+            build_type_suffix: ""
+          - os: macos-latest
+            os_name: osx
+            exe_ext: ""
+            build_type_suffix: ""
+          - os: windows-latest
+            os_name: win
+            exe_ext: ".exe"
+            # 64-bit outputs on Windows go to a different folder name.
+            build_type_suffix: "_x64"
+
+    name: Build and test ${{ matrix.os_name }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Configure git to preserve line endings
+        # Otherwise, tests fail on Windows because "golden" test outputs will not
+        # have the correct line endings.
+        run: git config --global core.autocrlf false
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: src
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      - name: Build docs (Linux only)
+        if: runner.os == 'Linux'
+        uses: ./src/.github/workflows/custom-actions/build-docs
+
+      - name: Build Packager
+        uses: ./src/.github/workflows/custom-actions/build-packager
+        with:
+          os_name: ${{ matrix.os_name }}
+          lib_type: ${{ matrix.lib_type }}
+          build_type: ${{ matrix.build_type }}
+          build_type_suffix: ${{ matrix.build_type_suffix }}
+          exe_ext: ${{ matrix.exe_ext }}
+
+      - name: Test Packager
+        uses: ./src/.github/workflows/custom-actions/test-packager
+        with:
+          lib_type: ${{ matrix.lib_type }}
+          build_type: ${{ matrix.build_type }}
+          build_type_suffix: ${{ matrix.build_type_suffix }}
+          exe_ext: ${{ matrix.exe_ext }}

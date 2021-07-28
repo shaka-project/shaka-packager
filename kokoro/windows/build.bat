@@ -1,6 +1,7 @@
 :: Copyright 2017 Google Inc. All Rights Reserved.
 set ROOTDIR=%cd%
 set PACKAGERDIR=%ROOTDIR%\git\src
+set PATH=c:\Python35;%PATH%
 
 set GYP_DEFINES="target_arch=%PLATFORM%"
 if "%PLATFORM%"=="x64" (
