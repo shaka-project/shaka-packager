@@ -11,8 +11,5 @@ WORKDIR /
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ENV PATH /depot_tools:$PATH
 
-# Clang needs libtinfo.so.5 which is not available on ArchLinux.
-ENV GYP_DEFINES='clang=0'
-
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".
