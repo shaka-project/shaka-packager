@@ -46,12 +46,12 @@ class MpdNotifier {
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* container_id) = 0;
 
-  /// Record the duration of a single chunk for Low Latency DASH streaming.
+  /// Record the availailityTimeOffset for Low Latency DASH streaming.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
   /// @return true on success, false otherwise. This may fail if the container
   ///         specified by @a container_id does not exist.
-  virtual bool NotifyChunkDuration(uint32_t container_id) {return true;}
+  virtual bool NotifyAvailabilityTimeOffset(uint32_t container_id) {return true;}
 
   /// Change the sample duration of container with @a container_id.
   /// @param container_id Container ID obtained from calling

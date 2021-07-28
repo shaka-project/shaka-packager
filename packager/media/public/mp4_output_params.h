@@ -20,8 +20,8 @@ struct Mp4OutputParams {
   /// Note that it is required by spec if segment_template contains $Times$
   /// specifier.
   bool generate_sidx_in_media_segments = true;
-
-  /// TODO(Caitlin): Add description
+  /// Enable LL-DASH streaming
+  /// TODO(Caitlin): Elaborate
   bool is_low_latency_dash = false;
 };
 

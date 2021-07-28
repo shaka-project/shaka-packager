@@ -18,7 +18,7 @@ namespace mp4 {
 struct SegmentType;
 
 /// TODO(Caitlin): Write description
-/// Segmenter for low latency DASH profiles. There will be multiple
+/// Segmenter for LL-DASH profiles. There will be multiple
 /// media segments, which will contain multiple fragments. The generated segments
 /// are written as they are created to files defined by 
 /// @b MuxerOptions.segment_template if specified; otherwise, the segments are 

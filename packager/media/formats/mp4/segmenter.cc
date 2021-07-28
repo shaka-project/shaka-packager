@@ -239,7 +239,7 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
     sidx_->references.clear();
     key_frame_infos_.clear();
     return status;
-  } 
+  }
   return Status::OK;
 }
 
