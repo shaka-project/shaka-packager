@@ -93,10 +93,6 @@ If you don't have Administrator access, you can add a user-level PATH
 environment variable and put `C:\src\depot_tools` at the front, but
 if your system PATH has a Python in it, you will be out of luck.
 
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
-it to 0. This tells depot_tools to use your locally installed version of Visual
-Studio (by default, depot_tools will try to use a google-internal version).
-
 From a cmd.exe shell, run the command gclient (without arguments). On first
 run, gclient will install all the Windows-specific bits needed to work with
 the code, including msysgit and python.
@@ -168,12 +164,6 @@ you can change build system to `make` by overriding `GYP_GENERATORS`:
 
 ```shell
 $ GYP_GENERATORS='make' gclient runhooks
-```
-
-Another example, you can also disable clang by overriding `GYP_DEFINES`:
-
-```shell
-$ GYP_DEFINES='clang=0' gclient runhooks
 ```
 
 #### Windows
@@ -263,10 +253,10 @@ $ sed -i \
   /usr/include/malloc.h
 ```
 
-We also need to disable clang and some other features to make it work with musl:
+We also need to enable musl in the build config:
 
 ```shell
-export GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
+export GYP_DEFINES='musl=1'
 ```
 
 ### Arch Linux
@@ -286,12 +276,6 @@ $ git clone https://aur.archlinux.org/ncurses5-compat-libs.git
 $ cd ncurses5-compat-libs
 $ gpg --keyserver pgp.mit.edu --recv-keys F7E48EDB
 $ makepkg -si
-```
-
-Optionally, disable clang to build with gcc:
-
-```shell
-$ export GYP_DEFINES='clang=0'
 ```
 
 ### Debian

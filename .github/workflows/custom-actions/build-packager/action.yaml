@@ -57,9 +57,7 @@ runs:
 
     - name: Sync gclient
       env:
-        MACOSX_DEPLOYMENT_TARGET: "10.10"
         GYP_DEFINES: "target_arch=x64 libpackager_type=${{ inputs.lib_type }}_library"
-        DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
         GYP_MSVS_VERSION: "2019"
         GYP_MSVS_OVERRIDE_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise"
       shell: bash
