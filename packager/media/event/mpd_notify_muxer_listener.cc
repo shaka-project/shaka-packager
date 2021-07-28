@@ -105,9 +105,9 @@ void MpdNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-// Record the availability time offset for low latency manifests.
+// Record the availability time offset for LL-DASH manifests.
 void MpdNotifyMuxerListener::OnAvailabilityOffsetReady() {
-  mpd_notifier_->NotifyChunkDuration(notification_id_.value());
+  mpd_notifier_->NotifyAvailabilityTimeOffset(notification_id_.value());
 }
 
 // Record the sample duration in the media info for VOD so that OnMediaEnd, all
@@ -132,7 +132,7 @@ void MpdNotifyMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   media_info_->mutable_video_info()->set_frame_duration(sample_duration);
 }
 
-// Record the segment duration for low latency manifests.
+// Record the segment duration for LL-DASH manifests.
 void MpdNotifyMuxerListener::OnSegmentDurationReady() {
   mpd_notifier_->NotifySegmentDuration(notification_id_.value());
 }
