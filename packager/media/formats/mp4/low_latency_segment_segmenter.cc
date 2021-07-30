@@ -122,14 +122,6 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   }
 
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
-  std::unique_ptr<File, FileCloser> file;
-
-  // Point to the already open segment file for writing
-  file.reset(segment_file_);
-  if (!file) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot access the file to write " + file_name_);
-  }
 
   // Write the styp header to the beginning of the segment.
   styp_->Write(buffer.get());
@@ -138,7 +130,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
   DCHECK_NE(segment_size, 0u);
 
-  RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
+  RETURN_IF_ERROR(buffer->WriteToFile(segment_file_));
   if (muxer_listener()) {
     for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
       muxer_listener()->OnKeyFrame(
@@ -149,10 +141,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   }
 
   // Write the chunk data to the file
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
-
-  // Release the file to be used by the next chunk
-  file.release();
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(segment_file_));
 
   uint64_t segment_duration = GetSegmentDuration();
   UpdateProgress(segment_duration);
@@ -179,22 +168,8 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
 Status LowLatencySegmentSegmenter::WriteChunk() {
   DCHECK(fragment_buffer());
 
-  std::unique_ptr<File, FileCloser> file;
-
-  // point to the already open segment file for writing
-  file.reset(segment_file_);
-  if (!file) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot access the file to write " + file_name_);
-  }
-
   // Write the chunk data to the file
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
-
-  // Release the file to be used by the next chunk
-  // The release will cause the file's buffer to flush, 
-  // uploading the data to the server
-  file.release();
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(segment_file_));
 
   UpdateProgress(GetSegmentDuration());
 
@@ -203,6 +178,7 @@ Status LowLatencySegmentSegmenter::WriteChunk() {
 
 Status LowLatencySegmentSegmenter::FinalizeSegment() {
   // Close the file now that the final chunk has been written
+  LOG(INFO) << "finalizing segment";
   if (!segment_file_->Close()) {
     return Status(
         error::FILE_FAILURE,
