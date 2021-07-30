@@ -177,7 +177,6 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
 }
 
 Status LowLatencySegmentSegmenter::WriteChunk() {
-  DCHECK(sidx());
   DCHECK(fragment_buffer());
 
   std::unique_ptr<File, FileCloser> file;
