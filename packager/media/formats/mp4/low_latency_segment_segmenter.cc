@@ -168,8 +168,8 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
     // Add the current segment in the manifest. 
     // Following chunks will be appended to the open segment file.
     muxer_listener()->OnNewSegment(file_name_,
-                                  sidx()->earliest_presentation_time,
-                                  segment_duration, segment_size);
+                                   sidx()->earliest_presentation_time,
+                                   segment_duration, segment_size);
     is_initial_chunk_in_seg_ = false;
   }
 
