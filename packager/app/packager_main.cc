@@ -330,9 +330,13 @@ base::Optional<PackagingParams> GetPackagingParams() {
   chunking_params.subsegment_sap_aligned = FLAGS_fragment_sap_aligned;
 
   if (chunking_params.is_low_latency_dash && chunking_params.subsegment_duration_in_seconds > 0) {
-    LOG(ERROR) << "Fragment duration --fragment_duration, "
-                  "cannot be specified if LL-DASH --is_low_latency_dash, "
-                  "is enabled.";
+    // Low latency streaming requires data to be shipped as chunks,
+    // the smallest unit of video. Therefore, in low latency mode,
+    // each fragment will only contain one chunk, defaulting the
+    // fragment duration to the shortest time possible
+    // and making a user specified --framgnet_dration irrelevant.
+    LOG(ERROR) << "--fragment_duration cannot be specified "
+                  "if --is_low_latency_dash is enabled.";
     return base::nullopt;
   }
 
