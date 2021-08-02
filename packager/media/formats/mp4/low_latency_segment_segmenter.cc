@@ -115,7 +115,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   }
 
   // Create the segment file
-  segment_file_ = File::Open(file_name_.c_str(), "a");
+  segment_file_.reset(File::Open(file_name_.c_str(), "a"));
   if (!segment_file_) {
     return Status(error::FILE_FAILURE, "Cannot open segment file: " +
                                             file_name_);
@@ -130,7 +130,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
   DCHECK_NE(segment_size, 0u);
 
-  RETURN_IF_ERROR(buffer->WriteToFile(segment_file_));
+  RETURN_IF_ERROR(buffer->WriteToFile(segment_file_.get()));
   if (muxer_listener()) {
     for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
       muxer_listener()->OnKeyFrame(
@@ -141,7 +141,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   }
 
   // Write the chunk data to the file
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(segment_file_));
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(segment_file_.get()));
 
   uint64_t segment_duration = GetSegmentDuration();
   UpdateProgress(segment_duration);
@@ -169,7 +169,7 @@ Status LowLatencySegmentSegmenter::WriteChunk() {
   DCHECK(fragment_buffer());
 
   // Write the chunk data to the file
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(segment_file_));
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(segment_file_.get()));
 
   UpdateProgress(GetSegmentDuration());
 
@@ -179,7 +179,7 @@ Status LowLatencySegmentSegmenter::WriteChunk() {
 Status LowLatencySegmentSegmenter::FinalizeSegment() {
   // Close the file now that the final chunk has been written
   LOG(INFO) << "finalizing segment";
-  if (!segment_file_->Close()) {
+  if (!segment_file_.release()->Close()) {
     return Status(
         error::FILE_FAILURE,
         "Cannot close file " + file_name_ +

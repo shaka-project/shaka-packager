@@ -10,6 +10,8 @@
 #include "packager/media/formats/mp4/segmenter.h"
 
 #include "packager/file/file.h"
+#include "packager/file/file_closer.h"
+
 
 namespace shaka {
 namespace media {
@@ -56,7 +58,7 @@ class LowLatencySegmentSegmenter : public Segmenter {
   uint32_t num_segments_;
   bool is_initial_chunk_in_seg_ = true;
   bool ll_dash_mpd_values_initialized_ = false;
-  File* segment_file_;
+  std::unique_ptr<File, FileCloser> segment_file_;
   std::string file_name_;
 
   DISALLOW_COPY_AND_ASSIGN(LowLatencySegmentSegmenter);
