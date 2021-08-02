@@ -78,7 +78,6 @@ DEFINE_bool(dash_force_segment_list,
 DEFINE_bool(is_low_latency_dash,
             false,
             "If enabled, LL-DASH streaming will be used, "
-            "reducing overall latency by decoupling latency from segment duration."
-            "Chunks of data will be written to the segment file as they are created."
-            "Therefore, the content is available for playout as soon as the first chunk is uploaded, "
-            "as opposed to waiting until the entire segment is finished.");
+            "reducing overall latency by decoupling latency from segment duration. "
+            "Please see https://google.github.io/shaka-packager/html/tutorials/dash.html "
+            "for more information.");
