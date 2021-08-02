@@ -308,6 +308,11 @@ void Representation::SetPresentationTimeOffset(
 void Representation::SetAvailabilityTimeOffset() {
   // Adjust the frame duration to units of seconds to match target segment duration.
   const float frame_duration_sec = (float)frame_duration_ / (float)media_info_.reference_time_scale();
+  // availabilityTimeOffset = segment duration - chunk duration.
+  // Here, the frame duration is equivalent to the sample duration, 
+  // see Representation::SetSampleDuration(uint32_t frame_duration). 
+  // By definition, each chunk will contain only one sample; 
+  // thus, chunk_duration = sample_duration = frame_duration.
   const float ato = mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
   if (ato <= 0)
     return;
