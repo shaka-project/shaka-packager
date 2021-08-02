@@ -49,7 +49,6 @@ size_t CurlWriteCallback(char* buffer, size_t size, size_t nmemb, void* user) {
   IoCache* cache = reinterpret_cast<IoCache*>(user);
   size_t length = size * nmemb;
   if (cache) {
-    cache->Reopen();
     length = cache->Write(buffer, length);
     VLOG(3) << "CurlWriteCallback length=" << length;
   } else {
@@ -255,7 +254,6 @@ int64_t HttpFile::Size() {
 
 bool HttpFile::Flush() {
   upload_cache_.Close();
-  download_cache_.Close();
   return true;
 }
 
@@ -299,7 +297,7 @@ void HttpFile::SetupRequest() {
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteCallback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA,
-                method_ == HttpMethod::kPost ? nullptr : &download_cache_);
+                method_ == HttpMethod::kGet ? &download_cache_ : nullptr);
   if (method_ != HttpMethod::kGet) {
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, &CurlReadCallback);
     curl_easy_setopt(curl, CURLOPT_READDATA, &upload_cache_);
