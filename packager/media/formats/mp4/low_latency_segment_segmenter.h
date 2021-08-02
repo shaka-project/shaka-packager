@@ -19,11 +19,12 @@ namespace mp4 {
 
 struct SegmentType;
 
-/// TODO(Caitlin): Write description
-/// Segmenter for LL-DASH profiles. There will be multiple
-/// media segments, which will contain multiple fragments. The generated segments
-/// are written as they are created to files defined by 
-/// @b MuxerOptions.segment_template if specified; otherwise, the segments are 
+/// Segmenter for LL-DASH profiles. 
+/// Each segment constist of many fragments, and each fragment contains one chunk.
+/// A chunk is the smallest unit and is constructed of a single moof and mdat atom.
+/// A chunk is be generated for each recieved @b MediaSample.
+/// The generated chunks are written as they are created to files defined by 
+/// @b MuxerOptions.segment_template if specified; otherwise, the chunks are 
 /// appended to the main output file specified by @b MuxerOptions.output_file_name.
 class LowLatencySegmentSegmenter : public Segmenter {
  public:

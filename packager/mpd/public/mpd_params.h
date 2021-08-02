@@ -91,8 +91,11 @@ struct MpdParams {
   /// content is huge and the total number of (sub)segment references
   /// is greater than what the sidx atom allows (65535).
   bool use_segment_list = false;
-  /// Enable LL-DASH streaming
-  /// TODO(Caitlin): Elaborate
+  /// Enable LL-DASH streaming. 
+  /// Each segment constists of many fragments, and each fragment contains one chunk.
+  /// A chunk is the smallest unit and is constructed of a single moof and mdat atom.
+  /// Each chunk is uploaded immediately upon creation,
+  /// decoupling latency from segment duration. 
   bool is_low_latency_dash = false;
   /// This is the target latency in seconds requested by the user. The actual 
   /// latency may be different to the target latency 
