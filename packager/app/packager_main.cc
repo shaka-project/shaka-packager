@@ -334,7 +334,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
     // the smallest unit of video. Therefore, in low latency mode,
     // each fragment will only contain one chunk, defaulting the
     // fragment duration to the shortest time possible
-    // and making a user specified --framgnet_dration irrelevant.
+    // and making a user specified --fragment_duration irrelevant.
     LOG(ERROR) << "--fragment_duration cannot be specified "
                   "if --is_low_latency_dash is enabled.";
     return base::nullopt;
