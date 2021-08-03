@@ -8,6 +8,9 @@ inputs:
   os_name:
     description: The name of the OS (one word).  Appended to artifact filenames.
     required: true
+  target_arch:
+    description: The CPU architecture to target.  We support x64, arm64.
+    required: true
   lib_type:
     description: A library type, either "static" or "shared".
     required: true
@@ -48,6 +51,28 @@ runs:
         echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
         echo "::endgroup::"
 
+    - name: Build ninja (arm only)
+      shell: bash
+      run: |
+        # NOTE: There is no prebuilt copy of ninja for the "aarch64"
+        # architecture (as reported by "uname -p" on arm64).  So we must build
+        # our own, as recommended by depot_tools when it fails to fetch a
+        # prebuilt copy for us.
+        # NOTE 2: It turns out that $GITHUB_PATH operates like a stack.
+        # Appending to that file places the new path at the beginning of $PATH
+        # for the next step, so this step must come _after_ installing
+        # depot_tools.
+        if [[ "${{ inputs.target_arch }}" == "arm64" ]]; then
+          echo "::group::Build ninja (arm-only)"
+          git clone https://github.com/ninja-build/ninja.git -b v1.8.2
+          # The --bootstrap option compiles ninja as well as configures it.
+          # This is the exact command prescribed by depot_tools when it fails to
+          # fetch a ninja binary for your platform.
+          (cd ninja && ./configure.py --bootstrap)
+          echo "${GITHUB_WORKSPACE}/ninja" >> $GITHUB_PATH
+          echo "::endgroup::"
+        fi
+
     - name: Configure gclient
       shell: bash
       run: |
@@ -57,7 +82,7 @@ runs:
 
     - name: Sync gclient
       env:
-        GYP_DEFINES: "target_arch=x64 libpackager_type=${{ inputs.lib_type }}_library"
+        GYP_DEFINES: "target_arch=${{ inputs.target_arch }} libpackager_type=${{ inputs.lib_type }}_library"
         GYP_MSVS_VERSION: "2019"
         GYP_MSVS_OVERRIDE_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise"
       shell: bash
