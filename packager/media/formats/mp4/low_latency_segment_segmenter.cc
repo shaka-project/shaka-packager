@@ -24,9 +24,10 @@ namespace shaka {
 namespace media {
 namespace mp4 {
 
-LowLatencySegmentSegmenter::LowLatencySegmentSegmenter(const MuxerOptions& options,
-                                             std::unique_ptr<FileType> ftyp,
-                                             std::unique_ptr<Movie> moov)
+LowLatencySegmentSegmenter::LowLatencySegmentSegmenter(
+    const MuxerOptions& options,
+    std::unique_ptr<FileType> ftyp,
+    std::unique_ptr<Movie> moov)
     : Segmenter(options, std::move(ftyp), std::move(moov)),
       styp_(new SegmentType),
       num_segments_(0) {
@@ -98,7 +99,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);
-  
+
   DCHECK(!sidx()->references.empty());
   // earliest_presentation_time is the earliest presentation time of any access
   // unit in the reference stream in the first subsegment.
@@ -110,15 +111,15 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
     file_name_ = options().output_file_name.c_str();
   } else {
     file_name_ = GetSegmentName(options().segment_template,
-                               sidx()->earliest_presentation_time,
-                               num_segments_, options().bandwidth);
+                                sidx()->earliest_presentation_time,
+                                num_segments_, options().bandwidth);
   }
 
   // Create the segment file
   segment_file_.reset(File::Open(file_name_.c_str(), "a"));
   if (!segment_file_) {
-    return Status(error::FILE_FAILURE, "Cannot open segment file: " +
-                                            file_name_);
+    return Status(error::FILE_FAILURE,
+                  "Cannot open segment file: " + file_name_);
   }
 
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
@@ -148,13 +149,14 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
 
   if (muxer_listener()) {
     if (!ll_dash_mpd_values_initialized_) {
-      // Set necessary values for LL-DASH mpd after the first chunk has been processed.
+      // Set necessary values for LL-DASH mpd after the first chunk has been
+      // processed.
       muxer_listener()->OnSampleDurationReady(sample_duration());
       muxer_listener()->OnAvailabilityOffsetReady();
       muxer_listener()->OnSegmentDurationReady();
       ll_dash_mpd_values_initialized_ = true;
     }
-    // Add the current segment in the manifest. 
+    // Add the current segment in the manifest.
     // Following chunks will be appended to the open segment file.
     muxer_listener()->OnNewSegment(file_name_,
                                    sidx()->earliest_presentation_time,
@@ -185,10 +187,11 @@ Status LowLatencySegmentSegmenter::FinalizeSegment() {
             ", possibly file permission issue or running out of disk space.");
   }
 
-  // Current segment is complete. Reset state in preparation for the next segment.
+  // Current segment is complete. Reset state in preparation for the next
+  // segment.
   is_initial_chunk_in_seg_ = true;
   num_segments_++;
-  
+
   return Status::OK;
 }
 

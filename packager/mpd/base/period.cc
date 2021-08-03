@@ -139,20 +139,21 @@ base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
 
   // Required for LL-DASH MPDs.
   if (mpd_options_.mpd_params.is_low_latency_dash) {
-    // Create ServiceDescription element. 
+    // Create ServiceDescription element.
     xml::XmlNode service_description_node("ServiceDescription");
     if (!service_description_node.SetIntegerAttribute("id", id_))
       return base::nullopt;
-    
-    // Insert Latency into ServiceDescription element. 
+
+    // Insert Latency into ServiceDescription element.
     xml::XmlNode latency_node("Latency");
-    uint64_t target_latency_ms = mpd_options_.mpd_params.target_latency_seconds * 1000;
+    uint64_t target_latency_ms =
+        mpd_options_.mpd_params.target_latency_seconds * 1000;
     if (!latency_node.SetIntegerAttribute("target", target_latency_ms))
       return base::nullopt;
     if (!service_description_node.AddChild(std::move(latency_node)))
       return base::nullopt;
-    
-    // Insert ServiceDescription into Period element. 
+
+    // Insert ServiceDescription into Period element.
     if (!period.AddChild(std::move(service_description_node)))
       return base::nullopt;
   }

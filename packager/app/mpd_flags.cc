@@ -75,9 +75,11 @@ DEFINE_bool(dash_force_segment_list,
             "content is huge and the total number of (sub)segment references "
             "is greater than what the sidx atom allows (65535). Currently "
             "this flag is only supported in DASH ondemand profile.");
-DEFINE_bool(is_low_latency_dash,
-            false,
-            "If enabled, LL-DASH streaming will be used, "
-            "reducing overall latency by decoupling latency from segment duration. "
-            "Please see https://google.github.io/shaka-packager/html/tutorials/dash.html "
-            "for more information.");
+DEFINE_bool(
+    is_low_latency_dash,
+    false,
+    "If enabled, LL-DASH streaming will be used, "
+    "reducing overall latency by decoupling latency from segment duration. "
+    "Please see "
+    "https://google.github.io/shaka-packager/html/tutorials/dash.html "
+    "for more information.");

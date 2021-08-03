@@ -114,12 +114,12 @@ Status ChunkingHandler::OnMediaSample(
   }
 
   // This handles the LL-DASH case.
-  // On each media sample, which is the basis for a chunk, 
+  // On each media sample, which is the basis for a chunk,
   // we must increment the current_subsegment_index_
   // in order to hit FinalizeSegment() within Segmenter.
   if (!started_new_segment && chunking_params_.is_low_latency_dash) {
     current_subsegment_index_++;
-    
+
     RETURN_IF_ERROR(EndSubsegmentIfStarted());
     subsegment_start_time_ = timestamp;
   }
@@ -127,7 +127,8 @@ Status ChunkingHandler::OnMediaSample(
   // Here, a subsegment refers to a fragment that is within a segment.
   // This fragment size can be set with the 'fragment_duration' cmd arg.
   // This is NOT for the LL-DASH case.
-  if (!started_new_segment && IsSubsegmentEnabled() && !chunking_params_.is_low_latency_dash) {
+  if (!started_new_segment && IsSubsegmentEnabled() &&
+      !chunking_params_.is_low_latency_dash) {
     const bool can_start_new_subsegment =
         sample->is_key_frame() || !chunking_params_.subsegment_sap_aligned;
     if (can_start_new_subsegment) {

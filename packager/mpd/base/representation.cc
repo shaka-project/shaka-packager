@@ -209,7 +209,8 @@ void Representation::SetSampleDuration(int32_t frame_duration) {
 }
 
 void Representation::SetSegmentDuration() {
-  int64_t sd = mpd_options_.mpd_params.target_segment_duration * media_info_.reference_time_scale();
+  int64_t sd = mpd_options_.mpd_params.target_segment_duration *
+               media_info_.reference_time_scale();
   if (sd <= 0)
     return;
   media_info_.set_segment_duration(sd);
@@ -280,9 +281,9 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
-                                      start_number_, 
-                                      mpd_options_.mpd_params.is_low_latency_dash)) {
+      !representation.AddLiveOnlyInfo(
+          media_info_, segment_infos_, start_number_,
+          mpd_options_.mpd_params.is_low_latency_dash)) {
     LOG(ERROR) << "Failed to add Live info.";
     return base::nullopt;
   }
@@ -306,14 +307,17 @@ void Representation::SetPresentationTimeOffset(
 }
 
 void Representation::SetAvailabilityTimeOffset() {
-  // Adjust the frame duration to units of seconds to match target segment duration.
-  const float frame_duration_sec = (float)frame_duration_ / (float)media_info_.reference_time_scale();
+  // Adjust the frame duration to units of seconds to match target segment
+  // duration.
+  const float frame_duration_sec =
+      (float)frame_duration_ / (float)media_info_.reference_time_scale();
   // availabilityTimeOffset = segment duration - chunk duration.
-  // Here, the frame duration is equivalent to the sample duration, 
-  // see Representation::SetSampleDuration(uint32_t frame_duration). 
-  // By definition, each chunk will contain only one sample; 
+  // Here, the frame duration is equivalent to the sample duration,
+  // see Representation::SetSampleDuration(uint32_t frame_duration).
+  // By definition, each chunk will contain only one sample;
   // thus, chunk_duration = sample_duration = frame_duration.
-  const float ato = mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
+  const float ato =
+      mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
   if (ato <= 0)
     return;
   media_info_.set_availability_time_offset(ato);

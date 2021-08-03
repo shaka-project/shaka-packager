@@ -300,8 +300,8 @@ Status MP4Muxer::DelayInitializeMuxer() {
     segmenter_.reset(new SingleSegmentSegmenter(options(), std::move(ftyp),
                                                 std::move(moov)));
   } else if (options().mp4_params.is_low_latency_dash) {
-    segmenter_.reset(
-        new LowLatencySegmentSegmenter(options(), std::move(ftyp), std::move(moov)));
+    segmenter_.reset(new LowLatencySegmentSegmenter(options(), std::move(ftyp),
+                                                    std::move(moov)));
   } else {
     segmenter_.reset(
         new MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov)));
