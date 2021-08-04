@@ -460,16 +460,28 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32_t start_number) {
+    uint32_t start_number,
+    bool is_low_latency_dash) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
         "timescale", media_info.reference_time_scale()));
   }
 
+  if (media_info.has_segment_duration()) {
+    RCHECK(segment_template.SetIntegerAttribute(
+        "duration", media_info.segment_duration()));
+  }
+
   if (media_info.has_presentation_time_offset()) {
     RCHECK(segment_template.SetIntegerAttribute(
         "presentationTimeOffset", media_info.presentation_time_offset()));
+  }
+
+  if (media_info.has_availability_time_offset()) {
+    // Set the availabilityTimeOffset to the precision of 3 decimal places.
+    RCHECK(segment_template.SetFloatingPointAttribute(
+        "availabilityTimeOffset", round(media_info.availability_time_offset()*1000)/1000));
   }
 
   if (media_info.has_init_segment_url()) {
@@ -499,9 +511,11 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
             std::to_string(last_segment_number)));
       }
     } else {
-      XmlNode segment_timeline("SegmentTimeline");
-      RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
-      RCHECK(segment_template.AddChild(std::move(segment_timeline)));
+      if (!is_low_latency_dash){
+        XmlNode segment_timeline("SegmentTimeline");
+        RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
+        RCHECK(segment_template.AddChild(std::move(segment_timeline)));
+      }
     }
   }
   return AddChild(std::move(segment_template));
