@@ -6,6 +6,8 @@
 
 #include "packager/app/hls_flags.h"
 
+#include <limits>
+
 DEFINE_string(hls_master_playlist_output,
               "",
               "Output path for the master playlist for HLS. This flag must be"
@@ -30,3 +32,11 @@ DEFINE_int32(hls_media_sequence_number,
               "EXT-X-MEDIA-SEQUENCE value, which allows continuous media "
               "sequence across packager restarts. See #691 for more "
               "information about the reasoning of this and its use cases.");
+DEFINE_double(hls_start_time_offset,
+              std::numeric_limits<double>::lowest(),
+              "Floating-point number. Sets EXT-X-START on the media playlists "
+              "to specify the preferred point at wich the player should start "
+              "playing. A positive number indicates a time offset from the "
+              "beginning of the playlist. A negative number indicates a "
+              "negative time offset from the end of the last media segment "
+              "in the playlist.");

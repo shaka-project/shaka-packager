@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <memory>
 
 #include "packager/base/logging.h"
@@ -107,7 +108,8 @@ std::string CreatePlaylistHeader(
     HlsPlaylistType type,
     MediaPlaylist::MediaPlaylistStreamType stream_type,
     uint32_t media_sequence_number,
-    int discontinuity_sequence_number) {
+    int discontinuity_sequence_number,
+    double start_time_offset) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
   if (!version.empty()) {
@@ -147,6 +149,10 @@ std::string CreatePlaylistHeader(
   if (stream_type ==
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
     base::StringAppendF(&header, "#EXT-X-I-FRAMES-ONLY\n");
+  }
+  if (start_time_offset > std::numeric_limits<double>::lowest()) {
+    base::StringAppendF(&header, "#EXT-X-START:TIME-OFFSET=%f\n",
+                        start_time_offset);
   }
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
@@ -476,7 +482,8 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
 
   std::string content = CreatePlaylistHeader(
       media_info_, target_duration_, hls_params_.playlist_type, stream_type_,
-      media_sequence_number_, discontinuity_sequence_number_);
+      media_sequence_number_, discontinuity_sequence_number_,
+      hls_params_.start_time_offset);
 
   for (const auto& entry : entries_)
     base::StringAppendF(&content, "%s\n", entry->ToString().c_str());

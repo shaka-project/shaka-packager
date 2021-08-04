@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
 #define PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
 
+#include <limits>
 #include <string>
 
 namespace shaka {
@@ -62,6 +63,12 @@ struct HlsParams {
   /// Custom EXT-X-MEDIA-SEQUENCE value to allow continuous media playback
   /// across packager restarts. See #691 for details.
   uint32_t media_sequence_number = 0;
+  /// Sets EXT-X-START on the media playlists to specify the preferred point
+  /// at wich the player should start playing.
+  /// A positive number indicates a time offset from the beginning of the playlist.
+  /// A negative number indicates a negative time offset from the end of the
+  /// last media segment in the playlist.
+  double start_time_offset = std::numeric_limits<double>::lowest();
 };
 
 }  // namespace shaka

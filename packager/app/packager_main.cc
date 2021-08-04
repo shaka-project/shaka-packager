@@ -488,6 +488,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   hls_params.default_language = FLAGS_default_language;
   hls_params.default_text_language = FLAGS_default_text_language;
   hls_params.media_sequence_number = FLAGS_hls_media_sequence_number;
+  hls_params.start_time_offset = FLAGS_hls_start_time_offset;
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = FLAGS_dump_stream_info;
