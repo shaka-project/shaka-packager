@@ -35,8 +35,8 @@ const size_t kOutputs = 0;
 const size_t kInput = 0;
 const size_t kStreamIndex = 0;
 
-const uint32_t kZeroTransportStreamTimestampOffset = 0;
-const uint32_t kTimescale = 9000;
+const int32_t kZeroTransportStreamTimestampOffset = 0;
+const int32_t kTimescale = 9000;
 
 // For single-segment mode.
 const char kOutputFile[] = "memory://test.aac";

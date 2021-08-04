@@ -36,9 +36,9 @@ const uint8_t kExtraData[] = {
     0x00,
 };
 const int kTrackId = 0;
-const uint32_t kZeroTransportStreamTimestampOffset = 0;
-const uint32_t kTimeScale = 90000;
-const uint64_t kDuration = 180000;
+const int32_t kZeroTransportStreamTimestampOffset = 0;
+const int32_t kTimeScale = 90000;
+const int64_t kDuration = 180000;
 const char kCodecString[] = "avc1";
 const char kLanguage[] = "eng";
 const uint32_t kWidth = 1280;
@@ -181,7 +181,7 @@ TEST_F(TsSegmenterTest, AddSample) {
 TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   // Use something significantly smaller than 90000 to check that the scaling is
   // done correctly in the segmenter.
-  const uint32_t kInputTimescale = 1001;
+  const int32_t kInputTimescale = 1001;
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kInputTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
@@ -194,7 +194,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
 
-  const uint32_t kFirstPts = 1000;
+  const int32_t kFirstPts = 1000;
 
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));

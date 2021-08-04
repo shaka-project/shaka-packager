@@ -63,7 +63,7 @@ bool HasRequiredVideoFields(const MediaInfo_VideoInfo& video_info) {
   return true;
 }
 
-uint32_t GetTimeScale(const MediaInfo& media_info) {
+int32_t GetTimeScale(const MediaInfo& media_info) {
   if (media_info.has_reference_time_scale()) {
     return media_info.reference_time_scale();
   }
@@ -193,7 +193,7 @@ void Representation::AddNewSegment(int64_t start_time,
       size, static_cast<double>(duration) / media_info_.reference_time_scale());
 }
 
-void Representation::SetSampleDuration(uint32_t frame_duration) {
+void Representation::SetSampleDuration(int32_t frame_duration) {
   // Sample duration is used to generate approximate SegmentTimeline.
   // Text is required to have exactly the same segment duration.
   if (media_info_.has_audio_info() || media_info_.has_video_info())
@@ -399,10 +399,10 @@ bool Representation::ApproximiatelyEqual(int64_t time1, int64_t time2) const {
   const double kErrorThresholdSeconds = 0.05;
 
   // So we consider two times equal if they differ by less than one sample.
-  const uint32_t error_threshold =
+  const int32_t error_threshold =
       std::min(frame_duration_,
-               static_cast<uint32_t>(kErrorThresholdSeconds *
-                                     media_info_.reference_time_scale()));
+               static_cast<int32_t>(kErrorThresholdSeconds *
+                                    media_info_.reference_time_scale()));
   return std::abs(time1 - time2) <= error_threshold;
 }
 
@@ -422,8 +422,8 @@ void Representation::SlideWindow() {
       mpd_options_.mpd_type == MpdType::kStatic)
     return;
 
-  const uint32_t time_scale = GetTimeScale(media_info_);
-  DCHECK_GT(time_scale, 0u);
+  const int32_t time_scale = GetTimeScale(media_info_);
+  DCHECK_GT(time_scale, 0);
 
   const int64_t time_shift_buffer_depth = static_cast<int64_t>(
       mpd_options_.mpd_params.time_shift_buffer_depth * time_scale);

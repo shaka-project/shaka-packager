@@ -31,7 +31,7 @@ const double kTsTimescale = 90000.0;
 }  // namespace
 
 PesPacketGenerator::PesPacketGenerator(
-    uint32_t transport_stream_timestamp_offset)
+    int32_t transport_stream_timestamp_offset)
     : transport_stream_timestamp_offset_(transport_stream_timestamp_offset) {}
 
 PesPacketGenerator::~PesPacketGenerator() {}

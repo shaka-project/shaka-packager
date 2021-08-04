@@ -88,7 +88,7 @@ Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 
 Status ChunkingHandler::OnMediaSample(
     std::shared_ptr<const MediaSample> sample) {
-  DCHECK_NE(time_scale_, 0u) << "kStreamInfo should arrive before kMediaSample";
+  DCHECK_GT(time_scale_, 0) << "kStreamInfo should arrive before kMediaSample";
 
   const int64_t timestamp = sample->pts();
 

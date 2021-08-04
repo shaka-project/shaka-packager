@@ -28,13 +28,13 @@ namespace shaka {
 namespace media {
 namespace {
 
-constexpr uint32_t kZeroTransportStreamTimestampOffset = 0;
-constexpr uint32_t kTimescale = 5625;
+constexpr int32_t kZeroTransportStreamTimestampOffset = 0;
+constexpr int32_t kTimescale = 5625;
 constexpr double kExpectedTimescaleScale = kPackedAudioTimescale / kTimescale;
 static_assert(kExpectedTimescaleScale == 16.0, "");
 
 const int kTrackId = 0;
-const uint64_t kDuration = 180000;
+const int64_t kDuration = 180000;
 const char kCodecString[] = "codec-string";
 const char kLanguage[] = "eng";
 const bool kIsEncrypted = true;

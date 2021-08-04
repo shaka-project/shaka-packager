@@ -416,7 +416,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
                                      media_info.reference_time_scale()));
 
     if (use_segment_list && !use_single_segment_url_with_media) {
-      const uint64_t duration_seconds = static_cast<uint64_t>(
+      const int64_t duration_seconds = static_cast<int64_t>(
           floor(target_segment_duration * media_info.reference_time_scale()));
       RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
     }

@@ -29,8 +29,7 @@ namespace media {
 // accumulated frames to reach a target timestamp.
 class AudioTimestampHelper {
  public:
-  explicit AudioTimestampHelper(uint32_t timescale,
-                                uint32_t samples_per_second);
+  explicit AudioTimestampHelper(int32_t timescale, uint32_t samples_per_second);
 
   // Sets the base timestamp to |base_timestamp| and the sets count to 0.
   void SetBaseTimestamp(int64_t base_timestamp);

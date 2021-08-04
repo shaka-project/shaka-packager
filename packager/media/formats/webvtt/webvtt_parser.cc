@@ -395,8 +395,8 @@ bool WebVttParser::ParseCue(const std::string& id,
   const std::vector<std::string> time_and_style = base::SplitString(
       block[0], " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  uint64_t start_time = 0;
-  uint64_t end_time = 0;
+  int64_t start_time = 0;
+  int64_t end_time = 0;
 
   const bool parsed_time =
       time_and_style.size() >= 3 && time_and_style[1] == "-->" &&

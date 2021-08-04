@@ -15,7 +15,7 @@ namespace mp4 {
 
 /// Tracks key frame information.
 struct KeyFrameInfo {
-  uint64_t timestamp;
+  int64_t timestamp;
   uint64_t start_byte_offset;
   uint64_t size;
 };

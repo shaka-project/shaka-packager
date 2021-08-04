@@ -365,8 +365,8 @@ class LiveSegmentTimelineTest : public ::testing::Test {
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
   const uint32_t kStartNumber = 1;
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 100;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
 
   std::list<SegmentInfo> segment_infos = {
@@ -386,8 +386,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
   const uint32_t kStartNumber = 1;
-  const uint64_t kNonZeroStartTime = 500;
-  const uint64_t kDuration = 100;
+  const int64_t kNonZeroStartTime = 500;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
 
   std::list<SegmentInfo> segment_infos = {
@@ -410,8 +410,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
   const uint32_t kStartNumber = 6;
-  const uint64_t kNonZeroStartTime = 500;
-  const uint64_t kDuration = 100;
+  const int64_t kNonZeroStartTime = 500;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
 
   std::list<SegmentInfo> segment_infos = {
@@ -432,12 +432,12 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
 TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
   const uint32_t kStartNumber = 1;
 
-  const uint64_t kStartTime1 = 0;
-  const uint64_t kDuration1 = 100;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 100;
   const uint64_t kRepeat1 = 9;
 
-  const uint64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
-  const uint64_t kDuration2 = 200;
+  const int64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const int64_t kDuration2 = 200;
   const uint64_t kRepeat2 = 0;
 
   std::list<SegmentInfo> segment_infos = {
@@ -459,12 +459,12 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
 TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
   const uint32_t kStartNumber = 1;
 
-  const uint64_t kStartTime1 = 0;
-  const uint64_t kDuration1 = 100;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 100;
   const uint64_t kRepeat1 = 9;
 
-  const uint64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
-  const uint64_t kDuration2 = 200;
+  const int64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const int64_t kDuration2 = 200;
   const uint64_t kRepeat2 = 1;
 
   std::list<SegmentInfo> segment_infos = {
@@ -490,13 +490,13 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
 TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
   const uint32_t kStartNumber = 1;
 
-  const uint64_t kStartTime1 = 0;
-  const uint64_t kDuration1 = 100;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 100;
   const uint64_t kRepeat1 = 9;
 
   const uint64_t kGap = 100;
-  const uint64_t kStartTime2 = kGap + kStartTime1 + (kRepeat1 + 1) * kDuration1;
-  const uint64_t kDuration2 = 200;
+  const int64_t kStartTime2 = kGap + kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const int64_t kDuration2 = 200;
   const uint64_t kRepeat2 = 0;
 
   std::list<SegmentInfo> segment_infos = {
@@ -521,8 +521,8 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
 
 TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
   const uint32_t kStartNumber = 1;
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 100;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
 
   std::list<SegmentInfo> segment_infos = {

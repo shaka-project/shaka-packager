@@ -39,20 +39,20 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     const std::string& group_id,
                     uint32_t* stream_id));
   MOCK_METHOD2(NotifySampleDuration,
-               bool(uint32_t stream_id, uint32_t sample_duration));
+               bool(uint32_t stream_id, int32_t sample_duration));
   MOCK_METHOD6(NotifyNewSegment,
                bool(uint32_t stream_id,
                     const std::string& segment_name,
-                    uint64_t start_time,
-                    uint64_t duration,
+                    int64_t start_time,
+                    int64_t duration,
                     uint64_t start_byte_offset,
                     uint64_t size));
   MOCK_METHOD4(NotifyKeyFrame,
                bool(uint32_t stream_id,
-                    uint64_t timestamp,
+                    int64_t timestamp,
                     uint64_t start_byte_offset,
                     uint64_t size));
-  MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, uint64_t timestamp));
+  MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, int64_t timestamp));
   MOCK_METHOD5(
       NotifyEncryptionUpdate,
       bool(uint32_t stream_id,
@@ -75,13 +75,13 @@ const uint8_t kAnyData[] = {
 };
 
 const uint64_t kSegmentStartOffset = 10000;
-const uint64_t kSegmentStartTime = 19283;
-const uint64_t kSegmentDuration = 98028;
+const int64_t kSegmentStartTime = 19283;
+const int64_t kSegmentDuration = 98028;
 const uint64_t kSegmentSize = 756739;
 
-const uint64_t kCueStartTime = kSegmentStartTime;
+const int64_t kCueStartTime = kSegmentStartTime;
 
-const uint64_t kKeyFrameTimestamp = 20123;
+const int64_t kKeyFrameTimestamp = 20123;
 const uint64_t kKeyFrameStartByteOffset = 3456;
 const uint64_t kKeyFrameSize = 543234;
 

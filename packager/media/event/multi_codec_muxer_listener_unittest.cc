@@ -23,10 +23,10 @@ using ::testing::StrictMock;
 
 namespace {
 
-const uint64_t kSegmentStartTime = 19283;
-const uint64_t kSegmentDuration = 98028;
+const int64_t kSegmentStartTime = 19283;
+const int64_t kSegmentDuration = 98028;
 const uint64_t kSegmentSize = 756739;
-const uint32_t kTimescale = 90000;
+const int32_t kTimescale = 90000;
 MuxerListener::ContainerType kContainer = MuxerListener::kContainerMpeg2ts;
 
 }  // namespace

@@ -23,7 +23,7 @@ namespace media {
 
 namespace {
 
-const uint32_t kHttpFetchTimeout = 60;  // In seconds
+const int32_t kHttpFetchTimeout = 60;  // In seconds
 const std::string kAcquireLicenseRequest =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     "<soap:Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\" "
@@ -194,10 +194,11 @@ Status PlayReadyKeySource::GetKey(const std::vector<uint8_t>& key_id,
   return Status::OK;
 }
 
-Status PlayReadyKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                              uint32_t crypto_period_duration_in_seconds,
-                                              const std::string& stream_label,
-                                              EncryptionKey* key) {
+Status PlayReadyKeySource::GetCryptoPeriodKey(
+    uint32_t crypto_period_index,
+    int32_t crypto_period_duration_in_seconds,
+    const std::string& stream_label,
+    EncryptionKey* key) {
   // TODO(robinconnell): Implement key rotation.
   *key = *encryption_key_;
   return Status::OK;

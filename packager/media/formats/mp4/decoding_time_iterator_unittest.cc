@@ -19,7 +19,7 @@ class DecodingTimeIteratorTest : public testing::Test {
  public:
   DecodingTimeIteratorTest() {
     // Build decoding time table from kDecodingTimes.
-    uint32_t decoding_time = 0;
+    int32_t decoding_time = 0;
     uint32_t length = sizeof(kDecodingTimes) / sizeof(DecodingTime);
     for (uint32_t i = 0; i < length; ++i) {
       for (uint32_t j = 0; j < kDecodingTimes[i].sample_count; ++j) {

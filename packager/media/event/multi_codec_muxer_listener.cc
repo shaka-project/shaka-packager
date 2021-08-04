@@ -15,7 +15,7 @@ namespace media {
 
 void MultiCodecMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                            const StreamInfo& stream_info,
-                                           uint32_t time_scale,
+                                           int32_t time_scale,
                                            ContainerType container_type) {
   size_t num_codecs = 0;
   for (const std::string& codec_string :

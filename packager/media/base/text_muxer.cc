@@ -76,8 +76,8 @@ Status TextMuxer::FinalizeSegment(size_t stream_id,
   const std::string& segment_template = options().segment_template;
   DCHECK(!segment_template.empty());
   const uint32_t index = segment_index_++;
-  const uint64_t start = segment_info.start_timestamp;
-  const uint64_t duration = segment_info.duration;
+  const int64_t start = segment_info.start_timestamp;
+  const int64_t duration = segment_info.duration;
   const uint32_t bandwidth = options().bandwidth;
 
   const std::string filename =

@@ -28,7 +28,7 @@ using ::testing::StrEq;
 namespace {
 const uint32_t kDefaultPeriodId = 0u;
 const double kDefaultPeriodStartTime = 0.0;
-const uint32_t kDefaultTimeScale = 10;
+const int32_t kDefaultTimeScale = 10;
 const bool kContentProtectionInAdaptationSet = true;
 
 MATCHER_P(EqualsProto, message, "") {
@@ -145,7 +145,7 @@ TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
   EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
 
-  const uint32_t kSampleDuration = 100;
+  const int32_t kSampleDuration = 100;
   EXPECT_CALL(*mock_representation, SetSampleDuration(kSampleDuration));
   EXPECT_TRUE(
       notifier.NotifySampleDuration(kRepresentationId, kSampleDuration));
@@ -160,7 +160,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
   SimpleMpdNotifier notifier(empty_mpd_option_);
   uint32_t container_id;
   EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
-  const uint32_t kAnySampleDuration = 1000;
+  const int32_t kAnySampleDuration = 1000;
   EXPECT_TRUE(notifier.NotifySampleDuration(container_id, kAnySampleDuration));
   EXPECT_TRUE(notifier.Flush());
 }
@@ -185,8 +185,8 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
   EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
 
-  const uint64_t kStartTime = 0u;
-  const uint32_t kSegmentDuration = 100u;
+  const int64_t kStartTime = 0;
+  const int32_t kSegmentDuration = 100;
   const uint64_t kSegmentSize = 123456u;
   EXPECT_CALL(*mock_representation,
               AddNewSegment(kStartTime, kSegmentDuration, kSegmentSize));
@@ -231,7 +231,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {
   std::unique_ptr<MockRepresentation> mock_representation2(
       new MockRepresentation(kRepresentationId));
 
-  const uint64_t kCueEventTimestamp = 1000;
+  const int64_t kCueEventTimestamp = 1000;
   EXPECT_CALL(*mock_representation, GetMediaInfo())
       .WillOnce(ReturnRef(valid_media_info1_));
   EXPECT_CALL(*mock_mpd_builder_ptr,

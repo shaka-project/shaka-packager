@@ -52,8 +52,8 @@ const uint8_t kH264CodecConfig[] = {
 };
 const uint8_t kAV1CodecConfig[] = {0x00, 0x01, 0x02, 0x03};
 const int kTrackId = 1;
-const uint32_t kTimeScale = 1000;
-const uint64_t kDuration = 10000;
+const int32_t kTimeScale = 1000;
+const int64_t kDuration = 10000;
 const char kCodecString[] = "codec string";
 const char kLanguage[] = "eng";
 const bool kEncrypted = true;

@@ -70,7 +70,7 @@ const char kExpectedDefaultMediaInfoSubsegmentRange[] =
     "  end: 9999\n"
     "}\n";
 
-const uint32_t kDefaultReferenceTimeScale = 1000u;
+const int32_t kDefaultReferenceTimeScale = 1000;
 
 // Struct that gets passed for to CreateVideoStreamInfo() to create a
 // StreamInfo instance. Useful for generating multiple VideoStreamInfo with
@@ -79,8 +79,8 @@ struct VideoStreamInfoParameters {
   VideoStreamInfoParameters();
   ~VideoStreamInfoParameters();
   int track_id;
-  uint32_t time_scale;
-  uint64_t duration;
+  int32_t time_scale;
+  int64_t duration;
   Codec codec;
   std::string codec_string;
   std::string language;
@@ -95,8 +95,8 @@ struct VideoStreamInfoParameters {
 
 struct OnNewSegmentParameters {
   std::string file_name;
-  uint64_t start_time;
-  uint64_t duration;
+  int64_t start_time;
+  int64_t duration;
   uint64_t segment_file_size;
 };
 
