@@ -30,8 +30,8 @@ class SingleSegmentSegmenter : public Segmenter {
 
   /// @name Segmenter implementation overrides.
   /// @{
-  Status FinalizeSegment(uint64_t start_timestamp,
-                         uint64_t duration_timestamp,
+  Status FinalizeSegment(int64_t start_timestamp,
+                         int64_t duration_timestamp,
                          bool is_subsegment) override;
   bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
@@ -54,7 +54,7 @@ class SingleSegmentSegmenter : public Segmenter {
 
  private:
   // Segmenter implementation overrides.
-  Status NewSegment(uint64_t start_timestamp, bool is_subsegment) override;
+  Status NewSegment(int64_t start_timestamp, bool is_subsegment) override;
 
   std::unique_ptr<MkvWriter> writer_;
   uint64_t init_end_;

@@ -33,7 +33,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template);
 /// @param bandwidth represents the bit rate, in bits/sec, of the stream.
 /// @return The segment name with identifier substituted.
 std::string GetSegmentName(const std::string& segment_template,
-                           uint64_t segment_start_time,
+                           int64_t segment_start_time,
                            uint32_t segment_index,
                            uint32_t bandwidth);
 

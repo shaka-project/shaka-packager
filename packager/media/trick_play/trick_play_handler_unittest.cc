@@ -27,7 +27,7 @@ const size_t kStreamIndex = 0;
 
 // This value does not matter as trick play does not use it, but it is needed
 // to create the audio and video info.
-const uint32_t kTimescale = 1000u;
+const int32_t kTimescale = 1000;
 
 const bool kKeyFrame = true;
 }  // namespace

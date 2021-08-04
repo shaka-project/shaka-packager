@@ -11,7 +11,7 @@ namespace shaka {
 namespace media {
 
 static const uint32_t kDefaultSampleRate = 44100;
-static const uint32_t kTimescale = 1000000;
+static const int32_t kTimescale = 1000000;
 
 class AudioTimestampHelperTest : public ::testing::Test {
  public:

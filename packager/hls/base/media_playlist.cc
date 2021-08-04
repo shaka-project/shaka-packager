@@ -25,7 +25,7 @@ namespace shaka {
 namespace hls {
 
 namespace {
-uint32_t GetTimeScale(const MediaInfo& media_info) {
+int32_t GetTimeScale(const MediaInfo& media_info) {
   if (media_info.has_reference_time_scale())
     return media_info.reference_time_scale();
 
@@ -34,7 +34,7 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
 
   if (media_info.has_audio_info())
     return media_info.audio_info().time_scale();
-  return 0u;
+  return 0;
 }
 
 std::string AdjustVideoCodec(const std::string& codec) {
@@ -103,7 +103,7 @@ void AppendExtXMap(const MediaInfo& media_info, std::string* out) {
 
 std::string CreatePlaylistHeader(
     const MediaInfo& media_info,
-    uint32_t target_duration,
+    int32_t target_duration,
     HlsPlaylistType type,
     MediaPlaylist::MediaPlaylistStreamType stream_type,
     uint32_t media_sequence_number,
@@ -371,7 +371,7 @@ void MediaPlaylist::SetCharacteristicsForTesting(
 }
 
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
-  const uint32_t time_scale = GetTimeScale(media_info);
+  const int32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
     LOG(ERROR) << "MediaInfo does not contain a valid timescale.";
     return false;
@@ -400,7 +400,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   return true;
 }
 
-void MediaPlaylist::SetSampleDuration(uint32_t sample_duration) {
+void MediaPlaylist::SetSampleDuration(int32_t sample_duration) {
   if (media_info_.has_video_info())
     media_info_.mutable_video_info()->set_frame_duration(sample_duration);
 }
@@ -506,7 +506,7 @@ double MediaPlaylist::GetLongestSegmentDuration() const {
   return longest_segment_duration_seconds_;
 }
 
-void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
+void MediaPlaylist::SetTargetDuration(int32_t target_duration) {
   if (target_duration_set_) {
     if (target_duration_ == target_duration)
       return;
@@ -664,7 +664,7 @@ void MediaPlaylist::SlideWindow() {
       hls_params_.playlist_type != HlsPlaylistType::kLive) {
     return;
   }
-  DCHECK_GT(time_scale_, 0u);
+  DCHECK_GT(time_scale_, 0);
 
   if (current_buffer_depth_ <= hls_params_.time_shift_buffer_depth)
     return;

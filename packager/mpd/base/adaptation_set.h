@@ -143,8 +143,8 @@ class AdaptationSet {
   /// @param start_time is the start time of the new segment.
   /// @param duration is the duration of the new segment.
   void OnNewSegmentForRepresentation(uint32_t representation_id,
-                                     uint64_t start_time,
-                                     uint64_t duration);
+                                     int64_t start_time,
+                                     int64_t duration);
 
   /// Notifies the AdaptationSet instance that the sample duration for the
   /// Representation was set.
@@ -159,8 +159,8 @@ class AdaptationSet {
   /// @frame_duration is the duration of a frame in the Representation.
   /// @param timescale is the timescale of the Representation.
   void OnSetFrameRateForRepresentation(uint32_t representation_id,
-                                       uint32_t frame_duration,
-                                       uint32_t timescale);
+                                       int32_t frame_duration,
+                                       int32_t timescale);
 
   /// Add the adaptation set this trick play adaptation set belongs to.
   /// @param adaptation_set points to the reference (or main) adapation set.
@@ -216,7 +216,7 @@ class AdaptationSet {
   // start times 0, 200, 400, then the map contains:
   // 1 -> [0, 100, 200]
   // 2 -> [0, 200, 400]
-  typedef std::map<uint32_t, std::list<uint64_t>> RepresentationTimeline;
+  typedef std::map<uint32_t, std::list<int64_t>> RepresentationTimeline;
 
   // Update AdaptationSet attributes for new MediaInfo.
   void UpdateFromMediaInfo(const MediaInfo& media_info);
@@ -230,15 +230,15 @@ class AdaptationSet {
   /// @param start_time is the start time of the new segment.
   /// @param duration is the duration of the new segment.
   void CheckDynamicSegmentAlignment(uint32_t representation_id,
-                                    uint64_t start_time,
-                                    uint64_t duration);
+                                    int64_t start_time,
+                                    int64_t duration);
 
   // Checks representation_segment_start_times_ and sets segments_aligned_.
   // Use this for static MPD, do not use for dynamic MPD.
   void CheckStaticSegmentAlignment();
 
   // Records the framerate of a Representation.
-  void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
+  void RecordFrameRate(int32_t frame_duration, int32_t timescale);
 
   std::list<ContentProtectionElement> content_protection_elements_;
   // representation_id => Representation map. It also keeps the representations_

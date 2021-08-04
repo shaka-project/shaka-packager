@@ -79,7 +79,7 @@ class EncryptionHandler : public MediaHandler {
   // Remaining clear lead in the stream's time scale.
   int64_t remaining_clear_lead_ = 0;
   // Crypto period duration in the stream's time scale.
-  uint64_t crypto_period_duration_ = 0;
+  int64_t crypto_period_duration_ = 0;
   // Previous crypto period index if key rotation is enabled.
   int64_t prev_crypto_period_index_ = -1;
   bool check_new_crypto_period_ = false;

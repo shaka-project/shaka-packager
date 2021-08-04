@@ -166,8 +166,8 @@ bool TwoPassSingleSegmentSegmenter::CopyFileWithClusterRewrite(
       return false;
 
     // Update the progress; need to convert from WebM timecode to ISO BMFF.
-    const uint64_t webm_delta_time = next_cue->time() - cue->time();
-    const uint64_t delta_time = FromWebMTimecode(webm_delta_time);
+    const int64_t webm_delta_time = next_cue->time() - cue->time();
+    const int64_t delta_time = FromWebMTimecode(webm_delta_time);
     UpdateProgress(delta_time);
   }
 

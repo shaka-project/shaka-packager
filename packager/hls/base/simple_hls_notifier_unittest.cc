@@ -79,8 +79,8 @@ const double kTestTimeShiftBufferDepth = 1800.0;
 const char kTestPrefix[] = "http://testprefix.com/";
 const char kAnyOutputDir[] = "anything";
 
-const uint64_t kAnyStartTime = 10;
-const uint64_t kAnyDuration = 1000;
+const int64_t kAnyStartTime = 10;
+const int64_t kAnyDuration = 1000;
 const uint64_t kAnySize = 2000;
 
 const char kCencProtectionScheme[] = "cenc";
@@ -209,8 +209,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
-  const uint64_t kStartTime = 1328;
-  const uint64_t kDuration = 398407;
+  const int64_t kStartTime = 1328;
+  const int64_t kDuration = 398407;
   const uint64_t kSize = 6595840;
   const std::string segment_name = "segmentname";
   EXPECT_CALL(*mock_media_playlist,
@@ -218,7 +218,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
                          kDuration, 203, kSize));
 
   const double kLongestSegmentDuration = 11.3;
-  const uint32_t kTargetDuration = 12;  // ceil(kLongestSegmentDuration).
+  const int32_t kTargetDuration = 12;  // ceil(kLongestSegmentDuration).
   EXPECT_CALL(*mock_media_playlist, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
 
@@ -261,7 +261,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyKeyFrame) {
   const uint32_t stream_id =
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
 
-  const uint64_t kTimestamp = 12345;
+  const int64_t kTimestamp = 12345;
   const uint64_t kStartByteOffset = 888;
   const uint64_t kSize = 555;
   EXPECT_CALL(*mock_media_playlist,
@@ -369,7 +369,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyCueEvent) {
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
 
   EXPECT_CALL(*mock_media_playlist, AddPlacementOpportunity());
-  const uint64_t kCueEventTimestamp = 12345;
+  const int64_t kCueEventTimestamp = 12345;
   EXPECT_TRUE(notifier.NotifyCueEvent(stream_id, kCueEventTimestamp));
 }
 
@@ -538,8 +538,8 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
-  const uint64_t kStartTime = 1328;
-  const uint64_t kDuration = 398407;
+  const int64_t kStartTime = 1328;
+  const int64_t kDuration = 398407;
   const uint64_t kSize = 6595840;
   const std::string segment_name = "segmentname";
   EXPECT_CALL(*mock_media_playlist,
@@ -547,7 +547,7 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
                          kDuration, _, kSize));
 
   const double kLongestSegmentDuration = 11.3;
-  const uint32_t kTargetDuration = 12;  // ceil(kLongestSegmentDuration).
+  const int32_t kTargetDuration = 12;  // ceil(kLongestSegmentDuration).
   EXPECT_CALL(*mock_media_playlist, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
 
@@ -578,8 +578,8 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
 }
 
 TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
-  const uint64_t kStartTime = 1328;
-  const uint64_t kDuration = 398407;
+  const int64_t kStartTime = 1328;
+  const int64_t kDuration = 398407;
   const uint64_t kSize = 6595840;
 
   InSequence in_sequence;
@@ -619,7 +619,7 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
 
   EXPECT_CALL(*mock_media_playlist1, AddSegment(_, _, _, _, _)).Times(1);
   const double kLongestSegmentDuration = 11.3;
-  const uint32_t kTargetDuration = 12;  // ceil(kLongestSegmentDuration).
+  const int32_t kTargetDuration = 12;  // ceil(kLongestSegmentDuration).
   EXPECT_CALL(*mock_media_playlist1, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
 

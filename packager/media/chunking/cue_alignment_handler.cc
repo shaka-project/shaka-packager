@@ -46,7 +46,7 @@ int64_t GetScaledTime(const StreamInfo& info, const StreamData& data) {
 
 double TimeInSeconds(const StreamInfo& info, const StreamData& data) {
   const int64_t scaled_time = GetScaledTime(info, data);
-  const uint32_t time_scale = info.time_scale();
+  const int32_t time_scale = info.time_scale();
 
   return static_cast<double>(scaled_time) / time_scale;
 }
@@ -55,7 +55,7 @@ double TextEndTimeInSeconds(const StreamInfo& info, const StreamData& data) {
   DCHECK(data.text_sample);
 
   const int64_t scaled_time = data.text_sample->EndTime();
-  const uint32_t time_scale = info.time_scale();
+  const int32_t time_scale = info.time_scale();
 
   return static_cast<double>(scaled_time) / time_scale;
 }

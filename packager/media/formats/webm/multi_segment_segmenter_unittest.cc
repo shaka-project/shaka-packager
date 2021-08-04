@@ -13,8 +13,8 @@ namespace shaka {
 namespace media {
 namespace {
 
-const uint32_t kTimeScale = 1000000u;
-const uint64_t kDuration = 1000000u;
+const int32_t kTimeScale = 1000000;
+const int64_t kDuration = 1000000;
 const bool kSubsegment = true;
 
 const uint8_t kBasicSupportDataInit[] = {

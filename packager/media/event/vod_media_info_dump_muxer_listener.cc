@@ -46,7 +46,7 @@ void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
 void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const StreamInfo& stream_info,
-    uint32_t time_scale,
+    int32_t time_scale,
     ContainerType container_type) {
   DCHECK(muxer_options.segment_template.empty());
   media_info_.reset(new MediaInfo());
@@ -68,7 +68,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
 void VodMediaInfoDumpMuxerListener::OnEncryptionStart() {}
 
 void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(
-    uint32_t sample_duration) {
+    int32_t sample_duration) {
   // Assume one VideoInfo.
   if (media_info_->has_video_info()) {
     media_info_->mutable_video_info()->set_frame_duration(sample_duration);

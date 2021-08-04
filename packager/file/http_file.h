@@ -42,7 +42,7 @@ class HttpFile : public File {
            const std::string& url,
            const std::string& upload_content_type,
            const std::vector<std::string>& headers,
-           uint32_t timeout_in_seconds);
+           int32_t timeout_in_seconds);
 
   HttpFile(const HttpFile&) = delete;
   HttpFile& operator=(const HttpFile&) = delete;
@@ -75,7 +75,7 @@ class HttpFile : public File {
 
   const std::string url_;
   const std::string upload_content_type_;
-  const uint32_t timeout_in_seconds_;
+  const int32_t timeout_in_seconds_;
   const HttpMethod method_;
   IoCache download_cache_;
   IoCache upload_cache_;

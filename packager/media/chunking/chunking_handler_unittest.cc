@@ -20,8 +20,8 @@ namespace shaka {
 namespace media {
 namespace {
 const size_t kStreamIndex = 0;
-const uint32_t kTimeScale0 = 800;
-const uint32_t kTimeScale1 = 1000;
+const int32_t kTimeScale0 = 800;
+const int32_t kTimeScale1 = 1000;
 const int64_t kDuration = 300;
 const bool kKeyFrame = true;
 const bool kIsSubsegment = true;

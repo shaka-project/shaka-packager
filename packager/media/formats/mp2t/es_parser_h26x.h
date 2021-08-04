@@ -127,7 +127,7 @@ class EsParserH26x : public EsParser {
 
   // Frame for which we do not yet have a duration.
   std::shared_ptr<MediaSample> pending_sample_;
-  uint64_t pending_sample_duration_ = 0;
+  int64_t pending_sample_duration_ = 0;
 
   // Indicates whether waiting for first key frame.
   bool waiting_for_key_frame_ = true;

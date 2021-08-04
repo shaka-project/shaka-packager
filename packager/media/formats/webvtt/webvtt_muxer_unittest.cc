@@ -31,13 +31,13 @@ const size_t kStreamIndex = 0;
 const bool kEncrypted = true;
 const char* kNoId = "";
 
-const uint64_t kMsTimeScale = 1000u;
+const int64_t kMsTimeScale = 1000;
 
 const char* kSegmentedFileTemplate = "memory://output/template-$Number$.vtt";
 const char* kSegmentedFileOutput1 = "memory://output/template-1.vtt";
 const char* kSegmentedFileOutput2 = "memory://output/template-2.vtt";
 
-const uint64_t kSegmentDuration = 10000;
+const int64_t kSegmentDuration = 10000;
 const float kMillisecondsPerSecond = 1000.0f;
 }  // namespace
 

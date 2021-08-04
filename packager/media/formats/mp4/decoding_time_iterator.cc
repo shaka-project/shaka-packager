@@ -37,12 +37,12 @@ bool DecodingTimeIterator::IsValid() const {
          sample_index_ < iterator_->sample_count;
 }
 
-uint64_t DecodingTimeIterator::Duration(uint32_t start_sample,
-                                        uint32_t end_sample) const {
+int64_t DecodingTimeIterator::Duration(uint32_t start_sample,
+                                       uint32_t end_sample) const {
   DCHECK_LE(start_sample, end_sample);
   uint32_t current_sample = 0;
   uint32_t prev_sample = 0;
-  uint64_t duration = 0;
+  int64_t duration = 0;
   std::vector<DecodingTime>::const_iterator it = decoding_time_table_.begin();
   for (; it != decoding_time_table_.end(); ++it) {
     current_sample += it->sample_count;

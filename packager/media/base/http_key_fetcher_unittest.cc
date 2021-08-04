@@ -80,7 +80,7 @@ TEST(DISABLED_HttpKeyFetcherTest, UrlWithPort) {
 }
 
 TEST(DISABLED_HttpKeyFetcherTest, SmallTimeout) {
-  const uint32_t kTimeoutInSeconds = 1;
+  const int32_t kTimeoutInSeconds = 1;
   HttpKeyFetcher fetcher(kTimeoutInSeconds);
   std::string response;
   Status status = fetcher.FetchKeys(kTestUrl, kDelayTwoSecs, &response);
@@ -88,7 +88,7 @@ TEST(DISABLED_HttpKeyFetcherTest, SmallTimeout) {
 }
 
 TEST(DISABLED_HttpKeyFetcherTest, BigTimeout) {
-  const uint32_t kTimeoutInSeconds = 5;
+  const int32_t kTimeoutInSeconds = 5;
   HttpKeyFetcher fetcher(kTimeoutInSeconds);
   std::string response;
   Status status = fetcher.FetchKeys(kTestUrl, kDelayTwoSecs, &response);

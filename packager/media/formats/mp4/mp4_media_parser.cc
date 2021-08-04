@@ -39,9 +39,9 @@ namespace media {
 namespace mp4 {
 namespace {
 
-uint64_t Rescale(uint64_t time_in_old_scale,
-                 uint32_t old_scale,
-                 uint32_t new_scale) {
+int64_t Rescale(int64_t time_in_old_scale,
+                int32_t old_scale,
+                int32_t new_scale) {
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
@@ -386,10 +386,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
-    const uint32_t timescale = track->media.header.timescale;
+    const int32_t timescale = track->media.header.timescale;
 
     // Calculate duration (based on timescale).
-    uint64_t duration = 0;
+    int64_t duration = 0;
     if (track->media.header.duration > 0) {
       duration = track->media.header.duration;
     } else if (moov_->extends.header.fragment_duration > 0) {

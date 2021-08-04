@@ -174,7 +174,7 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   // reference, which contains all the fragments in sidx().
   std::vector<SegmentReference>& refs = sidx()->references;
   SegmentReference& vod_ref = refs[0];
-  uint64_t first_sap_time =
+  int64_t first_sap_time =
       refs[0].sap_delta_time + refs[0].earliest_presentation_time;
   for (uint32_t i = 1; i < refs.size(); ++i) {
     vod_ref.referenced_size += refs[i].referenced_size;

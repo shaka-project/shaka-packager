@@ -17,7 +17,7 @@ namespace media {
 namespace {
 
 const uint32_t kStreamId = 0;
-const uint32_t kTimeScale = 1000;
+const int32_t kTimeScale = 1000;
 
 const char* kNoId = "";
 

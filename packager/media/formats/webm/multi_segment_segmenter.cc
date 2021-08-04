@@ -22,8 +22,8 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options)
 
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
-Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
-                                              uint64_t duration_timestamp,
+Status MultiSegmentSegmenter::FinalizeSegment(int64_t start_timestamp,
+                                              int64_t duration_timestamp,
                                               bool is_subsegment) {
   CHECK(cluster());
   RETURN_IF_ERROR(Segmenter::FinalizeSegment(
@@ -85,7 +85,7 @@ Status MultiSegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
+Status MultiSegmentSegmenter::NewSegment(int64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
     temp_file_name_ =
@@ -100,7 +100,7 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
       return status;
   }
 
-  const uint64_t start_timecode = FromBmffTimestamp(start_timestamp);
+  const int64_t start_timecode = FromBmffTimestamp(start_timestamp);
   return SetCluster(start_timecode, 0, writer_.get());
 }
 

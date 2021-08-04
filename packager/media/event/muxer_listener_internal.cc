@@ -226,7 +226,7 @@ MediaInfo GetCompatibleComparisonMediaInfo(const MediaInfo& media_info) {
 
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        const StreamInfo& stream_info,
-                       uint32_t reference_time_scale,
+                       int32_t reference_time_scale,
                        MuxerListener::ContainerType container_type,
                        MediaInfo* media_info) {
   DCHECK(media_info);

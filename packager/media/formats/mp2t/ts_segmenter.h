@@ -58,7 +58,7 @@ class TsSegmenter {
   // TODO(kqyang): Remove the usage of segment start timestamp and duration in
   // xx_segmenter, which could cause confusions on which is the source of truth
   // as the segment start timestamp and duration could be tracked locally.
-  Status FinalizeSegment(uint64_t start_timestamp, uint64_t duration);
+  Status FinalizeSegment(int64_t start_timestamp, int64_t duration);
 
   /// Only for testing.
   void InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer);
@@ -83,7 +83,7 @@ class TsSegmenter {
   Codec codec_ = kUnknownCodec;
   std::vector<uint8_t> audio_codec_config_;
 
-  const uint32_t transport_stream_timestamp_offset_ = 0;
+  const int32_t transport_stream_timestamp_offset_ = 0;
   // Scale used to scale the input stream to TS's timesccale (which is 90000).
   // Used for calculating the duration in seconds fo the current segment.
   double timescale_scale_ = 1.0;

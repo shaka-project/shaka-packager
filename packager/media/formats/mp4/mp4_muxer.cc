@@ -655,7 +655,7 @@ void MP4Muxer::FireOnMediaStartEvent() {
   }
   DCHECK(!streams().empty()) << "Media started without a stream.";
 
-  const uint32_t timescale = segmenter_->GetReferenceTimeScale();
+  const int32_t timescale = segmenter_->GetReferenceTimeScale();
   muxer_listener()->OnMediaStart(options(), *streams().front(), timescale,
                                  MuxerListener::kContainerMp4);
 }

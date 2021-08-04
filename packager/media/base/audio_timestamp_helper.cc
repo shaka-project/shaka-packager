@@ -10,7 +10,7 @@
 namespace shaka {
 namespace media {
 
-AudioTimestampHelper::AudioTimestampHelper(uint32_t timescale,
+AudioTimestampHelper::AudioTimestampHelper(int32_t timescale,
                                            uint32_t samples_per_second)
     : base_timestamp_(kNoTimestamp), frame_count_(0) {
   DCHECK_GT(samples_per_second, 0u);

@@ -97,12 +97,12 @@ class MuxerListener {
   /// @param container_type is the container of this media.
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const StreamInfo& stream_info,
-                            uint32_t time_scale,
+                            int32_t time_scale,
                             ContainerType container_type) = 0;
 
   /// Called when the average sample duration of the media is determined.
   /// @param sample_duration in timescale of the media.
-  virtual void OnSampleDurationReady(uint32_t sample_duration) = 0;
+  virtual void OnSampleDurationReady(int32_t sample_duration) = 0;
 
   /// Called when all files are written out and the muxer object does not output
   /// any more files.
