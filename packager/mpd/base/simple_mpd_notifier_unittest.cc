@@ -151,6 +151,32 @@ TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
       notifier.NotifySampleDuration(kRepresentationId, kSampleDuration));
 }
 
+TEST_F(SimpleMpdNotifierTest, NotifySegmentDuration) {
+  SimpleMpdNotifier notifier(empty_mpd_option_);
+
+  const uint32_t kRepresentationId = 9u;  
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
+  std::unique_ptr<MockRepresentation> mock_representation(
+      new MockRepresentation(kRepresentationId));
+
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
+      .WillOnce(Return(default_mock_period_.get()));
+  EXPECT_CALL(*default_mock_period_, GetOrCreateAdaptationSet(_, _))
+      .WillOnce(Return(default_mock_adaptation_set_.get()));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
+      .WillOnce(Return(mock_representation.get()));
+
+  uint32_t container_id;
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
+  EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
+  EXPECT_EQ(kRepresentationId, container_id);
+
+  mock_representation->SetSegmentDuration();
+
+  EXPECT_TRUE(
+      notifier.NotifySegmentDuration(kRepresentationId));
+}
+
 // This test is mainly for tsan. Using both the notifier and the MpdBuilder.
 // Although locks in MpdBuilder have been removed,
 // https://github.com/google/shaka-packager/issues/45
