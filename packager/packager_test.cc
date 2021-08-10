@@ -277,6 +277,16 @@ TEST_F(PackagerTest, LowLatencyDashEnabledAndFragmentDurationSet) {
   EXPECT_THAT(status.error_message(),
               HasSubstr("--fragment_duration cannot be set"));
 }
+
+TEST_F(PackagerTest, LowLatencyDashEnabledAndUtcTimingNotSet) {
+  auto packaging_params = SetupPackagingParams();
+  packaging_params.mpd_params.is_low_latency_dash = true;
+  Packager packager;
+  auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+  EXPECT_THAT(status.error_message(),
+              HasSubstr("--utc_timings must be be set"));
+}
 // TODO(kqyang): Add more tests.
 
 }  // namespace shaka

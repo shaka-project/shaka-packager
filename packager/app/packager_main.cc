@@ -478,13 +478,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.include_mspr_pro = FLAGS_include_mspr_pro_for_playready;
   mpd_params.is_low_latency_dash = FLAGS_is_low_latency_dash;
 
-  if (mpd_params.is_low_latency_dash && mpd_params.utc_timings.empty()) {
-    // Low latency DASH MPD requires a UTC Timing value
-    LOG(ERROR) << "--utc_timings must be be set "
-                  "if --is_low_latency_dash is enabled.";
-    return base::nullopt;
-  }
-
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {
     return base::nullopt;
