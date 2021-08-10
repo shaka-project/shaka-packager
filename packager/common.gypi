@@ -12,12 +12,18 @@
       'shaka_code%': 0,
       # musl is a lightweight C standard library used in Alpine Linux.
       'musl%': 0,
+      # This is a flag from build/common.gypi to allow linker warnings.
+      # This may be necessary with static_link_binaries=1.
+      'disable_fatal_linker_warnings%': '0',
       'libpackager_type%': 'static_library',
+      'static_link_binaries%': '0',
     },
 
     'shaka_code%': '<(shaka_code)',
     'musl%': '<(musl)',
+    'disable_fatal_linker_warnings%': '<(disable_fatal_linker_warnings)',
     'libpackager_type%': '<(libpackager_type)',
+    'static_link_binaries%': '<(static_link_binaries)',
 
     'conditions': [
       ['shaka_code==1', {
@@ -41,11 +47,11 @@
     ],
   },
   'target_defaults': {
-    # These defines make the contents of base/mac/foundation_util.h compile
-    # against the standard OSX SDK, by renaming Chrome's opaque type and using
-    # the real OSX type.  This was not necessary before we switched away from
-    # using hermetic copies of clang and the sysroot to build.
     'defines': [
+      # These defines make the contents of base/mac/foundation_util.h compile
+      # against the standard OSX SDK, by renaming Chrome's opaque type and
+      # using the real OSX type.  This was not necessary before we switched
+      # away from using hermetic copies of clang and the sysroot to build.
       'OpaqueSecTrustRef=__SecACL',
       'OpaqueSecTrustedApplicationRef=__SecTrustedApplication',
     ],
@@ -120,6 +126,22 @@
           # Do not treat warnings as errors on musl as there is a hard-coded
           # warning in musl's sys/errno.h.
           '-Werror',
+        ],
+      }],
+      ['static_link_binaries==1', {
+        'conditions': [
+          ['OS=="linux"', {
+            'defines': [
+              # Even when we are not using musl or uClibc, pretending to use
+              # uClibc on Linux is the only way to disable certain Chromium
+              # base features, such as hooking into malloc.  Hooking into
+              # malloc, in turn, fails when we are linking statically.
+              '__UCLIBC__',
+            ],
+          }],
+        ],
+        'ldflags': [
+          '-static',
         ],
       }],
     ],

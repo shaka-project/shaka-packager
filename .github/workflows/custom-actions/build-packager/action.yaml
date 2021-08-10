@@ -63,6 +63,11 @@ runs:
       shell: bash
       run: |
         echo "::group::Sync gclient"
+        BUILD_CONFIG="${{ inputs.build_type }}-${{ inputs.lib_type }}"
+        if [[ "$BUILD_CONFIG" == "Release-static" && "${{ runner.os }}" == "Linux" ]]; then
+          # For static release builds, set these two additional flags for fully static binaries.
+          export GYP_DEFINES="$GYP_DEFINES disable_fatal_linker_warnings=1 static_link_binaries=1"
+        fi
         gclient sync
         echo "::endgroup::"
 
@@ -80,6 +85,15 @@ runs:
         if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
           echo "Skipping artifacts for $BUILD_CONFIG."
           exit 0
+        fi
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          echo "::group::Check for static executables"
+          # Prove that we built static executables on Linux.  "ldd" will fail
+          # if the executable is not dynamically linked, so fail the workflow
+          # if "ldd" succeeds.
+          ldd packager && exit 1
+          ldd mpd_generator && exit 1
+          echo "::endgroup::"
         fi
         echo "::group::Prepare artifacts folder"
         mkdir artifacts
