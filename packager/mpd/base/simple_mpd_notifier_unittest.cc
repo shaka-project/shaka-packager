@@ -154,7 +154,7 @@ TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
 TEST_F(SimpleMpdNotifierTest, NotifySegmentDuration) {
   SimpleMpdNotifier notifier(empty_mpd_option_);
 
-  const uint32_t kRepresentationId = 9u;  
+  const uint32_t kRepresentationId = 9u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
@@ -173,14 +173,13 @@ TEST_F(SimpleMpdNotifierTest, NotifySegmentDuration) {
 
   mock_representation->SetSegmentDuration();
 
-  EXPECT_TRUE(
-      notifier.NotifySegmentDuration(kRepresentationId));
+  EXPECT_TRUE(notifier.NotifySegmentDuration(kRepresentationId));
 }
 
 TEST_F(SimpleMpdNotifierTest, NotifyAvailabilityTimeOffset) {
   SimpleMpdNotifier notifier(empty_mpd_option_);
 
-  const uint32_t kRepresentationId = 10u;  
+  const uint32_t kRepresentationId = 10u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
@@ -199,8 +198,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyAvailabilityTimeOffset) {
 
   mock_representation->SetAvailabilityTimeOffset();
 
-  EXPECT_TRUE(
-      notifier.NotifyAvailabilityTimeOffset(kRepresentationId));
+  EXPECT_TRUE(notifier.NotifyAvailabilityTimeOffset(kRepresentationId));
 }
 
 // This test is mainly for tsan. Using both the notifier and the MpdBuilder.

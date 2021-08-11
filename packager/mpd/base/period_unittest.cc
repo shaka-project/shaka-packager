@@ -201,7 +201,8 @@ TEST_F(PeriodTest, LowLatencyDashMpdGetXml) {
       "<Period id=\"9\" start=\"PT5.6S\">"
       // LL-DASH standards require ServiceDescription and Latency elements
       "  <ServiceDescription id=\"9\" >"
-      // In LL-DASH MPD, the target latency is in ms, so the expected value is 1000.
+      // In LL-DASH MPD, the target latency is in ms, so the expected value is
+      // 1000.
       "    <Latency target=\"1000\"/>"
       "  </ServiceDescription>"
       // ContentType and Representation elements are populated after

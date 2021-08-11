@@ -741,21 +741,21 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
   const uint64_t kRepeat = 0;
   const bool kIsLowLatency = true;
 
-    std::list<SegmentInfo> segment_infos = {
+  std::list<SegmentInfo> segment_infos = {
       {kStartNumber, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
                                              kStartNumber, kIsLowLatency));
-  EXPECT_THAT(representation,
-              XmlNodeEqual(
-                  "<Representation>"
-                  "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
-                  "                   availabilityTimeOffset=\"4.9\" "
-                  "                   initialization=\"init.m4s\" "
-                  "                   media=\"$Number$.m4s\" "
-                  "                   startNumber=\"1\"/>"
-                  "</Representation>"));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation>"
+                   "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
+                   "                   availabilityTimeOffset=\"4.9\" "
+                   "                   initialization=\"init.m4s\" "
+                   "                   media=\"$Number$.m4s\" "
+                   "                   startNumber=\"1\"/>"
+                   "</Representation>"));
 }
 
 }  // namespace xml

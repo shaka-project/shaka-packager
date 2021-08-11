@@ -270,7 +270,8 @@ TEST_F(PackagerTest, ReadFromBufferFailed) {
 TEST_F(PackagerTest, LowLatencyDashEnabledAndFragmentDurationSet) {
   auto packaging_params = SetupPackagingParams();
   packaging_params.chunking_params.is_low_latency_dash = true;
-  packaging_params.chunking_params.subsegment_duration_in_seconds = kFragmentDurationInSeconds; 
+  packaging_params.chunking_params.subsegment_duration_in_seconds =
+      kFragmentDurationInSeconds;
   Packager packager;
   auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
   ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());

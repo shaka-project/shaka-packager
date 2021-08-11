@@ -590,20 +590,20 @@ TEST_F(MpdNotifyMuxerListenerTest, LowLatencyDash) {
       CreateVideoStreamInfo(video_params);
 
   const std::string kExpectedMediaInfo =
-    "video_info {\n"
-    "  codec: \"avc1.010101\"\n"
-    "  width: 720\n"
-    "  height: 480\n"
-    "  time_scale: 10\n"
-    "  pixel_width: 1\n"
-    "  pixel_height: 1\n"
-    "}\n"
-    "media_duration_seconds: 20.0\n"
-    "init_segment_name: \"liveinit.mp4\"\n"
-    "segment_template: \"live-$NUMBER$.mp4\"\n"
-    "reference_time_scale: 1000\n"
-    "container_type: CONTAINER_MP4\n";
-  
+      "video_info {\n"
+      "  codec: \"avc1.010101\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "media_duration_seconds: 20.0\n"
+      "init_segment_name: \"liveinit.mp4\"\n"
+      "segment_template: \"live-$NUMBER$.mp4\"\n"
+      "reference_time_scale: 1000\n"
+      "container_type: CONTAINER_MP4\n";
+
   const uint64_t kStartTime1 = 0u;
   const uint64_t kStartTime2 = 1001u;
   const uint64_t kDuration = 1000u;
@@ -611,10 +611,12 @@ TEST_F(MpdNotifyMuxerListenerTest, LowLatencyDash) {
   const uint64_t kSegmentSize2 = 30128u;
 
   EXPECT_CALL(*notifier_,
-            NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _))
+              NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*notifier_, NotifySampleDuration(_, kDuration)).WillOnce(Return(true));
-  EXPECT_CALL(*notifier_, NotifyAvailabilityTimeOffset(_)).WillOnce(Return(true));
+  EXPECT_CALL(*notifier_, NotifySampleDuration(_, kDuration))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*notifier_, NotifyAvailabilityTimeOffset(_))
+      .WillOnce(Return(true));
   EXPECT_CALL(*notifier_, NotifySegmentDuration(_)).WillOnce(Return(true));
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime1, kDuration, kSegmentSize1));
@@ -633,7 +635,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LowLatencyDash) {
   listener_->OnCueEvent(kStartTime2, "dummy cue data");
   listener_->OnNewSegment("", kStartTime2, kDuration, kSegmentSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
-  
+
   EXPECT_CALL(*notifier_, Flush()).Times(0);
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }

@@ -387,7 +387,7 @@ Status ValidateParams(const PackagingParams& packaging_params,
                   "if --is_low_latency_dash is enabled.");
   }
 
-  if (packaging_params.mpd_params.is_low_latency_dash && 
+  if (packaging_params.mpd_params.is_low_latency_dash &&
       packaging_params.mpd_params.utc_timings.empty()) {
     // Low latency DASH MPD requires a UTC Timing value
     return Status(error::INVALID_ARGUMENT,
