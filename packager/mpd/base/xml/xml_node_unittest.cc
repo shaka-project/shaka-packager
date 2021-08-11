@@ -728,7 +728,7 @@ class LowLatencySegmentTest : public ::testing::Test {
     media_info_.set_init_segment_url("init.m4s");
     media_info_.set_segment_template_url("$Number$.m4s");
     media_info_.set_reference_time_scale(90000);
-    media_info_.set_availability_time_offset(4.900);
+    media_info_.set_availability_time_offset(4.900f);
     media_info_.set_segment_duration(450000);
   }
 
