@@ -728,7 +728,7 @@ class LowLatencySegmentTest : public ::testing::Test {
     media_info_.set_init_segment_url("init.m4s");
     media_info_.set_segment_template_url("$Number$.m4s");
     media_info_.set_reference_time_scale(90000);
-    media_info_.set_availability_time_offset(4.900f);
+    media_info_.set_availability_time_offset(4.9750987314f);
     media_info_.set_segment_duration(450000);
   }
 
@@ -751,7 +751,7 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
       representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
-                   "                   availabilityTimeOffset=\"4.9\" "
+                   "                   availabilityTimeOffset=\"4.975\" "
                    "                   initialization=\"init.m4s\" "
                    "                   media=\"$Number$.m4s\" "
                    "                   startNumber=\"1\"/>"
