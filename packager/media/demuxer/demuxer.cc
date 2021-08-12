@@ -343,7 +343,9 @@ bool Demuxer::NewTextSampleEvent(uint32_t track_id,
   return PushTextSample(track_id, sample);
 }
 
-void Demuxer::DecoderConfigChangedEvent() {}
+void Demuxer::DecoderConfigChangedEvent() {
+  NotifyDecoderConfigChanged();
+}
 
 bool Demuxer::PushMediaSample(uint32_t track_id,
                               std::shared_ptr<MediaSample> sample) {

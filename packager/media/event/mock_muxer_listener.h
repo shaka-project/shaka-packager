@@ -69,6 +69,8 @@ class MockMuxerListener : public MuxerListener {
 
   MOCK_METHOD2(OnCueEvent,
                void(int64_t timestamp, const std::string& cue_data));
+
+  MOCK_METHOD0(OnDecoderConfigChanged, void());
 };
 
 }  // namespace media

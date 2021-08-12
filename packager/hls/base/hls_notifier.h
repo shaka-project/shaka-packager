@@ -81,6 +81,9 @@ class HlsNotifier {
   /// @return true on success, false otherwise.
   virtual bool NotifyCueEvent(uint32_t stream_id, int64_t timestamp) = 0;
 
+  /// Called when the decoder config parameters have changed.
+  virtual void NotifyDecoderConfigChanged(uint32_t stream_id) = 0;
+
   /// @param stream_id is the value set by NotifyNewStream().
   /// @param key_id is the key ID for the stream.
   /// @param system_id is the DRM system ID in e.g. PSSH boxes. For example this

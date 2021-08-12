@@ -213,6 +213,8 @@ void MpdNotifyMuxerListener::OnCueEvent(int64_t timestamp,
   }
 }
 
+void MpdNotifyMuxerListener::OnDecoderConfigChanged() {}
+
 bool MpdNotifyMuxerListener::NotifyNewContainer() {
   uint32_t notification_id;
   if (!mpd_notifier_->NotifyNewContainer(*media_info_, &notification_id)) {

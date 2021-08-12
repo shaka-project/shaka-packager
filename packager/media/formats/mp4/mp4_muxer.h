@@ -35,6 +35,10 @@ class MP4Muxer : public Muxer {
   explicit MP4Muxer(const MuxerOptions& options);
   ~MP4Muxer() override;
 
+ protected:
+  // MediaHandler implementation overrides.
+  void OnDecoderConfigChanged() override;
+
  private:
   // Muxer implementation overrides.
   Status InitializeMuxer() override;

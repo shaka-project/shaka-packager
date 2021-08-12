@@ -188,6 +188,9 @@ class MediaHandler {
   /// Event handler for flush request at the specific input stream index.
   virtual Status OnFlushRequest(size_t input_stream_index);
 
+  /// Event handler for decoder config changes.
+  virtual void OnDecoderConfigChanged();
+
   /// Validate if the stream at the specified index actually exists.
   virtual bool ValidateOutputStreamIndex(size_t stream_index) const;
 
@@ -248,6 +251,9 @@ class MediaHandler {
 
   /// Flush all connected downstream handlers.
   Status FlushAllDownstreams();
+
+  /// Notifies all connected downstream handlers of a decoder config change.
+  void NotifyDecoderConfigChanged();
 
   bool initialized() { return initialized_; }
   size_t num_input_streams() const { return num_input_streams_; }

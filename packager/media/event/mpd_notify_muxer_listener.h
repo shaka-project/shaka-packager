@@ -53,6 +53,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
                     uint64_t segment_file_size) override;
   void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
+  void OnDecoderConfigChanged() override;
   /// @}
 
   void set_accessibilities(const std::vector<std::string>& accessiblities) {

@@ -435,6 +435,17 @@ bool SimpleHlsNotifier::NotifyCueEvent(uint32_t stream_id, int64_t timestamp) {
   return true;
 }
 
+void SimpleHlsNotifier::NotifyDecoderConfigChanged(uint32_t stream_id) {
+  base::AutoLock auto_lock(lock_);
+  auto stream_iterator = stream_map_.find(stream_id);
+  if (stream_iterator == stream_map_.end()) {
+    LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
+    return;
+  }
+  auto& media_playlist = stream_iterator->second->media_playlist;
+  media_playlist->AddDiscontinuity();
+}
+
 bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     uint32_t stream_id,
     const std::vector<uint8_t>& key_id,

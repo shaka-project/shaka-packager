@@ -80,5 +80,11 @@ void CombinedMuxerListener::OnCueEvent(int64_t timestamp,
   }
 }
 
+void CombinedMuxerListener::OnDecoderConfigChanged() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnDecoderConfigChanged();
+  }
+}
+
 }  // namespace media
 }  // namespace shaka

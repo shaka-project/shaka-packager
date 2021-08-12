@@ -274,6 +274,10 @@ void HlsNotifyMuxerListener::OnCueEvent(int64_t timestamp,
   }
 }
 
+void HlsNotifyMuxerListener::OnDecoderConfigChanged() {
+  hls_notifier_->NotifyDecoderConfigChanged(stream_id_.value());
+}
+
 bool HlsNotifyMuxerListener::NotifyNewStream() {
   DCHECK(media_info_);
 

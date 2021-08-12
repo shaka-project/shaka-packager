@@ -87,6 +87,11 @@ Status MediaHandler::OnFlushRequest(size_t input_stream_index) {
   return FlushDownstream(output_stream_index);
 }
 
+void MediaHandler::OnDecoderConfigChanged() {
+  // Forward the event to all downstream handlers.
+  NotifyDecoderConfigChanged();
+}
+
 bool MediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
   return stream_index < num_input_streams_;
 }
@@ -120,5 +125,12 @@ Status MediaHandler::FlushAllDownstreams() {
   }
   return Status::OK;
 }
+
+void MediaHandler::NotifyDecoderConfigChanged() {
+  for (const auto& pair : output_handlers_) {
+    pair.second.first->OnDecoderConfigChanged();
+  }
+}
+
 }  // namespace media
 }  // namespace shaka

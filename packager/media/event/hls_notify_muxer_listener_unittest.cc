@@ -53,6 +53,7 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     uint64_t start_byte_offset,
                     uint64_t size));
   MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, int64_t timestamp));
+  MOCK_METHOD1(NotifyDecoderConfigChanged, void(uint32_t stream_id));
   MOCK_METHOD5(
       NotifyEncryptionUpdate,
       bool(uint32_t stream_id,

@@ -373,6 +373,10 @@ Status MP4Muxer::UpdateEditListOffsetFromSample(const MediaSample& sample) {
   return Status::OK;
 }
 
+void MP4Muxer::OnDecoderConfigChanged() {
+  muxer_listener()->OnDecoderConfigChanged();
+}
+
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
   int64_t now = IsoTimeNow();
   trak->header.creation_time = now;

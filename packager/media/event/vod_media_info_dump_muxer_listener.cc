@@ -110,6 +110,8 @@ void VodMediaInfoDumpMuxerListener::OnCueEvent(int64_t timestamp,
   NOTIMPLEMENTED();
 }
 
+void VodMediaInfoDumpMuxerListener::OnDecoderConfigChanged() {}
+
 // static
 bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
     const MediaInfo& media_info,

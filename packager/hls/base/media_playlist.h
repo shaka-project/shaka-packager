@@ -150,6 +150,9 @@ class MediaPlaylist {
   /// https://support.google.com/dfp_premium/answer/7295798?hl=en.
   virtual void AddPlacementOpportunity();
 
+  /// Add #EXT-X-DISCONTINUITY.
+  virtual void AddDiscontinuity();
+
   /// Write the playlist to |file_path|.
   /// This does not close the file.
   /// If target duration is not set explicitly, this will try to find the target

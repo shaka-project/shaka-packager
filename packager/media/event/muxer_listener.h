@@ -143,6 +143,9 @@ class MuxerListener {
   /// @param cue_data is the data of the cue.
   virtual void OnCueEvent(int64_t timestamp, const std::string& cue_data) = 0;
 
+  /// Called when the decoder config parameters have changed.
+  virtual void OnDecoderConfigChanged() = 0;
+
  protected:
   MuxerListener() = default;
 };
