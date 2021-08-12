@@ -52,6 +52,9 @@ class MediaParser {
                               std::shared_ptr<TextSample> text_sample)>
       NewTextSampleCB;
 
+  /// Called when the decoder config parameters have changed.
+  typedef base::Callback<void()> DecoderConfigChangedCB;
+
   /// Initialize the parser with necessary callbacks. Must be called before any
   /// data is passed to Parse().
   /// @param init_cb will be called once enough data has been parsed to
@@ -60,11 +63,14 @@ class MediaParser {
   ///        available from the parser.
   /// @param new_text_sample_cb will be called each time a new text sample is
   ///        available from the parser.
+  /// @param decoder_config_changed_cb will be called each time when the decoder
+  ///        config parameters changed.
   /// @param decryption_key_source the key source to decrypt the frames.  May be
   ///        NULL, and caller retains ownership.
   virtual void Init(const InitCB& init_cb,
                     const NewMediaSampleCB& new_media_sample_cb,
                     const NewTextSampleCB& new_text_sample_cb,
+                    const DecoderConfigChangedCB& decoder_config_changed_cb,
                     KeySource* decryption_key_source) = 0;
 
   /// Flush data currently in the parser and put the parser in a state where it

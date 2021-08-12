@@ -58,6 +58,7 @@ class WvmMediaParser : public MediaParser {
   void Init(const InitCB& init_cb,
             const NewMediaSampleCB& new_media_sample_cb,
             const NewTextSampleCB& new_text_sample_cb,
+            const DecoderConfigChangedCB& decoder_config_changed_cb,
             KeySource* decryption_key_source) override;
   bool Flush() override WARN_UNUSED_RESULT;
   bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;

@@ -158,6 +158,7 @@ Mp2tMediaParser::~Mp2tMediaParser() {}
 void Mp2tMediaParser::Init(const InitCB& init_cb,
                            const NewMediaSampleCB& new_media_sample_cb,
                            const NewTextSampleCB& new_text_sample_cb,
+                           const DecoderConfigChangedCB& decoder_config_changed_cb,
                            KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
   DCHECK(init_cb_.is_null());
@@ -168,6 +169,7 @@ void Mp2tMediaParser::Init(const InitCB& init_cb,
   init_cb_ = init_cb;
   new_media_sample_cb_ = new_media_sample_cb;
   new_text_sample_cb_ = new_text_sample_cb;
+  decoder_config_changed_cb_ = decoder_config_changed_cb;
 }
 
 bool Mp2tMediaParser::Flush() {
@@ -295,10 +297,12 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                  base::Unretained(this), pes_pid);
   switch (stream_type) {
     case TsStreamType::kAvc:
-      es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit_media));
+      es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit_media,
+                                       decoder_config_changed_cb_));
       break;
     case TsStreamType::kHevc:
-      es_parser.reset(new EsParserH265(pes_pid, on_new_stream, on_emit_media));
+      es_parser.reset(new EsParserH265(pes_pid, on_new_stream, on_emit_media,
+                                       decoder_config_changed_cb_));
       break;
     case TsStreamType::kAdtsAac:
     case TsStreamType::kMpeg1Audio:

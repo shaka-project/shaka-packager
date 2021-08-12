@@ -52,6 +52,7 @@ class WebVttParserTest : public testing::Test {
         base::Bind(&WebVttParserTest::InitCB, base::Unretained(this)),
         base::Bind(&WebVttParserTest::NewMediaSampleCB, base::Unretained(this)),
         base::Bind(&WebVttParserTest::NewTextSampleCB, base::Unretained(this)),
+        base::Bind(&WebVttParserTest::DecoderConfigChangedCB, base::Unretained(this)),
         nullptr);
   }
 
@@ -70,6 +71,8 @@ class WebVttParserTest : public testing::Test {
     samples_.emplace_back(std::move(sample));
     return true;
   }
+
+  void DecoderConfigChangedCB() {}
 
   std::shared_ptr<WebVttParser> parser_;
   std::vector<std::shared_ptr<StreamInfo>> streams_;

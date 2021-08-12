@@ -141,12 +141,15 @@ class WvmMediaParserTest : public testing::Test {
     return false;
   }
 
+  void OnDecoderConfigChanged() {}
+
   void InitializeParser() {
     parser_->Init(
         base::Bind(&WvmMediaParserTest::OnInit, base::Unretained(this)),
         base::Bind(&WvmMediaParserTest::OnNewSample, base::Unretained(this)),
         base::Bind(&WvmMediaParserTest::OnNewTextSample,
                    base::Unretained(this)),
+        base::Bind(&WvmMediaParserTest::OnDecoderConfigChanged, base::Unretained(this)),
         key_source_.get());
   }
 

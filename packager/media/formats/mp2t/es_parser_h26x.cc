@@ -31,9 +31,11 @@ EsParserH26x::EsParserH26x(
     Nalu::CodecType type,
     std::unique_ptr<H26xByteToUnitStreamConverter> stream_converter,
     uint32_t pid,
-    const EmitSampleCB& emit_sample_cb)
+    const EmitSampleCB& emit_sample_cb,
+    const MediaParser::DecoderConfigChangedCB& decoder_config_changed_cb)
     : EsParser(pid),
       emit_sample_cb_(emit_sample_cb),
+      decoder_config_changed_cb_(decoder_config_changed_cb),
       type_(type),
       es_queue_(new media::OffsetByteQueue()),
       stream_converter_(std::move(stream_converter)) {}

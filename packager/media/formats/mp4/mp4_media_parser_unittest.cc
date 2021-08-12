@@ -93,11 +93,14 @@ class MP4MediaParserTest : public testing::Test {
     return false;
   }
 
+  void DecoderConfigChangedF() {}
+
   void InitializeParser(KeySource* decryption_key_source) {
     parser_->Init(
         base::Bind(&MP4MediaParserTest::InitF, base::Unretained(this)),
         base::Bind(&MP4MediaParserTest::NewSampleF, base::Unretained(this)),
         base::Bind(&MP4MediaParserTest::NewTextSampleF, base::Unretained(this)),
+        base::Bind(&MP4MediaParserTest::DecoderConfigChangedF, base::Unretained(this)),
         decryption_key_source);
   }
 

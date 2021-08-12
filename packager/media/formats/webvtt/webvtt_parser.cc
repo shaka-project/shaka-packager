@@ -193,6 +193,7 @@ WebVttParser::WebVttParser() {}
 void WebVttParser::Init(const InitCB& init_cb,
                         const NewMediaSampleCB& new_media_sample_cb,
                         const NewTextSampleCB& new_text_sample_cb,
+                        const DecoderConfigChangedCB& decoder_config_changed_cb,
                         KeySource* decryption_key_source) {
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());

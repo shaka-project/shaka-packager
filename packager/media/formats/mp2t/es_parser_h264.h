@@ -26,7 +26,8 @@ class EsParserH264 : public EsParserH26x {
  public:
   EsParserH264(uint32_t pid,
                const NewStreamInfoCB& new_stream_info_cb,
-               const EmitSampleCB& emit_sample_cb);
+               const EmitSampleCB& emit_sample_cb,
+               const MediaParser::DecoderConfigChangedCB& decoder_config_changed_cb);
   ~EsParserH264() override;
 
   // EsParserH26x implementation override.

@@ -21,12 +21,14 @@ namespace mp2t {
 
 EsParserH264::EsParserH264(uint32_t pid,
                            const NewStreamInfoCB& new_stream_info_cb,
-                           const EmitSampleCB& emit_sample_cb)
+                           const EmitSampleCB& emit_sample_cb,
+                           const MediaParser::DecoderConfigChangedCB& decoder_config_changed_cb)
     : EsParserH26x(Nalu::kH264,
                    std::unique_ptr<H26xByteToUnitStreamConverter>(
                        new H264ByteToUnitStreamConverter()),
                    pid,
-                   emit_sample_cb),
+                   emit_sample_cb,
+                   decoder_config_changed_cb),
       new_stream_info_cb_(new_stream_info_cb),
       decoder_config_check_pending_(false),
       h264_parser_(new H264Parser()) {}
@@ -145,6 +147,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
       // video resolution changes) should be treated as errors.
       LOG(WARNING) << "H.264 decoder configuration has changed.";
       last_video_decoder_config_->set_codec_config(decoder_config_record);
+      decoder_config_changed_cb().Run();
     }
     return true;
   }

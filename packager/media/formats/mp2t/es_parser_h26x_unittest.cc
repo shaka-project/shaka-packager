@@ -77,12 +77,14 @@ class TestableEsParser : public EsParserH26x {
  public:
   TestableEsParser(Nalu::CodecType codec_type,
                    const NewStreamInfoCB& new_stream_info_cb,
-                   const EmitSampleCB& emit_sample_cb)
+                   const EmitSampleCB& emit_sample_cb,
+                   const MediaParser::DecoderConfigChangedCB& decoder_config_changed_cb)
       : EsParserH26x(codec_type,
                      std::unique_ptr<H26xByteToUnitStreamConverter>(
                          new FakeByteToUnitStreamConverter(codec_type)),
                      0,
-                     emit_sample_cb),
+                     emit_sample_cb,
+                     decoder_config_changed_cb),
         codec_type_(codec_type),
         new_stream_info_cb_(new_stream_info_cb),
         decoder_config_check_pending_(false) {}
@@ -185,6 +187,8 @@ class EsParserH26xTest : public testing::Test {
     has_stream_info_ = true;
   }
 
+  void DecoderConfigChanged() {}
+
  protected:
   std::vector<std::vector<uint8_t>> samples_;
   size_t sample_count_;
@@ -256,7 +260,8 @@ void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
   TestableEsParser es_parser(
       codec_type,
       base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
+      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)),
+      base::Bind(&EsParserH26xTest::DecoderConfigChanged, base::Unretained(this)));
 
   int64_t timestamp = 0;
   for (const auto& sample_data :
@@ -402,7 +407,8 @@ TEST_F(EsParserH26xTest, H264AudInAccessUnit) {
   TestableEsParser es_parser(
       Nalu::kH264,
       base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
+      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)),
+      base::Bind(&EsParserH26xTest::DecoderConfigChanged, base::Unretained(this)));
 
   size_t sample_index = 0;
   for (const auto& sample_data :

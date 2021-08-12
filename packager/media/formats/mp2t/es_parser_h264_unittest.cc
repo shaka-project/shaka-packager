@@ -135,6 +135,8 @@ class EsParserH264Test : public testing::Test {
     stream_map_[config->track_id()] = config;
   }
 
+  void DecoderConfigChanged() {}
+
   size_t sample_count() const { return sample_count_; }
   bool first_frame_is_key_frame() { return first_frame_is_key_frame_; }
 
@@ -170,7 +172,8 @@ void EsParserH264Test::ProcessPesPackets(
   EsParserH264 es_parser(
       0,
       base::Bind(&EsParserH264Test::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH264Test::EmitSample, base::Unretained(this)));
+      base::Bind(&EsParserH264Test::EmitSample, base::Unretained(this)),
+      base::Bind(&EsParserH264Test::DecoderConfigChanged, base::Unretained(this)));
 
   size_t au_idx = 0;
   for (size_t k = 0; k < pes_packets.size(); k++) {

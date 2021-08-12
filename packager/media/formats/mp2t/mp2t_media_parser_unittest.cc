@@ -100,12 +100,15 @@ class Mp2tMediaParserTest : public testing::Test {
     return false;
   }
 
+  void OnDecoderConfigChanged() {}
+
   void InitializeParser() {
     parser_->Init(
         base::Bind(&Mp2tMediaParserTest::OnInit, base::Unretained(this)),
         base::Bind(&Mp2tMediaParserTest::OnNewSample, base::Unretained(this)),
         base::Bind(&Mp2tMediaParserTest::OnNewTextSample,
                    base::Unretained(this)),
+        base::Bind(&Mp2tMediaParserTest::OnDecoderConfigChanged, base::Unretained(this)),
         NULL);
   }
 

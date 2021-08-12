@@ -185,6 +185,7 @@ MP4MediaParser::~MP4MediaParser() {}
 void MP4MediaParser::Init(const InitCB& init_cb,
                           const NewMediaSampleCB& new_media_sample_cb,
                           const NewTextSampleCB& new_text_sample_cb,
+                          const DecoderConfigChangedCB& decoder_config_changed_cb,
                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
