@@ -97,8 +97,8 @@ runs:
             # that the last executed statement will be a success, and the step
             # won't be failed if we get that far.
             ls packager mpd_generator >/dev/null || exit 1
-            ldd packager && exit 1
-            ldd mpd_generator && exit 1
+            ldd packager 2>&1 && exit 1
+            ldd mpd_generator 2>&1 && exit 1
             true
           )
           echo "::endgroup::"
@@ -107,6 +107,10 @@ runs:
         mkdir artifacts
         ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
         cd src/out/Release${{ inputs.build_type_suffix }}
+        echo "::endgroup::"
+        echo "::group::Strip executables"
+        strip packager${{ inputs.exe_ext }}
+        strip mpd_generator${{ inputs.exe_ext }}
         echo "::endgroup::"
         echo "::group::Copy packager"
         cp packager${{ inputs.exe_ext }} \
