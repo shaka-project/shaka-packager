@@ -88,11 +88,16 @@ runs:
         fi
         if [[ "${{ runner.os }}" == "Linux" ]]; then
           echo "::group::Check for static executables"
-          # Prove that we built static executables on Linux.  "ldd" will fail
-          # if the executable is not dynamically linked, so fail the workflow
-          # if "ldd" succeeds.
-          ldd packager && exit 1
-          ldd mpd_generator && exit 1
+          (
+            cd src/out/Release${{ inputs.build_type_suffix }}
+            # Prove that we built static executables on Linux.  First, check that
+            # the executables exist, and fail if they do not.  Then check "ldd",
+            # which will fail if the executable is not dynamically linked.  If
+            # "ldd" succeeds, we fail the workflow.
+            (test -x packager && test -x mpd_generator) || exit 1
+            ldd packager && exit 1
+            ldd mpd_generator && exit 1
+          )
           echo "::endgroup::"
         fi
         echo "::group::Prepare artifacts folder"
