@@ -93,10 +93,13 @@ runs:
             # Prove that we built static executables on Linux.  First, check that
             # the executables exist, and fail if they do not.  Then check "ldd",
             # which will fail if the executable is not dynamically linked.  If
-            # "ldd" succeeds, we fail the workflow.
-            (test -x packager && test -x mpd_generator) || exit 1
+            # "ldd" succeeds, we fail the workflow.  Finally, we call "true" so
+            # that the last executed statement will be a success, and the step
+            # won't be failed if we get that far.
+            ls packager mpd_generator >/dev/null || exit 1
             ldd packager && exit 1
             ldd mpd_generator && exit 1
+            true
           )
           echo "::endgroup::"
         fi
