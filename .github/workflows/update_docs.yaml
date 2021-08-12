@@ -45,6 +45,6 @@ jobs:
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.SHAKA_BOT_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: gh-pages
           full_commit_message: Generate docs for ${{ steps.ref.outputs.ref }}
