@@ -72,7 +72,7 @@ class WebVttParserTest : public testing::Test {
     return true;
   }
 
-  void DecoderConfigChangedCB() {}
+  void DecoderConfigChangedCB(uint32_t track_id) {}
 
   std::shared_ptr<WebVttParser> parser_;
   std::vector<std::shared_ptr<StreamInfo>> streams_;

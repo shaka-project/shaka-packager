@@ -295,14 +295,16 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                   base::Unretained(this), pes_pid);
   auto on_emit_text = base::Bind(&Mp2tMediaParser::OnEmitTextSample,
                                  base::Unretained(this), pes_pid);
+  auto on_decoder_config_changed = base::Bind(&Mp2tMediaParser::OnDecoderConfigChanged,
+                                 base::Unretained(this), pes_pid);
   switch (stream_type) {
     case TsStreamType::kAvc:
       es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit_media,
-                                       decoder_config_changed_cb_));
+                                       on_decoder_config_changed));
       break;
     case TsStreamType::kHevc:
       es_parser.reset(new EsParserH265(pes_pid, on_new_stream, on_emit_media,
-                                       decoder_config_changed_cb_));
+                                       on_decoder_config_changed));
       break;
     case TsStreamType::kAdtsAac:
     case TsStreamType::kMpeg1Audio:
@@ -430,6 +432,10 @@ void Mp2tMediaParser::OnEmitTextSample(uint32_t pes_pid,
     return;
   }
   pid_state->second->text_sample_queue_.push_back(std::move(new_sample));
+}
+
+void Mp2tMediaParser::OnDecoderConfigChanged(uint32_t pes_pid) {
+  decoder_config_changed_cb_.Run(pes_pid);
 }
 
 bool Mp2tMediaParser::EmitRemainingSamples() {

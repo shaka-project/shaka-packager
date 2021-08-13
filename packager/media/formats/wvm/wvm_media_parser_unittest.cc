@@ -141,7 +141,7 @@ class WvmMediaParserTest : public testing::Test {
     return false;
   }
 
-  void OnDecoderConfigChanged() {}
+  void OnDecoderConfigChanged(uint32_t track_id) {}
 
   void InitializeParser() {
     parser_->Init(

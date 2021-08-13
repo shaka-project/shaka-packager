@@ -373,8 +373,9 @@ Status MP4Muxer::UpdateEditListOffsetFromSample(const MediaSample& sample) {
   return Status::OK;
 }
 
-void MP4Muxer::OnDecoderConfigChanged() {
+Status MP4Muxer::OnDecoderConfigChanged(size_t input_stream_index) {
   muxer_listener()->OnDecoderConfigChanged();
+  return Status::OK;
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {

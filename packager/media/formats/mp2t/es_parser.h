@@ -23,6 +23,7 @@ class EsParser {
   typedef base::Callback<void(std::shared_ptr<StreamInfo>)> NewStreamInfoCB;
   typedef base::Callback<void(std::shared_ptr<MediaSample>)> EmitSampleCB;
   typedef base::Callback<void(std::shared_ptr<TextSample>)> EmitTextSampleCB;
+  typedef base::Callback<void()> DecoderConfigChangedCB;
 
   EsParser(uint32_t pid) : pid_(pid) {}
   virtual ~EsParser() {}

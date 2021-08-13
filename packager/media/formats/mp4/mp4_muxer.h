@@ -37,7 +37,7 @@ class MP4Muxer : public Muxer {
 
  protected:
   // MediaHandler implementation overrides.
-  void OnDecoderConfigChanged() override;
+  Status OnDecoderConfigChanged(size_t input_stream_index) override;
 
  private:
   // Muxer implementation overrides.

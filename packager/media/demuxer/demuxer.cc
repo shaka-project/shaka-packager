@@ -343,8 +343,18 @@ bool Demuxer::NewTextSampleEvent(uint32_t track_id,
   return PushTextSample(track_id, sample);
 }
 
-void Demuxer::DecoderConfigChangedEvent() {
-  NotifyDecoderConfigChanged();
+void Demuxer::DecoderConfigChangedEvent(uint32_t track_id) {
+  auto stream_index_iter = track_id_to_stream_index_map_.find(track_id);
+  if (stream_index_iter == track_id_to_stream_index_map_.end()) {
+    LOG(ERROR) << "Track " << track_id << " not found.";
+    return;
+  }
+  if (stream_index_iter->second == kInvalidStreamIndex)
+    return;
+  Status status = NotifyDecoderConfigChanged(stream_index_iter->second);
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to notify for decoder config change: " << status;
+  }
 }
 
 bool Demuxer::PushMediaSample(uint32_t track_id,

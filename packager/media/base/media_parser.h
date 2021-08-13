@@ -53,7 +53,8 @@ class MediaParser {
       NewTextSampleCB;
 
   /// Called when the decoder config parameters have changed.
-  typedef base::Callback<void()> DecoderConfigChangedCB;
+  /// @param track_id is the id of the track that changed.
+  typedef base::Callback<void(uint32_t track_id)> DecoderConfigChangedCB;
 
   /// Initialize the parser with necessary callbacks. Must be called before any
   /// data is passed to Parse().

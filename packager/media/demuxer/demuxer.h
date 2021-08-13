@@ -119,7 +119,7 @@ class Demuxer : public OriginHandler {
                            std::shared_ptr<MediaSample> sample);
   bool NewTextSampleEvent(uint32_t track_id,
                           std::shared_ptr<TextSample> sample);
-  void DecoderConfigChangedEvent();
+  void DecoderConfigChangedEvent(uint32_t track_id);
   // Helper function to push the sample to corresponding stream.
   bool PushMediaSample(uint32_t track_id, std::shared_ptr<MediaSample> sample);
   bool PushTextSample(uint32_t track_id, std::shared_ptr<TextSample> sample);

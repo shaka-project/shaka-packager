@@ -13,7 +13,6 @@
 
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
-#include "packager/media/base/media_parser.h"
 #include "packager/media/codecs/nalu_reader.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 
@@ -32,7 +31,7 @@ class EsParserH26x : public EsParser {
                std::unique_ptr<H26xByteToUnitStreamConverter> stream_converter,
                uint32_t pid,
                const EmitSampleCB& emit_sample_cb,
-               const MediaParser::DecoderConfigChangedCB& decoder_config_changed_cb);
+               const DecoderConfigChangedCB& decoder_config_changed_cb);
   ~EsParserH26x() override;
 
   // EsParser implementation overrides.
@@ -54,7 +53,7 @@ class EsParserH26x : public EsParser {
     return stream_converter_.get();
   }
 
-  const MediaParser::DecoderConfigChangedCB& decoder_config_changed_cb() const {
+  const DecoderConfigChangedCB& decoder_config_changed_cb() const {
     return decoder_config_changed_cb_;
   }
 
@@ -107,7 +106,7 @@ class EsParserH26x : public EsParser {
   EmitSampleCB emit_sample_cb_;
 
   // Calback to notify about decoder config updates.
-  MediaParser::DecoderConfigChangedCB decoder_config_changed_cb_;
+  DecoderConfigChangedCB decoder_config_changed_cb_;
 
   // The type of stream being parsed.
   Nalu::CodecType type_;

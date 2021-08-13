@@ -93,7 +93,7 @@ class MP4MediaParserTest : public testing::Test {
     return false;
   }
 
-  void DecoderConfigChangedF() {}
+  void DecoderConfigChangedF(uint32_t track_id) {}
 
   void InitializeParser(KeySource* decryption_key_source) {
     parser_->Init(

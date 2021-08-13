@@ -68,6 +68,7 @@ class Mp2tMediaParser : public MediaParser {
                          std::shared_ptr<MediaSample> new_sample);
   void OnEmitTextSample(uint32_t pes_pid,
                         std::shared_ptr<TextSample> new_sample);
+  void OnDecoderConfigChanged(uint32_t pes_pid);
 
   // Invoke the initialization callback if needed.
   bool FinishInitializationIfNeeded();

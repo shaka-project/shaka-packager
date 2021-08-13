@@ -87,9 +87,11 @@ Status MediaHandler::OnFlushRequest(size_t input_stream_index) {
   return FlushDownstream(output_stream_index);
 }
 
-void MediaHandler::OnDecoderConfigChanged() {
-  // Forward the event to all downstream handlers.
-  NotifyDecoderConfigChanged();
+Status MediaHandler::OnDecoderConfigChanged(size_t input_stream_index) {
+  // The default implementation treats the output stream index to be identical
+  // to the input stream index, which is true for most handlers.
+  const size_t output_stream_index = input_stream_index;
+  return NotifyDecoderConfigChanged(output_stream_index);
 }
 
 bool MediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
@@ -126,10 +128,13 @@ Status MediaHandler::FlushAllDownstreams() {
   return Status::OK;
 }
 
-void MediaHandler::NotifyDecoderConfigChanged() {
-  for (const auto& pair : output_handlers_) {
-    pair.second.first->OnDecoderConfigChanged();
+Status MediaHandler::NotifyDecoderConfigChanged(size_t output_stream_index) {
+  auto handler_it = output_handlers_.find(output_stream_index);
+  if (handler_it == output_handlers_.end()) {
+    return Status(error::NOT_FOUND,
+                  "No output handler exist at the specified index.");
   }
+  return handler_it->second.first->OnDecoderConfigChanged(handler_it->second.second);
 }
 
 }  // namespace media
