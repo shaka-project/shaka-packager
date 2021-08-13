@@ -255,6 +255,9 @@ class MediaHandler {
   /// Notify the downstream handler of a decoder config change.
   Status NotifyDecoderConfigChanged(size_t output_stream_index);
 
+  // Notify all downstream handlers of a decoder config change.
+  Status NotifyAllDecoderConfigChanged();
+
   bool initialized() { return initialized_; }
   size_t num_input_streams() const { return num_input_streams_; }
   size_t next_output_stream_index() const { return next_output_stream_index_; }

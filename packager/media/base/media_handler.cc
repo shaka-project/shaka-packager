@@ -137,5 +137,15 @@ Status MediaHandler::NotifyDecoderConfigChanged(size_t output_stream_index) {
   return handler_it->second.first->OnDecoderConfigChanged(handler_it->second.second);
 }
 
+Status MediaHandler::NotifyAllDecoderConfigChanged() {
+   for (const auto& pair : output_handlers_) {
+    Status status = pair.second.first->OnDecoderConfigChanged(pair.second.second);
+    if (!status.ok()) {
+      return status;
+    }
+  }
+  return Status::OK;
+}
+
 }  // namespace media
 }  // namespace shaka

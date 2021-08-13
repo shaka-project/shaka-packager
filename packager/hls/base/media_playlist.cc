@@ -470,6 +470,12 @@ void MediaPlaylist::AddPlacementOpportunity() {
 }
 
 void MediaPlaylist::AddDiscontinuity() {
+  // Make sure that discontinuities are not repeated
+  if(!entries_.empty() &&
+      entries_.back()->type() == HlsEntry::EntryType::kExtDiscontinuity) {
+    return;
+  }
+  
   entries_.emplace_back(new DiscontinuityEntry());
 }
 

@@ -344,14 +344,10 @@ bool Demuxer::NewTextSampleEvent(uint32_t track_id,
 }
 
 void Demuxer::DecoderConfigChangedEvent(uint32_t track_id) {
-  auto stream_index_iter = track_id_to_stream_index_map_.find(track_id);
-  if (stream_index_iter == track_id_to_stream_index_map_.end()) {
-    LOG(ERROR) << "Track " << track_id << " not found.";
-    return;
-  }
-  if (stream_index_iter->second == kInvalidStreamIndex)
-    return;
-  Status status = NotifyDecoderConfigChanged(stream_index_iter->second);
+  // Notify all handlers of the change. This is necessary because the e.g the
+  // decoder config change for a video stream might have side-effects to audio
+  // streams as well.
+  Status status = NotifyAllDecoderConfigChanged();
   if (!status.ok()) {
     LOG(ERROR) << "Failed to notify for decoder config change: " << status;
   }
