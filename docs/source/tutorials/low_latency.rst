@@ -26,7 +26,7 @@ Documentation
 Getting started
 ===============
 
-To enable LL-DASH mode, use set the ``--is_low_latency_dash`` flag to ``true``. 
+To enable LL-DASH mode, set the ``--is_low_latency_dash`` flag to ``true``. 
 
 All HTTP requests will use chunked transfer encoding:
 ``Transfer-Encoding: chunked``.
@@ -38,8 +38,8 @@ All HTTP requests will use chunked transfer encoding:
 Synopsis
 ========
 
-Here is a basic example of the low latency feature. 
-The LL-DASH streaming borrows features from "FFmpeg piping" and "HTTP upload",
+Here is a basic example of the LL-DASH support. 
+The LL-DASH setup borrows features from "FFmpeg piping" and "HTTP upload",
 see :doc:`ffmpeg_piping` and :doc:`http_upload`.
 
 Define UNIX pipe to connect ffmpeg with packager::
@@ -49,7 +49,6 @@ Define UNIX pipe to connect ffmpeg with packager::
 
 Acquire and transcode RTMP stream::
 
-    # Steady
     ffmpeg -fflags nobuffer -threads 0 -y \
         -i rtmp://184.72.239.149/vod/mp4:bigbuckbunny_450.mp4 \
         -pix_fmt yuv420p -vcodec libx264 -preset:v superfast -acodec aac \
@@ -67,6 +66,7 @@ Configure and run packager::
         --io_block_size 65536 \
         --segment_duration 2 \
         --is_low_latency_dash=true \
+        --utc_timings "urn:mpeg:dash:utc:http-xsdate:2014"="https://time.akamai.com/?iso" \
         --mpd_output "${UPLOAD_URL}/bigbuckbunny.mpd" \
 
 
@@ -81,11 +81,11 @@ Delivery Pipeline
 =================
 Shaka Packager will upload the LL-DASH content to the specified output via HTTP chunked transfer encoding.
 The server must have the ability to handle this type of request. If using a proxy or shim for cloud authentication,
-these services must also support HTTP chunked transfer endoding.
+these services must also support HTTP chunked transfer encoding.
 
 Examples of supporting content delivery systems:
 
-* AWS MediaStore
+* `AWS MediaStore <https://aws.amazon.com/mediastore/>`_
 
 Player
 ======
@@ -95,5 +95,5 @@ The player should also recognize the the throughput estimation and ABR challenge
 
 Examples of supporting players:
 
-* Shaka Player? 
-* dash.js
+* `Shaka Player <https://github.com/google/shaka-player>`_
+* `dash.js <https://github.com/Dash-Industry-Forum/dash.js>`_
