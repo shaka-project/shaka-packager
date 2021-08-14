@@ -68,6 +68,16 @@ deps_os = {
 
 hooks = [
   {
+    # When using CC=clang CXX=clang++, there is a binutils version check that
+    # does not work correctly in common.gypi.  Since we are stuck with a very
+    # old version of chromium/src/build, there is nothing to do but patch it to
+    # remove the check.  Thankfully, this version number does not control
+    # anything critical in the build settings as far as we can tell.
+    'name': 'patch-binutils-version-check',
+    'pattern': '.',
+    'action': ['sed', '-e', 's/<!pymod_do_main(compiler_version target assembler)/0/', '-i.bk', 'src/packager/build/common.gypi'],
+  },
+  {
     # A change to a .gyp, .gypi, or to GYP itself should run the generator.
     "pattern": ".",
     "action": ["python", "src/gyp_packager.py", "--depth=src/packager"],
