@@ -269,7 +269,7 @@ TEST_F(PackagerTest, ReadFromBufferFailed) {
 
 TEST_F(PackagerTest, LowLatencyDashEnabledAndFragmentDurationSet) {
   auto packaging_params = SetupPackagingParams();
-  packaging_params.chunking_params.is_low_latency_dash = true;
+  packaging_params.chunking_params.low_latency_dash_mode = true;
   packaging_params.chunking_params.subsegment_duration_in_seconds =
       kFragmentDurationInSeconds;
   Packager packager;
@@ -281,7 +281,7 @@ TEST_F(PackagerTest, LowLatencyDashEnabledAndFragmentDurationSet) {
 
 TEST_F(PackagerTest, LowLatencyDashEnabledAndUtcTimingNotSet) {
   auto packaging_params = SetupPackagingParams();
-  packaging_params.mpd_params.is_low_latency_dash = true;
+  packaging_params.mpd_params.low_latency_dash_mode = true;
   Packager packager;
   auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
   ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());

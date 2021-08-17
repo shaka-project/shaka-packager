@@ -138,7 +138,7 @@ base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
     return base::nullopt;
 
   // Required for LL-DASH MPDs.
-  if (mpd_options_.mpd_params.is_low_latency_dash) {
+  if (mpd_options_.mpd_params.low_latency_dash_mode) {
     // Create ServiceDescription element.
     xml::XmlNode service_description_node("ServiceDescription");
     if (!service_description_node.SetIntegerAttribute("id", id_))

@@ -283,7 +283,7 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
   if (HasLiveOnlyFields(media_info_) &&
       !representation.AddLiveOnlyInfo(
           media_info_, segment_infos_, start_number_,
-          mpd_options_.mpd_params.is_low_latency_dash)) {
+          mpd_options_.mpd_params.low_latency_dash_mode)) {
     LOG(ERROR) << "Failed to add Live info.";
     return base::nullopt;
   }

@@ -209,7 +209,7 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
 
 TEST_F(ChunkingHandlerTest, LowLatencyDash) {
   ChunkingParams chunking_params;
-  chunking_params.is_low_latency_dash = true;
+  chunking_params.low_latency_dash_mode = true;
   chunking_params.segment_duration_in_seconds = 1;
   SetUpChunkingHandler(1, chunking_params);
 

@@ -325,7 +325,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   ChunkingParams& chunking_params = packaging_params.chunking_params;
   chunking_params.segment_duration_in_seconds = FLAGS_segment_duration;
   chunking_params.subsegment_duration_in_seconds = FLAGS_fragment_duration;
-  chunking_params.is_low_latency_dash = FLAGS_is_low_latency_dash;
+  chunking_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
   chunking_params.segment_sap_aligned = FLAGS_segment_sap_aligned;
   chunking_params.subsegment_sap_aligned = FLAGS_fragment_sap_aligned;
 
@@ -436,7 +436,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mp4_params.generate_sidx_in_media_segments =
       FLAGS_generate_sidx_in_media_segments;
   mp4_params.include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
-  mp4_params.is_low_latency_dash = FLAGS_is_low_latency_dash;
+  mp4_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
 
   packaging_params.transport_stream_timestamp_offset_ms =
       FLAGS_transport_stream_timestamp_offset_ms;
@@ -476,7 +476,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
       FLAGS_allow_approximate_segment_timeline;
   mpd_params.allow_codec_switching = FLAGS_allow_codec_switching;
   mpd_params.include_mspr_pro = FLAGS_include_mspr_pro_for_playready;
-  mpd_params.is_low_latency_dash = FLAGS_is_low_latency_dash;
+  mpd_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {

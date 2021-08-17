@@ -96,7 +96,7 @@ struct MpdParams {
   /// chunk. A chunk is the smallest unit and is constructed of a single moof
   /// and mdat atom. Each chunk is uploaded immediately upon creation,
   /// decoupling latency from segment duration.
-  bool is_low_latency_dash = false;
+  bool low_latency_dash_mode = false;
   /// This is the target latency in seconds requested by the user. The actual
   /// latency may be different to the target latency
   /// and is greatly influnced by the player.

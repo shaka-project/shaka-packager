@@ -461,7 +461,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
     uint32_t start_number,
-    bool is_low_latency_dash) {
+    bool low_latency_dash_mode) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
@@ -510,7 +510,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
             std::to_string(last_segment_number)));
       }
     } else {
-      if (!is_low_latency_dash) {
+      if (!low_latency_dash_mode) {
         XmlNode segment_timeline("SegmentTimeline");
         RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
         RCHECK(segment_template.AddChild(std::move(segment_timeline)));

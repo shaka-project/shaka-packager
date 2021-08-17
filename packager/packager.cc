@@ -374,7 +374,7 @@ Status ValidateParams(const PackagingParams& packaging_params,
                   "on-demand profile (not using segment_template or segment list).");
   }
 
-  if (packaging_params.chunking_params.is_low_latency_dash &&
+  if (packaging_params.chunking_params.low_latency_dash_mode &&
       packaging_params.chunking_params.subsegment_duration_in_seconds) {
     // Low latency streaming requires data to be shipped as chunks,
     // the smallest unit of video. Right now, each chunk contains
@@ -384,15 +384,15 @@ Status ValidateParams(const PackagingParams& packaging_params,
     // of desired frames per chunk.
     return Status(error::INVALID_ARGUMENT,
                   "--fragment_duration cannot be set "
-                  "if --is_low_latency_dash is enabled.");
+                  "if --low_latency_dash_mode is enabled.");
   }
 
-  if (packaging_params.mpd_params.is_low_latency_dash &&
+  if (packaging_params.mpd_params.low_latency_dash_mode &&
       packaging_params.mpd_params.utc_timings.empty()) {
     // Low latency DASH MPD requires a UTC Timing value
     return Status(error::INVALID_ARGUMENT,
                   "--utc_timings must be be set "
-                  "if --is_low_latency_dash is enabled.");
+                  "if --low_latency_dash_mode is enabled.");
   }
 
   return Status::OK;

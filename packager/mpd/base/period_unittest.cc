@@ -186,7 +186,7 @@ TEST_F(PeriodTest, LowLatencyDashMpdGetXml) {
       "}\n"
       "container_type: 1\n";
   mpd_options_.mpd_type = MpdType::kDynamic;
-  mpd_options_.mpd_params.is_low_latency_dash = true;
+  mpd_options_.mpd_params.low_latency_dash_mode = true;
   mpd_options_.mpd_params.target_latency_seconds = 1;
 
   EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))

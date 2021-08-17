@@ -102,7 +102,7 @@ class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
     mpd_options.dash_profile = DashProfile::kLive;
     // Low Latency DASH live profile should be dynamic.
     mpd_options.mpd_type = MpdType::kDynamic;
-    mpd_options.mpd_params.is_low_latency_dash = true;
+    mpd_options.mpd_params.low_latency_dash_mode = true;
     notifier_.reset(new MockMpdNotifier(mpd_options));
     listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
   }
