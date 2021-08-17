@@ -6,7 +6,7 @@ Low Latency DASH (LL-DASH) Streaming
 Introduction
 ************
 
-If ``--is_low_latency_dash`` is enabled, low latency DASH (LL-DASH) packaging will be used.
+If ``--low_latency_dash_mode`` is enabled, low latency DASH (LL-DASH) packaging will be used.
 
 This will reduce overall latency by ensuring that the media segments are chunk encoded and delivered via an aggregating response.
 The combination of these features will ensure that overall latency can be decoupled from the segment duration.
@@ -26,7 +26,7 @@ Documentation
 Getting started
 ===============
 
-To enable LL-DASH mode, set the ``--is_low_latency_dash`` flag to ``true``. 
+To enable LL-DASH mode, set the ``--low_latency_dash_mode`` flag to ``true``. 
 
 All HTTP requests will use chunked transfer encoding:
 ``Transfer-Encoding: chunked``.
@@ -65,7 +65,7 @@ Configure and run packager::
         "input=${PIPE},stream=video,init_segment=${UPLOAD_URL}_init.m4s,segment_template=${UPLOAD_URL}/bigbuckbunny-video-h264-450-\$Number%04d\$.m4s" \
         --io_block_size 65536 \
         --segment_duration 2 \
-        --is_low_latency_dash=true \
+        --low_latency_dash_mode=true \
         --utc_timings "urn:mpeg:dash:utc:http-xsdate:2014"="https://time.akamai.com/?iso" \
         --mpd_output "${UPLOAD_URL}/bigbuckbunny.mpd" \
 

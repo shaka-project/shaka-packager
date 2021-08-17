@@ -96,7 +96,7 @@ DASH options
     If enabled, allow adaptive switching between different codecs, if they have 
     the same language, media type (audio, video etc) and container type.
 
---is_low_latency_dash
+--low_latency_dash_mode
 
     If enabled, LL-DASH streaming will be used,
     reducing overall latency by decoupling latency from segment duration.
