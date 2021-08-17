@@ -11,7 +11,7 @@ If ``--low_latency_dash_mode`` is enabled, low latency DASH (LL-DASH) packaging 
 This will reduce overall latency by ensuring that the media segments are chunk encoded and delivered via an aggregating response.
 The combination of these features will ensure that overall latency can be decoupled from the segment duration.
 For low latency to be achieved, the output of Shaka Packager must be combined with a delivery system which can chain together a set of aggregating responses, such as chunked transfer encoding under HTTP/1.1 or a HTTP/2 or HTTP/3 connection.
-The output of Shaka Packager must be played DASH client which understands the availabilityTimeOffset MPD value.
+The output of Shaka Packager must be played with a DASH client that understands the availabilityTimeOffset MPD value.
 Furthermore, the player should also understand the throughput estimation and ABR challenges that arise when operating in the low latency regime.
 
 This tutorial covers LL-DASH packaging and uses features from the DASH, HTTP upload, and FFmpeg piping tutorials.
