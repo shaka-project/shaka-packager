@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2014 Google Inc. All rights reserved.
 #
@@ -25,8 +25,6 @@ Module is optional. If not specified, build everything.
 Step 1 is only required if there is any gyp file change. Otherwise, you
 may just run ninja.
 """
-
-from __future__ import print_function
 
 import os
 import sys

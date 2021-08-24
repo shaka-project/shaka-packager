@@ -23,7 +23,7 @@
             '<(generated_dir)/license_notice.h',
           ],
           'action': [
-            'python', 'generate_license_notice.py', '<(generated_dir)',
+            'python3', 'generate_license_notice.py', '<(generated_dir)',
           ],
           'process_outputs_as_sources': 1,
           'message': 'Generating embeddable license',
