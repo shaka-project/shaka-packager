@@ -428,7 +428,7 @@
             '<(shared_generated_dir)/x86insn_nasm.gperf',
           ],
           'action': [
-            'python',
+            'python3',
             '<(gen_insn_path)',
             '<(shared_generated_dir)',
           ],

@@ -7,8 +7,6 @@
 # https://developers.google.com/open-source/licenses/bsd
 """This script is used to generate version string for packager."""
 
-from __future__ import print_function
-
 import subprocess
 
 if __name__ == '__main__':
@@ -29,4 +27,4 @@ if __name__ == '__main__':
   if version_tag:
     print('{0}-{1}'.format(version_tag, version_hash))
   else:
-    print(version_hash)
+    print(version_hash.decode('utf8'))

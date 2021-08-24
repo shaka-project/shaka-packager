@@ -77,7 +77,7 @@
         '<(protoc)',
       ],
       'action': [
-        'python',
+        'python3',
         '<(protoc_wrapper)',
         # If no cc_include specified --protobuf option will be ignored.
         '--include',

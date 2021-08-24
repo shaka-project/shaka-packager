@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2018 Google Inc. All rights reserved.
 #
@@ -6,8 +6,6 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 """This script extracts a version or release notes from the changelog."""
-
-from __future__ import print_function
 
 import argparse
 import re
@@ -22,7 +20,7 @@ def main():
 
   args = parser.parse_args()
 
-  with open('CHANGELOG.md', 'r') as f:
+  with open('CHANGELOG.md', 'r', encoding='utf8') as f:
     contents = f.read()
 
   # This excludes the header line with the release name and date, to match the
