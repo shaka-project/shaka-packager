@@ -161,6 +161,7 @@ jobs:
         uses: ./src/.github/workflows/custom-actions/build-packager
         with:
           os_name: ${{ matrix.os_name }}
+          target_arch: ${{ matrix.target_arch }}
           lib_type: ${{ matrix.lib_type }}
           build_type: ${{ matrix.build_type }}
           build_type_suffix: ${{ matrix.build_type_suffix }}
