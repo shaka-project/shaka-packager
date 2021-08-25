@@ -46,6 +46,15 @@ class MpdNotifier {
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* container_id) = 0;
 
+  /// Record the availailityTimeOffset for Low Latency DASH streaming.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifyAvailabilityTimeOffset(uint32_t container_id) {
+    return true;
+  }
+
   /// Change the sample duration of container with @a container_id.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
@@ -55,6 +64,13 @@ class MpdNotifier {
   ///         specified by @a container_id does not exist.
   virtual bool NotifySampleDuration(uint32_t container_id,
                                     int32_t sample_duration) = 0;
+
+  /// Record the duration of a segment for Low Latency DASH streaming.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifySegmentDuration(uint32_t container_id) { return true; }
 
   /// Notifies MpdBuilder that there is a new segment ready. For live, this
   /// is usually a new segment, for VOD this is usually a subsegment.

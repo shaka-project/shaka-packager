@@ -100,9 +100,15 @@ class MuxerListener {
                             int32_t time_scale,
                             ContainerType container_type) = 0;
 
+  /// Called when LL-DASH streaming starts.
+  virtual void OnAvailabilityOffsetReady() {}
+
   /// Called when the average sample duration of the media is determined.
   /// @param sample_duration in timescale of the media.
   virtual void OnSampleDurationReady(int32_t sample_duration) = 0;
+
+  /// Called when LL-DASH streaming starts.
+  virtual void OnSegmentDurationReady() {}
 
   /// Called when all files are written out and the muxer object does not output
   /// any more files.

@@ -44,7 +44,9 @@ class MpdNotifyMuxerListener : public MuxerListener {
                     const StreamInfo& stream_info,
                     int32_t time_scale,
                     ContainerType container_type) override;
+  void OnAvailabilityOffsetReady() override;
   void OnSampleDurationReady(int32_t sample_duration) override;
+  void OnSegmentDurationReady() override;
   void OnMediaEnd(const MediaRanges& media_ranges,
                   float duration_seconds) override;
   void OnNewSegment(const std::string& file_name,

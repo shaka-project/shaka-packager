@@ -126,6 +126,8 @@ class Segmenter {
   virtual Status DoFinalize() = 0;
   virtual Status DoFinalizeSegment() = 0;
 
+  virtual Status DoFinalizeChunk() { return Status::OK; }
+
   uint32_t GetReferenceStreamId();
 
   void FinalizeFragmentForKeyRotation(

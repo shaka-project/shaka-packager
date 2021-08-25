@@ -207,5 +207,48 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
                         kDuration, !kEncrypted, _)));
 }
 
+TEST_F(ChunkingHandlerTest, LowLatencyDash) {
+  ChunkingParams chunking_params;
+  chunking_params.low_latency_dash_mode = true;
+  chunking_params.segment_duration_in_seconds = 1;
+  SetUpChunkingHandler(1, chunking_params);
+
+  // Each completed segment will contain 2 chunks
+  const int64_t kChunkDurationInMs = 500;
+  const int64_t kSegmentDurationInMs = 1000;
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale1))));
+
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex, GetMediaSample(i * kChunkDurationInMs, kChunkDurationInMs,
+                                     kKeyFrame))));
+  }
+
+  // NOTE: Each MediaSample will create a chunk, dispatching SegmentInfo
+  EXPECT_THAT(
+      GetOutputStreamDataVector(),
+      ElementsAre(
+          IsStreamInfo(kStreamIndex, kTimeScale1, !kEncrypted, _),
+          // Chunk 1 for segment 1
+          IsMediaSample(kStreamIndex, 0, kChunkDurationInMs, !kEncrypted, _),
+          IsSegmentInfo(kStreamIndex, 0, kChunkDurationInMs, kIsSubsegment,
+                        !kEncrypted),
+          // Chunk 2 for segment 1
+          IsMediaSample(kStreamIndex, kChunkDurationInMs, kChunkDurationInMs,
+                        !kEncrypted, _),
+          IsSegmentInfo(kStreamIndex, 0, 2 * kChunkDurationInMs, !kIsSubsegment,
+                        !kEncrypted),
+          // Chunk 1 for segment 2
+          IsMediaSample(kStreamIndex, kSegmentDurationInMs, kChunkDurationInMs,
+                        !kEncrypted, _),
+          IsSegmentInfo(kStreamIndex, kSegmentDurationInMs, kChunkDurationInMs,
+                        kIsSubsegment, !kEncrypted),
+          // Chunk 2 for segment 2
+          IsMediaSample(kStreamIndex, kSegmentDurationInMs + kChunkDurationInMs,
+                        kChunkDurationInMs, !kEncrypted, _)));
+}
+
 }  // namespace media
 }  // namespace shaka
