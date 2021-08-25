@@ -39,6 +39,7 @@ const uint8_t kKey[]{
     0x3a, 0xed, 0xde, 0xc0, 0xbc, 0x42, 0x1f, 0x4d,
 };
 const double kClearLeadInSeconds = 1.0;
+const double kFragmentDurationInSeconds = 5.0;
 
 }  // namespace
 
@@ -266,6 +267,27 @@ TEST_F(PackagerTest, ReadFromBufferFailed) {
   ASSERT_EQ(error::FILE_FAILURE, packager.Run().error_code());
 }
 
+TEST_F(PackagerTest, LowLatencyDashEnabledAndFragmentDurationSet) {
+  auto packaging_params = SetupPackagingParams();
+  packaging_params.chunking_params.low_latency_dash_mode = true;
+  packaging_params.chunking_params.subsegment_duration_in_seconds =
+      kFragmentDurationInSeconds;
+  Packager packager;
+  auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+  EXPECT_THAT(status.error_message(),
+              HasSubstr("--fragment_duration cannot be set"));
+}
+
+TEST_F(PackagerTest, LowLatencyDashEnabledAndUtcTimingNotSet) {
+  auto packaging_params = SetupPackagingParams();
+  packaging_params.mpd_params.low_latency_dash_mode = true;
+  Packager packager;
+  auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+  EXPECT_THAT(status.error_message(),
+              HasSubstr("--utc_timings must be be set"));
+}
 // TODO(kqyang): Add more tests.
 
 }  // namespace shaka

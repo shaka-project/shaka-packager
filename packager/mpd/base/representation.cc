@@ -208,6 +208,14 @@ void Representation::SetSampleDuration(int32_t frame_duration) {
   }
 }
 
+void Representation::SetSegmentDuration() {
+  int64_t sd = mpd_options_.mpd_params.target_segment_duration *
+               media_info_.reference_time_scale();
+  if (sd <= 0)
+    return;
+  media_info_.set_segment_duration(sd);
+}
+
 const MediaInfo& Representation::GetMediaInfo() const {
   return media_info_;
 }
@@ -273,8 +281,9 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
-                                      start_number_)) {
+      !representation.AddLiveOnlyInfo(
+          media_info_, segment_infos_, start_number_,
+          mpd_options_.mpd_params.low_latency_dash_mode)) {
     LOG(ERROR) << "Failed to add Live info.";
     return base::nullopt;
   }
@@ -295,6 +304,23 @@ void Representation::SetPresentationTimeOffset(
   if (pto <= 0)
     return;
   media_info_.set_presentation_time_offset(pto);
+}
+
+void Representation::SetAvailabilityTimeOffset() {
+  // Adjust the frame duration to units of seconds to match target segment
+  // duration.
+  const double frame_duration_sec =
+      (double)frame_duration_ / (double)media_info_.reference_time_scale();
+  // availabilityTimeOffset = segment duration - chunk duration.
+  // Here, the frame duration is equivalent to the sample duration,
+  // see Representation::SetSampleDuration(uint32_t frame_duration).
+  // By definition, each chunk will contain only one sample;
+  // thus, chunk_duration = sample_duration = frame_duration.
+  const double ato =
+      mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
+  if (ato <= 0)
+    return;
+  media_info_.set_availability_time_offset(ato);
 }
 
 bool Representation::GetStartAndEndTimestamps(

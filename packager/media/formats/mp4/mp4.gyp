@@ -29,6 +29,8 @@
         'fragmenter.cc',
         'fragmenter.h',
         'key_frame_info.h',
+        'low_latency_segment_segmenter.cc',
+        'low_latency_segment_segmenter.h',
         'mp4_media_parser.cc',
         'mp4_media_parser.h',
         'mp4_muxer.cc',
