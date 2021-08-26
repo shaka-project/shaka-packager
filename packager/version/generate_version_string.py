@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -12,7 +12,7 @@ import subprocess
 if __name__ == '__main__':
   try:
     version_tag = subprocess.check_output('git tag --points-at HEAD',
-        stderr=subprocess.STDOUT, shell=True).rstrip()
+        stderr=subprocess.STDOUT, shell=True).decode().rstrip()
   except subprocess.CalledProcessError as e:
     # git tag --points-at is not supported in old versions of git. Just ignore
     # version_tag in this case.
@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
   try:
     version_hash = subprocess.check_output('git rev-parse --short HEAD',
-        stderr=subprocess.STDOUT, shell=True).rstrip()
+        stderr=subprocess.STDOUT, shell=True).decode().rstrip()
   except subprocess.CalledProcessError as e:
     version_hash = 'unknown-version'
 
   if version_tag:
     print('{0}-{1}'.format(version_tag, version_hash))
   else:
-    print(version_hash.decode('utf8'))
+    print(version_hash)
