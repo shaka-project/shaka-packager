@@ -59,12 +59,12 @@ jobs:
             # 64-bit outputs on Windows go to a different folder name.
             build_type_suffix: "_x64"
           - os: linux-arm64
-            os_name: linux-arm64
+            os_name: linux
             target_arch: arm64
             exe_ext: ""
             build_type_suffix: ""
 
-    name: Build and test ${{ matrix.os_name }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
+    name: Build and test ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
     runs-on: ${{ matrix.os }}
 
     steps:

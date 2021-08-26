@@ -137,22 +137,19 @@ runs:
         strip packager${{ inputs.exe_ext }}
         strip mpd_generator${{ inputs.exe_ext }}
         echo "::endgroup::"
+        SUFFIX="-${{ inputs.os_name }}-${{ inputs.target_arch }}"
+        EXE_SUFFIX="$SUFFIX${{ inputs.exe_ext}}"
         echo "::group::Copy packager"
-        cp packager${{ inputs.exe_ext }} \
-            $ARTIFACTS/packager-${{ inputs.os_name }}${{ inputs.exe_ext }}
+        cp packager${{ inputs.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
         echo "::endgroup::"
         echo "::group::Copy mpd_generator"
-        cp mpd_generator${{ inputs.exe_ext }} \
-            $ARTIFACTS/mpd_generator-${{ inputs.os_name }}${{ inputs.exe_ext }}
+        cp mpd_generator${{ inputs.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
         echo "::endgroup::"
-        if [[ '${{ runner.os }}' == 'Windows' ]]; then
-          echo "::group::Zip pssh-box"
-          7z a $ARTIFACTS/pssh-box-${{ inputs.os_name }}.py.zip \
-              pyproto pssh-box.py
-          echo "::endgroup::"
-        else
+        # The pssh-box bundle is OS and architecture independent.  So only do
+        # it on this one OS and architecture, and give it a more generic
+        # filename.
+        if [[ '${{ inputs.os_name }}' == 'linux' && '${{ inputs.target_arch }}' == 'x64' ]]; then
           echo "::group::Tar pssh-box"
-          tar -czf $ARTIFACTS/pssh-box-${{ inputs.os_name }}.py.tar.gz \
-              pyproto pssh-box.py
+          tar -czf $ARTIFACTS/pssh-box.py.tar.gz pyproto pssh-box.py
           echo "::endgroup::"
         fi
