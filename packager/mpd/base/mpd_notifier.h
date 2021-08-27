@@ -87,6 +87,13 @@ class MpdNotifier {
                                 int64_t duration,
                                 uint64_t size) = 0;
 
+  /// TODO(Caitlin)
+  virtual bool NotifyCompletedSegment(uint32_t container_id,
+                                      int64_t duration,
+                                      uint64_t size) {
+    return true;
+  }
+
   /// Notifies MpdBuilder that there is a new CueEvent.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().

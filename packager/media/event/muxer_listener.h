@@ -135,6 +135,10 @@ class MuxerListener {
                             int64_t duration,
                             uint64_t segment_file_size) = 0;
 
+  /// TODO(Caitlin)
+  virtual void OnCompletedSegment(int64_t duration,
+                                  uint64_t segment_file_size) {}
+
   /// Called when there is a new key frame. For Video only. Note that it should
   /// be called before OnNewSegment is called on the containing segment.
   /// @param timestamp is in terms of the timescale of the media.

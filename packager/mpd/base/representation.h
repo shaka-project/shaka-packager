@@ -95,11 +95,21 @@ class Representation {
   /// @param start_time is the start time for the (sub)segment, in units of the
   ///        stream's time scale.
   /// @param duration is the duration of the segment, in units of the stream's
-  ///        time scale.
+  ///        time scale. In the low latency case, this duration is that of the
+  ///        first chunk because the full duration is not yet known.
   /// @param size of the segment in bytes.
   virtual void AddNewSegment(int64_t start_time,
                              int64_t duration,
                              uint64_t size);
+
+  /// Update a media segment in the Representation.
+  /// In the low latency case, the segment duration will not be ready until the
+  /// entire segment has been processed. This allows setting the full duration
+  /// after the segment has been completed and the true duratio is known.
+  /// @param duration is the duration of the segment, in units of the stream's
+  ///        time scale.
+  /// @param size of the segment in bytes.
+  virtual void UpdateCompletedSegment(int64_t duration, uint64_t size);
 
   /// Set the sample duration of this Representation.
   /// Sample duration is not available right away especially for live. This
@@ -187,6 +197,11 @@ class Representation {
   // Add a SegmentInfo. This function may insert an adjusted SegmentInfo if
   // |allow_approximate_segment_timeline_| is set.
   void AddSegmentInfo(int64_t start_time, int64_t duration);
+
+  // Update the current SegmentInfo. This method is used to update the duration
+  // value after a low latency segment has been completed and the true duration
+  // is known.
+  void UpdateSegmentInfo(int64_t duration);
 
   // Check if two timestamps are approximately equal if
   // |allow_approximate_segment_timeline_| is set; Otherwise check whether the

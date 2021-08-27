@@ -187,6 +187,22 @@ void Representation::AddNewSegment(int64_t start_time,
     state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
 
   AddSegmentInfo(start_time, duration);
+
+  // Only update the buffer depth and bandwidth estimator when the full segment
+  // is completed. In the LL-DASH case, only the first chunk in the segment has
+  // been written at this point. For LL-DASH, wait until the entire segment has
+  // been written before updating.
+  if (!mpd_options_.mpd_params.low_latency_dash_mode) {
+    current_buffer_depth_ += segment_infos_.back().duration;
+
+    bandwidth_estimator_.AddBlock(size, static_cast<double>(duration) /
+                                            media_info_.reference_time_scale());
+  }
+}
+
+void Representation::UpdateCompletedSegment(int64_t duration, uint64_t size) {
+  UpdateSegmentInfo(duration);
+
   current_buffer_depth_ += segment_infos_.back().duration;
 
   bandwidth_estimator_.AddBlock(
@@ -408,6 +424,13 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
   }
 
   segment_infos_.push_back({start_time, adjusted_duration, kNoRepeat});
+}
+
+void Representation::UpdateSegmentInfo(int64_t duration) {
+  if (!segment_infos_.empty()) {
+    // Update the duration in the current segment.
+    segment_infos_.back().duration = duration;
+  }
 }
 
 bool Representation::ApproximiatelyEqual(int64_t time1, int64_t time2) const {
