@@ -97,7 +97,9 @@ class Representation {
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale. In the low latency case, this duration is that of the
   ///        first chunk because the full duration is not yet known.
-  /// @param size of the segment in bytes.
+  /// @param size of the segment in bytes. In the low latency case, this size is
+  /// that of the
+  ///        first chunk because the full size is not yet known.
   virtual void AddNewSegment(int64_t start_time,
                              int64_t duration,
                              uint64_t size);
@@ -106,9 +108,10 @@ class Representation {
   /// In the low latency case, the segment duration will not be ready until the
   /// entire segment has been processed. This allows setting the full duration
   /// after the segment has been completed and the true duratio is known.
-  /// @param duration is the duration of the segment, in units of the stream's
+  /// @param duration is the duration of the complete segment, in units of the
+  /// stream's
   ///        time scale.
-  /// @param size of the segment in bytes.
+  /// @param size of the complete segment in bytes.
   virtual void UpdateCompletedSegment(int64_t duration, uint64_t size);
 
   /// Set the sample duration of this Representation.
@@ -199,8 +202,8 @@ class Representation {
   void AddSegmentInfo(int64_t start_time, int64_t duration);
 
   // Update the current SegmentInfo. This method is used to update the duration
-  // value after a low latency segment has been completed and the true duration
-  // is known.
+  // value after a low latency segment is complete, and the full segment
+  // duration is known.
   void UpdateSegmentInfo(int64_t duration);
 
   // Check if two timestamps are approximately equal if

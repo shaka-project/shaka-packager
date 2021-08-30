@@ -464,8 +464,8 @@ class SegmentTemplateTest : public RepresentationTest {
     if (mpd_options_.mpd_params.low_latency_dash_mode) {
       // Low latency segments do not repeat, so create 1 new segment and return.
       // At this point, only the first chunk of the low latency segment has been
-      // written. The BW will be updated once the segment is fully written and
-      // the segment duration and size are known.
+      // written. The bandwidth will be updated once the segment is fully
+      // written and the segment duration and size are known.
       representation_->AddNewSegment(start_time, duration, size);
       return;
     }
