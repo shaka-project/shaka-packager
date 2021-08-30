@@ -189,9 +189,10 @@ void Representation::AddNewSegment(int64_t start_time,
   AddSegmentInfo(start_time, duration);
 
   // Only update the buffer depth and bandwidth estimator when the full segment
-  // is completed. In the LL-DASH case, only the first chunk in the segment has
-  // been written at this point. For LL-DASH, wait until the entire segment has
-  // been written before updating.
+  // is completed. In the low latency case, only the first chunk in the segment
+  // has been written at this point. Therefore, we must wait until the entire
+  // segment has been written before updating buffer depth and bandwidth
+  // estimator.
   if (!mpd_options_.mpd_params.low_latency_dash_mode) {
     current_buffer_depth_ += segment_infos_.back().duration;
 
@@ -201,6 +202,12 @@ void Representation::AddNewSegment(int64_t start_time,
 }
 
 void Representation::UpdateCompletedSegment(int64_t duration, uint64_t size) {
+  if (!mpd_options_.mpd_params.low_latency_dash_mode) {
+    LOG(WARNING)
+        << "UpdateCompletedSegment is only applicable to low latency mode.";
+    return;
+  }
+
   UpdateSegmentInfo(duration);
 
   current_buffer_depth_ += segment_infos_.back().duration;
