@@ -345,7 +345,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
 }
 
 bool SimpleHlsNotifier::NotifySampleDuration(uint32_t stream_id,
-                                             uint32_t sample_duration) {
+                                             int32_t sample_duration) {
   base::AutoLock auto_lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
@@ -359,8 +359,8 @@ bool SimpleHlsNotifier::NotifySampleDuration(uint32_t stream_id,
 
 bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          const std::string& segment_name,
-                                         uint64_t start_time,
-                                         uint64_t duration,
+                                         int64_t start_time,
+                                         int64_t duration,
                                          uint64_t start_byte_offset,
                                          uint64_t size) {
   base::AutoLock auto_lock(lock_);
@@ -377,8 +377,8 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                              start_byte_offset, size);
 
   // Update target duration.
-  uint32_t longest_segment_duration =
-      static_cast<uint32_t>(ceil(media_playlist->GetLongestSegmentDuration()));
+  int32_t longest_segment_duration =
+      static_cast<int32_t>(ceil(media_playlist->GetLongestSegmentDuration()));
   bool target_duration_updated = false;
   if (longest_segment_duration > target_duration_) {
     target_duration_ = longest_segment_duration;
@@ -409,7 +409,7 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
 }
 
 bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
-                                       uint64_t timestamp,
+                                       int64_t timestamp,
                                        uint64_t start_byte_offset,
                                        uint64_t size) {
   base::AutoLock auto_lock(lock_);
@@ -423,7 +423,7 @@ bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
   return true;
 }
 
-bool SimpleHlsNotifier::NotifyCueEvent(uint32_t stream_id, uint64_t timestamp) {
+bool SimpleHlsNotifier::NotifyCueEvent(uint32_t stream_id, int64_t timestamp) {
   base::AutoLock auto_lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {

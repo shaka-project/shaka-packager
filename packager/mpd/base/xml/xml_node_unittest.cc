@@ -365,16 +365,17 @@ class LiveSegmentTimelineTest : public ::testing::Test {
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
   const uint32_t kStartNumber = 1;
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 100;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
+  const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
       {kStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -386,16 +387,17 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
   const uint32_t kStartNumber = 1;
-  const uint64_t kNonZeroStartTime = 500;
-  const uint64_t kDuration = 100;
+  const int64_t kNonZeroStartTime = 500;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
+  const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
       {kNonZeroStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(representation,
               XmlNodeEqual(
@@ -410,16 +412,17 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
   const uint32_t kStartNumber = 6;
-  const uint64_t kNonZeroStartTime = 500;
-  const uint64_t kDuration = 100;
+  const int64_t kNonZeroStartTime = 500;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
+  const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
       {kNonZeroStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -431,13 +434,14 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
 
 TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
   const uint32_t kStartNumber = 1;
+  const bool kIsLowLatency = false;
 
-  const uint64_t kStartTime1 = 0;
-  const uint64_t kDuration1 = 100;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 100;
   const uint64_t kRepeat1 = 9;
 
-  const uint64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
-  const uint64_t kDuration2 = 200;
+  const int64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const int64_t kDuration2 = 200;
   const uint64_t kRepeat2 = 0;
 
   std::list<SegmentInfo> segment_infos = {
@@ -445,8 +449,8 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -458,13 +462,14 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
 
 TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
   const uint32_t kStartNumber = 1;
+  const bool kIsLowLatency = false;
 
-  const uint64_t kStartTime1 = 0;
-  const uint64_t kDuration1 = 100;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 100;
   const uint64_t kRepeat1 = 9;
 
-  const uint64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
-  const uint64_t kDuration2 = 200;
+  const int64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const int64_t kDuration2 = 200;
   const uint64_t kRepeat2 = 1;
 
   std::list<SegmentInfo> segment_infos = {
@@ -472,8 +477,8 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(representation,
               XmlNodeEqual(
@@ -489,14 +494,15 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
 
 TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
   const uint32_t kStartNumber = 1;
+  const bool kIsLowLatency = false;
 
-  const uint64_t kStartTime1 = 0;
-  const uint64_t kDuration1 = 100;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 100;
   const uint64_t kRepeat1 = 9;
 
   const uint64_t kGap = 100;
-  const uint64_t kStartTime2 = kGap + kStartTime1 + (kRepeat1 + 1) * kDuration1;
-  const uint64_t kDuration2 = 200;
+  const int64_t kStartTime2 = kGap + kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const int64_t kDuration2 = 200;
   const uint64_t kRepeat2 = 0;
 
   std::list<SegmentInfo> segment_infos = {
@@ -504,8 +510,8 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(representation,
               XmlNodeEqual(
@@ -521,9 +527,10 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
 
 TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
   const uint32_t kStartNumber = 1;
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 100;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
+  const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
       {kStartTime, kDuration, kRepeat},
@@ -531,8 +538,8 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
   RepresentationXmlNode representation;
   FLAGS_dash_add_last_segment_number_when_needed = true;
 
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -712,6 +719,42 @@ TEST_F(OnDemandVODSegmentTest, SegmentUrlWithMediaRanges) {
                    "<SegmentURL mediaRange=\"932-9999\"/>"
                    "<SegmentURL mediaRange=\"10000-11000\"/>"
                    "</SegmentList>"
+                   "</Representation>"));
+}
+
+class LowLatencySegmentTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    media_info_.set_init_segment_url("init.m4s");
+    media_info_.set_segment_template_url("$Number$.m4s");
+    media_info_.set_reference_time_scale(90000);
+    media_info_.set_availability_time_offset(4.9750987314);
+    media_info_.set_segment_duration(450000);
+  }
+
+  MediaInfo media_info_;
+};
+
+TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
+  const uint32_t kStartNumber = 1;
+  const uint64_t kDuration = 100;
+  const uint64_t kRepeat = 0;
+  const bool kIsLowLatency = true;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartNumber, kDuration, kRepeat},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, kIsLowLatency));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation>"
+                   "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
+                   "                   availabilityTimeOffset=\"4.9750987314\" "
+                   "                   initialization=\"init.m4s\" "
+                   "                   media=\"$Number$.m4s\" "
+                   "                   startNumber=\"1\"/>"
                    "</Representation>"));
 }
 

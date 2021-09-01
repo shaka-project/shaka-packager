@@ -54,6 +54,8 @@ struct CueEvent {
 
 struct SegmentInfo {
   bool is_subsegment = false;
+  bool is_chunk = false;
+  bool is_final_chunk_in_seg = false;
   bool is_encrypted = false;
   int64_t start_timestamp = -1;
   int64_t duration = 0;

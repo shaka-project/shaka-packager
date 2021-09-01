@@ -39,8 +39,8 @@ std::string VideoCodecToString(Codec codec) {
 }  // namespace
 
 VideoStreamInfo::VideoStreamInfo(int track_id,
-                                 uint32_t time_scale,
-                                 uint64_t duration,
+                                 int32_t time_scale,
+                                 int64_t duration,
                                  Codec codec,
                                  H26xStreamFormat h26x_stream_format,
                                  const std::string& codec_string,

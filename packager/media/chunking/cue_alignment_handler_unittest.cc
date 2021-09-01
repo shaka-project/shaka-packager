@@ -30,7 +30,7 @@ const size_t kThreeOutputs = 3;
 
 const bool kKeyFrame = true;
 
-const uint32_t kMsTimeScale = 1000;
+const int32_t kMsTimeScale = 1000;
 
 const size_t kStreamIndex = 0;
 }  // namespace

@@ -42,7 +42,7 @@ class PackedAudioSegmenter {
   /// @param transport_stream_timestamp_offset is the offset to be applied to
   ///        sample timestamps to compensate for possible negative timestamps in
   ///        the input.
-  explicit PackedAudioSegmenter(uint32_t transport_stream_timestamp_offset);
+  explicit PackedAudioSegmenter(int32_t transport_stream_timestamp_offset);
   virtual ~PackedAudioSegmenter();
 
   /// Initialize the object.
@@ -81,7 +81,7 @@ class PackedAudioSegmenter {
   Status EncryptionAudioSetup(const MediaSample& sample);
   Status StartNewSegment(const MediaSample& first_sample);
 
-  const uint32_t transport_stream_timestamp_offset_ = 0;
+  const int32_t transport_stream_timestamp_offset_ = 0;
   // Codec for the stream.
   Codec codec_ = kUnknownCodec;
   std::vector<uint8_t> audio_codec_config_;

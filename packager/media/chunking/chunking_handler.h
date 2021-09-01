@@ -81,7 +81,7 @@ class ChunkingHandler : public MediaHandler {
   base::Optional<int64_t> segment_start_time_;
   base::Optional<int64_t> subsegment_start_time_;
   int64_t max_segment_time_ = 0;
-  uint32_t time_scale_ = 0;
+  int32_t time_scale_ = 0;
 
   // The offset is applied to sample timestamps so a full segment is generated
   // after cue points.

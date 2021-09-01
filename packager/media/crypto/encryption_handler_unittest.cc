@@ -38,7 +38,7 @@ using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
 const size_t kStreamIndex = 0;
-const uint32_t kTimeScale = 1000;
+const int32_t kTimeScale = 1000;
 const char kAudioStreamLabel[] = "AUDIO";
 const char kSdVideoStreamLabel[] = "SD";
 
@@ -66,7 +66,7 @@ class MockKeySource : public RawKeySource {
                Status(const std::string& stream_label, EncryptionKey* key));
   MOCK_METHOD4(GetCryptoPeriodKey,
                Status(uint32_t crypto_period_index,
-                      uint32_t crypto_period_duration_in_seconds,
+                      int32_t crypto_period_duration_in_seconds,
                       const std::string& stream_label,
                       EncryptionKey* key));
 };

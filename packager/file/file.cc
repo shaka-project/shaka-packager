@@ -184,6 +184,7 @@ File* File::CreateInternalFile(const char* file_name, const char* mode) {
   base::StringPiece real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
+  // Calls constructor for the derived File class.
   return file_type->factory_function(real_file_name.data(), mode);
 }
 

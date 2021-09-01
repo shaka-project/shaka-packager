@@ -71,7 +71,7 @@ class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
   }
 
   Status DispatchStream() {
-    const uint64_t kMsTimeScale = 1000u;
+    const int64_t kMsTimeScale = 1000;
 
     auto info = GetTextStreamInfo(kMsTimeScale);
     return In()->Dispatch(

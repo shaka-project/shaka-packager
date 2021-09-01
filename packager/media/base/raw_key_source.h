@@ -30,7 +30,7 @@ class RawKeySource : public KeySource {
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                            uint32_t crypto_period_duration_in_seconds,
+                            int32_t crypto_period_duration_in_seconds,
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}

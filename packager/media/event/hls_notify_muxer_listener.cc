@@ -84,7 +84,7 @@ void HlsNotifyMuxerListener::OnEncryptionStart() {
 
 void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                           const StreamInfo& stream_info,
-                                          uint32_t time_scale,
+                                          int32_t time_scale,
                                           ContainerType container_type) {
   std::unique_ptr<MediaInfo> media_info(new MediaInfo);
   if (!internal::GenerateMediaInfo(muxer_options, stream_info, time_scale,
@@ -125,7 +125,7 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+void HlsNotifyMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   if (stream_id_) {
     // This happens in live mode.
     hls_notifier_->NotifySampleDuration(stream_id_.value(), sample_duration);

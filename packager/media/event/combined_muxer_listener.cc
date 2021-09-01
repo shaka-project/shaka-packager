@@ -35,7 +35,7 @@ void CombinedMuxerListener::OnEncryptionStart() {
 
 void CombinedMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                          const StreamInfo& stream_info,
-                                         uint32_t time_scale,
+                                         int32_t time_scale,
                                          ContainerType container_type) {
   for (auto& listener : muxer_listeners_) {
     listener->OnMediaStart(muxer_options, stream_info, time_scale,
@@ -43,9 +43,21 @@ void CombinedMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-void CombinedMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+void CombinedMuxerListener::OnAvailabilityOffsetReady() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnAvailabilityOffsetReady();
+  }
+}
+
+void CombinedMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   for (auto& listener : muxer_listeners_) {
     listener->OnSampleDurationReady(sample_duration);
+  }
+}
+
+void CombinedMuxerListener::OnSegmentDurationReady() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnSegmentDurationReady();
   }
 }
 

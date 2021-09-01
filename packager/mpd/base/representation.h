@@ -41,8 +41,8 @@ class RepresentationStateChangeListener {
   /// Representation.
   /// @param frame_duration is the duration of a frame.
   /// @param timescale is the timescale of the Representation.
-  virtual void OnSetFrameRateForRepresentation(uint32_t frame_duration,
-                                               uint32_t timescale) = 0;
+  virtual void OnSetFrameRateForRepresentation(int32_t frame_duration,
+                                               int32_t timescale) = 0;
 };
 
 /// Representation class contains references to a single media stream, as
@@ -106,7 +106,7 @@ class Representation {
   /// allows setting the sample duration after the Representation has been
   /// initialized.
   /// @param sample_duration is the duration of a sample.
-  virtual void SetSampleDuration(uint32_t sample_duration);
+  virtual void SetSampleDuration(int32_t sample_duration);
 
   /// @return MediaInfo for the Representation.
   virtual const MediaInfo& GetMediaInfo() const;
@@ -126,6 +126,14 @@ class Representation {
 
   /// Set @presentationTimeOffset in SegmentBase / SegmentTemplate.
   void SetPresentationTimeOffset(double presentation_time_offset);
+
+  /// Set @availabilityTimeOffset in SegmentTemplate.
+  /// This is necessary for Low Latency DASH streaming.
+  void SetAvailabilityTimeOffset();
+
+  /// Set @duration in SegmentTemplate.
+  /// This is necessary for Low Latency DASH streaming.
+  void SetSegmentDuration();
 
   /// Gets the start and end timestamps in seconds.
   /// @param start_timestamp_seconds contains the returned start timestamp in
@@ -239,7 +247,7 @@ class Representation {
   const bool allow_approximate_segment_timeline_ = false;
   // Segments with duration difference less than one frame duration are
   // considered to have the same duration.
-  uint32_t frame_duration_ = 0;
+  int32_t frame_duration_ = 0;
 };
 
 }  // namespace shaka

@@ -17,7 +17,7 @@
 namespace shaka {
 namespace media {
 namespace {
-std::string TimestampToString(uint64_t timestamp) {
+std::string TimestampToString(int64_t timestamp) {
   // https://tools.ietf.org/html/rfc8216 The ID3 payload MUST be a 33-bit MPEG-2
   // Program Elementary Stream timestamp expressed as a big-endian eight-octet
   // number, with the upper 31 bits set to zero.
@@ -30,7 +30,7 @@ std::string TimestampToString(uint64_t timestamp) {
 }  // namespace
 
 PackedAudioSegmenter::PackedAudioSegmenter(
-    uint32_t transport_stream_timestamp_offset)
+    int32_t transport_stream_timestamp_offset)
     : transport_stream_timestamp_offset_(transport_stream_timestamp_offset) {}
 
 PackedAudioSegmenter::~PackedAudioSegmenter() = default;

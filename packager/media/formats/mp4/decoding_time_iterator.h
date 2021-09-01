@@ -40,7 +40,7 @@ class DecodingTimeIterator {
   uint32_t sample_delta() const { return iterator_->sample_delta; }
 
   /// @return Duration from start_sample to end_sample, both 1-based, inclusive.
-  uint64_t Duration(uint32_t start_sample, uint32_t end_sample) const;
+  int64_t Duration(uint32_t start_sample, uint32_t end_sample) const;
 
   /// @return Total number of samples in the table.
   uint32_t NumSamples() const;

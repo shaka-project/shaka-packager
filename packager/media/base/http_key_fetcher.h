@@ -28,7 +28,7 @@ class HttpKeyFetcher : public KeyFetcher {
   HttpKeyFetcher();
   /// Create a fetcher with timeout.
   /// @param timeout_in_seconds specifies the timeout in seconds.
-  HttpKeyFetcher(uint32_t timeout_in_seconds);
+  HttpKeyFetcher(int32_t timeout_in_seconds);
   ~HttpKeyFetcher() override;
 
   /// @name KeyFetcher implementation overrides.
@@ -56,7 +56,7 @@ class HttpKeyFetcher : public KeyFetcher {
   Status FetchInternal(HttpMethod method, const std::string& url,
                        const std::string& data, std::string* response);
 
-  const uint32_t timeout_in_seconds_;
+  const int32_t timeout_in_seconds_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpKeyFetcher);
 };

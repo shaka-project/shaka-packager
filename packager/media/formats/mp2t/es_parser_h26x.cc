@@ -326,7 +326,7 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
       const int64_t kArbitrarySmallDuration = 0.001 * kMpeg2Timescale;  // 1ms.
       pending_sample_->set_duration(kArbitrarySmallDuration);
     } else {
-      uint64_t sample_duration = media_sample->dts() - pending_sample_->dts();
+      int64_t sample_duration = media_sample->dts() - pending_sample_->dts();
       pending_sample_->set_duration(sample_duration);
 
       const int kArbitraryGapScale = 10;

@@ -71,8 +71,19 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyAvailabilityTimeOffset(uint32_t container_id) {
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->SetAvailabilityTimeOffset();
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
-                                             uint32_t sample_duration) {
+                                             int32_t sample_duration) {
   base::AutoLock auto_lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
@@ -83,9 +94,20 @@ bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifySegmentDuration(uint32_t container_id) {
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->SetSegmentDuration();
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
-                                         uint64_t start_time,
-                                         uint64_t duration,
+                                         int64_t start_time,
+                                         int64_t duration,
                                          uint64_t size) {
   base::AutoLock auto_lock(lock_);
   auto it = representation_map_.find(container_id);
@@ -98,7 +120,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
 }
 
 bool SimpleMpdNotifier::NotifyCueEvent(uint32_t container_id,
-                                       uint64_t timestamp) {
+                                       int64_t timestamp) {
   base::AutoLock auto_lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {

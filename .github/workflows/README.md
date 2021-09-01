@@ -47,7 +47,3 @@
  - `NPM_PACKAGE_NAME`: Not a true "secret", but stored here to avoid someone
    pushing bogus packages to NPM during CI testing from a fork
    - In a fork, set to a private name which differs from the production one
- - `SHAKA_BOT_TOKEN`: A GitHub personal access token for the `shaka-bot`
-   account, with `workflow` scope
-   - To generate, visit https://github.com/settings/tokens/new and select the
-     `workflow` scope

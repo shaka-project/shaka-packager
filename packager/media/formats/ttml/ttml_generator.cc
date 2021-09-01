@@ -18,7 +18,7 @@ namespace {
 
 constexpr const char* kRegionIdPrefix = "_shaka_region_";
 
-std::string ToTtmlTime(int64_t time, uint32_t timescale) {
+std::string ToTtmlTime(int64_t time, int32_t timescale) {
   int64_t remaining = time * 1000 / timescale;
 
   const int ms = remaining % 1000;
@@ -49,7 +49,7 @@ TtmlGenerator::~TtmlGenerator() {}
 
 void TtmlGenerator::Initialize(const std::map<std::string, TextRegion>& regions,
                                const std::string& language,
-                               uint32_t time_scale) {
+                               int32_t time_scale) {
   regions_ = regions;
   language_ = language;
   time_scale_ = time_scale;

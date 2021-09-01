@@ -50,18 +50,18 @@ class SimpleHlsNotifier : public HlsNotifier {
                        const std::string& group_id,
                        uint32_t* stream_id) override;
   bool NotifySampleDuration(uint32_t stream_id,
-                            uint32_t sample_duration) override;
+                            int32_t sample_duration) override;
   bool NotifyNewSegment(uint32_t stream_id,
                         const std::string& segment_name,
-                        uint64_t start_time,
-                        uint64_t duration,
+                        int64_t start_time,
+                        int64_t duration,
                         uint64_t start_byte_offset,
                         uint64_t size) override;
   bool NotifyKeyFrame(uint32_t stream_id,
-                      uint64_t timestamp,
+                      int64_t timestamp,
                       uint64_t start_byte_offset,
                       uint64_t size) override;
-  bool NotifyCueEvent(uint32_t container_id, uint64_t timestamp) override;
+  bool NotifyCueEvent(uint32_t container_id, int64_t timestamp) override;
   bool NotifyEncryptionUpdate(
       uint32_t stream_id,
       const std::vector<uint8_t>& key_id,
@@ -80,7 +80,7 @@ class SimpleHlsNotifier : public HlsNotifier {
   };
 
   std::string master_playlist_dir_;
-  uint32_t target_duration_ = 0;
+  int32_t target_duration_ = 0;
 
   std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;
   std::unique_ptr<MasterPlaylist> master_playlist_;

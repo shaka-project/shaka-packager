@@ -573,10 +573,10 @@ bool WvmMediaParser::ParseIndexEntry() {
       return false;
     }
 
-    uint64_t track_duration = 0;
+    int64_t track_duration = 0;
     uint32_t trick_play_factor = 0;
     uint32_t sampling_frequency = kDefaultSamplingFrequency;
-    uint32_t time_scale = kMpeg2ClockRate;
+    int32_t time_scale = kMpeg2ClockRate;
     uint16_t video_width = 0;
     uint16_t video_height = 0;
     uint32_t pixel_width = 0;

@@ -332,7 +332,7 @@ TEST_F(AdaptationSetTest,
 
   // Then set same frame duration for the representations. (Given that the
   // time scales match).
-  const uint32_t kSameFrameDuration = 3u;
+  const int32_t kSameFrameDuration = 3;
   representation_480p->SetSampleDuration(kSameFrameDuration);
   representation_360p->SetSampleDuration(kSameFrameDuration);
 
@@ -341,7 +341,7 @@ TEST_F(AdaptationSetTest,
   EXPECT_THAT(same_frame_rate, AttributeEqual("frameRate", "10/3"));
 
   // Then set 480p to be 5fps (10/2) so that maxFrameRate is set.
-  const uint32_t k5FPSFrameDuration = 2;
+  const int32_t k5FPSFrameDuration = 2;
   static_assert(k5FPSFrameDuration < kSameFrameDuration,
                 "frame_duration_must_be_shorter_for_max_frame_rate");
   representation_480p->SetSampleDuration(k5FPSFrameDuration);
@@ -673,8 +673,8 @@ TEST_F(OnDemandAdaptationSetTest, SubsegmentAlignment) {
 
   // First use same start time and duration, and verify that subsegmentAlignment
   // is set to true.
-  const uint64_t kStartTime = 0u;
-  const uint64_t kDuration = 10u;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 10;
   const uint64_t kAnySize = 19834u;
 
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
@@ -735,10 +735,10 @@ TEST_F(OnDemandAdaptationSetTest, ForceSetsubsegmentAlignment) {
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
 
   // Use different starting times to make the segments "not aligned".
-  const uint64_t kStartTime1 = 1u;
-  const uint64_t kStartTime2 = 2u;
+  const int64_t kStartTime1 = 1;
+  const int64_t kStartTime2 = 2;
   static_assert(kStartTime1 != kStartTime2, "StartTimesShouldBeDifferent");
-  const uint64_t kDuration = 10u;
+  const int64_t kDuration = 10;
   const uint64_t kAnySize = 19834u;
   representation_480p->AddNewSegment(kStartTime1, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime2, kDuration, kAnySize);
@@ -754,8 +754,8 @@ TEST_F(OnDemandAdaptationSetTest, ForceSetsubsegmentAlignment) {
 // Verify that segmentAlignment is set to true if all the Representations
 // segments' are aligned and the DASH profile is Live and MPD type is dynamic.
 TEST_F(LiveAdaptationSetTest, SegmentAlignmentDynamicMpd) {
-  const uint64_t kStartTime = 0u;
-  const uint64_t kDuration = 10u;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 10;
   const uint64_t kAnySize = 19834u;
 
   const char k480pMediaInfo[] =
@@ -808,8 +808,8 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignmentDynamicMpd) {
 // Verify that segmentAlignment is set to true if all the Representations
 // segments' are aligned and the DASH profile is Live and MPD type is static.
 TEST_F(LiveAdaptationSetTest, SegmentAlignmentStaticMpd) {
-  const uint64_t kStartTime = 0u;
-  const uint64_t kDuration = 10u;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 10;
   const uint64_t kAnySize = 19834u;
 
   const char k480pMediaInfo[] =

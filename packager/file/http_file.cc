@@ -157,7 +157,7 @@ HttpFile::HttpFile(HttpMethod method,
                    const std::string& url,
                    const std::string& upload_content_type,
                    const std::vector<std::string>& headers,
-                   uint32_t timeout_in_seconds)
+                   int32_t timeout_in_seconds)
     : File(url.c_str()),
       url_(url),
       upload_content_type_(upload_content_type),
@@ -297,7 +297,7 @@ void HttpFile::SetupRequest() {
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteCallback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA,
-                   method_ == HttpMethod::kPut ? nullptr : &download_cache_);
+                   method_ == HttpMethod::kGet ? &download_cache_ : nullptr);
   if (method_ != HttpMethod::kGet) {
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, &CurlReadCallback);
     curl_easy_setopt(curl, CURLOPT_READDATA, &upload_cache_);

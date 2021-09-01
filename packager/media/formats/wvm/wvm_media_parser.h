@@ -234,8 +234,8 @@ class WvmMediaParser : public MediaParser {
   uint8_t pes_flags_2_;
   uint8_t prev_pes_flags_1_;
   size_t pes_header_data_bytes_;
-  uint64_t timestamp_;
-  uint64_t pts_;
+  int64_t timestamp_;
+  int64_t pts_;
   uint64_t dts_;
   uint8_t index_program_id_;
   std::shared_ptr<MediaSample> media_sample_;

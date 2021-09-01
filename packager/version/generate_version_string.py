@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -7,14 +7,12 @@
 # https://developers.google.com/open-source/licenses/bsd
 """This script is used to generate version string for packager."""
 
-from __future__ import print_function
-
 import subprocess
 
 if __name__ == '__main__':
   try:
     version_tag = subprocess.check_output('git tag --points-at HEAD',
-        stderr=subprocess.STDOUT, shell=True).rstrip()
+        stderr=subprocess.STDOUT, shell=True).decode().rstrip()
   except subprocess.CalledProcessError as e:
     # git tag --points-at is not supported in old versions of git. Just ignore
     # version_tag in this case.
@@ -22,7 +20,7 @@ if __name__ == '__main__':
 
   try:
     version_hash = subprocess.check_output('git rev-parse --short HEAD',
-        stderr=subprocess.STDOUT, shell=True).rstrip()
+        stderr=subprocess.STDOUT, shell=True).decode().rstrip()
   except subprocess.CalledProcessError as e:
     version_hash = 'unknown-version'
 

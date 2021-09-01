@@ -55,8 +55,8 @@ class Segmenter {
   Status AddSample(const MediaSample& sample);
 
   /// Finalize the (sub)segment.
-  virtual Status FinalizeSegment(uint64_t start_timestamp,
-                                 uint64_t duration_timestamp,
+  virtual Status FinalizeSegment(int64_t start_timestamp,
+                                 int64_t duration_timestamp,
                                  bool is_subsegment) = 0;
 
   /// @return true if there is an initialization range, while setting @a start
@@ -77,13 +77,13 @@ class Segmenter {
 
  protected:
   /// Converts the given time in ISO BMFF timestamp to WebM timecode.
-  uint64_t FromBmffTimestamp(uint64_t bmff_timestamp);
+  int64_t FromBmffTimestamp(int64_t bmff_timestamp);
   /// Converts the given time in WebM timecode to ISO BMFF timestamp.
-  uint64_t FromWebMTimecode(uint64_t webm_timecode);
+  int64_t FromWebMTimecode(int64_t webm_timecode);
   /// Writes the Segment header to @a writer.
   Status WriteSegmentHeader(uint64_t file_size, MkvWriter* writer);
   /// Creates a Cluster object with the given parameters.
-  Status SetCluster(uint64_t start_webm_timecode,
+  Status SetCluster(int64_t start_webm_timecode,
                     uint64_t position,
                     MkvWriter* writer);
 
@@ -100,7 +100,7 @@ class Segmenter {
   int track_id() const { return track_id_; }
   uint64_t segment_payload_pos() const { return segment_payload_pos_; }
 
-  uint64_t duration() const { return duration_; }
+  int64_t duration() const { return duration_; }
 
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
@@ -118,13 +118,13 @@ class Segmenter {
   // In single-segment mode, a Cluster is a segment and there is no subsegment.
   // In multi-segment mode, a new file is a segment and the clusters in the file
   // are subsegments.
-  virtual Status NewSegment(uint64_t start_timestamp, bool is_subsegment) = 0;
+  virtual Status NewSegment(int64_t start_timestamp, bool is_subsegment) = 0;
 
   // Store the previous sample so we know which one is the last frame.
   std::shared_ptr<const MediaSample> prev_sample_;
   // The reference frame timestamp; used to populate the ReferenceBlock element
   // when writing non-keyframe BlockGroups.
-  uint64_t reference_frame_timestamp_ = 0;
+  int64_t reference_frame_timestamp_ = 0;
 
   const MuxerOptions& options_;
 
@@ -138,7 +138,7 @@ class Segmenter {
   ProgressListener* progress_listener_ = nullptr;
   uint64_t progress_target_ = 0;
   uint64_t accumulated_progress_ = 0;
-  uint64_t first_timestamp_ = 0;
+  int64_t first_timestamp_ = 0;
   int64_t sample_duration_ = 0;
   // The position (in bytes) of the start of the Segment payload in the init
   // file.  This is also the size of the header before the SeekHead.
@@ -153,8 +153,8 @@ class Segmenter {
 
   // The subset of information that we need from StreamInfo
   bool is_encrypted_ = false;
-  uint64_t time_scale_ = 0;
-  uint64_t duration_ = 0;
+  int64_t time_scale_ = 0;
+  int64_t duration_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

@@ -17,9 +17,8 @@ const char* kHeader = "WEBVTT\n";
 const int kTsTimescale = 90000;
 }  // namespace
 
-WebVttFileBuffer::WebVttFileBuffer(
-    uint32_t transport_stream_timestamp_offset_ms,
-    const std::string& style_region_config)
+WebVttFileBuffer::WebVttFileBuffer(int32_t transport_stream_timestamp_offset_ms,
+                                   const std::string& style_region_config)
     : transport_stream_timestamp_offset_(transport_stream_timestamp_offset_ms *
                                          kTsTimescale / 1000),
       style_region_config_(style_region_config) {

@@ -46,6 +46,15 @@ class MpdNotifier {
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* container_id) = 0;
 
+  /// Record the availailityTimeOffset for Low Latency DASH streaming.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifyAvailabilityTimeOffset(uint32_t container_id) {
+    return true;
+  }
+
   /// Change the sample duration of container with @a container_id.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
@@ -54,7 +63,14 @@ class MpdNotifier {
   /// @return true on success, false otherwise. This may fail if the container
   ///         specified by @a container_id does not exist.
   virtual bool NotifySampleDuration(uint32_t container_id,
-                                    uint32_t sample_duration) = 0;
+                                    int32_t sample_duration) = 0;
+
+  /// Record the duration of a segment for Low Latency DASH streaming.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifySegmentDuration(uint32_t container_id) { return true; }
 
   /// Notifies MpdBuilder that there is a new segment ready. For live, this
   /// is usually a new segment, for VOD this is usually a subsegment.
@@ -67,8 +83,8 @@ class MpdNotifier {
   /// @param size is the new segment size in bytes.
   /// @return true on success, false otherwise.
   virtual bool NotifyNewSegment(uint32_t container_id,
-                                uint64_t start_time,
-                                uint64_t duration,
+                                int64_t start_time,
+                                int64_t duration,
                                 uint64_t size) = 0;
 
   /// Notifies MpdBuilder that there is a new CueEvent.
@@ -76,7 +92,7 @@ class MpdNotifier {
   ///        NotifyNewContainer().
   /// @param timestamp is the timestamp of the CueEvent.
   /// @return true on success, false otherwise.
-  virtual bool NotifyCueEvent(uint32_t container_id, uint64_t timestamp) = 0;
+  virtual bool NotifyCueEvent(uint32_t container_id, int64_t timestamp) = 0;
 
   /// Notifiers MpdBuilder that there is a new PSSH for the container.
   /// This may be called whenever the key has to change, e.g. key rotation.

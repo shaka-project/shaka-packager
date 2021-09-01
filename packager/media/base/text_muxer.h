@@ -36,8 +36,8 @@ class TextMuxer : public Muxer {
   /// also clear any buffered samples.
   virtual Status WriteToFile(const std::string& filename, uint64_t* size) = 0;
 
-  uint64_t total_duration_ms_ = 0;
-  uint64_t last_cue_ms_ = 0;
+  int64_t total_duration_ms_ = 0;
+  int64_t last_cue_ms_ = 0;
   uint32_t segment_index_ = 0;
 };
 

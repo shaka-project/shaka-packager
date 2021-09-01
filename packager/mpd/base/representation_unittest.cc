@@ -40,7 +40,7 @@ class MockRepresentationStateChangeListener
                void(int64_t start_time, int64_t duration));
 
   MOCK_METHOD2(OnSetFrameRateForRepresentation,
-               void(uint32_t frame_duration, uint32_t timescale));
+               void(int32_t frame_duration, int32_t timescale));
 };
 
 }  // namespace
@@ -270,8 +270,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const int64_t kStartTime = 199238u;
-  const int64_t kDuration = 98u;
+  const int64_t kStartTime = 199238;
+  const int64_t kDuration = 98;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener, OnNewSegmentForRepresentation(kStartTime, kDuration));
@@ -300,8 +300,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const uint32_t kTimeScale = 1000u;
-  const int64_t kFrameDuration = 33u;
+  const int32_t kTimeScale = 1000;
+  const int64_t kFrameDuration = 33;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
@@ -413,11 +413,11 @@ const char kSElementTemplate[] =
 const char kSElementTemplateWithoutR[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
-const uint32_t kDefaultTimeScale = 1000u;
+const int32_t kDefaultTimeScale = 1000;
 const int64_t kScaledTargetSegmentDuration = 10;
 const double kTargetSegmentDurationInSeconds =
     static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
-const uint32_t kSampleDuration = 2;
+const int32_t kSampleDuration = 2;
 
 std::string GetDefaultMediaInfo() {
   const char kMediaInfo[] =

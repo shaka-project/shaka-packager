@@ -13,7 +13,7 @@
       'target_name': 'version',
       'type': '<(component)',
       'defines': [
-        'PACKAGER_VERSION="<!(python generate_version_string.py)"',
+        'PACKAGER_VERSION="<!(python3 generate_version_string.py)"',
       ],
       'sources': [
         'version.cc',

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2014 Google Inc. All rights reserved.
 #
@@ -10,10 +10,6 @@
 Build instructions:
 
 1. Setup gyp: ./gyp_packager.py or use gclient runhooks
-
-clang is enabled by default, which can be disabled by overriding
-GYP_DEFINE environment variable, i.e.
-"GYP_DEFINES='clang=0' gclient runhooks".
 
 Ninja is the default build system. User can also change to make by
 overriding GYP_GENERATORS to make, i.e.
@@ -29,8 +25,6 @@ Module is optional. If not specified, build everything.
 Step 1 is only required if there is any gyp file change. Otherwise, you
 may just run ninja.
 """
-
-from __future__ import print_function
 
 import os
 import sys
@@ -74,17 +68,33 @@ if __name__ == '__main__':
                       'linux_use_bundled_binutils': 0,
                       'linux_use_bundled_gold': 0,
                       'linux_use_gold_flags': 0,
+                      'clang': 0,
+                      'host_clang': 0,
+                      'clang_xcode': 1,
+                      'use_allocator': 'none',
+                      'mac_deployment_target': '10.10',
+                      'use_experimental_allocator_shim': 0,
                       'clang_use_chrome_plugins': 0}
 
-  gyp_defines = os.environ.get('GYP_DEFINES', '')
+  gyp_defines_str = os.environ.get('GYP_DEFINES', '')
+  user_gyp_defines_map = {}
+  for term in gyp_defines_str.split(' '):
+    if term:
+      key, value = term.strip().split('=')
+      user_gyp_defines_map[key] = value
+
   for key, value in _DEFAULT_DEFINES.items():
-    if key not in gyp_defines:
-      gyp_defines += ' {0}={1}'.format(key, value)
-  os.environ['GYP_DEFINES'] = gyp_defines.strip()
+    if key not in user_gyp_defines_map:
+      gyp_defines_str += ' {0}={1}'.format(key, value)
+  os.environ['GYP_DEFINES'] = gyp_defines_str.strip()
 
   # Default to ninja, but only if no generator has explicitly been set.
   if 'GYP_GENERATORS' not in os.environ:
     os.environ['GYP_GENERATORS'] = 'ninja'
+
+  # By default, don't download our own toolchain for Windows.
+  if 'DEPOT_TOOLS_WIN_TOOLCHAIN' not in os.environ:
+    os.environ['DEPOT_TOOLS_WIN_TOOLCHAIN'] = '0'
 
   # There shouldn't be a circular dependency relationship between .gyp files,
   # but in Chromium's .gyp files, on non-Mac platforms, circular relationships
