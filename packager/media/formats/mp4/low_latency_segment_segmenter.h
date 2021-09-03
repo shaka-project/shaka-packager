@@ -61,6 +61,7 @@ class LowLatencySegmentSegmenter : public Segmenter {
   bool ll_dash_mpd_values_initialized_ = false;
   std::unique_ptr<File, FileCloser> segment_file_;
   std::string file_name_;
+  size_t segment_size_ = 0u;
 
   DISALLOW_COPY_AND_ASSIGN(LowLatencySegmentSegmenter);
 };

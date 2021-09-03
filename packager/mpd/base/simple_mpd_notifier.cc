@@ -119,6 +119,19 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyCompletedSegment(uint32_t container_id,
+                                               int64_t duration,
+                                               uint64_t size) {
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->UpdateCompletedSegment(duration, size);
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifyCueEvent(uint32_t container_id,
                                        int64_t timestamp) {
   base::AutoLock auto_lock(lock_);
