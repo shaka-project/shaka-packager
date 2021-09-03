@@ -128,8 +128,8 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   styp_->Write(buffer.get());
 
   const size_t segment_header_size = buffer->Size();
-  const size_t segment_size = segment_header_size + fragment_buffer()->Size();
-  DCHECK_NE(segment_size, 0u);
+  segment_size_ = segment_header_size + fragment_buffer()->Size();
+  DCHECK_NE(segment_size_, 0u);
 
   RETURN_IF_ERROR(buffer->WriteToFile(segment_file_.get()));
   if (muxer_listener()) {
@@ -160,7 +160,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
     // Following chunks will be appended to the open segment file.
     muxer_listener()->OnNewSegment(file_name_,
                                    sidx()->earliest_presentation_time,
-                                   segment_duration, segment_size);
+                                   segment_duration, segment_size_);
     is_initial_chunk_in_seg_ = false;
   }
 
@@ -179,6 +179,9 @@ Status LowLatencySegmentSegmenter::WriteChunk() {
 }
 
 Status LowLatencySegmentSegmenter::FinalizeSegment() {
+  if (muxer_listener()) {
+    muxer_listener()->OnCompletedSegment(GetSegmentDuration(), segment_size_);
+  }
   // Close the file now that the final chunk has been written
   if (!segment_file_.release()->Close()) {
     return Status(
@@ -190,6 +193,7 @@ Status LowLatencySegmentSegmenter::FinalizeSegment() {
   // Current segment is complete. Reset state in preparation for the next
   // segment.
   is_initial_chunk_in_seg_ = true;
+  segment_size_ = 0u;
   num_segments_++;
 
   return Status::OK;

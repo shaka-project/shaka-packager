@@ -73,7 +73,8 @@ class MpdNotifier {
   virtual bool NotifySegmentDuration(uint32_t container_id) { return true; }
 
   /// Notifies MpdBuilder that there is a new segment ready. For live, this
-  /// is usually a new segment, for VOD this is usually a subsegment.
+  /// is usually a new segment, for VOD this is usually a subsegment, for low
+  /// latency this is the first chunk.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
   /// @param start_time is the start time of the new segment, in units of the
@@ -86,6 +87,23 @@ class MpdNotifier {
                                 int64_t start_time,
                                 int64_t duration,
                                 uint64_t size) = 0;
+
+  /// Notifies MpdBuilder that a segment is fully written and provides the
+  /// segment's complete duration and size. For Low Latency only. Note, size and
+  /// duration are not known when the low latency segment is first registered
+  /// with the MPD, so we must update these values after the segment is
+  /// complete.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @param duration is the duration of the complete segment, in units of the
+  ///        stream's time scale.
+  /// @param size is the complete segment size in bytes.
+  /// @return true on success, false otherwise.
+  virtual bool NotifyCompletedSegment(uint32_t container_id,
+                                      int64_t duration,
+                                      uint64_t size) {
+    return true;
+  }
 
   /// Notifies MpdBuilder that there is a new CueEvent.
   /// @param container_id Container ID obtained from calling
