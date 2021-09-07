@@ -296,8 +296,7 @@ void HttpFile::SetupRequest() {
   curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteCallback);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA,
-                   method_ == HttpMethod::kGet ? &download_cache_ : nullptr);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &download_cache_);
   if (method_ != HttpMethod::kGet) {
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, &CurlReadCallback);
     curl_easy_setopt(curl, CURLOPT_READDATA, &upload_cache_);
