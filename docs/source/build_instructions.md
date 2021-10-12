@@ -12,6 +12,7 @@ for [other distros below](#notes-for-other-linux-distros).
 sudo apt-get update
 sudo apt-get install -y \
         curl \
+        libc-ares-dev \
         build-essential git python python3
 ```
 
@@ -243,7 +244,7 @@ Use `apk` command to install dependencies:
 ```shell
 apk add --no-cache \
         bash curl \
-        bsd-compat-headers linux-headers \
+        bsd-compat-headers c-ares-dev linux-headers \
         build-base git ninja python2 python3
 ```
 
@@ -270,6 +271,7 @@ Instead of running `sudo apt-get install` to install build dependencies, run:
 ```shell
 sudo pacman -Sy --needed \
         core/which \
+        c-ares \
         gcc git python2 python3
 ```
 
@@ -284,7 +286,7 @@ Instead of running `sudo apt-get install` to install build dependencies, run:
 ```shell
 su -c 'yum install -y \
         which \
-        libatomic \
+        c-ares-devel libatomic \
         gcc-c++ git python2'
 ```
 
@@ -299,6 +301,7 @@ Use `zypper` command to install dependencies:
 ```shell
 sudo zypper in -y \
         curl which \
+        c-ares-devel \
         gcc-c++ git python python3
 ```
 

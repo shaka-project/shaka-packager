@@ -43,6 +43,15 @@ runs:
           echo "::endgroup::"
         fi
 
+    - name: Install c-ares (Linux only)
+      shell: bash
+      run: |
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          echo "::group::Install c-ares"
+          sudo apt install -y libc-ares-dev
+          echo "::endgroup::"
+        fi
+
     - name: Install depot tools
       shell: bash
       run: |

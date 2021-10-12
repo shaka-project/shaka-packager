@@ -3,6 +3,7 @@ FROM archlinux:latest
 # Install utilities, libraries, and dev tools.
 RUN pacman -Sy --needed --noconfirm \
         core/which \
+        c-ares \
         gcc git python2 python3
 
 # Install depot_tools.
