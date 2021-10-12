@@ -4,6 +4,7 @@ FROM debian:9
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get install -y \
         curl \
+        libc-ares-dev \
         build-essential git python python3
 
 # Install depot_tools.
