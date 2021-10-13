@@ -100,3 +100,33 @@ jobs:
           build_type: ${{ matrix.build_type }}
           build_type_suffix: ${{ matrix.build_type_suffix }}
           exe_ext: ${{ matrix.exe_ext }}
+
+  test_supported_linux_distros:
+    # Doesn't really "need" it, but let's not waste time on a series of docker
+    # builds just to cancel it because of a linter error.
+    needs: lint
+    name: Test builds on all supported Linux distros (using docker)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: src
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      - name: Install depot tools
+        shell: bash
+        run: |
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+
+      - name: Setup gclient
+        shell: bash
+        run: |
+          gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+          # NOTE: the docker tests will do gclient runhooks, so skip hooks here.
+          gclient sync --nohooks
+
+      - name: Test all distros
+        shell: bash
+        run: ./src/packager/testing/dockers/test_dockers.sh
