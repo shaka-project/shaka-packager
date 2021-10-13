@@ -1,3 +1,8 @@
+## [2.6.1] - 2021-10-14
+### Fixed
+ - Fix crash in static-linked linux builds (#996)
+ - Update outdated Dockerfiles
+
 ## [2.6.0] - 2021-09-07
 ### Added
  - Low latency DASH support (#979)
@@ -610,6 +615,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.6.1]: https://github.com/google/shaka-packager/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/google/shaka-packager/compare/v2.5.1...v2.6.0
 [2.5.1]: https://github.com/google/shaka-packager/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/google/shaka-packager/compare/v2.4.3...v2.5.0
