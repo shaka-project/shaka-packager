@@ -393,6 +393,46 @@ TEST_F(WebVttParserTest, ParseRegions) {
   EXPECT_TRUE(region.scroll);
 }
 
+TEST_F(WebVttParserTest, ParseRegionsMaxPercent) {
+  const uint8_t text[] =
+      "WEBVTT\n"
+      "\n"
+      "REGION\n"
+      "id:foo\n"
+      "width:20%\n"
+      "lines:6\n"
+      "viewportanchor:25%,100%\n"
+      "scroll:up\n"
+      "\n"
+      "00:01:00.000 --> 01:00:00.000 region:foo\n"
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitialize());
+
+  ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
+  ASSERT_TRUE(parser_->Flush());
+
+  ASSERT_EQ(streams_.size(), 1u);
+  ASSERT_EQ(samples_.size(), 1u);
+
+  auto* stream = static_cast<const TextStreamInfo*>(streams_[0].get());
+  const auto& regions = stream->regions();
+  ASSERT_EQ(regions.size(), 1u);
+  ASSERT_EQ(regions.count("foo"), 1u);
+
+  EXPECT_EQ(samples_[0]->settings().region, "foo");
+  const auto& region = regions.at("foo");
+  EXPECT_EQ(region.width.value, 20.0f);
+  EXPECT_EQ(region.width.type, TextUnitType::kPercent);
+  EXPECT_EQ(region.height.value, 6.0f);
+  EXPECT_EQ(region.height.type, TextUnitType::kLines);
+  EXPECT_EQ(region.window_anchor_x.value, 25.0f);
+  EXPECT_EQ(region.window_anchor_x.type, TextUnitType::kPercent);
+  EXPECT_EQ(region.window_anchor_y.value, 100.0f);
+  EXPECT_EQ(region.window_anchor_y.type, TextUnitType::kPercent);
+  EXPECT_TRUE(region.scroll);
+}
+
 // Verify that a typical case with mulitple cues work.
 TEST_F(WebVttParserTest, ParseMultipleCues) {
   const uint8_t text[] =
