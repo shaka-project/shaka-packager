@@ -14,6 +14,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/optional.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/base/protection_system_ids.h"
@@ -480,8 +481,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
       // convert it to the actual key uri.
-      std::string key_uri_data = VectorToString(key_id);
-      key_uri = Base64EncodeData(kUriFairPlayPrefix, key_uri_data);
+      key_uri = kUriFairPlayPrefix + base::ToLowerASCII(base::HexEncode(
+                                         key_id.data(), key_id.size()));
     }
 
     // FairPlay defines IV to be carried with the key, not the playlist.
