@@ -45,6 +45,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
                          const std::string& ext_x_media_name,
                          const std::string& ext_x_media_group_id,
                          const std::vector<std::string>& characteristics,
+                         int output_order,
                          hls::HlsNotifier* hls_notifier);
   ~HlsNotifyMuxerListener() override;
 
@@ -83,6 +84,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
   const std::vector<std::string> characteristics_;
+  int output_order_;
   hls::HlsNotifier* const hls_notifier_;
   base::Optional<uint32_t> stream_id_;
 

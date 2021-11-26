@@ -73,6 +73,7 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
     const StreamDescriptor& stream) {
   MuxerListenerFactory::StreamData data;
   data.media_info_output = stream.output;
+  data.output_order = stream.output_order;
 
   data.hls_group_id = stream.hls_group_id;
   data.hls_name = stream.hls_name;

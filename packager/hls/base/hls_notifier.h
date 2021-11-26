@@ -39,6 +39,7 @@ class HlsNotifier {
                                const std::string& playlist_name,
                                const std::string& stream_name,
                                const std::string& group_id,
+                               int output_order,
                                uint32_t* stream_id) = 0;
 
   /// Change the sample duration of stream with @a stream_id.

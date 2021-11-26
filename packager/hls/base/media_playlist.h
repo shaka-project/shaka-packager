@@ -71,12 +71,14 @@ class MediaPlaylist {
   MediaPlaylist(const HlsParams& hls_params,
                 const std::string& file_name,
                 const std::string& name,
-                const std::string& group_id);
+                const std::string& group_id,
+                int output_order);
   virtual ~MediaPlaylist();
 
   const std::string& file_name() const { return file_name_; }
   const std::string& name() const { return name_; }
   const std::string& group_id() const { return group_id_; }
+  int output_order() const { return output_order_; }
   MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
 
@@ -253,6 +255,7 @@ class MediaPlaylist {
   const std::string file_name_;
   const std::string name_;
   const std::string group_id_;
+  int output_order_;
   MediaInfo media_info_;
   MediaPlaylistStreamType stream_type_ = MediaPlaylistStreamType::kUnknown;
   // Whether to use byte range for SegmentInfoEntry.

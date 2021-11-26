@@ -339,16 +339,18 @@ HlsEntry::~HlsEntry() {}
 MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
                              const std::string& file_name,
                              const std::string& name,
-                             const std::string& group_id)
+                             const std::string& group_id,
+                             int output_order)
     : hls_params_(hls_params),
       file_name_(file_name),
       name_(name),
       group_id_(group_id),
+      output_order_(output_order),
       media_sequence_number_(hls_params_.media_sequence_number) {
-        // When there's a forced media_sequence_number, start with discontinuity
-        if (media_sequence_number_ > 0)
-          entries_.emplace_back(new DiscontinuityEntry());
-      }
+  // When there's a forced media_sequence_number, start with discontinuity
+  if (media_sequence_number_ > 0)
+    entries_.emplace_back(new DiscontinuityEntry());
+}
 
 MediaPlaylist::~MediaPlaylist() {}
 

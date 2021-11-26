@@ -32,11 +32,12 @@ class MockHlsNotifier : public hls::HlsNotifier {
   MockHlsNotifier() : HlsNotifier(HlsParams()) {}
 
   MOCK_METHOD0(Init, bool());
-  MOCK_METHOD5(NotifyNewStream,
+  MOCK_METHOD6(NotifyNewStream,
                bool(const MediaInfo& media_info,
                     const std::string& playlist_name,
                     const std::string& name,
                     const std::string& group_id,
+                    int output_order,
                     uint32_t* stream_id));
   MOCK_METHOD2(NotifySampleDuration,
                bool(uint32_t stream_id, int32_t sample_duration));
@@ -120,6 +121,7 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
                   kDefaultName,
                   kDefaultGroupId,
                   std::vector<std::string>{kCharactersticA, kCharactersticB},
+                  0,
                   &mock_notifier_) {}
 
   MuxerListener::MediaRanges GetMediaRanges(
@@ -164,7 +166,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
       NotifyNewStream(Property(&MediaInfo::hls_characteristics,
                                ElementsAre(kCharactersticA, kCharactersticB)),
                       StrEq(kDefaultPlaylistName), StrEq("DEFAULTNAME"),
-                      StrEq("DEFAULTGROUPID"), _))
+                      StrEq("DEFAULTGROUPID"), 0, _))
       .WillOnce(Return(true));
 
   MuxerOptions muxer_options;
@@ -187,7 +189,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
                                   iv, {{system_id, pssh}});
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -221,7 +223,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
                                   iv, {{system_id, pssh}});
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -251,7 +253,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoEncryptionUpdateIfNotifyNewStreamFails) {
                                   iv, GetDefaultKeySystemInfo());
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
-  EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillOnce(Return(false));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -267,7 +269,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoEncryptionUpdateIfNotifyNewStreamFails) {
 // Verify that after OnMediaStart(), OnEncryptionInfoReady() calls
 // NotifyEncryptionUpdate().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -301,7 +303,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyWithProtectionScheme) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
   ON_CALL(mock_notifier_,
-          NotifyNewStream(HasEncryptionScheme("cenc"), _, _, _, _))
+          NotifyNewStream(HasEncryptionScheme("cenc"), _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -313,7 +315,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyWithProtectionScheme) {
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -328,7 +330,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnNewSegmentAndCueEvent) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -351,7 +353,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnNewSegmentAndCueEvent) {
 // Verify that the notifier is called for every segment in OnMediaEnd if
 // segment_template is not set.
 TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -396,7 +398,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEndTwice) {
                          kSegmentSize);
   listener_.OnCueEvent(kCueStartTime, "dummy cue data");
 
-  EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillOnce(Return(true));
   EXPECT_CALL(mock_notifier_, NotifyNewSegment(_, StrEq("filename1.mp4"),
                                                kSegmentStartTime, _, _, _));
@@ -425,7 +427,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEndTwice) {
 // two.
 TEST_F(HlsNotifyMuxerListenerTest,
        NoSegmentTemplateOnMediaEndSubsegmentSizeMismatch) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -457,6 +459,7 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
                   kDefaultName,
                   kDefaultGroupId,
                   std::vector<std::string>(),  // no characteristics.
+                  0,
                   &mock_notifier_) {}
 
   MockHlsNotifier mock_notifier_;
@@ -464,7 +467,7 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
 };
 
 TEST_P(HlsNotifyMuxerListenerKeyFrameTest, WithSegmentTemplate) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
@@ -485,7 +488,7 @@ TEST_P(HlsNotifyMuxerListenerKeyFrameTest, WithSegmentTemplate) {
 // Verify that the notifier is called for every key frame in OnMediaEnd if
 // segment_template is not set.
 TEST_P(HlsNotifyMuxerListenerKeyFrameTest, NoSegmentTemplate) {
-  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =

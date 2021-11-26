@@ -38,6 +38,8 @@ class MuxerListenerFactory {
     // The stream's output destination. Will only be used if the factory is
     // told to output media info.
     std::string media_info_output;
+    // The stream's order in HLS manifest (TODO: and DASH mpd).
+    int output_order;
 
     // HLS specific values needed to write to HLS manifests. Will only be used
     // if an HlsNotifier is given to the factory.

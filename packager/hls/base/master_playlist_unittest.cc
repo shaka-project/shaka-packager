@@ -47,7 +47,7 @@ std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
   const char kNoGroup[] = "";
 
   std::unique_ptr<MockMediaPlaylist> playlist(
-      new MockMediaPlaylist(filename, kNoName, kNoGroup));
+      new MockMediaPlaylist(filename, kNoName, kNoGroup, 0));
 
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kVideo);
@@ -91,7 +91,7 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
     bool ac4_ims_flag,
     bool ac4_cbi_flag) {
   std::unique_ptr<MockMediaPlaylist> playlist(
-      new MockMediaPlaylist(filename, name, group));
+      new MockMediaPlaylist(filename, name, group, 0));
 
   EXPECT_CALL(*playlist, GetNumChannels()).WillRepeatedly(Return(channels));
   EXPECT_CALL(*playlist, GetEC3JocComplexity())
@@ -123,7 +123,7 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
     const std::string& codec,
     const std::string& language) {
   std::unique_ptr<MockMediaPlaylist> playlist(
-      new MockMediaPlaylist(filename, name, group));
+      new MockMediaPlaylist(filename, name, group, 0));
 
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kSubtitle);

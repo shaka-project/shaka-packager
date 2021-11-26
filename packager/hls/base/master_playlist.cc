@@ -52,7 +52,8 @@ struct Variant {
   uint64_t avg_audio_bitrate = 0;
 };
 
-uint64_t GetMaximumMaxBitrate(const std::list<const MediaPlaylist*> playlists) {
+uint64_t GetMaximumMaxBitrate(
+    const std::vector<const MediaPlaylist*> playlists) {
   uint64_t max = 0;
   for (const auto& playlist : playlists) {
     max = std::max(max, playlist->MaxBitrate());
@@ -60,7 +61,8 @@ uint64_t GetMaximumMaxBitrate(const std::list<const MediaPlaylist*> playlists) {
   return max;
 }
 
-uint64_t GetMaximumAvgBitrate(const std::list<const MediaPlaylist*> playlists) {
+uint64_t GetMaximumAvgBitrate(
+    const std::vector<const MediaPlaylist*> playlists) {
   uint64_t max = 0;
   for (const auto& playlist : playlists) {
     max = std::max(max, playlist->AvgBitrate());
@@ -69,7 +71,7 @@ uint64_t GetMaximumAvgBitrate(const std::list<const MediaPlaylist*> playlists) {
 }
 
 std::set<std::string> GetGroupCodecString(
-    const std::list<const MediaPlaylist*>& group) {
+    const std::vector<const MediaPlaylist*>& group) {
   std::set<std::string> codecs;
 
   for (const MediaPlaylist* playlist : group) {
@@ -97,7 +99,7 @@ std::set<std::string> GetGroupCodecString(
 }
 
 std::list<Variant> AudioGroupsToVariants(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& groups) {
+    const std::map<std::string, std::vector<const MediaPlaylist*>>& groups) {
   std::list<Variant> variants;
 
   for (const auto& group : groups) {
@@ -139,7 +141,7 @@ const char* GetGroupId(const MediaPlaylist& playlist) {
 }
 
 std::list<Variant> SubtitleGroupsToVariants(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& groups) {
+    const std::map<std::string, std::vector<const MediaPlaylist*>>& groups) {
   std::list<Variant> variants;
 
   for (const auto& group : groups) {
@@ -160,8 +162,9 @@ std::list<Variant> SubtitleGroupsToVariants(
 }
 
 std::list<Variant> BuildVariants(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& audio_groups,
-    const std::map<std::string, std::list<const MediaPlaylist*>>&
+    const std::map<std::string, std::vector<const MediaPlaylist*>>&
+        audio_groups,
+    const std::map<std::string, std::vector<const MediaPlaylist*>>&
         subtitle_groups) {
   std::list<Variant> audio_variants = AudioGroupsToVariants(audio_groups);
   std::list<Variant> subtitle_variants =
@@ -358,7 +361,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 }
 
 void BuildMediaTags(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
+    const std::map<std::string, std::vector<const MediaPlaylist*>>& groups,
     const std::string& default_language,
     const std::string& base_url,
     std::string* out) {
@@ -410,11 +413,12 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
-  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
-  std::map<std::string, std::list<const MediaPlaylist*>>
+  std::map<std::string, std::vector<const MediaPlaylist*>>
+      audio_playlist_groups;
+  std::map<std::string, std::vector<const MediaPlaylist*>>
       subtitle_playlist_groups;
-  std::list<const MediaPlaylist*> video_playlists;
-  std::list<const MediaPlaylist*> iframe_playlists;
+  std::vector<const MediaPlaylist*> video_playlists;
+  std::vector<const MediaPlaylist*> iframe_playlists;
   for (const MediaPlaylist* playlist : playlists) {
     switch (playlist->stream_type()) {
       case MediaPlaylist::MediaPlaylistStreamType::kAudio:
@@ -434,6 +438,20 @@ void AppendPlaylists(const std::string& default_audio_language,
                          << " not handled.";
     }
   }
+
+  // Sort the streams by input order in the command line.
+  auto comparator = [](const MediaPlaylist* a, const MediaPlaylist* b) {
+    return a->output_order() < b->output_order();
+  };
+  for (auto& it : audio_playlist_groups) {
+    std::stable_sort(it.second.begin(), it.second.end(), comparator);
+  }
+  for (auto& it : subtitle_playlist_groups) {
+    std::stable_sort(it.second.begin(), it.second.end(), comparator);
+  }
+  std::stable_sort(video_playlists.begin(), video_playlists.end(), comparator);
+  std::stable_sort(iframe_playlists.begin(), iframe_playlists.end(),
+                   comparator);
 
   if (!audio_playlist_groups.empty()) {
     content->append("\n");

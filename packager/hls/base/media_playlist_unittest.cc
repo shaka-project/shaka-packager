@@ -50,8 +50,8 @@ class MediaPlaylistTest : public ::testing::Test {
         default_group_id_("default_group_id") {
     hls_params_.playlist_type = type;
     hls_params_.time_shift_buffer_depth = kTimeShiftBufferDepth;
-    media_playlist_.reset(new MediaPlaylist(hls_params_, default_file_name_,
-                                            default_name_, default_group_id_));
+    media_playlist_.reset(new MediaPlaylist(
+        hls_params_, default_file_name_, default_name_, default_group_id_, 0));
   }
 
   void SetUp() override {
