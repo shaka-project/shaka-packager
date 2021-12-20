@@ -292,23 +292,23 @@ class MediaHandlerTestBase : public ::testing::Test {
  protected:
   bool IsVideoCodec(Codec codec) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale) const;
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale,
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale,
                                                  uint32_t width,
                                                  uint64_t height) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale,
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale,
                                                  Codec codec) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale,
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale,
                                                  Codec codec,
                                                  uint32_t width,
                                                  uint64_t height) const;
 
-  std::unique_ptr<StreamInfo> GetAudioStreamInfo(uint32_t time_scale) const;
+  std::unique_ptr<StreamInfo> GetAudioStreamInfo(int32_t time_scale) const;
 
-  std::unique_ptr<StreamInfo> GetAudioStreamInfo(uint32_t time_scale,
+  std::unique_ptr<StreamInfo> GetAudioStreamInfo(int32_t time_scale,
                                                  Codec codec) const;
 
   std::shared_ptr<MediaSample> GetMediaSample(int64_t timestamp,
@@ -325,7 +325,7 @@ class MediaHandlerTestBase : public ::testing::Test {
                                               int64_t duration,
                                               bool is_subsegment) const;
 
-  std::unique_ptr<StreamInfo> GetTextStreamInfo(uint32_t timescale) const;
+  std::unique_ptr<StreamInfo> GetTextStreamInfo(int32_t timescale) const;
 
   std::unique_ptr<TextSample> GetTextSample(const std::string& id,
                                             int64_t start,

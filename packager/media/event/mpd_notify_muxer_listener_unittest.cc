@@ -96,6 +96,17 @@ class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
     listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
   }
 
+  void SetupForLowLatencyDash() {
+    MpdOptions mpd_options;
+    // Low Latency DASH streaming should be live.
+    mpd_options.dash_profile = DashProfile::kLive;
+    // Low Latency DASH live profile should be dynamic.
+    mpd_options.mpd_type = MpdType::kDynamic;
+    mpd_options.mpd_params.low_latency_dash_mode = true;
+    notifier_.reset(new MockMpdNotifier(mpd_options));
+    listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
+  }
+
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
     // On success, this writes the result to |temp_file_path_|.
     listener_->OnMediaEnd(params.media_ranges, params.duration_seconds);
@@ -279,7 +290,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
-  const uint32_t kSampleDuration = 1234u;
+  const int32_t kSampleDuration = 1234;
   const char kExpectedMediaInfo[] =
       "video_info {\n"
       "  frame_duration: 1234\n"  // Should match the constant above.
@@ -303,7 +314,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
 
-  const uint32_t kReferenceTimeScale = 1111u;  // Should match the protobuf.
+  const int32_t kReferenceTimeScale = 1111;  // Should match the protobuf.
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
   listener_->OnMediaStart(muxer_options, *video_stream_info,
@@ -326,7 +337,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReadySegmentList) {
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
-  const uint32_t kSampleDuration = 1234u;
+  const int32_t kSampleDuration = 1234;
   const char kExpectedMediaInfo[] =
       "video_info {\n"
       "  frame_duration: 1234\n"  // Should match the constant above.
@@ -353,7 +364,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReadySegmentList) {
       "  begin: 222\n"
       "  end: 9999\n"
       "}\n";
-  const uint32_t kReferenceTimeScale = 1111u;  // Should match the protobuf.
+  const int32_t kReferenceTimeScale = 1111;  // Should match the protobuf.
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
   listener_->OnMediaStart(muxer_options, *video_stream_info,
@@ -378,11 +389,11 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  const uint64_t kStartTime1 = 0u;
-  const uint64_t kDuration1 = 1000u;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 1000;
   const uint64_t kSegmentFileSize1 = 29812u;
-  const uint64_t kStartTime2 = 1001u;
-  const uint64_t kDuration2 = 3787u;
+  const int64_t kStartTime2 = 1001;
+  const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
@@ -416,11 +427,11 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegmentSegmentList) {
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  const uint64_t kStartTime1 = 0u;
-  const uint64_t kDuration1 = 1000u;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 1000;
   const uint64_t kSegmentFileSize1 = 29812u;
-  const uint64_t kStartTime2 = 1001u;
-  const uint64_t kDuration2 = 3787u;
+  const int64_t kStartTime2 = 1001;
+  const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
@@ -466,11 +477,11 @@ TEST_F(MpdNotifyMuxerListenerTest, VodMultipleFiles) {
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  const uint64_t kStartTime1 = 0u;
-  const uint64_t kDuration1 = 1000u;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 1000;
   const uint64_t kSegmentFileSize1 = 29812u;
-  const uint64_t kStartTime2 = 1001u;
-  const uint64_t kDuration2 = 3787u;
+  const int64_t kStartTime2 = 1001;
+  const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
 
   // Expectation for first file before OnMediaEnd.
@@ -509,7 +520,6 @@ TEST_F(MpdNotifyMuxerListenerTest, VodMultipleFiles) {
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
-
 TEST_F(MpdNotifyMuxerListenerTest, VodMultipleFilesSegmentList) {
   SetupForVodSegmentList();
   MuxerOptions muxer_options1;
@@ -528,11 +538,11 @@ TEST_F(MpdNotifyMuxerListenerTest, VodMultipleFilesSegmentList) {
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  const uint64_t kStartTime1 = 0u;
-  const uint64_t kDuration1 = 1000u;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 1000;
   const uint64_t kSegmentFileSize1 = 29812u;
-  const uint64_t kStartTime2 = 1001u;
-  const uint64_t kDuration2 = 3787u;
+  const int64_t kStartTime2 = 1001;
+  const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
 
   // Expectation for first file before OnMediaEnd.
@@ -568,6 +578,65 @@ TEST_F(MpdNotifyMuxerListenerTest, VodMultipleFilesSegmentList) {
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   EXPECT_CALL(*notifier_, Flush());
+  FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
+}
+
+TEST_F(MpdNotifyMuxerListenerTest, LowLatencyDash) {
+  SetupForLowLatencyDash();
+  MuxerOptions muxer_options;
+  SetDefaultLiveMuxerOptions(&muxer_options);
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  std::shared_ptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+
+  const std::string kExpectedMediaInfo =
+      "video_info {\n"
+      "  codec: \"avc1.010101\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "media_duration_seconds: 20.0\n"
+      "init_segment_name: \"liveinit.mp4\"\n"
+      "segment_template: \"live-$NUMBER$.mp4\"\n"
+      "reference_time_scale: 1000\n"
+      "container_type: CONTAINER_MP4\n";
+
+  const uint64_t kStartTime1 = 0u;
+  const uint64_t kStartTime2 = 1001u;
+  const uint64_t kDuration = 1000u;
+  const uint64_t kSegmentSize1 = 29812u;
+  const uint64_t kSegmentSize2 = 30128u;
+
+  EXPECT_CALL(*notifier_,
+              NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*notifier_, NotifySampleDuration(_, kDuration))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*notifier_, NotifyAvailabilityTimeOffset(_))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*notifier_, NotifySegmentDuration(_)).WillOnce(Return(true));
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime1, kDuration, kSegmentSize1));
+  EXPECT_CALL(*notifier_, NotifyCueEvent(_, kStartTime2));
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime2, kDuration, kSegmentSize2));
+  EXPECT_CALL(*notifier_, Flush()).Times(2);
+
+  listener_->OnMediaStart(muxer_options, *video_stream_info,
+                          kDefaultReferenceTimeScale,
+                          MuxerListener::kContainerMp4);
+  listener_->OnSampleDurationReady(kDuration);
+  listener_->OnAvailabilityOffsetReady();
+  listener_->OnSegmentDurationReady();
+  listener_->OnNewSegment("", kStartTime1, kDuration, kSegmentSize1);
+  listener_->OnCueEvent(kStartTime2, "dummy cue data");
+  listener_->OnNewSegment("", kStartTime2, kDuration, kSegmentSize2);
+  ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
+
+  EXPECT_CALL(*notifier_, Flush()).Times(0);
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
@@ -605,11 +674,11 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "  include_mspr_pro: 1\n"
       "}\n";
 
-  const uint64_t kStartTime1 = 0u;
-  const uint64_t kDuration1 = 1000u;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 1000;
   const uint64_t kSegmentFileSize1 = 29812u;
-  const uint64_t kStartTime2 = 1001u;
-  const uint64_t kDuration2 = 3787u;
+  const int64_t kStartTime2 = 1001;
+  const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
@@ -678,11 +747,11 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
       "  include_mspr_pro: 1\n"
       "}\n";
 
-  const uint64_t kStartTime1 = 0u;
-  const uint64_t kDuration1 = 1000u;
+  const int64_t kStartTime1 = 0;
+  const int64_t kDuration1 = 1000;
   const uint64_t kSegmentFileSize1 = 29812u;
-  const uint64_t kStartTime2 = 1001u;
-  const uint64_t kDuration2 = 3787u;
+  const int64_t kStartTime2 = 1001;
+  const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);

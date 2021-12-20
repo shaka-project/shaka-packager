@@ -26,8 +26,8 @@ namespace {
 const int64_t kInvalidOffset = std::numeric_limits<int64_t>::max();
 
 int64_t Rescale(int64_t time_in_old_scale,
-                uint32_t old_scale,
-                uint32_t new_scale) {
+                int32_t old_scale,
+                int32_t new_scale) {
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 

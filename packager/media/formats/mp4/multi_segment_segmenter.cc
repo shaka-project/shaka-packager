@@ -148,7 +148,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
             ", possibly file permission issue or running out of disk space.");
   }
 
-  uint64_t segment_duration = 0;
+  int64_t segment_duration = 0;
   // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
   // values of all Subsegment_duration fields in the first ‘sidx’ box.
   for (size_t i = 0; i < sidx()->references.size(); ++i)

@@ -59,9 +59,9 @@ class Fragmenter {
 
   void ClearFragmentFinalized() { fragment_finalized_ = false; }
 
-  uint64_t fragment_duration() const { return fragment_duration_; }
-  uint64_t first_sap_time() const { return first_sap_time_; }
-  uint64_t earliest_presentation_time() const {
+  int64_t fragment_duration() const { return fragment_duration_; }
+  int64_t first_sap_time() const { return first_sap_time_; }
+  int64_t earliest_presentation_time() const {
     return earliest_presentation_time_;
   }
   bool fragment_initialized() const { return fragment_initialized_; }

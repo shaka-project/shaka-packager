@@ -1,8 +1,10 @@
-FROM alpine:3.8
+FROM alpine:3.11
 
-# Install packages needed for Shaka Packager.
-RUN apk add --no-cache bash build-base curl findutils git ninja python \
-                       bsd-compat-headers linux-headers libexecinfo-dev
+# Install utilities, libraries, and dev tools.
+RUN apk add --no-cache \
+        bash curl \
+        bsd-compat-headers c-ares-dev linux-headers \
+        build-base git ninja python2 python3
 
 # Install depot_tools.
 WORKDIR /
@@ -14,12 +16,8 @@ ENV PATH $PATH:/depot_tools
 RUN sed -i \
     '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
     /usr/include/malloc.h
+ENV GYP_DEFINES='musl=1'
 
-ENV GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
-# Alpine does not support python3 yet, but depot_tools enabled python3
-# by default. Disable python3 explicitly for now.
-# See https://github.com/google/shaka-packager/issues/763 for details.
-ENV GCLIENT_PY3=0
 # Bypass VPYTHON included by depot_tools, which no longer works in Alpine.
 ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 

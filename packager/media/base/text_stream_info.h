@@ -60,11 +60,15 @@ class TextStreamInfo : public StreamInfo {
   /// @param width of the text. This may be 0.
   /// @param height of the text. This may be 0.
   /// @param language is the language of this stream. This may be empty.
-  TextStreamInfo(int track_id, uint32_t time_scale, uint64_t duration,
+  TextStreamInfo(int track_id,
+                 int32_t time_scale,
+                 int64_t duration,
                  Codec codec,
                  const std::string& codec_string,
-                 const std::string& codec_config, uint16_t width,
-                 uint16_t height, const std::string& language);
+                 const std::string& codec_config,
+                 uint16_t width,
+                 uint16_t height,
+                 const std::string& language);
 
   ~TextStreamInfo() override;
 

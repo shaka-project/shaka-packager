@@ -40,7 +40,7 @@ class MockRepresentationStateChangeListener
                void(int64_t start_time, int64_t duration));
 
   MOCK_METHOD2(OnSetFrameRateForRepresentation,
-               void(uint32_t frame_duration, uint32_t timescale));
+               void(int32_t frame_duration, int32_t timescale));
 };
 
 }  // namespace
@@ -270,8 +270,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const int64_t kStartTime = 199238u;
-  const int64_t kDuration = 98u;
+  const int64_t kStartTime = 199238;
+  const int64_t kDuration = 98;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener, OnNewSegmentForRepresentation(kStartTime, kDuration));
@@ -300,8 +300,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const uint32_t kTimeScale = 1000u;
-  const int64_t kFrameDuration = 33u;
+  const int32_t kTimeScale = 1000;
+  const int64_t kFrameDuration = 33;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
@@ -413,11 +413,11 @@ const char kSElementTemplate[] =
 const char kSElementTemplateWithoutR[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
-const uint32_t kDefaultTimeScale = 1000u;
+const int32_t kDefaultTimeScale = 1000;
 const int64_t kScaledTargetSegmentDuration = 10;
 const double kTargetSegmentDurationInSeconds =
     static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
-const uint32_t kSampleDuration = 2;
+const int32_t kSampleDuration = 2;
 
 std::string GetDefaultMediaInfo() {
   const char kMediaInfo[] =
@@ -444,6 +444,8 @@ class SegmentTemplateTest : public RepresentationTest {
  public:
   void SetUp() override {
     mpd_options_.mpd_type = MpdType::kDynamic;
+    mpd_options_.mpd_params.low_latency_dash_mode = false;
+
     representation_ =
         CreateRepresentation(ConvertToMediaInfo(GetDefaultMediaInfo()),
                              kAnyRepresentationId, NoListener());
@@ -458,6 +460,16 @@ class SegmentTemplateTest : public RepresentationTest {
 
     SegmentInfo s = {start_time, duration, repeat};
     segment_infos_for_expected_out_.push_back(s);
+
+    if (mpd_options_.mpd_params.low_latency_dash_mode) {
+      // Low latency segments do not repeat, so create 1 new segment and return.
+      // At this point, only the first chunk of the low latency segment has been
+      // written. The bandwidth will be updated once the segment is fully
+      // written and the segment duration and size are known.
+      representation_->AddNewSegment(start_time, duration, size);
+      return;
+    }
+
     if (repeat == 0) {
       expected_s_elements_ +=
           base::StringPrintf(kSElementTemplateWithoutR, start_time, duration);
@@ -472,6 +484,16 @@ class SegmentTemplateTest : public RepresentationTest {
       bandwidth_estimator_.AddBlock(
           size, static_cast<double>(duration) / kDefaultTimeScale);
     }
+  }
+
+  void UpdateSegment(int64_t duration, uint64_t size) {
+    DCHECK(representation_);
+    DCHECK(!segment_infos_for_expected_out_.empty());
+
+    segment_infos_for_expected_out_.back().duration = duration;
+    representation_->UpdateCompletedSegment(duration, size);
+    bandwidth_estimator_.AddBlock(
+        size, static_cast<double>(duration) / kDefaultTimeScale);
   }
 
  protected:
@@ -508,6 +530,39 @@ TEST_F(SegmentTemplateTest, OneSegmentNormal) {
 
   expected_s_elements_ = "<S t=\"0\" d=\"10\"/>";
   EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
+}
+
+TEST_F(SegmentTemplateTest, OneSegmentLowLatency) {
+  const int64_t kStartTime = 0;
+  const int64_t kChunkDuration = 5;
+  const uint64_t kChunkSize = 128;
+  const int64_t kSegmentDuration = kChunkDuration * 1000;
+  const uint64_t kSegmentSize = kChunkSize * 1000;
+
+  mpd_options_.mpd_params.low_latency_dash_mode = true;
+  mpd_options_.mpd_params.target_segment_duration =
+      kSegmentDuration / representation_->GetMediaInfo().reference_time_scale();
+
+  // Set values used in LL-DASH MPD attributes
+  representation_->SetSampleDuration(kChunkDuration);
+  representation_->SetAvailabilityTimeOffset();
+  representation_->SetSegmentDuration();
+
+  // Register segment after the first chunk is complete
+  AddSegments(kStartTime, kChunkDuration, kChunkSize, 0);
+  // Update SegmentInfo after the segment is complete
+  UpdateSegment(kSegmentDuration, kSegmentSize);
+
+  const char kOutputTemplate[] =
+      "<Representation id=\"1\" bandwidth=\"204800\" "
+      " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
+      " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
+      "  <SegmentTemplate timescale=\"1000\" "
+      "   duration=\"5000\" availabilityTimeOffset=\"4.995\" "
+      "   initialization=\"init.mp4\" media=\"$Time$.mp4\" "
+      "   startNumber=\"1\"/>\n"
+      "</Representation>\n";
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(kOutputTemplate));
 }
 
 TEST_F(SegmentTemplateTest, RepresentationClone) {

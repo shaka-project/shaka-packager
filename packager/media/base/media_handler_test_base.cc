@@ -14,7 +14,7 @@
 namespace {
 
 const int kTrackId = 1;
-const uint64_t kDuration = 10000;
+const int64_t kDuration = 10000;
 const char kCodecString[] = "codec string";
 const uint8_t kSampleBits = 1;
 const uint8_t kNumChannels = 2;
@@ -175,25 +175,25 @@ bool MediaHandlerTestBase::IsVideoCodec(Codec codec) const {
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
-    uint32_t time_scale) const {
+    int32_t time_scale) const {
   return GetVideoStreamInfo(time_scale, kCodecVP9, kWidth, kHeight);
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
-    uint32_t time_scale,
+    int32_t time_scale,
     uint32_t width,
     uint64_t height) const {
   return GetVideoStreamInfo(time_scale, kCodecVP9, width, height);
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
-    uint32_t time_scale,
+    int32_t time_scale,
     Codec codec) const {
   return GetVideoStreamInfo(time_scale, codec, kWidth, kHeight);
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
-    uint32_t time_scale,
+    int32_t time_scale,
     Codec codec,
     uint32_t width,
     uint64_t height) const {
@@ -205,12 +205,12 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(
-    uint32_t time_scale) const {
+    int32_t time_scale) const {
   return GetAudioStreamInfo(time_scale, kCodecAAC);
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(
-    uint32_t time_scale,
+    int32_t time_scale,
     Codec codec) const {
   return std::unique_ptr<AudioStreamInfo>(new AudioStreamInfo(
       kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,
@@ -254,7 +254,7 @@ std::unique_ptr<SegmentInfo> MediaHandlerTestBase::GetSegmentInfo(
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetTextStreamInfo(
-    uint32_t timescale) const {
+    int32_t timescale) const {
   // None of this information is actually used by the text out handler.
   // The stream info is just needed to signal the start of the stream.
   return std::unique_ptr<StreamInfo>(

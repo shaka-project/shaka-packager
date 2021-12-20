@@ -7,6 +7,10 @@ Usage:
  this_script.py search_text replacement_text
 """
 
+# This runs on a Windows kokoro host where we don't control the python version.
+# Because this runs in python2, we can't specify an encoding in open().
+# pylint: disable=unspecified-encoding
+
 import os
 import sys
 

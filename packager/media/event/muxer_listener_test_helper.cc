@@ -29,8 +29,8 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(
 
 VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   const int kTrackId = 0;
-  const uint32_t kTimeScale = 10;
-  const uint64_t kVideoStreamDuration = 200;
+  const int32_t kTimeScale = 10;
+  const int64_t kVideoStreamDuration = 200;
   const Codec kH264Codec = kCodecH264;
   const char* kCodecString = "avc1.010101";
   const char* kLanuageUndefined = "und";

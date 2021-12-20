@@ -15,7 +15,7 @@ namespace shaka {
 namespace media {
 namespace internal {
 namespace {
-const uint32_t kReferenceTimeScale = 1000;
+const int32_t kReferenceTimeScale = 1000;
 }  // namespace
 
 class MuxerListenerInternalTest : public ::testing::Test {};

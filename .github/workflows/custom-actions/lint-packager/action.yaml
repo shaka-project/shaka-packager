@@ -18,7 +18,7 @@ runs:
         rm git-clang-format
         echo "::endgroup::"
         echo "::group::Installing pylint"
-        python3 -m pip install --upgrade pylint
+        python3 -m pip install --upgrade pylint==2.8.3
         echo "::endgroup::"
         echo "::group::Check clang-format for C++ sources"
         # NOTE: --binary forces use of global clang-format (which works) instead

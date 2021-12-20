@@ -28,9 +28,9 @@ namespace mp4 {
 
 namespace {
 
-uint64_t Rescale(uint64_t time_in_old_scale,
-                 uint32_t old_scale,
-                 uint32_t new_scale) {
+int64_t Rescale(int64_t time_in_old_scale,
+                int32_t old_scale,
+                int32_t new_scale) {
   return static_cast<double>(time_in_old_scale) / old_scale * new_scale;
 }
 
@@ -111,10 +111,11 @@ Status Segmenter::Finalize() {
   // file for VOD and static live case only.
   moov_->extends.header.fragment_duration = 0;
   for (size_t i = 0; i < stream_durations_.size(); ++i) {
-    uint64_t duration =
+    int64_t duration =
         Rescale(stream_durations_[i], moov_->tracks[i].media.header.timescale,
                 moov_->header.timescale);
-    if (duration > moov_->extends.header.fragment_duration)
+    if (duration >
+        static_cast<int64_t>(moov_->extends.header.fragment_duration))
       moov_->extends.header.fragment_duration = duration;
   }
   return DoFinalize();
@@ -224,7 +225,6 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   for (std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
     fragmenter->ClearFragmentFinalized();
-    
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
     Status status = DoFinalizeChunk();
@@ -243,12 +243,12 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
   return Status::OK;
 }
 
-uint32_t Segmenter::GetReferenceTimeScale() const {
+int32_t Segmenter::GetReferenceTimeScale() const {
   return moov_->header.timescale;
 }
 
 double Segmenter::GetDuration() const {
-  uint64_t duration = moov_->extends.header.fragment_duration;
+  int64_t duration = moov_->extends.header.fragment_duration;
   if (duration == 0) {
     // Handling the case where this is not properly initialized.
     return 0.0;

@@ -87,7 +87,7 @@ class KeySource {
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, an error status otherwise.
   virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                    uint32_t crypto_period_duration_in_seconds,
+                                    int32_t crypto_period_duration_in_seconds,
                                     const std::string& stream_label,
                                     EncryptionKey* key) = 0;
 

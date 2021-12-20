@@ -33,6 +33,14 @@
       'dependencies': [
         '../zlib/zlib.gyp:zlib',
       ],
+      # Disable all CPU-specific optimizations, which may fail to link because
+      # we don't have a CPU-specific set of source files.
+      'defines': [
+        'PNG_ARM_NEON_OPT=0',
+        'PNG_INTEL_SSE_OPT=0',
+        'PNG_MIPS_MSA_OPT=0',
+        'PNG_POWERPC_VSX_OPT=0',
+      ],
       'direct_dependent_settings': {
         'include_dirs': [
           '.',

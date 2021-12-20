@@ -8,8 +8,8 @@
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace {
-// Timestamps are represented in double in WebM. Convert to uint64_t in us.
-const uint32_t kWebMTimeScale = 1000000u;
+// Timestamps are represented in double in WebM. Convert to int64_t in us.
+const int32_t kWebMTimeScale = 1000000;
 }  // namespace
 
 namespace shaka {

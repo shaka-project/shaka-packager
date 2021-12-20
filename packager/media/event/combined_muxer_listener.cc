@@ -35,7 +35,7 @@ void CombinedMuxerListener::OnEncryptionStart() {
 
 void CombinedMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                          const StreamInfo& stream_info,
-                                         uint32_t time_scale,
+                                         int32_t time_scale,
                                          ContainerType container_type) {
   for (auto& listener : muxer_listeners_) {
     listener->OnMediaStart(muxer_options, stream_info, time_scale,
@@ -49,7 +49,7 @@ void CombinedMuxerListener::OnAvailabilityOffsetReady() {
   }
 }
 
-void CombinedMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+void CombinedMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   for (auto& listener : muxer_listeners_) {
     listener->OnSampleDurationReady(sample_duration);
   }
@@ -74,6 +74,13 @@ void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
                                          uint64_t segment_file_size) {
   for (auto& listener : muxer_listeners_) {
     listener->OnNewSegment(file_name, start_time, duration, segment_file_size);
+  }
+}
+
+void CombinedMuxerListener::OnCompletedSegment(int64_t duration,
+                                               uint64_t segment_file_size) {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnCompletedSegment(duration, segment_file_size);
   }
 }
 

@@ -43,7 +43,7 @@ struct PackagingParams {
   /// The offset to be applied to transport stream (e.g. MPEG2-TS, HLS packed
   /// audio) timestamps to compensate for possible negative timestamps in the
   /// input.
-  uint32_t transport_stream_timestamp_offset_ms = 0;
+  int32_t transport_stream_timestamp_offset_ms = 0;
   /// Chunking (segmentation) related parameters.
   ChunkingParams chunking_params;
 

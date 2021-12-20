@@ -27,7 +27,7 @@ namespace {
 
 const char kDefaultPlaylistFileName[] = "default_playlist.m3u8";
 const double kTimeShiftBufferDepth = 20;
-const uint64_t kTimeScale = 90000;
+const int64_t kTimeScale = 90000;
 const uint64_t kMBytes = 1000000;
 const uint64_t kZeroByteOffset = 0;
 
@@ -1002,8 +1002,8 @@ const char kIgnoredSegmentName[] = "ignored_segment_name";
 const char kSegmentTemplateTime[] = "memory://$Time$.mp4";
 const char kSegmentTemplateTimeUrl[] = "video/$Time$.mp4";
 
-const uint64_t kInitialStartTime = 0;
-const uint64_t kDuration = kTimeScale;
+const int64_t kInitialStartTime = 0;
+const int64_t kDuration = kTimeScale;
 }  // namespace
 
 class MediaPlaylistDeleteSegmentsTest

@@ -37,10 +37,16 @@
               'HAVE_CONFIG_H',
               'CURL_CA_BUNDLE="<!(config/linux/find_curl_ca_bundle.sh)"',
               'USE_OPENSSL',
+              'USE_ARES',
             ],
             'include_dirs': [
               'config/linux',
             ],
+            'link_settings': {
+              'libraries': [
+                '-lcares',
+              ],
+            },
           },
         }],
         ['OS == "mac"', {

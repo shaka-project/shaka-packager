@@ -416,7 +416,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
                                      media_info.reference_time_scale()));
 
     if (use_segment_list && !use_single_segment_url_with_media) {
-      const uint64_t duration_seconds = static_cast<uint64_t>(
+      const int64_t duration_seconds = static_cast<int64_t>(
           floor(target_segment_duration * media_info.reference_time_scale()));
       RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
     }
@@ -461,7 +461,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
     uint32_t start_number,
-    bool is_low_latency_dash) {
+    bool low_latency_dash_mode) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
@@ -469,8 +469,8 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   }
 
   if (media_info.has_segment_duration()) {
-    RCHECK(segment_template.SetIntegerAttribute(
-        "duration", media_info.segment_duration()));
+    RCHECK(segment_template.SetIntegerAttribute("duration",
+                                                media_info.segment_duration()));
   }
 
   if (media_info.has_presentation_time_offset()) {
@@ -479,9 +479,8 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   }
 
   if (media_info.has_availability_time_offset()) {
-    // Set the availabilityTimeOffset to the precision of 3 decimal places.
     RCHECK(segment_template.SetFloatingPointAttribute(
-        "availabilityTimeOffset", round(media_info.availability_time_offset()*1000)/1000));
+        "availabilityTimeOffset", media_info.availability_time_offset()));
   }
 
   if (media_info.has_init_segment_url()) {
@@ -511,7 +510,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
             std::to_string(last_segment_number)));
       }
     } else {
-      if (!is_low_latency_dash){
+      if (!low_latency_dash_mode) {
         XmlNode segment_timeline("SegmentTimeline");
         RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
         RCHECK(segment_template.AddChild(std::move(segment_timeline)));

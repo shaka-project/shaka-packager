@@ -28,7 +28,7 @@ class TtmlGenerator {
 
   void Initialize(const std::map<std::string, TextRegion>& regions,
                   const std::string& language,
-                  uint32_t time_scale);
+                  int32_t time_scale);
   void AddSample(const TextSample& sample);
   void Reset();
 
@@ -47,7 +47,7 @@ class TtmlGenerator {
   std::list<TextSample> samples_;
   std::map<std::string, TextRegion> regions_;
   std::string language_;
-  uint32_t time_scale_;
+  int32_t time_scale_;
   // This is modified in "const" methods to create unique IDs.
   mutable uint32_t region_id_ = 0;
 };

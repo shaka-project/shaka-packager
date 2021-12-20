@@ -49,23 +49,23 @@ uint64_t Round(double value) {
 // uint64_t/int64_t, which is sufficient to represent a time as large as 292
 // years.
 
-uint64_t BmffTimestampToNs(uint64_t timestamp, uint64_t time_scale) {
+int64_t BmffTimestampToNs(int64_t timestamp, int64_t time_scale) {
   // Casting to double is needed otherwise kSecondsToNs * timestamp may overflow
   // uint64_t/int64_t.
   return Round(static_cast<double>(timestamp) / time_scale * kSecondsToNs);
 }
 
-uint64_t NsToBmffTimestamp(uint64_t ns, uint64_t time_scale) {
+int64_t NsToBmffTimestamp(int64_t ns, int64_t time_scale) {
   // Casting to double is needed otherwise ns * time_scale may overflow
   // uint64_t/int64_t.
   return Round(static_cast<double>(ns) / kSecondsToNs * time_scale);
 }
 
-uint64_t NsToWebMTimecode(uint64_t ns, uint64_t timecode_scale) {
+int64_t NsToWebMTimecode(int64_t ns, int64_t timecode_scale) {
   return ns / timecode_scale;
 }
 
-uint64_t WebMTimecodeToNs(uint64_t timecode, uint64_t timecode_scale) {
+int64_t WebMTimecodeToNs(int64_t timecode, int64_t timecode_scale) {
   return timecode * timecode_scale;
 }
 
@@ -151,7 +151,7 @@ Status Segmenter::Initialize(const StreamInfo& info,
 
 Status Segmenter::Finalize() {
   if (prev_sample_ && !prev_sample_->end_of_stream()) {
-    uint64_t duration =
+    int64_t duration =
         prev_sample_->pts() - first_timestamp_ + prev_sample_->duration();
     segment_info_.set_duration(FromBmffTimestamp(duration));
   }
@@ -194,8 +194,8 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
   return Status::OK;
 }
 
-Status Segmenter::FinalizeSegment(uint64_t start_timestamp,
-                                  uint64_t duration_timestamp,
+Status Segmenter::FinalizeSegment(int64_t start_timestamp,
+                                  int64_t duration_timestamp,
                                   bool is_subsegment) {
   if (is_subsegment)
     new_subsegment_ = true;
@@ -210,13 +210,13 @@ float Segmenter::GetDurationInSeconds() const {
          static_cast<double>(kSecondsToNs);
 }
 
-uint64_t Segmenter::FromBmffTimestamp(uint64_t bmff_timestamp) {
+int64_t Segmenter::FromBmffTimestamp(int64_t bmff_timestamp) {
   return NsToWebMTimecode(
       BmffTimestampToNs(bmff_timestamp, time_scale_),
       segment_info_.timecode_scale());
 }
 
-uint64_t Segmenter::FromWebMTimecode(uint64_t webm_timecode) {
+int64_t Segmenter::FromWebMTimecode(int64_t webm_timecode) {
   return NsToBmffTimestamp(
       WebMTimecodeToNs(webm_timecode, segment_info_.timecode_scale()),
       time_scale_);
@@ -260,10 +260,10 @@ Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {
   return Status::OK;
 }
 
-Status Segmenter::SetCluster(uint64_t start_webm_timecode,
+Status Segmenter::SetCluster(int64_t start_webm_timecode,
                              uint64_t position,
                              MkvWriter* writer) {
-  const uint64_t scale = segment_info_.timecode_scale();
+  const int64_t scale = segment_info_.timecode_scale();
   cluster_.reset(new mkvmuxer::Cluster(start_webm_timecode, position, scale));
   cluster_->Init(writer);
   return Status::OK;

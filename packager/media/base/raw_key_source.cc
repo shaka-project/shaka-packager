@@ -58,10 +58,11 @@ Status RawKeySource::GetKey(const std::vector<uint8_t>& key_id,
                     " was not found.");
 }
 
-Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                        uint32_t crypto_period_duration_in_seconds,
-                                        const std::string& stream_label,
-                                        EncryptionKey* key) {
+Status RawKeySource::GetCryptoPeriodKey(
+    uint32_t crypto_period_index,
+    int32_t crypto_period_duration_in_seconds,
+    const std::string& stream_label,
+    EncryptionKey* key) {
   RETURN_IF_ERROR(GetKey(stream_label, key));
 
   // A naive key rotation algorithm is implemented here by left rotating the

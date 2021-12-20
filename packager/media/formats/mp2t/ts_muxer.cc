@@ -11,7 +11,7 @@ namespace media {
 namespace mp2t {
 
 namespace {
-const uint32_t kTsTimescale = 90000;
+const int32_t kTsTimescale = 90000;
 }  // namespace
 
 TsMuxer::TsMuxer(const MuxerOptions& muxer_options) : Muxer(muxer_options) {}

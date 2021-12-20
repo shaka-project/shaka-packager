@@ -96,10 +96,9 @@ deps_os = {
 hooks = [
   {
     # Downloads the current stable linux sysroot to build/linux/ if needed.
-    # This script is only run on linux, except on arm.
+    # This script is a no-op except for linux.
     'name': 'sysroot',
     'pattern': '.',
-    "condition": "checkout_linux and not checkout_arm and not checkout_arm64",
     'action': ['python', 'src/packager/build/linux/sysroot_scripts/install-sysroot.py',
                '--running-as-hook'],
   },
@@ -112,8 +111,8 @@ hooks = [
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
     "name": "clang",
-    # Skip clang updates on Windows and arm, where we don't use clang.
-    "condition": "not checkout_win and not checkout_arm and not checkout_arm64",
+    # Skip clang updates on Windows, where we don't use clang.
+    "condition": "not checkout_win",
     "pattern": ".",
     "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],
   },

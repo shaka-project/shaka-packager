@@ -103,7 +103,7 @@ class MediaPlaylist {
   /// Sample duration is not available right away especially. This allows
   /// setting the sample duration after the Media Playlist has been initialized.
   /// @param sample_duration is the duration of a sample.
-  virtual void SetSampleDuration(uint32_t sample_duration);
+  virtual void SetSampleDuration(int32_t sample_duration);
 
   /// Segments must be added in order.
   /// @param file_name is the file name of the segment.
@@ -183,7 +183,7 @@ class MediaPlaylist {
   /// The spec does not allow changing EXT-X-TARGETDURATION. However, this class
   /// has no control over the input source.
   /// @param target_duration is the target duration for this playlist.
-  virtual void SetTargetDuration(uint32_t target_duration);
+  virtual void SetTargetDuration(int32_t target_duration);
 
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
@@ -265,7 +265,7 @@ class MediaPlaylist {
   int discontinuity_sequence_number_ = 0;
 
   double longest_segment_duration_seconds_ = 0.0;
-  uint32_t time_scale_ = 0;
+  int32_t time_scale_ = 0;
 
   BandwidthEstimator bandwidth_estimator_;
 
@@ -275,7 +275,7 @@ class MediaPlaylist {
 
   // See SetTargetDuration() comments.
   bool target_duration_set_ = false;
-  uint32_t target_duration_ = 0;
+  int32_t target_duration_ = 0;
 
   // TODO(kqyang): This could be managed better by a separate class, than having
   // all them managed in MediaPlaylist.

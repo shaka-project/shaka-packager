@@ -48,7 +48,7 @@ class WidevineKeySource : public KeySource {
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                            uint32_t crypto_period_duration_in_seconds,
+                            int32_t crypto_period_duration_in_seconds,
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}
@@ -130,7 +130,7 @@ class WidevineKeySource : public KeySource {
   bool key_production_started_ = false;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_ = 0;
-  uint32_t crypto_period_duration_in_seconds_ = 0;
+  int32_t crypto_period_duration_in_seconds_ = 0;
   std::vector<uint8_t> group_id_;
   bool enable_entitlement_license_ = false;
   std::unique_ptr<EncryptionKeyQueue> key_pool_;

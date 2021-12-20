@@ -33,8 +33,8 @@ std::string StreamTypeToString(StreamType type) {
 
 StreamInfo::StreamInfo(StreamType stream_type,
                        int track_id,
-                       uint32_t time_scale,
-                       uint64_t duration,
+                       int32_t time_scale,
+                       int64_t duration,
                        Codec codec,
                        const std::string& codec_string,
                        const uint8_t* codec_config,

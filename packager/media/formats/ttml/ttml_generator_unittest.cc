@@ -15,7 +15,7 @@ namespace ttml {
 
 namespace {
 
-const uint64_t kMsTimeScale = 1000u;
+const int64_t kMsTimeScale = 1000;
 
 const TextFragmentStyle kNoStyles{};
 const bool kNewline = true;
@@ -37,7 +37,7 @@ struct TestProperties {
 
   std::map<std::string, TextRegion> regions;
   std::string language = "";
-  uint32_t time_scale = kMsTimeScale;
+  int32_t time_scale = kMsTimeScale;
 };
 
 }  // namespace

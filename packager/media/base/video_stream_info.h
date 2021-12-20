@@ -28,8 +28,8 @@ class VideoStreamInfo : public StreamInfo {
   /// @param pixel_width is the width of the pixel. 0 if unknown.
   /// @param pixel_height is the height of the pixels. 0 if unknown.
   VideoStreamInfo(int track_id,
-                  uint32_t time_scale,
-                  uint64_t duration,
+                  int32_t time_scale,
+                  int64_t duration,
                   Codec codec,
                   H26xStreamFormat h26x_stream_format,
                   const std::string& codec_string,

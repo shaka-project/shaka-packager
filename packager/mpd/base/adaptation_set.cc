@@ -148,8 +148,8 @@ class RepresentationStateChangeListenerImpl
                                                    start_time, duration);
   }
 
-  void OnSetFrameRateForRepresentation(uint32_t frame_duration,
-                                       uint32_t timescale) override {
+  void OnSetFrameRateForRepresentation(int32_t frame_duration,
+                                       int32_t timescale) override {
     adaptation_set_->OnSetFrameRateForRepresentation(representation_id_,
                                                      frame_duration, timescale);
   }
@@ -391,8 +391,8 @@ void AdaptationSet::AddAdaptationSetSwitching(
 // muxer so one might run faster than others). To be clear, for dynamic MPD, all
 // Representations should be added before a segment is added.
 void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
-                                                  uint64_t start_time,
-                                                  uint64_t duration) {
+                                                  int64_t start_time,
+                                                  int64_t duration) {
   if (mpd_options_.mpd_type == MpdType::kDynamic) {
     CheckDynamicSegmentAlignment(representation_id, start_time, duration);
   } else {
@@ -402,8 +402,8 @@ void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
 }
 
 void AdaptationSet::OnSetFrameRateForRepresentation(uint32_t representation_id,
-                                                    uint32_t frame_duration,
-                                                    uint32_t timescale) {
+                                                    int32_t frame_duration,
+                                                    int32_t timescale) {
   RecordFrameRate(frame_duration, timescale);
 }
 
@@ -478,14 +478,14 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 // But since this is unlikely to happen in the packager (and to save
 // computation), this isn't handled at the moment.
 void AdaptationSet::CheckDynamicSegmentAlignment(uint32_t representation_id,
-                                                 uint64_t start_time,
-                                                 uint64_t /* duration */) {
+                                                 int64_t start_time,
+                                                 int64_t /* duration */) {
   if (segments_aligned_ == kSegmentAlignmentFalse ||
       force_set_segment_alignment_) {
     return;
   }
 
-  std::list<uint64_t>& current_representation_start_times =
+  std::list<int64_t>& current_representation_start_times =
       representation_segment_start_times_[representation_id];
   current_representation_start_times.push_back(start_time);
   // There's no way to detemine whether the segments are aligned if some
@@ -494,10 +494,10 @@ void AdaptationSet::CheckDynamicSegmentAlignment(uint32_t representation_id,
     return;
 
   DCHECK(!current_representation_start_times.empty());
-  const uint64_t expected_start_time =
+  const int64_t expected_start_time =
       current_representation_start_times.front();
   for (const auto& key_value : representation_segment_start_times_) {
-    const std::list<uint64_t>& representation_start_time = key_value.second;
+    const std::list<int64_t>& representation_start_time = key_value.second;
     // If there are no entries in a list, then there is no way for the
     // segment alignment status to change.
     // Note that it can be empty because entries get deleted below.
@@ -518,7 +518,7 @@ void AdaptationSet::CheckDynamicSegmentAlignment(uint32_t representation_id,
   segments_aligned_ = kSegmentAlignmentTrue;
 
   for (auto& key_value : representation_segment_start_times_) {
-    std::list<uint64_t>& representation_start_time = key_value.second;
+    std::list<int64_t>& representation_start_time = key_value.second;
     representation_start_time.pop_front();
   }
 }
@@ -540,7 +540,7 @@ void AdaptationSet::CheckStaticSegmentAlignment() {
   // This is not the most efficient implementation to compare the values
   // because expected_time_line is compared against all other time lines, but
   // probably the most readable.
-  const std::list<uint64_t>& expected_time_line =
+  const std::list<int64_t>& expected_time_line =
       representation_segment_start_times_.begin()->second;
 
   bool all_segment_time_line_same_length = true;
@@ -548,13 +548,13 @@ void AdaptationSet::CheckStaticSegmentAlignment() {
   RepresentationTimeline::const_iterator it =
       representation_segment_start_times_.begin();
   for (++it; it != representation_segment_start_times_.end(); ++it) {
-    const std::list<uint64_t>& other_time_line = it->second;
+    const std::list<int64_t>& other_time_line = it->second;
     if (expected_time_line.size() != other_time_line.size()) {
       all_segment_time_line_same_length = false;
     }
 
-    const std::list<uint64_t>* longer_list = &other_time_line;
-    const std::list<uint64_t>* shorter_list = &expected_time_line;
+    const std::list<int64_t>* longer_list = &other_time_line;
+    const std::list<int64_t>* shorter_list = &expected_time_line;
     if (expected_time_line.size() > other_time_line.size()) {
       shorter_list = &other_time_line;
       longer_list = &expected_time_line;
@@ -585,8 +585,7 @@ void AdaptationSet::CheckStaticSegmentAlignment() {
 
 // Since all AdaptationSet cares about is the maxFrameRate, representation_id
 // is not passed to this method.
-void AdaptationSet::RecordFrameRate(uint32_t frame_duration,
-                                    uint32_t timescale) {
+void AdaptationSet::RecordFrameRate(int32_t frame_duration, int32_t timescale) {
   if (frame_duration == 0) {
     LOG(ERROR) << "Frame duration is 0 and cannot be set.";
     return;

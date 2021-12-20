@@ -25,6 +25,7 @@ namespace media {
 namespace mp4 {
 
 LowLatencySegmentSegmenter::LowLatencySegmentSegmenter(const MuxerOptions& options,
+    const MuxerOptions& options,
                                              std::unique_ptr<FileType> ftyp,
                                              std::unique_ptr<Movie> moov)
     : Segmenter(options, std::move(ftyp), std::move(moov)),
@@ -160,6 +161,7 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
   if (muxer_listener()) {
     if (!ll_dash_mpd_values_initialized_) {
       // Set necessary values for LL-DASH mpd after the first chunk has been processed.
+      // processed.
       muxer_listener()->OnSampleDurationReady(sample_duration());
       muxer_listener()->OnAvailabilityOffsetReady();
       muxer_listener()->OnSegmentDurationReady();
@@ -203,6 +205,9 @@ Status LowLatencySegmentSegmenter::WriteChunk() {
 }
 
 Status LowLatencySegmentSegmenter::FinalizeSegment() {
+  if (muxer_listener()) {
+    muxer_listener()->OnCompletedSegment(GetSegmentDuration(), segment_size_);
+  }
   // Close the file now that the final chunk has been written
   if (!segment_file_->Close()) {
     return Status(
@@ -212,7 +217,9 @@ Status LowLatencySegmentSegmenter::FinalizeSegment() {
   }
 
   // Current segment is complete. Reset state in preparation for the next segment.
+  // segment.
   is_initial_chunk_in_seg_ = true;
+  segment_size_ = 0u;
   num_segments_++;
   
   return Status::OK;

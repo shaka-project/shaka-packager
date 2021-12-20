@@ -26,7 +26,7 @@ struct MuxerOptions {
 
   // A positive value, in milliseconds, by which output timestamps are offset to
   // compensate for negative timestamps in the input.
-  uint32_t transport_stream_timestamp_offset_ms = 0;
+  int32_t transport_stream_timestamp_offset_ms = 0;
 
   /// Output file name. If segment_template is not specified, the Muxer
   /// generates this single output file with all segments concatenated;

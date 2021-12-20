@@ -57,11 +57,10 @@ void MpdNotifyMuxerListener::OnEncryptionInfoReady(
 
 void MpdNotifyMuxerListener::OnEncryptionStart() {}
 
-void MpdNotifyMuxerListener::OnMediaStart(
-    const MuxerOptions& muxer_options,
-    const StreamInfo& stream_info,
-    uint32_t time_scale,
-    ContainerType container_type) {
+void MpdNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
+                                          const StreamInfo& stream_info,
+                                          int32_t time_scale,
+                                          ContainerType container_type) {
   std::unique_ptr<MediaInfo> media_info(new MediaInfo());
   if (!internal::GenerateMediaInfo(muxer_options,
                                    stream_info,
@@ -113,8 +112,7 @@ void MpdNotifyMuxerListener::OnAvailabilityOffsetReady() {
 
 // Record the sample duration in the media info for VOD so that OnMediaEnd, all
 // the information is in the media info.
-void MpdNotifyMuxerListener::OnSampleDurationReady(
-    uint32_t sample_duration) {
+void MpdNotifyMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifySampleDuration(notification_id_.value(),
                                         sample_duration);
@@ -204,6 +202,12 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
     event_info.segment_info = {start_time, duration, segment_file_size};
     event_info_.push_back(event_info);
   }
+}
+
+void MpdNotifyMuxerListener::OnCompletedSegment(int64_t duration,
+                                                uint64_t segment_file_size) {
+  mpd_notifier_->NotifyCompletedSegment(notification_id_.value(), duration,
+                                        segment_file_size);
 }
 
 void MpdNotifyMuxerListener::OnKeyFrame(int64_t timestamp,

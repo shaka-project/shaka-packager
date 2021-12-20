@@ -1,10 +1,13 @@
-FROM alpine:3.8 as builder
+FROM alpine:3.11 as builder
 
-# Install packages needed for Shaka Packager.
-RUN apk add --no-cache bash build-base curl findutils git ninja python \
-                       bsd-compat-headers linux-headers libexecinfo-dev
+# Install utilities, libraries, and dev tools.
+RUN apk add --no-cache \
+        bash curl \
+        bsd-compat-headers linux-headers \
+        build-base git ninja python2 python3
 
 # Install depot_tools.
+WORKDIR /
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ENV PATH $PATH:/depot_tools
 
@@ -13,24 +16,21 @@ ENV PATH $PATH:/depot_tools
 RUN sed -i \
     '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
     /usr/include/malloc.h
+ENV GYP_DEFINES='musl=1'
 
-ENV GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
-# Alpine does not support python3 yet, but depot_tools enabled python3
-# by default. Disable python3 explicitly for now.
-# See https://github.com/google/shaka-packager/issues/763 for details.
-ENV GCLIENT_PY3=0
 # Bypass VPYTHON included by depot_tools, which no longer works in Alpine.
 ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
 
-# Build shaka-packager
+# Build shaka-packager from the current directory, rather than what has been
+# merged.
 WORKDIR shaka_packager
 RUN gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
 COPY . src
-RUN gclient sync
-RUN cd src && ninja -C out/Release
+RUN gclient sync --force
+RUN ninja -C src/out/Release
 
 # Copy only result binaries to our final image.
-FROM alpine:3.8
+FROM alpine:3.11
 RUN apk add --no-cache libstdc++ python
 COPY --from=builder /shaka_packager/src/out/Release/packager \
                     /shaka_packager/src/out/Release/mpd_generator \

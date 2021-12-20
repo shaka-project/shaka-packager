@@ -10,7 +10,10 @@ for [other distros below](#notes-for-other-linux-distros).
 
 ```shell
 sudo apt-get update
-sudo apt-get install build-essential curl git python
+sudo apt-get install -y \
+        curl \
+        libc-ares-dev \
+        build-essential git python python3
 ```
 
 Note that `Git` must be v1.7.5 or above.
@@ -21,7 +24,7 @@ Note that `Git` must be v1.7.5 or above.
 *   The OS X 10.10 SDK or later. Run
 
     ```shell
-    $ ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+    ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
     ```
 
     to check whether you have it.
@@ -58,7 +61,7 @@ GYP_MSVS_OVERRIDE_PATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Comm
 Clone the `depot_tools` repository from Chromium:
 
 ```shell
-$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
 Add `depot_tools` to the end of your PATH (you will probably want to put this
@@ -66,7 +69,7 @@ in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
 `/path/to/depot_tools`:
 
 ```shell
-$ export PATH="$PATH:/path/to/depot_tools"
+export PATH="$PATH:/path/to/depot_tools"
 ```
 
 ### Windows
@@ -93,10 +96,6 @@ If you don't have Administrator access, you can add a user-level PATH
 environment variable and put `C:\src\depot_tools` at the front, but
 if your system PATH has a Python in it, you will be out of luck.
 
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
-it to 0. This tells depot_tools to use your locally installed version of Visual
-Studio (by default, depot_tools will try to use a google-internal version).
-
 From a cmd.exe shell, run the command gclient (without arguments). On first
 run, gclient will install all the Windows-specific bits needed to work with
 the code, including msysgit and python.
@@ -115,26 +114,26 @@ call this whatever you like and put it wherever you like, as long as the full
 path has no spaces):
 
 ```shell
-$ mkdir shaka_packager && cd shaka_packager
+mkdir shaka_packager && cd shaka_packager
 ```
 
 Run the `gclient` tool from `depot_tools` to check out the code and its
 dependencies.
 
 ```shell
-$ gclient config https://www.github.com/google/shaka-packager.git --name=src --unmanaged
-$ gclient sync
+gclient config https://www.github.com/google/shaka-packager.git --name=src --unmanaged
+gclient sync
 ```
 
 To sync to a particular commit or version, add the '-r \<revision\>' flag to
 `gclient sync`, e.g.
 
 ```shell
-$ gclient sync -r 4cb5326355e1559d60b46167740e04624d0d2f51
+gclient sync -r 4cb5326355e1559d60b46167740e04624d0d2f51
 ```
 
 ```shell
-$ gclient sync -r v1.2.0
+gclient sync -r v1.2.0
 ```
 
 If you don't want the full repo history, you can save some time by adding the
@@ -145,7 +144,7 @@ and a directory called `src` in the working directory. The remaining
 instructions assume you have switched to the `src` directory:
 
 ```shell
-$ cd src
+cd src
 ```
 
 ### Build Shaka Packager
@@ -158,7 +157,7 @@ which is bundled in depot_tools.
 To build the code, run `ninja` command:
 
 ```shell
-$ ninja -C out/Release
+ninja -C out/Release
 ```
 
 If you want to build debug code, replace `Release` above with `Debug`.
@@ -167,13 +166,7 @@ We also provide a mechanism to change build settings, for example,
 you can change build system to `make` by overriding `GYP_GENERATORS`:
 
 ```shell
-$ GYP_GENERATORS='make' gclient runhooks
-```
-
-Another example, you can also disable clang by overriding `GYP_DEFINES`:
-
-```shell
-$ GYP_DEFINES='clang=0' gclient runhooks
+GYP_GENERATORS='make' gclient runhooks
 ```
 
 #### Windows
@@ -182,8 +175,8 @@ The instructions are similar, except that Windows allows using either `/` or `\`
 as path separator:
 
 ```shell
-$ ninja -C out/Release
-$ ninja -C out\Release
+ninja -C out/Release
+ninja -C out\Release
 ```
 
 Also, unlike Linux / Mac, 32-bit is chosen by default even if the system is
@@ -191,9 +184,9 @@ Also, unlike Linux / Mac, 32-bit is chosen by default even if the system is
 configured to `out/%CONFIGURATION%_x64`, i.e.:
 
 ```shell
-$ SET GYP_DEFINES='target_arch=x64' 
-$ gclient runhooks
-$ ninja -C out/Release_x64
+SET GYP_DEFINES='target_arch=x64'
+gclient runhooks
+ninja -C out/Release_x64
 ```
 
 ### Build artifacts
@@ -210,8 +203,8 @@ on how to use `Shaka Packager`.
 To update an existing checkout, you can run
 
 ```shell
-$ git pull origin master --rebase
-$ gclient sync
+git pull origin master --rebase
+gclient sync
 ```
 
 The first command updates the primary Packager source repository and rebases on
@@ -227,19 +220,19 @@ The install-build-deps script can be used to install all the compiler
 and library dependencies directly from Ubuntu:
 
 ```shell
-$ ./packager/build/install-build-deps.sh
+./packager/build/install-build-deps.sh
 ```
 
 Install sysroot image and others using `gclient`:
 
 ```shell
-$ GYP_CROSSCOMPILE=1 GYP_DEFINES="target_arch=arm" gclient runhooks
+GYP_CROSSCOMPILE=1 GYP_DEFINES="target_arch=arm" gclient runhooks
 ```
 
 The build command is the same as in Ubuntu:
 
 ```shell
-$ ninja -C out/Release
+ninja -C out/Release
 ```
 
 ## Notes for other linux distros
@@ -249,8 +242,10 @@ $ ninja -C out/Release
 Use `apk` command to install dependencies:
 
 ```shell
-$ apk add --no-cache bash build-base curl findutils git ninja python \
-                     bsd-compat-headers linux-headers libexecinfo-dev
+apk add --no-cache \
+        bash curl \
+        bsd-compat-headers c-ares-dev linux-headers \
+        build-base git ninja python2 python3
 ```
 
 Alpine uses musl which does not have mallinfo defined in malloc.h. It is
@@ -258,15 +253,15 @@ required by one of Shaka Packager's dependency. To workaround the problem, a
 dummy structure has to be defined in /usr/include/malloc.h, e.g.
 
 ```shell
-$ sed -i \
+sed -i \
   '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
   /usr/include/malloc.h
 ```
 
-We also need to disable clang and some other features to make it work with musl:
+We also need to enable musl in the build config:
 
 ```shell
-export GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
+export GYP_DEFINES='musl=1'
 ```
 
 ### Arch Linux
@@ -274,24 +269,10 @@ export GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none
 Instead of running `sudo apt-get install` to install build dependencies, run:
 
 ```shell
-$ sudo pacman -Sy --needed python2 git curl gcc gcc-libs make
-$ sudo ln -sf python2 /usr/bin/python
-```
-
-Clang requires libtinfo.so.5 which is not available by default on Arch Linux.
-You can get libtinfo from ncurses5-compat-libs in AUR:
-
-```shell
-$ git clone https://aur.archlinux.org/ncurses5-compat-libs.git
-$ cd ncurses5-compat-libs
-$ gpg --keyserver pgp.mit.edu --recv-keys F7E48EDB
-$ makepkg -si
-```
-
-Optionally, disable clang to build with gcc:
-
-```shell
-$ export GYP_DEFINES='clang=0'
+sudo pacman -Sy --needed \
+        core/which \
+        c-ares \
+        gcc git python2 python3
 ```
 
 ### Debian
@@ -303,16 +284,25 @@ Same as Ubuntu.
 Instead of running `sudo apt-get install` to install build dependencies, run:
 
 ```shell
-$ su -c 'yum install -y git python git curl gcc-c++ findutils bzip2 \
-         ncurses-compat-libs'
+su -c 'yum install -y \
+        which \
+        c-ares-devel libatomic \
+        gcc-c++ git python2'
 ```
+
+### CentOS
+
+Same as Fedora.
 
 ### OpenSUSE
 
 Use `zypper` command to install dependencies:
 
 ```shell
-sudo zypper in git python python-xml git curl gcc-c++ tar libncurses5
+sudo zypper in -y \
+        curl which \
+        c-ares-devel \
+        gcc-c++ git python python3
 ```
 
 ## Tips, tricks, and troubleshooting
@@ -328,13 +318,13 @@ the Xcode license has not been accepted yet which (contrary to the message) any
 user can do by running:
 
 ```shell
-$ xcodebuild -license
+xcodebuild -license
 ```
 
 Only accepting for all users of the machine requires root:
 
 ```shell
-$ sudo xcodebuild -license
+sudo xcodebuild -license
 ```
 
 ### Missing curl CA bundle
@@ -347,7 +337,7 @@ curl CA bundle is not able to be located. Installing curl with openssl should
 resolve the issue:
 
 ```shell
-$ brew install curl --with-openssl
+brew install curl --with-openssl
 ```
 
 ### Using an IDE
@@ -360,17 +350,17 @@ Manual editing might be necessary.
 To generate CMakeLists.txt in out/Release and out/Debug use:
 
 ```shell
-$ GYP_GENERATORS=cmake gclient runhooks
+GYP_GENERATORS=cmake gclient runhooks
 ```
 
 To generate IDE project files in out/Release and out/Debug use:
 
 ```shell
-$ GYP_GENERATORS=eclipse gclient runhooks
-$ GYP_GENERATORS=xcode gclient runhooks
-$ GYP_GENERATORS=xcode_test gclient runhooks
-$ GYP_GENERATORS=msvs gclient runhooks
-$ GYP_GENERATORS=msvs_test gclient runhooks
+GYP_GENERATORS=eclipse gclient runhooks
+GYP_GENERATORS=xcode gclient runhooks
+GYP_GENERATORS=xcode_test gclient runhooks
+GYP_GENERATORS=msvs gclient runhooks
+GYP_GENERATORS=msvs_test gclient runhooks
 ```
 
 ## Contributing
@@ -386,7 +376,7 @@ If you know which tests are affected by your change, you can limit which tests
 are run using the `--gtest_filter` arg, e.g.:
 
 ```shell
-$ out/Debug/mp4_unittest --gtest_filter="MP4MediaParserTest.*"
+out/Debug/mp4_unittest --gtest_filter="MP4MediaParserTest.*"
 ```
 
 You can find out more about GoogleTest at its
