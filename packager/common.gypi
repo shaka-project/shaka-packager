@@ -12,12 +12,18 @@
       'shaka_code%': 0,
       # musl is a lightweight C standard library used in Alpine Linux.
       'musl%': 0,
+      # This is a flag from build/common.gypi to allow linker warnings.
+      # This may be necessary with static_link_binaries=1.
+      'disable_fatal_linker_warnings%': '0',
       'libpackager_type%': 'static_library',
+      'static_link_binaries%': '0',
     },
 
     'shaka_code%': '<(shaka_code)',
     'musl%': '<(musl)',
+    'disable_fatal_linker_warnings%': '<(disable_fatal_linker_warnings)',
     'libpackager_type%': '<(libpackager_type)',
+    'static_link_binaries%': '<(static_link_binaries)',
 
     'conditions': [
       ['shaka_code==1', {
@@ -41,25 +47,38 @@
     ],
   },
   'target_defaults': {
+    'defines': [
+      # These defines make the contents of base/mac/foundation_util.h compile
+      # against the standard OSX SDK, by renaming Chrome's opaque type and
+      # using the real OSX type.  This was not necessary before we switched
+      # away from using hermetic copies of clang and the sysroot to build.
+      'OpaqueSecTrustRef=__SecACL',
+      'OpaqueSecTrustedApplicationRef=__SecTrustedApplication',
+    ],
     'conditions': [
       ['shaka_code==1', {
         'include_dirs': [
           '.',
           '..',
         ],
-        'variables': {
-          'clang_warning_flags': [
-            '-Wimplicit-fallthrough',
-          ],
-          # Revert the relevant settings in Chromium's common.gypi.
-          'clang_warning_flags_unset': [
-            '-Wno-char-subscripts',
-            '-Wno-unneeded-internal-declaration',
-            '-Wno-covered-switch-default',
-
-            # C++11-related flags:
-            '-Wno-c++11-narrowing',
-            '-Wno-reserved-user-defined-literal',
+        'cflags': [
+          # This is triggered by logging macros.
+          '-Wno-implicit-fallthrough',
+          # Triggered by unit tests, which override things in mocks.  gmock
+          # doesn't mark them as override.  An upgrade may help.  TODO: try
+          # upgrading gmock.
+          '-Wno-inconsistent-missing-override',
+          # Triggered by base/time/time.h when using clang, but NOT on Mac.
+          '-Wno-implicit-const-int-float-conversion',
+        ],
+        'xcode_settings': {
+          'WARNING_CFLAGS': [
+            # This is triggered by logging macros.
+            '-Wno-implicit-fallthrough',
+            # Triggered by unit tests, which override things in mocks.  gmock
+            # doesn't mark them as override.  An upgrade may help.  TODO: try
+            # upgrading gmock.
+            '-Wno-inconsistent-missing-override',
           ],
         },
         # TODO(kqyang): Fix these msvs warnings.
@@ -75,10 +94,17 @@
       }, {
         # We do not have control over non-shaka code. Disable some warnings to
         # make build pass.
+        'cflags': [
+          '-Wno-error',
+        ],
         'variables': {
           'clang_warning_flags': [
-            '-Wno-tautological-constant-compare',
-            '-Wno-unguarded-availability',
+            '-Wno-error',
+          ],
+        },
+        'xcode_settings': {
+          'WARNING_CFLAGS': [
+            '-Wno-error',
           ],
         },
         'msvs_disabled_warnings': [
@@ -86,19 +112,6 @@
                  # the current code page. It typically happens when compiling
                  # the code in CJK environment if there is non-ASCII characters
                  # in the file.
-        ],
-        'cflags': [
-          # TODO(modmaker): Remove once Chromium base is removed.
-          '-Wno-deprecated-declarations',
-        ],
-        'conditions': [
-          ['clang==0', {
-            'cflags': [
-              '-Wno-dangling-else',
-              '-Wno-deprecated-declarations',
-              '-Wno-unused-function',
-            ],
-          }],
         ],
       }],
       ['musl==1', {
@@ -114,7 +127,23 @@
           # warning in musl's sys/errno.h.
           '-Werror',
         ],
-      }]
+      }],
+      ['static_link_binaries==1', {
+        'conditions': [
+          ['OS=="linux"', {
+            'defines': [
+              # Even when we are not using musl or uClibc, pretending to use
+              # uClibc on Linux is the only way to disable certain Chromium
+              # base features, such as hooking into malloc.  Hooking into
+              # malloc, in turn, fails when we are linking statically.
+              '__UCLIBC__',
+            ],
+          }],
+        ],
+        'ldflags': [
+          '-static',
+        ],
+      }],
     ],
   },
 }

@@ -26,7 +26,7 @@ bool GetTotalMilliseconds(uint64_t hours,
                           uint64_t minutes,
                           uint64_t seconds,
                           uint64_t ms,
-                          uint64_t* out) {
+                          int64_t* out) {
   DCHECK(out);
   if (minutes > 59 || seconds > 59 || ms > 999) {
     VLOG(1) << "Hours:" << hours << " Minutes:" << minutes
@@ -160,7 +160,7 @@ std::string WriteFragment(const TextFragment& fragment,
 
 }  // namespace
 
-bool WebVttTimestampToMs(const base::StringPiece& source, uint64_t* out) {
+bool WebVttTimestampToMs(const base::StringPiece& source, int64_t* out) {
   DCHECK(out);
 
   if (source.length() < 9) {

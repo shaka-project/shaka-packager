@@ -36,7 +36,7 @@ using ::testing::SetArgPointee;
 
 namespace {
 
-const uint32_t kZeroTransportStreamTimestampOffset = 0;
+const int32_t kZeroTransportStreamTimestampOffset = 0;
 
 // Bogus data for testing.
 const uint8_t kAnyData[] = {
@@ -75,8 +75,8 @@ const uint8_t kVideoExtraData[] = {
 const uint8_t kAudioExtraData[] = {0x12, 0x10};
 
 const int kTrackId = 0;
-const uint32_t kTimeScale = 90000;
-const uint64_t kDuration = 180000;
+const int32_t kTimeScale = 90000;
+const int64_t kDuration = 180000;
 const char kCodecString[] = "avc1";
 const char kLanguage[] = "eng";
 const uint32_t kWidth = 1280;
@@ -198,7 +198,7 @@ TEST_F(PesPacketGeneratorTest, AddVideoSample) {
 
   std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
-  const uint32_t kPts = 12345;
+  const int32_t kPts = 12345;
   const uint32_t kDts = 12300;
   sample->set_pts(kPts);
   sample->set_dts(kDts);
@@ -236,7 +236,7 @@ TEST_F(PesPacketGeneratorTest, AddEncryptedVideoSample) {
 
   std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
-  const uint32_t kPts = 12345;
+  const int32_t kPts = 12345;
   const uint32_t kDts = 12300;
   sample->set_pts(kPts);
   sample->set_dts(kDts);
@@ -352,7 +352,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 // Because TS has to use 90000 as its timescale, make sure that the timestamps
 // are scaled.
 TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
-  const uint32_t kTestTimescale = 1000;
+  const int32_t kTestTimescale = 1000;
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTestTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
@@ -365,7 +365,7 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
 
   std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
-  const uint32_t kPts = 5000;
+  const int32_t kPts = 5000;
   const uint32_t kDts = 4000;
   sample->set_pts(kPts);
   sample->set_dts(kDts);

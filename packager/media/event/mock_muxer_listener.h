@@ -35,10 +35,10 @@ class MockMuxerListener : public MuxerListener {
   MOCK_METHOD4(OnMediaStart,
                void(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
-                    uint32_t time_scale,
+                    int32_t time_scale,
                     ContainerType container_type));
 
-  MOCK_METHOD1(OnSampleDurationReady, void(uint32_t sample_duration));
+  MOCK_METHOD1(OnSampleDurationReady, void(int32_t sample_duration));
 
   MOCK_METHOD9(OnMediaEndMock,
                void(bool has_init_range,

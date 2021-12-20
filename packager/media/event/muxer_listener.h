@@ -97,7 +97,7 @@ class MuxerListener {
   /// @param container_type is the container of this media.
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const StreamInfo& stream_info,
-                            uint32_t time_scale,
+                            int32_t time_scale,
                             ContainerType container_type) = 0;
 
   /// Called when LL-DASH streaming starts.
@@ -105,9 +105,9 @@ class MuxerListener {
 
   /// Called when the average sample duration of the media is determined.
   /// @param sample_duration in timescale of the media.
-  virtual void OnSampleDurationReady(uint32_t sample_duration) = 0;
+  virtual void OnSampleDurationReady(int32_t sample_duration) = 0;
 
-  /// Called when  LL-DASH streaming starts. 
+  /// Called when LL-DASH streaming starts.
   virtual void OnSegmentDurationReady() {}
 
   /// Called when all files are written out and the muxer object does not output
@@ -120,9 +120,11 @@ class MuxerListener {
                           float duration_seconds) = 0;
 
   /// Called when a segment has been muxed and the file has been written.
-  /// Note: For some implementations, this is used to signal new subsegments.
-  /// For example, for generating video on demand (VOD) MPD manifest, this is
-  /// called to signal subsegments.
+  /// Note: For some implementations, this is used to signal new subsegments
+  /// or chunks. For example, for generating video on demand (VOD) MPD manifest,
+  /// this is called to signal subsegments. In the low latency case, this
+  /// indicates the start of a new segment and will contain info about the
+  /// segment's first chunk.
   /// @param segment_name is the name of the new segment. Note that some
   ///        implementations may not require this, e.g. if this is a subsegment.
   /// @param start_time is the start time of the segment, relative to the
@@ -134,6 +136,15 @@ class MuxerListener {
                             int64_t start_time,
                             int64_t duration,
                             uint64_t segment_file_size) = 0;
+
+  /// Called when a segment has been muxed and the entire file has been written.
+  /// For Low Latency only. Note that it should be called after OnNewSegment.
+  /// When the low latency segment is initally added to the manifest, the size
+  /// and duration are not known, because the segment is still being processed.
+  /// This will update the segment's duration and size after the segment is
+  /// fully written and these values are known.
+  virtual void OnCompletedSegment(int64_t duration,
+                                  uint64_t segment_file_size) {}
 
   /// Called when there is a new key frame. For Video only. Note that it should
   /// be called before OnNewSegment is called on the containing segment.

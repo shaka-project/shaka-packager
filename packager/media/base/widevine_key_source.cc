@@ -216,10 +216,11 @@ Status WidevineKeySource::GetKey(const std::vector<uint8_t>& key_id,
                 "Cannot find key with specified key ID");
 }
 
-Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                             uint32_t crypto_period_duration_in_seconds,
-                                             const std::string& stream_label,
-                                             EncryptionKey* key) {
+Status WidevineKeySource::GetCryptoPeriodKey(
+    uint32_t crypto_period_index,
+    int32_t crypto_period_duration_in_seconds,
+    const std::string& stream_label,
+    EncryptionKey* key) {
   DCHECK(key_production_thread_.HasBeenStarted());
   // TODO(kqyang): This is not elegant. Consider refactoring later.
   {

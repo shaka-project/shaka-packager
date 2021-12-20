@@ -220,7 +220,7 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   bool AddLiveOnlyInfo(const MediaInfo& media_info,
                        const std::list<SegmentInfo>& segment_infos,
                        uint32_t start_number,
-                       bool is_low_latency_dash) WARN_UNUSED_RESULT;
+                       bool low_latency_dash_mode) WARN_UNUSED_RESULT;
 
  private:
   // Add AudioChannelConfiguration element. Note that it is a required element

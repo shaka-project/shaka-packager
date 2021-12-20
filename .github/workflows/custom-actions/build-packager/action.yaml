@@ -8,6 +8,9 @@ inputs:
   os_name:
     description: The name of the OS (one word).  Appended to artifact filenames.
     required: true
+  target_arch:
+    description: The CPU architecture to target.  We support x64, arm64.
+    required: true
   lib_type:
     description: A library type, either "static" or "shared".
     required: true
@@ -40,6 +43,15 @@ runs:
           echo "::endgroup::"
         fi
 
+    - name: Install c-ares (Linux only)
+      shell: bash
+      run: |
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          echo "::group::Install c-ares"
+          sudo apt install -y libc-ares-dev
+          echo "::endgroup::"
+        fi
+
     - name: Install depot tools
       shell: bash
       run: |
@@ -47,6 +59,28 @@ runs:
         git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
         echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
         echo "::endgroup::"
+
+    - name: Build ninja (arm only)
+      shell: bash
+      run: |
+        # NOTE: There is no prebuilt copy of ninja for the "aarch64"
+        # architecture (as reported by "uname -p" on arm64).  So we must build
+        # our own, as recommended by depot_tools when it fails to fetch a
+        # prebuilt copy for us.
+        # NOTE 2: It turns out that $GITHUB_PATH operates like a stack.
+        # Appending to that file places the new path at the beginning of $PATH
+        # for the next step, so this step must come _after_ installing
+        # depot_tools.
+        if [[ "${{ inputs.target_arch }}" == "arm64" ]]; then
+          echo "::group::Build ninja (arm-only)"
+          git clone https://github.com/ninja-build/ninja.git -b v1.8.2
+          # The --bootstrap option compiles ninja as well as configures it.
+          # This is the exact command prescribed by depot_tools when it fails to
+          # fetch a ninja binary for your platform.
+          (cd ninja && ./configure.py --bootstrap)
+          echo "${GITHUB_WORKSPACE}/ninja" >> $GITHUB_PATH
+          echo "::endgroup::"
+        fi
 
     - name: Configure gclient
       shell: bash
@@ -57,14 +91,17 @@ runs:
 
     - name: Sync gclient
       env:
-        MACOSX_DEPLOYMENT_TARGET: "10.10"
-        GYP_DEFINES: "target_arch=x64 libpackager_type=${{ inputs.lib_type }}_library"
-        DEPOT_TOOLS_WIN_TOOLCHAIN: "0"
+        GYP_DEFINES: "target_arch=${{ inputs.target_arch }} libpackager_type=${{ inputs.lib_type }}_library"
         GYP_MSVS_VERSION: "2019"
         GYP_MSVS_OVERRIDE_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise"
       shell: bash
       run: |
         echo "::group::Sync gclient"
+        BUILD_CONFIG="${{ inputs.build_type }}-${{ inputs.lib_type }}"
+        if [[ "$BUILD_CONFIG" == "Release-static" && "${{ runner.os }}" == "Linux" ]]; then
+          # For static release builds, set these two additional flags for fully static binaries.
+          export GYP_DEFINES="$GYP_DEFINES disable_fatal_linker_warnings=1 static_link_binaries=1"
+        fi
         gclient sync
         echo "::endgroup::"
 
@@ -83,27 +120,45 @@ runs:
           echo "Skipping artifacts for $BUILD_CONFIG."
           exit 0
         fi
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          echo "::group::Check for static executables"
+          (
+            cd src/out/Release${{ inputs.build_type_suffix }}
+            # Prove that we built static executables on Linux.  First, check that
+            # the executables exist, and fail if they do not.  Then check "ldd",
+            # which will fail if the executable is not dynamically linked.  If
+            # "ldd" succeeds, we fail the workflow.  Finally, we call "true" so
+            # that the last executed statement will be a success, and the step
+            # won't be failed if we get that far.
+            ls packager mpd_generator >/dev/null || exit 1
+            ldd packager 2>&1 && exit 1
+            ldd mpd_generator 2>&1 && exit 1
+            true
+          )
+          echo "::endgroup::"
+        fi
         echo "::group::Prepare artifacts folder"
         mkdir artifacts
         ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
         cd src/out/Release${{ inputs.build_type_suffix }}
         echo "::endgroup::"
+        echo "::group::Strip executables"
+        strip packager${{ inputs.exe_ext }}
+        strip mpd_generator${{ inputs.exe_ext }}
+        echo "::endgroup::"
+        SUFFIX="-${{ inputs.os_name }}-${{ inputs.target_arch }}"
+        EXE_SUFFIX="$SUFFIX${{ inputs.exe_ext}}"
         echo "::group::Copy packager"
-        cp packager${{ inputs.exe_ext }} \
-            $ARTIFACTS/packager-${{ inputs.os_name }}${{ inputs.exe_ext }}
+        cp packager${{ inputs.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
         echo "::endgroup::"
         echo "::group::Copy mpd_generator"
-        cp mpd_generator${{ inputs.exe_ext }} \
-            $ARTIFACTS/mpd_generator-${{ inputs.os_name }}${{ inputs.exe_ext }}
+        cp mpd_generator${{ inputs.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
         echo "::endgroup::"
-        if [[ '${{ runner.os }}' == 'Windows' ]]; then
-          echo "::group::Zip pssh-box"
-          7z a $ARTIFACTS/pssh-box-${{ inputs.os_name }}.py.zip \
-              pyproto pssh-box.py
-          echo "::endgroup::"
-        else
+        # The pssh-box bundle is OS and architecture independent.  So only do
+        # it on this one OS and architecture, and give it a more generic
+        # filename.
+        if [[ '${{ inputs.os_name }}' == 'linux' && '${{ inputs.target_arch }}' == 'x64' ]]; then
           echo "::group::Tar pssh-box"
-          tar -czf $ARTIFACTS/pssh-box-${{ inputs.os_name }}.py.tar.gz \
-              pyproto pssh-box.py
+          tar -czf $ARTIFACTS/pssh-box.py.tar.gz pyproto pssh-box.py
           echo "::endgroup::"
         fi

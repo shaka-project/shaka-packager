@@ -48,7 +48,7 @@ class HlsNotifier {
   /// @return true on success, false otherwise. This may fail if the stream
   ///         specified by @a stream_id does not exist.
   virtual bool NotifySampleDuration(uint32_t stream_id,
-                                    uint32_t sample_duration) = 0;
+                                    int32_t sample_duration) = 0;
 
   /// @param stream_id is the value set by NotifyNewStream().
   /// @param segment_name is the name of the new segment.
@@ -60,8 +60,8 @@ class HlsNotifier {
   /// @param size is the size in bytes.
   virtual bool NotifyNewSegment(uint32_t stream_id,
                                 const std::string& segment_name,
-                                uint64_t start_time,
-                                uint64_t duration,
+                                int64_t start_time,
+                                int64_t duration,
                                 uint64_t start_byte_offset,
                                 uint64_t size) = 0;
 
@@ -72,14 +72,14 @@ class HlsNotifier {
   /// @param start_byte_offset is the offset of where the keyframe starts.
   /// @param size is the size in bytes.
   virtual bool NotifyKeyFrame(uint32_t stream_id,
-                              uint64_t timestamp,
+                              int64_t timestamp,
                               uint64_t start_byte_offset,
                               uint64_t size) = 0;
 
   /// @param stream_id is the value set by NotifyNewStream().
   /// @param timestamp is the timestamp of the CueEvent.
   /// @return true on success, false otherwise.
-  virtual bool NotifyCueEvent(uint32_t stream_id, uint64_t timestamp) = 0;
+  virtual bool NotifyCueEvent(uint32_t stream_id, int64_t timestamp) = 0;
 
   /// @param stream_id is the value set by NotifyNewStream().
   /// @param key_id is the key ID for the stream.

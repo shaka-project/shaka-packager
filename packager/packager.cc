@@ -374,6 +374,27 @@ Status ValidateParams(const PackagingParams& packaging_params,
                   "on-demand profile (not using segment_template or segment list).");
   }
 
+  if (packaging_params.chunking_params.low_latency_dash_mode &&
+      packaging_params.chunking_params.subsegment_duration_in_seconds) {
+    // Low latency streaming requires data to be shipped as chunks,
+    // the smallest unit of video. Right now, each chunk contains
+    // one frame. Therefore, in low latency mode,
+    // a user specified --fragment_duration is irrelevant.
+    // TODO(caitlinocallaghan): Add a feature for users to specify the number
+    // of desired frames per chunk.
+    return Status(error::INVALID_ARGUMENT,
+                  "--fragment_duration cannot be set "
+                  "if --low_latency_dash_mode is enabled.");
+  }
+
+  if (packaging_params.mpd_params.low_latency_dash_mode &&
+      packaging_params.mpd_params.utc_timings.empty()) {
+    // Low latency DASH MPD requires a UTC Timing value
+    return Status(error::INVALID_ARGUMENT,
+                  "--utc_timings must be be set "
+                  "if --low_latency_dash_mode is enabled.");
+  }
+
   return Status::OK;
 }
 

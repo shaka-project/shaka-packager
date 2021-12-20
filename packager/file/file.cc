@@ -17,7 +17,6 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/file/callback_file.h"
 #include "packager/file/file_util.h"
-#include "packager/file/http_file.h"
 #include "packager/file/local_file.h"
 #include "packager/file/memory_file.h"
 #include "packager/file/threaded_io_file.h"
@@ -101,11 +100,11 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
 }
 
 File* CreateHttpsFile(const char* file_name, const char* mode) {
-  return new HttpFile(HttpMethod::kPost, std::string("https://") + file_name);
+  return new HttpFile(HttpMethod::kPut, std::string("https://") + file_name);
 }
 
 File* CreateHttpFile(const char* file_name, const char* mode) {
-  return new HttpFile(HttpMethod::kPost, std::string("http://") + file_name);
+  return new HttpFile(HttpMethod::kPut, std::string("http://") + file_name);
 }
 
 File* CreateMemoryFile(const char* file_name, const char* mode) {

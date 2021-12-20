@@ -169,10 +169,10 @@ class DiffFilesPolicy(object):
     dump_b = os.path.join(out_dir, os.path.basename(file_b) + '.dump.actual')
     try:
       cmd = ['mp4dump', '--verbosity', '2', file_a]
-      with open(dump_a, 'w') as f:
+      with open(dump_a, 'w', encoding='utf8') as f:
         subprocess.check_call(cmd, stdout=f)
       cmd = ['mp4dump', '--verbosity', '2', file_b]
-      with open(dump_b, 'w') as f:
+      with open(dump_b, 'w', encoding='utf8') as f:
         subprocess.check_call(cmd, stdout=f)
     except (OSError, subprocess.CalledProcessError):
       # If the program isn't available or returns an error, just ignore it and

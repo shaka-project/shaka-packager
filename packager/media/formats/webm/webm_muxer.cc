@@ -90,7 +90,7 @@ void WebMMuxer::FireOnMediaStartEvent() {
 
   DCHECK(!streams().empty()) << "Media started without a stream.";
 
-  const uint32_t timescale = streams().front()->time_scale();
+  const int32_t timescale = streams().front()->time_scale();
   muxer_listener()->OnMediaStart(options(), *streams().front(), timescale,
                                  MuxerListener::kContainerWebM);
 }

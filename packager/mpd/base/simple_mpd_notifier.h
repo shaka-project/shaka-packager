@@ -38,13 +38,16 @@ class SimpleMpdNotifier : public MpdNotifier {
   bool NotifyNewContainer(const MediaInfo& media_info, uint32_t* id) override;
   bool NotifyAvailabilityTimeOffset(uint32_t container_id) override;
   bool NotifySampleDuration(uint32_t container_id,
-                            uint32_t sample_duration) override;
+                            int32_t sample_duration) override;
   bool NotifySegmentDuration(uint32_t container_id) override;
   bool NotifyNewSegment(uint32_t container_id,
-                        uint64_t start_time,
-                        uint64_t duration,
+                        int64_t start_time,
+                        int64_t duration,
                         uint64_t size) override;
-  bool NotifyCueEvent(uint32_t container_id, uint64_t timestamp) override;
+  bool NotifyCompletedSegment(uint32_t container_id,
+                              int64_t duration,
+                              uint64_t size) override;
+  bool NotifyCueEvent(uint32_t container_id, int64_t timestamp) override;
   bool NotifyEncryptionUpdate(uint32_t container_id,
                               const std::string& drm_uuid,
                               const std::vector<uint8_t>& new_key_id,

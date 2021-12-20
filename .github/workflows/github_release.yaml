@@ -84,7 +84,7 @@ jobs:
         id: draft_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ needs.setup.outputs.tag }}
           release_name: ${{ needs.setup.outputs.tag }}
@@ -112,25 +112,33 @@ jobs:
     needs: [setup, lint, draft_release]
     strategy:
       matrix:
-        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        os: ["ubuntu-latest", "macos-latest", "windows-latest", "self-hosted-linux-arm64"]
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
         include:
           - os: ubuntu-latest
             os_name: linux
+            target_arch: x64
             exe_ext: ""
             build_type_suffix: ""
           - os: macos-latest
             os_name: osx
+            target_arch: x64
             exe_ext: ""
             build_type_suffix: ""
           - os: windows-latest
             os_name: win
+            target_arch: x64
             exe_ext: ".exe"
             # 64-bit outputs on Windows go to a different folder name.
             build_type_suffix: "_x64"
+          - os: self-hosted-linux-arm64
+            os_name: linux
+            target_arch: arm64
+            exe_ext: ""
+            build_type_suffix: ""
 
-    name: Build and test ${{ matrix.os_name }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
+    name: Build and test ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -153,6 +161,7 @@ jobs:
         uses: ./src/.github/workflows/custom-actions/build-packager
         with:
           os_name: ${{ matrix.os_name }}
+          target_arch: ${{ matrix.target_arch }}
           lib_type: ${{ matrix.lib_type }}
           build_type: ${{ matrix.build_type }}
           build_type_suffix: ${{ matrix.build_type_suffix }}
@@ -170,10 +179,40 @@ jobs:
         if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
         uses: dwenegar/upload-release-assets@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ needs.draft_release.outputs.release_id }}
           assets_path: artifacts
+
+  test_supported_linux_distros:
+    # Doesn't really "need" it, but let's not waste time on a series of docker
+    # builds just to cancel it because of a linter error.
+    needs: lint
+    name: Test builds on all supported Linux distros (using docker)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: src
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      - name: Install depot tools
+        shell: bash
+        run: |
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+
+      - name: Setup gclient
+        shell: bash
+        run: |
+          gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+          # NOTE: the docker tests will do gclient runhooks, so skip hooks here.
+          gclient sync --nohooks
+
+      - name: Test all distros
+        shell: bash
+        run: ./src/packager/testing/dockers/test_dockers.sh
 
   publish_release:
     name: Publish GitHub release
@@ -183,6 +222,6 @@ jobs:
       - name: Publish release
         uses: eregon/publish-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ needs.draft_release.outputs.release_id }}

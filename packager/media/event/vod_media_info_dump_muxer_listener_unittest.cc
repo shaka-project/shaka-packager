@@ -88,7 +88,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
       bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptions(&muxer_options);
-    const uint32_t kReferenceTimeScale = 1000;
+    const int32_t kReferenceTimeScale = 1000;
     if (enable_encryption) {
       std::vector<uint8_t> bogus_default_key_id(
           kBogusDefaultKeyId,

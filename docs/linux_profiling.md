@@ -1,9 +1,9 @@
 # Linux Profiling
 
 Profiling code is enabled when the `use_allocator` variable in gyp is set to
-`tcmalloc` (currently the default) and `profiling` variable in gyp is set to
-`1`. That will build the tcmalloc library, including the cpu profiling and heap
-profiling code into shaka-packager, e.g.
+`tcmalloc` and `profiling` variable in gyp is set to `1`. That will build the
+tcmalloc library, including the cpu profiling and heap profiling code into
+shaka-packager, e.g.
 
     GYP_DEFINES='profiling=1 use_allocator="tcmalloc"' gclient runhooks
 
@@ -74,6 +74,35 @@ Or you can use gdb to attach at any point:
 2.  Cause it to dump a profile: `(gdb) p HeapProfilerDump("foobar")`
 3.  The filename will be printed on the console, e.g.
     "`Dumping heap profile to heap.0001.heap (foobar)`"
+
+
+## Thread sanitizer (tsan)
+
+To compile with the thread sanitizer library (tsan), you must set clang as your
+compiler and set the `tsan=1` and `tsan_blacklist` configs:
+
+    CC=clang CXX=clang++ GYP_DEFINES="tsan=1 tsan_blacklist=/path/to/src/packager/tools/memory/tsan_v2/ignores.txt" gclient runhooks
+
+NOTE: tsan and asan cannot be used at the same time.
+
+
+## Adddress sanitizer (asan)
+
+To compile with the address sanitizer library (asan), you must set clang as your
+compiler and set the `asan=1` config:
+
+    CC=clang CXX=clang++ GYP_DEFINES="asan=1" gclient runhooks
+
+NOTE: tsan and asan cannot be used at the same time.
+
+
+## Leak sanitizer (lsan)
+
+To compile with the leak sanitizer library (lsan), you must set clang as your
+compiler and set the `lsan=1` config:
+
+    CC=clang CXX=clang++ GYP_DEFINES="lsan=1" gclient runhooks
+
 
 ## Reference
 

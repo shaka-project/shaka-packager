@@ -91,14 +91,14 @@ class Segmenter {
   // Otherwise, a vector of ranges for the media segments are returned.
   virtual std::vector<Range> GetSegmentRanges() = 0;
 
-  uint32_t GetReferenceTimeScale() const;
+  int32_t GetReferenceTimeScale() const;
 
   /// @return The total length, in seconds, of segmented media files.
   double GetDuration() const;
 
   /// @return The sample duration in the timescale of the media.
   ///         Returns 0 if no samples are added yet.
-  uint32_t sample_duration() const { return sample_duration_; }
+  int32_t sample_duration() const { return sample_duration_; }
 
  protected:
   /// Update segmentation progress using ProgressListener.
@@ -146,7 +146,7 @@ class Segmenter {
   ProgressListener* progress_listener_ = nullptr;
   uint64_t progress_target_ = 0u;
   uint64_t accumulated_progress_ = 0u;
-  uint32_t sample_duration_ = 0u;
+  int32_t sample_duration_ = 0;
   std::vector<uint64_t> stream_durations_;
   std::vector<KeyFrameInfo> key_frame_infos_;
 

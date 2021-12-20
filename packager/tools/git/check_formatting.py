@@ -32,8 +32,6 @@ Steps to install clang-format on your system if you don't have it already:
 
 """
 
-from __future__ import print_function
-
 import subprocess
 import sys
 

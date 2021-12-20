@@ -7,6 +7,7 @@
 #include "packager/media/formats/mp2t/program_map_table_writer.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
