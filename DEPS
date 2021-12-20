@@ -18,11 +18,27 @@ deps = {
   "src/packager/build":
     Var("chromium_git") + "/chromium/src/build@f0243d787961584ac95a86e7dae897b9b60ea674",  #409966
 
+  "src/packager/buildtools/third_party/libc++/trunk":
+    Var("github") + "/llvm-mirror/libcxx.git@8c22696675a2c5ea1c79fc64a4d7dfe1c2f4ca8b",
+
+  "src/packager/buildtools/third_party/libc++abi/trunk":
+    Var("github") + "/llvm-mirror/libcxxabi.git@6092bfa6c153ad712e2fc90c7b9e536420bf3c57",
+
   "src/packager/testing/gmock":
     Var("chromium_git") + "/external/googlemock@0421b6f358139f02e102c9c332ce19a33faf75be",  #566
 
   "src/packager/testing/gtest":
     Var("chromium_git") + "/external/github.com/google/googletest@6f8a66431cb592dad629028a50b3dd418a408c87",
+
+  # Keep bundled binutil scripts but not downloading actual binaries by default.
+  # Automatic downloading of binutils has been causing problems for some users:
+  # #164, #412, #440. Using bundled binutils helps reduce linking time, but
+  # packager codebase is relatively small, so the gain is not significant.
+  # User can still enable the usage of bundled binutils by running
+  # 'python src/packager/third_party/binutils/download.py' and set
+  # 'linux_use_bundled_binutils' and 'linux_use_bundled_gold' to 1 in GYP_DEFINES.
+  "src/packager/third_party/binutils":
+    Var("chromium_git") + "/chromium/src/third_party/binutils@8d77853bc9415bcb7bb4206fa2901de7603387db",
 
   # Make sure the version matches the one in
   # src/packager/third_party/boringssl, which contains perl generated files.
@@ -54,11 +70,22 @@ deps = {
   "src/packager/third_party/zlib":
     Var("chromium_git") + "/chromium/src/third_party/zlib@830b5c25b5fbe37e032ea09dd011d57042dd94df",  #408157
 
+  "src/packager/tools/clang":
+    Var("chromium_git") + "/chromium/src/tools/clang@723b25997f0aab45fe1776a0f74a14782e350f8f",  #513983
+
   "src/packager/tools/gyp":
     Var("chromium_git") + "/external/gyp@caa60026e223fc501e8b337fd5086ece4028b1c6",
+
+  "src/packager/tools/valgrind":
+    Var("chromium_git") + "/chromium/deps/valgrind@3a97aa8142b6e63f16789b22daafb42d202f91dc",
 }
 
 deps_os = {
+  "unix": {  # Linux, actually.
+    # Linux gold build to build faster.
+    "src/packager/third_party/gold":
+      Var("chromium_git") + "/chromium/deps/gold@29ae7431b4688df544ea840b0b66784e5dd298fe",
+  },
   "win": {
     # Required by boringssl.
     "src/packager/third_party/yasm/source/patched-yasm":
@@ -68,18 +95,26 @@ deps_os = {
 
 hooks = [
   {
-    # When using CC=clang CXX=clang++, there is a binutils version check that
-    # does not work correctly in common.gypi.  Since we are stuck with a very
-    # old version of chromium/src/build, there is nothing to do but patch it to
-    # remove the check.  Thankfully, this version number does not control
+    # Downloads the current stable linux sysroot to build/linux/ if needed.
     # This script is a no-op except for linux.
-    "condition": "checkout_linux and not checkout_arm and not checkout_arm64",
-    # anything critical in the build settings as far as we can tell.
-    'name': 'patch-binutils-version-check',
+    'name': 'sysroot',
     'pattern': '.',
+    'action': ['python', 'src/packager/build/linux/sysroot_scripts/install-sysroot.py',
+               '--running-as-hook'],
+  },
+  {
+    # Update the Mac toolchain if necessary.
+    'name': 'mac_toolchain',
+    'pattern': '.',
+    'action': ['python', 'src/packager/build/mac_toolchain.py'],
+  },
+  {
+    # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
+    "name": "clang",
     # Skip clang updates on Windows, where we don't use clang.
     "condition": "not checkout_win",
-    'action': ['sed', '-e', 's/<!pymod_do_main(compiler_version target assembler)/0/', '-i.bk', 'src/packager/build/common.gypi'],
+    "pattern": ".",
+    "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],
   },
   {
     # A change to a .gyp, .gypi, or to GYP itself should run the generator.

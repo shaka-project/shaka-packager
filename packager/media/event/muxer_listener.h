@@ -110,6 +110,9 @@ class MuxerListener {
   /// Called when LL-DASH streaming starts.
   virtual void OnSegmentDurationReady() {}
 
+  /// Called when  LL-DASH streaming starts. 
+  virtual void OnSegmentDurationReady() {}
+
   /// Called when all files are written out and the muxer object does not output
   /// any more files.
   /// Note: This event might not be very interesting to MPEG DASH Live profile.
