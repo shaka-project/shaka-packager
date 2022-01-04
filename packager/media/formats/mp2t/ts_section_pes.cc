@@ -193,7 +193,7 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   RCHECK(bit_reader.ReadBits(16, &pes_packet_length));
 
   RCHECK(packet_start_code_prefix == kPesStartCode);
-  DVLOG(LOG_LEVEL_PES) << "stream_id=" << std::hex << stream_id << std::dec;
+  DVLOG(LOG_LEVEL_PES) << "stream_id=" << stream_id;
   if (pes_packet_length == 0)
     pes_packet_length = static_cast<int>(bit_reader.bits_available()) / 8;
 
@@ -299,12 +299,10 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   RCHECK(pes_header_remaining_size >= 0);
 
   // Read the PES packet.
-  DVLOG(LOG_LEVEL_PES)
-      << "Emit a reassembled PES:"
-      << " size=" << es_size
-      << " pts=" << media_pts
-      << " dts=" << media_dts
-      << " data_alignment_indicator=" << data_alignment_indicator;
+  DVLOG(LOG_LEVEL_PES) << "Emit a reassembled PES:"
+                       << " size=" << es_size << " pts=" << media_pts
+                       << " dts=" << media_dts << " data_alignment_indicator="
+                       << data_alignment_indicator;
   return es_parser_->Parse(&raw_pes[es_offset], es_size, media_pts, media_dts);
 }
 
