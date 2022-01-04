@@ -114,7 +114,7 @@ const char kUsage[] =
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
     "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    main, alternate, supplementary, commentary and dub. See DASH\n"
+    "    main, alternate, supplementary, commentary, dub and forced-subtitle. See DASH\n"
     "    (ISO/IEC 23009-1) specification for details.\n";
 
 // Labels for parameters in RawKey key info.

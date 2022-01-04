@@ -54,6 +54,8 @@ std::string RoleToText(AdaptationSet::Role role) {
       return "commentary";
     case AdaptationSet::kRoleDub:
       return "dub";
+    case AdaptationSet::kRoleForcedSubtitle:
+      return "forced-subtitle";
     default:
       return "unknown";
   }

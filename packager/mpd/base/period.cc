@@ -57,6 +57,8 @@ AdaptationSet::Role RoleFromString(const std::string& role_str) {
     return AdaptationSet::Role::kRoleCommentary;
   if (role_str == "dub")
     return AdaptationSet::Role::kRoleDub;
+  if (role_str == "forced-subtitle")
+    return AdaptationSet::Role::kRoleForcedSubtitle;
   return AdaptationSet::Role::kRoleUnknown;
 }
 
