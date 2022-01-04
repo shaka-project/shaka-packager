@@ -28,6 +28,18 @@
       return status;     \
   } while (false)
 
+#define READ_LONG(out)                                                     \
+  do {                                                                     \
+    long _out;                                                             \
+    int _tmp_out;                                                          \
+    br->ReadBits(16, &_tmp_out);                                           \
+    _out = (long)(_tmp_out) << 16;                                         \
+    br->ReadBits(16, &_tmp_out);                                           \
+    _out |= _tmp_out;                                                      \
+    *(out) = _out;                                                         \
+  } while(0)                                                               \
+
+
 namespace shaka {
 namespace media {
 
@@ -688,11 +700,10 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
     TRUE_OR_RETURN(br->ReadUE(&ignored));  // def_disp_win_bottom_offset
   }
 
-  bool vui_timing_info_present_flag;
-  TRUE_OR_RETURN(br->ReadBool(&vui_timing_info_present_flag));
-  if (vui_timing_info_present_flag) {
-    // vui_num_units_in_tick, vui_time_scale
-    TRUE_OR_RETURN(br->SkipBits(32 + 32));
+  TRUE_OR_RETURN(br->ReadBool(&vui->vui_timing_info_present_flag));
+  if (vui->vui_timing_info_present_flag) {
+    READ_LONG(&vui->vui_num_units_in_tick);
+    READ_LONG(&vui->vui_time_scale);
 
     bool vui_poc_proportional_to_timing_flag;
     TRUE_OR_RETURN(br->ReadBool(&vui_poc_proportional_to_timing_flag));

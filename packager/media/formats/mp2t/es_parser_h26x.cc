@@ -98,8 +98,10 @@ bool EsParserH26x::Flush() {
   RCHECK(ParseInternal());
 
   if (pending_sample_) {
-    // Flush pending sample.
-    DCHECK(pending_sample_duration_);
+    // Flush pending sample.ok
+    if (!pending_sample_duration_) {
+      pending_sample_duration_ = CalculateSampleDuration(pending_sample_pps_id_);
+    }
     pending_sample_->set_duration(pending_sample_duration_);
     emit_sample_cb_.Run(std::move(pending_sample_));
   }
@@ -343,6 +345,7 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
     emit_sample_cb_.Run(std::move(pending_sample_));
   }
   pending_sample_ = media_sample;
+  pending_sample_pps_id_ = pps_id;
 
   return true;
 }
