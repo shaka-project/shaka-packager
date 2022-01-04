@@ -330,7 +330,8 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
       pending_sample_->set_duration(sample_duration);
 
       const int kArbitraryGapScale = 10;
-      if (sample_duration > kArbitraryGapScale * pending_sample_duration_) {
+      if (pending_sample_duration_ &&
+          sample_duration > kArbitraryGapScale * pending_sample_duration_) {
         LOG(WARNING) << "[MPEG-2 TS] PID " << pid() << " Possible GAP at dts "
                      << pending_sample_->dts() << " with next sample at dts "
                      << media_sample->dts() << " (difference "
