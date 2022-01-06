@@ -309,7 +309,8 @@ class PackagerAppTest(unittest.TestCase):
                  skip_encryption=None,
                  bandwidth=None,
                  split_content_on_ad_cues=False,
-                 test_file=None):
+                 test_file=None,
+                 forced=None):
     """Get a stream descriptor as a string.
 
 
@@ -345,6 +346,7 @@ class PackagerAppTest(unittest.TestCase):
           into multiple files, with a total of NumAdCues + 1 files.
       test_file: The input file to use. If the input file is not specified, a
           default file will be used.
+      forced: If set to true, it sets HLS FORCED tag to YES.
 
 
     Returns:
@@ -399,6 +401,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if dash_only:
       stream.Append('dash_only', 1)
+
+    if forced:
+      stream.Append('forced', 1)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt', 'ttml',

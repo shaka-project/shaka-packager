@@ -30,3 +30,9 @@ HLS specific stream descriptor fields
     Optional colon or semi-colon separated list of values for the
     CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
     http://bit.ly/2OOUkdB for details.
+
+:forced:
+    The value is an enumerated-string; valid strings are YES and NO.
+    This attribute is OPTIONAL. Its absence indicates an implicit
+    value of NO. The FORCED attribute MUST NOT be present unless the
+    TYPE is SUBTITLES.

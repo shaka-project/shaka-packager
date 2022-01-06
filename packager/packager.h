@@ -140,6 +140,9 @@ struct StreamDescriptor {
   bool dash_only = false;
   /// Set to true to indicate that the stream is for hls only.
   bool hls_only = false;
+  ///Optional for HLS output. It is used to indicate rendition that is considered essential to play
+  /// String with value set to YES or NO. If set TYPE=SUBTITLES and AUTOSELECT=YES
+  bool forced = false;
 };
 
 class SHAKA_EXPORT Packager {

@@ -79,6 +79,7 @@ class MediaPlaylist {
   const std::string& group_id() const { return group_id_; }
   MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
+  bool forced() const { return forced_;}
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
@@ -259,6 +260,7 @@ class MediaPlaylist {
   bool use_byte_range_ = false;
   std::string codec_;
   std::string language_;
+  bool forced_;
   std::vector<std::string> characteristics_;
   uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;

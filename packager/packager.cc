@@ -79,6 +79,7 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
   data.hls_playlist_name = stream.hls_playlist_name;
   data.hls_iframe_playlist_name = stream.hls_iframe_playlist_name;
   data.hls_characteristics = stream.hls_characteristics;
+  data.forced = stream.forced;
   data.hls_only = stream.hls_only;
 
   data.dash_accessiblities = stream.dash_accessiblities;
