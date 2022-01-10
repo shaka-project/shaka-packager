@@ -46,6 +46,7 @@ class MuxerListenerFactory {
     std::string hls_playlist_name;
     std::string hls_iframe_playlist_name;
     std::vector<std::string> hls_characteristics;
+    bool forced = false;
     bool hls_only = false;
 
     // DASH specific values needed to write DASH mpd. Will only be used if an

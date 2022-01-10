@@ -293,7 +293,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
     case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
       tag.AddString("TYPE", "SUBTITLES");
       if(playlist.forced()) {
-        tag.AddString("FORCED", YES);
+        tag.AddString("FORCED", "YES");
       }
       break;
 
