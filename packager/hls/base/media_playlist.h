@@ -79,7 +79,6 @@ class MediaPlaylist {
   const std::string& group_id() const { return group_id_; }
   MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
-  bool forced() const { return forced_; }
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
@@ -221,6 +220,8 @@ class MediaPlaylist {
   const std::vector<std::string>& characteristics() const {
     return characteristics_;
   }
+
+  const bool forced() const { return forced_; }
 
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices

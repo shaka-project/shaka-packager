@@ -396,7 +396,8 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   characteristics_ =
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
-  forced_ = forced;
+  
+  forced_ = media_info_.forced();
 
   return true;
 }
