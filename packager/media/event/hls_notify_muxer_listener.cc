@@ -22,12 +22,14 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
     const std::vector<std::string>& characteristics,
+    bool forced,
     hls::HlsNotifier* hls_notifier)
     : playlist_name_(playlist_name),
       iframes_only_(iframes_only),
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
       characteristics_(characteristics),
+      forced_(forced),
       hls_notifier_(hls_notifier) {
   DCHECK(hls_notifier);
 }
@@ -96,6 +98,11 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
     for (const std::string& characteristic : characteristics_)
       media_info->add_hls_characteristics(characteristic);
   }
+  if(!forced_) {
+    media_info_->add_forced(forced);
+  }
+
+
   if (protection_scheme_ != FOURCC_NULL) {
     internal::SetContentProtectionFields(protection_scheme_, next_key_id_,
                                          next_key_system_infos_,
