@@ -98,7 +98,7 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
     for (const std::string& characteristic : characteristics_)
       media_info->add_hls_characteristics(characteristic);
   }
-  if(forced_) {
+  if (forced_) {
     media_info_->set_forced(forced_);
   }
 

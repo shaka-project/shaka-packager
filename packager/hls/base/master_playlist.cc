@@ -292,7 +292,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 
     case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
       tag.AddString("TYPE", "SUBTITLES");
-      if(playlist.forced()) {
+      if (playlist.forced()) {
         tag.AddString("FORCED", "YES");
       }
       break;
@@ -320,7 +320,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   if (is_autoselect) {
     tag.AddString("AUTOSELECT", "YES");
   }
-  if(playlist.forced() && !is_autoselect) {
+  if (playlist.forced() && !is_autoselect) {
     tag.AddString("AUTOSELECT", "YES");
   }
 

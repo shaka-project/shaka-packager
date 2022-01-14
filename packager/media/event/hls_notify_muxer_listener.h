@@ -39,8 +39,8 @@ class HlsNotifyMuxerListener : public MuxerListener {
   /// @param characteristics is the characteristics for this playlist. This is
   ///        the value of CHARACTERISTICS attribute for EXT-X-MEDIA. This may be
   ///        empty.
-  /// @param forced is the HLS FORCED SUBTITLE setting for this playlist. This is
-  ///        the value of FORCED attribute for EXT-X-MEDIA. This may be
+  /// @param forced is the HLS FORCED SUBTITLE setting for this playlist. This
+  ///        is the value of FORCED attribute for EXT-X-MEDIA. This may be
   ///        empty.
   /// @param hls_notifier used by this listener. Ownership does not transfer.
   HlsNotifyMuxerListener(const std::string& playlist_name,

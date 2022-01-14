@@ -249,9 +249,9 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         }
         descriptor.hls_only = hls_only_value > 0;
         break;
-        case kForcedField:
-          unsigned hls_forced_value;
-          if (!base::StringToUint(iter->second, &hls_forced_value)) {
+      case kForcedField:
+        unsigned hls_forced_value;
+        if (!base::StringToUint(iter->second, &hls_forced_value)) {
           LOG(ERROR) << "Non-numeric option for forced field "
                         "specified (" << iter->second << ").";
           return base::nullopt;
@@ -260,8 +260,8 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
           LOG(ERROR) << "forced should be either 0 or 1.";
           return base::nullopt;
         }
-          descriptor.forced = hls_forced_value > 0;
-          break;
+        descriptor.forced = hls_forced_value > 0;
+        break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
                    << "\").";
