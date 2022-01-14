@@ -253,7 +253,8 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         unsigned hls_forced_value;
         if (!base::StringToUint(iter->second, &hls_forced_value)) {
           LOG(ERROR) << "Non-numeric option for forced field "
-                        "specified (" << iter->second << ").";
+                        "specified ("
+                     << iter->second << ").";
           return base::nullopt;
         }
         if (hls_forced_value > 1) {
