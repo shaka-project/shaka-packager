@@ -223,14 +223,12 @@ bool WebVttParser::Parse() {
     // Check the header. It is possible for a 0xFEFF BOM to come before the
     // header text.
     if (block.size() != 1) {
-      LOG(ERROR) << "Failed to read WEBVTT header - "
+      LOG(WARNING) << "Failed to read WEBVTT header - "
                  << "block size should be 1 but was " << block.size() << ".";
-      return false;
     }
     if (block[0] != "WEBVTT" && block[0] != "\xEF\xBB\xBFWEBVTT") {
-      LOG(ERROR) << "Failed to read WEBVTT header - should be WEBVTT but was "
+      LOG(WARNING) << "Failed to read WEBVTT header - should be WEBVTT but was "
                  << block[0];
-      return false;
     }
     initialized_ = true;
   }

@@ -140,6 +140,12 @@ struct StreamDescriptor {
   bool dash_only = false;
   /// Set to true to indicate that the stream is for hls only.
   bool hls_only = false;
+
+  /// Optional value which specifies input container format.
+  /// Useful for live streaming situations, like auto-detecting webvtt without
+  /// its initial header.
+  std::string input_format;
+
 };
 
 class SHAKA_EXPORT Packager {
