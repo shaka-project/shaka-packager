@@ -1,3 +1,35 @@
+## [2.6.1] - 2021-10-14
+### Fixed
+ - Fix crash in static-linked linux builds (#996)
+ - Update outdated Dockerfiles
+
+## [2.6.0] - 2021-09-07
+### Added
+ - Low latency DASH support (#979)
+ - Added MPEG-H support (mha1, mhm1) (#930, #952)
+
+### Fixed
+ - Workaround warning spam using http_file (#948)
+ - Fixed various python2/3 issues in the build
+ - Fixed builds with CC=clang CXX=clang++
+
+### Changed
+ - Added arm64 to the build matrix
+ - Make release binary names more consistent
+ - Produce static release executables on Linux (#978, #965)
+ - Stop using hermetic clang, libc++, etc
+   - "gclient sync" now runs 20-30% faster
+   - "ninja -C out/Release" now runs 5-13% faster
+   - No longer required:
+     - DEPOT_TOOLS_WIN_TOOLCHAIN environment variable
+     - MACOSX_DEPLOYMENT_TARGET environment variable
+     - clang=0 gyp variable
+     - host_clang=0 gyp variable
+     - clang_xcode=1 gyp variable
+     - use_allocator=none gyp variable
+     - use_experimental_allocator_shim=0 gyp variable
+
+
 ## [2.5.1] - 2021-06-21
 ### Added
  - Add support for MSVS 2017 and 2019 (#867, #955)
@@ -583,6 +615,8 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.6.1]: https://github.com/google/shaka-packager/compare/v2.6.0...v2.6.1
+[2.6.0]: https://github.com/google/shaka-packager/compare/v2.5.1...v2.6.0
 [2.5.1]: https://github.com/google/shaka-packager/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/google/shaka-packager/compare/v2.4.3...v2.5.0
 [2.4.3]: https://github.com/google/shaka-packager/compare/v2.4.2...v2.4.3
