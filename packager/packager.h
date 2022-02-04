@@ -145,7 +145,6 @@ struct StreamDescriptor {
   /// Useful for live streaming situations, like auto-detecting webvtt without
   /// its initial header.
   std::string input_format;
-
 };
 
 class SHAKA_EXPORT Packager {
