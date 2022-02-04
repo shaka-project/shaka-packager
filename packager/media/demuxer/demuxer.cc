@@ -160,7 +160,6 @@ Status Demuxer::InitializeParser() {
                   "Cannot open file for reading " + file_name_);
   }
 
-
   int64_t bytes_read = 0;
   if (input_format_.empty()) {
     // Read enough bytes before detecting the container.
