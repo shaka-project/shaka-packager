@@ -6,6 +6,7 @@
 [comment]: # (See https://github.com/google/shaka-packager/issues/408 for the  )
 [comment]: # (full background.                                                 )
 
+
 ![Shaka Packager](https://raw.githubusercontent.com/google/shaka-packager/master/docs/shaka-packager.png)
 
 [![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
