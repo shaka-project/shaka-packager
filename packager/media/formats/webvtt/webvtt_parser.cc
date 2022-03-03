@@ -418,8 +418,8 @@ bool WebVttParser::ParseCue(const std::string& id,
   //
   // For more context see:
   //   - https://www.w3.org/TR/webvtt1/#webvtt-cue-timings
-  //   - https://github.com/google/shaka-packager/issues/335
-  //   - https://github.com/google/shaka-packager/issues/425
+  //   - https://github.com/shaka-project/shaka-packager/issues/335
+  //   - https://github.com/shaka-project/shaka-packager/issues/425
   //
   // Print a warning so that those packaging content can know that their
   // content is not spec compliant.

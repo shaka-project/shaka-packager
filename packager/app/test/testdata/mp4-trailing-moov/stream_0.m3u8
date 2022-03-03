@@ -1,11 +1,11 @@
 #EXTM3U
 #EXT-X-VERSION:6
-## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="bear-640x360-trailing-moov-audio.mp4",BYTERANGE="797@0"
+#EXT-X-MAP:URI="bear-640x360-trailing-moov-audio.mp4",BYTERANGE="804@0"
 #EXTINF:1.022,
-#EXT-X-BYTERANGE:17028@865
+#EXT-X-BYTERANGE:17028@872
 bear-640x360-trailing-moov-audio.mp4
 #EXTINF:0.998,
 #EXT-X-BYTERANGE:16285

@@ -112,7 +112,7 @@ VP9Level LevelFromCharacteristics(uint64_t luma_sample_rate,
     // max_luma_picture_size are ignored to avoid the extra complexities of
     // computing those values. It may result in incorrect level being returned.
     // If this is a problem, please file a bug to
-    // https://github.com/google/shaka-packager/issues.
+    // https://github.com/shaka-project/shaka-packager/issues.
     if (luma_sample_rate <= def.characteristics.max_luma_sample_rate &&
         luma_picture_size <= def.characteristics.max_luma_picture_size) {
       return def.level;
@@ -235,7 +235,7 @@ void VPCodecConfigurationRecord::SetVP9Level(uint16_t width,
   // extra complexities. It may result in smaller luma_sample_rate may than the
   // actual luma_sample_rate, leading to incorrect level being returned.
   // If this is a problem, please file a bug to
-  // https://github.com/google/shaka-packager/issues.
+  // https://github.com/shaka-project/shaka-packager/issues.
   const double kUnknownSampleDuration = 0.0;
   // The decision is based on luma_picture_size only if duration is unknown.
   uint64_t luma_sample_rate = 0;

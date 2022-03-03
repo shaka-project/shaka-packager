@@ -42,7 +42,7 @@ std::string AdjustVideoCodec(const std::string& codec) {
   // samples. It also fails mediastreamvalidator checks and some Apple devices /
   // platforms refused to play.
   // See https://apple.co/30n90DC 1.10 and
-  // https://github.com/google/shaka-packager/issues/587#issuecomment-489182182.
+  // https://github.com/shaka-project/shaka-packager/issues/587#issuecomment-489182182.
   // Replaced with the corresponding formats with the parameter sets stored in
   // the sample descriptions instead.
   std::string adjusted_codec = codec;
@@ -64,7 +64,7 @@ std::string AdjustVideoCodec(const std::string& codec) {
 // 1. MpdUtils header depends on libxml header, which is not in the deps here
 // 2. GetLanguage depends on MediaInfo from packager/mpd/
 // 3. Moving GetLanguage to LanguageUtils would create a a media => mpd dep.
-// TODO(https://github.com/google/shaka-packager/issues/373): Fix this
+// TODO(https://github.com/shaka-project/shaka-packager/issues/373): Fix this
 // dependency situation and factor this out to a common location.
 std::string GetLanguage(const MediaInfo& media_info) {
   std::string lang;

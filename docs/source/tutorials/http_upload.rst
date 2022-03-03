@@ -9,7 +9,7 @@
     contributions are always welcome.
 
     The discussion about this feature currently happens at
-    `Add HTTP PUT output #149 <https://github.com/google/shaka-packager/issues/149>`_.
+    `Add HTTP PUT output #149 <https://github.com/shaka-project/shaka-packager/issues/149>`_.
 
 ###########
 HTTP upload

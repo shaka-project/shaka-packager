@@ -6,7 +6,7 @@
 Welcome to Shaka Packager's documentation!
 ==========================================
 
-source code repository: https://github.com/google/shaka-packager
+source code repository: https://github.com/shaka-project/shaka-packager
 
 .. toctree::
    :maxdepth: 2

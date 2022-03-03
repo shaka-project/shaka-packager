@@ -1,18 +1,18 @@
 #EXTM3U
 #EXT-X-VERSION:6
-## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-I-FRAMES-ONLY
-#EXT-X-MAP:URI="bear-640x360-ec3-video.mp4",BYTERANGE="1131@0"
+#EXT-X-MAP:URI="bear-640x360-ec3-video.mp4",BYTERANGE="1138@0"
 #EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",KEYFORMAT="identity"
 #EXTINF:1.001,
-#EXT-X-BYTERANGE:15665@1199
+#EXT-X-BYTERANGE:15665@1206
 bear-640x360-ec3-video.mp4
 #EXTINF:1.001,
-#EXT-X-BYTERANGE:18754@95004
+#EXT-X-BYTERANGE:18754@95011
 bear-640x360-ec3-video.mp4
 #EXTINF:0.734,
-#EXT-X-BYTERANGE:20068@217344
+#EXT-X-BYTERANGE:20068@217351
 bear-640x360-ec3-video.mp4
 #EXT-X-ENDLIST

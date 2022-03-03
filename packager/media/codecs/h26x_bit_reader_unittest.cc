@@ -45,7 +45,8 @@ TEST(H26xBitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
 TEST(H26xBitReaderTest, ReadPpsWithTrailingZeroByte) {
   H26xBitReader reader;
 
-  // Data copied from https://github.com/google/shaka-packager/issues/418.
+  // Data copied from
+  // https://github.com/shaka-project/shaka-packager/issues/418.
   const unsigned char pps_rbsp[] = {0xee, 0x3c, 0x80, 0x00};
   EXPECT_TRUE(reader.Initialize(pps_rbsp, sizeof(pps_rbsp)));
 
