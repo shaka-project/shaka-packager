@@ -86,7 +86,7 @@ runs:
       shell: bash
       run: |
         echo "::group::Configure gclient"
-        gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+        gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
         echo "::endgroup::"
 
     - name: Sync gclient

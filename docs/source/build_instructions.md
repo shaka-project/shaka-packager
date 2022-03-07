@@ -31,7 +31,7 @@ Note that `Git` must be v1.7.5 or above.
 
 *   Note that there is a known problem with 10.15 SDK or later right now. You
     can workaround it by using 10.14 SDK. See
-    [#660](https://github.com/google/shaka-packager/issues/660#issuecomment-552576341)
+    [#660](https://github.com/shaka-project/shaka-packager/issues/660#issuecomment-552576341)
     for details.
 
 ## Windows system requirements
@@ -121,7 +121,7 @@ Run the `gclient` tool from `depot_tools` to check out the code and its
 dependencies.
 
 ```shell
-gclient config https://www.github.com/google/shaka-packager.git --name=src --unmanaged
+gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
 gclient sync
 ```
 
@@ -195,7 +195,7 @@ After a successful build, you can find build artifacts including the main
 `packager` binary in build output directory (`out/Release` or `out/Release_x64`
 for release build).
 
-See [Shaka Packager Documentation](https://google.github.io/shaka-packager/html/)
+See [Shaka Packager Documentation](https://shaka-project.github.io/shaka-packager/html/)
 on how to use `Shaka Packager`.
 
 ### Update your checkout
@@ -203,12 +203,12 @@ on how to use `Shaka Packager`.
 To update an existing checkout, you can run
 
 ```shell
-git pull origin master --rebase
+git pull origin main --rebase
 gclient sync
 ```
 
 The first command updates the primary Packager source repository and rebases on
-top of tip-of-tree (aka the Git branch `origin/master`). You can also use other
+top of tip-of-tree (aka the Git branch `origin/main`). You can also use other
 common Git commands to update the repo.
 
 The second command syncs dependencies to the appropriate versions and re-runs
@@ -366,7 +366,7 @@ GYP_GENERATORS=msvs_test gclient runhooks
 ## Contributing
 
 If you have improvements or fixes, we would love to have your contributions.
-See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for
+See https://github.com/shaka-project/shaka-packager/blob/main/CONTRIBUTING.md for
 details.
 
 We have continue integration tests setup on pull requests. You can also verify

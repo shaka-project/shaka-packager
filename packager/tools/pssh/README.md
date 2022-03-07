@@ -11,7 +11,7 @@ The utility needs to be built before being used, i.e. do not use the script in
 `packager/tools/pssh/pssh_box.py` directly.
 
 If you have not set up the build environment for Shaka Packager, see
-https://github.com/google/shaka-packager/blob/master/docs/source/build_instructions.md.
+https://github.com/shaka-project/shaka-packager/blob/master/docs/source/build_instructions.md.
 
 With the build environment set up, use `ninja` to build the utility:
 

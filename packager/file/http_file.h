@@ -33,8 +33,8 @@ enum class HttpMethod {
 ///
 /// About how to use this, please visit the corresponding documentation [1].
 ///
-/// [1] https://google.github.io/shaka-packager/html/tutorials/http_upload.html
-///
+/// [1]
+/// https://shaka-project.github.io/shaka-packager/html/tutorials/http_upload.html
 class HttpFile : public File {
  public:
   HttpFile(HttpMethod method, const std::string& url);

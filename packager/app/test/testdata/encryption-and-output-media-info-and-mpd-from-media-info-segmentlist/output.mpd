@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.739954710006714S">
   <Period id="0">
     <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
@@ -11,10 +11,10 @@
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
         <SegmentList timescale="44100" duration="44100">
-          <Initialization range="0-1006"/>
-          <SegmentURL mediaRange="1007-18034"/>
-          <SegmentURL mediaRange="18035-34716"/>
-          <SegmentURL mediaRange="34717-44575"/>
+          <Initialization range="0-1013"/>
+          <SegmentURL mediaRange="1014-18041"/>
+          <SegmentURL mediaRange="18042-34723"/>
+          <SegmentURL mediaRange="34724-44582"/>
         </SegmentList>
       </Representation>
     </AdaptationSet>

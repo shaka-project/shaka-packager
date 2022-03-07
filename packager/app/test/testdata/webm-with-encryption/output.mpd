@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360000610351562S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="1000000/33000" subsegmentAlignment="true" par="16:9">
@@ -8,8 +8,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="472624" codecs="vp8" mimeType="video/webm" sar="1:1">
         <BaseURL>bear-640x360-video.webm</BaseURL>
-        <SegmentBase indexRange="340-389" timescale="1000000" presentationTimeOffset="26000">
-          <Initialization range="0-339"/>
+        <SegmentBase indexRange="347-396" timescale="1000000" presentationTimeOffset="26000">
+          <Initialization range="0-346"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

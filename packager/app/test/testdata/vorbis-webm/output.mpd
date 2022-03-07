@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7679998874664307S">
   <Period id="0">
     <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
       <Representation id="0" bandwidth="59463" codecs="vorbis" mimeType="audio/webm" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-320x240-audio-only-audio.webm</BaseURL>
-        <SegmentBase indexRange="4159-4207" timescale="1000000">
-          <Initialization range="0-4158"/>
+        <SegmentBase indexRange="4166-4214" timescale="1000000">
+          <Initialization range="0-4165"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

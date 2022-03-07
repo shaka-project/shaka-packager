@@ -323,7 +323,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
         // configuration, which is already written.
         //
         // For more information see:
-        //  - github.com/google/shaka-packager/issues/327
+        //  - github.com/shaka-project/shaka-packager/issues/327
         //  - ISO/IEC 14496-15 5.4.5 Sync Sample
         //
         // TODO(kqyang): Parse sample data to figure out which SPS/PPS the
