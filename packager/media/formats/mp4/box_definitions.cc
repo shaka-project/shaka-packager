@@ -2429,14 +2429,15 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
     // The 'meta' box is not well formed in the video captured by Android's
     // default camera app: spec indicates that it is a FullBox but it is written
     // as a Box. This results in the box failed to be parsed. See
-    // https://github.com/google/shaka-packager/issues/319 for details.
+    // https://github.com/shaka-project/shaka-packager/issues/319 for details.
     // We do not care the content of metadata box in the source content, so just
     // skip reading the box.
     RCHECK(buffer->TryReadWriteChild(&metadata));
     if (FLAGS_mvex_before_trak) {
       // |extends| has to be written before |tracks| to workaround Android
       // MediaExtractor bug which requires |mvex| to be placed before |trak|.
-      // See https://github.com/google/shaka-packager/issues/711 for details.
+      // See https://github.com/shaka-project/shaka-packager/issues/711 for
+      // details.
       RCHECK(buffer->TryReadWriteChild(&extends));
     }
     for (uint32_t i = 0; i < tracks.size(); ++i)

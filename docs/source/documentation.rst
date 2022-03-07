@@ -26,7 +26,7 @@ There are several ways you can get Shaka Packager.
 - Using `Docker <https://www.docker.com/whatisdocker>`_.
   Instructions are available at :doc:`docker_instructions`.
 - Get prebuilt binaries from
-  `release <https://github.com/google/shaka-packager/releases>`_.
+  `release <https://github.com/shaka-project/shaka-packager/releases>`_.
 - Built from source, see :doc:`build_instructions` for details.
 
 Synopsis

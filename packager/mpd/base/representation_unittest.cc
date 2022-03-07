@@ -968,7 +968,8 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
 
 // Check the segments are grouped correctly when sample duration is not
 // available, which happens for text streams.
-// See https://github.com/google/shaka-packager/issues/417 for the background.
+// See https://github.com/shaka-project/shaka-packager/issues/417 for the
+// background.
 TEST_P(ApproximateSegmentTimelineTest, NoSampleDuration) {
   const char kMediaInfo[] =
       "text_info {\n"

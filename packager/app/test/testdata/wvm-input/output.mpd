@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360665798187256S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" maxWidth="640" maxHeight="360" frameRate="90000/3003" subsegmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="378694" codecs="avc1.64000d" mimeType="video/mp4" sar="1:1" width="320" height="180">
         <BaseURL>bear-multi-configs-0.mp4</BaseURL>
-        <SegmentBase indexRange="862-929" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-861"/>
+        <SegmentBase indexRange="869-936" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-868"/>
         </SegmentBase>
       </Representation>
       <Representation id="2" bandwidth="973483" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360">
         <BaseURL>bear-multi-configs-2.mp4</BaseURL>
-        <SegmentBase indexRange="863-930" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-862"/>
+        <SegmentBase indexRange="870-937" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-869"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -20,15 +20,15 @@
       <Representation id="1" bandwidth="131925" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-multi-configs-1.mp4</BaseURL>
-        <SegmentBase indexRange="761-828" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-760"/>
+        <SegmentBase indexRange="768-835" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-767"/>
         </SegmentBase>
       </Representation>
       <Representation id="3" bandwidth="138922" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-multi-configs-3.mp4</BaseURL>
-        <SegmentBase indexRange="761-828" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-760"/>
+        <SegmentBase indexRange="768-835" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-767"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

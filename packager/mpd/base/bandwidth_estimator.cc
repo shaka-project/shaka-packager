@@ -101,7 +101,8 @@ uint64_t BandwidthEstimator::GetBitrate(const Block& block,
     // We also apply the same exclusion to the bandwidth computation for DASH as
     // the bitrate for the short segment is not a good signal for peak
     // bandwidth.
-    // See https://github.com/google/shaka-packager/issues/498 for details.
+    // See https://github.com/shaka-project/shaka-packager/issues/498 for
+    // details.
     VLOG(1) << "Exclude short segment (duration " << block.duration
             << ", target_duration " << target_block_duration
             << ") in peak bandwidth computation.";

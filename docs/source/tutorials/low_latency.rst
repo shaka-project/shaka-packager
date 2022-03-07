@@ -98,6 +98,6 @@ The player should also recognize the the throughput estimation and ABR challenge
 
 Examples of supporting players:
 
-* `Shaka Player <https://github.com/google/shaka-player>`_
+* `Shaka Player <https://github.com/shaka-project/shaka-player>`_
 * `dash.js <https://github.com/Dash-Industry-Forum/dash.js>`_
 * `Streamline Low Latency DASH preview <https://github.com/streamlinevideo/low-latency-preview>`_

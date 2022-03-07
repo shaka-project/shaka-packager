@@ -19,7 +19,7 @@ console.log('Preparing Shaka Packager v' + package.version);
 // Calculate the repo name.  In GitHub Actions context, this will pull binaries
 // correctly from a fork.  When run by hand, it will default to the official
 // repo.
-var repo = process.env.GITHUB_REPOSITORY || 'google/shaka-packager';
+var repo = process.env.GITHUB_REPOSITORY || 'shaka-project/shaka-packager';
 
 // For fetching binaries from GitHub:
 var urlBase = 'https://github.com/' + repo + '/releases/download/v' +
