@@ -121,7 +121,8 @@ jobs:
       - name: Install depot tools
         shell: bash
         run: |
-          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          touch depot_tools/.disable_auto_update
           echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
 
       - name: Setup gclient

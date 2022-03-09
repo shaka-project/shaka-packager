@@ -56,13 +56,17 @@ GYP_MSVS_OVERRIDE_PATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Comm
 
 ## Install `depot_tools`
 
-### Linux and Mac
-
-Clone the `depot_tools` repository from Chromium:
+Clone a particular branch of the `depot_tools` repository from Chromium:
 
 ```shell
-git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+touch depot_tools/.disable_auto_update
 ```
+
+The latest version of depot_tools will not work, so please use that branch!
+
+
+### Linux and Mac
 
 Add `depot_tools` to the end of your PATH (you will probably want to put this
 in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
@@ -74,17 +78,8 @@ export PATH="$PATH:/path/to/depot_tools"
 
 ### Windows
 
-Download the
-[depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere.
-
-**WARNING: DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
-this will not extract the hidden “.git” folder which is necessary for
-depot_tools to autoupdate itself. You can use “Extract all…” from the context
-menu though.
-
 Add depot_tools to the start of your PATH (must be ahead of any installs of
-Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
+Python). Assuming you cloned the repo to C:\src\depot_tools, open:
 
 Control Panel → System and Security → System → Advanced system settings
 
