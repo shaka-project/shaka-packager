@@ -43,7 +43,8 @@ class AdaptationSet {
     kRoleAlternate,
     kRoleSupplementary,
     kRoleCommentary,
-    kRoleDub
+    kRoleDub,
+    kRoleDescription
   };
 
   virtual ~AdaptationSet();

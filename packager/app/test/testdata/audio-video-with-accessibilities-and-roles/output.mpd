@@ -12,7 +12,7 @@
     </AdaptationSet>
     <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
       <Accessibility schemeIdUri="urn:tva:metadata:cs:AudioPurposeCS:2007" value="1"/>
-      <Role schemeIdUri="urn:mpeg:dash:role:2011" value="alternate"/>
+      <Role schemeIdUri="urn:mpeg:dash:role:2011" value="description"/>
       <Representation id="1" bandwidth="133334" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
