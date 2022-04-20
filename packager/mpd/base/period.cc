@@ -298,6 +298,26 @@ bool Period::SetNewAdaptationSetAttributes(
     // In practice it doesn't really make sense to adapt between text tracks.
     new_adaptation_set->ForceSetSegmentAlignment(true);
   }
+
+  if (mpd_options_.dash_profile == DashProfile::kLive) {
+    // According to Dolby Digital Plus and Dolby AC-4 specs, startWithSAP
+    // attribute shall be set to 1. Other audio codecs do not have
+    // requirement on this value, we assume them to be 1 as well.
+    if (GetBaseCodec(media_info) == "mp4a" ||
+        GetBaseCodec(media_info) == "ac-3" ||
+        GetBaseCodec(media_info) == "ec-3" ||
+        GetBaseCodec(media_info) == "ac-4") {
+      new_adaptation_set->ForceStartwithSAP(1);
+    }
+  }
+  else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
+    if (GetBaseCodec(media_info) == "mp4a" ||
+        GetBaseCodec(media_info) == "ac-3" ||
+        GetBaseCodec(media_info) == "ec-3" ||
+        GetBaseCodec(media_info) == "ac-4") {
+      new_adaptation_set->ForceSubsegmentStartswithSAP(1);
+    }
+  }
   return true;
 }
 
