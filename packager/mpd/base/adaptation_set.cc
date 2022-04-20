@@ -274,6 +274,14 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
       return base::nullopt;
     }
   }
+  if (subsegment_start_with_sap_ == 1) {
+    if (!adaptation_set.SetIntegerAttribute("subsegmentStartsWithSAP", 1))
+      return base::nullopt;
+  }
+  else if (start_with_sap_ == 1) {
+    if (!adaptation_set.SetIntegerAttribute("startWithSAP", 1))
+      return base::nullopt;
+  }
 
   if (video_frame_rates_.size() == 1) {
     suppress_representation_frame_rate = true;
@@ -382,6 +390,14 @@ void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
 void AdaptationSet::AddAdaptationSetSwitching(
     const AdaptationSet* adaptation_set) {
   switchable_adaptation_sets_.push_back(adaptation_set);
+}
+
+void AdaptationSet::ForceSubsegmentStartswithSAP(uint32_t sap_value) {
+  subsegment_start_with_sap_ = sap_value;
+}
+
+void AdaptationSet::ForceStartwithSAP(uint32_t sap_value) {
+  start_with_sap_ = sap_value;
 }
 
 // For dynamic MPD, storing all start_time and duration will out-of-memory
