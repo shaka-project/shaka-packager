@@ -703,7 +703,7 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
         LOG(WARNING)
             << "Adjusting timestamps by " << -composition_offset
             << ". Please file a bug to "
-               "https://github.com/google/shaka-packager/issues if you "
+               "https://github.com/shaka-project/shaka-packager/issues if you "
                "do not think it is right or if you are seeing any problems.";
         timestamp_adjustment = -composition_offset;
       }

@@ -148,7 +148,7 @@ TEST(ESDescriptorTest, NonAACWithoutDecoderSpecificInfoTagTest) {
       ElementsAre());
 }
 
-// https://github.com/google/shaka-packager/issues/536.
+// https://github.com/shaka-project/shaka-packager/issues/536.
 TEST(ESDescriptorTest, Issue536) {
   // clang-format off
   const uint8_t kInput[] = {

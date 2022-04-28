@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360668182373047S">
   <Period id="0" duration="PT2.002S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
@@ -9,8 +9,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="977743" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video1.mp4</BaseURL>
-        <SegmentBase indexRange="1131-1186" timescale="30000">
-          <Initialization range="0-1130"/>
+        <SegmentBase indexRange="1138-1193" timescale="30000">
+          <Initialization range="0-1137"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -22,8 +22,8 @@
       <Representation id="1" bandwidth="133457" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio1.mp4</BaseURL>
-        <SegmentBase indexRange="1007-1062" timescale="44100">
-          <Initialization range="0-1006"/>
+        <SegmentBase indexRange="1014-1069" timescale="44100">
+          <Initialization range="0-1013"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -36,8 +36,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="872586" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video2.mp4</BaseURL>
-        <SegmentBase indexRange="1131-1174" timescale="30000" presentationTimeOffset="60059">
-          <Initialization range="0-1130"/>
+        <SegmentBase indexRange="1138-1181" timescale="30000" presentationTimeOffset="60059">
+          <Initialization range="0-1137"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -49,8 +49,8 @@
       <Representation id="1" bandwidth="110595" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio2.mp4</BaseURL>
-        <SegmentBase indexRange="1007-1050" timescale="44100" presentationTimeOffset="88288">
-          <Initialization range="0-1006"/>
+        <SegmentBase indexRange="1014-1057" timescale="44100" presentationTimeOffset="88288">
+          <Initialization range="0-1013"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

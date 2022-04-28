@@ -31,7 +31,7 @@ Note that `Git` must be v1.7.5 or above.
 
 *   Note that there is a known problem with 10.15 SDK or later right now. You
     can workaround it by using 10.14 SDK. See
-    [#660](https://github.com/google/shaka-packager/issues/660#issuecomment-552576341)
+    [#660](https://github.com/shaka-project/shaka-packager/issues/660#issuecomment-552576341)
     for details.
 
 ## Windows system requirements
@@ -56,13 +56,17 @@ GYP_MSVS_OVERRIDE_PATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Comm
 
 ## Install `depot_tools`
 
-### Linux and Mac
-
-Clone the `depot_tools` repository from Chromium:
+Clone a particular branch of the `depot_tools` repository from Chromium:
 
 ```shell
-git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+touch depot_tools/.disable_auto_update
 ```
+
+The latest version of depot_tools will not work, so please use that branch!
+
+
+### Linux and Mac
 
 Add `depot_tools` to the end of your PATH (you will probably want to put this
 in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
@@ -74,17 +78,8 @@ export PATH="$PATH:/path/to/depot_tools"
 
 ### Windows
 
-Download the
-[depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere.
-
-**WARNING: DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
-this will not extract the hidden “.git” folder which is necessary for
-depot_tools to autoupdate itself. You can use “Extract all…” from the context
-menu though.
-
 Add depot_tools to the start of your PATH (must be ahead of any installs of
-Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
+Python). Assuming you cloned the repo to C:\src\depot_tools, open:
 
 Control Panel → System and Security → System → Advanced system settings
 
@@ -121,7 +116,7 @@ Run the `gclient` tool from `depot_tools` to check out the code and its
 dependencies.
 
 ```shell
-gclient config https://www.github.com/google/shaka-packager.git --name=src --unmanaged
+gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
 gclient sync
 ```
 
@@ -195,7 +190,7 @@ After a successful build, you can find build artifacts including the main
 `packager` binary in build output directory (`out/Release` or `out/Release_x64`
 for release build).
 
-See [Shaka Packager Documentation](https://google.github.io/shaka-packager/html/)
+See [Shaka Packager Documentation](https://shaka-project.github.io/shaka-packager/html/)
 on how to use `Shaka Packager`.
 
 ### Update your checkout
@@ -203,12 +198,12 @@ on how to use `Shaka Packager`.
 To update an existing checkout, you can run
 
 ```shell
-git pull origin master --rebase
+git pull origin main --rebase
 gclient sync
 ```
 
 The first command updates the primary Packager source repository and rebases on
-top of tip-of-tree (aka the Git branch `origin/master`). You can also use other
+top of tip-of-tree (aka the Git branch `origin/main`). You can also use other
 common Git commands to update the repo.
 
 The second command syncs dependencies to the appropriate versions and re-runs
@@ -366,7 +361,7 @@ GYP_GENERATORS=msvs_test gclient runhooks
 ## Contributing
 
 If you have improvements or fixes, we would love to have your contributions.
-See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for
+See https://github.com/shaka-project/shaka-packager/blob/main/CONTRIBUTING.md for
 details.
 
 We have continue integration tests setup on pull requests. You can also verify

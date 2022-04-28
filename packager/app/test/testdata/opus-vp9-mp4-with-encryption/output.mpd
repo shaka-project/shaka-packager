@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360000610351562S">
   <Period id="0">
     <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
@@ -10,8 +10,8 @@
       <Representation id="0" bandwidth="86874" codecs="opus" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-320x240-vp9-opus-audio.mp4</BaseURL>
-        <SegmentBase indexRange="951-1018" timescale="1000000" presentationTimeOffset="37000">
-          <Initialization range="0-950"/>
+        <SegmentBase indexRange="958-1025" timescale="1000000" presentationTimeOffset="37000">
+          <Initialization range="0-957"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -22,8 +22,8 @@
       </ContentProtection>
       <Representation id="1" bandwidth="231745" codecs="vp09.00.20.08.01.02.02.02.00" mimeType="video/mp4" sar="427:320">
         <BaseURL>bear-320x240-vp9-opus-video.mp4</BaseURL>
-        <SegmentBase indexRange="1067-1134" timescale="1000000" presentationTimeOffset="37000">
-          <Initialization range="0-1066"/>
+        <SegmentBase indexRange="1074-1141" timescale="1000000" presentationTimeOffset="37000">
+          <Initialization range="0-1073"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

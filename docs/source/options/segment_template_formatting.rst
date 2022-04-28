@@ -30,7 +30,7 @@ described in ISO/IEC 23009-1:2014.
 
    Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
    version. Please file an `issue
-   <https://github.com/google/shaka-packager/issues>`_ if you want it to be
+   <https://github.com/shaka-project/shaka-packager/issues>`_ if you want it to be
    supported.
 
 In each URL, the identifiers shall be replaced by the substitution parameter

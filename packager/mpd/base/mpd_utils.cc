@@ -25,7 +25,7 @@ DEFINE_bool(
     false,
     "Use legacy vp9 codec string 'vp9' if set to true; otherwise new style "
     "vp09.xx.xx.xx... codec string will be used. Default to false as indicated "
-    "in https://github.com/google/shaka-packager/issues/406, all major "
+    "in https://github.com/shaka-project/shaka-packager/issues/406, all major "
     "browsers and platforms already support the new 'vp09' codec string.");
 
 namespace shaka {
@@ -332,7 +332,7 @@ const char kPlayReadyUUID[] = "9a04f079-9840-4286-ab92-e65be0885f95";
 const char kContentProtectionValueMSPR20[] = "MSPR 2.0";
 
 Element GenerateMarlinContentIds(const std::string& key_id) {
-  // See https://github.com/google/shaka-packager/issues/381 for details.
+  // See https://github.com/shaka-project/shaka-packager/issues/381 for details.
   static const char kMarlinContentIdName[] = "mas:MarlinContentId";
   static const char kMarlinContentIdPrefix[] = "urn:marlin:kid:";
   static const char kMarlinContentIdsName[] = "mas:MarlinContentIds";

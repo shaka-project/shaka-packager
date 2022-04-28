@@ -52,12 +52,30 @@ runs:
           echo "::endgroup::"
         fi
 
+    - name: Force Python 2 to support ancient build system (non-Linux only)
+      if: runner.os != 'Linux'
+      uses: actions/setup-python@v2
+      with:
+        python-version: '2.x'
+
+    - name: Force Python 2 to support ancient build system (Linux only)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        echo "::group::Install python2"
+        sudo apt install -y python2
+        sudo ln -sf python2 /usr/bin/python
+        echo "::endgroup::"
+
     - name: Install depot tools
       shell: bash
       run: |
         echo "::group::Install depot_tools"
-        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        touch depot_tools/.disable_auto_update
         echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+        # Bypass VPYTHON included by depot_tools.  Prefer the system installation.
+        echo "VPYTHON_BYPASS=manually managed python not supported by chrome operations" >> $GITHUB_ENV
         echo "::endgroup::"
 
     - name: Build ninja (arm only)
@@ -86,7 +104,7 @@ runs:
       shell: bash
       run: |
         echo "::group::Configure gclient"
-        gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+        gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
         echo "::endgroup::"
 
     - name: Sync gclient
