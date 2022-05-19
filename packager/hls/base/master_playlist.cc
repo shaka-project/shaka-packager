@@ -292,9 +292,6 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 
     case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
       tag.AddString("TYPE", "SUBTITLES");
-      if (playlist.forced()) {
-        tag.AddString("FORCED", "YES");
-      }
       break;
 
     default:
@@ -316,12 +313,17 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   if (is_default) {
     tag.AddString("DEFAULT", "YES");
   }
-
   if (is_autoselect) {
     tag.AddString("AUTOSELECT", "YES");
   }
+
   if (playlist.forced() && !is_autoselect) {
     tag.AddString("AUTOSELECT", "YES");
+  }
+  if (playlist.stream_type() ==
+          MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+      playlist.forced()) {
+    tag.AddString("FORCED", "YES");
   }
 
   const std::vector<std::string>& characteristics = playlist.characteristics();
