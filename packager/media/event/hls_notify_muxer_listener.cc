@@ -99,7 +99,7 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
       media_info->add_hls_characteristics(characteristic);
   }
   if (forced_) {
-    media_info_->set_forced(forced_);
+    media_info->set_forced(forced_);
   }
 
   if (protection_scheme_ != FOURCC_NULL) {

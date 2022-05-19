@@ -80,3 +80,7 @@ HLS options
 
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
     stream is HLS only.
+
+--forced=0|1
+    Optional. Default to 0 if not specified. If it is set to 1, indicates the
+    stream has a Forced selected media track.
