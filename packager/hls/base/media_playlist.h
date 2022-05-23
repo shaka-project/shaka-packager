@@ -223,7 +223,7 @@ class MediaPlaylist {
     return characteristics_;
   }
 
-  const bool forced() const { return forced_; }
+  bool forced() const { return forced_; }
 
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices
