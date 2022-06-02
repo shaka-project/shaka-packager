@@ -448,7 +448,7 @@ bool WebVttParser::ParseCue(const std::string& id,
   TextFragment body;
   TextFragmentStyle no_styles;
   for (size_t i = 1; i < block_size; i++) {
-    if (i > 1) {
+    if (i > 1 && i != block_size) {
       body.sub_fragments.emplace_back(no_styles, /* newline= */ true);
     }
     body.sub_fragments.emplace_back(no_styles, block[i]);
