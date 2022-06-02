@@ -208,6 +208,36 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   EXPECT_EQ(settings.text_alignment, TextAlignment::kCenter);
 }
 
+TEST_F(WebVttParserTest, ParseOneCueWithoutNewLine) {
+  const uint8_t text[] =
+      "WEBVTT\n"
+      "\n"
+      "00:01:00.000 --> 01:00:00.000\n"
+      "subtitle";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitialize());
+
+  ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
+  ASSERT_TRUE(parser_->Flush());
+
+  ASSERT_EQ(streams_.size(), 1u);
+  ASSERT_EQ(samples_.size(), 1u);
+  EXPECT_EQ(samples_[0]->id(), kNoId);
+  EXPECT_EQ(samples_[0]->start_time(), 60000u);
+  EXPECT_EQ(samples_[0]->duration(), 3540000u);
+  ExpectPlainCueWithBody(samples_[0]->body(), "subtitle");
+
+  // No settings
+  const auto& settings = samples_[0]->settings();
+  EXPECT_FALSE(settings.line);
+  EXPECT_FALSE(settings.position);
+  EXPECT_FALSE(settings.width);
+  EXPECT_FALSE(settings.height);
+  EXPECT_EQ(settings.region, "");
+  EXPECT_EQ(settings.writing_direction, WritingDirection::kHorizontal);
+  EXPECT_EQ(settings.text_alignment, TextAlignment::kCenter);
+}
+
 TEST_F(WebVttParserTest, ParseOneCueWithStyle) {
   const uint8_t text[] =
       "WEBVTT\n"
