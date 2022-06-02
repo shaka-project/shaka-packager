@@ -114,7 +114,8 @@ const char kUsage[] =
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
     "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    main, alternate, supplementary, commentary, dub and forced-subtitle. "
+    "    main, alternate, supplementary, commentary, description, dub and "
+    "forced-subtitle. "
     "See DASH\n"
     "    (ISO/IEC 23009-1) specification for details.\n"
     "  - forced (hls_forced): Optional value 1|0. Defaults to 0.\n"
@@ -571,7 +572,7 @@ int PackagerMain(int argc, char** argv) {
 #if defined(OS_WIN)
 // Windows wmain, which converts wide character arguments to UTF-8.
 int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
-  std::unique_ptr<char* [], std::function<void(char**)>> utf8_argv(
+  std::unique_ptr<char*[], std::function<void(char**)>> utf8_argv(
       new char*[argc], [argc](char** utf8_args) {
         // TODO(tinskip): This leaks, but if this code is enabled, it crashes.
         // Figure out why. I suspect gflags does something funny with the

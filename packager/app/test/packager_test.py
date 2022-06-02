@@ -714,7 +714,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream(
             'audio',
             dash_accessibilities='urn:tva:metadata:cs:AudioPurposeCS:2007=1',
-            dash_roles='alternate'),
+            dash_roles='description'),
         self._GetStream('video'),
     ]
 
