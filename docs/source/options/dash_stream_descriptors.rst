@@ -12,5 +12,5 @@ DASH specific stream descriptor fields
 
     Optional semicolon separated list of values for DASH Role element. The
     value should be one of: **caption**, **subtitle**, **main**, **alternate**,
-    **supplementary**, **commentary** and **dub**. See DASH (ISO/IEC 23009-1)
-    specification for details.
+    **supplementary**, **commentary**, **description** and **dub**. See 
+    DASH (ISO/IEC 23009-1) specification for details.
