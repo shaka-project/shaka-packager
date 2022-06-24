@@ -7,4 +7,6 @@
 # Packager CMake build file.
 
 # Subdirectories with their own CMakeLists.txt
-add_subdirectory(version)
+add_subdirectory(
+    tools
+    version)
