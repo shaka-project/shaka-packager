@@ -7,3 +7,6 @@
 [submodule "packager/third_party/boringssl"]
 	path = packager/third_party/boringssl
 	url = https://github.com/google/boringssl
+[submodule "packager/third_party/curl"]
+	path = packager/third_party/curl/source
+	url = https://github.com/curl/curl
