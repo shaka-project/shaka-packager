@@ -32,6 +32,3 @@
 /packager/third_party/tcmalloc/
 /packager/third_party/yasm/source/patched-yasm/
 /packager/third_party/zlib/
-/packager/tools/clang/
-/packager/tools/gyp/
-/packager/tools/valgrind/
