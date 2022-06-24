@@ -14,7 +14,7 @@ set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # Minimum C++ version.
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Global C++ flags.
@@ -24,8 +24,6 @@ set(CMAKE_CXX_FLAGS "-Wall")
 
 # Project root, to reference packager/foo/bar/...
 include_directories(.)
-# For base headers to reference each other starting with "base/..."
-include_directories(packager)
 
 # Project name.  May not contain spaces.
 project(shaka-packager)

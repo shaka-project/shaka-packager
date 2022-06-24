@@ -6,7 +6,8 @@
 
 #include "packager/version/version.h"
 
-#include "packager/base/synchronization/read_write_lock.h"
+#include <mutex>
+#include <shared_mutex>
 
 namespace shaka {
 namespace {
@@ -32,11 +33,11 @@ class Version {
   ~Version() {}
 
   const std::string& GetVersion() {
-    base::subtle::AutoReadLock read_lock(lock_);
+    std::shared_lock<std::shared_timed_mutex> read_lock(lock_);
     return version_;
   }
   void SetVersion(const std::string& version) {
-    base::subtle::AutoWriteLock write_lock(lock_);
+    std::unique_lock<std::shared_timed_mutex> write_lock(lock_);
     version_ = version;
   }
 
@@ -44,7 +45,7 @@ class Version {
   Version(const Version&) = delete;
   Version& operator=(const Version&) = delete;
 
-  base::subtle::ReadWriteLock lock_;
+  std::shared_timed_mutex lock_;
   std::string version_;
 };
 
