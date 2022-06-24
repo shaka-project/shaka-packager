@@ -28,5 +28,8 @@ include_directories(.)
 # Project name.  May not contain spaces.
 project(shaka-packager)
 
+# Build options.
+option(LIBPACKAGER_SHARED "Build libpackager as a shared library")
+
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)

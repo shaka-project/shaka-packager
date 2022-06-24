@@ -7,8 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/status.h"
+#include "absl/strings/str_format.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 
@@ -24,7 +24,7 @@ static void CheckStatus(const Status& s,
   } else {
     EXPECT_TRUE(!s.ok());
     EXPECT_THAT(s.ToString(), testing::HasSubstr(message));
-    EXPECT_THAT(s.ToString(), testing::HasSubstr(base::UintToString(code)));
+    EXPECT_THAT(s.ToString(), testing::HasSubstr(absl::StrFormat("%d", code)));
   }
 }
 

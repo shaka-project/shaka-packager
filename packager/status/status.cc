@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/status.h"
+#include "packager/status/status.h"
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
 
 namespace shaka {
 
@@ -57,7 +57,7 @@ const char* ErrorCodeToString(Code error_code) {
       return "TRICK_PLAY_ERROR";
   }
 
-  NOTIMPLEMENTED() << "Unknown Status Code: " << error_code;
+  LOG(ERROR) << "Unknown Status Code: " << error_code;
   return "UNKNOWN_STATUS";
 }
 }  // namespace
@@ -84,9 +84,9 @@ std::string Status::ToString() const {
   if (error_code_ == error::OK)
     return "OK";
 
-  return base::StringPrintf("%d (%s): %s", error_code_,
-                            error::ErrorCodeToString(error_code_),
-                            error_message_.c_str());
+  return absl::StrFormat("%d (%s): %s", error_code_,
+                         error::ErrorCodeToString(error_code_),
+                         error_message_.c_str());
 }
 
 std::ostream& operator<<(std::ostream& os, const Status& x) {

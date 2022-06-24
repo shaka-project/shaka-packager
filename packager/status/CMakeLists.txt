@@ -1,0 +1,25 @@
+# Copyright 2022 Google Inc. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+add_library(status STATIC
+    status.cc)
+target_link_libraries(status
+    absl::str_format
+    glog)
+
+if(LIBPACKAGER_SHARED)
+  target_compile_definitions(status PUBLIC SHAKA_IMPLEMENTATION)
+endif()
+
+add_executable(status_unittest
+    status_unittest.cc)
+target_link_libraries(status_unittest
+    status
+    gmock
+    gtest
+    gtest_main)
+# TODO: Test targets don't work yet.  Why not?
+add_test(NAME status_unittest COMMAND status_unittest)

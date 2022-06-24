@@ -10,3 +10,6 @@
 [submodule "packager/third_party/curl"]
 	path = packager/third_party/curl/source
 	url = https://github.com/curl/curl
+[submodule "packager/third_party/glog"]
+	path = packager/third_party/glog
+	url = https://github.com/google/glog
