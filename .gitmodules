@@ -4,3 +4,6 @@
 [submodule "packager/third_party/abseil-cpp"]
 	path = packager/third_party/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp
+[submodule "packager/third_party/boringssl"]
+	path = packager/third_party/boringssl
+	url = https://github.com/google/boringssl

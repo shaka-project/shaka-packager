@@ -17,5 +17,6 @@ set(ABSL_PROPAGATE_CXX_STD ON)
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(testing/googletest/googlemock)  # includes gtest
 add_subdirectory(third_party/abseil-cpp)
+add_subdirectory(third_party/boringssl)
 add_subdirectory(tools)
 add_subdirectory(version)
