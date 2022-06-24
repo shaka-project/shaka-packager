@@ -11,7 +11,11 @@
 # NOTE: This doesn't have to correspond to the actual version we pin to.
 set(GOOGLETEST_VERSION "1.12.0")
 
+# This will be the new default, so turn it on now to suppress a warning.
+set(ABSL_PROPAGATE_CXX_STD ON)
+
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(testing/googletest/googlemock)  # includes gtest
+add_subdirectory(third_party/abseil-cpp)
 add_subdirectory(tools)
 add_subdirectory(version)
