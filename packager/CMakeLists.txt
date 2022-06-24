@@ -6,7 +6,12 @@
 
 # Packager CMake build file.
 
+# Variables that must be defined for third-party libraries.
+
+# NOTE: This doesn't have to correspond to the actual version we pin to.
+set(GOOGLETEST_VERSION "1.12.0")
+
 # Subdirectories with their own CMakeLists.txt
-add_subdirectory(
-    tools
-    version)
+add_subdirectory(testing/googletest/googlemock)  # includes gtest
+add_subdirectory(tools)
+add_subdirectory(version)

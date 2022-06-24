@@ -15,8 +15,6 @@ build/
 /packager/base/
 /packager/build/
 /packager/docs/
-/packager/testing/gmock/
-/packager/testing/gtest/
 /packager/third_party/boringssl/src/
 /packager/third_party/curl/source/
 /packager/third_party/gflags/src/
