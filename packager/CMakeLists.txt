@@ -21,12 +21,15 @@ if(LIBPACKAGER_SHARED)
   add_definitions(SHARED_LIBRARY_BUILD)
 endif()
 
-# Subdirectories with their own CMakeLists.txt
+# Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(status)
-add_subdirectory(testing/googletest/googlemock)  # includes gtest
-add_subdirectory(third_party/abseil-cpp)
-add_subdirectory(third_party/boringssl)
-add_subdirectory(third_party/curl)
-add_subdirectory(third_party/glog)
 add_subdirectory(tools)
 add_subdirectory(version)
+
+# Third-party subdirectories with their own CMakeLists.txt, whose targets are
+# only built if they are referenced.
+add_subdirectory(testing/googletest/googlemock EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/abseil-cpp EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/boringssl EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/curl EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/glog EXCLUDE_FROM_ALL)
