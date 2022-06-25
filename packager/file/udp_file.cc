@@ -34,7 +34,7 @@
 
 #include <limits>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/file/udp_options.h"
 
 namespace shaka {
@@ -91,7 +91,7 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 }
 
 int64_t UdpFile::Write(const void* buffer, uint64_t length) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "UdpFile is unwritable!";
   return -1;
 }
 
@@ -103,21 +103,21 @@ int64_t UdpFile::Size() {
 }
 
 bool UdpFile::Flush() {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "UdpFile is unflushable!";
   return false;
 }
 
 bool UdpFile::Seek(uint64_t position) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "UdpFile is unseekable!";
   return false;
 }
 
 bool UdpFile::Tell(uint64_t* position) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "UdpFile is unseekable!";
   return false;
 }
 
-class ScopedSocket {
+class ScopedSocket : private DisallowCopyAndAssign {
  public:
   explicit ScopedSocket(SOCKET sock_fd) : sock_fd_(sock_fd) {}
 
@@ -136,8 +136,6 @@ class ScopedSocket {
 
  private:
   SOCKET sock_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSocket);
 };
 
 bool UdpFile::Open() {

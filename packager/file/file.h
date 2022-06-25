@@ -11,9 +11,9 @@
 
 #include <string>
 
-#include "packager/base/macros.h"
+#include "packager/common.h"
 #include "packager/file/public/buffer_callback_params.h"
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 
@@ -25,7 +25,7 @@ extern const char* kHttpFilePrefix;
 const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.
-class SHAKA_EXPORT File {
+class SHAKA_EXPORT File : private DisallowCopyAndAssign {
  public:
   /// Open the specified file.
   /// This is a file factory method, it opens a proper file automatically
@@ -189,8 +189,6 @@ class SHAKA_EXPORT File {
 
   // Note that the file type prefix has been stripped off.
   std::string file_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(File);
 };
 
 }  // namespace shaka

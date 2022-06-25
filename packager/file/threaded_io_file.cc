@@ -6,10 +6,7 @@
 
 #include "packager/file/threaded_io_file.h"
 
-#include "packager/base/bind.h"
-#include "packager/base/bind_helpers.h"
-#include "packager/base/location.h"
-#include "packager/base/threading/worker_pool.h"
+#include "packager/file/thread_pool.h"
 
 namespace shaka {
 
@@ -25,12 +22,10 @@ ThreadedIoFile::ThreadedIoFile(std::unique_ptr<File, FileCloser> internal_file,
       position_(0),
       size_(0),
       eof_(false),
-      flushing_(false),
-      flush_complete_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED),
       internal_file_error_(0),
-      task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                       base::WaitableEvent::InitialState::NOT_SIGNALED) {
+      flushing_(false),
+      flush_complete_(false),
+      task_exited_(false) {
   DCHECK(internal_file_);
 }
 
@@ -45,10 +40,8 @@ bool ThreadedIoFile::Open() {
   position_ = 0;
   size_ = internal_file_->Size();
 
-  base::WorkerPool::PostTask(
-      FROM_HERE,
-      base::Bind(&ThreadedIoFile::TaskHandler, base::Unretained(this)),
-      true /* task_is_slow */);
+  ThreadPool::instance.PostTask(
+      std::bind(&ThreadedIoFile::TaskHandler, this));
   return true;
 }
 
@@ -60,7 +53,7 @@ bool ThreadedIoFile::Close() {
     result = Flush();
 
   cache_.Close();
-  task_exit_event_.Wait();
+  WaitForSignal(&task_exited_mutex_, &task_exited_);
 
   result &= internal_file_.release()->Close();
   delete this;
@@ -111,9 +104,15 @@ bool ThreadedIoFile::Flush() {
   if (internal_file_error_.load(std::memory_order_relaxed))
     return false;
 
-  flushing_ = true;
+  {
+    absl::MutexLock lock(&flush_mutex_);
+    flushing_ = true;
+    flush_complete_ = false;
+  }
   cache_.Close();
-  flush_complete_event_.Wait();
+
+  WaitForSignal(&flush_mutex_, &flush_complete_);
+
   return internal_file_->Flush();
 }
 
@@ -128,7 +127,8 @@ bool ThreadedIoFile::Seek(uint64_t position) {
     // Reading. Close cache, wait for thread task to exit, seek, and re-post
     // the task.
     cache_.Close();
-    task_exit_event_.Wait();
+    WaitForSignal(&task_exited_mutex_, &task_exited_);
+
     bool result = internal_file_->Seek(position);
     if (!result) {
       // Seek failed. Seek to logical position instead.
@@ -138,10 +138,9 @@ bool ThreadedIoFile::Seek(uint64_t position) {
     }
     cache_.Reopen();
     eof_ = false;
-    base::WorkerPool::PostTask(
-        FROM_HERE,
-        base::Bind(&ThreadedIoFile::TaskHandler, base::Unretained(this)),
-        true /* task_is_slow */);
+
+    ThreadPool::instance.PostTask(
+        std::bind(&ThreadedIoFile::TaskHandler, this));
     if (!result)
       return false;
   }
@@ -157,11 +156,20 @@ bool ThreadedIoFile::Tell(uint64_t* position) {
 }
 
 void ThreadedIoFile::TaskHandler() {
+  {
+    absl::MutexLock lock(&task_exited_mutex_);
+    task_exited_ = false;
+  }
+
   if (mode_ == kInputMode)
     RunInInputMode();
   else
     RunInOutputMode();
-  task_exit_event_.Signal();
+
+  {
+    absl::MutexLock lock(&task_exited_mutex_);
+    task_exited_ = true;
+  }
 }
 
 void ThreadedIoFile::RunInInputMode() {
@@ -190,10 +198,11 @@ void ThreadedIoFile::RunInOutputMode() {
   while (true) {
     uint64_t write_bytes = cache_.Read(&io_buffer_[0], io_buffer_.size());
     if (write_bytes == 0) {
+      absl::MutexLock lock(&flush_mutex_);
       if (flushing_) {
         cache_.Reopen();
         flushing_ = false;
-        flush_complete_event_.Signal();
+        flush_complete_ = true;
       } else {
         return;
       }
@@ -205,9 +214,11 @@ void ThreadedIoFile::RunInOutputMode() {
         if (write_result < 0) {
           internal_file_error_.store(write_result, std::memory_order_relaxed);
           cache_.Close();
+
+          absl::MutexLock lock(&flush_mutex_);
           if (flushing_) {
             flushing_ = false;
-            flush_complete_event_.Signal();
+            flush_complete_ = true;
           }
           return;
         }
@@ -215,6 +226,17 @@ void ThreadedIoFile::RunInOutputMode() {
       }
     }
   }
+}
+
+void ThreadedIoFile::WaitForSignal(absl::Mutex* mutex, bool* condition) {
+  // This waits until the boolean condition variable is true, then locks the
+  // mutex.  The check is done every time the mutex is unlocked.  As long as
+  // this mutex is held when the variable is modified, this wait will always
+  // wake up when the variable is changed to true.
+  mutex->LockWhen(absl::Condition(condition));
+
+  // LockWhen leaves the mutex locked.  Return after unlocking the mutex again.
+  mutex->Unlock();
 }
 
 }  // namespace shaka

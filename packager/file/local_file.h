@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/file/file.h"
 
 namespace shaka {
@@ -48,8 +47,6 @@ class LocalFile : public File {
  private:
   std::string file_mode_;
   FILE* internal_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFile);
 };
 
 }  // namespace shaka

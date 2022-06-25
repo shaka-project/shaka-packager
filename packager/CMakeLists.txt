@@ -25,6 +25,7 @@ if(LIBPACKAGER_SHARED)
 endif()
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
+add_subdirectory(file)
 add_subdirectory(status)
 add_subdirectory(tools)
 add_subdirectory(version)
@@ -36,3 +37,4 @@ add_subdirectory(third_party/abseil-cpp EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/boringssl EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/curl EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/glog EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/json EXCLUDE_FROM_ALL)

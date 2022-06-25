@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "packager/file/memory_file.h"
+
 #include <gtest/gtest.h>
 #include <memory>
+
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 

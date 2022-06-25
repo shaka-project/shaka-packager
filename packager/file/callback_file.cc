@@ -6,7 +6,7 @@
 
 #include "packager/file/callback_file.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 
 namespace shaka {
 

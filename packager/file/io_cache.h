@@ -8,15 +8,16 @@
 #define PACKAGER_FILE_IO_CACHE_H_
 
 #include <stdint.h>
+
 #include <vector>
-#include "packager/base/macros.h"
-#include "packager/base/synchronization/lock.h"
-#include "packager/base/synchronization/waitable_event.h"
+
+#include "absl/synchronization/mutex.h"
+#include "packager/common.h"
 
 namespace shaka {
 
 /// Declaration of class which implements a thread-safe circular buffer.
-class IoCache {
+class IoCache : private DisallowCopyAndAssign {
  public:
   explicit IoCache(uint64_t cache_size);
   ~IoCache();
@@ -67,16 +68,14 @@ class IoCache {
   uint64_t BytesFreeInternal();
 
   const uint64_t cache_size_;
-  base::Lock lock_;
-  base::WaitableEvent read_event_;
-  base::WaitableEvent write_event_;
-  std::vector<uint8_t> circular_buffer_;
-  const uint8_t* end_ptr_;
-  uint8_t* r_ptr_;
-  uint8_t* w_ptr_;
-  bool closed_;
-
-  DISALLOW_COPY_AND_ASSIGN(IoCache);
+  absl::Mutex mutex_;
+  absl::CondVar read_event_ GUARDED_BY(mutex_);
+  absl::CondVar write_event_ GUARDED_BY(mutex_);
+  std::vector<uint8_t> circular_buffer_ GUARDED_BY(mutex_);
+  const uint8_t* end_ptr_ GUARDED_BY(mutex_);
+  uint8_t* r_ptr_ GUARDED_BY(mutex_);
+  uint8_t* w_ptr_ GUARDED_BY(mutex_);
+  bool closed_ GUARDED_BY(mutex_);
 };
 
 }  // namespace shaka
