@@ -17,6 +17,9 @@ set(ABSL_PROPAGATE_CXX_STD ON)
 # We will use abseil for flags.
 set(WITH_GFLAGS OFF)
 
+# Tell third-party libraries not to build their own tests.
+set(BUILD_TESTING OFF)
+
 if(LIBPACKAGER_SHARED)
   add_definitions(SHARED_LIBRARY_BUILD)
 endif()

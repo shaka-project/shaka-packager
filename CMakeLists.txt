@@ -28,6 +28,9 @@ include_directories(.)
 # Project name.  May not contain spaces.
 project(shaka-packager)
 
+# Enable CMake's test infrastructure.
+enable_testing()
+
 # Build options.
 option(LIBPACKAGER_SHARED "Build libpackager as a shared library")
 
