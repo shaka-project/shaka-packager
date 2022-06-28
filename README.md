@@ -93,8 +93,9 @@ There are several ways you can get Shaka Packager.
 # Useful Links
 
 - [Announcement List](https://groups.google.com/forum/#!forum/shaka-packager-users)
-  (join for release announcements and surveys)
-- [Documentation](https://shaka-project.github.io/shaka-packager/html/)
+  (join for infrequent announcements and surveys)
+- Subscribe to releases by following
+  [instructions from this blog](https://www.jessesquires.com/blog/2020/07/30/github-tip-watching-releases/)- [Documentation](https://shaka-project.github.io/shaka-packager/html/)
 - [Tutorials](https://shaka-project.github.io/shaka-packager/html/tutorials/tutorials.html)
 - Several open source players:
   - [DASH and HLS on Web: Shaka Player](https://github.com/shaka-project/shaka-player)
