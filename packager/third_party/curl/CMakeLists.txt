@@ -9,11 +9,13 @@
 # Don't build a shared libcurl.
 set(BUILD_SHARED_LIBS OFF)
 
-# Build libcurl with a static runtime on Windows.
-set(CURL_STATIC_CRT ON)
-
-# Use libcares to fix static linking on Linux.
-set(ENABLE_ARES ON)
+if(WIN32)
+  # Build libcurl with a static runtime on Windows.
+  set(CURL_STATIC_CRT ON)
+else()
+  # Use libcares to fix static linking on Linux.
+  set(ENABLE_ARES ON)
+endif()
 
 # Don't build with libdn, librtmp, libssh2, or zlib.
 set(USE_LIBIDN2 OFF)
