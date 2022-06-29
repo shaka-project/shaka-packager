@@ -31,7 +31,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ steps.ref.outputs.ref }}
 
       - name: Set up Python
@@ -40,7 +39,7 @@ jobs:
           python-version: 3.8
 
       - name: Build docs
-        uses: ./src/.github/workflows/custom-actions/build-docs
+        uses: .github/workflows/custom-actions/build-docs
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3

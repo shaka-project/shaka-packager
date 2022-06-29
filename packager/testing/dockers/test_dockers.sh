@@ -3,11 +3,34 @@
 # Exit on first error.
 set -e
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PACKAGER_DIR="$(dirname "$(dirname "$(dirname "$(dirname ${SCRIPT_DIR})")")")"
+# To debug a failure, run with the variable DEBUG=1.  For example:
+#   DEBUG=1 ./packager/testing/dockers/test_dockers.sh
+
+SCRIPT_DIR="$(dirname "$0")"
+PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../../..")"
+
+function docker_run_internal() {
+  docker run \
+      -it \
+      -v ${PACKAGER_DIR}:/shaka-packager \
+      -w /shaka-packager \
+      -e HOME=/shaka-packager \
+      --user "$(id -u):$(id -g)" \
+      ${CONTAINER} "$@"
+}
 
 function docker_run() {
-  docker run -v ${PACKAGER_DIR}:/shaka-packager -w /shaka-packager/src ${CONTAINER} "$@"
+  if ! docker_run_internal "$@"; then
+    echo "Command failed in ${CONTAINER}: $@"
+    if [[ "$DEBUG" == "1" ]]; then
+      echo "Launching interactive shell to debug."
+      docker_run_internal /bin/bash
+      exit 1
+    else
+      echo "Run with DEBUG=1 to debug!"
+      exit 1
+    fi
+  fi
 }
 
 # Command line arguments will be taken as an allowlist of OSes to run.
@@ -44,17 +67,15 @@ for DOCKER_FILE in ${SCRIPT_DIR}/*_Dockerfile ; do
 
   # Build a unique container name per OS for debugging purposes and to improve
   # caching.  Containers names must be in lowercase.
-  # To debug a failure in Alpine, for example, use:
-  #   docker run -it -v /path/to/packager:/shaka-packager \
-  #       packager_test_alpine:latest /bin/bash
   CONTAINER="$( echo "packager_test_${OS_NAME}" | tr A-Z a-z )"
 
   RAN_SOMETHING=1
   docker build -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}
-  docker_run rm -rf out/Release
-  docker_run gclient runhooks
-  docker_run ninja -C out/Release
-  docker_run out/Release/packager_test.py -v
+  docker_run rm -rf .cache/ build/
+  docker_run mkdir build/
+  docker_run cmake -S . -B build/
+  docker_run make -C build/
+  docker_run make -C build/ test
 done
 
 # Clear the exit trap from above.

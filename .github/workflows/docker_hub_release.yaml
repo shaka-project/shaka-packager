@@ -30,7 +30,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ env.TARGET_REF }}
 
       - name: Log in to Docker Hub
@@ -43,5 +42,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          context: src/
           tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:latest,${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ env.TARGET_REF }}

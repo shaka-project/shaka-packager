@@ -55,13 +55,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ needs.setup.outputs.tag }}
 
       - name: Check changelog version
         # This check prevents releases without appropriate changelog updates.
         run: |
-          cd src
           VERSION=$(packager/tools/extract_from_changelog.py --version)
           if [[ "$VERSION" != "${{ needs.setup.outputs.tag }}" ]]; then
             echo ""
@@ -76,7 +74,6 @@ jobs:
 
       - name: Extract release notes
         run: |
-          cd src
           packager/tools/extract_from_changelog.py --release_notes \
               | tee ../RELEASE_NOTES.md
 
@@ -99,14 +96,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ needs.setup.outputs.tag }}
           # This makes the merge base available for the C++ linter, so that it
           # can tell which files have changed.
           fetch-depth: 2
 
       - name: Lint
-        uses: ./src/.github/workflows/custom-actions/lint-packager
+        uses: .github/workflows/custom-actions/lint-packager
 
   build_and_test:
     needs: [setup, lint, draft_release]
@@ -150,15 +146,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ needs.setup.outputs.tag }}
 
       - name: Build docs (Linux only)
         if: runner.os == 'Linux'
-        uses: ./src/.github/workflows/custom-actions/build-docs
+        uses: .github/workflows/custom-actions/build-docs
 
       - name: Build Packager
-        uses: ./src/.github/workflows/custom-actions/build-packager
+        uses: .github/workflows/custom-actions/build-packager
         with:
           os_name: ${{ matrix.os_name }}
           target_arch: ${{ matrix.target_arch }}
@@ -168,7 +163,7 @@ jobs:
           exe_ext: ${{ matrix.exe_ext }}
 
       - name: Test Packager
-        uses: ./src/.github/workflows/custom-actions/test-packager
+        uses: .github/workflows/custom-actions/test-packager
         with:
           lib_type: ${{ matrix.lib_type }}
           build_type: ${{ matrix.build_type }}
@@ -194,26 +189,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ github.event.inputs.ref || github.ref }}
-
-      - name: Install depot tools
-        shell: bash
-        run: |
-          git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          touch depot_tools/.disable_auto_update
-          echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
-
-      - name: Setup gclient
-        shell: bash
-        run: |
-          gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
-          # NOTE: the docker tests will do gclient runhooks, so skip hooks here.
-          gclient sync --nohooks
 
       - name: Test all distros
         shell: bash
-        run: ./src/packager/testing/dockers/test_dockers.sh
+        run: ./packager/testing/dockers/test_dockers.sh
 
   publish_release:
     name: Publish GitHub release

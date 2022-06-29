@@ -11,7 +11,6 @@ runs:
     - name: Lint
       shell: bash
       run: |
-        cd src/
         echo "::group::Installing git-clang-format"
         wget https://raw.githubusercontent.com/llvm-mirror/clang/master/tools/clang-format/git-clang-format
         sudo install -m 755 git-clang-format /usr/local/bin/git-clang-format
@@ -21,8 +20,6 @@ runs:
         python3 -m pip install --upgrade pylint==2.8.3
         echo "::endgroup::"
         echo "::group::Check clang-format for C++ sources"
-        # NOTE: --binary forces use of global clang-format (which works) instead
-        # of depot_tools clang-format (which doesn't).
         # NOTE: Must use base.sha instead of base.ref, since we don't have
         # access to the branch name that base.ref would give us.
         # NOTE: Must also use fetch-depth: 2 in actions/checkout to have access

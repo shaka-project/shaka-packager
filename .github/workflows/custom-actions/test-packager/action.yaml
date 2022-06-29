@@ -26,20 +26,14 @@ runs:
     - name: Test
       shell: bash
       run: |
-        echo "::group::Prepare test environment"
-        # NOTE: Some of these tests must be run from the "src" directory.
-        cd src/
-        OUTDIR=out/${{ inputs.build_type }}${{ inputs.build_type_suffix }}
-        if [[ '${{ runner.os }}' == 'macOS' ]]; then
-          export DYLD_FALLBACK_LIBRARY_PATH=$OUTDIR
-        fi
-        echo "::endgroup::"
-        for i in $OUTDIR/*test${{ inputs.exe_ext }}; do
-          echo "::group::Test $i"
-          "$i" || exit 1
-          echo "::endgroup::"
-        done
-        echo "::group::Test $OUTDIR/packager_test.py"
-        python3 $OUTDIR/packager_test.py \
-            -v --libpackager_type=${{ inputs.lib_type }}_library
+        # TODO(joeyparrish): Check for any test env setup
+#        echo "::group::Prepare test environment"
+#        # NOTE: Some of these tests must be run from the project root directory.
+#        OUTDIR=build/${{ inputs.build_type }}${{ inputs.build_type_suffix }}
+#        if [[ '${{ runner.os }}' == 'macOS' ]]; then
+#          export DYLD_FALLBACK_LIBRARY_PATH=$OUTDIR
+#        fi
+#        echo "::endgroup::"
+        echo "::group::Test"
+        make -C build/ test
         echo "::endgroup::"

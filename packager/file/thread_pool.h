@@ -9,6 +9,7 @@
 
 #include "packager/common.h"
 
+#include <functional>
 #include <queue>
 
 #include "absl/base/thread_annotations.h"

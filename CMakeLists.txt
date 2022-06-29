@@ -7,7 +7,8 @@
 # Root-level CMake build file.
 
 # Minimum CMake version.
-cmake_minimum_required(VERSION 3.10)
+# We could require as low as 3.10, but glog requires 3.16.
+cmake_minimum_required(VERSION 3.16)
 
 # No in-source builds allowed.
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)

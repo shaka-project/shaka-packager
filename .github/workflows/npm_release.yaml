@@ -30,7 +30,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: src
           ref: ${{ env.TARGET_REF }}
 
       - name: Setup NodeJS
@@ -40,7 +39,7 @@ jobs:
 
       - name: Set package name and version
         run: |
-          cd src/npm
+          cd npm
           sed package.json -i \
               -e 's/"name": ""/"name": "${{ secrets.NPM_PACKAGE_NAME }}"/' \
               -e 's/"version": ""/"version": "${{ env.TARGET_REF }}"/'
@@ -49,6 +48,6 @@ jobs:
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_CI_TOKEN }}
-          package: src/npm/package.json
+          package: npm/package.json
           check-version: false
           access: public

@@ -26,7 +26,8 @@ target_link_libraries(file
     libcurl
     glog
     status
-    version)
+    version
+    -lstdc++fs)
 
 add_executable(file_unittest
     callback_file_unittest.cc

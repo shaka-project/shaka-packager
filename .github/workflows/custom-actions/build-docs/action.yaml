@@ -40,7 +40,7 @@ runs:
         echo "::endgroup::"
         echo "::group::Move ouputs"
         # Now move the generated outputs.
-        cp -a out/sphinx/html ../gh-pages/html
-        cp -a out/doxygen/html ../gh-pages/docs
+        cp -a build/sphinx/html ../gh-pages/html
+        cp -a build/doxygen/html ../gh-pages/docs
         cp docs/index.html ../gh-pages/index.html
         echo "::endgroup::"
