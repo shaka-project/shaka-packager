@@ -14,7 +14,7 @@ set(GOOGLETEST_VERSION "1.12.0")
 # This will be the new default, so turn it on now to suppress a warning.
 set(ABSL_PROPAGATE_CXX_STD ON)
 
-# We will use abseil for flags.
+# We will use abseil for flags, so turn off glog's search for gflags.
 set(WITH_GFLAGS OFF)
 
 # Tell third-party libraries not to build their own tests.
