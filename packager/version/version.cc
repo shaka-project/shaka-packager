@@ -6,8 +6,7 @@
 
 #include "packager/version/version.h"
 
-#include <mutex>
-#include <shared_mutex>
+#include "absl/synchronization/mutex.h"
 
 namespace shaka {
 namespace {
@@ -33,11 +32,11 @@ class Version {
   ~Version() {}
 
   const std::string& GetVersion() {
-    std::shared_lock<std::shared_timed_mutex> read_lock(lock_);
+    absl::ReaderMutexLock lock(&mutex_);
     return version_;
   }
   void SetVersion(const std::string& version) {
-    std::unique_lock<std::shared_timed_mutex> write_lock(lock_);
+    absl::MutexLock lock(&mutex_);
     version_ = version;
   }
 
@@ -45,8 +44,8 @@ class Version {
   Version(const Version&) = delete;
   Version& operator=(const Version&) = delete;
 
-  std::shared_timed_mutex lock_;
-  std::string version_;
+  absl::Mutex mutex_;
+  std::string version_ GUARDED_BY(mutex_);
 };
 
 }  // namespace

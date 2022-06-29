@@ -18,3 +18,5 @@ endif()
 add_library(version STATIC version.cc)
 target_compile_definitions(version PRIVATE
     PACKAGER_VERSION="${PACKAGER_VERSION}")
+target_link_libraries(version
+    absl::synchronization)
