@@ -12,8 +12,6 @@
 .repo
 .settings
 build/
-/packager/base/
-/packager/build/
 /packager/docs/
 /packager/third_party/icu/
 /packager/third_party/libpng/src/
