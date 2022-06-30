@@ -29,14 +29,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install c-ares (Linux only)
+    - name: Install nasm (Windows only)
+      if: runner.os == 'Windows'
       shell: bash
-      run: |
-        if [[ "${{ runner.os }}" == "Linux" ]]; then
-          echo "::group::Install c-ares"
-          sudo apt install -y libc-ares-dev
-          echo "::endgroup::"
-        fi
+      run: pacman -Sy --noconfirm nasm
+
+    - name: Install c-ares (Linux only)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: sudo apt install -y libc-ares-dev
 
     - name: Generate makefiles
       shell: bash
