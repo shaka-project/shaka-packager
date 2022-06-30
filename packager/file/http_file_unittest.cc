@@ -114,8 +114,16 @@ TEST(HttpFileTest, BasicPost) {
   ASSERT_JSON_STRING(json, "method", "POST");
   ASSERT_JSON_STRING(json, "data", data);
   ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-  ASSERT_JSON_STRING(json, "headers.Content-Length",
-                     std::to_string(data.size()));
+
+  // Curl may choose to send chunked or not based on the data.  We request
+  // chunked encoding, but don't control if it is actually used.  If we get
+  // chunked transfer, there is no Content-Length header reflected back to us.
+  if (!GetJsonString(json, "headers.Content-Length").empty()) {
+    ASSERT_JSON_STRING(json, "headers.Content-Length",
+                       std::to_string(data.size()));
+  } else {
+    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+  }
 }
 
 TEST(HttpFileTest, BasicPut) {
@@ -188,9 +196,7 @@ TEST(HttpFileTest, MultipleWrites) {
   }
 }
 
-// TODO: Test chunked uploads.  Since we can only read the response, we have no
-// way to detect if we are streaming the upload like we want.  httpbin seems to
-// populate the Content-Length even if we don't give it in the request.
+// TODO: Test chunked uploads explicitly.
 
 TEST(HttpFileTest, Error404) {
   FilePtr file(
