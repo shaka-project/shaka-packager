@@ -17,7 +17,7 @@ RUN make -C build
 
 # Copy only result binaries to our final image.
 FROM alpine:3.12
-RUN apk add --no-cache libstdc++ python
+RUN apk add --no-cache libstdc++ python3
 # TODO(joeyparrish): Copy binaries when build system is complete
 #COPY --from=builder /shaka_packager/build/packager \
 #                    /shaka_packager/build/mpd_generator \
