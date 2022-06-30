@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 2
 
       - name: Lint
-        uses: .github/workflows/custom-actions/lint-packager
+        uses: ./.github/workflows/custom-actions/lint-packager
 
   build_and_test:
     # Doesn't really "need" it, but let's not waste time on an expensive matrix
@@ -83,10 +83,10 @@ jobs:
 
       - name: Build docs (Linux only)
         if: runner.os == 'Linux'
-        uses: .github/workflows/custom-actions/build-docs
+        uses: ./.github/workflows/custom-actions/build-docs
 
       - name: Build Packager
-        uses: .github/workflows/custom-actions/build-packager
+        uses: ./.github/workflows/custom-actions/build-packager
         with:
           os_name: ${{ matrix.os_name }}
           target_arch: ${{ matrix.target_arch }}
@@ -96,7 +96,7 @@ jobs:
           exe_ext: ${{ matrix.exe_ext }}
 
       - name: Test Packager
-        uses: .github/workflows/custom-actions/test-packager
+        uses: ./.github/workflows/custom-actions/test-packager
         with:
           lib_type: ${{ matrix.lib_type }}
           build_type: ${{ matrix.build_type }}

@@ -39,7 +39,7 @@ jobs:
           python-version: 3.8
 
       - name: Build docs
-        uses: .github/workflows/custom-actions/build-docs
+        uses: ./.github/workflows/custom-actions/build-docs
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
