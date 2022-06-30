@@ -16,9 +16,9 @@
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 
-#define ASSERT_JSON_STRING(json, key, value)          \
-  do {                                                \
-    ASSERT_EQ(GetJsonString((json), (key)), (value)); \
+#define ASSERT_JSON_STRING(json, key, value) \
+  do { \
+    ASSERT_EQ(GetJsonString((json), (key)), (value)) << "JSON is " << (json); \
   } while (false)
 
 namespace shaka {
