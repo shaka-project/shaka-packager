@@ -11,13 +11,22 @@ PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../../..")"
 
 function docker_run_internal() {
   (
+    if [[ "$GITHUB_ACTIONS" == "true" ]]; then
+      # In GitHub actions, don't specify a user.  Files can be written as root.
+      USER_ARG=""
+    else
+      # Running on your workstation, make sure your files are written by the
+      # correct user.
+      USER_ARG="--user $(id -u):$(id -g)"
+    fi
     set -x
+
     docker run \
       -it \
       -v ${PACKAGER_DIR}:/shaka-packager \
       -w /shaka-packager \
       -e HOME=/shaka-packager \
-      --user "$(id -u):$(id -g)" \
+      ${USER_ARG} \
       ${CONTAINER} "$@"
   )
 }
