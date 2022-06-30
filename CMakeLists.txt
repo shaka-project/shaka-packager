@@ -6,6 +6,10 @@
 
 # Root-level CMake build file.
 
+# Project name.  May not contain spaces.  Versioning is managed elsewhere.
+cmake_policy(SET CMP0048 NEW)
+project(shaka-packager VERSION "")
+
 # Minimum CMake version.
 # We could require as low as 3.10, but glog requires 3.16.
 cmake_minimum_required(VERSION 3.16)
@@ -18,6 +22,14 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Minimum GCC version, if using GCC.
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  # Require at least GCC 9.  Before GCC 9, C++17 filesystem libs don't link.
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+    message(FATAL_ERROR "GCC version must be at least 9! (Found ${CMAKE_CXX_COMPILER_VERSION})")
+  endif()
+endif()
+
 # Global C++ flags.
 set(CMAKE_CXX_FLAGS "-Wall")
 
@@ -25,9 +37,6 @@ set(CMAKE_CXX_FLAGS "-Wall")
 
 # Project root, to reference packager/foo/bar/...
 include_directories(.)
-
-# Project name.  May not contain spaces.
-project(shaka-packager)
 
 # Enable CMake's test infrastructure.
 enable_testing()
