@@ -136,8 +136,16 @@ TEST(HttpFileTest, BasicPut) {
   ASSERT_JSON_STRING(json, "method", "PUT");
   ASSERT_JSON_STRING(json, "data", data);
   ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-  ASSERT_JSON_STRING(json, "headers.Content-Length",
-                     std::to_string(data.size()));
+
+  // Curl may choose to send chunked or not based on the data.  We request
+  // chunked encoding, but don't control if it is actually used.  If we get
+  // chunked transfer, there is no Content-Length header reflected back to us.
+  if (!GetJsonString(json, "headers.Content-Length").empty()) {
+    ASSERT_JSON_STRING(json, "headers.Content-Length",
+                       std::to_string(data.size()));
+  } else {
+    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+  }
 }
 
 TEST(HttpFileTest, MultipleWrites) {
@@ -167,9 +175,17 @@ TEST(HttpFileTest, MultipleWrites) {
   ASSERT_JSON_STRING(json, "method", "PUT");
   ASSERT_JSON_STRING(json, "data", data1 + data2 + data3 + data4);
   ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-  ASSERT_JSON_STRING(json, "headers.Content-Length",
-                     std::to_string(data1.size() + data2.size() + data3.size() +
-                                    data4.size()));
+
+  // Curl may choose to send chunked or not based on the data.  We request
+  // chunked encoding, but don't control if it is actually used.  If we get
+  // chunked transfer, there is no Content-Length header reflected back to us.
+  if (!GetJsonString(json, "headers.Content-Length").empty()) {
+    auto totalSize = data1.size() + data2.size() + data3.size() + data4.size();
+    ASSERT_JSON_STRING(json, "headers.Content-Length",
+                       std::to_string(totalSize));
+  } else {
+    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+  }
 }
 
 // TODO: Test chunked uploads.  Since we can only read the response, we have no
