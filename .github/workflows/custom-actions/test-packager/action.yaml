@@ -35,5 +35,5 @@ runs:
         #fi
         #echo "::endgroup::"
         echo "::group::Test"
-        make -C build/ test
+        (cd build; ctest -V)
         echo "::endgroup::"

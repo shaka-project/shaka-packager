@@ -87,7 +87,7 @@ for DOCKER_FILE in ${SCRIPT_DIR}/*_Dockerfile ; do
   docker_run mkdir build/
   docker_run cmake -S . -B build/
   docker_run make -C build/
-  docker_run make -C build/ test
+  docker_run cd build \&\& ctest -V
 done
 
 # Clear the exit trap from above.
