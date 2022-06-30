@@ -10,13 +10,16 @@ SCRIPT_DIR="$(dirname "$0")"
 PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../../..")"
 
 function docker_run_internal() {
-  docker run \
+  (
+    set -x
+    docker run \
       -it \
       -v ${PACKAGER_DIR}:/shaka-packager \
       -w /shaka-packager \
       -e HOME=/shaka-packager \
       --user "$(id -u):$(id -g)" \
       ${CONTAINER} "$@"
+  )
 }
 
 function docker_run() {
