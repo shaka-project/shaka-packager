@@ -1,19 +1,11 @@
-FROM debian:10
+FROM debian:11
 
 # Install utilities, libraries, and dev tools.
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get install -y \
         curl \
         libc-ares-dev \
-        build-essential git golang perl python3
-
-# Add buster-backports for a newer cmake version (3.16).
-RUN echo "deb http://deb.debian.org/debian buster-backports main" | \
-        tee -a /etc/apt/sources.list
-RUN apt-get update
-
-# Install the backport of cmake.
-RUN apt-get install -y -t buster-backports cmake
+        build-essential cmake git golang perl python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

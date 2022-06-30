@@ -8,6 +8,7 @@ set -e
 
 SCRIPT_DIR="$(dirname "$0")"
 PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../../..")"
+TEMP_BUILD_DIR="$(mktemp -d)"
 
 function docker_run_internal() {
   (
@@ -24,8 +25,9 @@ function docker_run_internal() {
     docker run \
       -it \
       -v ${PACKAGER_DIR}:/shaka-packager \
+      -v ${TEMP_BUILD_DIR}:/shaka-packager/build \
       -w /shaka-packager \
-      -e HOME=/shaka-packager \
+      -e HOME=/tmp \
       ${USER_ARG} \
       ${CONTAINER} "$@"
   )
@@ -58,9 +60,13 @@ if [[ $# != 0 ]]; then
   FILTER="($FILTER)"
 fi
 
-# On exit, print the name of the OS we were on.  This helps identify what to
-# debug when the start of a test run scrolls off-screen.
-trap 'echo "Failed on $OS_NAME!"' exit
+function on_exit() {
+  # On exit, print the name of the OS we were on.  This helps identify what to
+  # debug when the start of a test run scrolls off-screen.
+  echo "Failed on $OS_NAME!"
+  rm -rf "${TEMP_BUILD_DIR}"
+}
+trap 'on_exit' exit
 
 echo "Using OS filter: $FILTER"
 RAN_SOMETHING=0
@@ -83,11 +89,11 @@ for DOCKER_FILE in ${SCRIPT_DIR}/*_Dockerfile ; do
 
   RAN_SOMETHING=1
   docker build -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}
-  docker_run rm -rf .cache/ build/
-  docker_run mkdir build/
+  mkdir -p "${TEMP_BUILD_DIR}"
   docker_run cmake -S . -B build/
   docker_run make -C build/
   docker_run bash -c "cd build && ctest -V"
+  rm -rf "${TEMP_BUILD_DIR}"
 done
 
 # Clear the exit trap from above.
