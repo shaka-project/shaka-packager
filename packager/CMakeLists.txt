@@ -21,7 +21,7 @@ set(WITH_GFLAGS OFF)
 set(BUILD_TESTING OFF)
 
 if(LIBPACKAGER_SHARED)
-  add_definitions(SHARED_LIBRARY_BUILD)
+  add_definitions(-DSHARED_LIBRARY_BUILD)
 endif()
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
