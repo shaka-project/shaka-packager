@@ -29,12 +29,25 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install nasm (Windows only)
+    - name: Configure Windows builds
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        # At this point, we're running Git Bash.  After this step, we will be
+        # running msys bash, just as we would be when debugging via SSH with
+        # mxschmitt/action-tmate.
+        echo "C:\\msys64\\usr\\bin" >> "$GITHUB_PATH"
+        echo "C:\\msys64\\mingw64\\bin" >> "$GITHUB_PATH"
+
+        # Make sure that cmake generates makefiles and not ninja files.
+        echo "CMAKE_GENERATOR=MSYS Makefiles" >> "$GITHUB_ENV"
+
+    - name: Install Windows deps
       if: runner.os == 'Windows'
       shell: bash
       run: pacman -Sy --noconfirm nasm
 
-    - name: Install c-ares (Linux only)
+    - name: Install Linux deps
       if: runner.os == 'Linux'
       shell: bash
       run: sudo apt install -y libc-ares-dev
