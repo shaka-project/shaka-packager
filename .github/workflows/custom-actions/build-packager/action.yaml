@@ -57,7 +57,6 @@ runs:
       run: |
         echo "::group::Generate makefiles"
         mkdir -p build/
-        cd build/
 
         if [[ "${{ inputs.lib_type }}" == "shared" ]]; then
           LIBPACKAGER_SHARED="ON"
@@ -68,7 +67,8 @@ runs:
         cmake \
           -DCMAKE_BUILD_TYPE="${{ inputs.build_type }}" \
           -DLIBPACKAGER_SHARED="$LIBPACKAGER_SHARED" \
-          ..
+          -S . \
+          -B build/
         echo "::endgroup::"
 
     - name: Build
