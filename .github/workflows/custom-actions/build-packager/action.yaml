@@ -29,20 +29,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Select Xcode 10.3 and SDK 10.14 (macOS only)
-      # NOTE: macOS 11 doesn't work with our (old) version of Chromium build,
-      # and the latest Chromium build doesn't work with Packager's build
-      # system.  To work around this, we need an older SDK version, and to
-      # get that, we need an older XCode version.  XCode 10.3 has SDK 10.14,
-      # which works.
-      shell: bash
-      run: |
-        if [[ "${{ runner.os }}" == "macOS" ]]; then
-          echo "::group::Select Xcode 10.3"
-          sudo xcode-select -s /Applications/Xcode_10.3.app/Contents/Developer
-          echo "::endgroup::"
-        fi
-
     - name: Install c-ares (Linux only)
       shell: bash
       run: |
