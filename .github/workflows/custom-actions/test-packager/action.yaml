@@ -27,13 +27,13 @@ runs:
       shell: bash
       run: |
         # TODO(joeyparrish): Check for any test env setup
-#        echo "::group::Prepare test environment"
-#        # NOTE: Some of these tests must be run from the project root directory.
-#        OUTDIR=build/${{ inputs.build_type }}${{ inputs.build_type_suffix }}
-#        if [[ '${{ runner.os }}' == 'macOS' ]]; then
-#          export DYLD_FALLBACK_LIBRARY_PATH=$OUTDIR
-#        fi
-#        echo "::endgroup::"
+        #echo "::group::Prepare test environment"
+        ## NOTE: Some of these tests must be run from the project root directory.
+        #OUTDIR=build/${{ inputs.build_type }}${{ inputs.build_type_suffix }}
+        #if [[ '${{ runner.os }}' == 'macOS' ]]; then
+        #  export DYLD_FALLBACK_LIBRARY_PATH=$OUTDIR
+        #fi
+        #echo "::endgroup::"
         echo "::group::Test"
         make -C build/ test
         echo "::endgroup::"
