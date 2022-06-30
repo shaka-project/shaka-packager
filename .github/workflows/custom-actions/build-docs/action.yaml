@@ -26,8 +26,7 @@ runs:
       run: |
         echo "::group::Prepare output folders"
         mkdir -p gh-pages
-        cd src
-        mkdir -p out
+        mkdir -p build
         echo "::endgroup::"
         echo "::group::Build Doxygen docs"
         # Doxygen must run before Sphinx.  Sphinx will refer to
