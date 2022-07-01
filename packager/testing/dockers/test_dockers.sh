@@ -11,24 +11,20 @@ PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../../..")"
 TEMP_BUILD_DIR="$(mktemp -d)"
 
 function docker_run_internal() {
-  (
-    if [[ "$GITHUB_ACTIONS" == "true" ]]; then
-      # In GitHub actions, don't specify a user.  Files can be written as root.
-      USER_ARG=""
-    else
-      # Running on your workstation, make sure your files are written by the
-      # correct user.
-      USER_ARG="--user $(id -u):$(id -g)"
-    fi
-    set -x
+  if [[ "$DEBUG" == "1" ]]; then
+    # For debugging, allocate an interactive terminal in docker.
+    INTERACTIVE_ARG="-it"
+  else
+    INTERACTIVE_ARG=""
+  fi
 
-    docker run \
-      -it \
+  docker run \
+      ${INTERACTIVE_ARG} \
       -v ${PACKAGER_DIR}:/shaka-packager \
       -v ${TEMP_BUILD_DIR}:/shaka-packager/build \
       -w /shaka-packager \
       -e HOME=/tmp \
-      ${USER_ARG} \
+      --user $(id -u):$(id -g) \
       ${CONTAINER} "$@"
   )
 }
