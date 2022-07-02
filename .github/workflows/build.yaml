@@ -55,7 +55,8 @@ jobs:
   matrix_config:
     runs-on: ubuntu-latest
     outputs:
-      MATRIX: ${{ steps.configure.outputs.MATRIX }}
+      INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
+      OS: ${{ steps.configure.outputs.OS }}
       ENABLE_DEBUG: ${{ steps.configure.outputs.ENABLE_DEBUG }}
     steps:
       - uses: actions/checkout@v2
@@ -72,23 +73,26 @@ jobs:
           // Use ENABLE_SELF_HOSTED to decide what the build matrix below
           // should include.
           const {hosted, selfHosted} = require("${{ github.workspace }}/.github/workflows/build-matrix.json");
-          const matrix = enableSelfHosted ? hosted.concat(selfHosted) : hosted;
+          const include = enableSelfHosted ? hosted.concat(selfHosted) : hosted;
+          const os = include.map((config) => config.os);
 
-          // Output a JSON object consumed by the build matrix below.
-          console.log(`::set-output name=MATRIX::${ JSON.stringify(matrix) }`);
+          // Output JSON objects consumed by the build matrix below.
+          console.log(`::set-output name=INCLUDE::${ JSON.stringify(include) }`);
+          console.log(`::set-output name=OS::${ JSON.stringify(os) }`);
 
           // Output the debug flag directly.
           console.log(`::set-output name=ENABLE_DEBUG::${ enableDebug }`);
 
           // Log the outputs, for the sake of debugging this script.
-          console.log({enableDebug, matrix});
+          console.log({enableDebug, include, os});
 
   build:
     needs: matrix_config
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(needs.matrix_config.outputs.MATRIX) }}
+        include: ${{ fromJSON(needs.matrix_config.outputs.INCLUDE) }}
+        os: ${{ fromJSON(needs.matrix_config.outputs.OS) }}
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
 
