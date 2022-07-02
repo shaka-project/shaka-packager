@@ -6,8 +6,11 @@
 
 #include <gtest/gtest.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <filesystem>
 
 #include "absl/flags/declare.h"
 #include "packager/file/file.h"
@@ -51,6 +54,23 @@ size_t ReadFile(const std::string& path, std::string* data, size_t maxSize) {
   return bytes;
 }
 
+std::string generate_unique_temp_path() {
+  // Generate a unique name for a temporary file, using standard library
+  // routines, to avoid a circular dependency on any of our own code for
+  // generating temporary files.
+  // The template passed to mkstemp must end in 6 X's.
+  std::filesystem::path temp_path_template =
+      (std::filesystem::temp_directory_path() / "packager-test.XXXXXX");
+  // mkstemp will create and open the file, modify the character points to
+  // reflect the generated name (replacing the X characters with something
+  // else), and return an open file descriptor.  Then we close it and use the
+  // generated name.
+  std::string temp_path_template_string = temp_path_template.string();
+  int fd = mkstemp(temp_path_template_string.data());
+  close(fd);
+  return temp_path_template_string;
+}
+
 } // namespace
 
 namespace shaka {
@@ -62,10 +82,7 @@ class LocalFileTest : public testing::Test {
     for (int i = 0; i < kDataSize; ++i)
       data_[i] = i % 256;
 
-    // Generate a unique name for a temporary file, using a basic C-library
-    // routine, to avoid a circular dependency on any of our own code for
-    // generating temporary files.
-    local_file_name_no_prefix_ = tmpnam(nullptr);
+    local_file_name_no_prefix_ = generate_unique_temp_path();
 
     // Local file name with prefix for File API.
     local_file_name_ = kLocalFilePrefix;
@@ -110,8 +127,7 @@ TEST_F(LocalFileTest, Size) {
 TEST_F(LocalFileTest, Copy) {
   WriteFile(local_file_name_no_prefix_, data_);
 
-  // Create a temp file.
-  std::string destination = tmpnam(nullptr);
+  std::string destination = generate_unique_temp_path();
   ASSERT_TRUE(File::Copy(
       local_file_name_.c_str(),
       destination.c_str()));
