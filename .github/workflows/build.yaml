@@ -114,7 +114,7 @@ jobs:
           MSBuild build/shaka-packager.sln
 
       - name: Test
-        run: cd build; ctest -V
+        run: cd build; ctest -C "${{ matrix.build_type }}" -V
 
       # TODO(joeyparrish): Prepare artifacts when build system is complete again
 #      - name: Prepare artifacts (static release only)
