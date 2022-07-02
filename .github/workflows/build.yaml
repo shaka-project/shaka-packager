@@ -109,7 +109,9 @@ jobs:
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
-        run: MSBuild build/shaka-packager.sln
+        shell: pwsh
+        run: |
+          MSBuild build/shaka-packager.sln
 
       - name: Test
         run: cd build; ctest -V
