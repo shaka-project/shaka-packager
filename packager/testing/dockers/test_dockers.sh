@@ -26,7 +26,6 @@ function docker_run_internal() {
       -e HOME=/tmp \
       --user $(id -u):$(id -g) \
       ${CONTAINER} "$@"
-  )
 }
 
 function docker_run() {
