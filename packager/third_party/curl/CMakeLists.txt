@@ -9,10 +9,7 @@
 # Don't build a shared libcurl.
 set(BUILD_SHARED_LIBS OFF)
 
-if(WIN32)
-  # Build libcurl with a static runtime on Windows.
-  set(CURL_STATIC_CRT ON)
-else()
+if(NOT WIN32)
   # Use libcares to fix static linking on Linux.
   set(ENABLE_ARES ON)
 endif()
