@@ -23,6 +23,22 @@ on:
       ref:
         required: true
         type: string
+    secrets:
+      # The GITHUB_TOKEN name is reserved, but not passed through implicitly.
+      # So we call our secret parameter simply TOKEN.
+      TOKEN:
+        required: false
+
+      # These below are not actual secrets, but secrets are the only place to
+      # keep repo-specific configs that make this project friendlier to forks
+      # and easier to debug.
+
+      # If non-empty, start a debug SSH server on failures.
+      ENABLE_DEBUG:
+        required: false
+      # If non-empty, enable self-hosted runners in the build matrix.
+      ENABLE_SELF_HOSTED:
+        required: false
 
 # By default, run all commands in a bash shell.  On Windows, the default would
 # otherwise be powershell.
@@ -31,47 +47,55 @@ defaults:
     shell: bash
 
 jobs:
+  # Configure the build matrix based on inputs.  The list of objects in the
+  # build matrix contents can't be changed by conditionals, but it can be
+  # computed by another job and deserialized.  This uses
+  # secrets.ENABLE_SELF_HOSTED to determine the build matrix, based on the
+  # metadata in build-matrix.json.
+  matrix_config:
+    runs-on: ubuntu-latest
+    outputs:
+      MATRIX: ${{ steps.configure.outputs.MATRIX }}
+      ENABLE_DEBUG: ${{ steps.configure.outputs.ENABLE_DEBUG }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Configure Build Matrix
+        id: configure
+        shell: node {0}
+        run: |
+          const enableDebug = "${{ secrets.ENABLE_DEBUG }}" != '';
+          const enableSelfHosted = "${{ secrets.ENABLE_SELF_HOSTED }}" != '';
+
+          // Use ENABLE_SELF_HOSTED to decide what the build matrix below
+          // should include.
+          const {hosted, selfHosted} = require(".github/workflows/build-matrix.json");
+          const matrix = enableSelfHosted ? hosted.concat(selfHosted) : hosted;
+
+          // Output a JSON object consumed by the build matrix below.
+          console.log(`::set-output name=MATRIX::${ JSON.stringify(matrix) }`);
+
+          // Output the debug flag directly.
+          console.log(`::set-output name=ENABLE_DEBUG::${ enableDebug }`);
+
+          // Log the outputs, for the sake of debugging this script.
+          console.log({enableDebug, matrix});
+
   build:
+    needs: matrix_config
     strategy:
       fail-fast: false
       matrix:
-        # TODO(joeyparrish): exclude self-hosted in forks
-        #os: ["ubuntu-latest", "macos-latest", "windows-latest", "self-hosted-linux-arm64"]
-        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        include: ${{ fromJSON(needs.matrix_config.outputs.MATRIX) }}
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
-        include:
-          - os: ubuntu-latest
-            os_name: linux
-            target_arch: x64
-            exe_ext: ""
-            build_type_suffix: ""
-          - os: macos-latest
-            os_name: osx
-            target_arch: x64
-            exe_ext: ""
-            build_type_suffix: ""
-          - os: windows-latest
-            os_name: win
-            target_arch: x64
-            exe_ext: ".exe"
-            # 64-bit outputs on Windows go to a different folder name.
-            build_type_suffix: "_x64"
-          # TODO(joeyparrish): exclude self-hosted in forks
-          #- os: self-hosted-linux-arm64
-          #  os_name: linux
-          #  target_arch: arm64
-          #  exe_ext: ""
-          #  build_type_suffix: ""
 
     name: ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Setup MSBuild
-        if: runner.os == 'Windows'
-        uses: microsoft/setup-msbuild@v1.1
-
       - name: Configure git to preserve line endings
         # Otherwise, tests fail on Windows because "golden" test outputs will not
         # have the correct line endings.
@@ -124,7 +148,7 @@ jobs:
 #          if [[ "${{ runner.os }}" == "Linux" ]]; then
 #            echo "::group::Check for static executables"
 #            (
-#              cd build/Release${{ matrix.build_type_suffix }}
+#              cd build/Release
 #              # Prove that we built static executables on Linux.  First, check that
 #              # the executables exist, and fail if they do not.  Then check "ldd",
 #              # which will fail if the executable is not dynamically linked.  If
@@ -141,7 +165,7 @@ jobs:
 #          echo "::group::Prepare artifacts folder"
 #          mkdir artifacts
 #          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
-#          cd build/Release${{ matrix.build_type_suffix }}
+#          cd build/Release
 #          echo "::endgroup::"
 #          echo "::group::Strip executables"
 #          strip packager${{ matrix.exe_ext }}
@@ -173,3 +197,9 @@ jobs:
 #        with:
 #          release_id: ${{ needs.draft_release.outputs.release_id }}
 #          assets_path: artifacts
+
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3.6
+        with:
+          limit-access-to-actor: true
+        if: failure() && needs.matrix_config.outputs.ENABLE_DEBUG != ''

@@ -59,3 +59,8 @@
  - `NPM_PACKAGE_NAME`: Not a true "secret", but stored here to avoid someone
    pushing bogus packages to NPM during CI testing from a fork
    - In a fork, set to a private name which differs from the production one
+
+## Optional Repo Secrets
+ - `ENABLE_DEBUG`: Set to non-empty to enable debugging via SSH after a failure
+ - `ENABLE_SELF_HOSTED`: Set to non-empty to enable self-hosted runners in the
+   build matrix
