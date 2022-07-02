@@ -1,0 +1,173 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# A reusable workflow to build Packager on every supported OS and architecture.
+name: Build
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+# By default, run all commands in a bash shell.  On Windows, the default would
+# otherwise be powershell.  Each shell command should begin with "set -e" (to
+# make any failed command fail the script immediately) and "set -x" (to log
+# what commands are being run).
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(joeyparrish): exclude self-hosted in forks
+        #os: ["ubuntu-latest", "macos-latest", "windows-latest", "self-hosted-linux-arm64"]
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        build_type: ["Debug", "Release"]
+        lib_type: ["static", "shared"]
+        include:
+          - os: ubuntu-latest
+            os_name: linux
+            target_arch: x64
+            exe_ext: ""
+            build_type_suffix: ""
+          - os: macos-latest
+            os_name: osx
+            target_arch: x64
+            exe_ext: ""
+            build_type_suffix: ""
+          - os: windows-latest
+            os_name: win
+            target_arch: x64
+            exe_ext: ".exe"
+            # 64-bit outputs on Windows go to a different folder name.
+            build_type_suffix: "_x64"
+          # TODO(joeyparrish): exclude self-hosted in forks
+          #- os: self-hosted-linux-arm64
+          #  os_name: linux
+          #  target_arch: arm64
+          #  exe_ext: ""
+          #  build_type_suffix: ""
+
+    name: Build and test ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Setup MSBuild
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Configure git to preserve line endings
+        # Otherwise, tests fail on Windows because "golden" test outputs will not
+        # have the correct line endings.
+        run: git config --global core.autocrlf false
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.ref }}
+          submodules: true
+
+      # TODO(joeyparrish): Split out the docs workflow
+      - name: Build docs (Linux only)
+        if: runner.os == 'Linux'
+        uses: ./.github/workflows/custom-actions/build-docs
+
+      - name: Install Linux deps
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo apt install -y libc-ares-dev
+
+      - name: Generate build files
+        shell: bash
+        run: |
+          mkdir -p build/
+
+          if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
+            LIBPACKAGER_SHARED="ON"
+          else
+            LIBPACKAGER_SHARED="OFF"
+          fi
+
+          cmake \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
+            -DLIBPACKAGER_SHARED="$LIBPACKAGER_SHARED" \
+            -S . \
+            -B build/
+
+      - name: Build (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: make -C build/
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        run: MSBuild build/shaka-packager.sln
+
+      # TODO(joeyparrish): Prepare artifacts when build system is complete again
+#      - name: Prepare artifacts (static release only)
+#        shell: bash
+#        run: |
+#          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
+#          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
+#            echo "Skipping artifacts for $BUILD_CONFIG."
+#            exit 0
+#          fi
+#          if [[ "${{ runner.os }}" == "Linux" ]]; then
+#            echo "::group::Check for static executables"
+#            (
+#              cd build/Release${{ matrix.build_type_suffix }}
+#              # Prove that we built static executables on Linux.  First, check that
+#              # the executables exist, and fail if they do not.  Then check "ldd",
+#              # which will fail if the executable is not dynamically linked.  If
+#              # "ldd" succeeds, we fail the workflow.  Finally, we call "true" so
+#              # that the last executed statement will be a success, and the step
+#              # won't be failed if we get that far.
+#              ls packager mpd_generator >/dev/null || exit 1
+#              ldd packager 2>&1 && exit 1
+#              ldd mpd_generator 2>&1 && exit 1
+#              true
+#            )
+#            echo "::endgroup::"
+#          fi
+#          echo "::group::Prepare artifacts folder"
+#          mkdir artifacts
+#          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
+#          cd build/Release${{ matrix.build_type_suffix }}
+#          echo "::endgroup::"
+#          echo "::group::Strip executables"
+#          strip packager${{ matrix.exe_ext }}
+#          strip mpd_generator${{ matrix.exe_ext }}
+#          echo "::endgroup::"
+#          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
+#          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
+#          echo "::group::Copy packager"
+#          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
+#          echo "::endgroup::"
+#          echo "::group::Copy mpd_generator"
+#          cp mpd_generator${{ matrix.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
+#          echo "::endgroup::"
+#          # The pssh-box bundle is OS and architecture independent.  So only do
+#          # it on this one OS and architecture, and give it a more generic
+#          # filename.
+#          if [[ '${{ matrix.os_name }}' == 'linux' && '${{ matrix.target_arch }}' == 'x64' ]]; then
+#            echo "::group::Tar pssh-box"
+#            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pyproto pssh-box.py
+#            echo "::endgroup::"
+#          fi
