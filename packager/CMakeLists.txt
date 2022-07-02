@@ -6,20 +6,8 @@
 
 # Packager CMake build file.
 
-# Variables that must be defined for third-party libraries.
-
-# NOTE: This doesn't have to correspond to the actual version we pin to.
-set(GOOGLETEST_VERSION "1.12.0")
-
-# This will be the new default, so turn it on now to suppress a warning.
-set(ABSL_PROPAGATE_CXX_STD ON)
-
-# We will use abseil for flags, so turn off glog's search for gflags.
-set(WITH_GFLAGS OFF)
-
-# Tell third-party libraries not to build their own tests.
-set(BUILD_TESTING OFF)
-
+# Build static libs by default, or shared if LIBPACKAGER_SHARED is defined.
+option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
 if(LIBPACKAGER_SHARED)
   add_definitions(-DSHARED_LIBRARY_BUILD)
 endif()
@@ -27,14 +15,6 @@ endif()
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
 add_subdirectory(status)
+add_subdirectory(third_party)
 add_subdirectory(tools)
 add_subdirectory(version)
-
-# Third-party subdirectories with their own CMakeLists.txt, whose targets are
-# only built if they are referenced.
-add_subdirectory(testing/googletest/googlemock EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/abseil-cpp EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/curl EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/glog EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/json EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/mbedtls EXCLUDE_FROM_ALL)

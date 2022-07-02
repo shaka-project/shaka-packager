@@ -1,14 +1,14 @@
 [submodule "packager/testing/googletest"]
-	path = packager/testing/googletest
+	path = packager/third_party/googletest/source
 	url = https://github.com/google/googletest
 [submodule "packager/third_party/abseil-cpp"]
-	path = packager/third_party/abseil-cpp
+	path = packager/third_party/abseil-cpp/source
 	url = https://github.com/abseil/abseil-cpp
 [submodule "packager/third_party/curl"]
 	path = packager/third_party/curl/source
 	url = https://github.com/curl/curl
 [submodule "packager/third_party/glog"]
-	path = packager/third_party/glog
+	path = packager/third_party/glog/source
 	url = https://github.com/google/glog
 [submodule "packager/third_party/json"]
 	path = packager/third_party/json
