@@ -34,7 +34,7 @@ add_subdirectory(version)
 # only built if they are referenced.
 add_subdirectory(testing/googletest/googlemock EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/abseil-cpp EXCLUDE_FROM_ALL)
-add_subdirectory(third_party/boringssl EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/curl EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/glog EXCLUDE_FROM_ALL)
 add_subdirectory(third_party/json EXCLUDE_FROM_ALL)
+add_subdirectory(third_party/mbedtls EXCLUDE_FROM_ALL)

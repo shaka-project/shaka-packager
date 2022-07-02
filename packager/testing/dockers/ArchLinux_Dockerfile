@@ -4,7 +4,7 @@ FROM archlinux:latest
 RUN pacman -Sy --needed --noconfirm \
         core/which \
         c-ares \
-        cmake gcc git go make perl python3
+        cmake gcc git make python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

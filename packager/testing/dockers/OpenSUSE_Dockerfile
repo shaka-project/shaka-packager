@@ -6,7 +6,7 @@ FROM opensuse/tumbleweed:latest
 RUN zypper in -y \
         curl which \
         c-ares-devel \
-        cmake gcc-c++ git go perl python3
+        cmake gcc-c++ git python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

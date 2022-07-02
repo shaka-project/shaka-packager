@@ -23,17 +23,13 @@ set(USE_LIBRTMP OFF)
 set(CURL_USE_LIBSSH2 OFF)
 set(CURL_ZLIB OFF)
 
-# Force libcurl to use our local boringssl instead of searching for OpenSSL on
+# Force libcurl to use our local mbedtls instead of searching for OpenSSL on
 # the system.
-set(CURL_USE_OPENSSL OFF)  # Disable searching the system
-set(SSL_ENABLED ON)
-set(USE_OPENSSL ON)  # Enable OpenSSL API directly
-
-# Include boringssl headers for all targets in subfolders:
-include_directories(../boringssl/include)
-
-# Include boringssl libraries for all targets in subfolders:
-link_libraries(crypto ssl)
+set(CURL_USE_MBEDTLS ON)
+set(MBEDTLS_INCLUDE_DIRS ../mbedtls/source/include)
+set(MBEDTLS_LIBRARY mbedtls)
+set(MBEDX509_LIBRARY mbedx509)
+set(MBEDCRYPTO_LIBRARY mbedcrypto)
 
 # With these set in scope of this folder, load CURL's own CMakeLists.txt.
 add_subdirectory(source)

@@ -4,9 +4,6 @@
 [submodule "packager/third_party/abseil-cpp"]
 	path = packager/third_party/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp
-[submodule "packager/third_party/boringssl"]
-	path = packager/third_party/boringssl
-	url = https://github.com/google/boringssl
 [submodule "packager/third_party/curl"]
 	path = packager/third_party/curl/source
 	url = https://github.com/curl/curl
@@ -16,3 +13,6 @@
 [submodule "packager/third_party/json"]
 	path = packager/third_party/json
 	url = https://github.com/nlohmann/json
+[submodule "packager/third_party/mbedtls"]
+	path = packager/third_party/mbedtls/source
+	url = https://github.com/Mbed-TLS/mbedtls

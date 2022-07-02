@@ -10,7 +10,7 @@ RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|
 RUN yum install -y \
         which \
         c-ares-devel libatomic \
-        cmake gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ git go perl python3
+        cmake gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ git python3
 
 # CentOS 8 is old, and the g++ version installed doesn't automatically link the
 # C++ filesystem library as it should.  Activate a newer dev environment.
