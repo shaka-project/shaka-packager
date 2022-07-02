@@ -25,9 +25,7 @@ on:
         type: string
 
 # By default, run all commands in a bash shell.  On Windows, the default would
-# otherwise be powershell.  Each shell command should begin with "set -e" (to
-# make any failed command fail the script immediately) and "set -x" (to log
-# what commands are being run).
+# otherwise be powershell.
 defaults:
   run:
     shell: bash
@@ -85,18 +83,11 @@ jobs:
           ref: ${{ inputs.ref }}
           submodules: true
 
-      # TODO(joeyparrish): Split out the docs workflow
-      - name: Build docs (Linux only)
-        if: runner.os == 'Linux'
-        uses: ./.github/workflows/custom-actions/build-docs
-
       - name: Install Linux deps
         if: runner.os == 'Linux'
-        shell: bash
         run: sudo apt install -y libc-ares-dev
 
       - name: Generate build files
-        shell: bash
         run: |
           mkdir -p build/
 
@@ -114,7 +105,6 @@ jobs:
 
       - name: Build (Linux/macOS)
         if: runner.os != 'Windows'
-        shell: bash
         run: make -C build/
 
       - name: Build (Windows)
@@ -122,12 +112,10 @@ jobs:
         run: MSBuild build/shaka-packager.sln
 
       - name: Test
-        shell: bash
         run: cd build; ctest -V
 
       # TODO(joeyparrish): Prepare artifacts when build system is complete again
 #      - name: Prepare artifacts (static release only)
-#        shell: bash
 #        run: |
 #          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
 #          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
@@ -176,3 +164,13 @@ jobs:
 #            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pyproto pssh-box.py
 #            echo "::endgroup::"
 #          fi
+
+      # TODO(joeyparrish): Attach artifacts when build system is complete again
+#      - name: Attach artifacts to release
+#        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
+#        uses: dwenegar/upload-release-assets@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          release_id: ${{ needs.draft_release.outputs.release_id }}
+#          assets_path: artifacts

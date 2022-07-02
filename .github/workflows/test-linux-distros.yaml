@@ -24,9 +24,7 @@ on:
         type: string
 
 # By default, run all commands in a bash shell.  On Windows, the default would
-# otherwise be powershell.  Each shell command should begin with "set -e" (to
-# make any failed command fail the script immediately) and "set -x" (to log
-# what commands are being run).
+# otherwise be powershell.
 defaults:
   run:
     shell: bash

@@ -32,25 +32,21 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref || github.ref }}
-          # This makes the merge base available for the C++ linter, so that it
-          # can tell which files have changed.
-          fetch-depth: 2
-
-      - name: Lint
-        uses: ./.github/workflows/custom-actions/lint-packager
+    uses: ./.github/workflows/lint.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
 
   build_and_test:
-    # Doesn't really "need" it, but let's not waste time on an expensive matrix
-    # build step just to cancel it because of a linter error.
     needs: lint
     name: Build and test
     uses: ./.github/workflows/build.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
+
+  build_docs:
+    needs: lint
+    name: Build docs
+    uses: ./.github/workflows/build-docs.yaml
     with:
       ref: ${{ github.event.inputs.ref || github.ref }}
 

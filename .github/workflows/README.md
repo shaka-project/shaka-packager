@@ -1,44 +1,49 @@
 # GitHub Actions CI
 
-## Actions
- - `custom-actions/lint-packager`:
-   Lints Shaka Packager.  You must pass `fetch-depth: 2` to `actions/checkout`
-   in order to provide enough history for the linter to tell which files have
-   changed.
- - `custom-actions/test-packager`:
-   Tests Shaka Packager.  Requires OS-dependent and build-dependent inputs.
- - `custom-actions/build-docs`:
-   Builds Shaka Packager docs.
-
 ## Reusable workflows
  - `build.yaml`:
    Build and test all combinations of OS & build settings.  Also builds docs on
    Linux.
+
+ - `build-docs.yaml`:
+   Build Packager docs.  Runs only on Linux.
+
  - `docker-image.yaml`:
    Build the official Docker image.
+
+ - `lint.yaml`:
+   Lint Shaka Packager.
+
  - `test-linux-distros.yaml`:
    Test the build on all Linux distros via docker.
 
-## Workflows
+## Composed workflows
  - On PR (`pr.yaml`), invoke:
+   - `lint.yaml`
    - `build.yaml`
+   - `build-docs.yaml`
    - `docker-image.yaml`
    - `test-linux-distros.yaml`
 
- - On release tag:
-   - `github_release.yaml`:
-     Creates a draft release on GitHub, builds and tests all combinations of OS
-     & build settings, builds docs on all OSes, attaches static release binaries
-     to the draft release, then fully publishes the release.
+ - On release tag (`github-release.yaml`):
+   - Create a draft release
+   - Invoke:
+     - `lint.yaml`
+     - `build.yaml`
+     - `test-linux-distros.yaml`
+   - Publish the release with binaries from `build.yaml` attached
+
  - On release published:
-   - `docker_hub_release.yaml`:
-     Builds a Docker image to match the published GitHub release, then pushes it
-     to Docker Hub.
-   - `npm_release.yaml`:
-     Builds an NPM package to match the published GitHub release, then pushes it
-     to NPM.
-   - `update_docs.yaml`:
-     Builds updated docs and pushes them to the gh-pages branch.
+   - `docker-hub-release.yaml`, publishes the official Docker image
+   - `npm-release.yaml`, publishes the official NPM package
+   - `update-docs.yaml`:
+     - Invoke `build-docs.yaml`
+     - Push the output to the `gh-pages` branch
+
+## Common workflows from shaka-project
+ - `sync-labels.yaml`
+ - `update-issues.yaml`
+ - `validate-pr-title.yaml`
 
 ## Required Repo Secrets
  - `DOCKERHUB_CI_USERNAME`: The username of the Docker Hub CI account
