@@ -15,7 +15,7 @@
 # A reusable workflow to build Packager docs.  Leaves docs output in the
 # "gh-pages" folder.  Only runs in Linux due to the dependency on doxygen,
 # which we install with apt.
-name: Build Shaka Packager Docs
+name: Build Docs
 
 # Runs when called from another workflow.
 on:
@@ -28,7 +28,7 @@ on:
 jobs:
   docs:
     name: Build docs
-    if: runner.os == 'Linux'
+    runs-on: ubuntu-latest
 
     steps:
       - name: Install dependencies
