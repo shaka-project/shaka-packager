@@ -111,17 +111,9 @@ jobs:
     # builds just to cancel it because of a linter error.
     needs: lint
     name: Test builds on all supported Linux distros (using docker)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref || github.ref }}
-          submodules: true
-
-      - name: Test all distros
-        shell: bash
-        run: ./packager/testing/dockers/test_dockers.sh
+    uses: ./.github/workflows/test-linux-distros.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
 
   test_official_docker_image_build:
     # Doesn't really "need" it, but let's not waste time on a series of docker

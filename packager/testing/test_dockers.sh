@@ -4,10 +4,10 @@
 set -e
 
 # To debug a failure, run with the variable DEBUG=1.  For example:
-#   DEBUG=1 ./packager/testing/dockers/test_dockers.sh
+#   DEBUG=1 ./packager/testing/test_dockers.sh
 
 SCRIPT_DIR="$(dirname "$0")"
-PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../../..")"
+PACKAGER_DIR="$(realpath "$SCRIPT_DIR/../..")"
 TEMP_BUILD_DIR="$(mktemp -d)"
 
 function docker_run_internal() {
@@ -65,7 +65,7 @@ trap 'on_exit' exit
 
 echo "Using OS filter: $FILTER"
 RAN_SOMETHING=0
-for DOCKER_FILE in ${SCRIPT_DIR}/*_Dockerfile ; do
+for DOCKER_FILE in ${SCRIPT_DIR}/dockers/*; do
   # Take the basename of the dockerfile path, then remove the trailing
   # "_Dockerfile" from the file name.  This is the OS name.
   OS_NAME="$( basename "$DOCKER_FILE" | sed -e 's/_Dockerfile//' )"
@@ -83,7 +83,7 @@ for DOCKER_FILE in ${SCRIPT_DIR}/*_Dockerfile ; do
   CONTAINER="$( echo "packager_test_${OS_NAME}" | tr A-Z a-z )"
 
   RAN_SOMETHING=1
-  docker build -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}
+  docker build -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}/dockers/
   mkdir -p "${TEMP_BUILD_DIR}"
   docker_run cmake -S . -B build/
   docker_run make -C build/

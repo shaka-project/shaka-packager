@@ -13,7 +13,6 @@
 .repo
 .settings
 build/
-go/
 /packager/docs/
 /packager/third_party/icu/
 /packager/third_party/libpng/src/
