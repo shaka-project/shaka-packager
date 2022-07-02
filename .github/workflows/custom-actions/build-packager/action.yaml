@@ -29,12 +29,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install Windows deps
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        # TODO: Windows deps?
-
     - name: Install Linux deps
       if: runner.os == 'Linux'
       shell: bash

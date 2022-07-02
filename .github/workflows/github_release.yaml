@@ -138,6 +138,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Setup MSBuild
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.1
+
       - name: Configure git to preserve line endings
         # Otherwise, tests fail on Windows because "golden" test outputs will not
         # have the correct line endings.
