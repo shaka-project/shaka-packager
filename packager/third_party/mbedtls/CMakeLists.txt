@@ -10,5 +10,8 @@
 set(ENABLE_PROGRAMS OFF)
 set(ENABLE_TESTING OFF)
 
+# Don't generate any files, which would mean a build-time dependency on Perl.
+set(GEN_FILES OFF)
+
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
