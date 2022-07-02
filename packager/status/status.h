@@ -107,6 +107,8 @@ enum Code {
 
 }  // namespace error
 
+// Not using DisallowCopyAndAssign here intentionally to allow the compiler-
+// generated copy constructor and assignment operator.
 class SHAKA_EXPORT Status {
  public:
   /// Creates a "successful" status.
@@ -148,9 +150,6 @@ class SHAKA_EXPORT Status {
  private:
   error::Code error_code_;
   std::string error_message_;
-
-  // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
-  // generated copy constructor and assignment operator.
 };
 
 SHAKA_EXPORT std::ostream& operator<<(std::ostream& os, const Status& x);
