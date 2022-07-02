@@ -5,19 +5,26 @@
    Lints Shaka Packager.  You must pass `fetch-depth: 2` to `actions/checkout`
    in order to provide enough history for the linter to tell which files have
    changed.
- - `custom-actions/build-packager`:
-   Builds Shaka Packager.  Leaves build artifacts in the "artifacts" folder.
-   Requires OS-dependent and build-dependent inputs.
  - `custom-actions/test-packager`:
    Tests Shaka Packager.  Requires OS-dependent and build-dependent inputs.
  - `custom-actions/build-docs`:
    Builds Shaka Packager docs.
 
+## Reusable workflows
+ - `build.yaml`:
+   Build and test all combinations of OS & build settings.  Also builds docs on
+   Linux.
+ - `docker-image.yaml`:
+   Build the official Docker image.
+ - `test-linux-distros.yaml`:
+   Test the build on all Linux distros via docker.
+
 ## Workflows
- - On PR:
-   - `build_and_test.yaml`:
-     Builds and tests all combinations of OS & build settings.  Also builds
-     docs.
+ - On PR (`pr.yaml`), invoke:
+   - `build.yaml`
+   - `docker-image.yaml`
+   - `test-linux-distros.yaml`
+
  - On release tag:
    - `github_release.yaml`:
      Creates a draft release on GitHub, builds and tests all combinations of OS

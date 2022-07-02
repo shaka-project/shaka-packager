@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# A reusable workflow to build Packager on every supported OS and architecture.
+# A reusable workflow to build and test Packager on every supported OS and
+# architecture.
 name: Build
 
 # Runs when called from another workflow.
@@ -119,6 +120,10 @@ jobs:
       - name: Build (Windows)
         if: runner.os == 'Windows'
         run: MSBuild build/shaka-packager.sln
+
+      - name: Test
+        shell: bash
+        run: cd build; ctest -V
 
       # TODO(joeyparrish): Prepare artifacts when build system is complete again
 #      - name: Prepare artifacts (static release only)
