@@ -56,7 +56,7 @@ jobs:
           console.log(`::set-output name=MATRIX::${ JSON.stringify(matrix) }`);
 
           // Log the outputs, for the sake of debugging this script.
-          console.log({enableDebug, matrix});
+          console.log({matrix});
 
   # Build each dockerfile in parallel in a different CI job.
   build:
