@@ -58,7 +58,7 @@ jobs:
     # Doesn't really "need" it, but let's not waste time on a series of docker
     # builds just to cancel it because of a linter error.
     needs: lint
-    name: Test builds on all supported Linux distros
+    name: Test Linux distros
     uses: ./.github/workflows/test-linux-distros.yaml
     with:
       ref: ${{ github.event.inputs.ref || github.ref }}
@@ -67,7 +67,7 @@ jobs:
     # Doesn't really "need" it, but let's not waste time on a series of docker
     # builds just to cancel it because of a linter error.
     needs: lint
-    name: Test official Docker image build
+    name: Build official Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

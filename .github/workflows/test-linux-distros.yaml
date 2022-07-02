@@ -68,7 +68,7 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.matrix_config.outputs.MATRIX) }}
 
-    name: Build on ${{ matrix.os_name }}
+    name: ${{ matrix.os_name }}
     runs-on: ubuntu-latest
 
     steps:
