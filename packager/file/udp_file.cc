@@ -7,29 +7,23 @@
 #include "packager/file/udp_file.h"
 
 #if defined(OS_WIN)
-
-#include <windows.h>
-#include <ws2tcpip.h>
-#define close closesocket
-#define EINTR_CODE WSAEINTR
-
+# include <ws2tcpip.h>
+# define close closesocket
+# define EINTR_CODE WSAEINTR
 #else
-
-#include <arpa/inet.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <unistd.h>
-#define INVALID_SOCKET -1
-#define EINTR_CODE EINTR
-
+# include <arpa/inet.h>
+# include <errno.h>
+# include <string.h>
+# include <sys/socket.h>
+# include <sys/time.h>
+# include <unistd.h>
+# define INVALID_SOCKET -1
+# define EINTR_CODE EINTR
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
 // building on a machine that is older than that.
-#ifndef IP_MULTICAST_ALL
-#define IP_MULTICAST_ALL      49
-#endif
-
+# ifndef IP_MULTICAST_ALL
+#  define IP_MULTICAST_ALL      49
+# endif
 #endif  // defined(OS_WIN)
 
 #include <limits>
@@ -83,8 +77,8 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 
   int64_t result;
   do {
-    result =
-        recvfrom(socket_, reinterpret_cast<char*>(buffer), length, 0, NULL, 0);
+    result = recvfrom(socket_, reinterpret_cast<char*>(buffer),
+                      static_cast<int>(length), 0, NULL, 0);
   } while (result == -1 && GetSocketErrorCode() == EINTR_CODE);
 
   return result;

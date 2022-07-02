@@ -9,9 +9,9 @@
 #include <stdio.h>
 
 #if defined(OS_WIN)
-#include <windows.h>
+# include <windows.h>
 #else
-#include <sys/stat.h>
+# include <sys/stat.h>
 #endif  // defined(OS_WIN)
 
 #include <filesystem>
@@ -126,7 +126,7 @@ bool LocalFile::Open() {
     }
   }
 
-  internal_file_ = fopen(file_path.c_str(), file_mode_.c_str());
+  internal_file_ = fopen(file_path.u8string().c_str(), file_mode_.c_str());
   return (internal_file_ != NULL);
 }
 

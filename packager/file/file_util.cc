@@ -28,7 +28,7 @@ std::string TempFileName() {
 #else
   const uint32_t process_id = static_cast<uint32_t>(getpid());
 #endif
-  const uint32_t thread_id =
+  const size_t thread_id =
       std::hash<std::thread::id>{}(std::this_thread::get_id());
 
   // We may need two or more temporary files in the same thread. There might be
@@ -37,7 +37,7 @@ std::string TempFileName() {
   static thread_local uint32_t instance_id = 0;
   ++instance_id;
 
-  return absl::StrFormat("packager-tempfile-%x-%x-%x",
+  return absl::StrFormat("packager-tempfile-%x-%zx-%x",
                          process_id, thread_id, instance_id);
 }
 }  // namespace

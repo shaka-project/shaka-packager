@@ -51,37 +51,40 @@ FieldType GetFieldType(const std::string& field_name) {
   return kUnknownField;
 }
 
-bool StringToAddressAndPort(absl::string_view addr_and_port,
+bool StringToAddressAndPort(std::string_view addr_and_port,
                             std::string* addr,
                             uint16_t* port) {
   DCHECK(addr);
   DCHECK(port);
 
   const size_t colon_pos = addr_and_port.find(':');
-  if (colon_pos == absl::string_view::npos) {
+  if (colon_pos == std::string_view::npos) {
     return false;
   }
   *addr = addr_and_port.substr(0, colon_pos);
-  unsigned port_value;
+
+  // NOTE: SimpleAtoi will not take a uint16_t.  So we check the bounds of the
+  // vale and then cast to uint16_t.
+  uint32_t port_value;
   if (!absl::SimpleAtoi(addr_and_port.substr(colon_pos + 1), &port_value) ||
       (port_value > 65535)) {
     return false;
   }
-  *port = port_value;
+  *port = static_cast<uint16_t>(port_value);
   return true;
 }
 
 }  // namespace
 
 std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
-    absl::string_view udp_url) {
+    std::string_view udp_url) {
   std::unique_ptr<UdpOptions> options(new UdpOptions);
 
   const size_t question_mark_pos = udp_url.find('?');
-  absl::string_view address_str = udp_url.substr(0, question_mark_pos);
+  std::string_view address_str = udp_url.substr(0, question_mark_pos);
 
-  if (question_mark_pos != absl::string_view::npos) {
-    absl::string_view options_str = udp_url.substr(question_mark_pos + 1);
+  if (question_mark_pos != std::string_view::npos) {
+    std::string_view options_str = udp_url.substr(question_mark_pos + 1);
 
     std::vector<std::string> kv_strings = absl::StrSplit(options_str, '&');
 

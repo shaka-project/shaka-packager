@@ -19,6 +19,12 @@ set(BUILD_SHARED_LIBS OFF)
 # See https://gitlab.kitware.com/cmake/cmake/-/issues/20312
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
+if(MSVC)
+  # Use warning level 3 in third-party code, as opposed to level 4 used in our
+  # own code.
+  add_compile_options(/W3)
+endif()
+
 # These all use EXCLUDE_FROM_ALL so that only the referenced targets get built.
 add_subdirectory(abseil-cpp EXCLUDE_FROM_ALL)
 add_subdirectory(curl EXCLUDE_FROM_ALL)

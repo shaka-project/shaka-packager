@@ -47,7 +47,7 @@ class IoCacheTest : public testing::Test {
  protected:
   void SetUp() override {
     for (unsigned int idx = 0; idx < kBlockSize; ++idx)
-      reference_block_[idx] = idx;
+      reference_block_[idx] = idx & 0xff;
     cache_.reset(new IoCache(kCacheSize));
     cache_closed_ = false;
   }

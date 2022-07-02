@@ -10,5 +10,9 @@
 # to.
 set(GOOGLETEST_VERSION "1.12.0")
 
+# Force gtest to use a shared CRT on MSVC.  Without this, we get link errors on
+# our tests on Windows.
+set(gtest_force_shared_crt ON)
+
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source/googlemock)

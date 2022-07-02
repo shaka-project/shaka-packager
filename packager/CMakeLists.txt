@@ -15,6 +15,21 @@ endif()
 if(MSVC)
   # Warning level 4 and all warnings as errors.
   add_compile_options(/W4 /WX)
+  # Silence a warning from an absl header about alignment in boolean flags.
+  add_compile_options(/wd4324)
+
+  # Packager's macro for Windows-specific code.
+  add_definitions(-DOS_WIN)
+
+  # Suppress Microsoft's min() and max() macros, which will conflict with
+  # things like std::numeric_limits::max() and std::min().
+  add_definitions(-DNOMINMAX)
+  # Define this so that we can use fopen() without warnings.
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  # Don't automatically include winsock.h in windows.h.  This is needed for us
+  # to use winsock2.h, which contains definitions that conflict with the
+  # ancient winsock 1.1 interface in winsock.h.
+  add_definitions(-DWIN32_LEAN_AND_MEAN)
 else()
   # Lots of warnings and all warnings as errors.
   # Note that we can't use -Wpedantic due to absl's int128 headers.

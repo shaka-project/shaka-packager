@@ -14,7 +14,8 @@
 #include "packager/file/file.h"
 
 #if defined(OS_WIN)
-#include <winsock2.h>
+# include <windows.h>
+# include <winsock2.h>
 #else
 typedef int SOCKET;
 #endif  // defined(OS_WIN)

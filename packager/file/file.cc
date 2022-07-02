@@ -15,7 +15,8 @@
 #include <memory>
 
 #if defined(OS_WIN)
-// TODO: Windows headers for file attributes
+# include <windows.h>
+# include <fileapi.h>
 #else
 # include <sys/stat.h>
 # include <sys/types.h>
@@ -25,16 +26,15 @@
 #include "absl/flags/flag.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
 #include "glog/logging.h"
 
 #include "packager/file/callback_file.h"
 #include "packager/file/file_util.h"
+#include "packager/file/http_file.h"
 #include "packager/file/local_file.h"
 #include "packager/file/memory_file.h"
 #include "packager/file/threaded_io_file.h"
 #include "packager/file/udp_file.h"
-#include "packager/file/http_file.h"
 
 ABSL_FLAG(uint64_t, io_cache_size,
           32ULL << 20,
@@ -151,14 +151,14 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kHttpsFilePrefix, &CreateHttpsFile, nullptr, nullptr},
 };
 
-absl::string_view GetFileTypePrefix(absl::string_view file_name) {
+std::string_view GetFileTypePrefix(std::string_view file_name) {
   size_t pos = file_name.find("://");
   return (pos == std::string::npos) ? "" : file_name.substr(0, pos + 3);
 }
 
-const FileTypeInfo* GetFileTypeInfo(absl::string_view file_name,
-                                    absl::string_view* real_file_name) {
-  absl::string_view file_type_prefix = GetFileTypePrefix(file_name);
+const FileTypeInfo* GetFileTypeInfo(std::string_view file_name,
+                                    std::string_view* real_file_name) {
+  std::string_view file_type_prefix = GetFileTypePrefix(file_name);
   for (const FileTypeInfo& file_type : kFileTypeInfo) {
     if (file_type_prefix == file_type.type) {
       *real_file_name = file_name.substr(file_type_prefix.size());
@@ -176,7 +176,7 @@ File* File::Create(const char* file_name, const char* mode) {
   std::unique_ptr<File, FileCloser> internal_file(
       CreateInternalFile(file_name, mode));
 
-  absl::string_view file_type_prefix = GetFileTypePrefix(file_name);
+  std::string_view file_type_prefix = GetFileTypePrefix(file_name);
   if (file_type_prefix == kMemoryFilePrefix ||
       file_type_prefix == kCallbackFilePrefix) {
     // Disable caching for memory and callback files.
@@ -204,7 +204,7 @@ File* File::Create(const char* file_name, const char* mode) {
 }
 
 File* File::CreateInternalFile(const char* file_name, const char* mode) {
-  absl::string_view real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   // Calls constructor for the derived File class.
@@ -235,7 +235,7 @@ File* File::OpenWithNoBuffering(const char* file_name, const char* mode) {
 
 bool File::Delete(const char* file_name) {
   static bool logged = false;
-  absl::string_view real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   if (file_type->delete_function) {
@@ -311,7 +311,7 @@ bool File::WriteStringToFile(const char* file_name,
 bool File::WriteFileAtomically(const char* file_name,
                                const std::string& contents) {
   VLOG(2) << "File::WriteFileAtomically: " << file_name;
-  absl::string_view real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   if (file_type->atomic_write_function)
@@ -409,13 +409,13 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
 }
 
 bool File::IsLocalRegularFile(const char* file_name) {
-  absl::string_view real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   if (file_type->type != kLocalFilePrefix)
     return false;
 #if defined(OS_WIN)
-  const DWORD fileattr = GetFileAttributes(real_file_name.c_str());
+  DWORD fileattr = GetFileAttributes(real_file_name.data());
   if (fileattr == INVALID_FILE_ATTRIBUTES) {
     LOG(ERROR) << "Failed to GetFileAttributes of " << real_file_name;
     return false;

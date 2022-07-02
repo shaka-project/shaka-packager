@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "absl/strings/string_view.h"
-
 namespace shaka {
 
 /// Options parsed from UDP url string of the form: udp://ip:port[?options]
@@ -19,7 +17,7 @@ class UdpOptions {
   /// Parse from UDP url.
   /// @param udp_url is the url of the form udp://ip:port[?options]
   /// @returns a UdpOptions object on success, nullptr otherwise.
-  static std::unique_ptr<UdpOptions> ParseFromString(absl::string_view udp_url);
+  static std::unique_ptr<UdpOptions> ParseFromString(std::string_view udp_url);
 
   const std::string& address() const { return address_; }
   uint16_t port() const { return port_; }

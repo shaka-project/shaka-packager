@@ -8,7 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <unistd.h>
+
+#if defined(OS_WIN)
+# include <io.h>
+#else
+# include <unistd.h>
+#endif
 
 #include <filesystem>
 
@@ -30,10 +35,14 @@ void WriteFile(const std::string& path, const std::string& data) {
 }
 
 void DeleteFile(const std::string& path) {
+#if defined(OS_WIN)
+  _unlink(path.c_str());
+#else
   unlink(path.c_str());
+#endif
 }
 
-ssize_t FileSize(const std::string& path) {
+int64_t FileSize(const std::string& path) {
   struct stat file_stats;
   if (stat(path.c_str(), &file_stats) != 0) {
     return -1;
@@ -42,14 +51,14 @@ ssize_t FileSize(const std::string& path) {
 }
 
 // Returns num bytes read, up to maxSize.
-size_t ReadFile(const std::string& path, std::string* data, size_t maxSize) {
+uint64_t ReadFile(const std::string& path, std::string* data, uint32_t maxSize) {
   FILE* f = fopen(path.c_str(), "rb");
   if (!f) {
     return 0;
   }
 
   data->resize(maxSize);
-  size_t bytes = fread(data->data(), 1, maxSize, f);
+  uint64_t bytes = fread(data->data(), 1, maxSize, f);
   data->resize(bytes);
   return bytes;
 }
@@ -57,17 +66,22 @@ size_t ReadFile(const std::string& path, std::string* data, size_t maxSize) {
 std::string generate_unique_temp_path() {
   // Generate a unique name for a temporary file, using standard library
   // routines, to avoid a circular dependency on any of our own code for
-  // generating temporary files.
-  // The template passed to mkstemp must end in 6 X's.
+  // generating temporary files.  The template must end in 6 X's.
   std::filesystem::path temp_path_template =
       (std::filesystem::temp_directory_path() / "packager-test.XXXXXX");
+  std::string temp_path_template_string = temp_path_template.string();
+#if defined(OS_WIN)
+  // _mktemp will modify the string passed to it to reflect the generated name
+  // (replacing the X characters with something else).
+  _mktemp(temp_path_template_string.data());
+#else
   // mkstemp will create and open the file, modify the character points to
   // reflect the generated name (replacing the X characters with something
   // else), and return an open file descriptor.  Then we close it and use the
   // generated name.
-  std::string temp_path_template_string = temp_path_template.string();
   int fd = mkstemp(temp_path_template_string.data());
   close(fd);
+#endif
   return temp_path_template_string;
 }
 
@@ -88,13 +102,9 @@ class LocalFileTest : public testing::Test {
     local_file_name_ = kLocalFilePrefix;
     local_file_name_ += local_file_name_no_prefix_;
 
-    // TODO(joeyparrish): Is it the intent of these tests to use LocalFile
-    // directly?  Or the default io_cache_size flag?
-#if 0
     // Use LocalFile directly without ThreadedIoFile.
     backup_io_cache_size.reset(new FlagSaver<uint64_t>(&FLAGS_io_cache_size));
     absl::SetFlag(&FLAGS_io_cache_size, 0);
-#endif
   }
 
   void TearDown() override {
@@ -262,8 +272,8 @@ TEST_P(ParamLocalFileTest, SeekWriteAndSeekRead) {
   const uint32_t kInitialWriteSize(100);
   const uint32_t kFinalFileSize(200);
 
-  FlagSaver backup_io_block_size(&FLAGS_io_block_size);
-  FlagSaver backup_io_cache_size(&FLAGS_io_cache_size);
+  FlagSaver local_backup_io_block_size(&FLAGS_io_block_size);
+  FlagSaver local_backup_io_cache_size(&FLAGS_io_cache_size);
   absl::SetFlag(&FLAGS_io_block_size, kBlockSize);
   absl::SetFlag(&FLAGS_io_cache_size, GetParam());
 
@@ -333,11 +343,11 @@ TEST_P(ParamLocalFileTest, SeekWriteAndSeekRead) {
 
   EXPECT_TRUE(file->Close());
 }
-INSTANTIATE_TEST_CASE_P(TestSeekWithDifferentCacheSizes,
-                        ParamLocalFileTest,
-                        // 0 disables cache, 20 is small, 61 is prime, and 1000
-                        // is just under the data size of 1k.
-                        ::testing::Values(0u, 20u, 61u, 1000u));
+INSTANTIATE_TEST_SUITE_P(TestSeekWithDifferentCacheSizes,
+                         ParamLocalFileTest,
+                         // 0 disables cache, 20 is small, 61 is prime, and 1000
+                         // is just under the data size of 1k.
+                         ::testing::Values(0u, 20u, 61u, 1000u));
 
 TEST(FileTest, MakeCallbackFileName) {
   const BufferCallbackParams* params =

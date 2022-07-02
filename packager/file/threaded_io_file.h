@@ -58,7 +58,7 @@ class ThreadedIoFile : public File {
   uint64_t position_;
   uint64_t size_;
   std::atomic<bool> eof_;
-  std::atomic<int32_t> internal_file_error_;
+  std::atomic<int64_t> internal_file_error_;
 
   absl::Mutex flush_mutex_;
   bool flushing_ GUARDED_BY(flush_mutex_);
