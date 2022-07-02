@@ -7,9 +7,18 @@
 # Packager CMake build file.
 
 # Build static libs by default, or shared if LIBPACKAGER_SHARED is defined.
-option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
 if(LIBPACKAGER_SHARED)
   add_definitions(-DSHARED_LIBRARY_BUILD)
+endif()
+
+# Global C++ flags.
+if(MSVC)
+  # Warning level 4 and all warnings as errors.
+  add_compile_options(/W4 /WX)
+else()
+  # Lots of warnings and all warnings as errors.
+  # Note that we can't use -Wpedantic due to absl's int128 headers.
+  add_compile_options(-Wall -Wextra -Werror)
 endif()
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.

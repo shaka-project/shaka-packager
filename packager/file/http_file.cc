@@ -14,6 +14,7 @@
 #include "absl/strings/str_format.h"
 #include "glog/logging.h"
 
+#include "packager/common.h"
 #include "packager/file/thread_pool.h"
 #include "packager/version/version.h"
 
@@ -263,11 +264,13 @@ bool HttpFile::Flush() {
 }
 
 bool HttpFile::Seek(uint64_t position) {
+  UNUSED(position);
   LOG(ERROR) << "HttpFile does not support Seek().";
   return false;
 }
 
 bool HttpFile::Tell(uint64_t* position) {
+  UNUSED(position);
   LOG(ERROR) << "HttpFile does not support Tell().";
   return false;
 }

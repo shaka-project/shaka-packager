@@ -27,6 +27,10 @@ class DisallowCopyAndAssign {
 /// standard-library's less-easy-to-understand std::extent template.
 #define arraysize(a) std::extent<decltype(a)>::value
 
+/// A macro to declare that you intentionally did not use a parameter.  Useful
+/// when implementing abstract interfaces.
+#define UNUSED(x) (void)(x)
+
 }  // namespace shaka
 
 #endif  // PACKAGER_COMMON_H_

@@ -94,8 +94,11 @@ TEST(CallbackFileTest, ReadFailed) {
       File::MakeCallbackFileName(callback_params, kBufferLabel);
 
   EXPECT_CALL(mock_read_func, Call(StrEq(kBufferLabel), _, _))
-      .WillOnce(WithArgs<1, 2>(
-          Invoke([](void* buffer, uint64_t size) { return kFileError; })));
+      .WillOnce(WithArgs<1, 2>(Invoke([](void* buffer, uint64_t size) {
+        UNUSED(buffer);
+        UNUSED(size);
+        return kFileError;
+      })));
 
   std::unique_ptr<File, FileCloser> reader(File::Open(file_name.c_str(), "r"));
   ASSERT_TRUE(reader);

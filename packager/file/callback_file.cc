@@ -7,6 +7,7 @@
 #include "packager/file/callback_file.h"
 
 #include "glog/logging.h"
+#include "packager/common.h"
 
 namespace shaka {
 
@@ -47,11 +48,13 @@ bool CallbackFile::Flush() {
 }
 
 bool CallbackFile::Seek(uint64_t position) {
+  UNUSED(position);
   VLOG(1) << "CallbackFile does not support Seek().";
   return false;
 }
 
 bool CallbackFile::Tell(uint64_t* position) {
+  UNUSED(position);
   VLOG(1) << "CallbackFile does not support Tell().";
   return false;
 }

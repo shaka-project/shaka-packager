@@ -17,7 +17,7 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
-#include <strings.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -91,6 +91,8 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 }
 
 int64_t UdpFile::Write(const void* buffer, uint64_t length) {
+  UNUSED(buffer);
+  UNUSED(length);
   LOG(ERROR) << "UdpFile is unwritable!";
   return -1;
 }
@@ -108,11 +110,13 @@ bool UdpFile::Flush() {
 }
 
 bool UdpFile::Seek(uint64_t position) {
+  UNUSED(position);
   LOG(ERROR) << "UdpFile is unseekable!";
   return false;
 }
 
 bool UdpFile::Tell(uint64_t* position) {
+  UNUSED(position);
   LOG(ERROR) << "UdpFile is unseekable!";
   return false;
 }
@@ -168,10 +172,12 @@ bool UdpFile::Open() {
     return false;
   }
 
-  struct sockaddr_in local_sock_addr = {0};
   // TODO(kqyang): Support IPv6.
+  struct sockaddr_in local_sock_addr;
+  memset(&local_sock_addr, 0, sizeof(local_sock_addr));
   local_sock_addr.sin_family = AF_INET;
   local_sock_addr.sin_port = htons(options->port());
+
   const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
   if (is_multicast) {
     local_sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);

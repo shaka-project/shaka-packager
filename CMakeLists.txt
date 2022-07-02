@@ -14,6 +14,10 @@ project(shaka-packager VERSION "")
 # We could require as low as 3.10, but glog requires 3.16.
 cmake_minimum_required(VERSION 3.16)
 
+# The only build option for Shaka Packager is whether to build a shared
+# libpackager library.  By default, don't.
+option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
+
 # No in-source builds allowed.
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
@@ -25,13 +29,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Minimum GCC version, if using GCC.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   # Require at least GCC 9.  Before GCC 9, C++17 filesystem libs don't link.
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
     message(FATAL_ERROR "GCC version must be at least 9! (Found ${CMAKE_CXX_COMPILER_VERSION})")
   endif()
 endif()
-
-# Global C++ flags.
-set(CMAKE_CXX_FLAGS "-Wall")
 
 # Global include paths.
 
