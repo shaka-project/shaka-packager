@@ -15,8 +15,8 @@
 #include <memory>
 
 #if defined(OS_WIN)
-#include <fileapi.h>
 #include <windows.h>
+#include <fileapi.h>
 #else
 #include <sys/stat.h>
 #include <sys/types.h>
