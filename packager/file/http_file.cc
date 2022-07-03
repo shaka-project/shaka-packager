@@ -18,22 +18,29 @@
 #include "packager/file/thread_pool.h"
 #include "packager/version/version.h"
 
-ABSL_FLAG(std::string, user_agent, "",
+ABSL_FLAG(std::string,
+          user_agent,
+          "",
           "Set a custom User-Agent string for HTTP requests.");
-ABSL_FLAG(std::string, ca_file,
+ABSL_FLAG(std::string,
+          ca_file,
           "",
           "Absolute path to the Certificate Authority file for the "
           "server cert. PEM format");
-ABSL_FLAG(std::string, client_cert_file,
+ABSL_FLAG(std::string,
+          client_cert_file,
           "",
           "Absolute path to client certificate file.");
-ABSL_FLAG(std::string, client_cert_private_key_file,
+ABSL_FLAG(std::string,
+          client_cert_private_key_file,
           "",
           "Absolute path to the Private Key file.");
-ABSL_FLAG(std::string, client_cert_private_key_password,
+ABSL_FLAG(std::string,
+          client_cert_private_key_password,
           "",
           "Password to the private key file.");
-ABSL_FLAG(bool, disable_peer_verification,
+ABSL_FLAG(bool,
+          disable_peer_verification,
           false,
           "Disable peer verification. This is needed to talk to servers "
           "without valid certificates.");
@@ -219,8 +226,7 @@ bool HttpFile::Open() {
   // TODO: Implement retrying with exponential backoff, see
   // "widevine_key_source.cc"
 
-  ThreadPool::instance.PostTask(
-      std::bind(&HttpFile::ThreadMain, this));
+  ThreadPool::instance.PostTask(std::bind(&HttpFile::ThreadMain, this));
 
   return true;
 }
@@ -316,8 +322,7 @@ void HttpFile::SetupRequest() {
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 
   // Client authentication
-  if (!client_cert_private_key_file_.empty() &&
-      !client_cert_file_.empty()) {
+  if (!client_cert_private_key_file_.empty() && !client_cert_file_.empty()) {
     curl_easy_setopt(curl, CURLOPT_SSLKEY,
                      client_cert_private_key_file_.data());
     curl_easy_setopt(curl, CURLOPT_SSLCERT, client_cert_file_.data());
@@ -348,8 +353,7 @@ void HttpFile::ThreadMain() {
     if (res == CURLE_HTTP_RETURNED_ERROR) {
       long response_code = 0;
       curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &response_code);
-      error_message +=
-          absl::StrFormat(", response code: %ld.", response_code);
+      error_message += absl::StrFormat(", response code: %ld.", response_code);
     }
 
     status_ = Status(

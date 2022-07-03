@@ -9,9 +9,9 @@
 #include <stdio.h>
 
 #if defined(OS_WIN)
-# include <windows.h>
+#include <windows.h>
 #else
-# include <sys/stat.h>
+#include <sys/stat.h>
 #endif  // defined(OS_WIN)
 
 #include <filesystem>

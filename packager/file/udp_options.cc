@@ -12,7 +12,8 @@
 #include "glog/logging.h"
 #include "packager/common.h"
 
-ABSL_FLAG(std::string, udp_interface_address,
+ABSL_FLAG(std::string,
+          udp_interface_address,
           "",
           "IP address of the interface over which to receive UDP unicast"
           " or multicast streams");

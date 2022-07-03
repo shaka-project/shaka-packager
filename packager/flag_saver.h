@@ -15,18 +15,16 @@ namespace shaka {
 /// A FlagSaver is an RAII object to save and restore the values of
 /// command-line flags during a test.  Unlike the gflags version, flags to be
 /// saved and restored must be listed explicitly.
-template<typename T>
+template <typename T>
 class FlagSaver {
  public:
   FlagSaver(absl::Flag<T>* flag)
       : flag_(flag), original_value_(absl::GetFlag(*flag)) {}
 
-  ~FlagSaver() {
-    absl::SetFlag(flag_, original_value_);
-  }
+  ~FlagSaver() { absl::SetFlag(flag_, original_value_); }
 
  private:
-  absl::Flag<T> *flag_;  // unowned
+  absl::Flag<T>* flag_;  // unowned
   T original_value_;
 };
 

@@ -15,8 +15,8 @@ namespace shaka {
 /// Usage: class Foo : private DisallowCopyAndAssign
 class DisallowCopyAndAssign {
  public:
-  DisallowCopyAndAssign(const DisallowCopyAndAssign &) = delete;
-  DisallowCopyAndAssign& operator=(const DisallowCopyAndAssign &) = delete;
+  DisallowCopyAndAssign(const DisallowCopyAndAssign&) = delete;
+  DisallowCopyAndAssign& operator=(const DisallowCopyAndAssign&) = delete;
 
  protected:
   DisallowCopyAndAssign() = default;

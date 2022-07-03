@@ -9,9 +9,9 @@
 #include <inttypes.h>
 
 #if defined(OS_WIN)
-# include <windows.h>
+#include <windows.h>
 #else
-# include <unistd.h>
+#include <unistd.h>
 #endif
 
 #include <filesystem>
@@ -37,8 +37,8 @@ std::string TempFileName() {
   static thread_local uint32_t instance_id = 0;
   ++instance_id;
 
-  return absl::StrFormat("packager-tempfile-%x-%zx-%x",
-                         process_id, thread_id, instance_id);
+  return absl::StrFormat("packager-tempfile-%x-%zx-%x", process_id, thread_id,
+                         instance_id);
 }
 }  // namespace
 

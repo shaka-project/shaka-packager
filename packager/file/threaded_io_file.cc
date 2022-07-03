@@ -40,8 +40,7 @@ bool ThreadedIoFile::Open() {
   position_ = 0;
   size_ = internal_file_->Size();
 
-  ThreadPool::instance.PostTask(
-      std::bind(&ThreadedIoFile::TaskHandler, this));
+  ThreadPool::instance.PostTask(std::bind(&ThreadedIoFile::TaskHandler, this));
   return true;
 }
 

@@ -20,9 +20,7 @@ class UdpOptionsTest : public testing::Test {
  public:
   UdpOptionsTest() : saver(&FLAGS_udp_interface_address) {}
 
-  void SetUp() override {
-    absl::SetFlag(&FLAGS_udp_interface_address, "");
-  }
+  void SetUp() override { absl::SetFlag(&FLAGS_udp_interface_address, ""); }
 
  private:
   FlagSaver<std::string> saver;

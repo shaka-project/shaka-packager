@@ -7,23 +7,23 @@
 #include "packager/file/udp_file.h"
 
 #if defined(OS_WIN)
-# include <ws2tcpip.h>
-# define close closesocket
-# define EINTR_CODE WSAEINTR
+#include <ws2tcpip.h>
+#define close closesocket
+#define EINTR_CODE WSAEINTR
 #else
-# include <arpa/inet.h>
-# include <errno.h>
-# include <string.h>
-# include <sys/socket.h>
-# include <sys/time.h>
-# include <unistd.h>
-# define INVALID_SOCKET -1
-# define EINTR_CODE EINTR
+#include <arpa/inet.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <unistd.h>
+#define INVALID_SOCKET -1
+#define EINTR_CODE EINTR
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
 // building on a machine that is older than that.
-# ifndef IP_MULTICAST_ALL
-#  define IP_MULTICAST_ALL      49
-# endif
+#ifndef IP_MULTICAST_ALL
+#define IP_MULTICAST_ALL 49
+#endif
 #endif  // defined(OS_WIN)
 
 #include <limits>

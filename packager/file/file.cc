@@ -15,12 +15,12 @@
 #include <memory>
 
 #if defined(OS_WIN)
-# include <windows.h>
-# include <fileapi.h>
+#include <fileapi.h>
+#include <windows.h>
 #else
-# include <sys/stat.h>
-# include <sys/types.h>
-# include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 #include "absl/flags/flag.h"
@@ -36,11 +36,13 @@
 #include "packager/file/threaded_io_file.h"
 #include "packager/file/udp_file.h"
 
-ABSL_FLAG(uint64_t, io_cache_size,
+ABSL_FLAG(uint64_t,
+          io_cache_size,
           32ULL << 20,
           "Size of the threaded I/O cache, in bytes. Specify 0 to disable "
           "threaded I/O.");
-ABSL_FLAG(uint64_t, io_block_size,
+ABSL_FLAG(uint64_t,
+          io_block_size,
           1ULL << 16,
           "Size of the block size used for threaded I/O, in bytes.");
 
@@ -447,8 +449,7 @@ bool File::ParseCallbackFileName(const std::string& callback_file_name,
   size_t pos = callback_file_name.find("/");
   int64_t callback_address = 0;
   if (pos == std::string::npos ||
-      !absl::SimpleAtoi(callback_file_name.substr(0, pos),
-                        &callback_address)) {
+      !absl::SimpleAtoi(callback_file_name.substr(0, pos), &callback_address)) {
     LOG(ERROR) << "Expecting CallbackFile with name like "
                   "'<callback address>/<entity name>', but seeing "
                << callback_file_name;

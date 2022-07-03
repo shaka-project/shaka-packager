@@ -28,8 +28,8 @@ namespace {
 using FilePtr = std::unique_ptr<HttpFile, FileCloser>;
 
 // Handles keys with dots, indicating a nested field.
-std::string GetJsonString(
-    const nlohmann::json& json, const std::string& combined_key) {
+std::string GetJsonString(const nlohmann::json& json,
+                          const std::string& combined_key) {
   std::vector<std::string> keys = absl::StrSplit(combined_key, '.');
   nlohmann::json current = json;
 
@@ -60,10 +60,9 @@ nlohmann::json HandleResponse(const FilePtr& file) {
   }
   VLOG(1) << "Response:\n" << result;
 
-  nlohmann::json value = nlohmann::json::parse(
-      result,
-      /* parser callback */ nullptr,
-      /* allow exceptions */ false);
+  nlohmann::json value = nlohmann::json::parse(result,
+                                               /* parser callback */ nullptr,
+                                               /* allow exceptions */ false);
   return value;
 }
 

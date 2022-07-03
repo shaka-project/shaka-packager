@@ -70,9 +70,8 @@ class IoCacheTest : public testing::Test {
                             int sleep_between_writes_ms,
                             bool close_when_done) {
     writer_thread_.reset(new std::thread(
-        std::bind(&IoCacheTest::WriteToCache, this,
-                  test_buffer, num_writes, sleep_between_writes_ms,
-                  close_when_done)));
+        std::bind(&IoCacheTest::WriteToCache, this, test_buffer, num_writes,
+                  sleep_between_writes_ms, close_when_done)));
   }
 
   void WaitForWriterThread() {

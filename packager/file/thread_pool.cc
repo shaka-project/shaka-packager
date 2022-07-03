@@ -22,9 +22,7 @@ const absl::Duration kMaxThreadIdleTime = absl::Minutes(10);
 // static
 ThreadPool ThreadPool::instance;
 
-ThreadPool::ThreadPool()
-    : num_idle_threads_(0), terminated_(false) {
-}
+ThreadPool::ThreadPool() : num_idle_threads_(0), terminated_(false) {}
 
 ThreadPool::~ThreadPool() {
   Terminate();

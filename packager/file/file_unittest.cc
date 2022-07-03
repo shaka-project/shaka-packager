@@ -10,9 +10,9 @@
 #include <sys/stat.h>
 
 #if defined(OS_WIN)
-# include <io.h>
+#include <io.h>
 #else
-# include <unistd.h>
+#include <unistd.h>
 #endif
 
 #include <filesystem>
@@ -51,7 +51,9 @@ int64_t FileSize(const std::string& path) {
 }
 
 // Returns num bytes read, up to maxSize.
-uint64_t ReadFile(const std::string& path, std::string* data, uint32_t maxSize) {
+uint64_t ReadFile(const std::string& path,
+                  std::string* data,
+                  uint32_t maxSize) {
   FILE* f = fopen(path.c_str(), "rb");
   if (!f) {
     return 0;
@@ -85,7 +87,7 @@ std::string generate_unique_temp_path() {
   return temp_path_template_string;
 }
 
-} // namespace
+}  // namespace
 
 namespace shaka {
 
@@ -138,18 +140,14 @@ TEST_F(LocalFileTest, Copy) {
   WriteFile(local_file_name_no_prefix_, data_);
 
   std::string destination = generate_unique_temp_path();
-  ASSERT_TRUE(File::Copy(
-      local_file_name_.c_str(),
-      destination.c_str()));
+  ASSERT_TRUE(File::Copy(local_file_name_.c_str(), destination.c_str()));
 
-  ASSERT_EQ(kDataSize,
-            FileSize(destination));
+  ASSERT_EQ(kDataSize, FileSize(destination));
 
   // Try to read twice as much data as expected, to make sure that there isn't
   // extra stuff appended.
   std::string read_data;
-  ASSERT_EQ(kDataSize,
-            ReadFile(destination, &read_data, kDataSize * 2));
+  ASSERT_EQ(kDataSize, ReadFile(destination, &read_data, kDataSize * 2));
   ASSERT_EQ(data_, read_data);
 
   DeleteFile(destination);
@@ -164,8 +162,7 @@ TEST_F(LocalFileTest, Write) {
   EXPECT_TRUE(file->Close());
 
   std::string read_data;
-  ASSERT_EQ(kDataSize,
-            FileSize(local_file_name_no_prefix_));
+  ASSERT_EQ(kDataSize, FileSize(local_file_name_no_prefix_));
   ASSERT_EQ(kDataSize,
             ReadFile(local_file_name_no_prefix_, &read_data, kDataSize));
 
