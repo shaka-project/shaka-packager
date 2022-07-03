@@ -6,6 +6,12 @@
 
 #include "packager/file/file.h"
 
+// Must come before other Windows headers.  Placed in its own block so that
+// clang-format doesn't try to place other headers before it.
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #include <errno.h>
 #include <inttypes.h>
 
@@ -15,7 +21,6 @@
 #include <memory>
 
 #if defined(OS_WIN)
-#include <windows.h>
 #include <fileapi.h>
 #else
 #include <sys/stat.h>
