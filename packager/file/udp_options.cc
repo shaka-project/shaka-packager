@@ -64,7 +64,7 @@ bool StringToAddressAndPort(std::string_view addr_and_port,
   *addr = addr_and_port.substr(0, colon_pos);
 
   // NOTE: SimpleAtoi will not take a uint16_t.  So we check the bounds of the
-  // vale and then cast to uint16_t.
+  // value and then cast to uint16_t.
   uint32_t port_value;
   if (!absl::SimpleAtoi(addr_and_port.substr(colon_pos + 1), &port_value) ||
       (port_value > 65535)) {
