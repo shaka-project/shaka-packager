@@ -35,7 +35,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 # Global include paths.
-
 # Project root, to reference packager/foo/bar/...
 include_directories(.)
 
