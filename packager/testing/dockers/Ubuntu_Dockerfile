@@ -10,15 +10,5 @@ RUN apt-get install -y \
         libc-ares-dev \
         build-essential cmake git python3
 
-## Add cmake PPA for a newer cmake version (> 3.10).
-#RUN curl https://apt.kitware.com/keys/kitware-archive-latest.asc | \
-#        apt-key add -
-#RUN echo "deb https://apt.kitware.com/ubuntu/ bionic main" | \
-#        tee -a /etc/apt/sources.list
-#RUN apt-get update
-#
-## Install the backport of cmake.
-#RUN apt-get install -y cmake
-
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".
