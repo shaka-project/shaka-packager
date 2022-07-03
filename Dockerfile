@@ -4,7 +4,7 @@ FROM alpine:3.12 as builder
 RUN apk add --no-cache \
         bash curl \
         bsd-compat-headers c-ares-dev linux-headers \
-        build-base cmake git go perl python3
+        build-base cmake git python3
 
 # Build shaka-packager from the current directory, rather than what has been
 # merged.
