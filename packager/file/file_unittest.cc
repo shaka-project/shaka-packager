@@ -50,17 +50,17 @@ int64_t FileSize(const std::string& path) {
   return file_stats.st_size;
 }
 
-// Returns num bytes read, up to maxSize.
+// Returns num bytes read, up to max_size.
 uint64_t ReadFile(const std::string& path,
                   std::string* data,
-                  uint32_t maxSize) {
+                  uint32_t max_size) {
   FILE* f = fopen(path.c_str(), "rb");
   if (!f) {
     return 0;
   }
 
-  data->resize(maxSize);
-  uint64_t bytes = fread(data->data(), 1, maxSize, f);
+  data->resize(max_size);
+  uint64_t bytes = fread(data->data(), 1, max_size, f);
   data->resize(bytes);
   return bytes;
 }
