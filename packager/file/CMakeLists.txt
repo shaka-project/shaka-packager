@@ -25,6 +25,7 @@ target_link_libraries(file
     absl::time
     libcurl
     glog
+    kv_pairs
     status
     version)
 

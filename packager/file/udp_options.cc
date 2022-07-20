@@ -11,6 +11,7 @@
 #include "absl/strings/str_split.h"
 #include "glog/logging.h"
 #include "packager/common.h"
+#include "packager/kv_pairs/kv_pairs.h"
 
 ABSL_FLAG(std::string,
           udp_interface_address,
@@ -86,15 +87,7 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
 
   if (question_mark_pos != std::string_view::npos) {
     std::string_view options_str = udp_url.substr(question_mark_pos + 1);
-
-    std::vector<std::string> kv_strings = absl::StrSplit(options_str, '&');
-
-    typedef std::pair<std::string, std::string> KVPair;
-    std::vector<KVPair> kv_pairs;
-    for (const auto& kv_string : kv_strings) {
-      KVPair pair = absl::StrSplit(kv_string, absl::MaxSplits('=', 1));
-      kv_pairs.push_back(pair);
-    }
+    std::vector<KVPair> kv_pairs = SplitStringIntoKeyValuePairs(options_str);
 
     for (const auto& pair : kv_pairs) {
       switch (GetFieldType(pair.first)) {
