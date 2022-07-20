@@ -122,19 +122,13 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
 }
 
 File* CreateHttpsFile(const char* file_name, const char* mode) {
-  HttpMethod method = HttpMethod::kGet;
-  if (strcmp(mode, "r") != 0) {
-    method = HttpMethod::kPut;
-  }
-  return new HttpFile(method, std::string("https://") + file_name);
+  UNUSED(mode);  // TODO: choose method based on file mode
+  return new HttpFile(HttpMethod::kPut, std::string("https://") + file_name);
 }
 
 File* CreateHttpFile(const char* file_name, const char* mode) {
-  HttpMethod method = HttpMethod::kGet;
-  if (strcmp(mode, "r") != 0) {
-    method = HttpMethod::kPut;
-  }
-  return new HttpFile(method, std::string("http://") + file_name);
+  UNUSED(mode);  // TODO: choose method based on file mode
+  return new HttpFile(HttpMethod::kPut, std::string("http://") + file_name);
 }
 
 File* CreateMemoryFile(const char* file_name, const char* mode) {
