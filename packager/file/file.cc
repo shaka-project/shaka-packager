@@ -103,9 +103,11 @@ bool WriteLocalFileAtomically(const char* file_name,
   if (!File::WriteStringToFile(temp_file_name.c_str(), contents))
     return false;
 
-  if (rename(temp_file_name.c_str(), file_name) != 0) {
+  std::error_code ec;
+  std::filesystem::rename(temp_file_name, file_name, ec);
+  if (ec) {
     LOG(ERROR) << "Failed to replace file '" << file_name << "' with '"
-               << temp_file_name << "', error: " << errno;
+               << temp_file_name << "', error: " << ec;
     return false;
   }
   return true;

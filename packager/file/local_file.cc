@@ -75,7 +75,7 @@ int64_t LocalFile::Size() {
   std::error_code ec;
   int64_t file_size = std::filesystem::file_size(file_name(), ec);
   if (ec) {
-    LOG(ERROR) << "Cannot get file size.";
+    LOG(ERROR) << "Cannot get file size, error: " << ec;
     return -1;
   }
   return file_size;
