@@ -44,7 +44,7 @@ class ThreadPool : private DisallowCopyAndAssign {
 
   absl::Mutex mutex_;
   absl::CondVar tasks_available_ GUARDED_BY(mutex_);
-  std::queue<Task> tasks_;
+  std::queue<Task> tasks_ GUARDED_BY(mutex_);
   size_t num_idle_threads_ GUARDED_BY(mutex_);
   bool terminated_ GUARDED_BY(mutex_);
 };
