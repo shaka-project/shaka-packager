@@ -11,37 +11,28 @@
 
 namespace shaka {
 
-using ::testing::ElementsAre;
 using ::std::make_pair;
+using ::testing::ElementsAre;
 
 TEST(KVPairs, Empty) {
-  ASSERT_THAT(
-      SplitStringIntoKeyValuePairs(""),
-      ElementsAre());
+  ASSERT_THAT(SplitStringIntoKeyValuePairs(""), ElementsAre());
 }
 
 TEST(KVPairs, Single) {
-  ASSERT_THAT(
-      SplitStringIntoKeyValuePairs("a=b"),
-      ElementsAre(make_pair("a", "b")));
+  ASSERT_THAT(SplitStringIntoKeyValuePairs("a=b"),
+              ElementsAre(make_pair("a", "b")));
 }
 
 TEST(KVPairs, Multiple) {
-  ASSERT_THAT(
-      SplitStringIntoKeyValuePairs("a=b&c=d&e=f"),
-      ElementsAre(
-          make_pair("a", "b"),
-          make_pair("c", "d"),
-          make_pair("e", "f")));
+  ASSERT_THAT(SplitStringIntoKeyValuePairs("a=b&c=d&e=f"),
+              ElementsAre(make_pair("a", "b"), make_pair("c", "d"),
+                          make_pair("e", "f")));
 }
 
 TEST(KVPairs, ExtraEqualsSigns) {
-  ASSERT_THAT(
-      SplitStringIntoKeyValuePairs("a=b&c==d&e=f=g=h"),
-      ElementsAre(
-          make_pair("a", "b"),
-          make_pair("c", "=d"),
-          make_pair("e", "f=g=h")));
+  ASSERT_THAT(SplitStringIntoKeyValuePairs("a=b&c==d&e=f=g=h"),
+              ElementsAre(make_pair("a", "b"), make_pair("c", "=d"),
+                          make_pair("e", "f=g=h")));
 }
 
 }  // namespace shaka
