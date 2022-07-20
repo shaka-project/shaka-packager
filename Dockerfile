@@ -10,7 +10,6 @@ RUN apk add --no-cache \
 # merged.
 WORKDIR shaka-packager
 COPY . /shaka-packager/
-RUN rm -rf build
 RUN mkdir build
 RUN cmake -S . -B build
 RUN make -C build
