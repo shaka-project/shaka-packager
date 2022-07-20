@@ -6,12 +6,6 @@
 
 #include "packager/file/file.h"
 
-// Must come before other Windows headers.  Placed in its own block so that
-// clang-format doesn't try to place other headers before it.
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 #include <errno.h>
 #include <inttypes.h>
 
@@ -19,14 +13,6 @@
 #include <cstdio>
 #include <filesystem>
 #include <memory>
-
-#if defined(OS_WIN)
-#include <fileapi.h>
-#else
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#endif
 
 #include "absl/flags/flag.h"
 #include "absl/strings/numbers.h"
@@ -415,23 +401,12 @@ bool File::IsLocalRegularFile(const char* file_name) {
   std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
+
   if (file_type->type != kLocalFilePrefix)
     return false;
-#if defined(OS_WIN)
-  DWORD fileattr = GetFileAttributes(real_file_name.data());
-  if (fileattr == INVALID_FILE_ATTRIBUTES) {
-    LOG(ERROR) << "Failed to GetFileAttributes of " << real_file_name;
-    return false;
-  }
-  return (fileattr & FILE_ATTRIBUTE_DIRECTORY) == 0;
-#else
-  struct stat info;
-  if (stat(real_file_name.data(), &info) != 0) {
-    LOG(ERROR) << "Failed to run stat on " << real_file_name;
-    return false;
-  }
-  return S_ISREG(info.st_mode);
-#endif
+
+  std::error_code ec;
+  return std::filesystem::is_regular_file(real_file_name, ec);
 }
 
 std::string File::MakeCallbackFileName(
