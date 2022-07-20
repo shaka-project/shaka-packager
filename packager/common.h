@@ -9,6 +9,8 @@
 
 #include <type_traits>
 
+#include "absl/base/macros.h"
+
 namespace shaka {
 
 /// A mix-in to disable copying and assignment.
@@ -23,9 +25,9 @@ class DisallowCopyAndAssign {
   ~DisallowCopyAndAssign() = default;
 };
 
-/// A work-alike for Chromium base's arraysize macro, but built on the C++11
-/// standard-library's less-easy-to-understand std::extent template.
-#define arraysize(a) std::extent<decltype(a)>::value
+/// ABSL_ARRAYSIZE works just like the arraysize macro we used to use from
+/// Chromium.  To ease porting, define arraysize() as ABSL_ARRAYSIZE().
+#define arraysize(a) ABSL_ARRAYSIZE(a)
 
 /// A macro to declare that you intentionally did not use a parameter.  Useful
 /// when implementing abstract interfaces.
