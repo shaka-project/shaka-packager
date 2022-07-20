@@ -33,6 +33,10 @@ class DisallowCopyAndAssign {
 /// when implementing abstract interfaces.
 #define UNUSED(x) (void)(x)
 
+/// A macro to declare that you intentionally did not implement a method.
+/// You can use the insertion operator to add specific logs to this.
+#define NOTIMPLEMENTED() LOG(ERROR) << "NOTIMPLEMENTED: "
+
 }  // namespace shaka
 
 #endif  // PACKAGER_COMMON_H_

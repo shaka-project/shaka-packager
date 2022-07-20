@@ -8,6 +8,7 @@
 
 #include "absl/strings/str_format.h"
 #include "glog/logging.h"
+#include "packager/common.h"
 
 namespace shaka {
 
@@ -57,7 +58,7 @@ const char* ErrorCodeToString(Code error_code) {
       return "TRICK_PLAY_ERROR";
   }
 
-  LOG(ERROR) << "Unknown Status Code: " << error_code;
+  NOTIMPLEMENTED() << "Unknown Status Code: " << error_code;
   return "UNKNOWN_STATUS";
 }
 }  // namespace

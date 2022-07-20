@@ -115,7 +115,7 @@ bool WriteLocalFileAtomically(const char* file_name,
 
 File* CreateUdpFile(const char* file_name, const char* mode) {
   if (strcmp(mode, "r")) {
-    LOG(ERROR) << "UdpFile only supports read (receive) mode.";
+    NOTIMPLEMENTED() << "UdpFile only supports read (receive) mode.";
     return NULL;
   }
   return new UdpFile(file_name);

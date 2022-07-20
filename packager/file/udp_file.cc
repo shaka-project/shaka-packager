@@ -87,7 +87,7 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 int64_t UdpFile::Write(const void* buffer, uint64_t length) {
   UNUSED(buffer);
   UNUSED(length);
-  LOG(ERROR) << "UdpFile is unwritable!";
+  NOTIMPLEMENTED() << "UdpFile is unwritable!";
   return -1;
 }
 
@@ -99,19 +99,19 @@ int64_t UdpFile::Size() {
 }
 
 bool UdpFile::Flush() {
-  LOG(ERROR) << "UdpFile is unflushable!";
+  NOTIMPLEMENTED() << "UdpFile is unflushable!";
   return false;
 }
 
 bool UdpFile::Seek(uint64_t position) {
   UNUSED(position);
-  LOG(ERROR) << "UdpFile is unseekable!";
+  NOTIMPLEMENTED() << "UdpFile is unseekable!";
   return false;
 }
 
 bool UdpFile::Tell(uint64_t* position) {
   UNUSED(position);
-  LOG(ERROR) << "UdpFile is unseekable!";
+  NOTIMPLEMENTED() << "UdpFile is unseekable!";
   return false;
 }
 

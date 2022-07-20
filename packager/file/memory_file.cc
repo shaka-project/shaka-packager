@@ -57,9 +57,9 @@ class FileSystem {
     absl::MutexLock auto_lock(&mutex_);
 
     if (open_files_.find(file_name) != open_files_.end()) {
-      LOG(ERROR) << "File '" << file_name
-                 << "' is already open. MemoryFile does not support "
-                    "opening the same file before it is closed.";
+      NOTIMPLEMENTED() << "File '" << file_name
+                       << "' is already open. MemoryFile does not support "
+                          "opening the same file before it is closed.";
       return nullptr;
     }
 
@@ -71,7 +71,8 @@ class FileSystem {
       if (iter != files_.end())
         iter->second.clear();
     } else {
-      LOG(ERROR) << "File mode '" << mode << "' not supported by MemoryFile";
+      NOTIMPLEMENTED() << "File mode '" << mode
+                       << "' not supported by MemoryFile";
       return nullptr;
     }
 
