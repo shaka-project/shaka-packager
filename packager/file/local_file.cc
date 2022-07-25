@@ -131,7 +131,9 @@ bool LocalFile::Open() {
 }
 
 bool LocalFile::Delete(const char* file_name) {
-  return std::filesystem::remove(file_name);
+  std::error_code ec;
+  // On error (ec truthy), remove() will return false anyway.
+  return std::filesystem::remove(file_name, ec);
 }
 
 }  // namespace shaka

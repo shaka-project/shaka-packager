@@ -9,12 +9,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#if defined(OS_WIN)
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-
 #include <filesystem>
 
 #include "absl/flags/declare.h"
@@ -35,19 +29,18 @@ void WriteFile(const std::string& path, const std::string& data) {
 }
 
 void DeleteFile(const std::string& path) {
-#if defined(OS_WIN)
-  _unlink(path.c_str());
-#else
-  unlink(path.c_str());
-#endif
+  std::error_code ec;
+  std::filesystem::remove(path, ec);
+  // Ignore errors.
 }
 
 int64_t FileSize(const std::string& path) {
-  struct stat file_stats;
-  if (stat(path.c_str(), &file_stats) != 0) {
+  std::error_code ec;
+  int64_t file_size = std::filesystem::file_size(path, ec);
+  if (ec) {
     return -1;
   }
-  return file_stats.st_size;
+  return file_size;
 }
 
 // Returns num bytes read, up to max_size.
