@@ -47,6 +47,8 @@ class LocalFile : public File {
  private:
   std::string file_mode_;
   FILE* internal_file_;
+
+  DISALLOW_COPY_AND_ASSIGN(LocalFile);
 };
 
 }  // namespace shaka

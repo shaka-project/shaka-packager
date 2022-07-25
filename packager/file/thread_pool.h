@@ -21,7 +21,7 @@ namespace shaka {
 /// is no replacement in the C++ standard library nor in absl.
 /// (As of June 2022.)  The pool will grow when there are no threads available
 /// to handle a task, and it will shrink when a thread is idle for too long.
-class ThreadPool : private DisallowCopyAndAssign {
+class ThreadPool {
  public:
   typedef std::function<void()> Task;
 
@@ -47,6 +47,8 @@ class ThreadPool : private DisallowCopyAndAssign {
   std::queue<Task> tasks_ GUARDED_BY(mutex_);
   size_t num_idle_threads_ GUARDED_BY(mutex_);
   bool terminated_ GUARDED_BY(mutex_);
+
+  DISALLOW_COPY_AND_ASSIGN(ThreadPool);
 };
 
 }  // namespace shaka

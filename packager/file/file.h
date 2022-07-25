@@ -25,7 +25,7 @@ extern const char* kHttpFilePrefix;
 const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.
-class SHAKA_EXPORT File : private DisallowCopyAndAssign {
+class SHAKA_EXPORT File {
  public:
   /// Open the specified file.
   /// This is a file factory method, it opens a proper file automatically
@@ -189,6 +189,8 @@ class SHAKA_EXPORT File : private DisallowCopyAndAssign {
 
   // Note that the file type prefix has been stripped off.
   std::string file_name_;
+
+  DISALLOW_COPY_AND_ASSIGN(File);
 };
 
 }  // namespace shaka

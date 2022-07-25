@@ -49,6 +49,8 @@ class MemoryFile : public File {
   std::string mode_;
   std::vector<uint8_t>* file_;
   uint64_t position_;
+
+  DISALLOW_COPY_AND_ASSIGN(MemoryFile);
 };
 
 }  // namespace shaka

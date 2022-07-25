@@ -17,7 +17,7 @@
 namespace shaka {
 
 /// Declaration of class which implements a thread-safe circular buffer.
-class IoCache : private DisallowCopyAndAssign {
+class IoCache {
  public:
   explicit IoCache(uint64_t cache_size);
   ~IoCache();
@@ -76,6 +76,8 @@ class IoCache : private DisallowCopyAndAssign {
   uint8_t* r_ptr_ GUARDED_BY(mutex_);
   uint8_t* w_ptr_ GUARDED_BY(mutex_);
   bool closed_ GUARDED_BY(mutex_);
+
+  DISALLOW_COPY_AND_ASSIGN(IoCache);
 };
 
 }  // namespace shaka

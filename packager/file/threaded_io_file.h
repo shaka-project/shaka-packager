@@ -66,6 +66,8 @@ class ThreadedIoFile : public File {
 
   absl::Mutex task_exited_mutex_;
   bool task_exited_ GUARDED_BY(task_exited_mutex_);
+
+  DISALLOW_COPY_AND_ASSIGN(ThreadedIoFile);
 };
 
 }  // namespace shaka

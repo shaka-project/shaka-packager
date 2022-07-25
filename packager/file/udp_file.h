@@ -51,6 +51,8 @@ class UdpFile : public File {
   // For Winsock in Windows.
   bool wsa_started_ = false;
 #endif  // defined(OS_WIN)
+
+  DISALLOW_COPY_AND_ASSIGN(UdpFile);
 };
 
 }  // namespace shaka

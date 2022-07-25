@@ -115,7 +115,7 @@ bool UdpFile::Tell(uint64_t* position) {
   return false;
 }
 
-class ScopedSocket : private DisallowCopyAndAssign {
+class ScopedSocket {
  public:
   explicit ScopedSocket(SOCKET sock_fd) : sock_fd_(sock_fd) {}
 
@@ -134,6 +134,8 @@ class ScopedSocket : private DisallowCopyAndAssign {
 
  private:
   SOCKET sock_fd_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedSocket);
 };
 
 bool UdpFile::Open() {

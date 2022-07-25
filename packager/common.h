@@ -13,17 +13,14 @@
 
 namespace shaka {
 
-/// A mix-in to disable copying and assignment.
-/// Usage: class Foo : private DisallowCopyAndAssign
-class DisallowCopyAndAssign {
- public:
-  DisallowCopyAndAssign(const DisallowCopyAndAssign&) = delete;
-  DisallowCopyAndAssign& operator=(const DisallowCopyAndAssign&) = delete;
-
- protected:
-  DisallowCopyAndAssign() = default;
-  ~DisallowCopyAndAssign() = default;
-};
+/// A macro to disable copying and assignment. Usage:
+/// class Foo {
+///  private:
+///   DISALLOW_COPY_AND_ASSIGN(Foo);
+/// }
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&) = delete;      \
+  void operator=(const TypeName&) = delete;
 
 /// ABSL_ARRAYSIZE works just like the arraysize macro we used to use from
 /// Chromium.  To ease porting, define arraysize() as ABSL_ARRAYSIZE().
