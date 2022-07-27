@@ -10,7 +10,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/escaping.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/video_stream_info.h"
 
@@ -145,10 +145,8 @@ MATCHER_P6(MatchEncryptionConfig,
            constant_iv,
            key_id,
            "") {
-  const std::string constant_iv_hex =
-      base::HexEncode(arg.constant_iv.data(), arg.constant_iv.size());
-  const std::string key_id_hex =
-      base::HexEncode(arg.key_id.data(), arg.key_id.size());
+  const std::string constant_iv_hex = absl::BytesToHexString(arg.constant_iv);
+  const std::string key_id_hex = absl::BytesToHexString(arg.key_id);
   const std::string protection_scheme_as_string =
       FourCCToString(arg.protection_scheme);
   // Convert to integers so that they will print as a number and not a uint8_t

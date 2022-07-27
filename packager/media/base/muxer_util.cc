@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_split.h"
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/numbers.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/str_split.h"
+#include "glog/logging.h"
 #include "packager/media/base/video_stream_info.h"
 
 namespace shaka {
@@ -28,7 +28,7 @@ Status ValidateFormatTag(const std::string& format_tag) {
   if (format_tag.size() > 3 && format_tag[0] == '%' && format_tag[1] == '0' &&
       format_tag[format_tag.size() - 1] == 'd') {
     unsigned out;
-    if (base::StringToUint(format_tag.substr(2, format_tag.size() - 3), &out)) {
+    if (absl::SimpleAtoi(format_tag.substr(2, format_tag.size() - 3), &out)) {
       return Status::OK;
     }
   }
@@ -47,8 +47,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
                   "Segment template should not be empty.");
   }
 
-  std::vector<std::string> splits = base::SplitString(
-      segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> splits = absl::StrSplit(segment_template, "$");
 
   // ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.
   // Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.
@@ -114,8 +113,7 @@ std::string GetSegmentName(const std::string& segment_template,
                            uint32_t bandwidth) {
   DCHECK_EQ(Status::OK, ValidateSegmentTemplate(segment_template));
 
-  std::vector<std::string> splits = base::SplitString(
-      segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> splits = absl::StrSplit(segment_template, "$");
   // "$" always appears in pairs, so there should be odd number of splits.
   DCHECK_EQ(1u, splits.size() % 2);
 
@@ -150,14 +148,13 @@ std::string GetSegmentName(const std::string& segment_template,
 
     if (identifier == "Number") {
       // SegmentNumber starts from 1.
-      segment_name += base::StringPrintf(
-          format_tag.c_str(), static_cast<uint64_t>(segment_index + 1));
+      segment_name += absl::StrFormat(format_tag.c_str(),
+                                      static_cast<uint64_t>(segment_index + 1));
     } else if (identifier == "Time") {
-      segment_name +=
-          base::StringPrintf(format_tag.c_str(), segment_start_time);
+      segment_name += absl::StrFormat(format_tag.c_str(), segment_start_time);
     } else if (identifier == "Bandwidth") {
-      segment_name += base::StringPrintf(format_tag.c_str(),
-                                         static_cast<uint64_t>(bandwidth));
+      segment_name +=
+          absl::StrFormat(format_tag.c_str(), static_cast<uint64_t>(bandwidth));
     }
   }
   return segment_name;

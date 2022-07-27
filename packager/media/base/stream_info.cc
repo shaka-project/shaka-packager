@@ -8,8 +8,9 @@
 
 #include <inttypes.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
+#include "packager/macros.h"
 #include "packager/media/base/timestamp.h"
 
 namespace shaka {
@@ -27,7 +28,8 @@ std::string StreamTypeToString(StreamType type) {
       return "Text";
   }
 
-  NOTREACHED() << "Unhandled StreamType with value " << static_cast<int>(type);
+  NOTIMPLEMENTED() << "Unhandled StreamType with value "
+                   << static_cast<int>(type);
   return "";
 }
 
@@ -61,11 +63,11 @@ std::string StreamInfo::ToString() const {
   if (duration_ == kInfiniteDuration) {
     duration = "Infinite";
   } else {
-    duration = base::StringPrintf("%" PRIu64 " (%.1f seconds)", duration_,
-                                  static_cast<double>(duration_) / time_scale_);
+    duration = absl::StrFormat("%" PRIu64 " (%.1f seconds)", duration_,
+                               static_cast<double>(duration_) / time_scale_);
   }
 
-  return base::StringPrintf(
+  return absl::StrFormat(
       "type: %s\n codec_string: %s\n time_scale: %d\n duration: "
       "%s\n is_encrypted: %s\n",
       StreamTypeToString(stream_type_).c_str(), codec_string_.c_str(),

@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

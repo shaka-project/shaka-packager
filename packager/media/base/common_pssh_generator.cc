@@ -6,6 +6,7 @@
 
 #include "packager/media/base/common_pssh_generator.h"
 
+#include "packager/macros.h"
 #include "packager/media/base/protection_system_ids.h"
 
 namespace shaka {
@@ -25,17 +26,20 @@ bool CommonPsshGenerator::SupportMultipleKeys() {
   return true;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CommonPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
+  UNUSED(key_id);
+  UNUSED(key);
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return std::nullopt;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CommonPsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
+  UNUSED(key_ids);
   // Intentionally empty PSSH data for RawKey.
   return std::vector<uint8_t>();
 }

@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
+#include "packager/macros.h"
 #include "packager/media/base/container_names.h"
 
 namespace shaka {

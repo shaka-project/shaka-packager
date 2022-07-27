@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/status.h"
+#include "packager/macros.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 

@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/base/protection_system_specific_info.h"
 
 namespace shaka {

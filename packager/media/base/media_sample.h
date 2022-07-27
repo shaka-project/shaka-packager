@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/decrypt_config.h"
 
 namespace shaka {

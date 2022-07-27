@@ -20,6 +20,16 @@
   TypeName(const TypeName&) = delete;      \
   void operator=(const TypeName&) = delete;
 
+/// A macro to disable all implicit constructors (copy, assignment, and default
+/// constructor). Usage:
+/// class Foo {
+///  private:
+///   DISALLOW_IMPLICIT_CONSTRUCTORS(Foo);
+/// }
+#define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
+  TypeName() = delete;                           \
+  DISALLOW_COPY_AND_ASSIGN(TypeName);
+
 /// ABSL_ARRAYSIZE works just like the arraysize macro we used to use from
 /// Chromium.  To ease porting, define arraysize() as ABSL_ARRAYSIZE().
 #define arraysize(a) ABSL_ARRAYSIZE(a)

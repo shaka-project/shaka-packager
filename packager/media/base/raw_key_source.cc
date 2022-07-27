@@ -7,10 +7,11 @@
 #include "packager/media/base/raw_key_source.h"
 
 #include <algorithm>
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+
+#include "absl/strings/escaping.h"
+#include "glog/logging.h"
 #include "packager/media/base/key_source.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace {
 const char kEmptyDrmLabel[] = "";
@@ -23,6 +24,8 @@ RawKeySource::~RawKeySource() {}
 
 Status RawKeySource::FetchKeys(EmeInitDataType init_data_type,
                                const std::vector<uint8_t>& init_data) {
+  UNUSED(init_data_type);
+  UNUSED(init_data);
   // Do nothing for raw key encryption/decryption.
   return Status::OK;
 }
@@ -53,8 +56,9 @@ Status RawKeySource::GetKey(const std::vector<uint8_t>& key_id,
       return Status::OK;
     }
   }
+  std::string key_id_str(key_id.begin(), key_id.end());
   return Status(error::INTERNAL_ERROR,
-                "Key for key_id=" + base::HexEncode(&key_id[0], key_id.size()) +
+                "Key for key_id=" + absl::BytesToHexString(key_id_str) +
                     " was not found.");
 }
 
@@ -63,6 +67,8 @@ Status RawKeySource::GetCryptoPeriodKey(
     int32_t crypto_period_duration_in_seconds,
     const std::string& stream_label,
     EncryptionKey* key) {
+  UNUSED(crypto_period_duration_in_seconds);
+
   RETURN_IF_ERROR(GetKey(stream_label, key));
 
   // A naive key rotation algorithm is implemented here by left rotating the

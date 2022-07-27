@@ -29,6 +29,11 @@ target_link_libraries(file
     status
     version)
 
+add_library(file_test_util STATIC
+    file_test_util.cc)
+target_link_libraries(file_test_util
+    gmock)
+
 add_executable(file_unittest
     callback_file_unittest.cc
     file_unittest.cc
@@ -39,6 +44,7 @@ add_executable(file_unittest
     udp_options_unittest.cc)
 target_link_libraries(file_unittest
     file
+    file_test_util
     gmock
     gtest
     gtest_main

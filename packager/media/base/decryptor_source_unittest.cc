@@ -9,14 +9,15 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/base/raw_key_source.h"
 
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Mock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
-using ::testing::Mock;
-using ::testing::_;
 
 namespace shaka {
 namespace media {

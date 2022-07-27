@@ -8,7 +8,7 @@
 
 #include <google/protobuf/util/json_util.h>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 
 namespace shaka {
 namespace media {
@@ -32,7 +32,7 @@ bool JsonStringToMessage(const std::string& input,
                                                             json_parse_options);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to parse from JSON: " << input
-               << " error: " << status.error_message();
+               << " error: " << status.message();
     return false;
   }
   return true;

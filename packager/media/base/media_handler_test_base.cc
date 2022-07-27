@@ -9,7 +9,7 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/status_test_util.h"
+#include "packager/status/status_test_util.h"
 
 namespace {
 
@@ -126,6 +126,7 @@ std::string ToPrettyString(const std::string& str) {
 }
 
 bool FakeInputMediaHandler::ValidateOutputStreamIndex(size_t index) const {
+  UNUSED(index);
   return true;
 }
 
@@ -134,6 +135,7 @@ Status FakeInputMediaHandler::InitializeInternal() {
 }
 
 Status FakeInputMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
+  UNUSED(stream_data);
   return Status(error::INTERNAL_ERROR,
                 "FakeInputMediaHandler should never be a downstream handler.");
 }
@@ -163,10 +165,12 @@ Status CachingMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status CachingMediaHandler::OnFlushRequest(size_t input_stream_index) {
+  UNUSED(input_stream_index);
   return Status::OK;
 }
 
 bool CachingMediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
+  UNUSED(stream_index);
   return true;
 }
 

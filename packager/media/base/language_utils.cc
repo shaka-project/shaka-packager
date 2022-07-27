@@ -6,7 +6,8 @@
 
 #include "packager/media/base/language_utils.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
+#include "packager/macros.h"
 
 namespace {
 

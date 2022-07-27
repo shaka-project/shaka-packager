@@ -46,9 +46,7 @@
 #endif
 
 #ifndef FALLTHROUGH_INTENDED
-#define FALLTHROUGH_INTENDED \
-  do {                       \
-  } while (0)
+#define FALLTHROUGH_INTENDED
 #endif
 
 #endif  // PACKAGER_MEDIA_BASE_MACROS_H_

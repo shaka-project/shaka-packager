@@ -6,7 +6,7 @@
 
 #include "packager/media/base/text_stream_info.h"
 
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
 
 namespace shaka {
 namespace media {
@@ -44,8 +44,8 @@ std::string TextStreamInfo::ToString() const {
   if (!sub_streams_.empty()) {
     ret += " Sub Streams:";
     for (auto& pair : sub_streams_) {
-      ret += base::StringPrintf("\n  ID: %u, Lang: %s", pair.first,
-                                pair.second.language.c_str());
+      ret += absl::StrFormat("\n  ID: %u, Lang: %s", pair.first,
+                             pair.second.language.c_str());
     }
   }
   return ret + "\n";
