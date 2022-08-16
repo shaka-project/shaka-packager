@@ -6,11 +6,9 @@
 
 #include "packager/file/file.h"
 
-#include <errno.h>
 #include <inttypes.h>
 
 #include <algorithm>
-#include <cstdio>
 #include <filesystem>
 #include <memory>
 
