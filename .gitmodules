@@ -21,7 +21,7 @@
 	url = https://github.com/joeyparrish/zlib
 [submodule "packager/third_party/libpng/source"]
 	path = packager/third_party/libpng/source
-	url = git://git.code.sf.net/p/libpng/code
+	url = https://github.com/glennrp/libpng
 [submodule "packager/third_party/libwebm/source"]
 	path = packager/third_party/libwebm/source
 	url = https://github.com/webmproject/libwebm
