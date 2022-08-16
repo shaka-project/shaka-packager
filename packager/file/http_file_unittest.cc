@@ -11,17 +11,13 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/json/json_reader.h"
-#include "packager/base/values.h"
+#include "absl/strings/str_split.h"
+#include "nlohmann/json.hpp"
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 
-#define ASSERT_JSON_STRING(json, key, value)        \
-  do {                                              \
-    std::string actual;                             \
-    ASSERT_TRUE((json)->GetString((key), &actual)); \
-    ASSERT_EQ(actual, (value));                     \
-  } while (false)
+#define ASSERT_JSON_STRING(json, key, value) \
+  ASSERT_EQ(GetJsonString((json), (key)), (value)) << "JSON is " << (json)
 
 namespace shaka {
 
@@ -29,7 +25,27 @@ namespace {
 
 using FilePtr = std::unique_ptr<HttpFile, FileCloser>;
 
-std::unique_ptr<base::DictionaryValue> HandleResponse(const FilePtr& file) {
+// Handles keys with dots, indicating a nested field.
+std::string GetJsonString(const nlohmann::json& json,
+                          const std::string& combined_key) {
+  std::vector<std::string> keys = absl::StrSplit(combined_key, '.');
+  nlohmann::json current = json;
+
+  for (const std::string& key : keys) {
+    if (!current.contains(key)) {
+      return "";
+    }
+    current = current[key];
+  }
+
+  if (current.is_string()) {
+    return current.get<std::string>();
+  }
+
+  return "";
+}
+
+nlohmann::json HandleResponse(const FilePtr& file) {
   std::string result;
   while (true) {
     char buffer[64 * 1024];
@@ -42,27 +58,26 @@ std::unique_ptr<base::DictionaryValue> HandleResponse(const FilePtr& file) {
   }
   VLOG(1) << "Response:\n" << result;
 
-  auto value = base::JSONReader::Read(result);
-  if (!value || !value->IsType(base::Value::TYPE_DICTIONARY))
-    return nullptr;
-  return std::unique_ptr<base::DictionaryValue>{
-      static_cast<base::DictionaryValue*>(value.release())};
+  nlohmann::json value = nlohmann::json::parse(result,
+                                               /* parser callback */ nullptr,
+                                               /* allow exceptions */ false);
+  return value;
 }
 
 }  // namespace
 
-TEST(HttpFileTest, DISABLED_BasicGet) {
+TEST(HttpFileTest, BasicGet) {
   FilePtr file(new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything"));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
   auto json = HandleResponse(file);
-  ASSERT_TRUE(json);
+  ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
   ASSERT_JSON_STRING(json, "method", "GET");
 }
 
-TEST(HttpFileTest, DISABLED_CustomHeaders) {
+TEST(HttpFileTest, CustomHeaders) {
   std::vector<std::string> headers{"Host: foo", "X-My-Header: Something"};
   FilePtr file(new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything",
                             "", headers, 0));
@@ -70,7 +85,7 @@ TEST(HttpFileTest, DISABLED_CustomHeaders) {
   ASSERT_TRUE(file->Open());
 
   auto json = HandleResponse(file);
-  ASSERT_TRUE(json);
+  ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "GET");
@@ -78,7 +93,7 @@ TEST(HttpFileTest, DISABLED_CustomHeaders) {
   ASSERT_JSON_STRING(json, "headers.X-My-Header", "Something");
 }
 
-TEST(HttpFileTest, DISABLED_BasicPost) {
+TEST(HttpFileTest, BasicPost) {
   FilePtr file(new HttpFile(HttpMethod::kPost, "https://httpbin.org/anything"));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
@@ -90,17 +105,25 @@ TEST(HttpFileTest, DISABLED_BasicPost) {
   ASSERT_TRUE(file->Flush());
 
   auto json = HandleResponse(file);
-  ASSERT_TRUE(json);
+  ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "POST");
   ASSERT_JSON_STRING(json, "data", data);
   ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-  ASSERT_JSON_STRING(json, "headers.Content-Length",
-                     std::to_string(data.size()));
+
+  // Curl may choose to send chunked or not based on the data.  We request
+  // chunked encoding, but don't control if it is actually used.  If we get
+  // chunked transfer, there is no Content-Length header reflected back to us.
+  if (!GetJsonString(json, "headers.Content-Length").empty()) {
+    ASSERT_JSON_STRING(json, "headers.Content-Length",
+                       std::to_string(data.size()));
+  } else {
+    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+  }
 }
 
-TEST(HttpFileTest, DISABLED_BasicPut) {
+TEST(HttpFileTest, BasicPut) {
   FilePtr file(new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything"));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
@@ -112,17 +135,25 @@ TEST(HttpFileTest, DISABLED_BasicPut) {
   ASSERT_TRUE(file->Flush());
 
   auto json = HandleResponse(file);
-  ASSERT_TRUE(json);
+  ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "PUT");
   ASSERT_JSON_STRING(json, "data", data);
   ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-  ASSERT_JSON_STRING(json, "headers.Content-Length",
-                     std::to_string(data.size()));
+
+  // Curl may choose to send chunked or not based on the data.  We request
+  // chunked encoding, but don't control if it is actually used.  If we get
+  // chunked transfer, there is no Content-Length header reflected back to us.
+  if (!GetJsonString(json, "headers.Content-Length").empty()) {
+    ASSERT_JSON_STRING(json, "headers.Content-Length",
+                       std::to_string(data.size()));
+  } else {
+    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+  }
 }
 
-TEST(HttpFileTest, DISABLED_MultipleWrites) {
+TEST(HttpFileTest, MultipleWrites) {
   FilePtr file(new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything"));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
@@ -143,22 +174,28 @@ TEST(HttpFileTest, DISABLED_MultipleWrites) {
   ASSERT_TRUE(file->Flush());
 
   auto json = HandleResponse(file);
-  ASSERT_TRUE(json);
+  ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "PUT");
   ASSERT_JSON_STRING(json, "data", data1 + data2 + data3 + data4);
   ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-  ASSERT_JSON_STRING(json, "headers.Content-Length",
-                     std::to_string(data1.size() + data2.size() + data3.size() +
-                                    data4.size()));
+
+  // Curl may choose to send chunked or not based on the data.  We request
+  // chunked encoding, but don't control if it is actually used.  If we get
+  // chunked transfer, there is no Content-Length header reflected back to us.
+  if (!GetJsonString(json, "headers.Content-Length").empty()) {
+    auto totalSize = data1.size() + data2.size() + data3.size() + data4.size();
+    ASSERT_JSON_STRING(json, "headers.Content-Length",
+                       std::to_string(totalSize));
+  } else {
+    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+  }
 }
 
-// TODO: Test chunked uploads.  Since we can only read the response, we have no
-// way to detect if we are streaming the upload like we want.  httpbin seems to
-// populate the Content-Length even if we don't give it in the request.
+// TODO: Test chunked uploads explicitly.
 
-TEST(HttpFileTest, DISABLED_Error404) {
+TEST(HttpFileTest, Error404) {
   FilePtr file(
       new HttpFile(HttpMethod::kGet, "https://httpbin.org/status/404"));
   ASSERT_TRUE(file);
@@ -173,7 +210,7 @@ TEST(HttpFileTest, DISABLED_Error404) {
   ASSERT_EQ(status.error_code(), error::HTTP_FAILURE);
 }
 
-TEST(HttpFileTest, DISABLED_TimeoutTriggered) {
+TEST(HttpFileTest, TimeoutTriggered) {
   FilePtr file(
       new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/8", "", {}, 1));
   ASSERT_TRUE(file);
@@ -188,14 +225,14 @@ TEST(HttpFileTest, DISABLED_TimeoutTriggered) {
   ASSERT_EQ(status.error_code(), error::TIME_OUT);
 }
 
-TEST(HttpFileTest, DISABLED_TimeoutNotTriggered) {
+TEST(HttpFileTest, TimeoutNotTriggered) {
   FilePtr file(
       new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/1", "", {}, 5));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
   auto json = HandleResponse(file);
-  ASSERT_TRUE(json);
+  ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 }
 

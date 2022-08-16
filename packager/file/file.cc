@@ -6,30 +6,34 @@
 
 #include "packager/file/file.h"
 
-#include <gflags/gflags.h>
 #include <inttypes.h>
+
 #include <algorithm>
+#include <filesystem>
 #include <memory>
-#include "packager/base/files/file_util.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_piece.h"
-#include "packager/base/strings/stringprintf.h"
+
+#include "absl/flags/flag.h"
+#include "absl/strings/numbers.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
+
 #include "packager/file/callback_file.h"
 #include "packager/file/file_util.h"
+#include "packager/file/http_file.h"
 #include "packager/file/local_file.h"
 #include "packager/file/memory_file.h"
 #include "packager/file/threaded_io_file.h"
 #include "packager/file/udp_file.h"
-#include "packager/file/http_file.h"
 
-DEFINE_uint64(io_cache_size,
-              32ULL << 20,
-              "Size of the threaded I/O cache, in bytes. Specify 0 to disable "
-              "threaded I/O.");
-DEFINE_uint64(io_block_size,
-              1ULL << 16,
-              "Size of the block size used for threaded I/O, in bytes.");
+ABSL_FLAG(uint64_t,
+          io_cache_size,
+          32ULL << 20,
+          "Size of the threaded I/O cache, in bytes. Specify 0 to disable "
+          "threaded I/O.");
+ABSL_FLAG(uint64_t,
+          io_block_size,
+          1ULL << 16,
+          "Size of the block size used for threaded I/O, in bytes.");
 
 // Needed for Windows weirdness which somewhere defines CopyFile as CopyFileW.
 #ifdef CopyFile
@@ -74,18 +78,20 @@ bool DeleteLocalFile(const char* file_name) {
 
 bool WriteLocalFileAtomically(const char* file_name,
                               const std::string& contents) {
-  const base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file_name);
-  const std::string dir_name = file_path.DirName().AsUTF8Unsafe();
+  const std::filesystem::path file_path(file_name);
+  const std::filesystem::path dir_path = file_path.parent_path();
+
   std::string temp_file_name;
-  if (!TempFilePath(dir_name, &temp_file_name))
+  if (!TempFilePath(dir_path.string(), &temp_file_name))
     return false;
   if (!File::WriteStringToFile(temp_file_name.c_str(), contents))
     return false;
-  base::File::Error replace_file_error = base::File::FILE_OK;
-  if (!base::ReplaceFile(base::FilePath::FromUTF8Unsafe(temp_file_name),
-                         file_path, &replace_file_error)) {
+
+  std::error_code ec;
+  std::filesystem::rename(temp_file_name, file_name, ec);
+  if (ec) {
     LOG(ERROR) << "Failed to replace file '" << file_name << "' with '"
-               << temp_file_name << "', error: " << replace_file_error;
+               << temp_file_name << "', error: " << ec;
     return false;
   }
   return true;
@@ -100,10 +106,12 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
 }
 
 File* CreateHttpsFile(const char* file_name, const char* mode) {
+  UNUSED(mode);  // TODO: choose method based on file mode
   return new HttpFile(HttpMethod::kPut, std::string("https://") + file_name);
 }
 
 File* CreateHttpFile(const char* file_name, const char* mode) {
+  UNUSED(mode);  // TODO: choose method based on file mode
   return new HttpFile(HttpMethod::kPut, std::string("http://") + file_name);
 }
 
@@ -130,14 +138,14 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kHttpsFilePrefix, &CreateHttpsFile, nullptr, nullptr},
 };
 
-base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {
+std::string_view GetFileTypePrefix(std::string_view file_name) {
   size_t pos = file_name.find("://");
   return (pos == std::string::npos) ? "" : file_name.substr(0, pos + 3);
 }
 
-const FileTypeInfo* GetFileTypeInfo(base::StringPiece file_name,
-                                    base::StringPiece* real_file_name) {
-  base::StringPiece file_type_prefix = GetFileTypePrefix(file_name);
+const FileTypeInfo* GetFileTypeInfo(std::string_view file_name,
+                                    std::string_view* real_file_name) {
+  std::string_view file_type_prefix = GetFileTypePrefix(file_name);
   for (const FileTypeInfo& file_type : kFileTypeInfo) {
     if (file_type_prefix == file_type.type) {
       *real_file_name = file_name.substr(file_type_prefix.size());
@@ -155,23 +163,25 @@ File* File::Create(const char* file_name, const char* mode) {
   std::unique_ptr<File, FileCloser> internal_file(
       CreateInternalFile(file_name, mode));
 
-  base::StringPiece file_type_prefix = GetFileTypePrefix(file_name);
+  std::string_view file_type_prefix = GetFileTypePrefix(file_name);
   if (file_type_prefix == kMemoryFilePrefix ||
       file_type_prefix == kCallbackFilePrefix) {
     // Disable caching for memory and callback files.
     return internal_file.release();
   }
 
-  if (FLAGS_io_cache_size) {
+  if (absl::GetFlag(FLAGS_io_cache_size)) {
     // Enable threaded I/O for "r", "w", and "a" modes only.
     if (!strcmp(mode, "r")) {
       return new ThreadedIoFile(std::move(internal_file),
-                                ThreadedIoFile::kInputMode, FLAGS_io_cache_size,
-                                FLAGS_io_block_size);
+                                ThreadedIoFile::kInputMode,
+                                absl::GetFlag(FLAGS_io_cache_size),
+                                absl::GetFlag(FLAGS_io_block_size));
     } else if (!strcmp(mode, "w") || !strcmp(mode, "a")) {
       return new ThreadedIoFile(std::move(internal_file),
                                 ThreadedIoFile::kOutputMode,
-                                FLAGS_io_cache_size, FLAGS_io_block_size);
+                                absl::GetFlag(FLAGS_io_cache_size),
+                                absl::GetFlag(FLAGS_io_block_size));
     }
   }
 
@@ -181,7 +191,7 @@ File* File::Create(const char* file_name, const char* mode) {
 }
 
 File* File::CreateInternalFile(const char* file_name, const char* mode) {
-  base::StringPiece real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   // Calls constructor for the derived File class.
@@ -212,7 +222,7 @@ File* File::OpenWithNoBuffering(const char* file_name, const char* mode) {
 
 bool File::Delete(const char* file_name) {
   static bool logged = false;
-  base::StringPiece real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   if (file_type->delete_function) {
@@ -288,7 +298,7 @@ bool File::WriteStringToFile(const char* file_name,
 bool File::WriteFileAtomically(const char* file_name,
                                const std::string& contents) {
   VLOG(2) << "File::WriteFileAtomically: " << file_name;
-  base::StringPiece real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
   if (file_type->atomic_write_function)
@@ -386,28 +396,15 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
 }
 
 bool File::IsLocalRegularFile(const char* file_name) {
-  base::StringPiece real_file_name;
+  std::string_view real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
+
   if (file_type->type != kLocalFilePrefix)
     return false;
-#if defined(OS_WIN)
-  const base::FilePath file_path(
-      base::FilePath::FromUTF8Unsafe(real_file_name));
-  const DWORD fileattr = GetFileAttributes(file_path.value().c_str());
-  if (fileattr == INVALID_FILE_ATTRIBUTES) {
-    LOG(ERROR) << "Failed to GetFileAttributes of " << file_path.value();
-    return false;
-  }
-  return (fileattr & FILE_ATTRIBUTE_DIRECTORY) == 0;
-#else
-  struct stat info;
-  if (stat(real_file_name.data(), &info) != 0) {
-    LOG(ERROR) << "Failed to run stat on " << real_file_name;
-    return false;
-  }
-  return S_ISREG(info.st_mode);
-#endif
+
+  std::error_code ec;
+  return std::filesystem::is_regular_file(real_file_name, ec);
 }
 
 std::string File::MakeCallbackFileName(
@@ -415,9 +412,9 @@ std::string File::MakeCallbackFileName(
     const std::string& name) {
   if (name.empty())
     return "";
-  return base::StringPrintf("%s%" PRIdPTR "/%s", kCallbackFilePrefix,
-                            reinterpret_cast<intptr_t>(&callback_params),
-                            name.c_str());
+  return absl::StrFormat("%s%" PRIdPTR "/%s", kCallbackFilePrefix,
+                         reinterpret_cast<intptr_t>(&callback_params),
+                         name.c_str());
 }
 
 bool File::ParseCallbackFileName(const std::string& callback_file_name,
@@ -426,8 +423,7 @@ bool File::ParseCallbackFileName(const std::string& callback_file_name,
   size_t pos = callback_file_name.find("/");
   int64_t callback_address = 0;
   if (pos == std::string::npos ||
-      !base::StringToInt64(callback_file_name.substr(0, pos),
-                           &callback_address)) {
+      !absl::SimpleAtoi(callback_file_name.substr(0, pos), &callback_address)) {
     LOG(ERROR) << "Expecting CallbackFile with name like "
                   "'<callback address>/<entity name>', but seeing "
                << callback_file_name;

@@ -10,19 +10,11 @@ RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|
 RUN yum install -y \
         which \
         c-ares-devel libatomic \
-        gcc-c++ git python2 python3
+        cmake gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ git python3
 
-# Default to python2 because our build system is ancient.
-RUN ln -sf python2 /usr/bin/python
-
-# Install depot_tools.
-WORKDIR /
-RUN git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-RUN touch depot_tools/.disable_auto_update
-ENV PATH /depot_tools:$PATH
-
-# Bypass VPYTHON included by depot_tools.  Prefer the system installation.
-ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+# CentOS 8 is old, and the g++ version installed doesn't automatically link the
+# C++ filesystem library as it should.  Activate a newer dev environment.
+ENV PATH="/opt/rh/gcc-toolset-9/root/usr/bin:$PATH"
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

@@ -1,0 +1,63 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# A reusable workflow to build Packager docs.  Leaves docs output in the
+# "gh-pages" folder.  Only runs in Linux due to the dependency on doxygen,
+# which we install with apt.
+name: Build Docs
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+jobs:
+  docs:
+    name: Build docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt install -y doxygen
+          python3 -m pip install \
+              sphinxcontrib.plantuml \
+              recommonmark \
+              cloud_sptheme \
+              breathe
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Generate docs
+        run: |
+          mkdir -p gh-pages
+          mkdir -p build
+
+          # Doxygen must run before Sphinx.  Sphinx will refer to
+          # Doxygen-generated output when it builds its own docs.
+          doxygen docs/Doxyfile
+
+          # Now build the Sphinx-based docs.
+          make -C docs/ html
+
+          # Now move the generated outputs.
+          cp -a build/sphinx/html gh-pages/html
+          cp -a build/doxygen/html gh-pages/docs
+          cp docs/index.html gh-pages/index.html

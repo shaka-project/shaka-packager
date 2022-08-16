@@ -7,36 +7,45 @@
 #include "packager/file/http_file.h"
 
 #include <curl/curl.h>
-#include <gflags/gflags.h>
 
-#include "packager/base/bind.h"
-#include "packager/base/files/file_util.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/base/threading/worker_pool.h"
+#include "absl/flags/declare.h"
+#include "absl/flags/flag.h"
+#include "absl/strings/escaping.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
+
+#include "packager/common.h"
+#include "packager/file/thread_pool.h"
 #include "packager/version/version.h"
 
-DEFINE_string(user_agent, "",
-              "Set a custom User-Agent string for HTTP requests.");
-DEFINE_string(ca_file,
-              "",
-              "Absolute path to the Certificate Authority file for the "
-              "server cert. PEM format");
-DEFINE_string(client_cert_file,
-              "",
-              "Absolute path to client certificate file.");
-DEFINE_string(client_cert_private_key_file,
-              "",
-              "Absolute path to the Private Key file.");
-DEFINE_string(client_cert_private_key_password,
-              "",
-              "Password to the private key file.");
-DEFINE_bool(disable_peer_verification,
-            false,
-            "Disable peer verification. This is needed to talk to servers "
-            "without valid certificates.");
-DECLARE_uint64(io_cache_size);
+ABSL_FLAG(std::string,
+          user_agent,
+          "",
+          "Set a custom User-Agent string for HTTP requests.");
+ABSL_FLAG(std::string,
+          ca_file,
+          "",
+          "Absolute path to the Certificate Authority file for the "
+          "server cert. PEM format");
+ABSL_FLAG(std::string,
+          client_cert_file,
+          "",
+          "Absolute path to client certificate file.");
+ABSL_FLAG(std::string,
+          client_cert_private_key_file,
+          "",
+          "Absolute path to the Private Key file.");
+ABSL_FLAG(std::string,
+          client_cert_private_key_password,
+          "",
+          "Password to the private key file.");
+ABSL_FLAG(bool,
+          disable_peer_verification,
+          false,
+          "Disable peer verification. This is needed to talk to servers "
+          "without valid certificates.");
+
+ABSL_DECLARE_FLAG(uint64_t, io_cache_size);
 
 namespace shaka {
 
@@ -114,11 +123,12 @@ int CurlDebugCallback(CURL* /* handle */,
       return 0;
   }
 
+  const std::string data_string(data, size);
   VLOG(log_level) << "\n\n"
                   << type_text << " (0x" << std::hex << size << std::dec
                   << " bytes)\n"
-                  << (in_hex ? base::HexEncode(data, size)
-                             : std::string(data, size));
+                  << (in_hex ? absl::BytesToHexString(data_string)
+                             : data_string);
   return 0;
 }
 
@@ -163,13 +173,17 @@ HttpFile::HttpFile(HttpMethod method,
       upload_content_type_(upload_content_type),
       timeout_in_seconds_(timeout_in_seconds),
       method_(method),
-      download_cache_(FLAGS_io_cache_size),
-      upload_cache_(FLAGS_io_cache_size),
+      download_cache_(absl::GetFlag(FLAGS_io_cache_size)),
+      upload_cache_(absl::GetFlag(FLAGS_io_cache_size)),
       curl_(curl_easy_init()),
       status_(Status::OK),
-      user_agent_(FLAGS_user_agent),
-      task_exit_event_(base::WaitableEvent::ResetPolicy::MANUAL,
-                       base::WaitableEvent::InitialState::NOT_SIGNALED) {
+      user_agent_(absl::GetFlag(FLAGS_user_agent)),
+      ca_file_(absl::GetFlag(FLAGS_ca_file)),
+      client_cert_file_(absl::GetFlag(FLAGS_client_cert_file)),
+      client_cert_private_key_file_(
+          absl::GetFlag(FLAGS_client_cert_private_key_file)),
+      client_cert_private_key_password_(
+          absl::GetFlag(FLAGS_client_cert_private_key_password)) {
   static LibCurlInitializer lib_curl_initializer;
   if (user_agent_.empty()) {
     user_agent_ += "ShakaPackager/" + GetPackagerVersion();
@@ -212,9 +226,7 @@ bool HttpFile::Open() {
   // TODO: Implement retrying with exponential backoff, see
   // "widevine_key_source.cc"
 
-  base::WorkerPool::PostTask(
-      FROM_HERE, base::Bind(&HttpFile::ThreadMain, base::Unretained(this)),
-      /* task_is_slow= */ true);
+  ThreadPool::instance.PostTask(std::bind(&HttpFile::ThreadMain, this));
 
   return true;
 }
@@ -225,7 +237,7 @@ Status HttpFile::CloseWithStatus() {
   // will wait for more data forever.
   download_cache_.Close();
   upload_cache_.Close();
-  task_exit_event_.Wait();
+  task_exit_event_.WaitForNotification();
 
   const Status result = status_;
   LOG_IF(ERROR, !result.ok()) << "HttpFile request failed: " << result;
@@ -258,11 +270,13 @@ bool HttpFile::Flush() {
 }
 
 bool HttpFile::Seek(uint64_t position) {
+  UNUSED(position);
   LOG(ERROR) << "HttpFile does not support Seek().";
   return false;
 }
 
 bool HttpFile::Tell(uint64_t* position) {
+  UNUSED(position);
   LOG(ERROR) << "HttpFile does not support Tell().";
   return false;
 }
@@ -304,25 +318,24 @@ void HttpFile::SetupRequest() {
 
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, request_headers_.get());
 
-  if (FLAGS_disable_peer_verification)
+  if (absl::GetFlag(FLAGS_disable_peer_verification))
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 
   // Client authentication
-  if (!FLAGS_client_cert_private_key_file.empty() &&
-      !FLAGS_client_cert_file.empty()) {
+  if (!client_cert_private_key_file_.empty() && !client_cert_file_.empty()) {
     curl_easy_setopt(curl, CURLOPT_SSLKEY,
-                     FLAGS_client_cert_private_key_file.data());
-    curl_easy_setopt(curl, CURLOPT_SSLCERT, FLAGS_client_cert_file.data());
+                     client_cert_private_key_file_.data());
+    curl_easy_setopt(curl, CURLOPT_SSLCERT, client_cert_file_.data());
     curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
     curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
 
-    if (!FLAGS_client_cert_private_key_password.empty()) {
+    if (!client_cert_private_key_password_.empty()) {
       curl_easy_setopt(curl, CURLOPT_KEYPASSWD,
-                       FLAGS_client_cert_private_key_password.data());
+                       client_cert_private_key_password_.data());
     }
   }
-  if (!FLAGS_ca_file.empty()) {
-    curl_easy_setopt(curl, CURLOPT_CAINFO, FLAGS_ca_file.data());
+  if (!ca_file_.empty()) {
+    curl_easy_setopt(curl, CURLOPT_CAINFO, ca_file_.data());
   }
 
   if (VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
@@ -340,8 +353,7 @@ void HttpFile::ThreadMain() {
     if (res == CURLE_HTTP_RETURNED_ERROR) {
       long response_code = 0;
       curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &response_code);
-      error_message +=
-          base::StringPrintf(", response code: %ld.", response_code);
+      error_message += absl::StrFormat(", response code: %ld.", response_code);
     }
 
     status_ = Status(
@@ -350,7 +362,7 @@ void HttpFile::ThreadMain() {
   }
 
   download_cache_.Close();
-  task_exit_event_.Signal();
+  task_exit_event_.Notify();
 }
 
 }  // namespace shaka

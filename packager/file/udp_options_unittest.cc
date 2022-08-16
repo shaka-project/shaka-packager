@@ -6,16 +6,24 @@
 
 #include "packager/file/udp_options.h"
 
-#include <gflags/gflags.h>
 #include <gtest/gtest.h>
 
-DECLARE_string(udp_interface_address);
+#include "absl/flags/declare.h"
+#include "absl/flags/flag.h"
+#include "packager/flag_saver.h"
+
+ABSL_DECLARE_FLAG(std::string, udp_interface_address);
 
 namespace shaka {
 
 class UdpOptionsTest : public testing::Test {
  public:
-  void SetUp() override { FLAGS_udp_interface_address = ""; }
+  UdpOptionsTest() : saver(&FLAGS_udp_interface_address) {}
+
+  void SetUp() override { absl::SetFlag(&FLAGS_udp_interface_address, ""); }
+
+ private:
+  FlagSaver<std::string> saver;
 };
 
 TEST_F(UdpOptionsTest, AddressAndPort) {
@@ -47,7 +55,7 @@ TEST_F(UdpOptionsTest, MissingAddress) {
 }
 
 TEST_F(UdpOptionsTest, UdpInterfaceAddressFlag) {
-  FLAGS_udp_interface_address = "10.11.12.13";
+  absl::SetFlag(&FLAGS_udp_interface_address, "10.11.12.13");
 
   auto options = UdpOptions::ParseFromString("224.1.2.30:88");
   ASSERT_TRUE(options);

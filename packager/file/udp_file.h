@@ -11,10 +11,10 @@
 
 #include <string>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/file/file.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
 #include <winsock2.h>
 #else
 typedef int SOCKET;

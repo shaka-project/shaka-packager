@@ -7,7 +7,7 @@
 #ifndef MEDIA_FILE_FILE_CLOSER_H_
 #define MEDIA_FILE_FILE_CLOSER_H_
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/file/file.h"
 
 namespace shaka {

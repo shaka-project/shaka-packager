@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/file/file.h"
 
 namespace shaka {

@@ -1,0 +1,67 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Build and Test PR
+
+# Builds and tests on all combinations of OS, build type, and library type.
+# Also builds the docs.
+#
+# Runs when a pull request is opened or updated.
+#
+# Can also be run manually for debugging purposes.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref to build and test."
+        required: False
+
+jobs:
+  lint:
+    name: Lint
+    uses: ./.github/workflows/lint.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
+
+  build_and_test:
+    needs: lint
+    name: Build and test
+    uses: ./.github/workflows/build.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
+
+  build_docs:
+    needs: lint
+    name: Build docs
+    uses: ./.github/workflows/build-docs.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
+
+  official_docker_image:
+    needs: lint
+    name: Official Docker image
+    uses: ./.github/workflows/docker-image.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
+
+  test_supported_linux_distros:
+    # Doesn't really "need" it, but let's not waste time on a series of docker
+    # builds just to cancel it because of a linter error.
+    needs: lint
+    name: Test Linux distros
+    uses: ./.github/workflows/test-linux-distros.yaml
+    with:
+      ref: ${{ github.event.inputs.ref || github.ref }}
