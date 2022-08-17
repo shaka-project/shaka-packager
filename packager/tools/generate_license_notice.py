@@ -17,13 +17,13 @@ PRUNE_PATHS = [
     os.path.join('third_party', 'json'),
     os.path.join('third_party', 'googletest'),
 
-    # The Java side of icu, not used in Packager.
-    os.path.join('third_party', 'icu', 'source', 'icu4j'),
-
     # Dependencies of dependencies, not actually used in Packager.
     os.path.join('third_party', 'libpng', 'source', 'contrib'),
 
-    # Comes with ICU, not used in packager.
+    # The Java side of icu, not used in Packager.
+    os.path.join('third_party', 'icu', 'source', 'icu4j'),
+
+    # Misc. ICU scripts, not used in Packager.
     os.path.join('third_party', 'icu', 'scripts'),
 ]
 
