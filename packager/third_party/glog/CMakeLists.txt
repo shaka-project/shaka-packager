@@ -16,7 +16,9 @@ set(WITH_GTEST OFF)
 set(WITH_UNWIND OFF)
 
 # Disable this warning/error, which occurs in demangle.c on macOS:
-add_compile_options(-Wno-shorten-64-to-32)
+if(NOT MSVC)
+  add_compile_options(-Wno-shorten-64-to-32)
+endif()
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
