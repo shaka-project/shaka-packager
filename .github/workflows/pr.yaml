@@ -22,6 +22,10 @@ on:
         required: False
 
 jobs:
+  settings:
+    name: Settings
+    uses: ./.github/workflows/settings.yaml
+
   lint:
     name: Lint
     uses: ./.github/workflows/lint.yaml
@@ -29,18 +33,21 @@ jobs:
       ref: ${{ github.event.inputs.ref || github.ref }}
 
   build_and_test:
-    needs: lint
+    needs: [lint, settings]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
       ref: ${{ github.event.inputs.ref || github.ref }}
+      self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
 
   build_docs:
-    needs: lint
+    needs: [lint, settings]
     name: Build docs
     uses: ./.github/workflows/build-docs.yaml
     with:
       ref: ${{ github.event.inputs.ref || github.ref }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
 
   official_docker_image:
     needs: lint

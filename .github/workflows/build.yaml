@@ -15,21 +15,21 @@ on:
       ref:
         required: true
         type: string
+      # If true, start a debug SSH server on failures.
+      debug:
+        required: false
+        type: boolean
+        default: false
+      # If true, enable self-hosted runners in the build matrix.
+      self_hosted:
+        required: false
+        type: boolean
+        default: false
+
     secrets:
       # The GITHUB_TOKEN name is reserved, but not passed through implicitly.
       # So we call our secret parameter simply TOKEN.
       TOKEN:
-        required: false
-
-      # These below are not actual secrets, but secrets are the only place to
-      # keep repo-specific configs that make this project friendlier to forks
-      # and easier to debug.
-
-      # If non-empty, start a debug SSH server on failures.
-      ENABLE_DEBUG:
-        required: false
-      # If non-empty, enable self-hosted runners in the build matrix.
-      ENABLE_SELF_HOSTED:
         required: false
 
 # By default, run all commands in a bash shell.  On Windows, the default would
@@ -41,15 +41,14 @@ defaults:
 jobs:
   # Configure the build matrix based on inputs.  The list of objects in the
   # build matrix contents can't be changed by conditionals, but it can be
-  # computed by another job and deserialized.  This uses
-  # secrets.ENABLE_SELF_HOSTED to determine the build matrix, based on the
-  # metadata in build-matrix.json.
-  matrix_config:
+  # computed by another job and deserialized.  This uses inputs.self_hosted to
+  # determine the build matrix, based on the metadata in build-matrix.json.
+  build_matrix_config:
+    name: Matrix configuration
     runs-on: ubuntu-latest
     outputs:
       INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
       OS: ${{ steps.configure.outputs.OS }}
-      ENABLE_DEBUG: ${{ steps.configure.outputs.ENABLE_DEBUG }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -59,11 +58,10 @@ jobs:
         id: configure
         shell: node {0}
         run: |
-          const enableDebug = "${{ secrets.ENABLE_DEBUG }}" != '';
-          const enableSelfHosted = "${{ secrets.ENABLE_SELF_HOSTED }}" != '';
+          const enableSelfHosted = ${{ inputs.self_hosted }};
 
-          // Use ENABLE_SELF_HOSTED to decide what the build matrix below
-          // should include.
+          // Use enableSelfHosted to decide what the build matrix below should
+          // include.
           const {hosted, selfHosted} = require("${{ github.workspace }}/.github/workflows/build-matrix.json");
           const include = enableSelfHosted ? hosted.concat(selfHosted) : hosted;
           const os = include.map((config) => config.os);
@@ -72,19 +70,16 @@ jobs:
           console.log(`::set-output name=INCLUDE::${ JSON.stringify(include) }`);
           console.log(`::set-output name=OS::${ JSON.stringify(os) }`);
 
-          // Output the debug flag directly.
-          console.log(`::set-output name=ENABLE_DEBUG::${ enableDebug }`);
-
           // Log the outputs, for the sake of debugging this script.
-          console.log({enableDebug, include, os});
+          console.log({enableSelfHosted, include, os});
 
   build:
-    needs: matrix_config
+    needs: build_matrix_config
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(needs.matrix_config.outputs.INCLUDE) }}
-        os: ${{ fromJSON(needs.matrix_config.outputs.OS) }}
+        include: ${{ fromJSON(needs.build_matrix_config.outputs.INCLUDE) }}
+        os: ${{ fromJSON(needs.build_matrix_config.outputs.OS) }}
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
 
@@ -198,4 +193,4 @@ jobs:
         uses: mxschmitt/action-tmate@v3.6
         with:
           limit-access-to-actor: true
-        if: failure() && needs.matrix_config.outputs.ENABLE_DEBUG != ''
+        if: failure() && inputs.debug

@@ -23,8 +23,8 @@ defaults:
 
 jobs:
   # Configure the build matrix based on files in the repo.
-  matrix_config:
-    name: Matrix config
+  docker_matrix_config:
+    name: Matrix configuration
     runs-on: ubuntu-latest
     outputs:
       MATRIX: ${{ steps.configure.outputs.MATRIX }}
@@ -51,13 +51,13 @@ jobs:
 
   # Build each dockerfile in parallel in a different CI job.
   build:
-    needs: matrix_config
+    needs: docker_matrix_config
     strategy:
       # Let other matrix entries complete, so we have all results on failure
       # instead of just the first failure.
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(needs.matrix_config.outputs.MATRIX) }}
+        include: ${{ fromJSON(needs.docker_matrix_config.outputs.MATRIX) }}
 
     name: ${{ matrix.os_name }}
     runs-on: ubuntu-latest

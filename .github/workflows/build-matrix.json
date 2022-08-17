@@ -21,7 +21,7 @@
     }
   ],
 
-  "comment2": "runners hosted by the owner, enabled by the ENABLE_SELF_HOSTED secret being set on the repo",
+  "comment2": "runners hosted by the owner, enabled by the 'self_hosted' environment being created on the repo",
   "selfHosted": [
     {
       "os": "self-hosted-linux-arm64",

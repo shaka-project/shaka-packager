@@ -18,7 +18,7 @@ on:
         type: string
 
       # If true, start a debug SSH server on failures.
-      ENABLE_DEBUG:
+      debug:
         required: false
         type: boolean
         default: false
@@ -64,4 +64,4 @@ jobs:
         uses: mxschmitt/action-tmate@v3.6
         with:
           limit-access-to-actor: true
-        if: failure() && inputs.ENABLE_DEBUG
+        if: failure() && inputs.debug

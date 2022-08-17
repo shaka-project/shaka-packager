@@ -60,7 +60,11 @@
    pushing bogus packages to NPM during CI testing from a fork
    - In a fork, set to a private name which differs from the production one
 
-## Optional Repo Secrets
- - `ENABLE_DEBUG`: Set to non-empty to enable debugging via SSH after a failure
- - `ENABLE_SELF_HOSTED`: Set to non-empty to enable self-hosted runners in the
-   build matrix
+## Repo Settings
+
+Each of these workflow features can be enabled by creating a "GitHub
+Environment" with the same name in your repo settings.  Forks will not have
+these enabled by default.
+
+ - `debug`: enable debugging via SSH after a failure
+ - `self_hosted`: enable self-hosted runners in the build matrix
