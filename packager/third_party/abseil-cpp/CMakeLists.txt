@@ -6,8 +6,6 @@
 
 # CMake build file to host abseil-cpp configuration.
 
-# Variables that must be defined for third-party libraries.
-
 # This will be the new default, so turn it on now to suppress a warning.
 set(ABSL_PROPAGATE_CXX_STD ON)
 

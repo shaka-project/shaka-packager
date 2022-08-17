@@ -15,5 +15,10 @@ set(WITH_GTEST OFF)
 # Don't depend on or search for libunwind.
 set(WITH_UNWIND OFF)
 
+# Disable this warning/error, which occurs in demangle.c on macOS:
+if(NOT MSVC)
+  add_compile_options(-Wno-shorten-64-to-32)
+endif()
+
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
