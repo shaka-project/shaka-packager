@@ -151,6 +151,8 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
     key.append("video:");
   } else if (media_info.has_audio_info()) {
     key.append("audio:");
+	key.append(std::to_string(media_info.audio_info().num_channels()));
+	key.append(":");
   } else if (media_info.has_text_info()) {
     key.append(MediaInfo_TextInfo_TextType_Name(media_info.text_info().type()));
     key.append(":");
