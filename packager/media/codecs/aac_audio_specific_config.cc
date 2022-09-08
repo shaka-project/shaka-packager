@@ -129,7 +129,7 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
     extension_frequency_ = kSampleRates[extension_frequency_index];
   }
   
-  if (audio_object_type_ == 42) {
+  if (audio_object_type_ == AOT_USAC) {
     return frequency_ != 0 && num_channels_ != 0 && channel_config_ <= 7;
   } else {
     return frequency_ != 0 && num_channels_ != 0 && audio_object_type_ >= 1 &&
@@ -209,7 +209,7 @@ uint8_t AACAudioSpecificConfig::GetNumChannels() const {
 bool AACAudioSpecificConfig::ParseAudioObjectType(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(5, &audio_object_type_));
   
-  if (audio_object_type_ == 31) {
+  if (audio_object_type_ == AOT_ESCAPE) {
     uint8_t audioObjectTypeExt;
     RCHECK(bit_reader->ReadBits(6, &audioObjectTypeExt));
     audio_object_type_ = static_cast<AudioObjectType>(32 + audioObjectTypeExt);
