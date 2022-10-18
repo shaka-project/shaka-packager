@@ -66,10 +66,10 @@ class AACAudioSpecificConfig {
     AOT_ER_AAC_ELD       = 39,  // Error Resilient Enhanced Low Delay
     AOT_SMR_SIMPLE       = 40,  // Symbolic Music Representation Simple
     AOT_SMR_MAIN         = 41,  // Symbolic Music Representation Main
-    AOT_USAC_NOSBR       = 42,  // Unified Speech and Audio Coding (no SBR)
+    AOT_USAC             = 42,  // Unified Speech and Audio Coding
     AOT_SAOC             = 43,  // Spatial Audio Object Coding
     AOT_LD_SURROUND      = 44,  // Low Delay MPEG Surround
-    AOT_USAC             = 45,  // Unified Speech and Audio Coding
+    SAOC_DE              = 45,  // Spatial Audio Object Coding Dialogue Enhancement
   };
 
   AACAudioSpecificConfig();
@@ -114,6 +114,7 @@ class AACAudioSpecificConfig {
   void set_sbr_present(bool sbr_present) { sbr_present_ = sbr_present; }
 
  private:
+  bool ParseAudioObjectType(BitReader* bit_reader);
   bool ParseDecoderGASpecificConfig(BitReader* bit_reader);
   bool SkipErrorSpecificConfig() const;
   // Parse GASpecificConfig. Calls |ParseProgramConfigElement| if
