@@ -17,6 +17,12 @@ on:
         required: true
         type: string
 
+      # If true, start a debug SSH server on failures.
+      ENABLE_DEBUG:
+        required: false
+        type: boolean
+        default: false
+
 jobs:
   docs:
     name: Build docs
@@ -53,3 +59,9 @@ jobs:
           cp -a build/sphinx/html gh-pages/html
           cp -a build/doxygen/html gh-pages/docs
           cp docs/index.html gh-pages/index.html
+
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3.6
+        with:
+          limit-access-to-actor: true
+        if: failure() && inputs.ENABLE_DEBUG
