@@ -35,7 +35,6 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               'sphinxcontrib.plantuml',
               'recommonmark',
-              'cloud_sptheme.ext.table_styling',
               'breathe']
 
 # Breathe configurations.

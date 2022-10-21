@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #
-# Copyright 2018 Google Inc. All rights reserved.
+# Copyright 2018 Google LLC. All rights reserved.
 #
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file or at
@@ -13,34 +13,18 @@ import sys
 
 LICENSE_FILES = set(['LICENSE', 'LICENSE.TXT', 'COPYING'])
 PRUNE_PATHS = [
-    # Identical to third_party/icu.
-    os.path.join('base', 'third_party', 'icu'),
+    # Used for testing, not in the binary build.
+    os.path.join('third_party', 'json'),
+    os.path.join('third_party', 'googletest'),
 
-    # Comes with Chromium base, not used in packager.
-    os.path.join('base', 'third_party', 'libevent'),
-    os.path.join('base', 'third_party', 'nspr'),
-    os.path.join('base', 'third_party', 'superfasthash'),
-    os.path.join('base', 'third_party', 'xdg_mime'),
-    os.path.join('base', 'third_party', 'xdg_user_dirs'),
+    # Dependencies of dependencies, not actually used in Packager.
+    os.path.join('third_party', 'libpng', 'source', 'contrib'),
 
-    # Used for development and test, not in the binary build.
-    os.path.join('buildtools', 'third_party', 'libc++', 'trunk', 'utils',
-                 'google-benchmark'),
-    os.path.join('testing', 'gmock'),
-    os.path.join('testing', 'gtest'),
-    os.path.join('third_party', 'binutils'),
-    os.path.join('third_party', 'boringssl', 'src', 'third_party',
-                 'googletest'),
-    os.path.join('third_party', 'gold'),
-    os.path.join('tools', 'gyp'),
+    # The Java side of icu, not used in Packager.
+    os.path.join('third_party', 'icu', 'source', 'icu4j'),
 
-    # Comes with Boringssl, not used in packager.
-    os.path.join('third_party', 'boringssl', 'src', 'third_party',
-                 'android-cmake'),
-    # Comes with ICU, not used in packager.
+    # Misc. ICU scripts, not used in Packager.
     os.path.join('third_party', 'icu', 'scripts'),
-    # Required by Chromium base, but not used in packager.
-    os.path.join('third_party', 'libevent'),
 ]
 
 CC_FILE_TEMPLATE = """

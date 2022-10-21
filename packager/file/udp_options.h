@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -6,8 +6,6 @@
 
 #include <memory>
 #include <string>
-
-#include "packager/base/strings/string_piece.h"
 
 namespace shaka {
 
@@ -19,7 +17,7 @@ class UdpOptions {
   /// Parse from UDP url.
   /// @param udp_url is the url of the form udp://ip:port[?options]
   /// @returns a UdpOptions object on success, nullptr otherwise.
-  static std::unique_ptr<UdpOptions> ParseFromString(base::StringPiece udp_url);
+  static std::unique_ptr<UdpOptions> ParseFromString(std::string_view udp_url);
 
   const std::string& address() const { return address_; }
   uint16_t port() const { return port_; }

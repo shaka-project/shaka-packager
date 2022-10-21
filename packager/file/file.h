@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,9 +11,9 @@
 
 #include <string>
 
-#include "packager/base/macros.h"
+#include "packager/common.h"
 #include "packager/file/public/buffer_callback_params.h"
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 
