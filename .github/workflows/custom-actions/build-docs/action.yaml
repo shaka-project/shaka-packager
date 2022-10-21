@@ -17,7 +17,6 @@ runs:
         python3 -m pip install \
             sphinxcontrib.plantuml \
             recommonmark \
-            cloud_sptheme \
             breathe
         echo "::endgroup::"
 
