@@ -225,6 +225,7 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   for (std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
     fragmenter->ClearFragmentFinalized();
+
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
     Status status = DoFinalizeChunk();
