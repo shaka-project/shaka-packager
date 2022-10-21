@@ -21,6 +21,7 @@ option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
 # No in-source builds allowed.
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+# TODO: Prevent accidental cmake invocation from deeper inside packager tree?
 
 # Minimum C++ version.
 set(CMAKE_CXX_STANDARD 17)

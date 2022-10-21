@@ -38,6 +38,9 @@ else()
   add_compile_options(-Wall -Wextra -Werror)
 endif()
 
+# Include our module for building protos.
+include("protobuf.cmake")
+
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
 add_subdirectory(kv_pairs)
