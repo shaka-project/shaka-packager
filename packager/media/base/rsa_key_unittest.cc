@@ -7,38 +7,108 @@
 // Unit test for rsa_key RSA encryption and signing.
 
 #include <gtest/gtest.h>
+#include <filesystem>
 #include <memory>
-#include "packager/media/base/rsa_key.h"
-#include "packager/media/base/test/fake_prng.h"
-#include "packager/media/base/test/rsa_test_data.h"
 
-namespace {
-// BoringSSL does not support RAND_set_rand_method yet, so we cannot use fake
-// prng with boringssl.
-const bool kIsFakePrngSupported = false;
-}  // namespace
+#include "glog/logging.h"
+#include "packager/media/base/rsa_key.h"
+#include "packager/media/base/test/rsa_test_data.h"
+#include "packager/media/test/test_data_util.h"
 
 namespace shaka {
 namespace media {
+
+namespace {
+
+const char kFakePrngDataFile[] = "fake_prng_data.bin";
+
+FILE* OpenFakePrng() {
+  // Open deterministic random data file for the fake PRNG.
+  std::filesystem::path path = GetTestDataFilePath(kFakePrngDataFile);
+  FILE* fp = fopen(path.string().c_str(), "rb");
+  if (!fp) {
+    LOG(ERROR) << "Cannot open " << kFakePrngDataFile;
+  }
+  return fp;
+}
+
+// mbedtls prng plugin.  Called by mbedtls to get random bytes.
+int FakePrngFunc(void* ctx, unsigned char* output, size_t len) {
+  DCHECK(ctx);
+  FILE* rand_source_fp = reinterpret_cast<FILE*>(ctx);
+
+  DCHECK(output);
+
+  if (fread(output, 1, len, rand_source_fp) < len) {
+    return MBEDTLS_ERR_ENTROPY_SOURCE_FAILED;
+  }
+  return 0;
+}
+
+class DeterministicRsaPublicKey : public RsaPublicKey {
+ public:
+  static DeterministicRsaPublicKey* Create(const std::string& serialized_key) {
+    std::unique_ptr<DeterministicRsaPublicKey> key(
+        new DeterministicRsaPublicKey());
+    if (!key->Deserialize(serialized_key)) {
+      return NULL;
+    }
+    return key.release();
+  }
+
+  ~DeterministicRsaPublicKey() {
+    if (fake_prng_fp_)
+      fclose(fake_prng_fp_);
+  }
+
+ protected:
+  DeterministicRsaPublicKey() : RsaPublicKey() {
+    fake_prng_fp_ = OpenFakePrng();
+  }
+
+  void* GetPrngContext() override { return fake_prng_fp_; }
+  prng_func_t GetPrngFunc() override { return FakePrngFunc; }
+
+  FILE* fake_prng_fp_;
+};
+
+class DeterministicRsaPrivateKey : public RsaPrivateKey {
+ public:
+  static DeterministicRsaPrivateKey* Create(const std::string& serialized_key) {
+    std::unique_ptr<DeterministicRsaPrivateKey> key(
+        new DeterministicRsaPrivateKey());
+    if (!key->Deserialize(serialized_key)) {
+      return NULL;
+    }
+    return key.release();
+  }
+
+  ~DeterministicRsaPrivateKey() {
+    if (fake_prng_fp_)
+      fclose(fake_prng_fp_);
+  }
+
+ protected:
+  DeterministicRsaPrivateKey() : RsaPrivateKey() {
+    fake_prng_fp_ = OpenFakePrng();
+  }
+
+  void* GetPrngContext() override { return fake_prng_fp_; }
+  prng_func_t GetPrngFunc() override { return FakePrngFunc; }
+
+  FILE* fake_prng_fp_;
+};
 
 class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
  public:
   RsaKeyTest() : test_set_(GetParam()) {}
 
   void SetUp() override {
-    if (kIsFakePrngSupported) {
-      // Make OpenSSL RSA deterministic.
-      ASSERT_TRUE(fake_prng::StartFakePrng());
-    }
-
     private_key_.reset(RsaPrivateKey::Create(test_set_.private_key));
     ASSERT_TRUE(private_key_ != NULL);
+
     public_key_.reset(RsaPublicKey::Create(test_set_.public_key));
     ASSERT_TRUE(public_key_ != NULL);
-  }
-  void TearDown() override {
-    if (kIsFakePrngSupported)
-      fake_prng::StopFakePrng();
   }
 
  protected:
@@ -84,11 +154,14 @@ TEST_P(RsaKeyTest, LoadPrivateKeyInPublicKey) {
 }
 
 TEST_P(RsaKeyTest, EncryptAndDecrypt) {
+  std::unique_ptr<DeterministicRsaPublicKey> deterministic_public_key(
+      DeterministicRsaPublicKey::Create(test_set_.public_key));
+  ASSERT_TRUE(deterministic_public_key != NULL);
+
   std::string encrypted_message;
-  EXPECT_TRUE(public_key_->Encrypt(test_set_.test_message, &encrypted_message));
-  if (kIsFakePrngSupported) {
-    EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
-  }
+  ASSERT_TRUE(deterministic_public_key->Encrypt(test_set_.test_message,
+                                                &encrypted_message));
+  EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
 
   std::string decrypted_message;
   EXPECT_TRUE(private_key_->Decrypt(encrypted_message, &decrypted_message));
@@ -122,12 +195,15 @@ TEST_P(RsaKeyTest, BadEncMessage3) {
 }
 
 TEST_P(RsaKeyTest, SignAndVerify) {
+  std::unique_ptr<DeterministicRsaPrivateKey> deterministic_private_key(
+      DeterministicRsaPrivateKey::Create(test_set_.private_key));
+  ASSERT_TRUE(deterministic_private_key != NULL);
+
   std::string signature;
-  EXPECT_TRUE(
-      private_key_->GenerateSignature(test_set_.test_message, &signature));
-  if (kIsFakePrngSupported) {
-    EXPECT_EQ(test_set_.signature, signature);
-  }
+  ASSERT_TRUE(deterministic_private_key->GenerateSignature(
+      test_set_.test_message, &signature));
+  EXPECT_EQ(test_set_.signature, signature);
+
   EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message, signature));
 }
 
@@ -161,5 +237,6 @@ INSTANTIATE_TEST_CASE_P(RsaTestKeys,
                         ::testing::Values(RsaTestData().test_set_3072_bits(),
                                           RsaTestData().test_set_2048_bits()));
 
+}  // namespace
 }  // namespace media
 }  // namespace shaka

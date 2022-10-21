@@ -18,106 +18,113 @@
 
 #include "packager/media/base/rsa_key.h"
 
-#include <openssl/err.h>
-#include <openssl/rsa.h>
-#include <openssl/x509.h>
+#include <memory>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/base/sha1.h"
+#include "glog/logging.h"
+#include "mbedtls/error.h"
 
 namespace {
 
 const size_t kPssSaltLength = 20u;
-
-// Serialize rsa key from DER encoded PKCS#1 RSAPrivateKey.
-RSA* DeserializeRsaKey(const std::string& serialized_key,
-                       bool deserialize_private_key) {
-  if (serialized_key.empty()) {
-    LOG(ERROR) << "Serialized RSA Key is empty.";
-    return NULL;
-  }
-
-  BIO* bio = BIO_new_mem_buf(const_cast<char*>(serialized_key.data()),
-                             serialized_key.size());
-  if (bio == NULL) {
-    LOG(ERROR) << "BIO_new_mem_buf returned NULL.";
-    return NULL;
-  }
-  RSA* rsa_key = deserialize_private_key ? d2i_RSAPrivateKey_bio(bio, NULL)
-                                         : d2i_RSAPublicKey_bio(bio, NULL);
-  BIO_free(bio);
-  return rsa_key;
-}
-
-RSA* DeserializeRsaPrivateKey(const std::string& serialized_key) {
-  RSA* rsa_key = DeserializeRsaKey(serialized_key, true);
-  if (!rsa_key) {
-    LOG(ERROR) << "Private RSA key deserialization failure.";
-    return NULL;
-  }
-  if (RSA_check_key(rsa_key) != 1) {
-    LOG(ERROR) << "Invalid RSA Private key: " << ERR_error_string(
-                                                     ERR_get_error(), NULL);
-    RSA_free(rsa_key);
-    return NULL;
-  }
-  return rsa_key;
-}
-
-RSA* DeserializeRsaPublicKey(const std::string& serialized_key) {
-  RSA* rsa_key = DeserializeRsaKey(serialized_key, false);
-  if (!rsa_key) {
-    LOG(ERROR) << "Private RSA key deserialization failure.";
-    return NULL;
-  }
-  if (RSA_size(rsa_key) <= 0) {
-    LOG(ERROR) << "Invalid RSA Public key: " << ERR_error_string(
-                                                    ERR_get_error(), NULL);
-    RSA_free(rsa_key);
-    return NULL;
-  }
-  return rsa_key;
-}
 
 }  // namespace
 
 namespace shaka {
 namespace media {
 
-RsaPrivateKey::RsaPrivateKey(RSA* rsa_key) : rsa_key_(rsa_key) {
-  DCHECK(rsa_key);
+RsaPrivateKey::RsaPrivateKey() {
+  mbedtls_pk_init(&pk_context_);
+  mbedtls_entropy_init(&entropy_context_);
+  mbedtls_ctr_drbg_init(&prng_context_);
 }
+
 RsaPrivateKey::~RsaPrivateKey() {
-  if (rsa_key_ != NULL)
-    RSA_free(rsa_key_);
+  mbedtls_pk_free(&pk_context_);
+  mbedtls_entropy_free(&entropy_context_);
+  mbedtls_ctr_drbg_free(&prng_context_);
 }
 
 RsaPrivateKey* RsaPrivateKey::Create(const std::string& serialized_key) {
-  RSA* rsa_key = DeserializeRsaPrivateKey(serialized_key);
-  return rsa_key == NULL ? NULL : new RsaPrivateKey(rsa_key);
+  std::unique_ptr<RsaPrivateKey> key(new RsaPrivateKey());
+  if (!key->Deserialize(serialized_key)) {
+    return NULL;
+  }
+  return key.release();
+}
+
+// Can be overridden for deterministic testing:
+RsaPrivateKey::prng_func_t RsaPrivateKey::GetPrngFunc() {
+  return mbedtls_ctr_drbg_random;
+}
+
+// Can be overridden for deterministic testing:
+void* RsaPrivateKey::GetPrngContext() {
+  return &prng_context_;
+}
+
+bool RsaPrivateKey::Deserialize(const std::string& serialized_key) {
+  const mbedtls_pk_info_t* pk_info = mbedtls_pk_info_from_type(MBEDTLS_PK_RSA);
+  DCHECK(pk_info);
+
+  CHECK_EQ(mbedtls_ctr_drbg_seed(&prng_context_, mbedtls_entropy_func,
+                                 &entropy_context_, /* custom= */ NULL,
+                                 /* custom_len= */ 0),
+           0);
+
+  int rv = mbedtls_pk_parse_key(
+      &pk_context_, reinterpret_cast<const uint8_t*>(serialized_key.data()),
+      serialized_key.size(),
+      /* password= */ NULL,
+      /* password_len= */ 0, GetPrngFunc(), GetPrngContext());
+  if (rv != 0) {
+    LOG(ERROR) << "RSA private key failed to load: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
+    return false;
+  }
+
+  // Set the padding mode and digest mode.
+  mbedtls_rsa_context* rsa_context = mbedtls_pk_rsa(pk_context_);
+  rv = mbedtls_rsa_set_padding(rsa_context, MBEDTLS_RSA_PKCS_V21,
+                               MBEDTLS_MD_SHA1);
+  if (rv != 0) {
+    LOG(ERROR) << "RSA private key failed to set padding: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
+    return false;
+  }
+
+  return true;
 }
 
 bool RsaPrivateKey::Decrypt(const std::string& encrypted_message,
                             std::string* decrypted_message) {
   DCHECK(decrypted_message);
 
-  size_t rsa_size = RSA_size(rsa_key_);
+  mbedtls_rsa_context* rsa_context = mbedtls_pk_rsa(pk_context_);
+
+  size_t rsa_size = mbedtls_rsa_get_len(rsa_context);
   if (encrypted_message.size() != rsa_size) {
     LOG(ERROR) << "Encrypted RSA message has the wrong size (expected "
                << rsa_size << ", actual " << encrypted_message.size() << ").";
     return false;
   }
+  decrypted_message->resize(encrypted_message.size());
 
-  decrypted_message->resize(rsa_size);
-  int decrypted_size = RSA_private_decrypt(
-      rsa_size, reinterpret_cast<const uint8_t*>(encrypted_message.data()),
-      reinterpret_cast<uint8_t*>(&(*decrypted_message)[0]), rsa_key_,
-      RSA_PKCS1_OAEP_PADDING);
+  size_t decrypted_size = 0;
+  int rv = mbedtls_rsa_rsaes_oaep_decrypt(
+      rsa_context, GetPrngFunc(), GetPrngContext(),
+      /* label= */ NULL,
+      /* label_len= */ 0, &decrypted_size,
+      reinterpret_cast<const uint8_t*>(encrypted_message.data()),
+      reinterpret_cast<uint8_t*>(decrypted_message->data()),
+      decrypted_message->size());
 
-  if (decrypted_size == -1) {
-    LOG(ERROR) << "RSA private decrypt failure: " << ERR_error_string(
-                                                         ERR_get_error(), NULL);
+  if (rv != 0) {
+    LOG(ERROR) << "RSA private decrypt failure: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
     return false;
   }
   decrypted_message->resize(decrypted_size);
@@ -132,45 +139,88 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
     return false;
   }
 
-  std::string message_digest = base::SHA1HashString(message);
+  mbedtls_rsa_context* rsa_context = mbedtls_pk_rsa(pk_context_);
 
-  // Add PSS padding.
-  size_t rsa_size = RSA_size(rsa_key_);
-  std::vector<uint8_t> padded_digest(rsa_size);
-  if (!RSA_padding_add_PKCS1_PSS_mgf1(
-          rsa_key_, &padded_digest[0],
-          reinterpret_cast<uint8_t*>(&message_digest[0]), EVP_sha1(),
-          EVP_sha1(), kPssSaltLength)) {
-    LOG(ERROR) << "RSA padding failure: " << ERR_error_string(ERR_get_error(),
-                                                              NULL);
-    return false;
-  }
-
-  // Encrypt PSS padded digest.
+  size_t rsa_size = mbedtls_rsa_get_len(rsa_context);
   signature->resize(rsa_size);
-  int signature_size = RSA_private_encrypt(
-      padded_digest.size(), &padded_digest[0],
-      reinterpret_cast<uint8_t*>(&(*signature)[0]), rsa_key_, RSA_NO_PADDING);
 
-  if (signature_size != static_cast<int>(rsa_size)) {
-    LOG(ERROR) << "RSA private encrypt failure: " << ERR_error_string(
-                                                         ERR_get_error(), NULL);
+  // Because we set the digest mode in the previous step, here we use
+  // MBEDTLS_MD_NONE to signal that we're passing the raw message, which
+  // mbedtls should hash for us using MBEDTLS_MD_SHA1 (set above).
+  int rv = mbedtls_rsa_rsassa_pss_sign_ext(
+      rsa_context, GetPrngFunc(), GetPrngContext(), MBEDTLS_MD_NONE,
+      message.size(), reinterpret_cast<const uint8_t*>(message.data()),
+      kPssSaltLength, reinterpret_cast<uint8_t*>(signature->data()));
+
+  if (rv != 0) {
+    LOG(ERROR) << "RSA sign failure: " << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
     return false;
   }
   return true;
 }
 
-RsaPublicKey::RsaPublicKey(RSA* rsa_key) : rsa_key_(rsa_key) {
-  DCHECK(rsa_key);
+RsaPublicKey::RsaPublicKey() {
+  mbedtls_pk_init(&pk_context_);
+  mbedtls_entropy_init(&entropy_context_);
+  mbedtls_ctr_drbg_init(&prng_context_);
 }
+
 RsaPublicKey::~RsaPublicKey() {
-  if (rsa_key_ != NULL)
-    RSA_free(rsa_key_);
+  mbedtls_pk_free(&pk_context_);
+  mbedtls_entropy_free(&entropy_context_);
+  mbedtls_ctr_drbg_free(&prng_context_);
 }
 
 RsaPublicKey* RsaPublicKey::Create(const std::string& serialized_key) {
-  RSA* rsa_key = DeserializeRsaPublicKey(serialized_key);
-  return rsa_key == NULL ? NULL : new RsaPublicKey(rsa_key);
+  std::unique_ptr<RsaPublicKey> key(new RsaPublicKey());
+  if (!key->Deserialize(serialized_key)) {
+    return NULL;
+  }
+  return key.release();
+}
+
+// Can be overridden for deterministic testing:
+RsaPublicKey::prng_func_t RsaPublicKey::GetPrngFunc() {
+  return mbedtls_ctr_drbg_random;
+}
+
+// Can be overridden for deterministic testing:
+void* RsaPublicKey::GetPrngContext() {
+  return &prng_context_;
+}
+
+bool RsaPublicKey::Deserialize(const std::string& serialized_key) {
+  const mbedtls_pk_info_t* pk_info = mbedtls_pk_info_from_type(MBEDTLS_PK_RSA);
+  DCHECK(pk_info);
+
+  CHECK_EQ(mbedtls_ctr_drbg_seed(&prng_context_, mbedtls_entropy_func,
+                                 &entropy_context_, /* custom= */ NULL,
+                                 /* custom_len= */ 0),
+           0);
+
+  int rv = mbedtls_pk_parse_public_key(
+      &pk_context_, reinterpret_cast<const uint8_t*>(serialized_key.data()),
+      serialized_key.size());
+  if (rv != 0) {
+    LOG(ERROR) << "RSA public key failed to load: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
+    return false;
+  }
+
+  // Set the padding mode and digest mode.
+  mbedtls_rsa_context* rsa_context = mbedtls_pk_rsa(pk_context_);
+  rv = mbedtls_rsa_set_padding(rsa_context, MBEDTLS_RSA_PKCS_V21,
+                               MBEDTLS_MD_SHA1);
+  if (rv != 0) {
+    LOG(ERROR) << "RSA public key failed to set padding: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
+    return false;
+  }
+
+  return true;
 }
 
 bool RsaPublicKey::Encrypt(const std::string& clear_message,
@@ -181,17 +231,22 @@ bool RsaPublicKey::Encrypt(const std::string& clear_message,
     return false;
   }
 
-  size_t rsa_size = RSA_size(rsa_key_);
-  encrypted_message->resize(rsa_size);
-  int encrypted_size =
-      RSA_public_encrypt(clear_message.size(),
-                         reinterpret_cast<const uint8_t*>(clear_message.data()),
-                         reinterpret_cast<uint8_t*>(&(*encrypted_message)[0]),
-                         rsa_key_, RSA_PKCS1_OAEP_PADDING);
+  mbedtls_rsa_context* rsa_context = mbedtls_pk_rsa(pk_context_);
 
-  if (encrypted_size != static_cast<int>(rsa_size)) {
-    LOG(ERROR) << "RSA public encrypt failure: " << ERR_error_string(
-                                                        ERR_get_error(), NULL);
+  size_t rsa_size = mbedtls_rsa_get_len(rsa_context);
+  encrypted_message->resize(rsa_size);
+
+  int rv = mbedtls_rsa_rsaes_oaep_encrypt(
+      rsa_context, GetPrngFunc(), GetPrngContext(),
+      /* label= */ NULL,
+      /* label_len= */ 0, clear_message.size(),
+      reinterpret_cast<const uint8_t*>(clear_message.data()),
+      reinterpret_cast<uint8_t*>(encrypted_message->data()));
+
+  if (rv != 0) {
+    LOG(ERROR) << "RSA public encrypt failure: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
     return false;
   }
   return true;
@@ -204,38 +259,30 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
     return false;
   }
 
-  size_t rsa_size = RSA_size(rsa_key_);
+  mbedtls_rsa_context* rsa_context = mbedtls_pk_rsa(pk_context_);
+
+  size_t rsa_size = mbedtls_rsa_get_len(rsa_context);
   if (signature.size() != rsa_size) {
     LOG(ERROR) << "Message signature is of the wrong size (expected "
                << rsa_size << ", actual " << signature.size() << ").";
     return false;
   }
 
-  // Decrypt the signature.
-  std::vector<uint8_t> padded_digest(signature.size());
-  int decrypted_size =
-      RSA_public_decrypt(signature.size(),
-                         reinterpret_cast<const uint8_t*>(signature.data()),
-                         &padded_digest[0],
-                         rsa_key_,
-                         RSA_NO_PADDING);
+  // Verify the signature.
+  int rv = mbedtls_rsa_rsassa_pss_verify_ext(
+      rsa_context,
+      MBEDTLS_MD_NONE,  // Verify whole message, not hash
+      message.size(), reinterpret_cast<const uint8_t*>(message.data()),
+      MBEDTLS_MD_SHA1, kPssSaltLength,
+      reinterpret_cast<const uint8_t*>(signature.data()));
 
-  if (decrypted_size != static_cast<int>(rsa_size)) {
-    LOG(ERROR) << "RSA public decrypt failure: " << ERR_error_string(
-                                                        ERR_get_error(), NULL);
+  if (rv != 0) {
+    LOG(ERROR) << "RSA signature verification failed: "
+               << mbedtls_high_level_strerr(rv) << " "
+               << mbedtls_low_level_strerr(rv);
     return false;
   }
-
-  std::string message_digest = base::SHA1HashString(message);
-
-  // Verify PSS padding.
-  return RSA_verify_PKCS1_PSS_mgf1(
-             rsa_key_,
-             reinterpret_cast<const uint8_t*>(message_digest.data()),
-             EVP_sha1(),
-             EVP_sha1(),
-             &padded_digest[0],
-             kPssSaltLength) != 0;
+  return true;
 }
 
 }  // namespace media

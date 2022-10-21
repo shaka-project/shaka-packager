@@ -12,10 +12,10 @@
 
 #include <string>
 
-#include "packager/base/macros.h"
-
-struct rsa_st;
-typedef struct rsa_st RSA;
+#include "mbedtls/ctr_drbg.h"
+#include "mbedtls/entropy.h"
+#include "mbedtls/pk.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {
@@ -40,11 +40,20 @@ class RsaPrivateKey {
   /// @return true if successful, false otherwise.
   bool GenerateSignature(const std::string& message, std::string* signature);
 
- private:
-  // RsaPrivateKey takes owership of |rsa_key|.
-  explicit RsaPrivateKey(RSA* rsa_key);
+ protected:
+  /// Can be overridden for deterministic testing:
+  typedef int (*prng_func_t)(void*, unsigned char*, size_t);
+  virtual void* GetPrngContext();
+  virtual prng_func_t GetPrngFunc();
 
-  RSA* rsa_key_;  // owned
+  RsaPrivateKey();
+
+  bool Deserialize(const std::string& serialized_key);
+
+ private:
+  mbedtls_pk_context pk_context_;
+  mbedtls_entropy_context entropy_context_;
+  mbedtls_ctr_drbg_context prng_context_;
 
   DISALLOW_COPY_AND_ASSIGN(RsaPrivateKey);
 };
@@ -69,11 +78,20 @@ class RsaPublicKey {
   bool VerifySignature(const std::string& message,
                        const std::string& signature);
 
- private:
-  // RsaPublicKey takes owership of |rsa_key|.
-  explicit RsaPublicKey(RSA* rsa_key);
+ protected:
+  /// Can be overridden for deterministic testing:
+  typedef int (*prng_func_t)(void*, unsigned char*, size_t);
+  virtual void* GetPrngContext();
+  virtual prng_func_t GetPrngFunc();
 
-  RSA* rsa_key_;  // owned
+  RsaPublicKey();
+
+  bool Deserialize(const std::string& serialized_key);
+
+ private:
+  mbedtls_pk_context pk_context_;
+  mbedtls_entropy_context entropy_context_;
+  mbedtls_ctr_drbg_context prng_context_;
 
   DISALLOW_COPY_AND_ASSIGN(RsaPublicKey);
 };

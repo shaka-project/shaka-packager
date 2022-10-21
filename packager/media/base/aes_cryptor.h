@@ -11,11 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
+#include "mbedtls/cipher.h"
+#include "packager/macros.h"
 #include "packager/media/base/fourccs.h"
-
-struct aes_key_st;
-typedef struct aes_key_st AES_KEY;
 
 namespace shaka {
 namespace media {
@@ -92,8 +90,15 @@ class AesCryptor {
                                std::vector<uint8_t>* iv);
 
  protected:
-  const AES_KEY* aes_key() const { return aes_key_.get(); }
-  AES_KEY* mutable_aes_key() { return aes_key_.get(); }
+  enum CipherMode {
+    kCtrMode,
+    kCbcMode,
+  };
+
+  // mbedTLS cipher context.
+  mbedtls_cipher_context_t cipher_ctx_;
+
+  bool SetupCipher(size_t key_size, CipherMode mode);
 
  private:
   // Internal implementation of crypt function.
@@ -118,9 +123,6 @@ class AesCryptor {
   // Return the number of padding bytes needed.
   // Note: No paddings should be needed except for pkcs5-cbc encryptor.
   virtual size_t NumPaddingBytes(size_t size) const;
-
-  // Openssl AES_KEY.
-  std::unique_ptr<AES_KEY> aes_key_;
 
   // Indicates whether a constant iv is used. Internal iv will be reset to
   // |iv_| before calling Crypt if that is the case.
