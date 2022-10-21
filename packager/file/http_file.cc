@@ -14,8 +14,8 @@
 #include "absl/strings/str_format.h"
 #include "glog/logging.h"
 
-#include "packager/common.h"
 #include "packager/file/thread_pool.h"
+#include "packager/macros.h"
 #include "packager/version/version.h"
 
 ABSL_FLAG(std::string,

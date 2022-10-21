@@ -4,14 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_COMMON_H_
-#define PACKAGER_COMMON_H_
+#ifndef PACKAGER_MACROS_H_
+#define PACKAGER_MACROS_H_
 
 #include <type_traits>
 
 #include "absl/base/macros.h"
-
-namespace shaka {
 
 /// A macro to disable copying and assignment. Usage:
 /// class Foo {
@@ -34,6 +32,4 @@ namespace shaka {
 /// You can use the insertion operator to add specific logs to this.
 #define NOTIMPLEMENTED() LOG(ERROR) << "NOTIMPLEMENTED: "
 
-}  // namespace shaka
-
-#endif  // PACKAGER_COMMON_H_
+#endif  // PACKAGER_MACROS_H_
