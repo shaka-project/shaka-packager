@@ -1,10 +1,10 @@
 #EXTM3U
 #EXT-X-VERSION:6
-## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:3
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="bear-av1-video.webm",BYTERANGE="314@0"
+#EXT-X-MAP:URI="bear-av1-video.webm",BYTERANGE="321@0"
 #EXTINF:2.736,
-#EXT-X-BYTERANGE:23653@333
+#EXT-X-BYTERANGE:23653@340
 bear-av1-video.webm
 #EXT-X-ENDLIST

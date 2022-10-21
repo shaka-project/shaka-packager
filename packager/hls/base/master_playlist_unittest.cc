@@ -170,8 +170,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
       "CODECS=\"avc1\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE\n"
@@ -204,8 +204,8 @@ TEST_F(MasterPlaylistTest,
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n#EXT-X-INDEPENDENT-SEGMENTS\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
@@ -233,8 +233,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideoWithFrameRate) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
       "CODECS=\"avc1\",RESOLUTION=800x600,FRAME-RATE=60.000,"
@@ -261,8 +261,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
       "CODECS=\"avc1\",RESOLUTION=800x600,CLOSED-CAPTIONS=NONE,"
@@ -316,8 +316,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"english\","
@@ -376,8 +376,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_hi.m3u8\","
       "GROUP-ID=\"audio_hi\",LANGUAGE=\"en\",NAME=\"english_hi\","
@@ -423,8 +423,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_lo.m3u8\","
       "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\","
@@ -467,8 +467,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\","
@@ -509,8 +509,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",AUTOSELECT=YES,"
@@ -551,8 +551,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/dvs_eng.m3u8\","
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"DVS english\","
@@ -593,8 +593,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"en-text-group\",LANGUAGE=\"en\",NAME=\"english\","
@@ -639,8 +639,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"english\","
@@ -712,8 +712,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
       "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
@@ -815,8 +815,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
       "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
@@ -867,8 +867,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyJOC) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
       "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
@@ -919,8 +919,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4IMS) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
       "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
@@ -972,8 +972,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4CBI) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
       "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","

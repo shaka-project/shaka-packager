@@ -3,13 +3,10 @@
 [comment]: # (These links in cloned repositories will point back to the main   )
 [comment]: # (repository and if it is an issue, we suggest updating the links  )
 [comment]: # (in the cloned repository.                                        )
-[comment]: # (See https://github.com/google/shaka-packager/issues/408 for the  )
+[comment]: # (See https://github.com/shaka-project/shaka-packager/issues/408 for the  )
 [comment]: # (full background.                                                 )
 
-![Shaka Packager](https://raw.githubusercontent.com/google/shaka-packager/master/docs/shaka-packager.png)
-
-[![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
-[![Build status](https://ci.appveyor.com/api/projects/status/3t8iu603rp25sa74?svg=true)](https://ci.appveyor.com/project/shaka/shaka-packager)
+![Shaka Packager](https://raw.githubusercontent.com/shaka-project/shaka-packager/main/docs/shaka-packager.png)
 
 Shaka Packager is a tool and a media packaging SDK for
 [DASH](http://dashif.org/) and [HLS](https://developer.apple.com/streaming/)
@@ -68,9 +65,9 @@ Shaka Packager supports:
   - ⁴: TTML input is only supported with TTML output (pass-through, DASH only),
     see also [#584][].
 
-[#272]: https://github.com/google/shaka-packager/issues/272
-[#405]: https://github.com/google/shaka-packager/issues/405
-[#584]: https://github.com/google/shaka-packager/issues/584
+[#272]: https://github.com/shaka-project/shaka-packager/issues/272
+[#405]: https://github.com/shaka-project/shaka-packager/issues/405
+[#584]: https://github.com/shaka-project/shaka-packager/issues/584
 
 - Platforms
   - Linux
@@ -86,21 +83,22 @@ There are several ways you can get Shaka Packager.
 
 - Using [Docker](https://www.docker.com/whatisdocker).
   Instructions are available
-  [here](https://github.com/google/shaka-packager/blob/master/docs/source/docker_instructions.md).
+  [here](https://github.com/shaka-project/shaka-packager/blob/main/docs/source/docker_instructions.md).
 - Get prebuilt binaries from
-  [release](https://github.com/google/shaka-packager/releases).
+  [release](https://github.com/shaka-project/shaka-packager/releases).
 - Built from source, see
-  [Build Instructions](https://github.com/google/shaka-packager/blob/master/docs/source/build_instructions.md)
+  [Build Instructions](https://github.com/shaka-project/shaka-packager/blob/main/docs/source/build_instructions.md)
   for details.
 
 # Useful Links
 
 - [Announcement List](https://groups.google.com/forum/#!forum/shaka-packager-users)
-  (join for release announcements and surveys)
-- [Documentation](https://google.github.io/shaka-packager/html/)
-- [Tutorials](https://google.github.io/shaka-packager/html/tutorials/tutorials.html)
+  (join for infrequent announcements and surveys)
+- Subscribe to releases by following
+  [instructions from this blog](https://www.jessesquires.com/blog/2020/07/30/github-tip-watching-releases/)- [Documentation](https://shaka-project.github.io/shaka-packager/html/)
+- [Tutorials](https://shaka-project.github.io/shaka-packager/html/tutorials/tutorials.html)
 - Several open source players:
-  - [DASH and HLS on Web: Shaka Player](https://github.com/google/shaka-player)
+  - [DASH and HLS on Web: Shaka Player](https://github.com/shaka-project/shaka-player)
   - [DASH on Web: dash.js](https://github.com/Dash-Industry-Forum/dash.js)
   - [HLS on Web: hls.js](https://github.com/video-dev/hls.js)
   - [DASH and HLS on Android: ExoPlayer](https://github.com/google/ExoPlayer)
@@ -108,5 +106,5 @@ There are several ways you can get Shaka Packager.
 # Contributing
 
 If you have improvements or fixes, we would love to have your contributions.
-See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for
+See https://github.com/shaka-project/shaka-packager/blob/main/CONTRIBUTING.md for
 details.

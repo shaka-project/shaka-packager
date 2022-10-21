@@ -380,7 +380,7 @@ TEST_F(EsParserH26xTest, H264BasicSupport) {
 }
 
 // This is not compliant to H264 spec, but VLC generates streams like this. See
-// https://github.com/google/shaka-packager/issues/526 for details.
+// https://github.com/shaka-project/shaka-packager/issues/526 for details.
 TEST_F(EsParserH26xTest, H264AudInAccessUnit) {
   // clang-format off
   const H26xNaluType kData[] = {

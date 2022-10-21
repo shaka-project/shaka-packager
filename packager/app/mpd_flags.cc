@@ -81,5 +81,7 @@ DEFINE_bool(
     "If enabled, LL-DASH streaming will be used, "
     "reducing overall latency by decoupling latency from segment duration. "
     "Please see "
-    "https://google.github.io/shaka-packager/html/tutorials/low_latency.html "
+    // clang-format off
+    "https://shaka-project.github.io/shaka-packager/html/tutorials/low_latency.html "
+    // clang-format on
     "for more information.");

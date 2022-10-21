@@ -131,7 +131,7 @@ Test vectors used in this tutorial
 :Widevine PSSH:
 
     The PSSH 00000031707373... is generated using
-    `pssh-box script <https://github.com/google/shaka-packager/tree/master/packager/tools/pssh>`_::
+    `pssh-box script <https://github.com/shaka-project/shaka-packager/tree/main/packager/tools/pssh>`_::
 
         $ pssh-box.py --widevine-system-id \
           --content-id 7465737420636f6e74656e74206964 --hex
@@ -146,4 +146,4 @@ Configuration options
 pssh-box (Utility to generate PSSH boxes)
 -----------------------------------------
 
-https://github.com/google/shaka-packager/tree/master/packager/tools/pssh
+https://github.com/shaka-project/shaka-packager/tree/main/packager/tools/pssh

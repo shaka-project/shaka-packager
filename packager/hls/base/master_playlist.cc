@@ -80,7 +80,7 @@ std::set<std::string> GetGroupCodecString(
   // string. As per HLS guidelines, "wvtt" is optional. When it is included, it
   // can cause playback errors on some Apple produces. Excluding it allows
   // playback on all Apple products. See
-  // https://github.com/google/shaka-packager/issues/402 for all details.
+  // https://github.com/shaka-project/shaka-packager/issues/402 for all details.
   auto wvtt = codecs.find("wvtt");
   if (wvtt != codecs.end()) {
     codecs.erase(wvtt);
@@ -258,7 +258,7 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
   // supported as output, the HLS output should always indicate that there are
   // no captions.  Explicitly signaling a lack of captions in HLS keeps Safari
   // from assuming captions and showing a text track that doesn't exist.
-  // https://github.com/google/shaka-packager/issues/922#issuecomment-804304019
+  // https://github.com/shaka-project/shaka-packager/issues/922#issuecomment-804304019
   tag.AddString("CLOSED-CAPTIONS", "NONE");
 
   if (playlist.stream_type() ==

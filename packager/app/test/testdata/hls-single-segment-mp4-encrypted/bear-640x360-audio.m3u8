@@ -1,12 +1,12 @@
 #EXTM3U
 #EXT-X-VERSION:6
-## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="bear-640x360-audio.mp4",BYTERANGE="1007@0"
+#EXT-X-MAP:URI="bear-640x360-audio.mp4",BYTERANGE="1014@0"
 #EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",KEYFORMAT="identity"
 #EXTINF:1.022,
-#EXT-X-BYTERANGE:17028@1075
+#EXT-X-BYTERANGE:17028@1082
 bear-640x360-audio.mp4
 #EXTINF:0.998,
 #EXT-X-BYTERANGE:16682

@@ -418,8 +418,8 @@ bool WebVttParser::ParseCue(const std::string& id,
   //
   // For more context see:
   //   - https://www.w3.org/TR/webvtt1/#webvtt-cue-timings
-  //   - https://github.com/google/shaka-packager/issues/335
-  //   - https://github.com/google/shaka-packager/issues/425
+  //   - https://github.com/shaka-project/shaka-packager/issues/335
+  //   - https://github.com/shaka-project/shaka-packager/issues/425
   //
   // Print a warning so that those packaging content can know that their
   // content is not spec compliant.
@@ -448,7 +448,7 @@ bool WebVttParser::ParseCue(const std::string& id,
   TextFragment body;
   TextFragmentStyle no_styles;
   for (size_t i = 1; i < block_size; i++) {
-    if (i > 1) {
+    if (i > 1 && i != block_size) {
       body.sub_fragments.emplace_back(no_styles, /* newline= */ true);
     }
     body.sub_fragments.emplace_back(no_styles, block[i]);

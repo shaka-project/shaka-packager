@@ -200,13 +200,14 @@ jobs:
       - name: Install depot tools
         shell: bash
         run: |
-          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          touch depot_tools/.disable_auto_update
           echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
 
       - name: Setup gclient
         shell: bash
         run: |
-          gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+          gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
           # NOTE: the docker tests will do gclient runhooks, so skip hooks here.
           gclient sync --nohooks
 

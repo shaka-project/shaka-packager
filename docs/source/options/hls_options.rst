@@ -71,7 +71,7 @@ HLS options
     number from previous packager run.
 
     For more information about the reasoning of this, please see issue
-    `#691 <https://github.com/google/shaka-packager/issues/691>`_.
+    `#691 <https://github.com/shaka-project/shaka-packager/issues/691>`_.
 
     The EXT-X-MEDIA-SEQUENCE documentation can be read here:
     https://tools.ietf.org/html/rfc8216#section-4.3.3.2.

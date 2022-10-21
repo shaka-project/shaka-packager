@@ -62,10 +62,9 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
   // Syntax of AudioSpecificConfig.
 
   // Read base configuration.
-  // Audio Object Types specified in ISO 14496-3, Table 1.15.
-  RCHECK(reader.ReadBits(5, &audio_object_type_));
-  // Audio objects type >=31 is not supported yet.
-  RCHECK(audio_object_type_ < 31);
+  // Audio Object Types specified in "ISO/IEC 14496-3:2019, Table 1.19"
+  RCHECK(ParseAudioObjectType(&reader));
+
   RCHECK(reader.ReadBits(4, &frequency_index_));
   if (frequency_index_ == 0xf)
     RCHECK(reader.ReadBits(24, &frequency_));
@@ -82,9 +81,7 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
     RCHECK(reader.ReadBits(4, &extension_frequency_index));
     if (extension_frequency_index == 0xf)
       RCHECK(reader.ReadBits(24, &extension_frequency_));
-    RCHECK(reader.ReadBits(5, &audio_object_type_));
-    // Audio objects type >=31 is not supported yet.
-    RCHECK(audio_object_type_ < 31);
+    RCHECK(ParseAudioObjectType(&reader));
   }
 
   RCHECK(ParseDecoderGASpecificConfig(&reader));
@@ -131,10 +128,14 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
     RCHECK(extension_frequency_index < arraysize(kSampleRates));
     extension_frequency_ = kSampleRates[extension_frequency_index];
   }
-
-  return frequency_ != 0 && num_channels_ != 0 && audio_object_type_ >= 1 &&
-         audio_object_type_ <= 4 && frequency_index_ != 0xf &&
-         channel_config_ <= 7;
+  
+  if (audio_object_type_ == AOT_USAC) {
+    return frequency_ != 0 && num_channels_ != 0 && channel_config_ <= 7;
+  } else {
+    return frequency_ != 0 && num_channels_ != 0 && audio_object_type_ >= 1 &&
+           audio_object_type_ <= 4 && frequency_index_ != 0xf &&
+           channel_config_ <= 7;
+  }
 }
 
 bool AACAudioSpecificConfig::ConvertToADTS(
@@ -205,6 +206,18 @@ uint8_t AACAudioSpecificConfig::GetNumChannels() const {
   return num_channels_;
 }
 
+bool AACAudioSpecificConfig::ParseAudioObjectType(BitReader* bit_reader) {
+  RCHECK(bit_reader->ReadBits(5, &audio_object_type_));
+  
+  if (audio_object_type_ == AOT_ESCAPE) {
+    uint8_t audioObjectTypeExt;
+    RCHECK(bit_reader->ReadBits(6, &audioObjectTypeExt));
+    audio_object_type_ = static_cast<AudioObjectType>(32 + audioObjectTypeExt);
+  }
+  
+  return true;
+}
+
 // Currently this function only support GASpecificConfig defined in
 // ISO 14496 Part 3 Table 4.1 - Syntax of GASpecificConfig()
 bool AACAudioSpecificConfig::ParseDecoderGASpecificConfig(
@@ -223,6 +236,10 @@ bool AACAudioSpecificConfig::ParseDecoderGASpecificConfig(
     case 22:
     case 23:
       return ParseGASpecificConfig(bit_reader);
+    case 42:
+      // Skip UsacConfig() parsing until required
+      RCHECK(bit_reader->SkipBits(bit_reader->bits_available()));
+      return true;
     default:
       break;
   }
