@@ -5,13 +5,13 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 add_library(run_tests_with_atexit_manager STATIC
-    run_tests_with_atexit_manager.cc
+    run_tests_with_atexit_manager.cc)
 target_link_libraries(run_tests_with_atexit_manager
     gtest
     version)
 
 add_executable(media_test_support
-    test_data_util.cc
+    test_data_util.cc)
 target_link_libraries(media_test_support
     run_tests_with_atexit_manager
     gmock
