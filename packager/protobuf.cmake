@@ -61,5 +61,8 @@ function(add_proto_library NAME)
       ${ADD_PROTO_LIBRARY_TYPE}
       ${ADD_PROTO_LIBRARY_EXCLUDE_FROM_ALL}
       ${ADD_PROTO_LIBRARY_GENERATED_SOURCES})
-  target_link_libraries(${NAME} libprotobuf-lite)
+  target_link_libraries(${NAME} libprotobuf)
+
+  # Anyone who depends on this proto library will need this include directory.
+  target_include_directories(${NAME} PUBLIC "${CMAKE_BINARY_DIR}")
 endfunction()

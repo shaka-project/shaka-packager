@@ -14,4 +14,6 @@ endif()
 
 add_library(license_notice STATIC
     "${CMAKE_CURRENT_BINARY_DIR}/license_notice.cc")
-target_include_directories(license_notice PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+
+# Anyone who depends on this library will need this include directory.
+target_include_directories(license_notice PUBLIC "${CMAKE_BINARY_DIR}")
