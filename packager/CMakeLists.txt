@@ -41,6 +41,7 @@ endif()
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
 add_subdirectory(kv_pairs)
+add_subdirectory(media)
 add_subdirectory(status)
 add_subdirectory(third_party)
 add_subdirectory(tools)
