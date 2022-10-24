@@ -15,6 +15,7 @@ if(LIBPACKAGER_SHARED)
 endif()
 
 add_executable(status_unittest
+    status_test_util_unittest.cc
     status_unittest.cc)
 target_link_libraries(status_unittest
     status
