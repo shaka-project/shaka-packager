@@ -131,7 +131,7 @@ jobs:
         run: cmake --build build/ --config "${{ matrix.build_type }}" --parallel
 
       - name: Test
-        run: cd build; ctest -C "${{ matrix.build_type }}" -V
+        run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
 
       # TODO(joeyparrish): Prepare artifacts when build system is complete again
 #      - name: Prepare artifacts (static release only)
