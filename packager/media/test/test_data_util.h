@@ -24,8 +24,8 @@ std::filesystem::path GetTestDataFilePath(const std::string& name) {
 // Returns a file path for a file in the media/app/test/testdata directory.
 std::filesystem::path GetAppTestDataFilePath(const std::string& name) {
   std::filesystem::path header_path(__FILE__);
-  return header_path.parent_path().parent_path() / "app" / "test" / "testdata"
-                                                 / name;
+  return header_path.parent_path().parent_path() / "app" / "test" / "testdata" /
+         name;
 }
 
 // Reads a test file from media/test/data directory and returns its content.
