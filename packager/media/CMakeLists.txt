@@ -6,4 +6,5 @@
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(base)
+add_subdirectory(replicator)
 add_subdirectory(test)
