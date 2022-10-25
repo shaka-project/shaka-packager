@@ -96,7 +96,7 @@ void AesCryptor::UpdateIv() {
     increment = (num_crypt_bytes_ + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE;
   }
 
-  for (ssize_t i = iv_.size() - 1; increment > 0 && i >= 0; --i) {
+  for (int64_t i = iv_.size() - 1; increment > 0 && i >= 0; --i) {
     increment += iv_[i];
     iv_[i] = increment & 0xFF;
     increment >>= 8;
