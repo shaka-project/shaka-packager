@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 
