@@ -7,18 +7,18 @@
 
 #include <stdint.h>
 
+#include <filesystem>
 #include <string>
-
-#include "packager/base/files/file_path.h"
+#include <vector>
 
 namespace shaka {
 namespace media {
 
 // Returns a file path for a file in the media/test/data directory.
-base::FilePath GetTestDataFilePath(const std::string& name);
+std::filesystem::path GetTestDataFilePath(const std::string& name);
 
 // Returns a file path for a file in the media/app/test/testdata directory.
-base::FilePath GetAppTestDataFilePath(const std::string& name);
+std::filesystem::path GetAppTestDataFilePath(const std::string& name);
 
 // Reads a test file from media/test/data directory and returns its content.
 std::vector<uint8_t> ReadTestDataFile(const std::string& name);
