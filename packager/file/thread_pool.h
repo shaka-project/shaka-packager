@@ -7,13 +7,12 @@
 #ifndef PACKAGER_FILE_THREAD_POOL_H_
 #define PACKAGER_FILE_THREAD_POOL_H_
 
-#include "packager/common.h"
-
 #include <functional>
 #include <queue>
 
 #include "absl/base/thread_annotations.h"
 #include "absl/synchronization/mutex.h"
+#include "packager/macros.h"
 
 namespace shaka {
 

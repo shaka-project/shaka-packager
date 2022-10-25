@@ -8,7 +8,7 @@
 
 #include "absl/strings/str_format.h"
 #include "glog/logging.h"
-#include "packager/common.h"
+#include "packager/macros.h"
 
 namespace shaka {
 
