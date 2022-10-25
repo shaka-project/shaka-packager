@@ -100,7 +100,12 @@ jobs:
 
       - name: Install Linux deps
         if: runner.os == 'Linux'
-        run: sudo apt install -y libc-ares-dev
+        # NOTE: cmake is already installed in GitHub Actions VMs, but not
+        # necessarily in a self-hosted runner.
+        run: |
+          sudo apt install -y \
+              cmake \
+              libc-ares-dev
 
       - name: Generate build files
         run: |
