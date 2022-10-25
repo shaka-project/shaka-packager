@@ -56,7 +56,7 @@ class DeterministicRsaPublicKey : public RsaPublicKey {
     return key.release();
   }
 
-  ~DeterministicRsaPublicKey() {
+  virtual ~DeterministicRsaPublicKey() {
     if (fake_prng_fp_)
       fclose(fake_prng_fp_);
   }
@@ -83,7 +83,7 @@ class DeterministicRsaPrivateKey : public RsaPrivateKey {
     return key.release();
   }
 
-  ~DeterministicRsaPrivateKey() {
+  virtual ~DeterministicRsaPrivateKey() {
     if (fake_prng_fp_)
       fclose(fake_prng_fp_);
   }

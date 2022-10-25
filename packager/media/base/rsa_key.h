@@ -23,7 +23,7 @@ namespace media {
 /// Rsa private key, used for message signing and decryption.
 class RsaPrivateKey {
  public:
-  ~RsaPrivateKey();
+  virtual ~RsaPrivateKey();
 
   /// Create an RsaPrivateKey object using a DER encoded PKCS#1 RSAPrivateKey.
   /// @return The created RsaPrivateKey object on success, NULL otherwise.
@@ -61,7 +61,7 @@ class RsaPrivateKey {
 /// Rsa public key, used for signature verification and encryption.
 class RsaPublicKey {
  public:
-  ~RsaPublicKey();
+  virtual ~RsaPublicKey();
 
   /// Create an RsaPublicKey object using a DER encoded PKCS#1 RSAPublicKey.
   /// @return The created RsaPrivateKey object on success, NULL otherwise.
