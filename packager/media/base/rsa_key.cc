@@ -28,6 +28,22 @@ namespace {
 
 const size_t kPssSaltLength = 20u;
 
+std::string mbedtls_strerr(int rv) {
+  // There is always a "high level" error.
+  std::string output(mbedtls_high_level_strerr(rv));
+
+  // Some errors have a "low level" error, which is like an inner error code
+  // with a deeper explanation.  But on mac and Windows, ostream crashes if you
+  // give it NULL.  So we combine them ourselves with a NULL check.
+  const char* low_level_error = mbedtls_low_level_strerr(rv);
+  if (low_level_error) {
+    output += ": ";
+    output += low_level_error;
+  }
+
+  return output;
+}
+
 }  // namespace
 
 namespace shaka {
@@ -78,9 +94,7 @@ bool RsaPrivateKey::Deserialize(const std::string& serialized_key) {
       /* password= */ NULL,
       /* password_len= */ 0, GetPrngFunc(), GetPrngContext());
   if (rv != 0) {
-    LOG(ERROR) << "RSA private key failed to load: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+    LOG(ERROR) << "RSA private key failed to load: " << mbedtls_strerr(rv);
     return false;
   }
 
@@ -90,8 +104,7 @@ bool RsaPrivateKey::Deserialize(const std::string& serialized_key) {
                                MBEDTLS_MD_SHA1);
   if (rv != 0) {
     LOG(ERROR) << "RSA private key failed to set padding: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+               << mbedtls_strerr(rv);
     return false;
   }
 
@@ -122,9 +135,7 @@ bool RsaPrivateKey::Decrypt(const std::string& encrypted_message,
       decrypted_message->size());
 
   if (rv != 0) {
-    LOG(ERROR) << "RSA private decrypt failure: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+    LOG(ERROR) << "RSA private decrypt failure: " << mbedtls_strerr(rv);
     return false;
   }
   decrypted_message->resize(decrypted_size);
@@ -154,8 +165,7 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
       reinterpret_cast<uint8_t*>(signature->data()));
 
   if (rv != 0) {
-    LOG(ERROR) << "RSA sign failure: " << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+    LOG(ERROR) << "RSA sign failure: " << mbedtls_strerr(rv);
     return false;
   }
   return true;
@@ -204,9 +214,7 @@ bool RsaPublicKey::Deserialize(const std::string& serialized_key) {
       &pk_context_, reinterpret_cast<const uint8_t*>(serialized_key.data()),
       serialized_key.size());
   if (rv != 0) {
-    LOG(ERROR) << "RSA public key failed to load: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+    LOG(ERROR) << "RSA public key failed to load: " << mbedtls_strerr(rv);
     return false;
   }
 
@@ -216,8 +224,7 @@ bool RsaPublicKey::Deserialize(const std::string& serialized_key) {
                                MBEDTLS_MD_SHA1);
   if (rv != 0) {
     LOG(ERROR) << "RSA public key failed to set padding: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+               << mbedtls_strerr(rv);
     return false;
   }
 
@@ -245,9 +252,7 @@ bool RsaPublicKey::Encrypt(const std::string& clear_message,
       reinterpret_cast<uint8_t*>(encrypted_message->data()));
 
   if (rv != 0) {
-    LOG(ERROR) << "RSA public encrypt failure: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+    LOG(ERROR) << "RSA public encrypt failure: " << mbedtls_strerr(rv);
     return false;
   }
   return true;
@@ -278,9 +283,7 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
       kPssSaltLength, reinterpret_cast<const uint8_t*>(signature.data()));
 
   if (rv != 0) {
-    LOG(ERROR) << "RSA signature verification failed: "
-               << mbedtls_high_level_strerr(rv) << " "
-               << mbedtls_low_level_strerr(rv);
+    LOG(ERROR) << "RSA signature verification failed: " << mbedtls_strerr(rv);
     return false;
   }
   return true;
