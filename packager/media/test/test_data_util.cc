@@ -26,15 +26,14 @@ std::filesystem::path GetAppTestDataFilePath(const std::string& name) {
 std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
   std::filesystem::path path = GetTestDataFilePath(name);
 
-  std::vector<uint8_t> data;
-  data.resize(std::filesystem::file_size(path));
-
   FILE* f = fopen(path.string().c_str(), "rb");
   if (!f) {
     LOG(FATAL) << "Failed to read test data from " << path;
     return std::vector<uint8_t>();
   }
 
+  std::vector<uint8_t> data;
+  data.resize(std::filesystem::file_size(path));
   size_t size = fread(data.data(), 1, data.size(), f);
   data.resize(size);
   fclose(f);
