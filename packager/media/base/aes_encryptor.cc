@@ -41,7 +41,7 @@ bool AesCtrEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
     return false;
   }
 
-  if (mbedtls_cipher_setkey(&cipher_ctx_, key.data(), 8 * key.size(),
+  if (mbedtls_cipher_setkey(&cipher_ctx_, key.data(), 8L * key.size(),
                             MBEDTLS_ENCRYPT) != 0) {
     LOG(ERROR) << "Failed to set CTR encryption key";
     return false;
@@ -115,7 +115,7 @@ bool AesCbcEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
     return false;
   }
 
-  if (mbedtls_cipher_setkey(&cipher_ctx_, key.data(), 8 * key.size(),
+  if (mbedtls_cipher_setkey(&cipher_ctx_, key.data(), 8L * key.size(),
                             MBEDTLS_ENCRYPT) != 0) {
     LOG(ERROR) << "Failed to set CBC encryption key";
     return false;

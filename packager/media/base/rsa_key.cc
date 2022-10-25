@@ -149,8 +149,9 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
   // mbedtls should hash for us using MBEDTLS_MD_SHA1 (set above).
   int rv = mbedtls_rsa_rsassa_pss_sign_ext(
       rsa_context, GetPrngFunc(), GetPrngContext(), MBEDTLS_MD_NONE,
-      message.size(), reinterpret_cast<const uint8_t*>(message.data()),
-      kPssSaltLength, reinterpret_cast<uint8_t*>(signature->data()));
+      static_cast<unsigned int>(message.size()),
+      reinterpret_cast<const uint8_t*>(message.data()), kPssSaltLength,
+      reinterpret_cast<uint8_t*>(signature->data()));
 
   if (rv != 0) {
     LOG(ERROR) << "RSA sign failure: " << mbedtls_high_level_strerr(rv) << " "
@@ -272,9 +273,9 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
   int rv = mbedtls_rsa_rsassa_pss_verify_ext(
       rsa_context,
       MBEDTLS_MD_NONE,  // Verify whole message, not hash
-      message.size(), reinterpret_cast<const uint8_t*>(message.data()),
-      MBEDTLS_MD_SHA1, kPssSaltLength,
-      reinterpret_cast<const uint8_t*>(signature.data()));
+      static_cast<unsigned int>(message.size()),
+      reinterpret_cast<const uint8_t*>(message.data()), MBEDTLS_MD_SHA1,
+      kPssSaltLength, reinterpret_cast<const uint8_t*>(signature.data()));
 
   if (rv != 0) {
     LOG(ERROR) << "RSA signature verification failed: "
