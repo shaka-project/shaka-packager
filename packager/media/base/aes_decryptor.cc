@@ -34,7 +34,8 @@ bool AesCbcDecryptor::InitializeWithIv(const std::vector<uint8_t>& key,
     return false;
   }
 
-  if (mbedtls_cipher_setkey(&cipher_ctx_, key.data(), 8 * key.size(),
+  if (mbedtls_cipher_setkey(&cipher_ctx_, key.data(),
+                            static_cast<int>(8 * key.size()),
                             MBEDTLS_DECRYPT) != 0) {
     LOG(ERROR) << "Failed to set CBC decryption key";
     return false;
