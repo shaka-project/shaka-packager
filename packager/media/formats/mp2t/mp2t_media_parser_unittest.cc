@@ -28,7 +28,9 @@ class Mp2tMediaParserTest : public testing::Test {
       : audio_frame_count_(0),
         video_frame_count_(0),
         video_min_dts_(kNoTimestamp),
-        video_max_dts_(kNoTimestamp) {
+        video_max_dts_(kNoTimestamp),
+        video_min_pts_(kNoTimestamp),
+        video_max_pts_(kNoTimestamp) {
     parser_.reset(new Mp2tMediaParser());
   }
 
@@ -41,6 +43,8 @@ class Mp2tMediaParserTest : public testing::Test {
   int video_frame_count_;
   int64_t video_min_dts_;
   int64_t video_max_dts_;
+  int64_t video_min_pts_;
+  int64_t video_max_pts_;
 
   bool AppendData(const uint8_t* data, size_t length) {
     return parser_->Parse(data, static_cast<int>(length));
@@ -79,12 +83,17 @@ class Mp2tMediaParserTest : public testing::Test {
         ++video_frame_count_;
         if (video_min_dts_ == kNoTimestamp)
           video_min_dts_ = sample->dts();
+        if (video_min_pts_ == kNoTimestamp || video_min_pts_ > sample->pts())
+          video_min_pts_ = sample->pts();
         // Verify timestamps are increasing.
         if (video_max_dts_ == kNoTimestamp)
           video_max_dts_ = sample->dts();
         else if (video_max_dts_ >= sample->dts()) {
           LOG(ERROR) << "Video DTS not strictly increasing.";
           return false;
+        }
+        if (video_max_pts_ < sample->pts()) {
+          video_max_pts_ = sample->pts();
         }
         video_max_dts_ = sample->dts();
       } else {
@@ -153,14 +162,30 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H265) {
 }
 
 TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
-  // "bear-640x360.ts" has been transcoded from bear-640x360.mp4 by applying a
-  // time offset of 95442s (close to 2^33 / 90000) which results in timestamps
-  // wrap around in the Mpeg2 TS stream.
+  // "bear-640x360_ptszero_dtswraparound.ts" has been transcoded from
+  // bear-640x360.mp4 by applying a time offset of 95442s (close to 2^33 /
+  // 90000) which results in timestamp wrap around in the Mpeg2 TS stream.
   ParseMpeg2TsFile("bear-640x360_ptswraparound.ts", 512);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
   EXPECT_LT(video_min_dts_, static_cast<int64_t>(1) << 33);
   EXPECT_GT(video_max_dts_, static_cast<int64_t>(1) << 33);
+}
+
+TEST_F(Mp2tMediaParserTest, PtsZeroDtsWrapAround) {
+  // "bear-640x360.ts" has been transcoded from bear-640x360.mp4 by applying a
+  // dts (close to 2^33 / 90000) and pts 1433 which results in dts
+  // wrap around in the Mpeg2 TS stream but pts does not.
+  ParseMpeg2TsFile("bear-640x360_ptszero_dtswraparound.ts", 512);
+  EXPECT_TRUE(parser_->Flush());
+  EXPECT_EQ(64, video_frame_count_);
+  // DTS was subjected to unroll
+  EXPECT_LT(video_min_dts_, static_cast<int64_t>(1) << 33);
+  EXPECT_GT(video_max_dts_, static_cast<int64_t>(1) << 33);
+  // PTS was not subjected to unroll but was artificially unrolled to be close
+  // to DTS
+  EXPECT_GT(video_min_pts_, static_cast<int64_t>(1) << 33);
+  EXPECT_GT(video_max_pts_, static_cast<int64_t>(1) << 33);
 }
 
 }  // namespace mp2t
