@@ -28,17 +28,16 @@
       return status;     \
   } while (false)
 
-#define READ_LONG(out)                                                     \
+#define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \
-    long _out;                                                             \
-    int _tmp_out;                                                          \
-    br->ReadBits(16, &_tmp_out);                                           \
-    _out = (long)(_tmp_out) << 16;                                         \
-    br->ReadBits(16, &_tmp_out);                                           \
-    _out |= _tmp_out;                                                      \
-    *(out) = _out;                                                         \
-  } while(0)                                                               \
+    if (!br->ReadBits(num_bits, (out))) {                                  \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+  } while (0)
 
+#define READ_LONG_OR_RETURN(out) READ_BITS_OR_RETURN(32, out)
 
 namespace shaka {
 namespace media {
@@ -702,8 +701,8 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
 
   TRUE_OR_RETURN(br->ReadBool(&vui->vui_timing_info_present_flag));
   if (vui->vui_timing_info_present_flag) {
-    READ_LONG(&vui->vui_num_units_in_tick);
-    READ_LONG(&vui->vui_time_scale);
+    READ_LONG_OR_RETURN(&vui->vui_num_units_in_tick);
+    READ_LONG_OR_RETURN(&vui->vui_time_scale);
 
     bool vui_poc_proportional_to_timing_flag;
     TRUE_OR_RETURN(br->ReadBool(&vui_poc_proportional_to_timing_flag));
