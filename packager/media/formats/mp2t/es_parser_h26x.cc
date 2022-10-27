@@ -98,7 +98,7 @@ bool EsParserH26x::Flush() {
   RCHECK(ParseInternal());
 
   if (pending_sample_) {
-    // Flush pending sample.ok
+    // Flush pending sample.
     if (!pending_sample_duration_) {
       pending_sample_duration_ = CalculateSampleDuration(pending_sample_pps_id_);
     }
