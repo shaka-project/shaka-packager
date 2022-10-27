@@ -49,7 +49,7 @@ jobs:
         # NOTE: macos-10.15 is required for now, to work around issues with our
         # build system.  See related comments in
         # .github/workflows/custom-actions/build-packager/action.yaml
-        os: ["ubuntu-latest", "macos-10.15", "windows-latest", "self-hosted-linux-arm64"]
+        os: ["ubuntu-latest", "macos-10.15", "windows-2019", "self-hosted-linux-arm64"]
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
         include:
@@ -63,7 +63,7 @@ jobs:
             target_arch: x64
             exe_ext: ""
             build_type_suffix: ""
-          - os: windows-latest
+          - os: windows-2019
             os_name: win
             target_arch: x64
             exe_ext: ".exe"
