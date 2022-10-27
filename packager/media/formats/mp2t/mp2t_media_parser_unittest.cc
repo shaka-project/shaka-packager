@@ -162,9 +162,9 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H265) {
 }
 
 TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
-  // "bear-640x360.ts" has been transcoded from bear-640x360.mp4 by applying a
-  // time offset of 95442s (close to 2^33 / 90000) which results in timestamps
-  // wrap around in the Mpeg2 TS stream.
+  // "bear-640x360_ptszero_dtswraparound.ts" has been transcoded from
+  // bear-640x360.mp4 by applying a time offset of 95442s (close to 2^33 /
+  // 90000) which results in timestamp wrap around in the Mpeg2 TS stream.
   ParseMpeg2TsFile("bear-640x360_ptswraparound.ts", 512);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
