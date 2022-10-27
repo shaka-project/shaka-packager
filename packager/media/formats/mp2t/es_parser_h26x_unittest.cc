@@ -121,7 +121,7 @@ class TestableEsParser : public EsParserH26x {
 
  private:
   int64_t CalculateSampleDuration(int pps_id) override {
-  // Typical 40ms - frame duration with 25 FPS
+    // Typical 40ms - frame duration with 25 FPS
     return 0.04 * 90000;
   }
 
