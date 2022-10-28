@@ -39,7 +39,8 @@ class EsParserH264 : public EsParserH26x {
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.
   bool UpdateVideoDecoderConfig(int sps_id) override;
-
+  // Calculate video sample duration based on SPS data
+  int64_t CalculateSampleDuration(int pps_id) override;
   // Callback to pass the stream configuration.
   NewStreamInfoCB new_stream_info_cb_;
 
