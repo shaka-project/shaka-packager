@@ -28,17 +28,17 @@
       return status;     \
   } while (false)
 
-#define READ_LONG_OR_RETURN(out)                                           \    
-  do {                                                                     \    
-    int _top_half, _bottom_half;                                           \    
-    if (!br->ReadBits(16, &_top_half)) {                                   \    
-      DVLOG(1)                                                             \    
-          << "Error in stream: unexpected EOS while trying to read " #out; \    
-      return kInvalidStream;                                               \    
-    }                                                                      \    
-    if (!br->ReadBits(16, &_bottom_half)) {                                \    
-      DVLOG(1)                                                             \    
-          << "Error in stream: unexpected EOS while trying to read " #out; \    
+#define READ_LONG_OR_RETURN(out)                                           \
+  do {                                                                     \
+    int _top_half, _bottom_half;                                           \
+    if (!br->ReadBits(16, &_top_half)) {                                   \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+    if (!br->ReadBits(16, &_bottom_half)) {                                \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
       return kInvalidStream;                                               \
     }                                                                      \
     *(out) = ((long)_top_half) << 16 | _bottom_half;                       \
