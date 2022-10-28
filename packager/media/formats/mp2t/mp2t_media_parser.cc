@@ -97,7 +97,7 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   // just discard the incoming TS packet.
   if (!enable_)
     return true;
-
+  // TODO(bzd): continuity_counter_ is never set
   int expected_continuity_counter = (continuity_counter_ + 1) % 16;
   if (continuity_counter_ >= 0 &&
       ts_packet.continuity_counter() != expected_continuity_counter) {
@@ -218,10 +218,11 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
       ts_byte_queue_.Pop(1);
       continue;
     }
-    DVLOG(LOG_LEVEL_TS)
-        << "Processing PID=" << ts_packet->pid()
-        << " start_unit=" << ts_packet->payload_unit_start_indicator();
-
+    DVLOG(LOG_LEVEL_TS) << "Processing PID=" << ts_packet->pid()
+                        << " start_unit="
+                        << ts_packet->payload_unit_start_indicator()
+                        << " continuity_counter="
+                        << ts_packet->continuity_counter();
     // Parse the section.
     auto it = pids_.find(ts_packet->pid());
     if (it == pids_.end() &&

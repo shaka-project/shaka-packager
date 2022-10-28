@@ -112,6 +112,17 @@ bool H264SliceHeader::IsSISlice() const {
     }                                                                      \
   } while (0)
 
+#define READ_LONG_OR_RETURN(out)        \
+  do {                                  \
+    long _out;                          \
+    int _tmp_out;                       \
+    READ_BITS_OR_RETURN(16, &_tmp_out); \
+    _out = (long)(_tmp_out) << 16;      \
+    READ_BITS_OR_RETURN(16, &_tmp_out); \
+    _out |= _tmp_out;                   \
+    *(out) = _out;                      \
+  } while(0)
+
 #define READ_BOOL_OR_RETURN(out)                                           \
   do {                                                                     \
     int _out;                                                              \
@@ -524,14 +535,12 @@ H264Parser::Result H264Parser::ParseVUIParameters(H26xBitReader* br,
     READ_UE_OR_RETURN(&data);  // chroma_sample_loc_type_bottom_field
   }
 
-  // Read and ignore timing info.
-  READ_BOOL_OR_RETURN(&data);  // timing_info_present_flag
-  if (data) {
-    READ_BITS_OR_RETURN(16, &data);  // num_units_in_tick
-    READ_BITS_OR_RETURN(16, &data);  // num_units_in_tick
-    READ_BITS_OR_RETURN(16, &data);  // time_scale
-    READ_BITS_OR_RETURN(16, &data);  // time_scale
-    READ_BOOL_OR_RETURN(&data);  // fixed_frame_rate_flag
+  // Read timing info.
+  READ_BOOL_OR_RETURN(&sps->timing_info_present_flag);
+  if (sps->timing_info_present_flag) {
+    READ_LONG_OR_RETURN(&sps->num_units_in_tick);
+    READ_LONG_OR_RETURN(&sps->time_scale);
+    READ_BOOL_OR_RETURN(&sps->fixed_frame_rate_flag);
   }
 
   // Read and ignore NAL HRD parameters, if present.

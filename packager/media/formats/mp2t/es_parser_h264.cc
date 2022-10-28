@@ -184,6 +184,22 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
   return true;
 }
 
+int64_t EsParserH264::CalculateSampleDuration(int pps_id) {
+  auto pps = h264_parser_->GetPps(pps_id);
+  if (pps) {
+    auto sps_id = pps->seq_parameter_set_id;
+    auto sps = h264_parser_->GetSps(sps_id);
+    if (sps && sps->timing_info_present_flag && sps->fixed_frame_rate_flag) {
+      return static_cast<int64_t>(kMpeg2Timescale) * sps->num_units_in_tick *
+             2 / sps->time_scale;
+    }
+  }
+  LOG(WARNING) << "[MPEG-2 TS] PID " << pid()
+               << " Cannot calculate frame rate from SPS.";
+  // Returns arbitrary safe duration
+  return 0.001 * kMpeg2Timescale;  // 1ms.
+}
+
 }  // namespace mp2t
 }  // namespace media
 }  // namespace shaka
