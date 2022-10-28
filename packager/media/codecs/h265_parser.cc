@@ -30,12 +30,14 @@
 
 #define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \
-    if (!br->ReadBits(num_bits, (out))) {                                  \
+    int _tmp_out;                                                          \
+    if (!br->ReadBits(num_bits, &_tmp_out)) {                              \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
       return kInvalidStream;                                               \
     }                                                                      \
-  } while (0)
+    *(out) = _tmp_out;                                                     \
+  } while(0)                                                               \
 
 #define READ_LONG_OR_RETURN(out) READ_BITS_OR_RETURN(32, out)
 
