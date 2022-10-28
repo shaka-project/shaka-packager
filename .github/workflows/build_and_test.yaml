@@ -47,7 +47,8 @@ jobs:
       fail-fast: false
       matrix:
         # NOTE: macos-10.15 is required for now, to work around issues with our
-        # build system.  See related comments in
+        # build system.  The same is true for windows-2019.  See related
+        # comments in
         # .github/workflows/custom-actions/build-packager/action.yaml
         os: ["ubuntu-latest", "macos-10.15", "windows-2019", "self-hosted-linux-arm64"]
         build_type: ["Debug", "Release"]
