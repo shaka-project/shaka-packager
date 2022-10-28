@@ -15,6 +15,13 @@ on:
         description: "The ref to build and test."
         required: False
 
+# If another instance of this workflow is started for the same PR, cancel the
+# old one.  If a PR is updated and a new test run is started, the old test run
+# will be cancelled automatically to conserve resources.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: Lint
@@ -40,9 +47,10 @@ jobs:
       fail-fast: false
       matrix:
         # NOTE: macos-10.15 is required for now, to work around issues with our
-        # build system.  See related comments in
+        # build system.  The same is true for windows-2019.  See related
+        # comments in
         # .github/workflows/custom-actions/build-packager/action.yaml
-        os: ["ubuntu-latest", "macos-10.15", "windows-latest", "self-hosted-linux-arm64"]
+        os: ["ubuntu-latest", "macos-10.15", "windows-2019", "self-hosted-linux-arm64"]
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
         include:
@@ -56,7 +64,7 @@ jobs:
             target_arch: x64
             exe_ext: ""
             build_type_suffix: ""
-          - os: windows-latest
+          - os: windows-2019
             os_name: win
             target_arch: x64
             exe_ext: ".exe"

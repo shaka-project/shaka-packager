@@ -76,6 +76,8 @@ runs:
         echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
         # Bypass VPYTHON included by depot_tools.  Prefer the system installation.
         echo "VPYTHON_BYPASS=manually managed python not supported by chrome operations" >> $GITHUB_ENV
+        # Work around an issue in depot_tools on Windows, where an unexpected exception type appears.
+        sed -e 's/except subprocess.CalledProcessError:/except:/' -i.bk depot_tools/git_cache.py
         echo "::endgroup::"
 
     - name: Build ninja (arm only)
