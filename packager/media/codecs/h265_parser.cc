@@ -28,27 +28,21 @@
       return status;     \
   } while (false)
 
-#define READ_BITS_OR_RETURN(num_bits, out)                                 \
-  do {                                                                     \
-    int _tmp_out;                                                          \
-    if (!br->ReadBits(num_bits, &_tmp_out)) {                              \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
+#define READ_LONG_OR_RETURN(out)                                           \    
+  do {                                                                     \    
+    int _top_half, _bottom_half;                                           \    
+    if (!br->ReadBits(16, &_top_half)) {                                   \    
+      DVLOG(1)                                                             \    
+          << "Error in stream: unexpected EOS while trying to read " #out; \    
+      return kInvalidStream;                                               \    
+    }                                                                      \    
+    if (!br->ReadBits(16, &_bottom_half)) {                                \    
+      DVLOG(1)                                                             \    
+          << "Error in stream: unexpected EOS while trying to read " #out; \    
       return kInvalidStream;                                               \
     }                                                                      \
-    *(out) = _tmp_out;                                                     \
-  } while(0)
-
-#define READ_LONG_OR_RETURN(out)        \
-  do {                                  \
-    long _out;                          \
-    int _tmp_out;                       \
-    READ_BITS_OR_RETURN(16, &_tmp_out); \
-    _out = (long)(_tmp_out) << 16;      \
-    READ_BITS_OR_RETURN(16, &_tmp_out); \
-    _out |= _tmp_out;                   \
-    *(out) = _out;                      \
-  } while(0)
+    *(out) = ((long)_top_half) << 16 | _bottom_half;                       \
+  } while (false)
 
 namespace shaka {
 namespace media {
