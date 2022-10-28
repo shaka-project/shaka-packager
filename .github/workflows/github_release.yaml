@@ -112,7 +112,7 @@ jobs:
     needs: [setup, lint, draft_release]
     strategy:
       matrix:
-        os: ["ubuntu-latest", "macos-latest", "windows-latest", "self-hosted-linux-arm64"]
+        os: ["ubuntu-latest", "macos-latest", "windows-2019", "self-hosted-linux-arm64"]
         build_type: ["Debug", "Release"]
         lib_type: ["static", "shared"]
         include:
@@ -126,7 +126,7 @@ jobs:
             target_arch: x64
             exe_ext: ""
             build_type_suffix: ""
-          - os: windows-latest
+          - os: windows-2019
             os_name: win
             target_arch: x64
             exe_ext: ".exe"

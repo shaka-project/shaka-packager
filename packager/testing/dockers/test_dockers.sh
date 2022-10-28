@@ -7,7 +7,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PACKAGER_DIR="$(dirname "$(dirname "$(dirname "$(dirname ${SCRIPT_DIR})")")")"
 
 function docker_run() {
-  docker run -v ${PACKAGER_DIR}:/shaka-packager -w /shaka-packager/src ${CONTAINER} "$@"
+  docker run \
+    -v ${PACKAGER_DIR}:/shaka-packager \
+    -w /shaka-packager/src \
+    --user $(id -u):$(id -g) \
+    ${CONTAINER} "$@"
 }
 
 # Command line arguments will be taken as an allowlist of OSes to run.
