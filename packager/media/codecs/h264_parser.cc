@@ -112,7 +112,16 @@ bool H264SliceHeader::IsSISlice() const {
     }                                                                      \
   } while (0)
 
-#define READ_LONG_OR_RETURN(out) READ_BITS_OR_RETURN(32, out)
+#define READ_LONG_OR_RETURN(out)                                           \
+  do {                                                                     \
+    int _out;                                                              \
+    if (!br->ReadBits(32, &_out)) {                                        \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+    *(out) = _out != 0;                                                    \
+  } while (0)
 
 #define READ_BOOL_OR_RETURN(out)                                           \
   do {                                                                     \
