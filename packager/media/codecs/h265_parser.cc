@@ -37,9 +37,18 @@
       return kInvalidStream;                                               \
     }                                                                      \
     *(out) = _tmp_out;                                                     \
-  } while(0)                                                               \
+  } while(0)
 
-#define READ_LONG_OR_RETURN(out) READ_BITS_OR_RETURN(32, out)
+#define READ_LONG_OR_RETURN(out)        \
+  do {                                  \
+    long _out;                          \
+    int _tmp_out;                       \
+    READ_BITS_OR_RETURN(16, &_tmp_out); \
+    _out = (long)(_tmp_out) << 16;      \
+    READ_BITS_OR_RETURN(16, &_tmp_out); \
+    _out |= _tmp_out;                   \
+    *(out) = _out;                      \
+  } while(0)
 
 namespace shaka {
 namespace media {
