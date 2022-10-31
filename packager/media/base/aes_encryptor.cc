@@ -69,9 +69,8 @@ bool AesCtrEncryptor::CryptInternal(const uint8_t* plaintext,
   for (size_t i = 0; i < plaintext_size; ++i) {
     if (block_offset_ == 0) {
       size_t ignored_output_size;
-      uint8_t unused_iv[AES_BLOCK_SIZE];
       CHECK_EQ(
-          mbedtls_cipher_crypt(&cipher_ctx_, unused_iv, AES_BLOCK_SIZE,
+          mbedtls_cipher_crypt(&cipher_ctx_, /* iv= */ NULL, /* iv_len= */ 0,
                                &counter_[0], AES_BLOCK_SIZE,
                                &encrypted_counter_[0], &ignored_output_size),
           0);
