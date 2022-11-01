@@ -23,6 +23,7 @@
 
 #include "glog/logging.h"
 #include "mbedtls/error.h"
+#include "mbedtls/md.h"
 
 namespace {
 
@@ -42,6 +43,18 @@ std::string mbedtls_strerr(int rv) {
   }
 
   return output;
+}
+
+std::string sha1(const std::string& message) {
+  const mbedtls_md_info_t* md_info = mbedtls_md_info_from_type(MBEDTLS_MD_SHA1);
+  DCHECK(md_info);
+
+  std::string hash(mbedtls_md_get_size(md_info), 0);
+  CHECK_EQ(0,
+           mbedtls_md(md_info, reinterpret_cast<const uint8_t*>(message.data()),
+                      message.size(), reinterpret_cast<uint8_t*>(hash.data())));
+
+  return hash;
 }
 
 }  // namespace
@@ -69,16 +82,6 @@ RsaPrivateKey* RsaPrivateKey::Create(const std::string& serialized_key) {
   return key.release();
 }
 
-// Can be overridden for deterministic testing:
-RsaPrivateKey::prng_func_t RsaPrivateKey::GetPrngFunc() {
-  return mbedtls_ctr_drbg_random;
-}
-
-// Can be overridden for deterministic testing:
-void* RsaPrivateKey::GetPrngContext() {
-  return &prng_context_;
-}
-
 bool RsaPrivateKey::Deserialize(const std::string& serialized_key) {
   const mbedtls_pk_info_t* pk_info = mbedtls_pk_info_from_type(MBEDTLS_PK_RSA);
   DCHECK(pk_info);
@@ -92,7 +95,7 @@ bool RsaPrivateKey::Deserialize(const std::string& serialized_key) {
       &pk_context_, reinterpret_cast<const uint8_t*>(serialized_key.data()),
       serialized_key.size(),
       /* password= */ NULL,
-      /* password_len= */ 0, GetPrngFunc(), GetPrngContext());
+      /* password_len= */ 0, mbedtls_ctr_drbg_random, &prng_context_);
   if (rv != 0) {
     LOG(ERROR) << "RSA private key failed to load: " << mbedtls_strerr(rv);
     return false;
@@ -127,7 +130,7 @@ bool RsaPrivateKey::Decrypt(const std::string& encrypted_message,
 
   size_t decrypted_size = 0;
   int rv = mbedtls_rsa_rsaes_oaep_decrypt(
-      rsa_context, GetPrngFunc(), GetPrngContext(),
+      rsa_context, mbedtls_ctr_drbg_random, &prng_context_,
       /* label= */ NULL,
       /* label_len= */ 0, &decrypted_size,
       reinterpret_cast<const uint8_t*>(encrypted_message.data()),
@@ -155,13 +158,11 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
   size_t rsa_size = mbedtls_rsa_get_len(rsa_context);
   signature->resize(rsa_size);
 
-  // Because we set the digest mode in the previous step, here we use
-  // MBEDTLS_MD_NONE to signal that we're passing the raw message, which
-  // mbedtls should hash for us using MBEDTLS_MD_SHA1 (set above).
+  std::string hash = sha1(message);
   int rv = mbedtls_rsa_rsassa_pss_sign_ext(
-      rsa_context, GetPrngFunc(), GetPrngContext(), MBEDTLS_MD_NONE,
-      static_cast<unsigned int>(message.size()),
-      reinterpret_cast<const uint8_t*>(message.data()), kPssSaltLength,
+      rsa_context, mbedtls_ctr_drbg_random, &prng_context_, MBEDTLS_MD_SHA1,
+      static_cast<unsigned int>(hash.size()),
+      reinterpret_cast<const uint8_t*>(hash.data()), kPssSaltLength,
       reinterpret_cast<uint8_t*>(signature->data()));
 
   if (rv != 0) {
@@ -189,16 +190,6 @@ RsaPublicKey* RsaPublicKey::Create(const std::string& serialized_key) {
     return NULL;
   }
   return key.release();
-}
-
-// Can be overridden for deterministic testing:
-RsaPublicKey::prng_func_t RsaPublicKey::GetPrngFunc() {
-  return mbedtls_ctr_drbg_random;
-}
-
-// Can be overridden for deterministic testing:
-void* RsaPublicKey::GetPrngContext() {
-  return &prng_context_;
 }
 
 bool RsaPublicKey::Deserialize(const std::string& serialized_key) {
@@ -245,7 +236,7 @@ bool RsaPublicKey::Encrypt(const std::string& clear_message,
   encrypted_message->resize(rsa_size);
 
   int rv = mbedtls_rsa_rsaes_oaep_encrypt(
-      rsa_context, GetPrngFunc(), GetPrngContext(),
+      rsa_context, mbedtls_ctr_drbg_random, &prng_context_,
       /* label= */ NULL,
       /* label_len= */ 0, clear_message.size(),
       reinterpret_cast<const uint8_t*>(clear_message.data()),
@@ -275,11 +266,10 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
   }
 
   // Verify the signature.
+  std::string hash = sha1(message);
   int rv = mbedtls_rsa_rsassa_pss_verify_ext(
-      rsa_context,
-      MBEDTLS_MD_NONE,  // Verify whole message, not hash
-      static_cast<unsigned int>(message.size()),
-      reinterpret_cast<const uint8_t*>(message.data()), MBEDTLS_MD_SHA1,
+      rsa_context, MBEDTLS_MD_SHA1, static_cast<unsigned int>(hash.size()),
+      reinterpret_cast<const uint8_t*>(hash.data()), MBEDTLS_MD_SHA1,
       kPssSaltLength, reinterpret_cast<const uint8_t*>(signature.data()));
 
   if (rv != 0) {

@@ -20,85 +20,6 @@ namespace media {
 
 namespace {
 
-const char kFakePrngDataFile[] = "fake_prng_data.bin";
-
-FILE* OpenFakePrng() {
-  // Open deterministic random data file for the fake PRNG.
-  std::filesystem::path path = GetTestDataFilePath(kFakePrngDataFile);
-  FILE* fp = fopen(path.string().c_str(), "rb");
-  if (!fp) {
-    LOG(ERROR) << "Cannot open " << kFakePrngDataFile;
-  }
-  return fp;
-}
-
-// mbedtls prng plugin.  Called by mbedtls to get random bytes.
-int FakePrngFunc(void* ctx, unsigned char* output, size_t len) {
-  DCHECK(ctx);
-  FILE* rand_source_fp = reinterpret_cast<FILE*>(ctx);
-
-  DCHECK(output);
-
-  if (fread(output, 1, len, rand_source_fp) < len) {
-    return MBEDTLS_ERR_ENTROPY_SOURCE_FAILED;
-  }
-  return 0;
-}
-
-class DeterministicRsaPublicKey : public RsaPublicKey {
- public:
-  static DeterministicRsaPublicKey* Create(const std::string& serialized_key) {
-    std::unique_ptr<DeterministicRsaPublicKey> key(
-        new DeterministicRsaPublicKey());
-    if (!key->Deserialize(serialized_key)) {
-      return NULL;
-    }
-    return key.release();
-  }
-
-  virtual ~DeterministicRsaPublicKey() {
-    if (fake_prng_fp_)
-      fclose(fake_prng_fp_);
-  }
-
- protected:
-  DeterministicRsaPublicKey() : RsaPublicKey() {
-    fake_prng_fp_ = OpenFakePrng();
-  }
-
-  void* GetPrngContext() override { return fake_prng_fp_; }
-  prng_func_t GetPrngFunc() override { return FakePrngFunc; }
-
-  FILE* fake_prng_fp_;
-};
-
-class DeterministicRsaPrivateKey : public RsaPrivateKey {
- public:
-  static DeterministicRsaPrivateKey* Create(const std::string& serialized_key) {
-    std::unique_ptr<DeterministicRsaPrivateKey> key(
-        new DeterministicRsaPrivateKey());
-    if (!key->Deserialize(serialized_key)) {
-      return NULL;
-    }
-    return key.release();
-  }
-
-  virtual ~DeterministicRsaPrivateKey() {
-    if (fake_prng_fp_)
-      fclose(fake_prng_fp_);
-  }
-
- protected:
-  DeterministicRsaPrivateKey() : RsaPrivateKey() {
-    fake_prng_fp_ = OpenFakePrng();
-  }
-
-  void* GetPrngContext() override { return fake_prng_fp_; }
-  prng_func_t GetPrngFunc() override { return FakePrngFunc; }
-
-  FILE* fake_prng_fp_;
-};
-
 class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
  public:
   RsaKeyTest() : test_set_(GetParam()) {}
@@ -154,17 +75,21 @@ TEST_P(RsaKeyTest, LoadPrivateKeyInPublicKey) {
 }
 
 TEST_P(RsaKeyTest, EncryptAndDecrypt) {
-  std::unique_ptr<DeterministicRsaPublicKey> deterministic_public_key(
-      DeterministicRsaPublicKey::Create(test_set_.public_key));
-  ASSERT_TRUE(deterministic_public_key != NULL);
-
   std::string encrypted_message;
-  ASSERT_TRUE(deterministic_public_key->Encrypt(test_set_.test_message,
-                                                &encrypted_message));
-  EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
+  ASSERT_TRUE(public_key_->Encrypt(test_set_.test_message, &encrypted_message));
 
   std::string decrypted_message;
   EXPECT_TRUE(private_key_->Decrypt(encrypted_message, &decrypted_message));
+  EXPECT_EQ(test_set_.test_message, decrypted_message);
+}
+
+TEST_P(RsaKeyTest, DecryptGoldenMessage) {
+  // This message is from an older version that predates our use of mbedtls,
+  // but proves that the new system is compatible with the messages produced by
+  // the old one.
+  std::string decrypted_message;
+  EXPECT_TRUE(
+      private_key_->Decrypt(test_set_.encrypted_message, &decrypted_message));
   EXPECT_EQ(test_set_.test_message, decrypted_message);
 }
 
@@ -195,16 +120,18 @@ TEST_P(RsaKeyTest, BadEncMessage3) {
 }
 
 TEST_P(RsaKeyTest, SignAndVerify) {
-  std::unique_ptr<DeterministicRsaPrivateKey> deterministic_private_key(
-      DeterministicRsaPrivateKey::Create(test_set_.private_key));
-  ASSERT_TRUE(deterministic_private_key != NULL);
-
   std::string signature;
-  ASSERT_TRUE(deterministic_private_key->GenerateSignature(
-      test_set_.test_message, &signature));
-  EXPECT_EQ(test_set_.signature, signature);
-
+  ASSERT_TRUE(
+      private_key_->GenerateSignature(test_set_.test_message, &signature));
   EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message, signature));
+}
+
+TEST_P(RsaKeyTest, VerifyGoldenSignature) {
+  // This signature is from an older version that predates our use of mbedtls,
+  // but proves that the new system is compatible with the signatures produced
+  // by the old one.
+  EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message,
+                                           test_set_.signature));
 }
 
 TEST_P(RsaKeyTest, BadSignature1) {

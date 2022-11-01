@@ -23,7 +23,7 @@ namespace media {
 /// Rsa private key, used for message signing and decryption.
 class RsaPrivateKey {
  public:
-  virtual ~RsaPrivateKey();
+  ~RsaPrivateKey();
 
   /// Create an RsaPrivateKey object using a DER encoded PKCS#1 RSAPrivateKey.
   /// @return The created RsaPrivateKey object on success, NULL otherwise.
@@ -40,17 +40,11 @@ class RsaPrivateKey {
   /// @return true if successful, false otherwise.
   bool GenerateSignature(const std::string& message, std::string* signature);
 
- protected:
-  /// Can be overridden for deterministic testing:
-  typedef int (*prng_func_t)(void*, unsigned char*, size_t);
-  virtual void* GetPrngContext();
-  virtual prng_func_t GetPrngFunc();
-
+ private:
   RsaPrivateKey();
 
   bool Deserialize(const std::string& serialized_key);
 
- private:
   mbedtls_pk_context pk_context_;
   mbedtls_entropy_context entropy_context_;
   mbedtls_ctr_drbg_context prng_context_;
@@ -61,7 +55,7 @@ class RsaPrivateKey {
 /// Rsa public key, used for signature verification and encryption.
 class RsaPublicKey {
  public:
-  virtual ~RsaPublicKey();
+  ~RsaPublicKey();
 
   /// Create an RsaPublicKey object using a DER encoded PKCS#1 RSAPublicKey.
   /// @return The created RsaPrivateKey object on success, NULL otherwise.
@@ -78,17 +72,11 @@ class RsaPublicKey {
   bool VerifySignature(const std::string& message,
                        const std::string& signature);
 
- protected:
-  /// Can be overridden for deterministic testing:
-  typedef int (*prng_func_t)(void*, unsigned char*, size_t);
-  virtual void* GetPrngContext();
-  virtual prng_func_t GetPrngFunc();
-
+ private:
   RsaPublicKey();
 
   bool Deserialize(const std::string& serialized_key);
 
- private:
   mbedtls_pk_context pk_context_;
   mbedtls_entropy_context entropy_context_;
   mbedtls_ctr_drbg_context prng_context_;
