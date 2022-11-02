@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/escaping.h"
+#include "glog/logging.h"
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_encryptor.h"
 
@@ -144,12 +144,11 @@ TEST_F(AesCtrEncryptorTest, NistTestCaseInplaceEncryptionDecryption) {
 TEST_F(AesCtrEncryptorTest, EncryptDecryptString) {
   static const char kPlaintext[] = "normal plaintext of random length";
   static const char kExpectedCiphertextInHex[] =
-      "82E3AD1EF90C5CC09EB37F1B9EFBD99016441A1C15123F0777CD57BB993E14DA02";
+      "82e3ad1ef90c5cc09eb37f1b9efbd99016441a1c15123f0777cd57bb993e14da02";
 
   std::string ciphertext;
   ASSERT_TRUE(encryptor_.Crypt(kPlaintext, &ciphertext));
-  EXPECT_EQ(kExpectedCiphertextInHex,
-            base::HexEncode(ciphertext.data(), ciphertext.size()));
+  EXPECT_EQ(kExpectedCiphertextInHex, absl::BytesToHexString(ciphertext));
 
   std::string decrypted;
   ASSERT_TRUE(decryptor_.SetIv(iv_));
@@ -202,7 +201,8 @@ TEST_F(AesCtrEncryptorTest, GenerateRandomIv) {
   std::vector<uint8_t> iv;
   ASSERT_TRUE(AesCryptor::GenerateRandomIv(FOURCC_cenc, &iv));
   ASSERT_EQ(kCencIvSize, iv.size());
-  LOG(INFO) << "Random IV: " << base::HexEncode(iv.data(), iv.size());
+  LOG(INFO) << "Random IV: "
+            << absl::BytesToHexString(std::string(iv.begin(), iv.end()));
 }
 
 TEST_F(AesCtrEncryptorTest, UnsupportedKeySize) {
@@ -427,16 +427,17 @@ TEST_F(AesCbcTest, Aes128CbcPkcs5) {
   const std::string kPlaintext =
       "Plain text with a g-clef U+1D11E \360\235\204\236";
   const std::string kExpectedCiphertextHex =
-      "D4A67A0BA33C30F207344D81D1E944BBE65587C3D7D9939A"
-      "C070C62B9C15A3EA312EA4AD1BC7929F4D3C16B03AD5ADA8";
+      "d4a67a0ba33c30f207344d81d1e944bbe65587c3d7d9939a"
+      "c070c62b9c15a3ea312ea4ad1bc7929f4d3c16b03ad5ada8";
 
   key_.assign(kKey.begin(), kKey.end());
   iv_.assign(kIv.begin(), kIv.end());
 
   const std::vector<uint8_t> plaintext(kPlaintext.begin(), kPlaintext.end());
-  std::vector<uint8_t> expected_ciphertext;
-  ASSERT_TRUE(
-      base::HexStringToBytes(kExpectedCiphertextHex, &expected_ciphertext));
+  std::string expected_ciphertext_string =
+      absl::HexStringToBytes(kExpectedCiphertextHex);
+  std::vector<uint8_t> expected_ciphertext(expected_ciphertext_string.begin(),
+                                           expected_ciphertext_string.end());
   TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
 
@@ -444,15 +445,16 @@ TEST_F(AesCbcTest, Aes192CbcPkcs5) {
   const std::string kKey = "192bitsIsTwentyFourByte!";
   const std::string kIv = "Sweet Sixteen IV";
   const std::string kPlaintext = "Small text";
-  const std::string kExpectedCiphertextHex = "78DE5D7C2714FC5C61346C5416F6C89A";
+  const std::string kExpectedCiphertextHex = "78de5d7c2714fc5c61346c5416f6c89a";
 
   key_.assign(kKey.begin(), kKey.end());
   iv_.assign(kIv.begin(), kIv.end());
 
   const std::vector<uint8_t> plaintext(kPlaintext.begin(), kPlaintext.end());
-  std::vector<uint8_t> expected_ciphertext;
-  ASSERT_TRUE(
-      base::HexStringToBytes(kExpectedCiphertextHex, &expected_ciphertext));
+  std::string expected_ciphertext_string =
+      absl::HexStringToBytes(kExpectedCiphertextHex);
+  std::vector<uint8_t> expected_ciphertext(expected_ciphertext_string.begin(),
+                                           expected_ciphertext_string.end());
   TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
 
@@ -557,10 +559,27 @@ TEST_F(AesCbcTest, Pkcs5CipherTextEmpty) {
   EXPECT_FALSE(decryptor_->Crypt("", &plaintext));
 }
 
+std::ostream& operator<<(std::ostream& os, CbcPaddingScheme scheme) {
+  switch (scheme) {
+    case kNoPadding:
+      return os << "kNoPadding";
+    case kPkcs5Padding:
+      return os << "kPkcs5Padding";
+    case kCtsPadding:
+      return os << "kCtsPadding";
+    default:
+      return os << "Unrecognized scheme: " << scheme;
+  }
+}
+
 struct CbcTestCase {
   CbcPaddingScheme padding_scheme;
   const char* plaintext_hex;
   const char* expected_ciphertext_hex;
+  friend std::ostream& operator<<(std::ostream& os, const CbcTestCase& param) {
+    return os << "padding_scheme = " << param.padding_scheme
+              << ", plaintext = " << param.plaintext_hex;
+  }
 };
 
 const CbcTestCase kCbcTestCases[] = {
@@ -608,14 +627,17 @@ TEST_P(AesCbcCryptorVerificationTest, EncryptDecryptTest) {
   std::vector<uint8_t> plaintext;
   std::string plaintext_hex(GetParam().plaintext_hex);
   if (!plaintext_hex.empty()) {
-    ASSERT_TRUE(base::HexStringToBytes(plaintext_hex, &plaintext));
+    std::string plaintext_string = absl::HexStringToBytes(plaintext_hex);
+    plaintext.assign(plaintext_string.begin(), plaintext_string.end());
   }
 
   std::vector<uint8_t> expected_ciphertext;
   std::string expected_ciphertext_hex(GetParam().expected_ciphertext_hex);
   if (!expected_ciphertext_hex.empty()) {
-    ASSERT_TRUE(base::HexStringToBytes(GetParam().expected_ciphertext_hex,
-                                       &expected_ciphertext));
+    std::string expected_ciphertext_string =
+        absl::HexStringToBytes(expected_ciphertext_hex);
+    expected_ciphertext.assign(expected_ciphertext_string.begin(),
+                               expected_ciphertext_string.end());
   }
 
   TestEncryptDecrypt(plaintext, expected_ciphertext);

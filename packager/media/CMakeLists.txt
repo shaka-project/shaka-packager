@@ -5,4 +5,5 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
+add_subdirectory(base)
 add_subdirectory(test)

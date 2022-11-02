@@ -32,4 +32,7 @@
 /// You can use the insertion operator to add specific logs to this.
 #define NOTIMPLEMENTED() LOG(ERROR) << "NOTIMPLEMENTED: "
 
+/// AES block size in bytes, regardless of key size.
+#define AES_BLOCK_SIZE 16
+
 #endif  // PACKAGER_MACROS_H_

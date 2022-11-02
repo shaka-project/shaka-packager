@@ -6,9 +6,9 @@
 
 #include "packager/media/base/aes_pattern_cryptor.h"
 
-#include <openssl/aes.h>
 #include <algorithm>
-#include "packager/base/logging.h"
+
+#include "glog/logging.h"
 
 namespace shaka {
 namespace media {
