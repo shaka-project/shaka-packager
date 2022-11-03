@@ -120,6 +120,11 @@ class TestableEsParser : public EsParserH26x {
   }
 
  private:
+  int64_t CalculateSampleDuration(int pps_id) override {
+    // Typical 40ms - frame duration with 25 FPS
+    return 0.04 * 90000;
+  }
+
   const int kTestPpsId = 123;
 
   Nalu::CodecType codec_type_;
@@ -179,6 +184,7 @@ class EsParserH26xTest : public testing::Test {
     const std::vector<uint8_t> sample_data(
         sample->data(), sample->data() + sample->data_size());
     EXPECT_EQ(samples_[sample_id], sample_data);
+    media_samples_.push_back(sample);
   }
 
   void NewVideoConfig(std::shared_ptr<StreamInfo> config) {
@@ -187,6 +193,7 @@ class EsParserH26xTest : public testing::Test {
 
  protected:
   std::vector<std::vector<uint8_t>> samples_;
+  std::vector<std::shared_ptr<MediaSample>> media_samples_;
   size_t sample_count_;
   bool has_stream_info_;
 };
@@ -377,6 +384,10 @@ TEST_F(EsParserH26xTest, H264BasicSupport) {
   RunTest(Nalu::kH264, kData, arraysize(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
+  EXPECT_EQ(3u, media_samples_.size());
+  for (size_t i = 0; i < media_samples_.size(); i++) {
+    EXPECT_GT(media_samples_[i]->duration(), 0u);
+  }
 }
 
 // This is not compliant to H264 spec, but VLC generates streams like this. See
@@ -451,6 +462,33 @@ TEST_F(EsParserH26xTest, H264DoesNotStartOnRsv) {
   RunTest(Nalu::kH264, kData, arraysize(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
+}
+
+TEST_F(EsParserH26xTest, H264ContainsOnlyOneFrame) {
+  const H26xNaluType kData[] = {
+      kSeparator,
+      kH264Aud,
+      kH264Sps,
+      kH264VclKeyFrame,
+  };
+
+  RunTest(Nalu::kH264, kData, arraysize(kData));
+  EXPECT_TRUE(has_stream_info_);
+  EXPECT_EQ(1u, sample_count_);
+  EXPECT_EQ(1u, media_samples_.size());
+  EXPECT_GT(media_samples_[0]->duration(), 0u);
+}
+
+TEST_F(EsParserH26xTest, H265ContainsOnlyOneFrame) {
+  const H26xNaluType kData[] = {
+      kSeparator, kH265Aud, kH265Sps, kH265VclKeyFrame,
+  };
+
+  RunTest(Nalu::kH265, kData, arraysize(kData));
+  EXPECT_TRUE(has_stream_info_);
+  EXPECT_EQ(1u, sample_count_);
+  EXPECT_EQ(1u, media_samples_.size());
+  EXPECT_GT(media_samples_[0]->duration(), 0u);
 }
 
 }  // namespace mp2t
