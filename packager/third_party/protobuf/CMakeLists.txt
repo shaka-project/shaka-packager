@@ -22,33 +22,34 @@ set(protobuf_DISABLE_RTTI ON)
 # The latest version of protobuf requires a path to ABSL.
 set(ABSL_ROOT_DIR get_filename_component(ABSOLUTE_PATH ../abseil-cpp/source ABSOLUTE))
 
+# Disable these errors/warnings:
 if(MSVC)
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/arena_align.h:
-  add_compile_options(/wd4146)  # sign comparison
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/generated_message_tctable_lite.cc
-  add_compile_options(/wd4141)  # multiple inline keywords
+  add_compile_options(
+    # src/google/protobuf/arena_align.h
+    /wd4146  # sign comparison
+    # src/google/protobuf/generated_message_tctable_lite.cc
+    /wd4141  # multiple inline keywords
+  )
 else()
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/stubs/stringprintf.cc:
-  add_compile_options(-Wno-sign-compare)
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/compiler/cpp/parse_function_generator.cc:
-  add_compile_options(-Wno-missing-field-initializers)
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/message_lite.cc:
-  add_compile_options(-Wno-stringop-overflow)
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/stubs/int128.cc:
-  add_compile_options(-Wno-shorten-64-to-32)
-  # Disable this error/warning, which occurs in
-  # src/google/protobuf/generated_message_tctable_lite.cc
-  add_compile_options(-Wno-unused-function)
-  # There are several interfaces with ununused parameters.
-  add_compile_options(-Wno-unused-parameter)
-  # There are also redundant move calls.
-  add_compile_options(-Wno-redundant-move)
+  add_compile_options(
+    # src/google/protobuf/util/message_differencer.cc
+    -Wno-type-limits
+    # src/google/protobuf/stubs/stringprintf.cc
+    -Wno-sign-compare
+    # src/google/protobuf/compiler/cpp/parse_function_generator.cc
+    -Wno-missing-field-initializers
+    # src/google/protobuf/message_lite.cc
+    -Wno-stringop-overflow
+    # src/google/protobuf/stubs/int128.cc
+    -Wno-shorten-64-to-32
+    # src/google/protobuf/generated_message_tctable_lite.cc
+    -Wno-unused-function
+
+    # There are several interfaces with ununused parameters.
+    -Wno-unused-parameter
+    # There are also redundant move calls.
+    -Wno-redundant-move
+  )
 endif()
 
 # Disable internal debugging features, which end up triggering further compiler
