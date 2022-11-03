@@ -68,7 +68,10 @@ function(add_proto_library NAME)
 
   # Anyone who depends on this proto library will also need to have these
   # warnings suppressed from the generated headers.
-  if(NOT MSVC)
+  if(MSVC)
+    # Integer truncation warnings
+    target_compile_options(${NAME} PUBLIC /wd4244 /wd4267)
+  else()
     target_compile_options(${NAME} PUBLIC -Wno-shorten-64-to-32)
     target_compile_options(${NAME} PUBLIC -Wno-unused-parameter)
   endif()
