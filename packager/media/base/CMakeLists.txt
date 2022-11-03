@@ -71,6 +71,7 @@ target_link_libraries(media_base
 add_library(media_handler_test_base STATIC
     media_handler_test_base.cc)
 target_link_libraries(media_handler_test_base
+    absl::strings
     glog
     gmock)
 
