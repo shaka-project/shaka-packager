@@ -54,6 +54,8 @@ add_compile_options(-Wno-format-extra-args)
 add_compile_options(-Wno-unused-but-set-variable)
 # Disable this warning/error, which occurs in xmlIO.c:
 add_compile_options(-Wno-unused-parameter)
+# Disable this warning/error, which occurs in xmlschemas.c:
+add_compile_options(-Wno-format-truncation)
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
