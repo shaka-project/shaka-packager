@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+#include <iterator>
 #include <memory>
 
 #include "absl/strings/escaping.h"
@@ -100,12 +101,12 @@ namespace media {
 class AesCtrEncryptorTest : public testing::Test {
  public:
   void SetUp() override {
-    key_.assign(kAesKey, kAesKey + arraysize(kAesKey));
-    iv_.assign(kAesIv, kAesIv + arraysize(kAesIv));
+    key_.assign(kAesKey, kAesKey + std::size(kAesKey));
+    iv_.assign(kAesIv, kAesIv + std::size(kAesIv));
     plaintext_.assign(kAesCtrPlaintext,
-                      kAesCtrPlaintext + arraysize(kAesCtrPlaintext));
+                      kAesCtrPlaintext + std::size(kAesCtrPlaintext));
     ciphertext_.assign(kAesCtrCiphertext,
-                       kAesCtrCiphertext + arraysize(kAesCtrCiphertext));
+                       kAesCtrCiphertext + std::size(kAesCtrCiphertext));
 
     ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_));
     ASSERT_TRUE(decryptor_.InitializeWithIv(key_, iv_));
@@ -161,13 +162,13 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
   // encrypted with IV = kIv128Max64, the subsequent blocks should be encrypted
   // with iv 0 to 3.
   std::vector<uint8_t> iv_max64(kIv128Max64,
-                                kIv128Max64 + arraysize(kIv128Max64));
+                                kIv128Max64 + std::size(kIv128Max64));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_max64));
   std::vector<uint8_t> encrypted;
   ASSERT_TRUE(encryptor_.Crypt(plaintext_, &encrypted));
 
   std::vector<uint8_t> iv_one_and_three(
-      kIv128OneAndThree, kIv128OneAndThree + arraysize(kIv128OneAndThree));
+      kIv128OneAndThree, kIv128OneAndThree + std::size(kIv128OneAndThree));
   encryptor_.UpdateIv();
   EXPECT_EQ(iv_one_and_three, encryptor_.iv());
 
@@ -175,7 +176,7 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
   std::vector<uint8_t> encrypted_verify(plaintext_.size(), 0);
   ASSERT_TRUE(
       encryptor_.Crypt(&plaintext_[0], kAesBlockSize, &encrypted_verify[0]));
-  std::vector<uint8_t> iv_zero(kIv128Zero, kIv128Zero + arraysize(kIv128Zero));
+  std::vector<uint8_t> iv_zero(kIv128Zero, kIv128Zero + std::size(kIv128Zero));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_zero));
   ASSERT_TRUE(encryptor_.Crypt(&plaintext_[kAesBlockSize], kAesBlockSize * 3,
                                &encrypted_verify[kAesBlockSize]));
@@ -183,7 +184,7 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
 }
 
 TEST_F(AesCtrEncryptorTest, 64BitIvUpdate) {
-  std::vector<uint8_t> iv_zero(kIv64Zero, kIv64Zero + arraysize(kIv64Zero));
+  std::vector<uint8_t> iv_zero(kIv64Zero, kIv64Zero + std::size(kIv64Zero));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_zero));
 
   // There are four blocks of text in |plaintext_|, but since iv is 8 bytes,
@@ -191,7 +192,7 @@ TEST_F(AesCtrEncryptorTest, 64BitIvUpdate) {
   std::vector<uint8_t> encrypted;
   ASSERT_TRUE(encryptor_.Crypt(plaintext_, &encrypted));
 
-  std::vector<uint8_t> iv_one(kIv64One, kIv64One + arraysize(kIv64One));
+  std::vector<uint8_t> iv_one(kIv64One, kIv64One + std::size(kIv64One));
   encryptor_.UpdateIv();
   EXPECT_EQ(iv_one, encryptor_.iv());
 }
@@ -206,19 +207,19 @@ TEST_F(AesCtrEncryptorTest, GenerateRandomIv) {
 }
 
 TEST_F(AesCtrEncryptorTest, UnsupportedKeySize) {
-  std::vector<uint8_t> key(kInvalidKey, kInvalidKey + arraysize(kInvalidKey));
+  std::vector<uint8_t> key(kInvalidKey, kInvalidKey + std::size(kInvalidKey));
   ASSERT_FALSE(encryptor_.InitializeWithIv(key, iv_));
 }
 
 TEST_F(AesCtrEncryptorTest, UnsupportedIV) {
-  std::vector<uint8_t> iv(kInvalidIv, kInvalidIv + arraysize(kInvalidIv));
+  std::vector<uint8_t> iv(kInvalidIv, kInvalidIv + std::size(kInvalidIv));
   ASSERT_FALSE(encryptor_.InitializeWithIv(key_, iv));
 }
 
 // Subsample test cases.
 struct SubsampleTestCase {
   const uint8_t* subsample_sizes;
-  uint32_t subsample_count;
+  size_t subsample_count;
 };
 
 class AesCtrEncryptorSubsampleTest
@@ -250,16 +251,16 @@ TEST_P(AesCtrEncryptorSubsampleTest, NistTestCaseSubsamples) {
 
 namespace {
 const SubsampleTestCase kSubsampleTestCases[] = {
-    {kSubsampleTest1, arraysize(kSubsampleTest1)},
-    {kSubsampleTest2, arraysize(kSubsampleTest2)},
-    {kSubsampleTest3, arraysize(kSubsampleTest3)},
-    {kSubsampleTest4, arraysize(kSubsampleTest4)},
-    {kSubsampleTest5, arraysize(kSubsampleTest5)},
-    {kSubsampleTest6, arraysize(kSubsampleTest6)},
-    {kSubsampleTest7, arraysize(kSubsampleTest7)},
-    {kSubsampleTest8, arraysize(kSubsampleTest8)},
-    {kSubsampleTest9, arraysize(kSubsampleTest9)},
-    {kSubsampleTest10, arraysize(kSubsampleTest10)}};
+    {kSubsampleTest1, std::size(kSubsampleTest1)},
+    {kSubsampleTest2, std::size(kSubsampleTest2)},
+    {kSubsampleTest3, std::size(kSubsampleTest3)},
+    {kSubsampleTest4, std::size(kSubsampleTest4)},
+    {kSubsampleTest5, std::size(kSubsampleTest5)},
+    {kSubsampleTest6, std::size(kSubsampleTest6)},
+    {kSubsampleTest7, std::size(kSubsampleTest7)},
+    {kSubsampleTest8, std::size(kSubsampleTest8)},
+    {kSubsampleTest9, std::size(kSubsampleTest9)},
+    {kSubsampleTest10, std::size(kSubsampleTest10)}};
 }  // namespace
 
 INSTANTIATE_TEST_CASE_P(SubsampleTestCases,
@@ -268,7 +269,7 @@ INSTANTIATE_TEST_CASE_P(SubsampleTestCases,
 
 struct IvTestCase {
   const uint8_t* iv_test;
-  uint32_t iv_size;
+  size_t iv_size;
   const uint8_t* iv_expected;
 };
 
@@ -301,12 +302,12 @@ namespace {
 // samples should be created by adding the block count of the previous sample to
 // the initialization vector of the previous sample.
 const IvTestCase kIvTestCases[] = {
-    {kIv128Zero, arraysize(kIv128Zero), kIv128Four},
-    {kIv128Max64, arraysize(kIv128Max64), kIv128OneAndThree},
-    {kIv128MaxMinusOne, arraysize(kIv128MaxMinusOne), kIv128Two},
-    {kIv64Zero, arraysize(kIv64Zero), kIv64One},
-    {kIv64MaxMinusOne, arraysize(kIv64MaxMinusOne), kIv64Max},
-    {kIv64Max, arraysize(kIv64Max), kIv64Zero}};
+    {kIv128Zero, std::size(kIv128Zero), kIv128Four},
+    {kIv128Max64, std::size(kIv128Max64), kIv128OneAndThree},
+    {kIv128MaxMinusOne, std::size(kIv128MaxMinusOne), kIv128Two},
+    {kIv64Zero, std::size(kIv64Zero), kIv64One},
+    {kIv64MaxMinusOne, std::size(kIv64MaxMinusOne), kIv64Max},
+    {kIv64Max, std::size(kIv64Max), kIv64Zero}};
 }  // namespace
 
 INSTANTIATE_TEST_CASE_P(IvTestCases,
@@ -320,8 +321,8 @@ class AesCbcTest : public ::testing::Test {
             new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv)),
         decryptor_(
             new AesCbcDecryptor(kPkcs5Padding, AesCryptor::kUseConstantIv)),
-        key_(kAesKey, kAesKey + arraysize(kAesKey)),
-        iv_(kAesIv, kAesIv + arraysize(kAesIv)) {}
+        key_(kAesKey, kAesKey + std::size(kAesKey)),
+        iv_(kAesIv, kAesIv + std::size(kAesIv)) {}
 
   void TestEncryptDecrypt(const std::vector<uint8_t>& plaintext,
                           const std::vector<uint8_t>& expected_ciphertext) {
@@ -411,12 +412,12 @@ TEST_F(AesCbcTest, Aes256CbcPkcs5) {
       0x3f, 0x46, 0x17, 0x96, 0xd6, 0xb0, 0xd6, 0xb2,
       0xe0, 0xc2, 0xa7, 0x2b, 0x4d, 0x80, 0xe6, 0x44};
 
-  key_.assign(kAesCbcKey, kAesCbcKey + arraysize(kAesCbcKey));
-  iv_.assign(kAesCbcIv, kAesCbcIv + arraysize(kAesCbcIv));
+  key_.assign(kAesCbcKey, kAesCbcKey + std::size(kAesCbcKey));
+  iv_.assign(kAesCbcIv, kAesCbcIv + std::size(kAesCbcIv));
   const std::vector<uint8_t> plaintext(
-      kAesCbcPlaintext, kAesCbcPlaintext + arraysize(kAesCbcPlaintext));
+      kAesCbcPlaintext, kAesCbcPlaintext + std::size(kAesCbcPlaintext));
   const std::vector<uint8_t> expected_ciphertext(
-      kAesCbcCiphertext, kAesCbcCiphertext + arraysize(kAesCbcCiphertext));
+      kAesCbcCiphertext, kAesCbcCiphertext + std::size(kAesCbcCiphertext));
 
   TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
@@ -469,9 +470,9 @@ TEST_F(AesCbcTest, NoPaddingNoChainAcrossCalls) {
   };
 
   std::vector<uint8_t> plaintext(kPlaintext,
-                                 kPlaintext + arraysize(kPlaintext));
+                                 kPlaintext + std::size(kPlaintext));
   std::vector<uint8_t> ciphertext(kCiphertext,
-                                  kCiphertext + arraysize(kCiphertext));
+                                  kCiphertext + std::size(kCiphertext));
 
   AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kUseConstantIv);
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
@@ -507,11 +508,11 @@ TEST_F(AesCbcTest, NoPaddingChainAcrossCalls) {
   };
 
   std::vector<uint8_t> plaintext(kPlaintext,
-                                 kPlaintext + arraysize(kPlaintext));
+                                 kPlaintext + std::size(kPlaintext));
   std::vector<uint8_t> ciphertext(kCiphertext,
-                                  kCiphertext + arraysize(kCiphertext));
+                                  kCiphertext + std::size(kCiphertext));
   std::vector<uint8_t> ciphertext2(kCiphertext2,
-                                   kCiphertext2 + arraysize(kCiphertext2));
+                                   kCiphertext2 + std::size(kCiphertext2));
 
   AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kDontUseConstantIv);
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
@@ -651,8 +652,8 @@ class AesPerformanceTest : public ::testing::Test {
  public:
   AesPerformanceTest()
       : cbc_encryptor_(kNoPadding, AesCryptor::kUseConstantIv),
-        key_(kAesKey, kAesKey + arraysize(kAesKey)),
-        iv_(kAesIv, kAesIv + arraysize(kAesIv)) {}
+        key_(kAesKey, kAesKey + std::size(kAesKey)),
+        iv_(kAesIv, kAesIv + std::size(kAesIv)) {}
 
   void SetUp() override {
     plaintext_.resize(0x10000);
