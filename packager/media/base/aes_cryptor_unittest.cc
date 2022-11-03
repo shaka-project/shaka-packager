@@ -219,7 +219,7 @@ TEST_F(AesCtrEncryptorTest, UnsupportedIV) {
 // Subsample test cases.
 struct SubsampleTestCase {
   const uint8_t* subsample_sizes;
-  uint32_t subsample_count;
+  size_t subsample_count;
 };
 
 class AesCtrEncryptorSubsampleTest
