@@ -10,6 +10,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <iterator>
 #include <string>
 
 #include "packager/file/file.h"
@@ -21,7 +22,7 @@ namespace shaka {
     std::string temp_data;                                          \
     ASSERT_TRUE(File::ReadFileToString((file_name), &temp_data));   \
     const char* array_ptr = reinterpret_cast<const char*>(array);   \
-    ASSERT_EQ(std::string(array_ptr, arraysize(array)), temp_data); \
+    ASSERT_EQ(std::string(array_ptr, std::size(array)), temp_data); \
   } while (false)
 
 #define ASSERT_FILE_STREQ(file_name, str)                         \
