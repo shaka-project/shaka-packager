@@ -146,15 +146,23 @@ std::string GetSegmentName(const std::string& segment_template,
       format_tag = "%01" PRIu64;
     }
 
+    // absl::StrFormat requires compile-time constants for format strings.
+    // If you don't have that, you build the formatter using this interface
+    // instead.
+    std::vector<absl::FormatArg> format_args;
+    absl::UntypedFormatSpec format(format_tag);
     if (identifier == "Number") {
       // SegmentNumber starts from 1.
-      segment_name += absl::StrFormat(format_tag.c_str(),
-                                      static_cast<uint64_t>(segment_index + 1));
+      format_args.emplace_back(static_cast<uint64_t>(segment_index + 1));
     } else if (identifier == "Time") {
-      segment_name += absl::StrFormat(format_tag.c_str(), segment_start_time);
+      format_args.emplace_back(static_cast<uint64_t>(segment_start_time));
     } else if (identifier == "Bandwidth") {
-      segment_name +=
-          absl::StrFormat(format_tag.c_str(), static_cast<uint64_t>(bandwidth));
+      format_args.emplace_back(static_cast<uint64_t>(bandwidth));
+    }
+
+    std::string format_output;
+    if (absl::FormatUntyped(&format_output, format, format_args)) {
+      segment_name += format_output;
     }
   }
   return segment_name;
