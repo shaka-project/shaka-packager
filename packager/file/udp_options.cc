@@ -6,6 +6,8 @@
 
 #include "packager/file/udp_options.h"
 
+#include <iterator>
+
 #include "absl/flags/flag.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_split.h"
@@ -46,7 +48,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
 };
 
 FieldType GetFieldType(const std::string& field_name) {
-  for (size_t idx = 0; idx < arraysize(kFieldNameTypeMappings); ++idx) {
+  for (size_t idx = 0; idx < std::size(kFieldNameTypeMappings); ++idx) {
     if (field_name == kFieldNameTypeMappings[idx].field_name)
       return kFieldNameTypeMappings[idx].field_type;
   }
