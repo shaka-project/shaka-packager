@@ -15,7 +15,7 @@ bool ValidHexStringToBytes(const std::string& hex, std::string* bytes) {
   // sequence will be converted into NUL characters silently.  So we do our own
   // validation here.
   for (char c : hex) {
-    c = std::tolower(c);
+    c = static_cast<char>(std::tolower(c));
     if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
       // valid
     } else {
