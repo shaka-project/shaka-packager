@@ -48,8 +48,10 @@ set(LIBXML2_WITH_SCHEMAS ON)
 set(LIBXML2_WITH_THREADS ON)
 set(LIBXML2_WITH_TREE ON)
 
-# Disable this warning/error, which occurs in buf.c:
-add_compile_options(-Wno-format-extra-args)
+if(NOT MSVC)
+  # Disable this warning/error, which occurs in buf.c:
+  add_compile_options(-Wno-format-extra-args)
+endif()
 # Disable this warning/error, which occurs in encoding.c:
 add_compile_options(-Wno-unused-but-set-variable)
 # Disable this warning/error, which occurs in xmlIO.c:

@@ -19,9 +19,11 @@ set(protobuf_WITH_ZLIB OFF)
 set(protobuf_BUILD_PROTOC_BINARIES ON)
 set(protobuf_DISABLE_RTTI ON)
 
-# Disable this error/warning, which occurs in
-# src/google/protobuf/stubs/stringprintf.cc:
-add_compile_options(-Wno-sign-compare)
+if(NOT MSVC)
+  # Disable this error/warning, which occurs in
+  # src/google/protobuf/stubs/stringprintf.cc:
+  add_compile_options(-Wno-sign-compare)
+endif()
 # Disable this error/warning, which occurs in
 # src/google/protobuf/compiler/cpp/parse_function_generator.cc:
 add_compile_options(-Wno-missing-field-initializers)
