@@ -269,7 +269,7 @@ INSTANTIATE_TEST_CASE_P(SubsampleTestCases,
 
 struct IvTestCase {
   const uint8_t* iv_test;
-  uint32_t iv_size;
+  size_t iv_size;
   const uint8_t* iv_expected;
 };
 
