@@ -36,6 +36,9 @@ else()
   # Lots of warnings and all warnings as errors.
   # Note that we can't use -Wpedantic due to absl's int128 headers.
   add_compile_options(-Wall -Wextra -Werror)
+  # Several warning suppression flags are required on one compiler version and
+  # not understood by another.  Do not treat these as errors.
+  add_compile_options(-Wno-unknown-warning-option)
 endif()
 
 # Include our module for building protos.
