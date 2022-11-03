@@ -25,6 +25,12 @@ add_compile_options(-Wno-sign-compare)
 # Disable this error/warning, which occurs in
 # src/google/protobuf/compiler/cpp/parse_function_generator.cc:
 add_compile_options(-Wno-missing-field-initializers)
+# Disable this error/warning, which occurs in
+# src/google/protobuf/message_lite.cc:
+add_compile_options(-Wno-stringop-overflow)
+# Disable this error/warning, which occurs in
+# src/google/protobuf/stubs/int128.cc:
+add_compile_options(-Wno-shorten-64-to-32)
 # There are several interfaces with ununused parameters.
 add_compile_options(-Wno-unused-parameter)
 # There are also redundant move calls.
