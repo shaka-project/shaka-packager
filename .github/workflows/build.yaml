@@ -124,11 +124,17 @@ jobs:
             -B build/
 
       - name: Build
-        # This is a universal build command, which will call make on Linux and
-        # Visual Studio on Windows.  Note that the VS generator is what cmake
-        # calls a "multi-configuration" generator, and so the desired build
-        # type must be specified for Windows.
-        run: cmake --build build/ --config "${{ matrix.build_type }}" --parallel
+        run: |
+          # This is a universal build command, which will call make on Linux
+          # and Visual Studio on Windows.  Note that the VS generator is what
+          # cmake calls a "multi-configuration" generator, and so the desired
+          # build type must be specified for Windows.
+          #
+          # Also, build errors from a parallel build can be hard to find and
+          # read.  Run a failing build once more without parallelism so that
+          # the log shows a single, clear error message at the bottom.
+          cmake --build build/ --config "${{ matrix.build_type }}" --parallel || \
+          cmake --build build/ --config "${{ matrix.build_type }}"
 
       - name: Test
         run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
@@ -193,13 +199,6 @@ jobs:
 #        with:
 #          release_id: ${{ needs.draft_release.outputs.release_id }}
 #          assets_path: artifacts
-
-      # Build errors from a parallel build can be hard to find and read.
-      # Run a failing build once more without parallelism so that the log shows
-      # a single, clear error message.
-      - name: Repeat build without paralellism for clear errors
-        run: cmake --build build/ --config "${{ matrix.build_type }}"
-        if: failure()
 
       - name: Debug
         uses: mxschmitt/action-tmate@v3.6
