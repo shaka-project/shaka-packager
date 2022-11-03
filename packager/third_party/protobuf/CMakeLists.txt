@@ -22,7 +22,14 @@ set(protobuf_DISABLE_RTTI ON)
 # The latest version of protobuf requires a path to ABSL.
 set(ABSL_ROOT_DIR get_filename_component(ABSOLUTE_PATH ../abseil-cpp/source ABSOLUTE))
 
-if(NOT MSVC)
+if(MSVC)
+  # Disable this error/warning, which occurs in
+  # src/google/protobuf/arena_align.h:
+  add_compile_options(/wd4146)  # sign comparison
+  # Disable this error/warning, which occurs in
+  # src/google/protobuf/generated_message_tctable_lite.cc
+  add_compile_options(/wd4141)  # multiple inline keywords
+else()
   # Disable this error/warning, which occurs in
   # src/google/protobuf/stubs/stringprintf.cc:
   add_compile_options(-Wno-sign-compare)
