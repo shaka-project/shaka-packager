@@ -96,7 +96,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ inputs.ref }}
-          submodules: true
+          submodules: recursive
 
       - name: Install Linux deps
         if: runner.os == 'Linux'
