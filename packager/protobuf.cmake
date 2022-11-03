@@ -65,4 +65,11 @@ function(add_proto_library NAME)
 
   # Anyone who depends on this proto library will need this include directory.
   target_include_directories(${NAME} PUBLIC "${CMAKE_BINARY_DIR}")
+
+  # Anyone who depends on this proto library will also need to have these
+  # warnings suppressed from the generated headers.
+  if(NOT MSVC)
+    target_compile_options(${NAME} PUBLIC -Wno-shorten-64-to-32)
+    target_compile_options(${NAME} PUBLIC -Wno-unused-parameter)
+  endif()
 endfunction()
