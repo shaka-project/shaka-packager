@@ -42,6 +42,7 @@ class EsParserH265 : public EsParserH26x {
   // Return true if successful.
   bool UpdateVideoDecoderConfig(int sps_id) override;
 
+  int64_t CalculateSampleDuration(int pps_id) override;
   // Callback to pass the stream configuration.
   NewStreamInfoCB new_stream_info_cb_;
 

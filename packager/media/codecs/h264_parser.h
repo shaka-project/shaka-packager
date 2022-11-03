@@ -82,6 +82,11 @@ struct H264Sps {
   int sar_height;   // Set to 0 when not specified.
   int transfer_characteristics;
 
+  bool timing_info_present_flag;
+  long num_units_in_tick;
+  long time_scale;
+  bool fixed_frame_rate_flag;
+
   bool bitstream_restriction_flag;
   int max_num_reorder_frames;
   int max_dec_frame_buffering;
