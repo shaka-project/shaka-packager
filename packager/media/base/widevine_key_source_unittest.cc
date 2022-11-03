@@ -603,12 +603,15 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   InSequence dummy;
 
   // Expecting a non-key rotation enabled request on FetchKeys().
-  EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
-      .WillOnce(Return(true));
-  std::string mock_response = absl::StrFormat(
-      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
-  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+  {
+    EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
+        .WillOnce(Return(true));
+    std::string mock_response =
+        absl::StrFormat(kHttpResponseFormat,
+                        Base64Encode(GenerateMockLicenseResponse()).c_str());
+    EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+        .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+  }
 
   for (uint32_t i = 0; i < kCryptoIterations; ++i) {
     uint32_t first_crypto_period_index =

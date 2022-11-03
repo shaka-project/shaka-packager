@@ -122,7 +122,8 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
     {3, 13},
   };
   // Expected decrypted buffer with the above subsamples.
-  const uint8_t kExpectedDecryptedBuffer[] = {
+  // clang-format off
+  const uint8_t kExpectedDecryptedSubsampleBuffer[] = {
     // Subsample[0].clear
     0x03, 0x04,
     // Subsample[0].cipher
@@ -133,6 +134,7 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
     0xb0, 0x1f, 0xdd, 0x09, 0x70, 0x5c, 0xfb, 0xd2,
     0xfb, 0x18, 0x64, 0x16, 0xc9,
   };
+  // clang-format on
 
   DecryptConfig decrypt_config(
       key_id_, std::vector<uint8_t>(kIv, kIv + std::size(kIv)),
@@ -141,10 +143,11 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
       &decrypted_buffer_[0]));
-  EXPECT_EQ(std::vector<uint8_t>(
-                kExpectedDecryptedBuffer,
-                kExpectedDecryptedBuffer + std::size(kExpectedDecryptedBuffer)),
-            decrypted_buffer_);
+  EXPECT_EQ(
+      std::vector<uint8_t>(kExpectedDecryptedSubsampleBuffer,
+                           kExpectedDecryptedSubsampleBuffer +
+                               std::size(kExpectedDecryptedSubsampleBuffer)),
+      decrypted_buffer_);
 }
 
 TEST_F(DecryptorSourceTest, SubsampleDecryptionSizeValidation) {
