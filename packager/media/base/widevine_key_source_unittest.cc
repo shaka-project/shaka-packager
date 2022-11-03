@@ -9,6 +9,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <iterator>
 
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_format.h"
@@ -637,7 +638,7 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
 
   EncryptionKey encryption_key;
   const std::string kStreamLabels[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
-  for (size_t i = 0; i < arraysize(kCryptoPeriodIndexes); ++i) {
+  for (size_t i = 0; i < std::size(kCryptoPeriodIndexes); ++i) {
     for (const std::string& stream_label : kStreamLabels) {
       ASSERT_OK(widevine_key_source_->GetCryptoPeriodKey(
           kCryptoPeriodIndexes[i], kCryptoPeriodSeconds, stream_label,

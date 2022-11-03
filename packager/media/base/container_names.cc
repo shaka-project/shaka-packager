@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iterator>
 #include <limits>
 
 #include "glog/logging.h"
@@ -375,7 +376,7 @@ static bool CheckDV(const uint8_t* buffer, int buffer_size) {
       reader.SkipBits(3);
       RCHECK(ReadBits(&reader, 24) == 0xffffff);
       current_sequence_number = sequence_number;
-      for (size_t i = 0; i < arraysize(last_block_number); ++i)
+      for (size_t i = 0; i < std::size(last_block_number); ++i)
         last_block_number[i] = -1;
     } else {
       // Sequence number must match (this will also fail if no header seen).
@@ -1640,7 +1641,7 @@ bool CheckWebVtt(const uint8_t* buffer, int buffer_size) {
 
   return StartsWith(buffer + offset, buffer_size - offset,
                     reinterpret_cast<const uint8_t*>(kWebVtt),
-                    arraysize(kWebVtt) - 1);
+                    std::size(kWebVtt) - 1);
 }
 
 bool CheckTtml(const uint8_t* buffer, int buffer_size) {

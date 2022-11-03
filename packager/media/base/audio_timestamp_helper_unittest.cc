@@ -4,6 +4,8 @@
 
 #include <gtest/gtest.h>
 
+#include <iterator>
+
 #include "packager/media/base/audio_timestamp_helper.h"
 #include "packager/media/base/timestamp.h"
 
@@ -76,7 +78,7 @@ TEST_F(AudioTimestampHelperTest, GetDuration) {
 
   int frame_count = 5;
   int64_t expected_durations[] = {113, 113, 114, 113, 113, 114};
-  for (size_t i = 0; i < arraysize(expected_durations); ++i) {
+  for (size_t i = 0; i < std::size(expected_durations); ++i) {
     int64_t duration = helper_.GetFrameDuration(frame_count);
     EXPECT_EQ(expected_durations[i], duration);
 

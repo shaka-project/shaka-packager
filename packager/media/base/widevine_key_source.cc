@@ -7,6 +7,7 @@
 #include "packager/media/base/widevine_key_source.h"
 
 #include <functional>
+#include <iterator>
 
 #include "absl/base/internal/endian.h"
 #include "absl/flags/flag.h"
@@ -66,7 +67,7 @@ CommonEncryptionRequest::ProtectionScheme ToCommonEncryptionProtectionScheme(
 ProtectionSystemSpecificInfo ProtectionSystemInfoFromPsshProto(
     const CommonEncryptionResponse::Track::Pssh& pssh_proto) {
   PsshBoxBuilder pssh_builder;
-  pssh_builder.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+  pssh_builder.set_system_id(kWidevineSystemId, std::size(kWidevineSystemId));
 
   if (pssh_proto.has_boxes()) {
     return {pssh_builder.system_id(),
@@ -131,7 +132,7 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
   switch (init_data_type) {
     case EmeInitDataType::CENC: {
       const std::vector<uint8_t> widevine_system_id(
-          kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+          kWidevineSystemId, kWidevineSystemId + std::size(kWidevineSystemId));
       std::vector<ProtectionSystemSpecificInfo> protection_systems_info;
       if (!ProtectionSystemSpecificInfo::ParseBoxes(
               init_data.data(), init_data.size(), &protection_systems_info)) {

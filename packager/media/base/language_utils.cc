@@ -6,6 +6,8 @@
 
 #include "packager/media/base/language_utils.h"
 
+#include <iterator>
+
 #include "glog/logging.h"
 #include "packager/macros.h"
 
@@ -103,7 +105,7 @@ std::string LanguageToShortestForm(const std::string& language) {
     return main_language + subtag;
   }
 
-  for (size_t i = 0; i < arraysize(kLanguageMap); ++i) {
+  for (size_t i = 0; i < std::size(kLanguageMap); ++i) {
     if (main_language == kLanguageMap[i].iso_639_2) {
       return kLanguageMap[i].iso_639_1 + subtag;
     }
@@ -125,7 +127,7 @@ std::string LanguageToISO_639_2(const std::string& language) {
     return main_language + subtag;
   }
 
-  for (size_t i = 0; i < arraysize(kLanguageMap); ++i) {
+  for (size_t i = 0; i < std::size(kLanguageMap); ++i) {
     if (main_language == kLanguageMap[i].iso_639_1) {
       return kLanguageMap[i].iso_639_2 + subtag;
     }

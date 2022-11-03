@@ -7,6 +7,7 @@
 #include "packager/media/base/playready_key_source.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "absl/strings/escaping.h"
 #include "glog/logging.h"
@@ -138,7 +139,7 @@ Status SetKeyInformationFromServerResponse(
     PsshBoxBuilder pssh_builder;
     pssh_builder.add_key_id(encryption_key->key_id);
     pssh_builder.set_system_id(kPlayReadySystemId,
-                               arraysize(kPlayReadySystemId));
+                               std::size(kPlayReadySystemId));
     pssh_builder.set_pssh_data(pssh_data);
     encryption_key->key_system_info.push_back(
         {pssh_builder.system_id(), pssh_builder.CreateBox()});
