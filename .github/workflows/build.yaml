@@ -194,6 +194,13 @@ jobs:
 #          release_id: ${{ needs.draft_release.outputs.release_id }}
 #          assets_path: artifacts
 
+      # Build errors from a parallel build can be hard to find and read.
+      # Run a failing build once more without parallelism so that the log shows
+      # a single, clear error message.
+      - name: Repeat build without paralellism for clear errors
+        run: cmake --build build/ --config "${{ matrix.build_type }}"
+        if: failure()
+
       - name: Debug
         uses: mxschmitt/action-tmate@v3.6
         with:
