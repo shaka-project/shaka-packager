@@ -24,8 +24,8 @@ const uint64_t kCodecDelayNs = 56789;
 const uint32_t kMaxBitrate = 13579;
 const uint32_t kAvgBitrate = 13000;
 const char kLanguage[] = "eng";
-const uint16_t kWidth = 10u;
-const uint16_t kHeight = 20u;
+const uint32_t kWidth = 10u;
+const uint32_t kHeight = 20u;
 const uint32_t kPixelWidth = 2u;
 const uint32_t kPixelHeight = 3u;
 const uint8_t kTransferCharacteristics = 0;
@@ -186,7 +186,7 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
     int32_t time_scale,
     uint32_t width,
-    uint64_t height) const {
+    uint32_t height) const {
   return GetVideoStreamInfo(time_scale, kCodecVP9, width, height);
 }
 
@@ -200,7 +200,7 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
     int32_t time_scale,
     Codec codec,
     uint32_t width,
-    uint64_t height) const {
+    uint32_t height) const {
   return std::unique_ptr<VideoStreamInfo>(new VideoStreamInfo(
       kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
       kCodecString, kCodecConfig, sizeof(kCodecConfig), width, height,

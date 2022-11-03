@@ -294,7 +294,7 @@ class MediaHandlerTestBase : public ::testing::Test {
 
   std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale,
                                                  uint32_t width,
-                                                 uint64_t height) const;
+                                                 uint32_t height) const;
 
   std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale,
                                                  Codec codec) const;
@@ -302,7 +302,7 @@ class MediaHandlerTestBase : public ::testing::Test {
   std::unique_ptr<StreamInfo> GetVideoStreamInfo(int32_t time_scale,
                                                  Codec codec,
                                                  uint32_t width,
-                                                 uint64_t height) const;
+                                                 uint32_t height) const;
 
   std::unique_ptr<StreamInfo> GetAudioStreamInfo(int32_t time_scale) const;
 

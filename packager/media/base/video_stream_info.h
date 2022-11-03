@@ -35,8 +35,8 @@ class VideoStreamInfo : public StreamInfo {
                   const std::string& codec_string,
                   const uint8_t* codec_config,
                   size_t codec_config_size,
-                  uint16_t width,
-                  uint16_t height,
+                  uint32_t width,
+                  uint32_t height,
                   uint32_t pixel_width,
                   uint32_t pixel_height,
                   uint8_t transfer_characteristics,
@@ -56,8 +56,8 @@ class VideoStreamInfo : public StreamInfo {
 
   const std::vector<uint8_t>& extra_config() const { return extra_config_; }
   H26xStreamFormat h26x_stream_format() const { return h26x_stream_format_; }
-  uint16_t width() const { return width_; }
-  uint16_t height() const { return height_; }
+  uint32_t width() const { return width_; }
+  uint32_t height() const { return height_; }
   /// Returns the pixel width.
   /// @return 0 if unknown.
   uint32_t pixel_width() const { return pixel_width_; }
@@ -96,8 +96,8 @@ class VideoStreamInfo : public StreamInfo {
   // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.
   std::vector<uint8_t> extra_config_;
   H26xStreamFormat h26x_stream_format_;
-  uint16_t width_;
-  uint16_t height_;
+  uint32_t width_;
+  uint32_t height_;
 
   // pixel_width_:pixel_height_ is the sample aspect ratio.
   // 0 means unknown.
