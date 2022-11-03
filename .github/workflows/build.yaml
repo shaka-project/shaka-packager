@@ -124,12 +124,11 @@ jobs:
             -B build/
 
       - name: Build
-        run: |
-          # This is a universal build command, which will call make on Linux
-          # and Visual Studio on Windows.  Note that the VS generator is what
-          # cmake calls a "multi-configuration" generator, and so the desired
-          # build type must be specified for Windows.
-          cmake --build build/ --config "${{ matrix.build_type }}"
+        # This is a universal build command, which will call make on Linux and
+        # Visual Studio on Windows.  Note that the VS generator is what cmake
+        # calls a "multi-configuration" generator, and so the desired build
+        # type must be specified for Windows.
+        run: cmake --build build/ --config "${{ matrix.build_type }}"
 
       - name: Test
         run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
