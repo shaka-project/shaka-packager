@@ -19,6 +19,9 @@ set(protobuf_WITH_ZLIB OFF)
 set(protobuf_BUILD_PROTOC_BINARIES ON)
 set(protobuf_DISABLE_RTTI ON)
 
+# The latest version of protobuf requires a path to ABSL.
+set(ABSL_ROOT_DIR get_filename_component(ABSOLUTE_PATH ../abseil-cpp/source ABSOLUTE))
+
 if(NOT MSVC)
   # Disable this error/warning, which occurs in
   # src/google/protobuf/stubs/stringprintf.cc:
@@ -40,6 +43,7 @@ if(NOT MSVC)
   # There are also redundant move calls.
   add_compile_options(-Wno-redundant-move)
 endif()
+
 # Disable internal debugging features, which end up triggering further compiler
 # errors.
 add_definitions(-DNDEBUG)
