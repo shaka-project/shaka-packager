@@ -21,16 +21,10 @@ set(LIBXML2_WITH_LEGACY OFF)
 set(LIBXML2_WITH_LZMA OFF)
 set(LIBXML2_WITH_MEM_DEBUG OFF)
 set(LIBXML2_WITH_MODULES OFF)
-set(LIBXML2_WITH_OUTPUT OFF)
-set(LIBXML2_WITH_PATTERN OFF)
 set(LIBXML2_WITH_PROGRAMS OFF)
-set(LIBXML2_WITH_PUSH OFF)
 set(LIBXML2_WITH_PYTHON OFF)
 set(LIBXML2_WITH_READER OFF)
-set(LIBXML2_WITH_REGEXPS OFF)
 set(LIBXML2_WITH_RUN_DEBUG OFF)
-set(LIBXML2_WITH_SAX1 OFF)
-set(LIBXML2_WITH_SCHEMAS OFF)
 set(LIBXML2_WITH_SCHEMATRON OFF)
 set(LIBXML2_WITH_TESTS OFF)
 set(LIBXML2_WITH_THREAD_ALLOC OFF)
@@ -45,15 +39,34 @@ set(LIBXML2_WITH_XPTR_LOCS OFF)
 set(LIBXML2_WITH_ZLIB OFF)
 
 # Turn these features on.  Note that it fails to build with THREADS turned off.
+set(LIBXML2_WITH_OUTPUT ON)
+set(LIBXML2_WITH_PATTERN ON)
+set(LIBXML2_WITH_PUSH ON)
+set(LIBXML2_WITH_REGEXPS ON)
+set(LIBXML2_WITH_SAX1 ON)
+set(LIBXML2_WITH_SCHEMAS ON)
 set(LIBXML2_WITH_THREADS ON)
 set(LIBXML2_WITH_TREE ON)
 
-# Disable this warning/error, which occurs in buf.c:
-add_compile_options(-Wno-format-extra-args)
-# Disable this warning/error, which occurs in encoding.c:
-add_compile_options(-Wno-unused-but-set-variable)
-# Disable this warning/error, which occurs in xmlIO.c:
-add_compile_options(-Wno-unused-parameter)
+if(MSVC)
+  # Disable this warning/error about division by 0, which occurs in xpath.c:
+  add_compile_options(/wd4723)
+  # Disable this warning/error about read(), which occurs in xmlIO.c:
+  add_compile_options(/wd4996)
+  # Disable this warning/error about WIN32_LEAN_AND_MEAN:
+  add_compile_options(/wd4005)
+  # Disable integer truncation warnings in many places
+  add_compile_options(/wd4244 /wd4267)
+else()
+  # Disable this warning/error, which occurs in buf.c:
+  add_compile_options(-Wno-format-extra-args)
+  # Disable this warning/error, which occurs in encoding.c:
+  add_compile_options(-Wno-unused-but-set-variable)
+  # Disable this warning/error, which occurs in xmlIO.c:
+  add_compile_options(-Wno-unused-parameter)
+  # Disable this warning/error, which occurs in xmlschemas.c:
+  add_compile_options(-Wno-format-truncation)
+endif()
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)

@@ -28,10 +28,10 @@ class CommonPsshGenerator : public PsshGenerator {
 
   // PsshGenerator implemetation overrides.
 
-  base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIds(
+  std::optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIds(
       const std::vector<std::vector<uint8_t>>& key_ids) const override;
 
-  base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIdAndKey(
+  std::optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIdAndKey(
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key) const override;
 };

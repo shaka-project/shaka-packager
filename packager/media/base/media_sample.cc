@@ -8,8 +8,8 @@
 
 #include <inttypes.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
 
 namespace shaka {
 namespace media {
@@ -116,7 +116,7 @@ void MediaSample::SetData(const uint8_t* data, size_t data_size) {
 std::string MediaSample::ToString() const {
   if (end_of_stream())
     return "End of stream sample\n";
-  return base::StringPrintf(
+  return absl::StrFormat(
       "dts: %" PRId64 "\n pts: %" PRId64 "\n duration: %" PRId64
       "\n "
       "is_key_frame: %s\n size: %zu\n side_data_size: %zu\n",

@@ -7,13 +7,14 @@
 #ifndef PACKAGER_MEDIA_BASE_PRODUCER_CONSUMER_QUEUE_H_
 #define PACKAGER_MEDIA_BASE_PRODUCER_CONSUMER_QUEUE_H_
 
+#include <chrono>
 #include <deque>
 
-#include "packager/base/strings/stringprintf.h"
-#include "packager/base/synchronization/condition_variable.h"
-#include "packager/base/synchronization/lock.h"
-#include "packager/base/timer/elapsed_timer.h"
-#include "packager/status.h"
+#include "absl/strings/str_format.h"
+#include "absl/synchronization/mutex.h"
+#include "absl/time/time.h"
+#include "packager/macros.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {
@@ -77,43 +78,43 @@ class ProducerConsumerQueue {
   /// Also terminate all waiting and future Push requests immediately.
   /// Stop cannot stall.
   void Stop() {
-    base::AutoLock l(lock_);
+    absl::MutexLock lock(&mutex_);
     stop_requested_ = true;
-    not_empty_cv_.Broadcast();
-    not_full_cv_.Broadcast();
-    new_element_cv_.Broadcast();
+    not_empty_cv_.SignalAll();
+    not_full_cv_.SignalAll();
+    new_element_cv_.SignalAll();
   }
 
   /// @return true if there are no elements in the queue.
   bool Empty() const {
-    base::AutoLock l(lock_);
+    absl::MutexLock lock(&mutex_);
     return q_.empty();
   }
 
   /// @return The number of elements in the queue.
   size_t Size() const {
-    base::AutoLock l(lock_);
+    absl::MutexLock lock(&mutex_);
     return q_.size();
   }
 
   /// @return The position of the head element in the queue. Note that the
   ///         returned value may be meaningless if the queue is empty.
   size_t HeadPos() const {
-    base::AutoLock l(lock_);
+    absl::MutexLock lock(&mutex_);
     return head_pos_;
   }
 
   /// @return The position of the tail element in the queue. Note that the
   ///         returned value may be meaningless if the queue is empty.
   size_t TailPos() const {
-    base::AutoLock l(lock_);
+    absl::MutexLock lock(&mutex_);
     return head_pos_ + q_.size() - 1;
   }
 
   /// @return true if the queue has been stopped using Stop(). This allows
   ///         producers to check if they can add new elements to the queue.
   bool Stopped() const {
-    base::AutoLock l(lock_);
+    absl::MutexLock lock(&mutex_);
     return stop_requested_;
   }
 
@@ -122,13 +123,14 @@ class ProducerConsumerQueue {
   void SlideHeadOnCenter(size_t pos);
 
   const size_t capacity_;  // Maximum number of elements; zero means unlimited.
-  mutable base::Lock lock_;  // Lock protecting all other variables below.
-  size_t head_pos_;          // Head position.
-  std::deque<T> q_;          // Internal queue holding the elements.
-  base::ConditionVariable not_empty_cv_;
-  base::ConditionVariable not_full_cv_;
-  base::ConditionVariable new_element_cv_;
-  bool stop_requested_;  // True after Stop has been called.
+
+  mutable absl::Mutex mutex_;
+  size_t head_pos_ GUARDED_BY(mutex_);  // Head position.
+  std::deque<T> q_ GUARDED_BY(mutex_);  // Internal queue holding the elements.
+  absl::CondVar not_empty_cv_ GUARDED_BY(mutex_);
+  absl::CondVar not_full_cv_ GUARDED_BY(mutex_);
+  absl::CondVar new_element_cv_ GUARDED_BY(mutex_);
+  bool stop_requested_ GUARDED_BY(mutex_);  // True after Stop has been called.
 
   DISALLOW_COPY_AND_ASSIGN(ProducerConsumerQueue);
 };
@@ -138,9 +140,6 @@ template <class T>
 ProducerConsumerQueue<T>::ProducerConsumerQueue(size_t capacity)
     : capacity_(capacity),
       head_pos_(0),
-      not_empty_cv_(&lock_),
-      not_full_cv_(&lock_),
-      new_element_cv_(&lock_),
       stop_requested_(false) {}
 
 template <class T>
@@ -148,9 +147,6 @@ ProducerConsumerQueue<T>::ProducerConsumerQueue(size_t capacity,
                                                 size_t starting_pos)
     : capacity_(capacity),
       head_pos_(starting_pos),
-      not_empty_cv_(&lock_),
-      not_full_cv_(&lock_),
-      new_element_cv_(&lock_),
       stop_requested_(false) {
 }
 
@@ -159,26 +155,27 @@ ProducerConsumerQueue<T>::~ProducerConsumerQueue() {}
 
 template <class T>
 Status ProducerConsumerQueue<T>::Push(const T& element, int64_t timeout_ms) {
-  base::AutoLock l(lock_);
+  absl::MutexLock lock(&mutex_);
   bool woken = false;
 
   // Check for queue shutdown.
   if (stop_requested_)
     return Status(error::STOPPED, "");
 
-  base::ElapsedTimer timer;
-  base::TimeDelta timeout_delta = base::TimeDelta::FromMilliseconds(timeout_ms);
+  auto start = std::chrono::steady_clock::now();
+  auto timeout_delta = std::chrono::milliseconds(timeout_ms);
 
   if (capacity_) {
     while (q_.size() == capacity_) {
       if (timeout_ms < 0) {
         // Wait forever, or until Stop.
-        not_full_cv_.Wait();
+        not_full_cv_.Wait(&mutex_);
       } else {
-        base::TimeDelta elapsed = timer.Elapsed();
+        auto elapsed = std::chrono::steady_clock::now() - start;
         if (elapsed < timeout_delta) {
           // Wait with timeout, or until Stop.
-          not_full_cv_.TimedWait(timeout_delta - elapsed);
+          not_full_cv_.WaitWithTimeout(
+              &mutex_, absl::FromChrono(timeout_delta - elapsed));
         } else {
           // We're through waiting.
           return Status(error::TIME_OUT, "Time out on pushing.");
@@ -208,11 +205,11 @@ Status ProducerConsumerQueue<T>::Push(const T& element, int64_t timeout_ms) {
 
 template <class T>
 Status ProducerConsumerQueue<T>::Pop(T* element, int64_t timeout_ms) {
-  base::AutoLock l(lock_);
+  absl::MutexLock lock(&mutex_);
   bool woken = false;
 
-  base::ElapsedTimer timer;
-  base::TimeDelta timeout_delta = base::TimeDelta::FromMilliseconds(timeout_ms);
+  auto start = std::chrono::steady_clock::now();
+  auto timeout_delta = std::chrono::milliseconds(timeout_ms);
 
   while (q_.empty()) {
     if (stop_requested_)
@@ -220,12 +217,13 @@ Status ProducerConsumerQueue<T>::Pop(T* element, int64_t timeout_ms) {
 
     if (timeout_ms < 0) {
       // Wait forever, or until Stop.
-      not_empty_cv_.Wait();
+      not_empty_cv_.Wait(&mutex_);
     } else {
-      base::TimeDelta elapsed = timer.Elapsed();
+      auto elapsed = std::chrono::steady_clock::now() - start;
       if (elapsed < timeout_delta) {
         // Wait with timeout, or until Stop.
-        not_empty_cv_.TimedWait(timeout_delta - elapsed);
+        not_empty_cv_.WaitWithTimeout(
+            &mutex_, absl::FromChrono(timeout_delta - elapsed));
       } else {
         // We're through waiting.
         return Status(error::TIME_OUT, "Time out on popping.");
@@ -252,18 +250,17 @@ template <class T>
 Status ProducerConsumerQueue<T>::Peek(size_t pos,
                                       T* element,
                                       int64_t timeout_ms) {
-  base::AutoLock l(lock_);
+  absl::MutexLock lock(&mutex_);
   if (pos < head_pos_) {
-    return Status(
-        error::INVALID_ARGUMENT,
-        base::StringPrintf(
-            "pos (%zu) is too small; head is at %zu.", pos, head_pos_));
+    return Status(error::INVALID_ARGUMENT,
+                  absl::StrFormat("pos (%zu) is too small; head is at %zu.",
+                                  pos, head_pos_));
   }
 
   bool woken = false;
 
-  base::ElapsedTimer timer;
-  base::TimeDelta timeout_delta = base::TimeDelta::FromMilliseconds(timeout_ms);
+  auto start = std::chrono::steady_clock::now();
+  auto timeout_delta = std::chrono::milliseconds(timeout_ms);
 
   // Move head to create some space (move the sliding window centered @ pos).
   SlideHeadOnCenter(pos);
@@ -274,12 +271,13 @@ Status ProducerConsumerQueue<T>::Peek(size_t pos,
 
     if (timeout_ms < 0) {
       // Wait forever, or until Stop.
-      new_element_cv_.Wait();
+      new_element_cv_.Wait(&mutex_);
     } else {
-      base::TimeDelta elapsed = timer.Elapsed();
+      auto elapsed = std::chrono::steady_clock::now() - start;
       if (elapsed < timeout_delta) {
         // Wait with timeout, or until Stop.
-        new_element_cv_.TimedWait(timeout_delta - elapsed);
+        new_element_cv_.WaitWithTimeout(
+            &mutex_, absl::FromChrono(timeout_delta - elapsed));
       } else {
         // We're through waiting.
         return Status(error::TIME_OUT, "Time out on peeking.");
@@ -300,7 +298,7 @@ Status ProducerConsumerQueue<T>::Peek(size_t pos,
 
 template <class T>
 void ProducerConsumerQueue<T>::SlideHeadOnCenter(size_t pos) {
-  lock_.AssertAcquired();
+  mutex_.AssertHeld();
 
   if (capacity_) {
     // Signal producer to proceed if we are going to create some capacity.

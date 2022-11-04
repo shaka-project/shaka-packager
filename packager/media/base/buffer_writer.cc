@@ -6,8 +6,8 @@
 
 #include "packager/media/base/buffer_writer.h"
 
-#include "packager/base/logging.h"
-#include "packager/base/sys_byteorder.h"
+#include "absl/base/internal/endian.h"
+#include "glog/logging.h"
 #include "packager/file/file.h"
 
 namespace shaka {
@@ -26,27 +26,27 @@ void BufferWriter::AppendInt(uint8_t v) {
   buf_.push_back(v);
 }
 void BufferWriter::AppendInt(uint16_t v) {
-  AppendInternal(base::HostToNet16(v));
+  AppendInternal(absl::big_endian::FromHost16(v));
 }
 void BufferWriter::AppendInt(uint32_t v) {
-  AppendInternal(base::HostToNet32(v));
+  AppendInternal(absl::big_endian::FromHost32(v));
 }
 void BufferWriter::AppendInt(uint64_t v) {
-  AppendInternal(base::HostToNet64(v));
+  AppendInternal(absl::big_endian::FromHost64(v));
 }
 void BufferWriter::AppendInt(int16_t v) {
-  AppendInternal(base::HostToNet16(v));
+  AppendInternal(absl::big_endian::FromHost16(v));
 }
 void BufferWriter::AppendInt(int32_t v) {
-  AppendInternal(base::HostToNet32(v));
+  AppendInternal(absl::big_endian::FromHost32(v));
 }
 void BufferWriter::AppendInt(int64_t v) {
-  AppendInternal(base::HostToNet64(v));
+  AppendInternal(absl::big_endian::FromHost64(v));
 }
 
 void BufferWriter::AppendNBytes(uint64_t v, size_t num_bytes) {
   DCHECK_GE(sizeof(v), num_bytes);
-  v = base::HostToNet64(v);
+  v = absl::big_endian::FromHost64(v);
   const uint8_t* data = reinterpret_cast<uint8_t*>(&v);
   AppendArray(&data[sizeof(v) - num_bytes], num_bytes);
 }

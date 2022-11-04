@@ -7,8 +7,8 @@
 #ifndef PACKAGER_MEDIA_BASE_KEY_FETCHER_H_
 #define PACKAGER_MEDIA_BASE_KEY_FETCHER_H_
 
-#include "base/macros.h"
-#include "packager/status.h"
+#include "packager/macros.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/public/crypto_params.h"
 
 namespace shaka {

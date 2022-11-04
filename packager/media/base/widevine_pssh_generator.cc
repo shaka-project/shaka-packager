@@ -6,6 +6,7 @@
 
 #include "packager/media/base/widevine_pssh_generator.h"
 
+#include "packager/macros.h"
 #include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
@@ -32,7 +33,7 @@ bool WidevinePsshGenerator::SupportMultipleKeys() {
   return true;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 WidevinePsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
   media::WidevinePsshData widevine_pssh_data;
@@ -43,12 +44,14 @@ WidevinePsshGenerator::GeneratePsshDataFromKeyIds(
   return StringToBytes(widevine_pssh_data.SerializeAsString());
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 WidevinePsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
+  UNUSED(key_id);
+  UNUSED(key);
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace media

@@ -12,17 +12,19 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/time/clock.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {
 
 class MediaSample;
+
+/// Returns seconds since January 1, 1970, UTC.
+typedef uint64_t (*MuxerClock)();
 
 /// Muxer is responsible for taking elementary stream samples and producing
 /// media containers. An optional KeySource can be provided to Muxer
@@ -51,12 +53,10 @@ class Muxer : public MediaHandler {
   /// Inject clock, mainly used for testing.
   /// The injected clock will be used to generate the creation time-stamp and
   /// modification time-stamp of the muxer output.
-  /// If no clock is injected, the code uses base::Time::Now() to generate the
-  /// time-stamps.
+  /// If no clock is injected, the code uses std::chrone::system_clock::now()
+  /// to generate the time-stamps.
   /// @param clock is the Clock to be injected.
-  void set_clock(base::Clock* clock) {
-    clock_ = clock;
-  }
+  void set_clock(MuxerClock clock) { clock_ = clock; }
 
  protected:
   /// @name MediaHandler implementation overrides.
@@ -69,7 +69,7 @@ class Muxer : public MediaHandler {
   const MuxerOptions& options() const { return options_; }
   MuxerListener* muxer_listener() { return muxer_listener_.get(); }
   ProgressListener* progress_listener() { return progress_listener_.get(); }
-  base::Clock* clock() { return clock_; }
+  uint64_t Now() const { return clock_(); }
 
  private:
   Muxer(const Muxer&) = delete;
@@ -109,7 +109,7 @@ class Muxer : public MediaHandler {
   std::unique_ptr<MuxerListener> muxer_listener_;
   std::unique_ptr<ProgressListener> progress_listener_;
   // An external injected clock, can be NULL.
-  base::Clock* clock_ = nullptr;
+  MuxerClock clock_ = nullptr;
 
   // In VOD single segment case with Ad Cues, |output_file_name| is allowed to
   // be a template. In this case, there will be NumAdCues + 1 files generated.

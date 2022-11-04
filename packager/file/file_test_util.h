@@ -41,6 +41,23 @@ namespace shaka {
                     reinterpret_cast<const char*>(array), sizeof(array)))); \
   } while (false)
 
+// Generate a unique filename.
+std::string generate_unique_temp_path();
+
+// A temporary file that is removed from the filesystem when the object is
+// destroyed.  Useful in tests that use ASSERT to avoid leaving behind temp
+// files.
+class TempFile {
+ public:
+  TempFile();
+  ~TempFile();
+
+  const std::string& path() const { return path_; }
+
+ private:
+  std::string path_;
+};
+
 }  // namespace shaka
 
 #endif  // MEDIA_FILE_FILE_TEST_UTIL_H_

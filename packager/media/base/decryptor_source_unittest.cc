@@ -9,14 +9,17 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/macros.h"
+#include <iterator>
+
+#include "packager/macros.h"
 #include "packager/media/base/raw_key_source.h"
 
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Mock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
-using ::testing::Mock;
-using ::testing::_;
 
 namespace shaka {
 namespace media {
@@ -63,9 +66,9 @@ class DecryptorSourceTest : public ::testing::Test {
  public:
   DecryptorSourceTest()
       : decryptor_source_(&mock_key_source_),
-        key_id_(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId))),
-        encrypted_buffer_(kBuffer, kBuffer + arraysize(kBuffer)),
-        decrypted_buffer_(arraysize(kBuffer)) {}
+        key_id_(std::vector<uint8_t>(kKeyId, kKeyId + std::size(kKeyId))),
+        encrypted_buffer_(kBuffer, kBuffer + std::size(kBuffer)),
+        decrypted_buffer_(std::size(kBuffer)) {}
 
  protected:
   StrictMock<MockKeySource> mock_key_source_;
@@ -77,40 +80,40 @@ class DecryptorSourceTest : public ::testing::Test {
 
 TEST_F(DecryptorSourceTest, FullSampleDecryption) {
   EncryptionKey encryption_key;
-  encryption_key.key.assign(kMockKey, kMockKey + arraysize(kMockKey));
+  encryption_key.key.assign(kMockKey, kMockKey + std::size(kMockKey));
   EXPECT_CALL(mock_key_source_, GetKey(key_id_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key), Return(Status::OK)));
 
   DecryptConfig decrypt_config(key_id_,
-                               std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
+                               std::vector<uint8_t>(kIv, kIv + std::size(kIv)),
                                std::vector<SubsampleEntry>());
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
       &decrypted_buffer_[0]));
   EXPECT_EQ(std::vector<uint8_t>(
                 kExpectedDecryptedBuffer,
-                kExpectedDecryptedBuffer + arraysize(kExpectedDecryptedBuffer)),
+                kExpectedDecryptedBuffer + std::size(kExpectedDecryptedBuffer)),
             decrypted_buffer_);
 
   // DecryptSampleBuffer can be called repetitively. No GetKey call again with
   // the same key id.
-  encrypted_buffer_.assign(kBuffer2, kBuffer2 + arraysize(kBuffer2));
-  decrypted_buffer_.resize(arraysize(kBuffer2));
+  encrypted_buffer_.assign(kBuffer2, kBuffer2 + std::size(kBuffer2));
+  decrypted_buffer_.resize(std::size(kBuffer2));
   DecryptConfig decrypt_config2(
-      key_id_, std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)),
+      key_id_, std::vector<uint8_t>(kIv2, kIv2 + std::size(kIv2)),
       std::vector<SubsampleEntry>());
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config2, &encrypted_buffer_[0], encrypted_buffer_.size(),
       &decrypted_buffer_[0]));
   EXPECT_EQ(std::vector<uint8_t>(kExpectedDecryptedBuffer2,
                                  kExpectedDecryptedBuffer2 +
-                                     arraysize(kExpectedDecryptedBuffer2)),
+                                     std::size(kExpectedDecryptedBuffer2)),
             decrypted_buffer_);
 }
 
 TEST_F(DecryptorSourceTest, SubsampleDecryption) {
   EncryptionKey encryption_key;
-  encryption_key.key.assign(kMockKey, kMockKey + arraysize(kMockKey));
+  encryption_key.key.assign(kMockKey, kMockKey + std::size(kMockKey));
   EXPECT_CALL(mock_key_source_, GetKey(key_id_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key), Return(Status::OK)));
 
@@ -119,7 +122,8 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
     {3, 13},
   };
   // Expected decrypted buffer with the above subsamples.
-  const uint8_t kExpectedDecryptedBuffer[] = {
+  // clang-format off
+  const uint8_t kExpectedDecryptedSubsampleBuffer[] = {
     // Subsample[0].clear
     0x03, 0x04,
     // Subsample[0].cipher
@@ -130,23 +134,25 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
     0xb0, 0x1f, 0xdd, 0x09, 0x70, 0x5c, 0xfb, 0xd2,
     0xfb, 0x18, 0x64, 0x16, 0xc9,
   };
+  // clang-format on
 
   DecryptConfig decrypt_config(
-      key_id_, std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
+      key_id_, std::vector<uint8_t>(kIv, kIv + std::size(kIv)),
       std::vector<SubsampleEntry>(kSubsamples,
-                                  kSubsamples + arraysize(kSubsamples)));
+                                  kSubsamples + std::size(kSubsamples)));
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
       &decrypted_buffer_[0]));
-  EXPECT_EQ(std::vector<uint8_t>(
-                kExpectedDecryptedBuffer,
-                kExpectedDecryptedBuffer + arraysize(kExpectedDecryptedBuffer)),
-            decrypted_buffer_);
+  EXPECT_EQ(
+      std::vector<uint8_t>(kExpectedDecryptedSubsampleBuffer,
+                           kExpectedDecryptedSubsampleBuffer +
+                               std::size(kExpectedDecryptedSubsampleBuffer)),
+      decrypted_buffer_);
 }
 
 TEST_F(DecryptorSourceTest, SubsampleDecryptionSizeValidation) {
   EncryptionKey encryption_key;
-  encryption_key.key.assign(kMockKey, kMockKey + arraysize(kMockKey));
+  encryption_key.key.assign(kMockKey, kMockKey + std::size(kMockKey));
   EXPECT_CALL(mock_key_source_, GetKey(key_id_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key), Return(Status::OK)));
 
@@ -157,9 +163,9 @@ TEST_F(DecryptorSourceTest, SubsampleDecryptionSizeValidation) {
   };
 
   DecryptConfig decrypt_config(
-      key_id_, std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
+      key_id_, std::vector<uint8_t>(kIv, kIv + std::size(kIv)),
       std::vector<SubsampleEntry>(kSubsamples,
-                                  kSubsamples + arraysize(kSubsamples)));
+                                  kSubsamples + std::size(kSubsamples)));
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
       &decrypted_buffer_[0]));
@@ -170,7 +176,7 @@ TEST_F(DecryptorSourceTest, DecryptFailedIfGetKeyFailed) {
       .WillOnce(Return(Status::UNKNOWN));
 
   DecryptConfig decrypt_config(key_id_,
-                               std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
+                               std::vector<uint8_t>(kIv, kIv + std::size(kIv)),
                                std::vector<SubsampleEntry>());
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
@@ -179,7 +185,7 @@ TEST_F(DecryptorSourceTest, DecryptFailedIfGetKeyFailed) {
 
 TEST_F(DecryptorSourceTest, EncryptedBufferAndDecryptedBufferOverlap) {
   DecryptConfig decrypt_config(key_id_,
-                               std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
+                               std::vector<uint8_t>(kIv, kIv + std::size(kIv)),
                                std::vector<SubsampleEntry>());
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),

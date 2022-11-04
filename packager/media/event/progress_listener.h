@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {

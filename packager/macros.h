@@ -18,6 +18,16 @@
   TypeName(const TypeName&) = delete;      \
   void operator=(const TypeName&) = delete;
 
+/// A macro to disable all implicit constructors (copy, assignment, and default
+/// constructor). Usage:
+/// class Foo {
+///  private:
+///   DISALLOW_IMPLICIT_CONSTRUCTORS(Foo);
+/// }
+#define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
+  TypeName() = delete;                           \
+  DISALLOW_COPY_AND_ASSIGN(TypeName);
+
 /// A macro to declare that you intentionally did not use a parameter.  Useful
 /// when implementing abstract interfaces.
 #define UNUSED(x) (void)(x)

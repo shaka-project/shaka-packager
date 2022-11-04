@@ -4,7 +4,7 @@
 
 #include "packager/media/base/byte_queue.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 
 namespace shaka {
 namespace media {

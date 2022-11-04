@@ -8,7 +8,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {

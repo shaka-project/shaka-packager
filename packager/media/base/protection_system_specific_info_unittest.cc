@@ -6,7 +6,9 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/macros.h"
+#include <iterator>
+
+#include "packager/macros.h"
 #include "packager/media/base/protection_system_specific_info.h"
 
 namespace shaka {
@@ -170,7 +172,7 @@ TEST_F(PsshTest, ParseBoxes_SupportsConcatenatedBoxes) {
 TEST_F(PsshTest, CreateBox_MakesV0Boxes) {
   PsshBoxBuilder pssh_builder;
   pssh_builder.set_system_id(kTestSystemId1Array,
-                             arraysize(kTestSystemId1Array));
+                             std::size(kTestSystemId1Array));
   pssh_builder.set_pssh_data(test_pssh_data_);
   pssh_builder.set_pssh_box_version(0);
 
@@ -181,7 +183,7 @@ TEST_F(PsshTest, CreateBox_MakesV1Boxes) {
   PsshBoxBuilder pssh_builder;
   pssh_builder.add_key_id(test_key_id_);
   pssh_builder.set_system_id(kTestSystemId1Array,
-                             arraysize(kTestSystemId1Array));
+                             std::size(kTestSystemId1Array));
   pssh_builder.set_pssh_data(test_pssh_data_);
   pssh_builder.set_pssh_box_version(1);
 

@@ -6,7 +6,7 @@
 
 #include "packager/media/base/buffer_reader.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 
 namespace shaka {
 namespace media {

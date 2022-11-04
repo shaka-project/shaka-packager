@@ -11,10 +11,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/base/optional.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/range.h"
 
@@ -45,9 +45,9 @@ class MuxerListener {
   /// writing out manifests.
   struct MediaRanges {
     /// Range of the initialization section of a segment.
-    base::Optional<Range> init_range;
+    std::optional<Range> init_range;
     /// Range of the index section of a segment.
-    base::Optional<Range> index_range;
+    std::optional<Range> index_range;
     /// Ranges of the subsegments (e.g. fragments).
     /// The vector is empty if ranges are not specified. For example it
     /// may not be a single file.
@@ -144,7 +144,10 @@ class MuxerListener {
   /// This will update the segment's duration and size after the segment is
   /// fully written and these values are known.
   virtual void OnCompletedSegment(int64_t duration,
-                                  uint64_t segment_file_size) {}
+                                  uint64_t segment_file_size) {
+    UNUSED(duration);
+    UNUSED(segment_file_size);
+  }
 
   /// Called when there is a new key frame. For Video only. Note that it should
   /// be called before OnNewSegment is called on the containing segment.

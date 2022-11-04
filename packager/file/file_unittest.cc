@@ -13,6 +13,7 @@
 
 #include "absl/flags/declare.h"
 #include "packager/file/file.h"
+#include "packager/file/file_test_util.h"
 #include "packager/flag_saver.h"
 
 ABSL_DECLARE_FLAG(uint64_t, io_cache_size);
@@ -56,28 +57,6 @@ uint64_t ReadFile(const std::string& path,
   uint64_t bytes = fread(data->data(), 1, max_size, f);
   data->resize(bytes);
   return bytes;
-}
-
-std::string generate_unique_temp_path() {
-  // Generate a unique name for a temporary file, using standard library
-  // routines, to avoid a circular dependency on any of our own code for
-  // generating temporary files.  The template must end in 6 X's.
-  std::filesystem::path temp_path_template =
-      (std::filesystem::temp_directory_path() / "packager-test.XXXXXX");
-  std::string temp_path_template_string = temp_path_template.string();
-#if defined(OS_WIN)
-  // _mktemp will modify the string passed to it to reflect the generated name
-  // (replacing the X characters with something else).
-  _mktemp(temp_path_template_string.data());
-#else
-  // mkstemp will create and open the file, modify the character points to
-  // reflect the generated name (replacing the X characters with something
-  // else), and return an open file descriptor.  Then we close it and use the
-  // generated name.
-  int fd = mkstemp(temp_path_template_string.data());
-  close(fd);
-#endif
-  return temp_path_template_string;
 }
 
 }  // namespace
@@ -132,7 +111,9 @@ TEST_F(LocalFileTest, Size) {
 TEST_F(LocalFileTest, Copy) {
   WriteFile(local_file_name_no_prefix_, data_);
 
-  std::string destination = generate_unique_temp_path();
+  TempFile temp_file;
+  std::string destination = temp_file.path();
+
   ASSERT_TRUE(File::Copy(local_file_name_.c_str(), destination.c_str()));
 
   ASSERT_EQ(kDataSize, FileSize(destination));
@@ -142,8 +123,6 @@ TEST_F(LocalFileTest, Copy) {
   std::string read_data;
   ASSERT_EQ(kDataSize, ReadFile(destination, &read_data, kDataSize * 2));
   ASSERT_EQ(data_, read_data);
-
-  DeleteFile(destination);
 }
 
 TEST_F(LocalFileTest, Write) {
