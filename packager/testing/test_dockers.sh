@@ -86,7 +86,7 @@ for DOCKER_FILE in ${SCRIPT_DIR}/dockers/*; do
   docker build -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}/dockers/
   mkdir -p "${TEMP_BUILD_DIR}"
   docker_run cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Debug
-  docker_run cmake --build build/ --config Debug --parallel
+  docker_run cmake --build build/ --config Debug
   docker_run bash -c "cd build && ctest -C Debug -V"
   rm -rf "${TEMP_BUILD_DIR}"
 done
