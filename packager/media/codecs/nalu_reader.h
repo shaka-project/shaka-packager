@@ -10,8 +10,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/base/decrypt_config.h"
 
 namespace shaka {
@@ -89,9 +88,9 @@ class Nalu {
 
   Nalu();
 
-  bool Initialize(CodecType type,
-                  const uint8_t* data,
-                  uint64_t size) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize(CodecType type,
+                                const uint8_t* data,
+                                uint64_t size);
 
   /// This is the pointer to the Nalu data, pointing to the header.
   const uint8_t* data() const { return data_; }

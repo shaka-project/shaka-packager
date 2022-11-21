@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "packager/media/codecs/h264_parser.h"
+
 #include <gtest/gtest.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/codecs/h264_parser.h"
+#include "glog/logging.h"
 #include "packager/media/test/test_data_util.h"
 
 namespace shaka {
@@ -111,12 +112,12 @@ TEST(H264ParserTest, SliceHeaderSize) {
   H264Parser parser;
   int unused_id;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, std::size(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &unused_id));
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kPps, arraysize(kPps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kPps, std::size(kPps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParsePps(nalu, &unused_id));
   ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kVideoSliceTrimmed,
-                              arraysize(kVideoSliceTrimmed)));
+                              std::size(kVideoSliceTrimmed)));
 
   H264SliceHeader slice_header;
   ASSERT_EQ(H264Parser::kOk, parser.ParseSliceHeader(nalu, &slice_header));
@@ -128,13 +129,13 @@ TEST(H264ParserTest, PredWeightTable) {
   H264Parser parser;
   int unused_id;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps2, arraysize(kSps2)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps2, std::size(kSps2)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &unused_id));
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kPps2, arraysize(kPps2)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kPps2, std::size(kPps2)));
   ASSERT_EQ(H264Parser::kOk, parser.ParsePps(nalu, &unused_id));
   ASSERT_TRUE(
       nalu.Initialize(Nalu::kH264, kVideoSliceTrimmedMultipleLumaWeights,
-                      arraysize(kVideoSliceTrimmedMultipleLumaWeights)));
+                      std::size(kVideoSliceTrimmedMultipleLumaWeights)));
 
   H264SliceHeader slice_header;
   ASSERT_EQ(H264Parser::kOk, parser.ParseSliceHeader(nalu, &slice_header));
@@ -196,7 +197,7 @@ TEST(H264ParserTest, ParseSps) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, std::size(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   const H264Sps* sps = parser.GetSps(sps_id);
@@ -217,7 +218,7 @@ TEST(H264ParserTest, ParseSpsWithTransferCharacteristics) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, std::size(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   const H264Sps* sps = parser.GetSps(sps_id);
@@ -237,7 +238,7 @@ TEST(H264ParserTest, ExtractResolutionFromSpsData) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, std::size(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;
@@ -262,7 +263,7 @@ TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, std::size(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;

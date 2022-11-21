@@ -8,10 +8,11 @@
 #define PACKAGER_MEDIA_CODECS_HEVC_DECODER_CONFIGURATION_RECORD_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/decoder_configuration_record.h"

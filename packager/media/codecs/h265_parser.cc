@@ -7,9 +7,10 @@
 #include "packager/media/codecs/h265_parser.h"
 
 #include <math.h>
+
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 

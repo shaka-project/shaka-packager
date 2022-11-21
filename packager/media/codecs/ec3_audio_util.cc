@@ -6,10 +6,11 @@
 
 #include "packager/media/codecs/ec3_audio_util.h"
 
-#include "packager/base/macros.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/escaping.h"
+#include "packager/macros.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
+#include "packager/utils/bytes_to_string_view.h"
 
 namespace shaka {
 namespace media {
@@ -57,7 +58,7 @@ enum kEC3AudioChannelMap {
 const size_t kChannelCountArray[] = {
     1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 2, 1, 2, 1, 1,
 };
-static_assert(arraysize(kChannelCountArray) == 16u,
+static_assert(std::size(kChannelCountArray) == 16u,
               "Channel count array should have 16 entries.");
 
 // EC3 Audio coding mode map (acmod) to determine EC3 audio channel layout. The
@@ -216,7 +217,8 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
                       &dependent_substreams_layout, &ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
-                 << base::HexEncode(ec3_data.data(), ec3_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ec3_data));
     return false;
   }
 
@@ -279,7 +281,8 @@ bool GetEc3JocComplexity(const std::vector<uint8_t>& ec3_data,
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
                       &dependent_substreams_layout, ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
-                 << base::HexEncode(ec3_data.data(), ec3_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ec3_data));
     return false;
   }
   return true;

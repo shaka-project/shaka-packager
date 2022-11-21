@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/codecs/vpx_parser.h"
 
 namespace shaka {
