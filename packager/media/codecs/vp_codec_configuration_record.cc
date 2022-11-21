@@ -6,13 +6,12 @@
 
 #include "packager/media/codecs/vp_codec_configuration_record.h"
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/str_replace.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/rcheck.h"
-#include "packager/base/strings/stringprintf.h"
 
 namespace shaka {
 namespace media {
@@ -38,8 +37,8 @@ std::string VPCodecAsString(Codec codec) {
 
 template <typename T>
 void MergeField(const std::string& name,
-                const base::Optional<T>& source_value,
-                base::Optional<T>* dest_value) {
+                const std::optional<T>& source_value,
+                std::optional<T>* dest_value) {
   if (*dest_value) {
     if (source_value && *source_value != **dest_value) {
       LOG(WARNING) << "VPx " << name << " is inconsistent, "
@@ -256,7 +255,7 @@ void VPCodecConfigurationRecord::WriteMP4(std::vector<uint8_t>* data) const {
   writer.AppendInt(transfer_characteristics());
   writer.AppendInt(matrix_coefficients());
   uint16_t codec_initialization_data_size =
-    static_cast<uint16_t>(codec_initialization_data_.size());
+      static_cast<uint16_t>(codec_initialization_data_.size());
   writer.AppendInt(codec_initialization_data_size);
   writer.AppendVector(codec_initialization_data_);
   writer.SwapBuffer(data);
@@ -273,13 +272,13 @@ void VPCodecConfigurationRecord::WriteWebM(std::vector<uint8_t>* data) const {
 
   if (level_) {
     writer.AppendInt(static_cast<uint8_t>(kFeatureLevel));  // ID = 2
-    writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(1));              // Length = 1
     writer.AppendInt(*level_);
   }
 
   if (bit_depth_) {
     writer.AppendInt(static_cast<uint8_t>(kFeatureBitDepth));  // ID = 3
-    writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(1));                 // Length = 1
     writer.AppendInt(*bit_depth_);
   }
 
@@ -295,13 +294,13 @@ void VPCodecConfigurationRecord::WriteWebM(std::vector<uint8_t>* data) const {
 
 std::string VPCodecConfigurationRecord::GetCodecString(Codec codec) const {
   const std::string fields[] = {
-      base::IntToString(profile()),
-      base::IntToString(level()),
-      base::IntToString(bit_depth()),
-      base::IntToString(chroma_subsampling()),
-      base::IntToString(color_primaries()),
-      base::IntToString(transfer_characteristics()),
-      base::IntToString(matrix_coefficients()),
+      absl::StrFormat("%d", profile()),
+      absl::StrFormat("%d", level()),
+      absl::StrFormat("%d", bit_depth()),
+      absl::StrFormat("%d", chroma_subsampling()),
+      absl::StrFormat("%d", color_primaries()),
+      absl::StrFormat("%d", transfer_characteristics()),
+      absl::StrFormat("%d", matrix_coefficients()),
       (video_full_range_flag_ && *video_full_range_flag_) ? "01" : "00",
   };
 
@@ -309,9 +308,9 @@ std::string VPCodecConfigurationRecord::GetCodecString(Codec codec) const {
   for (const std::string& field : fields) {
     // Make sure every field is at least 2-chars wide. The space will be
     // replaced with '0' afterwards.
-    base::StringAppendF(&codec_string, ".%2s", field.c_str());
+    absl::StrAppendFormat(&codec_string, ".%2s", field.c_str());
   }
-  base::ReplaceChars(codec_string, " ", "0", &codec_string);
+  absl::StrReplaceAll({{" ", "0"}}, &codec_string);
   return codec_string;
 }
 

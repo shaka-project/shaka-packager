@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -70,7 +70,7 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
     RCHECK(reader.ReadBits(24, &frequency_));
   RCHECK(reader.ReadBits(4, &channel_config_));
 
-  RCHECK(channel_config_ < arraysize(kChannelConfigs));
+  RCHECK(channel_config_ < std::size(kChannelConfigs));
   num_channels_ = kChannelConfigs[channel_config_];
 
   // Read extension configuration.
@@ -120,15 +120,15 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
   }
 
   if (frequency_ == 0) {
-    RCHECK(frequency_index_ < arraysize(kSampleRates));
+    RCHECK(frequency_index_ < std::size(kSampleRates));
     frequency_ = kSampleRates[frequency_index_];
   }
 
   if (extension_frequency_ == 0 && extension_frequency_index != 0xff) {
-    RCHECK(extension_frequency_index < arraysize(kSampleRates));
+    RCHECK(extension_frequency_index < std::size(kSampleRates));
     extension_frequency_ = kSampleRates[extension_frequency_index];
   }
-  
+
   if (audio_object_type_ == AOT_USAC) {
     return frequency_ != 0 && num_channels_ != 0 && channel_config_ <= 7;
   } else {
@@ -208,13 +208,13 @@ uint8_t AACAudioSpecificConfig::GetNumChannels() const {
 
 bool AACAudioSpecificConfig::ParseAudioObjectType(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(5, &audio_object_type_));
-  
+
   if (audio_object_type_ == AOT_ESCAPE) {
     uint8_t audioObjectTypeExt;
     RCHECK(bit_reader->ReadBits(6, &audioObjectTypeExt));
     audio_object_type_ = static_cast<AudioObjectType>(32 + audioObjectTypeExt);
   }
-  
+
   return true;
 }
 
@@ -288,7 +288,7 @@ bool AACAudioSpecificConfig::ParseGASpecificConfig(BitReader* bit_reader) {
 
   if (extension_flag) {
     if (audio_object_type_ == 22) {
-      RCHECK(bit_reader->ReadBits(5, &dummy));  // numOfSubFrame
+      RCHECK(bit_reader->ReadBits(5, &dummy));   // numOfSubFrame
       RCHECK(bit_reader->ReadBits(11, &dummy));  // layer_length
     }
 

@@ -33,7 +33,7 @@ TEST(AVCDecoderConfigurationRecordTest, Success) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -81,7 +81,7 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithSPSExtension) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -121,7 +121,7 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithTransferCharacteristics) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -153,7 +153,7 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithNoParameterSets) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -191,7 +191,7 @@ TEST(AVCDecoderConfigurationRecordTest, FailsOnInvalidNaluLengthSize) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_FALSE(avc_config.Parse(kAvcDecoderConfigurationData,
-                                arraysize(kAvcDecoderConfigurationData)));
+                                std::size(kAvcDecoderConfigurationData)));
 }
 
 TEST(AVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
@@ -199,7 +199,7 @@ TEST(AVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_FALSE(avc_config.Parse(kAvcDecoderConfigurationData,
-                                arraysize(kAvcDecoderConfigurationData)));
+                                std::size(kAvcDecoderConfigurationData)));
 }
 
 TEST(AVCDecoderConfigurationRecordTest, GetCodecString) {

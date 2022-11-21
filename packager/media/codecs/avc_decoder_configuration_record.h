@@ -8,10 +8,11 @@
 #define PACKAGER_MEDIA_CODECS_AVC_DECODER_CONFIGURATION_RECORD_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/decoder_configuration_record.h"
 
@@ -59,7 +60,7 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   uint32_t coded_height_ = 0;
   uint32_t pixel_width_ = 0;
   uint32_t pixel_height_ = 0;
-  
+
   // Only should be present for special case profile values.
   // Refer to ISO/IEC 14496-15 Section 5.3.3.1.1.
   uint8_t chroma_format_ = 0;

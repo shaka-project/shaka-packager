@@ -8,7 +8,7 @@
 
 #include <limits>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/codecs/h264_parser.h"
 
@@ -28,7 +28,7 @@ const H264Sps* ParseSpsFromBytes(const std::vector<uint8_t> sps,
     return nullptr;
   return parser->GetSps(sps_id);
 }
-} // namespace
+}  // namespace
 
 H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
     : H26xByteToUnitStreamConverter(Nalu::kH264) {}
@@ -47,7 +47,7 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
     return false;
   }
   // Construct an AVCDecoderConfigurationRecord containing a single SPS, a
-  // single PPS, and if available, a single SPS Extension NALU. 
+  // single PPS, and if available, a single SPS Extension NALU.
   // Please refer to ISO/IEC 14496-15 for format specifics.
   BufferWriter buffer;
   uint8_t version(1);
@@ -67,29 +67,29 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   buffer.AppendVector(last_pps_);
   // handle profile special cases, refer to ISO/IEC 14496-15 Section 5.3.3.1.2
   uint8_t profile_indication = last_sps_[1];
-  if (profile_indication == 100 || profile_indication == 110 || 
+  if (profile_indication == 100 || profile_indication == 110 ||
       profile_indication == 122 || profile_indication == 144) {
-      
-      H264Parser parser;
-      const H264Sps* sps = ParseSpsFromBytes(last_sps_, &parser);
-      if (sps == nullptr)
-        return false;
+    H264Parser parser;
+    const H264Sps* sps = ParseSpsFromBytes(last_sps_, &parser);
+    if (sps == nullptr)
+      return false;
 
-      uint8_t reserved_chroma_format = 0xfc | (sps->chroma_format_idc);
-      buffer.AppendInt(reserved_chroma_format);
-      uint8_t reserved_bit_depth_luma_minus8 = 0xf8 | sps->bit_depth_luma_minus8;
-      buffer.AppendInt(reserved_bit_depth_luma_minus8);
-      uint8_t reserved_bit_depth_chroma_minus8 = 0xf8 | sps->bit_depth_chroma_minus8;
-      buffer.AppendInt(reserved_bit_depth_chroma_minus8);	
-      
-      if (last_sps_ext_.empty()) {
-        uint8_t num_sps_ext(0);
-        buffer.AppendInt(num_sps_ext);     
-      } else {
-        uint8_t num_sps_ext(1);
-        buffer.AppendInt(num_sps_ext);     
-        buffer.AppendVector(last_sps_ext_);
-      }
+    uint8_t reserved_chroma_format = 0xfc | (sps->chroma_format_idc);
+    buffer.AppendInt(reserved_chroma_format);
+    uint8_t reserved_bit_depth_luma_minus8 = 0xf8 | sps->bit_depth_luma_minus8;
+    buffer.AppendInt(reserved_bit_depth_luma_minus8);
+    uint8_t reserved_bit_depth_chroma_minus8 =
+        0xf8 | sps->bit_depth_chroma_minus8;
+    buffer.AppendInt(reserved_bit_depth_chroma_minus8);
+
+    if (last_sps_ext_.empty()) {
+      uint8_t num_sps_ext(0);
+      buffer.AppendInt(num_sps_ext);
+    } else {
+      uint8_t num_sps_ext(1);
+      buffer.AppendInt(num_sps_ext);
+      buffer.AppendVector(last_sps_ext_);
+    }
   }
 
   buffer.SwapBuffer(decoder_config);

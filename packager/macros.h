@@ -39,4 +39,12 @@
 /// AES block size in bytes, regardless of key size.
 #define AES_BLOCK_SIZE 16
 
+/// Convert byte array to absl::string_view
+#define BYTE_ARRAY_TO_STRING_VIEW(array, array_size) \
+  absl::string_view(reinterpret_cast<const char*>(array), array_size)
+
+/// Convert byte container to absl::string_view
+#define BYTE_CONTAINER_TO_STRING_VIEW(container) \
+  BYTE_ARRAY_TO_STRING_VIEW(container.data(), container.size())
+
 #endif  // PACKAGER_MACROS_H_

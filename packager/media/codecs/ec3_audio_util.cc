@@ -6,8 +6,8 @@
 
 #include "packager/media/codecs/ec3_audio_util.h"
 
-#include "packager/base/macros.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/escaping.h"
+#include "packager/macros.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -57,7 +57,7 @@ enum kEC3AudioChannelMap {
 const size_t kChannelCountArray[] = {
     1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 2, 1, 2, 1, 1,
 };
-static_assert(arraysize(kChannelCountArray) == 16u,
+static_assert(std::size(kChannelCountArray) == 16u,
               "Channel count array should have 16 entries.");
 
 // EC3 Audio coding mode map (acmod) to determine EC3 audio channel layout. The
@@ -94,7 +94,7 @@ uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
     case kLeft | kRight:
       ret = 2;
       break;
-    case kCenter| kLeft | kRight:
+    case kCenter | kLeft | kRight:
       ret = 3;
       break;
     case kCenter | kLeft | kRight | kCenterSurround:
@@ -103,12 +103,11 @@ uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround:
       ret = 5;
       break;
-    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-         kLFEScreen:
+    case kCenter | kLeft | kRight | kLeftSurround | kRightSurround | kLFEScreen:
       ret = 6;
       break;
     case kCenter | kLeft | kRight | kLwRwPair | kLeftSurround | kRightSurround |
-         kLFEScreen:
+        kLFEScreen:
       ret = 7;
       break;
     case kLeft | kRight | kCenterSurround:
@@ -121,24 +120,24 @@ uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
       ret = 11;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-         kLrsRrsPair | kLFEScreen:
+        kLrsRrsPair | kLFEScreen:
       ret = 12;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-         kLFEScreen | kLvhRvhPair:
+        kLFEScreen | kLvhRvhPair:
       ret = 14;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-         kLFEScreen | kLvhRvhPair | kLtsRtsPair:
+        kLFEScreen | kLvhRvhPair | kLtsRtsPair:
       ret = 16;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-         kLFEScreen | kLvhRvhPair | kCenterVerticalHeight | kLtsRtsPair |
-         kTopCenterSurround:
+        kLFEScreen | kLvhRvhPair | kCenterVerticalHeight | kLtsRtsPair |
+        kTopCenterSurround:
       ret = 17;
       break;
     case kCenter | kLeft | kRight | kLsdRsdPair | kLrsRrsPair | kLFEScreen |
-         kLvhRvhPair | kLtsRtsPair:
+        kLvhRvhPair | kLtsRtsPair:
       ret = 19;
       break;
     default:
@@ -216,7 +215,8 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
                       &dependent_substreams_layout, &ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
-                 << base::HexEncode(ec3_data.data(), ec3_data.size());
+                 << absl::BytesToHexString(
+                        BYTE_CONTAINER_TO_STRING_VIEW(ec3_data));
     return false;
   }
 
@@ -279,7 +279,8 @@ bool GetEc3JocComplexity(const std::vector<uint8_t>& ec3_data,
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
                       &dependent_substreams_layout, ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
-                 << base::HexEncode(ec3_data.data(), ec3_data.size());
+                 << absl::BytesToHexString(
+                        BYTE_CONTAINER_TO_STRING_VIEW(ec3_data));
     return false;
   }
   return true;

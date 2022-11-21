@@ -6,8 +6,8 @@
 
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/escaping.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/codecs/h264_parser.h"
@@ -82,14 +82,15 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
     AddNalu(nalu);
   }
 
-  if (profile_indication_ == 100 || profile_indication_ == 110 || 
+  if (profile_indication_ == 100 || profile_indication_ == 110 ||
       profile_indication_ == 122 || profile_indication_ == 144) {
-
     uint8_t sps_ext_count;
-    if (!reader.Read1(&chroma_format_) || !reader.Read1(&bit_depth_luma_minus8_) ||
-        !reader.Read1(&bit_depth_chroma_minus8_) || !reader.Read1(&sps_ext_count)) {
-       LOG(WARNING) << "Insufficient bits in bitstream for given AVC profile";
-       return true;
+    if (!reader.Read1(&chroma_format_) ||
+        !reader.Read1(&bit_depth_luma_minus8_) ||
+        !reader.Read1(&bit_depth_chroma_minus8_) ||
+        !reader.Read1(&sps_ext_count)) {
+      LOG(WARNING) << "Insufficient bits in bitstream for given AVC profile";
+      return true;
     }
     chroma_format_ &= 0x3;
     bit_depth_luma_minus8_ &= 0x7;
@@ -104,8 +105,8 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
       RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));
       RCHECK(nalu.type() == Nalu::H264_SPSExtension);
       AddNalu(nalu);
-    } 
-  } 	
+    }
+  }
   return true;
 }
 
@@ -122,8 +123,10 @@ std::string AVCDecoderConfigurationRecord::GetCodecString(
     uint8_t avc_level) {
   const uint8_t bytes[] = {profile_indication, profile_compatibility,
                            avc_level};
+  absl::string_view bytes_str_view(reinterpret_cast<const char*>(bytes),
+                                   std::size(bytes));
   return FourCCToString(codec_fourcc) + "." +
-         base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+         absl::AsciiStrToLower(absl::BytesToHexString(bytes_str_view));
 }
 
 }  // namespace media

@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/codecs/h264_parser.h"
 
@@ -50,9 +50,8 @@ void UpdateSubsamples(uint64_t consumed_bytes,
                     subsamples->begin() + num_entries_to_delete);
 }
 
-bool IsNaluLengthEncrypted(
-    uint8_t nalu_length_size,
-    const std::vector<SubsampleEntry>& subsamples) {
+bool IsNaluLengthEncrypted(uint8_t nalu_length_size,
+                           const std::vector<SubsampleEntry>& subsamples) {
   if (subsamples.empty())
     return false;
 
@@ -72,9 +71,7 @@ bool IsNaluLengthEncrypted(
 
 Nalu::Nalu() = default;
 
-bool Nalu::Initialize(CodecType type,
-                      const uint8_t* data,
-                      uint64_t size) {
+bool Nalu::Initialize(CodecType type, const uint8_t* data, uint64_t size) {
   if (type == Nalu::kH264) {
     return InitializeFromH264(data, size);
   } else {
@@ -268,8 +265,8 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
     nalu_length_size_or_start_code_size = nalu_length_size_;
 
     if (nalu_length + nalu_length_size_ > stream_size_) {
-      LOG(ERROR) << "NALU length exceeds stream size: "
-                 << stream_size_ << " < " << nalu_length;
+      LOG(ERROR) << "NALU length exceeds stream size: " << stream_size_ << " < "
+                 << nalu_length;
       return NaluReader::kInvalidStream;
     }
     if (nalu_length == 0) {
@@ -405,9 +402,8 @@ bool NaluReader::LocateNaluByStartCode(uint64_t* nalu_size,
   // Find the start code of next NALU.
   uint64_t nalu_start_off = 0;
   uint8_t annexb_start_code_size = 0;
-  if (!FindStartCodeInClearRange(
-          stream_, stream_size_,
-          &nalu_start_off, &annexb_start_code_size, subsamples_)) {
+  if (!FindStartCodeInClearRange(stream_, stream_size_, &nalu_start_off,
+                                 &annexb_start_code_size, subsamples_)) {
     DVLOG(4) << "Could not find start code, end of stream?";
     return false;
   }
@@ -443,9 +439,8 @@ bool NaluReader::LocateNaluByStartCode(uint64_t* nalu_size,
   uint8_t next_start_code_size = 0;
   while (true) {
     if (!FindStartCodeInClearRange(
-            nalu_data, max_nalu_data_size,
-            &nalu_size_without_start_code, &next_start_code_size,
-            subsamples_for_finding_next_nalu)) {
+            nalu_data, max_nalu_data_size, &nalu_size_without_start_code,
+            &next_start_code_size, subsamples_for_finding_next_nalu)) {
       nalu_data += max_nalu_data_size;
       break;
     }

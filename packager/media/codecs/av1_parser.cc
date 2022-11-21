@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -1810,7 +1810,7 @@ bool AV1Parser::SetFrameRefs(int last_frame_idx, int gold_frame_idx) {
   static const int kRefFrameList[] = {
       LAST2_FRAME, LAST3_FRAME, BWDREF_FRAME, ALTREF2_FRAME, ALTREF_FRAME,
   };
-  static_assert(arraysize(kRefFrameList) == kRefsPerFrame - 2,
+  static_assert(std::size(kRefFrameList) == kRefsPerFrame - 2,
                 "Unexpected kRefFrameList size.");
   for (const int ref_frame : kRefFrameList) {
     if (frame_header_.ref_frame_idx[ref_frame - LAST_FRAME] < 0) {

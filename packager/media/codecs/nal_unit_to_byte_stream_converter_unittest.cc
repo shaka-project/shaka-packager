@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/media/base/media_sample.h"
-#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
 #include "packager/media/formats/mp4/box_definitions_comparison.h"
 
 namespace shaka {
@@ -19,38 +20,110 @@ namespace {
 // This should be valud AVCDecoderConfigurationRecord that can be parsed by
 // NalUnitToByteStreamConverter.
 const uint8_t kTestAVCDecoderConfigurationRecord[] = {
-    0x01,        // configuration version (must be 1)
-    0x00,        // AVCProfileIndication (bogus)
-    0x00,        // profile_compatibility (bogus)
-    0x00,        // AVCLevelIndication (bogus)
-    0xFF,        // Length size minus 1 == 3
-    0xE1,        // 1 sps.
-    0x00, 0x1D,  // SPS length == 29
+    0x01,  // configuration version (must be 1)
+    0x00,  // AVCProfileIndication (bogus)
+    0x00,  // profile_compatibility (bogus)
+    0x00,  // AVCLevelIndication (bogus)
+    0xFF,  // Length size minus 1 == 3
+    0xE1,  // 1 sps.
+    0x00,
+    0x1D,  // SPS length == 29
     // Some valid SPS data.
-    0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-    0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-    0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-    0x60, 0x0F, 0x16, 0x2D, 0x96,
-    0x01,        // 1 pps.
-    0x00, 0x0A,  // PPS length == 10
-    0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
+    0x67,
+    0x64,
+    0x00,
+    0x1E,
+    0xAC,
+    0xD9,
+    0x40,
+    0xB4,
+    0x2F,
+    0xF9,
+    0x7F,
+    0xF0,
+    0x00,
+    0x80,
+    0x00,
+    0x91,
+    0x00,
+    0x00,
+    0x03,
+    0x03,
+    0xE9,
+    0x00,
+    0x00,
+    0xEA,
+    0x60,
+    0x0F,
+    0x16,
+    0x2D,
+    0x96,
+    0x01,  // 1 pps.
+    0x00,
+    0x0A,  // PPS length == 10
+    0x68,
+    0xFE,
+    0xFD,
+    0xFC,
+    0xFB,
+    0x11,
+    0x12,
+    0x13,
+    0x14,
+    0x15,
 };
 const uint8_t kTestAVCDecoderConfigurationRecordNaluLengthSize2[] = {
-    0x01,        // configuration version (must be 1)
-    0x00,        // AVCProfileIndication (bogus)
-    0x00,        // profile_compatibility (bogus)
-    0x00,        // AVCLevelIndication (bogus)
-    0xFD,        // Length size minus 1 == 1
-    0xE1,        // 1 sps.
-    0x00, 0x1D,  // SPS length == 29
+    0x01,  // configuration version (must be 1)
+    0x00,  // AVCProfileIndication (bogus)
+    0x00,  // profile_compatibility (bogus)
+    0x00,  // AVCLevelIndication (bogus)
+    0xFD,  // Length size minus 1 == 1
+    0xE1,  // 1 sps.
+    0x00,
+    0x1D,  // SPS length == 29
     // Some valid SPS data.
-    0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-    0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-    0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-    0x60, 0x0F, 0x16, 0x2D, 0x96,
-    0x01,        // 1 pps.
-    0x00, 0x0A,  // PPS length == 10
-    0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
+    0x67,
+    0x64,
+    0x00,
+    0x1E,
+    0xAC,
+    0xD9,
+    0x40,
+    0xB4,
+    0x2F,
+    0xF9,
+    0x7F,
+    0xF0,
+    0x00,
+    0x80,
+    0x00,
+    0x91,
+    0x00,
+    0x00,
+    0x03,
+    0x03,
+    0xE9,
+    0x00,
+    0x00,
+    0xEA,
+    0x60,
+    0x0F,
+    0x16,
+    0x2D,
+    0x96,
+    0x01,  // 1 pps.
+    0x00,
+    0x0A,  // PPS length == 10
+    0x68,
+    0xFE,
+    0xFD,
+    0xFC,
+    0xFB,
+    0x11,
+    0x12,
+    0x13,
+    0x14,
+    0x15,
 };
 
 const bool kIsKeyFrame = true;
@@ -68,10 +141,10 @@ TEST(NalUnitToByteStreamConverterTest, ParseAVCDecoderConfigurationRecord) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 }
 
 // Empty AVCDecoderConfigurationRecord should return false.
@@ -85,19 +158,29 @@ TEST(NalUnitToByteStreamConverterTest, EmptyAVCDecoderConfigurationRecord) {
 TEST(NalUnitToByteStreamConverterTest, NoSps) {
   NalUnitToByteStreamConverter converter;
   const uint8_t kNoSps[] = {
-      0x01,        // configuration version (must be 1)
-      0x00,        // AVCProfileIndication (bogus)
-      0x00,        // profile_compatibility (bogus)
-      0x00,        // AVCLevelIndication (bogus)
-      0xFF,        // Length size minus 1 == 3
-      0xE0,        // 0 sps.
+      0x01,  // configuration version (must be 1)
+      0x00,  // AVCProfileIndication (bogus)
+      0x00,  // profile_compatibility (bogus)
+      0x00,  // AVCLevelIndication (bogus)
+      0xFF,  // Length size minus 1 == 3
+      0xE0,  // 0 sps.
       // The rest doesn't really matter, Initialize() should fail.
-      0x01,        // 1 pps.
-      0x00, 0x0A,  // PPS length == 10
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
+      0x01,  // 1 pps.
+      0x00,
+      0x0A,  // PPS length == 10
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,
   };
 
-  EXPECT_FALSE(converter.Initialize(kNoSps, arraysize(kNoSps)));
+  EXPECT_FALSE(converter.Initialize(kNoSps, std::size(kNoSps)));
 }
 
 // If there is no PPS, Initialize() should fail.
@@ -112,14 +195,13 @@ TEST(NalUnitToByteStreamConverterTest, NoPps) {
       0xE1,        // 1 sps.
       0x00, 0x1D,  // SPS length == 29
       // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-      0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
+      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0,
+      0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
       0x60, 0x0F, 0x16, 0x2D, 0x96,
       0x00,  // 0 pps.
   };
 
-  EXPECT_FALSE(converter.Initialize(kNoPps, arraysize(kNoPps)));
+  EXPECT_FALSE(converter.Initialize(kNoPps, std::size(kNoPps)));
 }
 
 // If the length of SPS is 0 then Initialize() should fail.
@@ -138,26 +220,26 @@ TEST(NalUnitToByteStreamConverterTest, ZeroLengthSps) {
       0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
   };
 
-  EXPECT_FALSE(converter.Initialize(kZeroLengthSps, arraysize(kZeroLengthSps)));
+  EXPECT_FALSE(converter.Initialize(kZeroLengthSps, std::size(kZeroLengthSps)));
 }
 
 // If the length of PPS is 0 then Initialize() should fail.
 TEST(NalUnitToByteStreamConverterTest, ZeroLengthPps) {
   NalUnitToByteStreamConverter converter;
   const uint8_t kZeroLengthPps[] = {
-    0x01,        // configuration version (must be 1)
-    0x00,        // AVCProfileIndication (bogus)
-    0x00,        // profile_compatibility (bogus)
-    0x00,        // AVCLevelIndication (bogus)
-    0xFF,        // Length size minus 1 == 3
-    0xE1,        // 1 sps.
-    0x00, 0x05,  // SPS length == 5
-    0x00, 0x00, 0x00, 0x01, 0x02,
-    0x01,        // 1 pps.
-    0x00, 0x00,  // PPS length == 0
+      0x01,        // configuration version (must be 1)
+      0x00,        // AVCProfileIndication (bogus)
+      0x00,        // profile_compatibility (bogus)
+      0x00,        // AVCLevelIndication (bogus)
+      0xFF,        // Length size minus 1 == 3
+      0xE1,        // 1 sps.
+      0x00, 0x05,  // SPS length == 5
+      0x00, 0x00, 0x00, 0x01, 0x02,
+      0x01,        // 1 pps.
+      0x00, 0x00,  // PPS length == 0
   };
 
-  EXPECT_FALSE(converter.Initialize(kZeroLengthPps, arraysize(kZeroLengthPps)));
+  EXPECT_FALSE(converter.Initialize(kZeroLengthPps, std::size(kZeroLengthPps)));
 }
 
 TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
@@ -171,38 +253,93 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,              // Start code.
-      0x09,                                // AUD type.
-      0xF0,                                // primary pic type is anything.
-      0x00, 0x00, 0x00, 0x01,              // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-      0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-      0x60, 0x0F, 0x16, 0x2D, 0x96,
-      0x00, 0x00, 0x00, 0x01,              // Start code.
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x67,
+      0x64,
+      0x00,
+      0x1E,
+      0xAC,
+      0xD9,
+      0x40,
+      0xB4,
+      0x2F,
+      0xF9,
+      0x7F,
+      0xF0,
+      0x00,
+      0x80,
+      0x00,
+      0x91,
+      0x00,
+      0x00,
+      0x03,
+      0x03,
+      0xE9,
+      0x00,
+      0x00,
+      0xEA,
+      0x60,
+      0x0F,
+      0x16,
+      0x2D,
+      0x96,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,  // PPS.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU.
       0x06,  // NALU type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
+      0xFD,
+      0x78,
+      0xA4,
+      0xC3,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
 // Expect a valid AVCDecoderConfigurationRecord with SPSExtension to pass.
-TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithSPSExtension) {
+TEST(NalUnitToByteStreamConverterTest,
+     ConvertUnitToByteStreamWithSPSExtension) {
   NalUnitToByteStreamConverter converter;
   const uint8_t kDecoderConfigWithSpsExt[] = {
       0x01,        // configuration version (must be 1)
@@ -213,60 +350,118 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithSPSExtension) 
       0xE1,        // 1 sps.
       0x00, 0x1D,  // SPS length == 29
       // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-      0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
+      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0,
+      0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
       0x60, 0x0F, 0x16, 0x2D, 0x96,
       0x01,        // 1 pps.
       0x00, 0x0A,  // PPS length == 10
       0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
-      0xFC,  // chroma_format == 0
-      0xF9,  // bit_depth_luma_minus8 == 1
-      0xFF,  // bit_depth_chroma_minus8 == 7
-      0x01,  // 1 SPS Extension 
+      0xFC,        // chroma_format == 0
+      0xF9,        // bit_depth_luma_minus8 == 1
+      0xFF,        // bit_depth_chroma_minus8 == 7
+      0x01,        // 1 SPS Extension
       0x00, 0x05,  // SPSExtension length = 5
-      0x6D, 0x33, 0x01, 0x57, 0x78
-  };
+      0x6D, 0x33, 0x01, 0x57, 0x78};
 
   // Only the type of the NAL units are checked.
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSample[] = {
       0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
       0x06,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77
-  };
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77};
 
   const uint8_t kByteStreamWithSpsExtension[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code
-      0x09,  		       // AUD Type
-      0xF0, 		       // Primary pic type
-      0x00, 0x00, 0x00, 0x01,  // Start code
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code
+      0x09,  // AUD Type
+      0xF0,  // Primary pic type
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code
       // Some SPS Data
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 
-      0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 
-      0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA, 0x60, 0x0F, 0x16, 
-      0x2D, 0x96, 
-      0x00, 0x00, 0x00, 0x01,  // Start code
+      0x67,
+      0x64,
+      0x00,
+      0x1E,
+      0xAC,
+      0xD9,
+      0x40,
+      0xB4,
+      0x2F,
+      0xF9,
+      0x7F,
+      0xF0,
+      0x00,
+      0x80,
+      0x00,
+      0x91,
+      0x00,
+      0x00,
+      0x03,
+      0x03,
+      0xE9,
+      0x00,
+      0x00,
+      0xEA,
+      0x60,
+      0x0F,
+      0x16,
+      0x2D,
+      0x96,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code
       // Some PPS Data
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15, 
-      0x00, 0x00, 0x00, 0x01,  // Start code
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code
       // Some SPS Extension data
-      0x6D, 0x33, 0x01, 0x57, 0x78, 
-      0x00, 0x00, 0x00, 0x01,  // Start code
+      0x6D,
+      0x33,
+      0x01,
+      0x57,
+      0x78,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code
       // The input NALU
       0x06,  //  NALU type
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, 
+      0xFD,
+      0x78,
+      0xA4,
+      0xC3,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
   };
-  EXPECT_TRUE(converter.Initialize(kDecoderConfigWithSpsExt, 
-              arraysize(kDecoderConfigWithSpsExt)));
-  
+  EXPECT_TRUE(converter.Initialize(kDecoderConfigWithSpsExt,
+                                   std::size(kDecoderConfigWithSpsExt)));
+
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-              kUnitStreamLikeMediaSample, 
-              arraysize(kUnitStreamLikeMediaSample), kIsKeyFrame, &output));
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
+      kIsKeyFrame, &output));
   EXPECT_EQ(std::vector<uint8_t>(std::begin(kByteStreamWithSpsExtension),
-                                 std::end(kByteStreamWithSpsExtension)), 
-                                 output);
+                                 std::end(kByteStreamWithSpsExtension)),
+            output);
 }
 
 // Verify that if it is not a key frame then SPS and PPS from decoder
@@ -280,25 +475,32 @@ TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(kNonKeyFrameStream,
-                                                arraysize(kNonKeyFrameStream),
+                                                std::size(kNonKeyFrameStream),
                                                 !kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // Anything.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // Anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU.
       0x06,  // NALU type.
-      0x33, 0x88,
+      0x33,
+      0x88,
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -306,34 +508,54 @@ TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
 // The zeros aren't contiguous but the escape byte was inserted.
 TEST(NalUnitToByteStreamConverterTest, DispersedZeros) {
   const uint8_t kDispersedZeros[] = {
-      0x00, 0x00, 0x00, 0x08,  // Size 8 NALU.
-      0x06,                    // NAL unit type.
+      0x00,
+      0x00,
+      0x00,
+      0x08,  // Size 8 NALU.
+      0x06,  // NAL unit type.
       // After 2 zeros (including the first byte of the NALU followed by 0, 1,
       // 2, or 3 caused it to insert the escape byte.
-      0x11, 0x00,
-      0x01, 0x00, 0x02, 0x00, 0x44,
+      0x11,
+      0x00,
+      0x01,
+      0x00,
+      0x02,
+      0x00,
+      0x44,
   };
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-      kDispersedZeros, arraysize(kDispersedZeros), !kIsKeyFrame, &output));
+      kDispersedZeros, std::size(kDispersedZeros), !kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // Anything.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // Anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU.
       0x06,  // NAL unit type.
-      0x11, 0x00, 0x01, 0x00, 0x02, 0x00, 0x44,
+      0x11,
+      0x00,
+      0x01,
+      0x00,
+      0x02,
+      0x00,
+      0x44,
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -349,24 +571,40 @@ TEST(NalUnitToByteStreamConverterTest, DoNotEscape) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-      kNotEscaped, arraysize(kNotEscaped), !kIsKeyFrame, &output));
+      kNotEscaped, std::size(kNotEscaped), !kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // Anything.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // Anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // Should be the same as the input.
       0x06,
-      0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02, 0x00, 0x00, 0x03,
+      0x00,
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x00,
+      0x00,
+      0x02,
+      0x00,
+      0x00,
+      0x03,
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -375,12 +613,12 @@ TEST(NalUnitToByteStreamConverterTest, NoClearNAL) {
   // Only the type of the NAL units are checked.
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSample[] = {
-      0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
-      0x02,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, // Slice data
-      0x00, 0x00, 0x00, 0x08,  // Size 8 NALU.
-      0x02,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77, // Slice data
+      0x00, 0x00, 0x00, 0x0A,                                // Size 10 NALU.
+      0x02,                                                  // NAL unit type.
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,  // Slice data
+      0x00, 0x00, 0x00, 0x08,                                // Size 8 NALU.
+      0x02,                                                  // NAL unit type.
+      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,              // Slice data
   };
 
   std::vector<SubsampleEntry> subsamples{SubsampleEntry(5, 9),
@@ -389,40 +627,103 @@ TEST(NalUnitToByteStreamConverterTest, NoClearNAL) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,              // Start code.
-      0x09,                                // AUD type.
-      0xF0,                                // primary pic type is anything.
-      0x00, 0x00, 0x00, 0x01,              // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-      0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-      0x60, 0x0F, 0x16, 0x2D, 0x96,
-      0x00, 0x00, 0x00, 0x01,              // Start code.
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x67,
+      0x64,
+      0x00,
+      0x1E,
+      0xAC,
+      0xD9,
+      0x40,
+      0xB4,
+      0x2F,
+      0xF9,
+      0x7F,
+      0xF0,
+      0x00,
+      0x80,
+      0x00,
+      0x91,
+      0x00,
+      0x00,
+      0x03,
+      0x03,
+      0xE9,
+      0x00,
+      0x00,
+      0xEA,
+      0x60,
+      0x0F,
+      0x16,
+      0x2D,
+      0x96,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,  // PPS.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU 1.
       0x02,  // NALU type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0xFD,
+      0x78,
+      0xA4,
+      0xC3,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU 2.
       0x02,  // NALU type.
-      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,
+      0xFD,
+      0x78,
+      0xA4,
+      0x82,
+      0x62,
+      0x29,
+      0x77,
   };
 
   const std::vector<SubsampleEntry> kExpectedOutputSubsamples{
       SubsampleEntry(58, 9), SubsampleEntry(5, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -434,10 +735,10 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNAL) {
   const uint8_t kUnitStreamLikeMediaSample[] = {
       0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
       0x06,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x08,  // Size 8 NALU.
-      0x02,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77, // Slice data
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11,
+      0x29, 0x77, 0x00, 0x00, 0x00, 0x08,        // Size 8 NALU.
+      0x02,                                      // NAL unit type.
+      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,  // Slice data
   };
 
   std::vector<SubsampleEntry> subsamples{SubsampleEntry(19, 7)};
@@ -445,40 +746,103 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNAL) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,              // Start code.
-      0x09,                                // AUD type.
-      0xF0,                                // primary pic type is anything.
-      0x00, 0x00, 0x00, 0x01,              // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
-      0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
-      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-      0x60, 0x0F, 0x16, 0x2D, 0x96,
-      0x00, 0x00, 0x00, 0x01,              // Start code.
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x67,
+      0x64,
+      0x00,
+      0x1E,
+      0xAC,
+      0xD9,
+      0x40,
+      0xB4,
+      0x2F,
+      0xF9,
+      0x7F,
+      0xF0,
+      0x00,
+      0x80,
+      0x00,
+      0x91,
+      0x00,
+      0x00,
+      0x03,
+      0x03,
+      0xE9,
+      0x00,
+      0x00,
+      0xEA,
+      0x60,
+      0x0F,
+      0x16,
+      0x2D,
+      0x96,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,  // PPS.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU 1.
       0x06,  // NALU type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0xFD,
+      0x78,
+      0xA4,
+      0xC3,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU 2.
       0x02,  // NALU type.
-      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,
+      0xFD,
+      0x78,
+      0xA4,
+      0x82,
+      0x62,
+      0x29,
+      0x77,
   };
 
   const std::vector<SubsampleEntry> kExpectedOutputSubsamples{
       SubsampleEntry(72, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -490,8 +854,7 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNALAndNaluLengthSize2) {
       0x00, 0x0A,  // Size 10 NALU.
       0x06,        // NAL unit type.
       0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11,
-      0x29, 0x77,
-      0x00, 0x08,                                // Size 8 NALU.
+      0x29, 0x77, 0x00, 0x08,                    // Size 8 NALU.
       0x02,                                      // NAL unit type.
       0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,  // Slice data
   };
@@ -501,38 +864,103 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNALAndNaluLengthSize2) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(converter.Initialize(
       kTestAVCDecoderConfigurationRecordNaluLengthSize2,
-      arraysize(kTestAVCDecoderConfigurationRecordNaluLengthSize2)));
+      std::size(kTestAVCDecoderConfigurationRecordNaluLengthSize2)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // primary pic type is anything.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0,
-      0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-      0x60, 0x0F, 0x16, 0x2D, 0x96, 0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x67,
+      0x64,
+      0x00,
+      0x1E,
+      0xAC,
+      0xD9,
+      0x40,
+      0xB4,
+      0x2F,
+      0xF9,
+      0x7F,
+      0xF0,
+      0x00,
+      0x80,
+      0x00,
+      0x91,
+      0x00,
+      0x00,
+      0x03,
+      0x03,
+      0xE9,
+      0x00,
+      0x00,
+      0xEA,
+      0x60,
+      0x0F,
+      0x16,
+      0x2D,
+      0x96,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,  // PPS.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU 1.
       0x06,  // NALU type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, 0x00, 0x00, 0x00,
+      0xFD,
+      0x78,
+      0xA4,
+      0xC3,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
       0x01,  // Start code.
       // The input NALU 2.
       0x02,  // NALU type.
-      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,
+      0xFD,
+      0x78,
+      0xA4,
+      0x82,
+      0x62,
+      0x29,
+      0x77,
   };
 
   const std::vector<SubsampleEntry> kExpectedOutputSubsamples{
       SubsampleEntry(72, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -541,19 +969,49 @@ TEST(NalUnitToByteStreamConverterTest, EscapeEncryptedNalu) {
   // Only the type of the NAL units are checked.
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSample[] = {
-      0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
-      0x06,                    // NAL unit type.
+      0x00,
+      0x00,
+      0x00,
+      0x0A,  // Size 10 NALU.
+      0x06,  // NAL unit type.
       // Unencrypted NALU with 0x000000 pattern (no need to escaped).
-      0xFD, 0x00, 0x00, 0x00, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x08,  // Size 8 NALU.
+      0xFD,
+      0x00,
+      0x00,
+      0x00,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
+      0x08,  // Size 8 NALU.
       0x02,  // NAL unit type.
       // Encrypted NALU with 0x000000 pattern (need to escape).
-      0xFD, 0x00, 0x00, 0x00, 0x62, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x09,  // Size 9 NALU.
+      0xFD,
+      0x00,
+      0x00,
+      0x00,
+      0x62,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
+      0x09,  // Size 9 NALU.
       0x01,  // NAL unit types.
       // Partially encrypted NALU with 0x000000 pattern at the boundary (need to
       // escape).
-      0xFD, 0x01, 0x02, 0x00, 0x00, 0x01, 0x02, 0x03,
+      0xFD,
+      0x01,
+      0x02,
+      0x00,
+      0x00,
+      0x01,
+      0x02,
+      0x03,
   };
 
   std::vector<SubsampleEntry> subsamples{SubsampleEntry(19, 7),
@@ -562,29 +1020,64 @@ TEST(NalUnitToByteStreamConverterTest, EscapeEncryptedNalu) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   ASSERT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       !kIsKeyFrame, kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
       // The input NALU 1.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x06,                    // NALU type.
-      0xFD, 0x00, 0x00, 0x00, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x06,  // NALU type.
+      0xFD,
+      0x00,
+      0x00,
+      0x00,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
       // The input NALU 2.
       0x02,  // NALU type.
-      0xFD, 0x00, 0x00, 0x03, 0x00, 0x62, 0x29, 0x77,
+      0xFD,
+      0x00,
+      0x00,
+      0x03,
+      0x00,
+      0x62,
+      0x29,
+      0x77,
       // The input NALU 3.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x01,                    // NAL unit types.
-      0xFD, 0x01, 0x02, 0x00, 0x00, 0x03, 0x01, 0x02, 0x03,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x01,  // NAL unit types.
+      0xFD,
+      0x01,
+      0x02,
+      0x00,
+      0x00,
+      0x03,
+      0x01,
+      0x02,
+      0x03,
   };
   EXPECT_EQ(std::vector<uint8_t>(std::begin(kExpectedOutput),
                                  std::end(kExpectedOutput)),
@@ -598,10 +1091,17 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedNaluEndingWithZero) {
   // Only the type of the NAL units are checked.
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSample[] = {
-      0x00, 0x00, 0x00, 0x06,  // Size 6 NALU.
-      0x01,                    // NALU unit types.
+      0x00,
+      0x00,
+      0x00,
+      0x06,  // Size 6 NALU.
+      0x01,  // NALU unit types.
       // Encrypted NALU with 0x0003 pattern in the end (need to escape).
-      0xFD, 0x00, 0x01, 0x02, 0x00,
+      0xFD,
+      0x00,
+      0x01,
+      0x02,
+      0x00,
   };
 
   std::vector<SubsampleEntry> subsamples{SubsampleEntry(7, 3)};
@@ -609,21 +1109,32 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedNaluEndingWithZero) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   ASSERT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       !kIsKeyFrame, kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // primary pic type is anything.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x01,                    // NALU unit types.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x01,  // NALU unit types.
       // Encrypted NALU with 0x0003 pattern in the end (need to escape).
-      0xFD, 0x00, 0x01, 0x02, 0x00, 0x03,
+      0xFD,
+      0x00,
+      0x01,
+      0x02,
+      0x00,
+      0x03,
   };
   EXPECT_EQ(std::vector<uint8_t>(std::begin(kExpectedOutput),
                                  std::end(kExpectedOutput)),
@@ -655,11 +1166,11 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedPps) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   // clang-format off
@@ -693,7 +1204,7 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedPps) {
       SubsampleEntry(72, 10), SubsampleEntry(5, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_THAT(kExpectedOutputSubsamples, subsamples);
 }
@@ -722,11 +1233,11 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsSame) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   // clang-format off
@@ -757,7 +1268,7 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsSame) {
       SubsampleEntry(73, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -785,11 +1296,11 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsDifferent) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   // clang-format off
@@ -823,7 +1334,7 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsDifferent) {
       SubsampleEntry(87, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -839,8 +1350,8 @@ TEST(NalUnitToByteStreamConverterTest,
   const uint8_t kUnitStreamLikeMediaSample[] = {
       0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
       0x06,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x08,                    // Size 8 NALU.
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11,
+      0x29, 0x77, 0x00, 0x00, 0x00, 0x08,        // Size 8 NALU.
       0x02,                                      // NAL unit type.
       0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,  // Slice data
   };
@@ -851,11 +1362,137 @@ TEST(NalUnitToByteStreamConverterTest,
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
+      kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
+
+  const uint8_t kExpectedOutput[] = {
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x09,  // AUD type.
+      0xF0,  // primary pic type is anything.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      // Some valid SPS data.
+      0x67,
+      0x64,
+      0x00,
+      0x1E,
+      0xAC,
+      0xD9,
+      0x40,
+      0xB4,
+      0x2F,
+      0xF9,
+      0x7F,
+      0xF0,
+      0x00,
+      0x80,
+      0x00,
+      0x91,
+      0x00,
+      0x00,
+      0x03,
+      0x03,
+      0xE9,
+      0x00,
+      0x00,
+      0xEA,
+      0x60,
+      0x0F,
+      0x16,
+      0x2D,
+      0x96,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      0x68,
+      0xFE,
+      0xFD,
+      0xFC,
+      0xFB,
+      0x11,
+      0x12,
+      0x13,
+      0x14,
+      0x15,  // PPS.
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      // The input NALU 1.
+      0x06,  // NALU type.
+      0xFD,
+      0x78,
+      0xA4,
+      0xC3,
+      0x82,
+      0x62,
+      0x11,
+      0x29,
+      0x77,
+      0x00,
+      0x00,
+      0x00,
+      0x01,  // Start code.
+      // The input NALU 2.
+      0x02,  // NALU type.
+      0xFD,
+      0x78,
+      0xA4,
+      0x82,
+      0x62,
+      0x29,
+      0x77,
+  };
+
+  const std::vector<SubsampleEntry> kExpectedOutputSubsamples{
+      SubsampleEntry(72, 7)};
+
+  EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
+                                 kExpectedOutput + std::size(kExpectedOutput)),
+            output);
+  EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
+}
+
+// One NAL unit has more than one subsamples. All subsamples have cipher
+// texts.
+TEST(NalUnitToByteStreamConverterTest,
+     MultipleSubsamplesInSingleNaluAllEncrypted) {
+  // Only the type of the NAL units are checked.
+  // This does not contain AUD, SPS, nor PPS.
+  const uint8_t kUnitStreamLikeMediaSample[] = {
+      0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
+      0x06,                    // NAL unit type.
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, 0x00, 0x00, 0x00,
+      0x10,  // Size 16 NALU.
+      0x02,  // NAL unit type.
+      // Slices data.
+      0xFD, 0x78, 0xA4, 0x82, 0x62,        // Encrypted.
+      0x29, 0x77, 0x27, 0xFD, 0x78, 0xA4,  // Clear.
+      0xC3, 0x82, 0x62, 0x11,              // Encrypted.
+  };
+
+  // The 2nd (partially) and 3rd subsamples belong to the 2nd input NALU.
+  std::vector<SubsampleEntry> subsamples{
+      SubsampleEntry(6, 0), SubsampleEntry(13, 5), SubsampleEntry(6, 4)};
+
+  NalUnitToByteStreamConverter converter;
+  EXPECT_TRUE(
+      converter.Initialize(kTestAVCDecoderConfigurationRecord,
+                           std::size(kTestAVCDecoderConfigurationRecord)));
+
+  std::vector<uint8_t> output;
+  EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -875,95 +1512,32 @@ TEST(NalUnitToByteStreamConverterTest,
       0x01,  // Start code.
       // The input NALU 2.
       0x02,  // NALU type.
-      0xFD, 0x78, 0xA4, 0x82, 0x62, 0x29, 0x77,
-  };
-
-  const std::vector<SubsampleEntry> kExpectedOutputSubsamples{
-      SubsampleEntry(72, 7)};
-
-  EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
-            output);
-  EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
-}
-
-// One NAL unit has more than one subsamples. All subsamples have cipher
-// texts.
-TEST(NalUnitToByteStreamConverterTest,
-     MultipleSubsamplesInSingleNaluAllEncrypted) {
-  // Only the type of the NAL units are checked.
-  // This does not contain AUD, SPS, nor PPS.
-  const uint8_t kUnitStreamLikeMediaSample[] = {
-      0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
-      0x06,                    // NAL unit type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x10,                          // Size 16 NALU.
-      0x02,                                            // NAL unit type.
       // Slices data.
-      0xFD, 0x78, 0xA4, 0x82, 0x62,  // Encrypted.
+      0xFD, 0x78, 0xA4, 0x82, 0x62,        // Encrypted.
       0x29, 0x77, 0x27, 0xFD, 0x78, 0xA4,  // Clear.
-      0xC3, 0x82, 0x62, 0x11,        // Encrypted.
-  };
-
-  // The 2nd (partially) and 3rd subsamples belong to the 2nd input NALU.
-  std::vector<SubsampleEntry> subsamples{ SubsampleEntry(6, 0),
-                                          SubsampleEntry(13, 5),
-                                          SubsampleEntry(6, 4)};
-
-  NalUnitToByteStreamConverter converter;
-  EXPECT_TRUE(
-      converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
-
-  std::vector<uint8_t> output;
-  EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
-      kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
-
-  const uint8_t kExpectedOutput[] = {
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x09,                    // AUD type.
-      0xF0,                    // primary pic type is anything.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      // Some valid SPS data.
-      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0,
-      0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
-      0x60, 0x0F, 0x16, 0x2D, 0x96, 0x00, 0x00, 0x00, 0x01,  // Start code.
-      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      // The input NALU 1.
-      0x06,  // NALU type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x01,  // Start code.
-      // The input NALU 2.
-      0x02,  // NALU type.
-      // Slices data.
-      0xFD, 0x78, 0xA4, 0x82, 0x62,  // Encrypted.
-      0x29, 0x77, 0x27, 0xFD, 0x78, 0xA4,  // Clear.
-      0xC3, 0x82, 0x62, 0x11, // Encrypted.
+      0xC3, 0x82, 0x62, 0x11,              // Encrypted.
   };
 
   const std::vector<SubsampleEntry> kExpectedOutputSubsamples{
       SubsampleEntry(72, 5), SubsampleEntry(6, 4)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
 
 // One NAL unit is larger than 2^16 bytes and the corresponding subsamples is
 // split into small subsamples. All subsamples have cipher texts.
-TEST(NalUnitToByteStreamConverterTest,
-     LargeNaluWithMultipleSubsamples) {
+TEST(NalUnitToByteStreamConverterTest, LargeNaluWithMultipleSubsamples) {
   // Only the type of the NAL units are checked.
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSamplePart1[] = {
-      0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
-      0x06,                    // NAL unit type.
+      0x00, 0x00, 0x00, 0x0A,                                // Size 10 NALU.
+      0x06,                                                  // NAL unit type.
       0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,  // Encrypted.
-      0x00, 0x01, 0x00, 0x0f,                          // Size 65551 NALU.
-      0x02,                                            // NAL unit type.
+      0x00, 0x01, 0x00, 0x0f,                                // Size 65551 NALU.
+      0x02,                                                  // NAL unit type.
   };
 
   const std::vector<uint8_t> kUnitStreamLikeMediaSamplePart2(65535, 0x01);
@@ -989,15 +1563,14 @@ TEST(NalUnitToByteStreamConverterTest,
       std::begin(kUnitStreamLikeMediaSamplePart3),
       std::end(kUnitStreamLikeMediaSamplePart3));
 
-  std::vector<SubsampleEntry> subsamples{ SubsampleEntry(5, 9),
-                                          SubsampleEntry(65535, 0),
-                                          SubsampleEntry(5, 5),
-                                          SubsampleEntry(6, 4)};
+  std::vector<SubsampleEntry> subsamples{
+      SubsampleEntry(5, 9), SubsampleEntry(65535, 0), SubsampleEntry(5, 5),
+      SubsampleEntry(6, 4)};
 
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
@@ -1018,8 +1591,8 @@ TEST(NalUnitToByteStreamConverterTest,
       0x00, 0x00, 0x00, 0x01,  // Start code.
       // The input NALU 1.
       0x06,  // NALU type.
-      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
-      0x00, 0x00, 0x00, 0x01,  // Start code.
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, 0x00, 0x00, 0x00,
+      0x01,  // Start code.
       // The input NALU 2.
       0x02,  // NALU type.
   };
@@ -1029,9 +1602,9 @@ TEST(NalUnitToByteStreamConverterTest,
 
   const uint8_t kExpectedOutputPart3[] = {
       // Slices data.
-      0xFD, 0x78, 0xA4, 0x82, 0x62,  // Encrypted.
+      0xFD, 0x78, 0xA4, 0x82, 0x62,        // Encrypted.
       0x29, 0x77, 0x27, 0xFD, 0x78, 0xA4,  // Clear.
-      0xC3, 0x82, 0x62, 0x11, // Encrypted.
+      0xC3, 0x82, 0x62, 0x11,              // Encrypted.
   };
 
   std::vector<uint8_t> expected_output(std::begin(kExpectedOutputPart1),

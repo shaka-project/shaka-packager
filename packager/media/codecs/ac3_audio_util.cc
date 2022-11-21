@@ -6,7 +6,7 @@
 
 #include "packager/media/codecs/ac3_audio_util.h"
 
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/escaping.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -42,7 +42,8 @@ size_t GetAc3NumChannels(const std::vector<uint8_t>& ac3_data) {
   bool lfe_channel_on;
   if (!ExtractAc3Data(ac3_data, &audio_coding_mode, &lfe_channel_on)) {
     LOG(WARNING) << "Seeing invalid AC3 data: "
-                 << base::HexEncode(ac3_data.data(), ac3_data.size());
+                 << absl::BytesToHexString(
+                        BYTE_CONTAINER_TO_STRING_VIEW(ac3_data));
     return 0;
   }
   return kAc3NumChannelsTable[audio_coding_mode] + (lfe_channel_on ? 1 : 0);

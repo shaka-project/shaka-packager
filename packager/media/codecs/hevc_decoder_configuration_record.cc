@@ -6,8 +6,9 @@
 
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include "absl/strings/escaping.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/str_join.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/codecs/h265_parser.h"
@@ -38,7 +39,8 @@ std::string GeneralProfileSpaceAsString(uint8_t general_profile_space) {
 std::string TrimLeadingZeros(const std::string& str) {
   DCHECK_GT(str.size(), 0u);
   for (size_t i = 0; i < str.size(); ++i) {
-    if (str[i] == '0') continue;
+    if (str[i] == '0')
+      continue;
     return str.substr(i);
   }
   return "0";
@@ -57,7 +59,8 @@ std::string ReverseBitsAndHexEncode(uint32_t x) {
                            static_cast<uint8_t>((x >> 8) & 0xFF),
                            static_cast<uint8_t>((x >> 16) & 0xFF),
                            static_cast<uint8_t>((x >> 24) & 0xFF)};
-  return TrimLeadingZeros(base::HexEncode(bytes, arraysize(bytes)));
+  return TrimLeadingZeros(absl::BytesToHexString(
+      BYTE_ARRAY_TO_STRING_VIEW(bytes, std::size(bytes))));
 }
 
 }  // namespace
@@ -78,8 +81,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
          reader.ReadToVector(&general_constraint_indicator_flags_, 6) &&
          reader.Read1(&general_level_idc_) &&
          reader.SkipBytes(8) &&  // Skip uninterested fields.
-         reader.Read1(&length_size_minus_one) &&
-         reader.Read1(&num_of_arrays));
+         reader.Read1(&length_size_minus_one) && reader.Read1(&num_of_arrays));
 
   general_profile_space_ = profile_indication >> 6;
   RCHECK(general_profile_space_ <= 3u);
@@ -129,23 +131,25 @@ std::string HEVCDecoderConfigurationRecord::GetCodecString(
   std::vector<std::string> fields;
   fields.push_back(FourCCToString(codec_fourcc));
   fields.push_back(GeneralProfileSpaceAsString(general_profile_space_) +
-                   base::IntToString(general_profile_idc_));
+                   absl::StrFormat("%d", general_profile_idc_));
   fields.push_back(
       ReverseBitsAndHexEncode(general_profile_compatibility_flags_));
   fields.push_back((general_tier_flag_ ? "H" : "L") +
-                   base::IntToString(general_level_idc_));
+                   absl::StrFormat("%d", general_level_idc_));
 
   // Remove trailing bytes that are zero.
   std::vector<uint8_t> constraints = general_constraint_indicator_flags_;
   size_t size = constraints.size();
   for (; size > 0; --size) {
-    if (constraints[size - 1] != 0) break;
+    if (constraints[size - 1] != 0)
+      break;
   }
   constraints.resize(size);
   for (uint8_t constraint : constraints)
-    fields.push_back(TrimLeadingZeros(base::HexEncode(&constraint, 1)));
+    fields.push_back(TrimLeadingZeros(
+        absl::BytesToHexString(BYTE_ARRAY_TO_STRING_VIEW(&constraint, 1))));
 
-  return base::JoinString(fields, ".");
+  return absl::StrJoin(fields, ".");
 }
 
 }  // namespace media

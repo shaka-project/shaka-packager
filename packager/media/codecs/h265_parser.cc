@@ -7,9 +7,10 @@
 #include "packager/media/codecs/h265_parser.h"
 
 #include <math.h>
+
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 
@@ -77,22 +78,70 @@ void GetAspectRatioInfo(const H265Sps& sps,
 
   // Table E.1
   switch (aspect_ratio_idc) {
-    case 1:  *pixel_width = 1;   *pixel_height = 1;  break;
-    case 2:  *pixel_width = 12;  *pixel_height = 11; break;
-    case 3:  *pixel_width = 10;  *pixel_height = 11; break;
-    case 4:  *pixel_width = 16;  *pixel_height = 11; break;
-    case 5:  *pixel_width = 40;  *pixel_height = 33; break;
-    case 6:  *pixel_width = 24;  *pixel_height = 11; break;
-    case 7:  *pixel_width = 20;  *pixel_height = 11; break;
-    case 8:  *pixel_width = 32;  *pixel_height = 11; break;
-    case 9:  *pixel_width = 80;  *pixel_height = 33; break;
-    case 10: *pixel_width = 18;  *pixel_height = 11; break;
-    case 11: *pixel_width = 15;  *pixel_height = 11; break;
-    case 12: *pixel_width = 64;  *pixel_height = 33; break;
-    case 13: *pixel_width = 160; *pixel_height = 99; break;
-    case 14: *pixel_width = 4;   *pixel_height = 3;  break;
-    case 15: *pixel_width = 3;   *pixel_height = 2;  break;
-    case 16: *pixel_width = 2;   *pixel_height = 1;  break;
+    case 1:
+      *pixel_width = 1;
+      *pixel_height = 1;
+      break;
+    case 2:
+      *pixel_width = 12;
+      *pixel_height = 11;
+      break;
+    case 3:
+      *pixel_width = 10;
+      *pixel_height = 11;
+      break;
+    case 4:
+      *pixel_width = 16;
+      *pixel_height = 11;
+      break;
+    case 5:
+      *pixel_width = 40;
+      *pixel_height = 33;
+      break;
+    case 6:
+      *pixel_width = 24;
+      *pixel_height = 11;
+      break;
+    case 7:
+      *pixel_width = 20;
+      *pixel_height = 11;
+      break;
+    case 8:
+      *pixel_width = 32;
+      *pixel_height = 11;
+      break;
+    case 9:
+      *pixel_width = 80;
+      *pixel_height = 33;
+      break;
+    case 10:
+      *pixel_width = 18;
+      *pixel_height = 11;
+      break;
+    case 11:
+      *pixel_width = 15;
+      *pixel_height = 11;
+      break;
+    case 12:
+      *pixel_width = 64;
+      *pixel_height = 33;
+      break;
+    case 13:
+      *pixel_width = 160;
+      *pixel_height = 99;
+      break;
+    case 14:
+      *pixel_width = 4;
+      *pixel_height = 3;
+      break;
+    case 15:
+      *pixel_width = 3;
+      *pixel_height = 2;
+      break;
+    case 16:
+      *pixel_width = 2;
+      *pixel_height = 1;
+      break;
 
     case 255:
       *pixel_width = sps.vui_parameters.sar_width;
