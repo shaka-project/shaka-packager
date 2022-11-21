@@ -7,9 +7,10 @@
 #include "packager/media/codecs/h265_parser.h"
 
 #include <math.h>
+
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 
@@ -884,7 +885,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
 
 H265Parser::Result H265Parser::SkipReferencePictureListModification(
     const H265SliceHeader& slice_header,
-    const H265Pps& pps,
+    const H265Pps&,
     int num_pic_total_curr,
     H26xBitReader* br) {
   // Reads whole element but ignores it all.

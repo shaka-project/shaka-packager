@@ -12,6 +12,7 @@
 #include "glog/logging.h"
 #include "packager/media/base/key_source.h"
 #include "packager/status/status_macros.h"
+#include "packager/utils/bytes_to_string_view.h"
 
 namespace {
 const char kEmptyDrmLabel[] = "";
@@ -56,9 +57,9 @@ Status RawKeySource::GetKey(const std::vector<uint8_t>& key_id,
       return Status::OK;
     }
   }
-  std::string key_id_str(key_id.begin(), key_id.end());
   return Status(error::INTERNAL_ERROR,
-                "Key for key_id=" + absl::BytesToHexString(key_id_str) +
+                "Key for key_id=" +
+                    absl::BytesToHexString(byte_vector_to_string_view(key_id)) +
                     " was not found.");
 }
 
