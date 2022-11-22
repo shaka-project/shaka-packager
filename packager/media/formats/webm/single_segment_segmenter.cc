@@ -6,9 +6,9 @@
 
 #include "packager/media/formats/webm/single_segment_segmenter.h"
 
+#include "mkvmuxer/mkvmuxer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
 namespace shaka {
 namespace media {

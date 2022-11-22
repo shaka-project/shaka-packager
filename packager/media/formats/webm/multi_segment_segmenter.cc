@@ -6,12 +6,12 @@
 
 #include "packager/media/formats/webm/multi_segment_segmenter.h"
 
+#include "mkvmuxer/mkvmuxer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/event/muxer_listener.h"
-#include "packager/status_macros.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -58,13 +58,13 @@ Status MultiSegmentSegmenter::FinalizeSegment(int64_t start_timestamp,
   return Status::OK;
 }
 
-bool MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
-                                                    uint64_t* end) {
+bool MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* /*start*/,
+                                                    uint64_t* /*end*/) {
   return false;
 }
 
-bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
-                                                     uint64_t* end) {
+bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* /*start*/,
+                                                     uint64_t* /*end*/) {
   return false;
 }
 

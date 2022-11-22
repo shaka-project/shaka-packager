@@ -90,8 +90,8 @@ bool MkvWriter::Seekable() const {
   return seekable_;
 }
 
-void MkvWriter::ElementStartNotify(mkvmuxer::uint64 element_id,
-                                   mkvmuxer::int64 position) {}
+void MkvWriter::ElementStartNotify(mkvmuxer::uint64 /*element_id*/,
+                                   mkvmuxer::int64 /*position*/) {}
 
 }  // namespace media
 }  // namespace shaka
