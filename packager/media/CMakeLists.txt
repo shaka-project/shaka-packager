@@ -8,6 +8,7 @@
 add_subdirectory(base)
 add_subdirectory(codecs)
 add_subdirectory(chunking)
+add_subdirectory(crypto)
 add_subdirectory(formats)
 add_subdirectory(origin)
 add_subdirectory(replicator)
