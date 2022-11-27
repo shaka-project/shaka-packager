@@ -23,7 +23,7 @@
 #include "packager/media/base/widevine_pssh_generator.h"
 #include "packager/media/crypto/aes_encryptor_factory.h"
 #include "packager/media/crypto/subsample_generator.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -390,7 +390,8 @@ void EncryptionHandler::EncryptBytes(const uint8_t* source,
   DCHECK(source);
   DCHECK(dest);
   DCHECK(encryptor_);
-  CHECK(encryptor_->Crypt(source, source_size, dest));
+  CHECK(encryptor_->Crypt(source, source_size, dest, &source_size));
+//bzd  CHECK(encryptor_->Crypt(source, dest));
 }
 
 void EncryptionHandler::InjectSubsampleGeneratorForTesting(

@@ -9,6 +9,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "glog/logging.h"
 #include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/base/mock_aes_cryptor.h"
@@ -16,7 +17,7 @@
 #include "packager/media/base/raw_key_source.h"
 #include "packager/media/crypto/aes_encryptor_factory.h"
 #include "packager/media/crypto/subsample_generator.h"
-#include "packager/status_test_util.h"
+#include "packager/status/status_test_util.h"
 
 namespace shaka {
 namespace media {
@@ -217,11 +218,11 @@ const size_t kDataSize = sizeof(kData);
 
 class EncryptionHandlerEncryptionTest
     : public EncryptionHandlerTest,
-      public WithParamInterface<std::tr1::tuple<FourCC, Codec>> {
+      public WithParamInterface<std::tuple<FourCC, Codec>> {
  public:
   void SetUp() override {
-    protection_scheme_ = std::tr1::get<0>(GetParam());
-    codec_ = std::tr1::get<1>(GetParam());
+    protection_scheme_ = std::get<0>(GetParam());
+    codec_ = std::get<1>(GetParam());
   }
 
   uint8_t GetExpectedCryptByteBlock() {
@@ -628,9 +629,9 @@ TEST_F(EncryptionHandlerPsshTest, GeneratesPssh) {
       GetOutputStreamDataVector().back()->stream_info.get();
 
   std::vector<uint8_t> widevine_system_id(
-      kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+      kWidevineSystemId, kWidevineSystemId + std::size(kWidevineSystemId));
   std::vector<uint8_t> playready_system_id(
-      kPlayReadySystemId, kPlayReadySystemId + arraysize(kPlayReadySystemId));
+      kPlayReadySystemId, kPlayReadySystemId + std::size(kPlayReadySystemId));
   ASSERT_THAT(
       stream_info->encryption_config().key_system_info,
       UnorderedElementsAre(IsPsshInfoWithSystemId(widevine_system_id),
@@ -644,7 +645,7 @@ TEST_F(EncryptionHandlerPsshTest, UsesKeyInfoFirst) {
   SetUpEncryptionHandler(encryption_params);
 
   std::vector<uint8_t> widevine_system_id(
-      kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+      kWidevineSystemId, kWidevineSystemId + std::size(kWidevineSystemId));
   EncryptionKey mock_encryption_key = GetMockEncryptionKey();
   ProtectionSystemSpecificInfo protection_info;
   protection_info.system_id = widevine_system_id;

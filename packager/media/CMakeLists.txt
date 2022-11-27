@@ -6,5 +6,6 @@
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(base)
+add_subdirectory(crypto)
 add_subdirectory(test)
 add_subdirectory(codecs)
