@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/file/file.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/protection_system_specific_info.h"

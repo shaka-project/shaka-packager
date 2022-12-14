@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/video_stream_info.h"

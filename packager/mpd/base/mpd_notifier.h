@@ -11,10 +11,11 @@
 #define MPD_BASE_MPD_NOTIFIER_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/mpd/base/mpd_options.h"
 
 namespace shaka {
