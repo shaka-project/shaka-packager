@@ -8,10 +8,10 @@
 #define PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/base/optional.h"
 #include "packager/media/event/event_info.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -84,7 +84,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_group_id_;
   const std::vector<std::string> characteristics_;
   hls::HlsNotifier* const hls_notifier_;
-  base::Optional<uint32_t> stream_id_;
+  std::optional<uint32_t> stream_id_;
 
   bool must_notify_encryption_start_ = false;
   // Cached encryption info before OnMediaStart() is called.

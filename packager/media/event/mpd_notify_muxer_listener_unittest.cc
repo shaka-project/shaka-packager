@@ -13,7 +13,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "packager/base/stl_util.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener_test_helper.h"
 #include "packager/mpd/base/content_protection_element.h"
@@ -204,7 +203,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       CreateVideoStreamInfo(video_params);
 
   const std::vector<uint8_t> default_key_id(
-      kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
+      kDefaultKeyId, kDefaultKeyId + std::size(kDefaultKeyId) - 1);
 
   const std::string kExpectedMediaInfo =
       std::string(kExpectedDefaultMediaInfo) +
@@ -220,7 +219,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
 
-  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + std::size(kBogusIv));
   listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc,
                                    default_key_id, iv,
                                    GetDefaultKeySystemInfo());
@@ -247,7 +246,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContentSegmentList) {
       CreateVideoStreamInfo(video_params);
 
   const std::vector<uint8_t> default_key_id(
-      kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
+      kDefaultKeyId, kDefaultKeyId + std::size(kDefaultKeyId) - 1);
 
   const std::string kExpectedMediaInfo =
       std::string(kExpectedDefaultMediaInfoSubsegmentRange) +
@@ -263,7 +262,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContentSegmentList) {
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
 
-  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + std::size(kBogusIv));
   listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc,
                                    default_key_id, iv,
                                    GetDefaultKeySystemInfo());
@@ -681,7 +680,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
   const std::vector<uint8_t> default_key_id(
-      kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
+      kDefaultKeyId, kDefaultKeyId + std::size(kDefaultKeyId) - 1);
 
   InSequence s;
   EXPECT_CALL(*notifier_, NotifyEncryptionUpdate(_, _, _, _)).Times(0);
@@ -699,7 +698,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   if (GetParam() == MpdType::kDynamic)
     EXPECT_CALL(*notifier_, Flush());
 
-  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + std::size(kBogusIv));
   listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs,
                                    default_key_id, iv,
                                    GetDefaultKeySystemInfo());
@@ -754,7 +753,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   const int64_t kDuration2 = 3787;
   const uint64_t kSegmentFileSize2 = 83743u;
   const std::vector<uint8_t> default_key_id(
-      kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
+      kDefaultKeyId, kDefaultKeyId + std::size(kDefaultKeyId) - 1);
 
   InSequence s;
   EXPECT_CALL(*notifier_,
@@ -771,7 +770,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   if (GetParam() == MpdType::kDynamic)
     EXPECT_CALL(*notifier_, Flush());
 
-  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + std::size(kBogusIv));
   listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbc1,
                                    default_key_id, iv,
                                    std::vector<ProtectionSystemSpecificInfo>());

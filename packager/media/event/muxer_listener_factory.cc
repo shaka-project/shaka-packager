@@ -8,8 +8,8 @@
 
 #include <list>
 
-#include "packager/base/memory/ptr_util.h"
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/hls_notify_muxer_listener.h"
@@ -39,7 +39,7 @@ std::unique_ptr<MuxerListener> CreateMpdListenerInternal(
     MpdNotifier* notifier) {
   DCHECK(notifier);
 
-  auto listener = base::MakeUnique<MpdNotifyMuxerListener>(notifier);
+  auto listener = std::make_unique<MpdNotifyMuxerListener>(notifier);
   listener->set_accessibilities(stream.dash_accessiblities);
   listener->set_roles(stream.dash_roles);
   return listener;
@@ -60,11 +60,11 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
   const std::vector<std::string>& characteristics = stream.hls_characteristics;
 
   if (name.empty()) {
-    name = base::StringPrintf("stream_%d", stream_index);
+    name = absl::StrFormat("stream_%d", stream_index);
   }
 
   if (playlist_name.empty()) {
-    playlist_name = base::StringPrintf("stream_%d.m3u8", stream_index);
+    playlist_name = absl::StrFormat("stream_%d.m3u8", stream_index);
   }
 
   const bool kIFramesOnly = true;
@@ -125,7 +125,7 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
     multi_codec_listener->AddListener(std::move(combined_listener));
   }
 
-  return std::move(multi_codec_listener);
+  return multi_codec_listener;
 }
 
 std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateHlsListener(

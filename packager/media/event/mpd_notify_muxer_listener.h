@@ -10,9 +10,9 @@
 #define PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "packager/base/optional.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/event_info.h"
 #include "packager/media/event/muxer_listener.h"
@@ -72,7 +72,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
   bool NotifyNewContainer();
 
   MpdNotifier* const mpd_notifier_ = nullptr;
-  base::Optional<uint32_t> notification_id_;
+  std::optional<uint32_t> notification_id_;
   std::unique_ptr<MediaInfo> media_info_;
 
   std::vector<std::string> accessibilities_;
