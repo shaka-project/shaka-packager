@@ -233,6 +233,29 @@ TEST_F(LocalFileTest, IsLocalRegular) {
   ASSERT_TRUE(File::IsLocalRegularFile(local_file_name_.c_str()));
 }
 
+TEST_F(LocalFileTest, UnicodePath) {
+  // Modify the local file name for this test to include non-ASCII characters.
+  // This is used in TearDown() to clean up the file we create in the test.
+  const std::string unicode_suffix = "από.txt";
+  local_file_name_ += unicode_suffix;
+  local_file_name_no_prefix_ += unicode_suffix;
+
+  // Write file using File API.
+  File* file = File::Open(local_file_name_.c_str(), "w");
+  ASSERT_TRUE(file != NULL);
+  EXPECT_EQ(kDataSize, file->Write(&data_[0], kDataSize));
+  EXPECT_EQ(kDataSize, file->Size());
+  EXPECT_TRUE(file->Close());
+
+  std::string read_data;
+  ASSERT_EQ(kDataSize, FileSize(local_file_name_no_prefix_));
+  ASSERT_EQ(kDataSize,
+            ReadFile(local_file_name_no_prefix_, &read_data, kDataSize));
+
+  // Compare data written and read.
+  EXPECT_EQ(data_, read_data);
+}
+
 class ParamLocalFileTest : public LocalFileTest,
                            public ::testing::WithParamInterface<uint8_t> {};
 
