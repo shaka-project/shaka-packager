@@ -247,10 +247,18 @@ TEST_F(LocalFileTest, UnicodePath) {
   EXPECT_EQ(kDataSize, file->Size());
   EXPECT_TRUE(file->Close());
 
-  std::string read_data;
-  ASSERT_EQ(kDataSize, FileSize(local_file_name_no_prefix_));
-  ASSERT_EQ(kDataSize,
-            ReadFile(local_file_name_no_prefix_, &read_data, kDataSize));
+  // Read file using File API.
+  file = File::Open(local_file_name_.c_str(), "r");
+  ASSERT_TRUE(file != NULL);
+
+  // Read the entire file.
+  std::string read_data(kDataSize, 0);
+  EXPECT_EQ(kDataSize, file->Read(&read_data[0], kDataSize));
+
+  // Verify EOF.
+  uint8_t single_byte;
+  EXPECT_EQ(0, file->Read(&single_byte, sizeof(single_byte)));
+  EXPECT_TRUE(file->Close());
 
   // Compare data written and read.
   EXPECT_EQ(data_, read_data);
