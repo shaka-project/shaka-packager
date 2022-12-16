@@ -15,7 +15,7 @@ set(ENABLE_WEBMINFO OFF)
 set(ENABLE_TESTS OFF)
 set(ENABLE_IWYU OFF)
 set(ENABLE_WEBM_PARSER OFF)
-set(BUILD_SHARED_LIBS OFF)
+set(MSVC_RUNTIME "dll")
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
