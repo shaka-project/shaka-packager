@@ -355,17 +355,17 @@ bool File::Copy(const char* from_file_name, const char* to_file_name) {
   return true;
 }
 
-int64_t File::CopyFile(File* source, File* destination) {
-  return CopyFile(source, destination, kWholeFile);
+int64_t File::Copy(File* source, File* destination) {
+  return Copy(source, destination, kWholeFile);
 }
 
-int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
+int64_t File::Copy(File* source, File* destination, int64_t max_copy) {
   DCHECK(source);
   DCHECK(destination);
   if (max_copy < 0)
     max_copy = std::numeric_limits<int64_t>::max();
 
-  VLOG(2) << "File::CopyFile from " << source->file_name() << " to "
+  VLOG(2) << "File::Copy from " << source->file_name() << " to "
           << destination->file_name();
 
   const int64_t kBufferSize = 0x40000;  // 256KB.

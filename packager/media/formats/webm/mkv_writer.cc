@@ -63,7 +63,7 @@ int64_t MkvWriter::WriteFromFile(File* source) {
 int64_t MkvWriter::WriteFromFile(File* source, int64_t max_copy) {
   DCHECK(file_);
 
-  const int64_t size = File::CopyFile(source, file_.get(), max_copy);
+  const int64_t size = File::Copy(source, file_.get(), max_copy);
   if (size < 0)
     return size;
 
