@@ -8,9 +8,9 @@
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -59,7 +59,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
   }
 }
 
-Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
+Status ChunkingHandler::OnFlushRequest(size_t /*input_stream_index*/) {
   RETURN_IF_ERROR(EndSegmentIfStarted());
   return FlushDownstream(kStreamIndex);
 }
@@ -79,7 +79,7 @@ Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
   RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
 
   // Force start new segment after cue event.
-  segment_start_time_ = base::nullopt;
+  segment_start_time_ = std::nullopt;
   // |cue_offset_| will be applied to sample timestamp so the segment after cue
   // point have duration ~= |segment_duration_|.
   cue_offset_ = event_time_in_seconds * time_scale_;

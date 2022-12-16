@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/media/base/media_handler_test_base.h"
-#include "packager/status_test_util.h"
+#include "packager/status/status_test_util.h"
 
 using ::testing::_;
 using ::testing::ElementsAre;
