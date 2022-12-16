@@ -29,6 +29,7 @@ add_library(formats_webm STATIC
 
 target_link_libraries(formats_webm
     webm
+    file
     media_base
     codecs
 )
