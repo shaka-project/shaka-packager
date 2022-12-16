@@ -15,6 +15,11 @@
 #include "packager/macros.h"
 #include "packager/status/status.h"
 
+// Needed for Windows weirdness which somewhere defines CopyFile as CopyFileW.
+#ifdef CopyFile
+#undef CopyFile
+#endif  // CopyFile
+
 namespace shaka {
 
 extern const char* kCallbackFilePrefix;

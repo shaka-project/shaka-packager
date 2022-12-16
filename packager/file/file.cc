@@ -35,11 +35,6 @@ ABSL_FLAG(uint64_t,
           1ULL << 16,
           "Size of the block size used for threaded I/O, in bytes.");
 
-// Needed for Windows weirdness which somewhere defines CopyFile as CopyFileW.
-#ifdef CopyFile
-#undef CopyFile
-#endif  // CopyFile
-
 namespace shaka {
 
 const char* kCallbackFilePrefix = "callback://";
