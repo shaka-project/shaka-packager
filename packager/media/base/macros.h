@@ -46,7 +46,7 @@
 #endif
 
 #ifndef FALLTHROUGH_INTENDED
-#define FALLTHROUGH_INTENDED
+#define FALLTHROUGH_INTENDED [[fallthrough]]
 #endif
 
 #endif  // PACKAGER_MEDIA_BASE_MACROS_H_

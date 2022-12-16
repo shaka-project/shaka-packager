@@ -6,7 +6,7 @@
 
 #include "packager/media/codecs/vp9_parser.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -122,7 +122,7 @@ bool ParseIfSuperframeIndex(const uint8_t* data,
 
   data += data_size - index_size + 1;
   size_t total_frame_sizes = 0;
-  for (size_t i = 0; i < num_frames; ++i) {
+  for (size_t frame = 0; frame < num_frames; ++frame) {
     vpx_frame.frame_size = 0;
     for (size_t i = 0; i < frame_size_length; ++i) {
       vpx_frame.frame_size |= *data << (i * 8);

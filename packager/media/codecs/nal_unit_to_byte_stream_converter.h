@@ -8,9 +8,10 @@
 #define PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_
 
 #include <stdint.h>
+
 #include <vector>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 

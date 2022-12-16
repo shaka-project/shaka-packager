@@ -13,6 +13,7 @@
 #include "glog/logging.h"
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_encryptor.h"
+#include "packager/utils/bytes_to_string_view.h"
 
 namespace {
 
@@ -203,7 +204,7 @@ TEST_F(AesCtrEncryptorTest, GenerateRandomIv) {
   ASSERT_TRUE(AesCryptor::GenerateRandomIv(FOURCC_cenc, &iv));
   ASSERT_EQ(kCencIvSize, iv.size());
   LOG(INFO) << "Random IV: "
-            << absl::BytesToHexString(std::string(iv.begin(), iv.end()));
+            << absl::BytesToHexString(byte_vector_to_string_view(iv));
 }
 
 TEST_F(AesCtrEncryptorTest, UnsupportedKeySize) {

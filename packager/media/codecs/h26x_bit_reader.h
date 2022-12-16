@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {

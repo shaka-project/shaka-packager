@@ -182,7 +182,7 @@ size_t DecoderConfigDescriptor::ComputeDataSize() {
          decoder_specific_info_descriptor_.ComputeSize();
 }
 
-bool SLConfigDescriptor::ReadData(BitReader* reader) {
+bool SLConfigDescriptor::ReadData(BitReader*) {
   return true;
 }
 
