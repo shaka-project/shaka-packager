@@ -6,7 +6,7 @@
 
 #include "packager/media/chunking/text_chunker.h"
 
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -31,7 +31,7 @@ Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   }
 }
 
-Status TextChunker::OnFlushRequest(size_t input_stream_index) {
+Status TextChunker::OnFlushRequest(size_t /*input_stream_index*/) {
   // Keep outputting segments until all the samples leave the system. Calling
   // |DispatchSegment| will remove samples over time.
   while (samples_in_current_segment_.size()) {

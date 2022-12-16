@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -29,7 +29,7 @@ int64_t GetScaledTime(const StreamInfo& info, const StreamData& data) {
     // This class does not support splitting MediaSample at cue points, which is
     // required for text stream. This class expects MediaSample to be converted
     // to TextSample before passing to this class.
-    NOTREACHED()
+    NOTIMPLEMENTED()
         << "A text streams should use text samples, not media samples.";
   }
 

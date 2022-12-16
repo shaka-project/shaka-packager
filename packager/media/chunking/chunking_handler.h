@@ -8,10 +8,10 @@
 #define PACKAGER_MEDIA_CHUNKING_CHUNKING_HANDLER_
 
 #include <atomic>
+#include <optional>
 #include <queue>
 
-#include "packager/base/logging.h"
-#include "packager/base/optional.h"
+#include "glog/logging.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/public/chunking_params.h"
 
@@ -78,8 +78,8 @@ class ChunkingHandler : public MediaHandler {
   // Current subsegment index, useful to determine where to do chunking.
   int64_t current_subsegment_index_ = -1;
 
-  base::Optional<int64_t> segment_start_time_;
-  base::Optional<int64_t> subsegment_start_time_;
+  std::optional<int64_t> segment_start_time_;
+  std::optional<int64_t> subsegment_start_time_;
   int64_t max_segment_time_ = 0;
   int32_t time_scale_ = 0;
 
