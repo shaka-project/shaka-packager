@@ -4,9 +4,8 @@
 
 #include "packager/media/formats/webm/webm_tracks_parser.h"
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include "absl/strings/str_format.h"
+#include "glog/logging.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
@@ -251,7 +250,7 @@ bool WebMTracksParser::OnListEnd(int id) {
         DLOG(INFO) << "Ignoring text track " << track_num_;
         ignored_tracks_.insert(track_num_);
       } else {
-        std::string track_num = base::Int64ToString(track_num_);
+        std::string track_num = absl::StrFormat("%d", track_num_);
         text_tracks_[track_num_] = TextTrackConfig(
             text_track_kind, track_name_, track_language_, track_num);
       }
@@ -309,7 +308,7 @@ bool WebMTracksParser::OnUInt(int id, int64_t val) {
   return true;
 }
 
-bool WebMTracksParser::OnFloat(int id, double val) {
+bool WebMTracksParser::OnFloat(int /*id*/, double /*val*/) {
   return true;
 }
 

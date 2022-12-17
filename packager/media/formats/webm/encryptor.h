@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "packager/status.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include "mkvmuxer/mkvmuxer.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

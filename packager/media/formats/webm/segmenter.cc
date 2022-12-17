@@ -6,7 +6,8 @@
 
 #include "packager/media/formats/webm/segmenter.h"
 
-#include "packager/base/time/time.h"
+#include "common/webmids.h"
+#include "mkvmuxer/mkvmuxerutil.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/media_sample.h"
@@ -19,8 +20,6 @@
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/formats/webm/encryptor.h"
 #include "packager/media/formats/webm/webm_constants.h"
-#include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
-#include "packager/third_party/libwebm/src/webmids.hpp"
 #include "packager/version/version.h"
 
 using mkvmuxer::AudioTrack;
@@ -194,8 +193,8 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
   return Status::OK;
 }
 
-Status Segmenter::FinalizeSegment(int64_t start_timestamp,
-                                  int64_t duration_timestamp,
+Status Segmenter::FinalizeSegment(int64_t /*start_timestamp*/,
+                                  int64_t /*duration_timestamp*/,
                                   bool is_subsegment) {
   if (is_subsegment)
     new_subsegment_ = true;
@@ -228,7 +227,7 @@ Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {
   if (!WriteEbmlHeader(writer))
     return error_status;
 
-  if (WriteID(writer, mkvmuxer::kMkvSegment) != 0)
+  if (WriteID(writer, libwebm::kMkvSegment) != 0)
     return error_status;
 
   const uint64_t segment_size_size = 8;

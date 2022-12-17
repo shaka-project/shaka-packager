@@ -6,9 +6,10 @@
 #define PACKAGER_MEDIA_FORMATS_WEBM_CLUSTER_BUILDER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {

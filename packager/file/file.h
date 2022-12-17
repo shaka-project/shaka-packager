@@ -135,14 +135,14 @@ class SHAKA_EXPORT File {
   /// @param source The file to copy from.
   /// @param destination The file to copy to.
   /// @return Number of bytes written, or a value < 0 on error.
-  static int64_t CopyFile(File* source, File* destination);
+  static int64_t Copy(File* source, File* destination);
 
   /// Copies the contents from source to destination.
   /// @param source The file to copy from.
   /// @param destination The file to copy to.
   /// @param max_copy The maximum number of bytes to copy; < 0 to copy to EOF.
   /// @return Number of bytes written, or a value < 0 on error.
-  static int64_t CopyFile(File* source, File* destination, int64_t max_copy);
+  static int64_t Copy(File* source, File* destination, int64_t max_copy);
 
   /// @param file_name is the name of the file to be checked.
   /// @return true if `file_name` is a local and regular file.
