@@ -259,7 +259,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data, int size) {
       return true;
 
     case kWebMIdBlockAdditional: {
-      uint64_t block_add_id = absl::big_endian::FromHost16(block_add_id_);
+      uint64_t block_add_id = absl::big_endian::FromHost64(block_add_id_);
       if (block_additional_data_) {
         // TODO: Technically, more than 1 BlockAdditional is allowed as per
         // matroska spec. But for now we don't have a use case to support
