@@ -133,7 +133,7 @@ std::string LanguageToISO_639_2(const std::string& language) {
   LOG(WARNING) << "No equivalent 3-letter language code for " << main_language;
   // This is probably a mistake on the part of the user and should be treated
   // as invalid input.
-  return "und";
+  return "qaa"; // Use a locally scoped ISO-639-2 code to denote invalid input.
 }
 
 }  // namespace shaka

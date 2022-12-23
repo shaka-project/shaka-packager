@@ -943,7 +943,7 @@ Status Packager::Initialize(
     // Update language to ISO_639_2 code if set.
     if (!copy.language.empty()) {
       copy.language = LanguageToISO_639_2(descriptor.language);
-      if (copy.language == "und") {
+      if (copy.language == "qaa") {
         return Status(
             error::INVALID_ARGUMENT,
             "Unknown/invalid language specified: " + descriptor.language);
