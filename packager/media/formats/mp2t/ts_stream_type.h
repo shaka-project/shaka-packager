@@ -45,6 +45,7 @@ enum class TsStreamType {
   // Below are internal values used to select other stream types based on other
   // info in headers.
   kDvbSubtitles = 0x100,
+  kTeletextSubtitles = 0x101,
 };
 
 }  // namespace mp2t

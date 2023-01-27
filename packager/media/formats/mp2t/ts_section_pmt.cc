@@ -108,9 +108,17 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
       es_info_length--;
 
       // See ETSI EN 300 468 Section 6.1
-      if (stream_type == TsStreamType::kPesPrivateData &&
-          descriptor_tag == 0x59) {  // subtitling_descriptor
-        pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+      if (stream_type == TsStreamType::kPesPrivateData) {
+        switch (descriptor_tag) {
+          case 0x56: // teletext_descriptor
+            pid_info.back().stream_type = TsStreamType::kTeletextSubtitles;
+            break;
+          case 0x59: // subtitling_descriptor
+            pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+            break;
+          default:
+            break;
+        }
       }
     }
     RCHECK(bit_reader->SkipBits(8 * es_info_length));
