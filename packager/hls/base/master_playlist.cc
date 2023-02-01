@@ -312,6 +312,8 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 
   if (is_default) {
     tag.AddString("DEFAULT", "YES");
+  } else {
+     tag.AddString("DEFAULT", "NO");
   }
 
   if (is_autoselect) {
