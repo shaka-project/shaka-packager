@@ -129,7 +129,16 @@ Status WebVttToMp4Handler::OnStreamInfo(
   DCHECK(stream_data);
   DCHECK(stream_data->stream_info);
 
-  return Dispatch(std::move(stream_data));
+  auto clone = stream_data->stream_info->Clone();
+  clone->set_codec(kCodecWebVtt);
+  clone->set_codec_string("wvtt");
+
+  if (clone->stream_type() != kStreamText) {
+    return Status(error::MUXER_FAILURE, "Incorrect stream type");
+  }
+
+  return Dispatch(
+      StreamData::FromStreamInfo(stream_data->stream_index, std::move(clone)));
 }
 
 Status WebVttToMp4Handler::OnCueEvent(std::unique_ptr<StreamData> stream_data) {
