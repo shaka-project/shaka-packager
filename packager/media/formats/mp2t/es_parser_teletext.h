@@ -28,6 +28,9 @@ class EsParserTeletext : public EsParser {
                    const uint8_t* descriptor,
                    const size_t descriptor_length);
 
+  EsParserTeletext(const EsParserTeletext&) = delete;
+  EsParserTeletext& operator=(const EsParserTeletext&) = delete;
+
   bool Parse(const uint8_t* buf, int size, int64_t pts, int64_t dts) override;
   bool Flush() override;
   void Reset() override;
@@ -38,10 +41,7 @@ class EsParserTeletext : public EsParser {
     int64_t pts;
   };
 
-  EsParserTeletext(const EsParserTeletext&) = delete;
-  EsParserTeletext& operator=(const EsParserTeletext&) = delete;
-
-  bool ParseInternal(const uint8_t* data, size_t size, int64_t pts);
+  bool ParseInternal(const uint8_t* data, const size_t size, const int64_t pts);
   bool ParseDataBlock(const int64_t pts,
                       const uint8_t* data_block,
                       const uint8_t packet_nr,

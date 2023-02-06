@@ -6,8 +6,6 @@
 
 #include "packager/media/formats/mp2t/es_parser_teletext.h"
 
-#include <cmath>
-
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/timestamp.h"
@@ -62,9 +60,9 @@ bool ParseSubtitlingDescriptor(
     const uint8_t page_number = page_tenths * 10 + page_digit;
 
     std::string lang(3, '\0');
-    lang[0] = (lang_code >> 16) & 0xff;
-    lang[1] = (lang_code >> 8) & 0xff;
-    lang[2] = (lang_code >> 0) & 0xff;
+    lang[0] = static_cast<char>((lang_code >> 16) & 0xff);
+    lang[1] = static_cast<char>((lang_code >> 8) & 0xff);
+    lang[2] = static_cast<char>((lang_code >> 0) & 0xff);
 
     const uint16_t index = magazine_number * 100 + page_number;
     result.emplace(index, std::move(lang));
@@ -94,6 +92,7 @@ EsParserTeletext::EsParserTeletext(const uint32_t pid,
       magazine_(0),
       page_number_(0),
       charset_code_(0),
+      current_charset_{},
       last_pts_(0) {
   if (!ParseSubtitlingDescriptor(descriptor, descriptor_length, languages_)) {
     LOG(ERROR) << "Unable to parse teletext_descriptor";
@@ -143,8 +142,8 @@ void EsParserTeletext::Reset() {
 }
 
 bool EsParserTeletext::ParseInternal(const uint8_t* data,
-                                     size_t size,
-                                     int64_t pts) {
+                                     const size_t size,
+                                     const int64_t pts) {
   BitReader reader(data, size);
   RCHECK(reader.SkipBits(8));
   std::vector<std::string> lines;
@@ -310,7 +309,7 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block) const {
   bool leading_spaces = true;
 
   for (size_t i = 0; i < payload_len; ++i) {
-    char next_char = BITREVERSE_8[data_block[i]] & 0x7f;
+    char next_char = static_cast<char>(BITREVERSE_8[data_block[i]] & 0x7f);
 
     if (next_char < 32 || next_char > 127) {
       next_char = 0x20;
