@@ -59,8 +59,6 @@ namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
 
-const int64_t kDefaultTextZeroBiasMs = 10 * 60 * 1000;  // 10 minutes
-
 MuxerListenerFactory::StreamData ToMuxerListenerData(
     const StreamDescriptor& stream) {
   MuxerListenerFactory::StreamData data;
@@ -663,7 +661,7 @@ Status CreateAudioVideoJobs(
       std::vector<std::shared_ptr<MediaHandler>> handlers;
       if (is_text) {
         handlers.emplace_back(
-            std::make_shared<TextPadder>(kDefaultTextZeroBiasMs));
+            std::make_shared<TextPadder>(packaging_params.default_text_zero_bias_ms));
       }
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
