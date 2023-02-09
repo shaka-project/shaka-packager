@@ -36,8 +36,12 @@ class EsParserTeletext : public EsParser {
   void Reset() override;
 
  private:
+  using RowColReplacementMap =
+      std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::string>>;
+
   struct TextBlock {
     std::vector<std::string> lines;
+    RowColReplacementMap packet_26_replacements;
     int64_t pts;
   };
 
@@ -49,7 +53,14 @@ class EsParserTeletext : public EsParser {
                       std::string& display_text);
   void UpdateCharset();
   void SendPending(const uint16_t index, const int64_t pts);
-  std::string BuildText(const uint8_t* data_block) const;
+  std::string BuildText(const uint8_t* data_block, const uint8_t row) const;
+  void ParsePacket26(const uint8_t* data_block);
+
+  static void SetPacket26ReplacementString(
+      RowColReplacementMap& replacement_map,
+      const uint8_t row,
+      const uint8_t column,
+      std::string&& replacement_string);
 
   NewStreamInfoCB new_stream_info_cb_;
   EmitTextSampleCB emit_sample_cb_;

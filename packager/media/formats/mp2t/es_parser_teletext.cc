@@ -31,6 +31,27 @@ uint8_t ReadHamming(BitReader& reader) {
   return HAMMING_8_4[bits];
 }
 
+bool Hamming_24_18(const uint32_t value, uint32_t& out_result) {
+  uint32_t result = value;
+
+  uint8_t test = 0;
+  for (uint8_t i = 0; i < 23; i++) {
+    test ^= ((result >> i) & 0x01) * (i + 33);
+  }
+  test ^= ((result >> 23) & 0x01) * 32;
+
+  if ((test & 0x1f) != 0x1f) {
+    if ((test & 0x20) == 0x20) {
+      return false;
+    }
+    result ^= 1 << (30 - test);
+  }
+
+  out_result = (result & 0x000004) >> 2 | (result & 0x000070) >> 3 |
+               (result & 0x007f00) >> 4 | (result & 0x7f0000) >> 5;
+  return true;
+}
+
 bool ParseSubtitlingDescriptor(
     const uint8_t* descriptor,
     const size_t size,
@@ -197,7 +218,7 @@ bool EsParserTeletext::ParseInternal(const uint8_t* data,
   const uint16_t index = magazine_ * 100 + page_number_;
   auto page_state_itr = page_state_.find(index);
   if (page_state_itr == page_state_.end()) {
-    page_state_.emplace(index, TextBlock{std::move(lines), last_pts_});
+    page_state_.emplace(index, TextBlock{std::move(lines), {}, last_pts_});
 
   } else {
     for (auto& line : lines) {
@@ -242,11 +263,15 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
 
     return false;
 
-  } else if (packet_nr > 25) {
+  } else if (packet_nr == 26) {
+    ParsePacket26(data_block);
+    return false;
+
+  } else if (packet_nr > 26) {
     return false;
   }
 
-  display_text = BuildText(data_block);
+  display_text = BuildText(data_block, packet_nr);
   return true;
 }
 
@@ -302,13 +327,36 @@ void EsParserTeletext::SendPending(const uint16_t index, const int64_t pts) {
   page_state_.erase(index);
 }
 
-std::string EsParserTeletext::BuildText(const uint8_t* data_block) const {
+std::string EsParserTeletext::BuildText(const uint8_t* data_block,
+                                        const uint8_t row) const {
   const size_t payload_len = 40;
   std::string next_string;
   next_string.reserve(payload_len * 2);
   bool leading_spaces = true;
 
+  const uint16_t index = magazine_ * 100 + page_number_;
+  const auto page_state_itr = page_state_.find(index);
+
+  const std::unordered_map<uint8_t, std::string>* column_replacement_map =
+      nullptr;
+  if (page_state_itr != page_state_.cend()) {
+    const auto row_itr =
+        page_state_itr->second.packet_26_replacements.find(row);
+    if (row_itr != page_state_itr->second.packet_26_replacements.cend()) {
+      column_replacement_map = &(row_itr->second);
+    }
+  }
+
   for (size_t i = 0; i < payload_len; ++i) {
+    if (column_replacement_map) {
+      const auto column_itr = column_replacement_map->find(i);
+      if (column_itr != column_replacement_map->cend()) {
+        next_string.append(column_itr->second);
+        leading_spaces = false;
+        continue;
+      }
+    }
+
     char next_char = static_cast<char>(BITREVERSE_8[data_block[i]] & 0x7f);
 
     if (next_char < 32 || next_char > 127) {
@@ -337,6 +385,94 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block) const {
   }
 
   return RemoveTrailingSpaces(next_string);
+}
+
+void EsParserTeletext::ParsePacket26(const uint8_t* data_block) {
+  const uint16_t index = magazine_ * 100 + page_number_;
+  auto page_state_itr = page_state_.find(index);
+  if (page_state_itr == page_state_.end()) {
+    page_state_.emplace(index, TextBlock{{}, {}, last_pts_});
+  }
+  auto& replacement_map = page_state_[index].packet_26_replacements;
+
+  uint8_t row = 0;
+  const size_t payload_len = 40;
+
+  std::vector<uint32_t> x26_triplets;
+  x26_triplets.reserve(13);
+  for (uint8_t i = 1; i < payload_len; i += 3) {
+    const uint32_t bytes = (BITREVERSE_8[data_block[i + 2]] << 16) |
+                           (BITREVERSE_8[data_block[i + 1]] << 8) |
+                           BITREVERSE_8[data_block[i]];
+    uint32_t triplet;
+    if (Hamming_24_18(bytes, triplet)) {
+      x26_triplets.emplace_back(triplet);
+    }
+  }
+
+  for (const auto triplet : x26_triplets) {
+    const uint8_t mode = (triplet & 0x7c0) >> 6;
+    const uint8_t address = triplet & 0x3f;
+    const uint8_t row_address_group = (address >= 0x28) && (address <= 0x3f);
+
+    if ((mode == 0x4) && (row_address_group == 0x1)) {
+      row = address - 0x28;
+      if (row == 0x0) {
+        row = 0x18;
+      }
+    }
+
+    if (mode >= 0x11 && mode <= 0x1f && row_address_group == 0x1) {
+      break;
+    }
+
+    const uint8_t data = (triplet & 0x3f800) >> 11;
+
+    if (mode == 0x0f && row_address_group == 0x0 && data > 0x1f) {
+      SetPacket26ReplacementString(
+          replacement_map, row, address,
+          reinterpret_cast<const char*>(CHARSET_G2_LATIN[data - 0x20]));
+    }
+
+    if (mode == 0x10 && row_address_group == 0x0 && data == 0x40) {
+      SetPacket26ReplacementString(replacement_map, row, address, "@");
+    }
+
+    if (mode < 0x11 || mode > 0x1f || row_address_group != 0x0) {
+      continue;
+    }
+
+    if (data >= 0x41 && data <= 0x5a) {
+      SetPacket26ReplacementString(
+          replacement_map, row, address,
+          reinterpret_cast<const char*>(
+              G2_LATIN_ACCENTS[mode - 0x11][data - 0x41]));
+
+    } else if (data >= 0x61 && data <= 0x7a) {
+      SetPacket26ReplacementString(
+          replacement_map, row, address,
+          reinterpret_cast<const char*>(
+              G2_LATIN_ACCENTS[mode - 0x11][data - 0x47]));
+
+    } else if ((data & 0x7f) >= 0x20) {
+      SetPacket26ReplacementString(replacement_map, row, address,
+                                   reinterpret_cast<const char*>(
+                                       CHARSET_G0_LATIN[(data & 0x7f) - 0x20]));
+    }
+  }
+}
+
+void EsParserTeletext::SetPacket26ReplacementString(
+    RowColReplacementMap& replacement_map,
+    const uint8_t row,
+    const uint8_t column,
+    std::string&& replacement_string) {
+  auto replacement_map_itr = replacement_map.find(row);
+  if (replacement_map_itr == replacement_map.cend()) {
+    replacement_map.emplace(row, std::unordered_map<uint8_t, std::string>{});
+  }
+  auto& column_map = replacement_map[row];
+  column_map.emplace(column, std::move(replacement_string));
 }
 
 }  // namespace mp2t
