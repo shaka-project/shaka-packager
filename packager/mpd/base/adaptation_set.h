@@ -327,6 +327,9 @@ class AdaptationSet {
 
   // Transfer characteristics.
   uint32_t transfer_characteristics_ = 0;
+
+  // The label of this AdaptationSet.
+  std::string label_;
 };
 
 }  // namespace shaka
