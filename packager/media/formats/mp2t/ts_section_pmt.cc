@@ -125,9 +125,17 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
       es_info_length -= 2;
 
       // See ETSI EN 300 468 Section 6.1
-      if (stream_type == TsStreamType::kPesPrivateData &&
-          descriptor_tag == kSubtitlingDescriptor) {
-        pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+      if (stream_type == TsStreamType::kPesPrivateData) {
+        switch (descriptor_tag) {
+          case 0x56: // teletext_descriptor
+            pid_info.back().stream_type = TsStreamType::kTeletextSubtitles;
+            break;
+          case 0x59: // subtitling_descriptor
+            pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+            break;
+          default:
+            break;
+        }
       } else if (descriptor_tag == kISO639LanguageDescriptor &&
                  descriptor_length >= 4) {
         // See section 2.6.19 of ISO-13818

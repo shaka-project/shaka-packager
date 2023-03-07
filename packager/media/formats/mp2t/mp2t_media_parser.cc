@@ -18,6 +18,7 @@
 #include <packager/media/formats/mp2t/es_parser_dvb.h>
 #include <packager/media/formats/mp2t/es_parser_h264.h>
 #include <packager/media/formats/mp2t/es_parser_h265.h>
+#include "packager/media/formats/mp2t/es_parser_teletext.h"
 #include <packager/media/formats/mp2t/mp2t_common.h>
 #include <packager/media/formats/mp2t/ts_audio_type.h>
 #include <packager/media/formats/mp2t/ts_packet.h>
@@ -26,6 +27,7 @@
 #include <packager/media/formats/mp2t/ts_section_pes.h>
 #include <packager/media/formats/mp2t/ts_section_pmt.h>
 #include <packager/media/formats/mp2t/ts_stream_type.h>
+
 
 namespace shaka {
 namespace media {
@@ -326,6 +328,11 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
       break;
     case TsStreamType::kDvbSubtitles:
       es_parser.reset(new EsParserDvb(pes_pid, on_new_stream, on_emit_text,
+                                      descriptor, descriptor_length));
+      pid_type = PidState::kPidTextPes;
+      break;
+    case TsStreamType::kTeletextSubtitles:
+      es_parser.reset(new EsParserTeletext(pes_pid, on_new_stream, on_emit_text,
                                       descriptor, descriptor_length));
       pid_type = PidState::kPidTextPes;
       break;
