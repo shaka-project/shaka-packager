@@ -117,7 +117,7 @@ dependencies.
 
 ```shell
 gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
-gclient sync
+gclient sync -r main
 ```
 
 To sync to a particular commit or version, add the '-r \<revision\>' flag to
