@@ -100,3 +100,9 @@ DASH options
 
     If enabled, LL-DASH streaming will be used,
     reducing overall latency by decoupling latency from segment duration.
+
+--dash_label <label_name>
+
+    Optional. Will add Label tag to adapation set and will be taken into
+    consideration along with codecs, language, media type (audio, video etc)
+    and container type to create different adaptation sets.
