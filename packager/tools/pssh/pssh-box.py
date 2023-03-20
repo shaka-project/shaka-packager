@@ -167,7 +167,7 @@ def _generate_widevine_data(key_ids, content_id, provider, protection_scheme):
     wv.content_id = content_id
   # 'cenc' is the default, so omitted to save bytes.
   if protection_scheme and protection_scheme != 'cenc':
-    wv.protection_scheme = struct.unpack('>L', bytes(protection_scheme, encoding='utf-8'))[0]
+    wv.protection_scheme = struct.unpack('>L', protection_scheme.encode())[0]
   return wv.SerializeToString()
 
 
