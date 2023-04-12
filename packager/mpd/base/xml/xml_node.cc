@@ -484,7 +484,11 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   }
 
   if (low_latency_dash_mode) {
-    RCHECK(segment_template.SetStringAttribute("availabilityTimeComplete", "false"));
+    RCHECK(segment_template.SetStringAttribute("availabilityTimeComplete",
+      "false"));
+  if (low_latency_dash_mode) {
+    RCHECK(segment_template.SetStringAttribute("availabilityTimeComplete",
+  +                                            "false"));
   }
 
   if (media_info.has_init_segment_url()) {
