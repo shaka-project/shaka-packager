@@ -4,7 +4,7 @@
 
 #include "packager/media/formats/webm/webm_content_encodings_client.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace shaka {

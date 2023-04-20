@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/time/time.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/text_track_config.h"
 #include "packager/media/base/video_stream_info.h"

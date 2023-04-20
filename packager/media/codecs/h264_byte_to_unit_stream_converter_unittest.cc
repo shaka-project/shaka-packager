@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+
 #include <gtest/gtest.h>
 #include <stdio.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+#include "absl/strings/escaping.h"
 #include "packager/media/test/test_data_util.h"
 
 namespace {
@@ -37,9 +38,11 @@ TEST(H264ByteToUnitStreamConverter, StripParameterSetsNalu) {
                                                          &output_frame));
   EXPECT_EQ(expected_output_frame, output_frame);
 
-  std::vector<uint8_t> expected_decoder_config;
-  ASSERT_TRUE(base::HexStringToBytes(kExpectedConfigRecord,
-                                     &expected_decoder_config));
+  auto expected_decoder_config_str =
+      absl::HexStringToBytes(kExpectedConfigRecord);
+  ASSERT_FALSE(expected_decoder_config_str.empty());
+  std::vector<uint8_t> expected_decoder_config(
+      expected_decoder_config_str.begin(), expected_decoder_config_str.end());
   std::vector<uint8_t> decoder_config;
   ASSERT_TRUE(converter.GetDecoderConfigurationRecord(&decoder_config));
   EXPECT_EQ(expected_decoder_config, decoder_config);

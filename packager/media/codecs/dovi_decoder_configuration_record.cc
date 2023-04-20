@@ -6,7 +6,7 @@
 
 #include "packager/media/codecs/dovi_decoder_configuration_record.h"
 
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -30,8 +30,8 @@ std::string DOVIDecoderConfigurationRecord::GetCodecString(
     FourCC codec_fourcc) const {
   // Dolby Vision Streams within the HTTP Live Streaming format Version 2.0:
   // https://www.dolby.com/us/en/technologies/dolby-vision/dolby-vision-streams-within-the-http-live-streaming-format-v2.0.pdf
-  return base::StringPrintf(
-      "%s.%02d.%02d", FourCCToString(codec_fourcc).c_str(), profile_, level_);
+  return absl::StrFormat("%s.%02d.%02d", FourCCToString(codec_fourcc).c_str(),
+                         profile_, level_);
 }
 
 }  // namespace media

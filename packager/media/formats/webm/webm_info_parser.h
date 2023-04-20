@@ -5,8 +5,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_INFO_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_INFO_PARSER_H_
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/time/time.h"
+#include <chrono>
+
 #include "packager/media/formats/webm/webm_parser.h"
 
 namespace shaka {
@@ -26,7 +26,7 @@ class WebMInfoParser : public WebMParserClient {
 
   int64_t timecode_scale() const { return timecode_scale_; }
   double duration() const { return duration_; }
-  base::Time date_utc() const { return date_utc_; }
+  std::chrono::system_clock::time_point date_utc() const { return date_utc_; }
 
  private:
   // WebMParserClient methods
@@ -39,7 +39,7 @@ class WebMInfoParser : public WebMParserClient {
 
   int64_t timecode_scale_;
   double duration_;
-  base::Time date_utc_;
+  std::chrono::system_clock::time_point date_utc_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMInfoParser);
 };

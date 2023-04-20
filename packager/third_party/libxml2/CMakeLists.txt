@@ -66,6 +66,8 @@ else()
   add_compile_options(-Wno-unused-parameter)
   # Disable this warning/error, which occurs in xmlschemas.c:
   add_compile_options(-Wno-format-truncation)
+  # Disable this warning/error, which occurs in tree.c:
+  add_compile_options(-Wno-array-bounds)
 endif()
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.

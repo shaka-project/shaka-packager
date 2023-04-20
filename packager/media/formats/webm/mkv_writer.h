@@ -10,9 +10,9 @@
 #include <memory>
 #include <string>
 
+#include "mkvmuxer/mkvmuxer.h"
 #include "packager/file/file_closer.h"
-#include "packager/status.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/numbers.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_parser.h"
 

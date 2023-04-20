@@ -6,10 +6,12 @@
 
 #include "packager/media/codecs/ac4_audio_util.h"
 
-#include "packager/base/macros.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include "absl/strings/escaping.h"
+#include "absl/strings/str_format.h"
+#include "packager/macros.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
+#include "packager/utils/bytes_to_string_view.h"
 
 namespace shaka {
 namespace media {
@@ -442,7 +444,8 @@ bool CalculateAC4ChannelMask(const std::vector<uint8_t>& ac4_data,
                       &mdcompat, &pre_channel_mask, &dolby_ims_indicator,
                       &dolby_cbi_indicator)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
-                 << base::HexEncode(ac4_data.data(), ac4_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ac4_data));
     return false;
   }
 
@@ -467,7 +470,8 @@ bool CalculateAC4ChannelMPEGValue(const std::vector<uint8_t>& ac4_data,
                       &mdcompat, &pre_channel_mask, &dolby_ims_indicator,
                       &dolby_cbi_indicator)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
-                 << base::HexEncode(ac4_data.data(), ac4_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ac4_data));
     return false;
   }
 
@@ -488,7 +492,8 @@ bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
                       &mdcompat, &pre_channel_mask, &dolby_ims_indicator,
                       &dolby_cbi_indicator)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
-                 << base::HexEncode(ac4_data.data(), ac4_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ac4_data));
     return false;
   }
 
@@ -517,7 +522,8 @@ bool GetAc4ImmersiveInfo(const std::vector<uint8_t>& ac4_data,
                       &mdcompat, &pre_channel_mask, ac4_ims_flag,
                       ac4_cbi_flag)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
-                 << base::HexEncode(ac4_data.data(), ac4_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ac4_data));
     return false;
   }
 

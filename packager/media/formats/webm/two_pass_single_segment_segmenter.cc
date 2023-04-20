@@ -8,13 +8,13 @@
 
 #include <algorithm>
 
+#include "common/webmids.h"
+#include "mkvmuxer/mkvmuxer.h"
+#include "mkvmuxer/mkvmuxerutil.h"
 #include "packager/file/file_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
-#include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
-#include "packager/third_party/libwebm/src/webmids.hpp"
 
 namespace shaka {
 namespace media {
@@ -141,7 +141,7 @@ bool TwoPassSingleSegmentSegmenter::CopyFileWithClusterRewrite(
     File* source,
     MkvWriter* dest,
     uint64_t last_size) {
-  const int cluster_id_size = mkvmuxer::GetUIntSize(mkvmuxer::kMkvCluster);
+  const int cluster_id_size = mkvmuxer::GetUIntSize(libwebm::kMkvCluster);
   const int cluster_size_size = 8;  // The size of the Cluster size integer.
   const int cluster_header_size = cluster_id_size + cluster_size_size;
 

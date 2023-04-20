@@ -6,7 +6,7 @@
 
 #include "packager/media/codecs/av1_codec_configuration_record.h"
 
-#include "packager/base/strings/stringprintf.h"
+#include "absl/strings/str_format.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -84,8 +84,8 @@ bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, size_t data_size) {
 // Since some of the optional fields (e.g. colorPrimaries) are not present in
 // AV1CodecConfigurationRecord, we omit all the optional fields.
 std::string AV1CodecConfigurationRecord::GetCodecString() const {
-  return base::StringPrintf("av01.%d.%02d%c.%02d", profile_, level_,
-                            tier_ ? 'H' : 'M', bit_depth_);
+  return absl::StrFormat("av01.%d.%02d%c.%02d", profile_, level_,
+                         tier_ ? 'H' : 'M', bit_depth_);
 }
 
 }  // namespace media

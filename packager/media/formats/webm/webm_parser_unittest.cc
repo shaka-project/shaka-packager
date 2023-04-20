@@ -342,7 +342,7 @@ TEST_F(WebMParserTest, ReservedIds) {
   const uint8_t* kBuffers[] = {k1ByteReservedId, k2ByteReservedId,
                                k3ByteReservedId, k4ByteReservedId};
 
-  for (size_t i = 0; i < arraysize(kBuffers); i++) {
+  for (size_t i = 0; i < std::size(kBuffers); i++) {
     int id;
     int64_t element_size;
     int buffer_size = 2 + static_cast<int>(i);
@@ -370,7 +370,7 @@ TEST_F(WebMParserTest, ReservedSizes) {
                                k5ByteReservedSize, k6ByteReservedSize,
                                k7ByteReservedSize, k8ByteReservedSize};
 
-  for (size_t i = 0; i < arraysize(kBuffers); i++) {
+  for (size_t i = 0; i < std::size(kBuffers); i++) {
     int id;
     int64_t element_size;
     int buffer_size = 2 + static_cast<int>(i);

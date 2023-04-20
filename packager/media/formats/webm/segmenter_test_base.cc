@@ -182,13 +182,13 @@ bool SegmentTestBase::ClusterParser::OnUInt(int id, int64_t val) {
   return true;
 }
 
-bool SegmentTestBase::ClusterParser::OnFloat(int id, double val) {
+bool SegmentTestBase::ClusterParser::OnFloat(int /*id*/, double /*val*/) {
   return true;
 }
 
 bool SegmentTestBase::ClusterParser::OnBinary(int id,
                                               const uint8_t* data,
-                                              int size) {
+                                              int /*size*/) {
   if (in_cluster_ && (id == kWebMIdSimpleBlock || id == kWebMIdBlock)) {
     if (cluster_timecode_ == -1) {
       LOG(WARNING) << "Cluster timecode not yet available";
@@ -201,7 +201,8 @@ bool SegmentTestBase::ClusterParser::OnBinary(int id,
   return true;
 }
 
-bool SegmentTestBase::ClusterParser::OnString(int id, const std::string& str) {
+bool SegmentTestBase::ClusterParser::OnString(int /*id*/,
+                                              const std::string& /*str*/) {
   return true;
 }
 

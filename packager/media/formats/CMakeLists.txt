@@ -5,10 +5,4 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
-add_subdirectory(base)
-add_subdirectory(codecs)
-add_subdirectory(formats)
-add_subdirectory(origin)
-add_subdirectory(replicator)
-add_subdirectory(test)
-add_subdirectory(trick_play)
+add_subdirectory(webm)

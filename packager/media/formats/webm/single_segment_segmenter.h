@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_
 
-#include "packager/media/formats/webm/segmenter.h"
-
 #include <memory>
+
 #include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/status.h"
+#include "packager/media/formats/webm/segmenter.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

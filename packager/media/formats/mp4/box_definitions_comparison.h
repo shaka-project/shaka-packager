@@ -346,8 +346,8 @@ inline bool operator==(const SoundMediaHeader& lhs,
   return lhs.balance == rhs.balance;
 }
 
-inline bool operator==(const SubtitleMediaHeader& lhs,
-                       const SubtitleMediaHeader& rhs) {
+inline bool operator==(const SubtitleMediaHeader& /*lhs*/,
+                       const SubtitleMediaHeader& /*rhs*/) {
   return true;
 }
 
@@ -488,7 +488,8 @@ inline bool operator==(const CuePayloadBox& lhs,
   return lhs.cue_text == rhs.cue_text;
 }
 
-inline bool operator==(const VTTEmptyCueBox& lhs, const VTTEmptyCueBox& rhs) {
+inline bool operator==(const VTTEmptyCueBox& /*lhs*/,
+                       const VTTEmptyCueBox& /*rhs*/) {
   return true;
 }
 

@@ -8,9 +8,10 @@
 #define PACKAGER_MEDIA_FORMATS_WEBM_SEEK_HEAD_H_
 
 #include <stdint.h>
+
 #include <vector>
 
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include "mkvmuxer/mkvmuxer.h"
 
 namespace shaka {
 namespace media {

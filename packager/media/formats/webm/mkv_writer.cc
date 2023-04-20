@@ -63,7 +63,7 @@ int64_t MkvWriter::WriteFromFile(File* source) {
 int64_t MkvWriter::WriteFromFile(File* source, int64_t max_copy) {
   DCHECK(file_);
 
-  const int64_t size = File::CopyFile(source, file_.get(), max_copy);
+  const int64_t size = File::Copy(source, file_.get(), max_copy);
   if (size < 0)
     return size;
 
@@ -90,8 +90,8 @@ bool MkvWriter::Seekable() const {
   return seekable_;
 }
 
-void MkvWriter::ElementStartNotify(mkvmuxer::uint64 element_id,
-                                   mkvmuxer::int64 position) {}
+void MkvWriter::ElementStartNotify(mkvmuxer::uint64 /*element_id*/,
+                                   mkvmuxer::int64 /*position*/) {}
 
 }  // namespace media
 }  // namespace shaka
