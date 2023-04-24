@@ -243,6 +243,7 @@ int64_t HttpFile::Read(void* buffer, uint64_t length) {
 }
 
 int64_t HttpFile::Write(const void* buffer, uint64_t length) {
+  DCHECK(!upload_cache_.closed());
   VLOG(2) << "Writing to " << url_ << ", length=" << length;
   return upload_cache_.Write(buffer, length);
 }
@@ -253,7 +254,8 @@ int64_t HttpFile::Size() {
 }
 
 bool HttpFile::Flush() {
-  upload_cache_.Close();
+  // Wait for curl to read any data we may have buffered.
+  upload_cache_.WaitUntilEmptyOrClosed();
   return true;
 }
 
