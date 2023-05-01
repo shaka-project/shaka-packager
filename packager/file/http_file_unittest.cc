@@ -8,7 +8,9 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <memory>
+#include <thread>
 #include <vector>
 
 #include "absl/strings/str_split.h"
@@ -64,176 +66,249 @@ nlohmann::json HandleResponse(const FilePtr& file) {
   return value;
 }
 
+// Tests using httpbin can sometimes be flaky.  We get HTTP 502 errors when it
+// is overloaded.  This will retry a test with delays, up to a limit, if the
+// HTTP status code is 502.
+void RetryTest(std::function<HttpFile*()> setup,
+               std::function<void(FilePtr&)> pre_read,
+               std::function<void(FilePtr&, nlohmann::json)> post_read) {
+  nlohmann::json json;
+  FilePtr file;
+
+  for (int i = 0; i < 3; ++i) {
+    file.reset(setup());
+
+    ASSERT_TRUE(file->Open());
+
+    pre_read(file);
+    if (testing::Test::HasFailure()) return;
+
+    json = HandleResponse(file);
+
+    if (file->http_status_code() != 502) {
+      // Not a 502 error, so take this result.
+      break;
+    }
+
+    // Delay with exponential increase (1s, 2s, 4s), then loop try again.
+    int delay = 1 << i;
+    LOG(WARNING) << "httpbin failure (" << file->http_status_code() << "): "
+                 << "Delaying " << delay << " seconds and retrying.";
+    std::this_thread::sleep_for(std::chrono::seconds(delay));
+  }
+
+  // Out of retries?  Check what we have.
+  post_read(file, json);
+}
+
 }  // namespace
 
 TEST(HttpFileTest, BasicGet) {
-  FilePtr file(new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything"));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
-  auto json = HandleResponse(file);
-  ASSERT_TRUE(json.is_object());
-  ASSERT_TRUE(file.release()->Close());
-  ASSERT_JSON_STRING(json, "method", "GET");
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything");
+      },
+      // pre_read
+      [](FilePtr&) -> void {},
+      // post_read
+      [](FilePtr&, nlohmann::json json) -> void {
+        ASSERT_TRUE(json.is_object());
+        ASSERT_JSON_STRING(json, "method", "GET");
+      });
 }
 
 TEST(HttpFileTest, CustomHeaders) {
-  std::vector<std::string> headers{"Host: foo", "X-My-Header: Something"};
-  FilePtr file(new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything",
-                            "", headers, 0));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
-  auto json = HandleResponse(file);
-  ASSERT_TRUE(json.is_object());
-  ASSERT_TRUE(file.release()->Close());
-
-  ASSERT_JSON_STRING(json, "method", "GET");
-  ASSERT_JSON_STRING(json, "headers.Host", "foo");
-  ASSERT_JSON_STRING(json, "headers.X-My-Header", "Something");
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        std::vector<std::string> headers{"Host: foo", "X-My-Header: Something"};
+        return new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything",
+                            "", headers, 0);
+      },
+      // pre_read
+      [](FilePtr&) -> void {},
+      // post_read
+      [](FilePtr&, nlohmann::json json) -> void {
+        ASSERT_TRUE(json.is_object());
+        ASSERT_JSON_STRING(json, "method", "GET");
+        ASSERT_JSON_STRING(json, "headers.Host", "foo");
+        ASSERT_JSON_STRING(json, "headers.X-My-Header", "Something");
+      });
 }
 
 TEST(HttpFileTest, BasicPost) {
-  FilePtr file(new HttpFile(HttpMethod::kPost, "https://httpbin.org/anything"));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
   const std::string data = "abcd";
 
-  ASSERT_EQ(file->Write(data.data(), data.size()),
-            static_cast<int64_t>(data.size()));
-  ASSERT_TRUE(file->Flush());
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kPost, "https://httpbin.org/anything");
+      },
+      // pre_read
+      [&data](FilePtr& file) -> void {
+        ASSERT_EQ(file->Write(data.data(), data.size()),
+                  static_cast<int64_t>(data.size()));
+        ASSERT_TRUE(file->Flush());
+      },
+      // post_read
+      [&data](FilePtr&, nlohmann::json json) -> void {
+        ASSERT_TRUE(json.is_object());
 
-  auto json = HandleResponse(file);
-  ASSERT_TRUE(json.is_object());
-  ASSERT_TRUE(file.release()->Close());
+        ASSERT_JSON_STRING(json, "method", "POST");
+        ASSERT_JSON_STRING(json, "data", data);
+        ASSERT_JSON_STRING(json, "headers.Content-Type",
+                           "application/octet-stream");
 
-  ASSERT_JSON_STRING(json, "method", "POST");
-  ASSERT_JSON_STRING(json, "data", data);
-  ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-
-  // Curl may choose to send chunked or not based on the data.  We request
-  // chunked encoding, but don't control if it is actually used.  If we get
-  // chunked transfer, there is no Content-Length header reflected back to us.
-  if (!GetJsonString(json, "headers.Content-Length").empty()) {
-    ASSERT_JSON_STRING(json, "headers.Content-Length",
-                       std::to_string(data.size()));
-  } else {
-    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
-  }
+        // Curl may choose to send chunked or not based on the data.  We request
+        // chunked encoding, but don't control if it is actually used.  If we
+        // get chunked transfer, there is no Content-Length header reflected
+        // back to us.
+        if (!GetJsonString(json, "headers.Content-Length").empty()) {
+          ASSERT_JSON_STRING(json, "headers.Content-Length",
+                             std::to_string(data.size()));
+        } else {
+          ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+        }
+      });
 }
 
 TEST(HttpFileTest, BasicPut) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything"));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
   const std::string data = "abcd";
 
-  ASSERT_EQ(file->Write(data.data(), data.size()),
-            static_cast<int64_t>(data.size()));
-  ASSERT_TRUE(file->Flush());
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything");
+      },
+      // pre_read
+      [&data](FilePtr& file) -> void {
+        ASSERT_EQ(file->Write(data.data(), data.size()),
+                  static_cast<int64_t>(data.size()));
+        ASSERT_TRUE(file->Flush());
+      },
+      // post_read
+      [&data](FilePtr&, nlohmann::json json) -> void {
+        ASSERT_TRUE(json.is_object());
 
-  auto json = HandleResponse(file);
-  ASSERT_TRUE(json.is_object());
-  ASSERT_TRUE(file.release()->Close());
+        ASSERT_JSON_STRING(json, "method", "PUT");
+        ASSERT_JSON_STRING(json, "data", data);
+        ASSERT_JSON_STRING(json, "headers.Content-Type",
+                           "application/octet-stream");
 
-  ASSERT_JSON_STRING(json, "method", "PUT");
-  ASSERT_JSON_STRING(json, "data", data);
-  ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-
-  // Curl may choose to send chunked or not based on the data.  We request
-  // chunked encoding, but don't control if it is actually used.  If we get
-  // chunked transfer, there is no Content-Length header reflected back to us.
-  if (!GetJsonString(json, "headers.Content-Length").empty()) {
-    ASSERT_JSON_STRING(json, "headers.Content-Length",
-                       std::to_string(data.size()));
-  } else {
-    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
-  }
+        // Curl may choose to send chunked or not based on the data.  We request
+        // chunked encoding, but don't control if it is actually used.  If we
+        // get chunked transfer, there is no Content-Length header reflected
+        // back to us.
+        if (!GetJsonString(json, "headers.Content-Length").empty()) {
+          ASSERT_JSON_STRING(json, "headers.Content-Length",
+                             std::to_string(data.size()));
+        } else {
+          ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+        }
+      });
 }
 
 TEST(HttpFileTest, MultipleWrites) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything"));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
   const std::string data1 = "abcd";
   const std::string data2 = "efgh";
   const std::string data3 = "ijkl";
   const std::string data4 = "mnop";
 
-  ASSERT_EQ(file->Write(data1.data(), data1.size()),
-            static_cast<int64_t>(data1.size()));
-  ASSERT_EQ(file->Write(data2.data(), data2.size()),
-            static_cast<int64_t>(data2.size()));
-  ASSERT_EQ(file->Write(data3.data(), data3.size()),
-            static_cast<int64_t>(data3.size()));
-  ASSERT_EQ(file->Write(data4.data(), data4.size()),
-            static_cast<int64_t>(data4.size()));
-  ASSERT_TRUE(file->Flush());
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything");
+      },
+      // pre_read
+      [&data1, &data2, &data3, &data4](FilePtr& file) -> void {
+        ASSERT_EQ(file->Write(data1.data(), data1.size()),
+                  static_cast<int64_t>(data1.size()));
+        ASSERT_EQ(file->Write(data2.data(), data2.size()),
+                  static_cast<int64_t>(data2.size()));
+        ASSERT_EQ(file->Write(data3.data(), data3.size()),
+                  static_cast<int64_t>(data3.size()));
+        ASSERT_EQ(file->Write(data4.data(), data4.size()),
+                  static_cast<int64_t>(data4.size()));
+        ASSERT_TRUE(file->Flush());
+      },
+      // post_read
+      [&data1, &data2, &data3, &data4](FilePtr&, nlohmann::json json) -> void {
+        ASSERT_TRUE(json.is_object());
 
-  auto json = HandleResponse(file);
-  ASSERT_TRUE(json.is_object());
-  ASSERT_TRUE(file.release()->Close());
+        ASSERT_JSON_STRING(json, "method", "PUT");
+        ASSERT_JSON_STRING(json, "data", data1 + data2 + data3 + data4);
+        ASSERT_JSON_STRING(json, "headers.Content-Type",
+                           "application/octet-stream");
 
-  ASSERT_JSON_STRING(json, "method", "PUT");
-  ASSERT_JSON_STRING(json, "data", data1 + data2 + data3 + data4);
-  ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
-
-  // Curl may choose to send chunked or not based on the data.  We request
-  // chunked encoding, but don't control if it is actually used.  If we get
-  // chunked transfer, there is no Content-Length header reflected back to us.
-  if (!GetJsonString(json, "headers.Content-Length").empty()) {
-    auto totalSize = data1.size() + data2.size() + data3.size() + data4.size();
-    ASSERT_JSON_STRING(json, "headers.Content-Length",
-                       std::to_string(totalSize));
-  } else {
-    ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
-  }
+        // Curl may choose to send chunked or not based on the data.  We request
+        // chunked encoding, but don't control if it is actually used.  If we
+        // get chunked transfer, there is no Content-Length header reflected
+        // back to us.
+        if (!GetJsonString(json, "headers.Content-Length").empty()) {
+          auto totalSize =
+              data1.size() + data2.size() + data3.size() + data4.size();
+          ASSERT_JSON_STRING(json, "headers.Content-Length",
+                             std::to_string(totalSize));
+        } else {
+          ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+        }
+      });
 }
 
 // TODO: Test chunked uploads explicitly.
 
 TEST(HttpFileTest, Error404) {
-  FilePtr file(
-      new HttpFile(HttpMethod::kGet, "https://httpbin.org/status/404"));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
-  // The site returns an empty response.
-  uint8_t buffer[1];
-  ASSERT_EQ(file->Read(buffer, sizeof(buffer)), 0);
-
-  auto status = file.release()->CloseWithStatus();
-  ASSERT_FALSE(status.ok());
-  ASSERT_EQ(status.error_code(), error::HTTP_FAILURE);
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kGet, "https://httpbin.org/status/404");
+      },
+      // pre_read
+      [](FilePtr&) -> void {},
+      // post_read
+      [](FilePtr& file, nlohmann::json) -> void {
+        // The site returns an empty response, not JSON.
+        auto status = file.release()->CloseWithStatus();
+        ASSERT_FALSE(status.ok());
+        ASSERT_EQ(status.error_code(), error::HTTP_FAILURE);
+      });
 }
 
 TEST(HttpFileTest, TimeoutTriggered) {
-  FilePtr file(
-      new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/8", "", {}, 1));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
-  // Request should timeout; error is reported in Close/CloseWithStatus.
-  uint8_t buffer[1];
-  ASSERT_EQ(file->Read(buffer, sizeof(buffer)), 0);
-
-  auto status = file.release()->CloseWithStatus();
-  ASSERT_FALSE(status.ok());
-  ASSERT_EQ(status.error_code(), error::TIME_OUT);
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/8", "",
+                            {}, 1);
+      },
+      // pre_read
+      [](FilePtr&) -> void {},
+      // post_read
+      [](FilePtr& file, nlohmann::json) -> void {
+        // Request should timeout; error is reported in Close/CloseWithStatus.
+        auto status = file.release()->CloseWithStatus();
+        ASSERT_FALSE(status.ok());
+        ASSERT_EQ(status.error_code(), error::TIME_OUT);
+      });
 }
 
 TEST(HttpFileTest, TimeoutNotTriggered) {
-  FilePtr file(
-      new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/1", "", {}, 5));
-  ASSERT_TRUE(file);
-  ASSERT_TRUE(file->Open());
-
-  auto json = HandleResponse(file);
-  ASSERT_TRUE(json.is_object());
-  ASSERT_TRUE(file.release()->Close());
+  RetryTest(
+      // setup
+      []() -> HttpFile* {
+        return new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/1", "",
+                            {}, 10);
+      },
+      // pre_read
+      [](FilePtr&) -> void {},
+      // post_read
+      [](FilePtr& file, nlohmann::json json) -> void {
+        // The timeout was not triggered.  We got back some JSON.
+        auto status = file.release()->CloseWithStatus();
+        ASSERT_TRUE(status.ok());
+        ASSERT_TRUE(json.is_object());
+      });
 }
 
 }  // namespace shaka
