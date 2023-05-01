@@ -22,6 +22,9 @@ set(protobuf_DISABLE_RTTI ON)
 # The latest version of protobuf requires a path to ABSL.
 set(ABSL_ROOT_DIR get_filename_component(ABSOLUTE_PATH ../abseil-cpp/source ABSOLUTE))
 
+# Make sure protoc links against the same MSVC runtime as internal libs.
+set(protobuf_MSVC_STATIC_RUNTIME OFF)
+
 # Disable these errors/warnings:
 if(MSVC)
   add_compile_options(
