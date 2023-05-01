@@ -100,7 +100,7 @@ TEST(HttpKeyFetcherTest, InvalidUrl) {
         EXPECT_NE(std::string::npos, status.error_message().find("404"));
       },
       // check_response
-      [](std::string& response) -> void {});
+      [](std::string&) -> void {});
 }
 
 TEST(HttpKeyFetcherTest, UrlWithPort) {
@@ -110,7 +110,7 @@ TEST(HttpKeyFetcherTest, UrlWithPort) {
         ASSERT_OK(fetcher.FetchKeys(kTestUrlWithPort, "", response));
       },
       // check_response
-      [](std::string& response) -> void {});
+      [](std::string&) -> void {});
 }
 
 TEST(HttpKeyFetcherTest, SmallTimeout) {
@@ -123,7 +123,7 @@ TEST(HttpKeyFetcherTest, SmallTimeout) {
         EXPECT_EQ(error::TIME_OUT, status.error_code());
       },
       // check_response
-      [](std::string& response) -> void {},
+      [](std::string&) -> void {},
       // timeout_in_seconds
       kTimeoutInSeconds);
 }
@@ -138,7 +138,7 @@ TEST(HttpKeyFetcherTest, BigTimeout) {
         EXPECT_OK(status);
       },
       // check_response
-      [](std::string& response) -> void {},
+      [](std::string&) -> void {},
       // timeout_in_seconds
       kTimeoutInSeconds);
 }
