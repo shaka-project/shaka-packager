@@ -29,7 +29,7 @@ HttpKeyFetcher::HttpKeyFetcher(int32_t timeout_in_seconds)
 
 HttpKeyFetcher::~HttpKeyFetcher() {}
 
-int HttpKeyFetcher::HttpStatusCode() const {
+int HttpKeyFetcher::http_status_code() const {
   return http_status_code_;
 }
 
@@ -79,7 +79,7 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
     response->append(temp, ret);
   }
 
-  http_status_code_ = file->HttpStatusCode();
+  http_status_code_ = file->http_status_code();
 
   return file.release()->CloseWithStatus();
 }

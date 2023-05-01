@@ -232,7 +232,7 @@ bool HttpFile::Open() {
   return true;
 }
 
-int HttpFile::HttpStatusCode() const {
+int HttpFile::http_status_code() const {
   return http_status_code_;
 }
 

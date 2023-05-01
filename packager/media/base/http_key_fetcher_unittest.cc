@@ -37,14 +37,14 @@ void RetryTest(std::function<void(HttpKeyFetcher&, std::string*)> make_request,
     response.clear();
     make_request(fetcher, &response);
 
-    if (fetcher.HttpStatusCode() != 502) {
+    if (fetcher.http_status_code() != 502) {
       // Not a 502 error, so take this result.
       break;
     }
 
     // Delay with exponential increase (1s, 2s, 4s), then loop try again.
     int delay = 1 << i;
-    LOG(WARNING) << "httpbin failure (" << fetcher.HttpStatusCode() << "): "
+    LOG(WARNING) << "httpbin failure (" << fetcher.http_status_code() << "): "
                  << "Delaying " << delay << " seconds and retrying.";
     std::this_thread::sleep_for(std::chrono::seconds(delay));
   }
@@ -57,9 +57,11 @@ void RetryTest(std::function<void(HttpKeyFetcher&, std::string*)> make_request,
 
 TEST(HttpFetcherTest, HttpGet) {
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         ASSERT_OK(fetcher.Get(kTestUrl, response));
       },
+      // check_response
       [](std::string& response) -> void {
         EXPECT_NE(std::string::npos, response.find("\"method\": \"GET\""));
       });
@@ -67,9 +69,11 @@ TEST(HttpFetcherTest, HttpGet) {
 
 TEST(HttpFetcherTest, HttpPost) {
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         ASSERT_OK(fetcher.Post(kTestUrl, "", response));
       },
+      // check_response
       [](std::string& response) -> void {
         EXPECT_NE(std::string::npos, response.find("\"method\": \"POST\""));
       });
@@ -77,9 +81,11 @@ TEST(HttpFetcherTest, HttpPost) {
 
 TEST(HttpKeyFetcherTest, HttpFetchKeys) {
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         ASSERT_OK(fetcher.FetchKeys(kTestUrl, "foo=62&type=mp4", response));
       },
+      // check_response
       [](std::string& response) -> void {
         EXPECT_NE(std::string::npos, response.find("\"foo=62&type=mp4\""));
       });
@@ -87,19 +93,23 @@ TEST(HttpKeyFetcherTest, HttpFetchKeys) {
 
 TEST(HttpKeyFetcherTest, InvalidUrl) {
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         Status status = fetcher.FetchKeys(kTestUrl404, "", response);
         EXPECT_EQ(error::HTTP_FAILURE, status.error_code());
         EXPECT_NE(std::string::npos, status.error_message().find("404"));
       },
+      // check_response
       [](std::string& response) -> void {});
 }
 
 TEST(HttpKeyFetcherTest, UrlWithPort) {
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         ASSERT_OK(fetcher.FetchKeys(kTestUrlWithPort, "", response));
       },
+      // check_response
       [](std::string& response) -> void {});
 }
 
@@ -107,22 +117,30 @@ TEST(HttpKeyFetcherTest, SmallTimeout) {
   const int32_t kTimeoutInSeconds = 1;
 
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         Status status = fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
         EXPECT_EQ(error::TIME_OUT, status.error_code());
       },
-      [](std::string& response) -> void {}, kTimeoutInSeconds);
+      // check_response
+      [](std::string& response) -> void {},
+      // timeout_in_seconds
+      kTimeoutInSeconds);
 }
 
 TEST(HttpKeyFetcherTest, BigTimeout) {
   const int32_t kTimeoutInSeconds = 5;
 
   RetryTest(
+      // make_request
       [](HttpKeyFetcher& fetcher, std::string* response) -> void {
         Status status = fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
         EXPECT_OK(status);
       },
-      [](std::string& response) -> void {}, kTimeoutInSeconds);
+      // check_response
+      [](std::string& response) -> void {},
+      // timeout_in_seconds
+      kTimeoutInSeconds);
 }
 
 }  // namespace media

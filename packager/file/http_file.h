@@ -47,7 +47,7 @@ class HttpFile : public File {
   HttpFile(const HttpFile&) = delete;
   HttpFile& operator=(const HttpFile&) = delete;
 
-  int HttpStatusCode() const;
+  int http_status_code() const;
   Status CloseWithStatus();
 
   /// @name File implementation overrides.

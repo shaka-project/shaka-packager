@@ -31,7 +31,7 @@ class HttpKeyFetcher : public KeyFetcher {
   HttpKeyFetcher(int32_t timeout_in_seconds);
   ~HttpKeyFetcher() override;
 
-  int HttpStatusCode() const;
+  int http_status_code() const;
 
   /// @name KeyFetcher implementation overrides.
   Status FetchKeys(const std::string& url,

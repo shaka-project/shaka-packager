@@ -84,14 +84,14 @@ void RetryTest(std::function<HttpFile*()> setup,
 
     json = HandleResponse(file);
 
-    if (file->HttpStatusCode() != 502) {
+    if (file->http_status_code() != 502) {
       // Not a 502 error, so take this result.
       break;
     }
 
     // Delay with exponential increase (1s, 2s, 4s), then loop try again.
     int delay = 1 << i;
-    LOG(WARNING) << "httpbin failure (" << file->HttpStatusCode() << "): "
+    LOG(WARNING) << "httpbin failure (" << file->http_status_code() << "): "
                  << "Delaying " << delay << " seconds and retrying.";
     std::this_thread::sleep_for(std::chrono::seconds(delay));
   }
@@ -104,29 +104,32 @@ void RetryTest(std::function<HttpFile*()> setup,
 
 TEST(HttpFileTest, BasicGet) {
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything");
       },
+      // pre_read
       [](FilePtr&) -> void {},
-      [](FilePtr& file, nlohmann::json json) -> void {
+      // post_read
+      [](FilePtr&, nlohmann::json json) -> void {
         ASSERT_TRUE(json.is_object());
-        ASSERT_TRUE(file.release()->Close());
         ASSERT_JSON_STRING(json, "method", "GET");
       });
 }
 
 TEST(HttpFileTest, CustomHeaders) {
   RetryTest(
+      // setup
       []() -> HttpFile* {
         std::vector<std::string> headers{"Host: foo", "X-My-Header: Something"};
         return new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything",
                             "", headers, 0);
       },
+      // pre_read
       [](FilePtr&) -> void {},
-      [](FilePtr& file, nlohmann::json json) -> void {
+      // post_read
+      [](FilePtr&, nlohmann::json json) -> void {
         ASSERT_TRUE(json.is_object());
-        ASSERT_TRUE(file.release()->Close());
-
         ASSERT_JSON_STRING(json, "method", "GET");
         ASSERT_JSON_STRING(json, "headers.Host", "foo");
         ASSERT_JSON_STRING(json, "headers.X-My-Header", "Something");
@@ -137,17 +140,19 @@ TEST(HttpFileTest, BasicPost) {
   const std::string data = "abcd";
 
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kPost, "https://httpbin.org/anything");
       },
+      // pre_read
       [&data](FilePtr& file) -> void {
         ASSERT_EQ(file->Write(data.data(), data.size()),
                   static_cast<int64_t>(data.size()));
         ASSERT_TRUE(file->Flush());
       },
-      [&data](FilePtr& file, nlohmann::json json) -> void {
+      // post_read
+      [&data](FilePtr&, nlohmann::json json) -> void {
         ASSERT_TRUE(json.is_object());
-        ASSERT_TRUE(file.release()->Close());
 
         ASSERT_JSON_STRING(json, "method", "POST");
         ASSERT_JSON_STRING(json, "data", data);
@@ -171,17 +176,19 @@ TEST(HttpFileTest, BasicPut) {
   const std::string data = "abcd";
 
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything");
       },
+      // pre_read
       [&data](FilePtr& file) -> void {
         ASSERT_EQ(file->Write(data.data(), data.size()),
                   static_cast<int64_t>(data.size()));
         ASSERT_TRUE(file->Flush());
       },
-      [&data](FilePtr& file, nlohmann::json json) -> void {
+      // post_read
+      [&data](FilePtr&, nlohmann::json json) -> void {
         ASSERT_TRUE(json.is_object());
-        ASSERT_TRUE(file.release()->Close());
 
         ASSERT_JSON_STRING(json, "method", "PUT");
         ASSERT_JSON_STRING(json, "data", data);
@@ -208,9 +215,11 @@ TEST(HttpFileTest, MultipleWrites) {
   const std::string data4 = "mnop";
 
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything");
       },
+      // pre_read
       [&data1, &data2, &data3, &data4](FilePtr& file) -> void {
         ASSERT_EQ(file->Write(data1.data(), data1.size()),
                   static_cast<int64_t>(data1.size()));
@@ -222,10 +231,9 @@ TEST(HttpFileTest, MultipleWrites) {
                   static_cast<int64_t>(data4.size()));
         ASSERT_TRUE(file->Flush());
       },
-      [&data1, &data2, &data3, &data4](FilePtr& file,
-                                       nlohmann::json json) -> void {
+      // post_read
+      [&data1, &data2, &data3, &data4](FilePtr&, nlohmann::json json) -> void {
         ASSERT_TRUE(json.is_object());
-        ASSERT_TRUE(file.release()->Close());
 
         ASSERT_JSON_STRING(json, "method", "PUT");
         ASSERT_JSON_STRING(json, "data", data1 + data2 + data3 + data4);
@@ -251,10 +259,13 @@ TEST(HttpFileTest, MultipleWrites) {
 
 TEST(HttpFileTest, Error404) {
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kGet, "https://httpbin.org/status/404");
       },
+      // pre_read
       [](FilePtr&) -> void {},
+      // post_read
       [](FilePtr& file, nlohmann::json) -> void {
         // The site returns an empty response, not JSON.
         auto status = file.release()->CloseWithStatus();
@@ -265,11 +276,14 @@ TEST(HttpFileTest, Error404) {
 
 TEST(HttpFileTest, TimeoutTriggered) {
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/8", "",
                             {}, 1);
       },
+      // pre_read
       [](FilePtr&) -> void {},
+      // post_read
       [](FilePtr& file, nlohmann::json) -> void {
         // Request should timeout; error is reported in Close/CloseWithStatus.
         auto status = file.release()->CloseWithStatus();
@@ -280,15 +294,19 @@ TEST(HttpFileTest, TimeoutTriggered) {
 
 TEST(HttpFileTest, TimeoutNotTriggered) {
   RetryTest(
+      // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/1", "",
                             {}, 5);
       },
+      // pre_read
       [](FilePtr&) -> void {},
+      // post_read
       [](FilePtr& file, nlohmann::json json) -> void {
         // The timeout was not triggered.  We got back some JSON.
+        auto status = file.release()->CloseWithStatus();
+        ASSERT_TRUE(status.ok());
         ASSERT_TRUE(json.is_object());
-        ASSERT_TRUE(file.release()->Close());
       });
 }
 
