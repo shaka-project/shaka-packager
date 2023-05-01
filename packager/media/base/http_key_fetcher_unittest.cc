@@ -26,16 +26,19 @@ const char kTestUrlDelayTwoSecs[] = "https://httpbin.org/delay/2";
 // Tests using httpbin can sometimes be flaky.  We get HTTP 502 errors when it
 // is overloaded.  This will retry a test with delays, up to a limit, if the
 // HTTP status code is 502.
-void RetryTest(std::function<void(HttpKeyFetcher&, std::string*)> make_request,
-               std::function<void(std::string&)> check_response,
-               int32_t timeout_in_seconds = 0) {
+void RetryTest(
+    std::function<Status(HttpKeyFetcher&, std::string*)> make_request,
+    std::function<void(Status, std::string&)> check_response,
+    int32_t timeout_in_seconds = 0) {
   std::string response;
+  Status status;
 
   for (int i = 0; i < 3; ++i) {
     HttpKeyFetcher fetcher(timeout_in_seconds);
 
     response.clear();
-    make_request(fetcher, &response);
+    status = make_request(fetcher, &response);
+    if (testing::Test::HasFailure()) return;
 
     if (fetcher.http_status_code() != 502) {
       // Not a 502 error, so take this result.
@@ -50,31 +53,33 @@ void RetryTest(std::function<void(HttpKeyFetcher&, std::string*)> make_request,
   }
 
   // Out of retries?  Check what we have.
-  check_response(response);
+  check_response(status, response);
 }
 
 }  // namespace
 
-TEST(HttpFetcherTest, HttpGet) {
+TEST(HttpKeyFetcherTest, HttpGet) {
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        ASSERT_OK(fetcher.Get(kTestUrl, response));
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.Get(kTestUrl, response);
       },
       // check_response
-      [](std::string& response) -> void {
+      [](Status status, std::string& response) -> void {
+        ASSERT_OK(status);
         EXPECT_NE(std::string::npos, response.find("\"method\": \"GET\""));
       });
 }
 
-TEST(HttpFetcherTest, HttpPost) {
+TEST(HttpKeyFetcherTest, HttpPost) {
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        ASSERT_OK(fetcher.Post(kTestUrl, "", response));
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.Post(kTestUrl, "", response);
       },
       // check_response
-      [](std::string& response) -> void {
+      [](Status status, std::string& response) -> void {
+        ASSERT_OK(status);
         EXPECT_NE(std::string::npos, response.find("\"method\": \"POST\""));
       });
 }
@@ -82,11 +87,12 @@ TEST(HttpFetcherTest, HttpPost) {
 TEST(HttpKeyFetcherTest, HttpFetchKeys) {
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        ASSERT_OK(fetcher.FetchKeys(kTestUrl, "foo=62&type=mp4", response));
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.FetchKeys(kTestUrl, "foo=62&type=mp4", response);
       },
       // check_response
-      [](std::string& response) -> void {
+      [](Status status, std::string& response) -> void {
+        ASSERT_OK(status);
         EXPECT_NE(std::string::npos, response.find("\"foo=62&type=mp4\""));
       });
 }
@@ -94,23 +100,26 @@ TEST(HttpKeyFetcherTest, HttpFetchKeys) {
 TEST(HttpKeyFetcherTest, InvalidUrl) {
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        Status status = fetcher.FetchKeys(kTestUrl404, "", response);
-        EXPECT_EQ(error::HTTP_FAILURE, status.error_code());
-        EXPECT_NE(std::string::npos, status.error_message().find("404"));
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.FetchKeys(kTestUrl404, "", response);
       },
       // check_response
-      [](std::string&) -> void {});
+      [](Status status, std::string&) -> void {
+        EXPECT_EQ(error::HTTP_FAILURE, status.error_code());
+        EXPECT_NE(std::string::npos, status.error_message().find("404"));
+      });
 }
 
 TEST(HttpKeyFetcherTest, UrlWithPort) {
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        ASSERT_OK(fetcher.FetchKeys(kTestUrlWithPort, "", response));
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.FetchKeys(kTestUrlWithPort, "", response);
       },
       // check_response
-      [](std::string&) -> void {});
+      [](Status status, std::string&) -> void {
+        ASSERT_OK(status);
+      });
 }
 
 TEST(HttpKeyFetcherTest, SmallTimeout) {
@@ -118,12 +127,13 @@ TEST(HttpKeyFetcherTest, SmallTimeout) {
 
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        Status status = fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
-        EXPECT_EQ(error::TIME_OUT, status.error_code());
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
       },
       // check_response
-      [](std::string&) -> void {},
+      [](Status status, std::string&) -> void {
+        EXPECT_EQ(error::TIME_OUT, status.error_code());
+      },
       // timeout_in_seconds
       kTimeoutInSeconds);
 }
@@ -133,12 +143,13 @@ TEST(HttpKeyFetcherTest, BigTimeout) {
 
   RetryTest(
       // make_request
-      [](HttpKeyFetcher& fetcher, std::string* response) -> void {
-        Status status = fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
-        EXPECT_OK(status);
+      [](HttpKeyFetcher& fetcher, std::string* response) -> Status {
+        return fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
       },
       // check_response
-      [](std::string&) -> void {},
+      [](Status status, std::string&) -> void {
+        ASSERT_OK(status);
+      },
       // timeout_in_seconds
       kTimeoutInSeconds);
 }

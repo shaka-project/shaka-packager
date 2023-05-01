@@ -81,6 +81,7 @@ void RetryTest(std::function<HttpFile*()> setup,
     ASSERT_TRUE(file->Open());
 
     pre_read(file);
+    if (testing::Test::HasFailure()) return;
 
     json = HandleResponse(file);
 
