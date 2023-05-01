@@ -6,8 +6,9 @@
 
 #include "packager/media/trick_play/trick_play_handler.h"
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

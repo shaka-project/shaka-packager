@@ -1,4 +1,4 @@
-// Copyright 2017 Google LLC. All rights reserved.
+// Copyright 2022 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,8 +11,10 @@
 #include <gtest/gtest.h>
 
 #include "absl/strings/escaping.h"
+#include "absl/strings/numbers.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/utils/bytes_to_string_view.h"
 
 namespace shaka {
 namespace media {
@@ -145,8 +147,11 @@ MATCHER_P6(MatchEncryptionConfig,
            constant_iv,
            key_id,
            "") {
-  const std::string constant_iv_hex = absl::BytesToHexString(arg.constant_iv);
-  const std::string key_id_hex = absl::BytesToHexString(arg.key_id);
+  const std::string_view constant_iv_data =
+      byte_vector_to_string_view(constant_iv);
+  const std::string constant_iv_hex = absl::BytesToHexString(constant_iv_data);
+  const std::string key_id_data(arg.key_id.data(), arg.key_id.size());
+  const std::string key_id_hex = absl::BytesToHexString(key_id_data);
   const std::string protection_scheme_as_string =
       FourCCToString(arg.protection_scheme);
   // Convert to integers so that they will print as a number and not a uint8_t

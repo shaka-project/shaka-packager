@@ -6,13 +6,13 @@
 
 # Root-level CMake build file.
 
-# Project name.  May not contain spaces.  Versioning is managed elsewhere.
-cmake_policy(SET CMP0048 NEW)
-project(shaka-packager VERSION "")
-
 # Minimum CMake version.
 # We could require as low as 3.10, but glog requires 3.16.
 cmake_minimum_required(VERSION 3.16)
+
+# Project name.  May not contain spaces.  Versioning is managed elsewhere.
+cmake_policy(SET CMP0048 NEW)
+project(shaka-packager VERSION "")
 
 # The only build option for Shaka Packager is whether to build a shared
 # libpackager library.  By default, don't.
