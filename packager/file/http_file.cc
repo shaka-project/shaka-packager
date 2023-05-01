@@ -358,7 +358,7 @@ void HttpFile::ThreadMain() {
     if (res == CURLE_HTTP_RETURNED_ERROR) {
       long response_code = 0;
       curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &response_code);
-      http_status_code_ = response_code;
+      http_status_code_ = static_cast<int>(response_code);
       error_message += absl::StrFormat(", response code: %ld.", response_code);
     }
 
