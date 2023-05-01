@@ -42,7 +42,14 @@ are:
 __author__ = 'petar@google.com (Petar Petrov)'
 
 import collections
+
+try:
+    packagerCor = collections.abc
+except AttributeError:
+    packagerCor = collections
+
 import sys
+
 
 if sys.version_info[0] < 3:
   # We would use collections.MutableMapping all the time, but in Python 2 it
@@ -179,7 +186,7 @@ if sys.version_info[0] < 3:
 else:
   # In Python 3 we can just use MutableMapping directly, because it defines
   # __slots__.
-  MutableMapping = collections.MutableMapping
+  MutableMapping = packagerCor.MutableMapping
 
 
 class BaseContainer(object):
@@ -337,7 +344,7 @@ class RepeatedScalarFieldContainer(BaseContainer):
     # We are presumably comparing against some other sequence type.
     return other == self._values
 
-collections.MutableSequence.register(BaseContainer)
+packagerCor.MutableSequence.register(BaseContainer)
 
 
 class RepeatedCompositeFieldContainer(BaseContainer):
