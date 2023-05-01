@@ -298,7 +298,7 @@ TEST(HttpFileTest, TimeoutNotTriggered) {
       // setup
       []() -> HttpFile* {
         return new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/1", "",
-                            {}, 5);
+                            {}, 10);
       },
       // pre_read
       [](FilePtr&) -> void {},

@@ -139,7 +139,7 @@ TEST(HttpKeyFetcherTest, SmallTimeout) {
 }
 
 TEST(HttpKeyFetcherTest, BigTimeout) {
-  const int32_t kTimeoutInSeconds = 5;
+  const int32_t kTimeoutInSeconds = 10;
 
   RetryTest(
       // make_request
