@@ -10,8 +10,8 @@
 
 #include <chrono>
 #include <memory>
-#include <vector>
 #include <thread>
+#include <vector>
 
 #include "absl/strings/str_split.h"
 #include "nlohmann/json.hpp"

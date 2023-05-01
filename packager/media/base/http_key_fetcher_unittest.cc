@@ -28,7 +28,7 @@ const char kTestUrlDelayTwoSecs[] = "https://httpbin.org/delay/2";
 // HTTP status code is 502.
 void RetryTest(std::function<void(HttpKeyFetcher&, std::string*)> make_request,
                std::function<void(std::string&)> check_response,
-               int32_t timeout_in_seconds=0) {
+               int32_t timeout_in_seconds = 0) {
   std::string response;
 
   for (int i = 0; i < 3; ++i) {
@@ -111,8 +111,7 @@ TEST(HttpKeyFetcherTest, SmallTimeout) {
         Status status = fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
         EXPECT_EQ(error::TIME_OUT, status.error_code());
       },
-      [](std::string& response) -> void {},
-      kTimeoutInSeconds);
+      [](std::string& response) -> void {}, kTimeoutInSeconds);
 }
 
 TEST(HttpKeyFetcherTest, BigTimeout) {
@@ -123,10 +122,8 @@ TEST(HttpKeyFetcherTest, BigTimeout) {
         Status status = fetcher.FetchKeys(kTestUrlDelayTwoSecs, "", response);
         EXPECT_OK(status);
       },
-      [](std::string& response) -> void {},
-      kTimeoutInSeconds);
+      [](std::string& response) -> void {}, kTimeoutInSeconds);
 }
 
 }  // namespace media
 }  // namespace shaka
-

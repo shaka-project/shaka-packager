@@ -25,8 +25,7 @@ constexpr size_t kBufferSize = 64 * 1024;
 HttpKeyFetcher::HttpKeyFetcher() : timeout_in_seconds_(0) {}
 
 HttpKeyFetcher::HttpKeyFetcher(int32_t timeout_in_seconds)
-    : timeout_in_seconds_(timeout_in_seconds),
-      http_status_code_(0) {}
+    : timeout_in_seconds_(timeout_in_seconds), http_status_code_(0) {}
 
 HttpKeyFetcher::~HttpKeyFetcher() {}
 
