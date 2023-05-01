@@ -8,8 +8,10 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <memory>
 #include <vector>
+#include <thread>
 
 #include "absl/strings/str_split.h"
 #include "nlohmann/json.hpp"
@@ -91,7 +93,7 @@ void RetryTest(std::function<HttpFile*()> setup,
     int delay = 1 << i;
     LOG(WARNING) << "httpbin failure (" << file->HttpStatusCode() << "): "
                  << "Delaying " << delay << " seconds and retrying.";
-    sleep(delay);
+    std::this_thread::sleep_for(std::chrono::seconds(delay));
   }
 
   // Out of retries?  Check what we have.
