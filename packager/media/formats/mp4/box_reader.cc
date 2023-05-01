@@ -67,7 +67,6 @@ bool BoxReader::StartBox(const uint8_t* buf,
 bool BoxReader::ScanChildren() {
   DCHECK(!scanned_);
   scanned_ = true;
-
   while (pos() < size()) {
     std::unique_ptr<BoxReader> child(
         new BoxReader(&data()[pos()], size() - pos()));
@@ -93,7 +92,7 @@ bool BoxReader::ReadChild(Box* child) {
 
   ChildMap::iterator itr = children_.find(child_type);
   RCHECK(itr != children_.end());
-  DVLOG(2) << "Found a " << FourCCToString(child_type) << " box.";
+  VLOG(2) << "Found a " << FourCCToString(child_type) << " box.";
   RCHECK(child->Parse(itr->second.get()));
   children_.erase(itr);
   return true;
