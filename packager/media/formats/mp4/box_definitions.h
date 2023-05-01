@@ -268,6 +268,15 @@ struct CodecConfiguration : Box {
   std::vector<uint8_t> data;
 };
 
+struct ColorParameters : Box {
+  DECLARE_BOX_METHODS(ColorParameters);
+
+  std::string color_parameter_type;
+  uint16_t color_primaries = 0u;
+  uint16_t transfer_characteristics = 0u;
+  uint16_t matrix_coefficients = 0u;
+};
+
 struct PixelAspectRatio : Box {
   DECLARE_BOX_METHODS(PixelAspectRatio);
 
@@ -297,6 +306,7 @@ struct VideoSampleEntry : Box {
   uint16_t width = 0u;
   uint16_t height = 0u;
 
+  ColorParameters colr;
   PixelAspectRatio pixel_aspect;
   ProtectionSchemeInfo sinf;
   CodecConfiguration codec_configuration;
