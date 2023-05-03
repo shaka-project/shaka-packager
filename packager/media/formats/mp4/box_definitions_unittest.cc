@@ -327,11 +327,18 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(ColorParameters* colr) {
-
+    colr->color_parameter_type = "nclx";
+    colr->color_primaries = 9;
+    colr->transfer_characteristics = 16;
+    colr->matrix_coefficients = 9;
+    colr->video_full_range_flag = 0;
   }
 
   void Modify(ColorParameters* colr) {
-
+    colr->color_primaries = 7;
+    colr->transfer_characteristics = 14;
+    colr->matrix_coefficients = 12;
+    colr->video_full_range_flag = 1;
   }
 
   void Fill(PixelAspectRatio* pasp) {
