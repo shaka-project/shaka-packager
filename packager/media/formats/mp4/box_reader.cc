@@ -67,6 +67,7 @@ bool BoxReader::StartBox(const uint8_t* buf,
 bool BoxReader::ScanChildren() {
   DCHECK(!scanned_);
   scanned_ = true;
+
   while (pos() < size()) {
     std::unique_ptr<BoxReader> child(
         new BoxReader(&data()[pos()], size() - pos()));
@@ -78,8 +79,8 @@ bool BoxReader::ScanChildren() {
     size_t box_size = child->size();
     children_.insert(std::pair<FourCC, std::unique_ptr<BoxReader>>(
         box_type, std::move(child)));
-    VLOG(2) << "Child " << FourCCToString(box_type) << " size 0x" << std::hex
-            << box_size << std::dec;
+    DVLOG(2) << "Child " << FourCCToString(box_type) << " size 0x" << std::hex
+             << box_size << std::dec;
     RCHECK(SkipBytes(box_size));
   }
 

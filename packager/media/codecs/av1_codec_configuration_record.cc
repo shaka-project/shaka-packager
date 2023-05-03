@@ -85,7 +85,6 @@ bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, size_t data_size) {
 // When color info is NOT available, generate the basic codec string without the
 // optional fields
 std::string AV1CodecConfigurationRecord::GetCodecString() const {
-  VLOG(2) << "AV1CodecConfigurationRecord::GetCodecString";
   return base::StringPrintf("av01.%d.%02d%c.%02d", profile_, level_,
                             tier_ ? 'H' : 'M', bit_depth_);
 }
