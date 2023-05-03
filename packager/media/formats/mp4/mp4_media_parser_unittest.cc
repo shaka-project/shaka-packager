@@ -118,6 +118,13 @@ TEST_F(MP4MediaParserTest, UnalignedAppend) {
   EXPECT_EQ(201u, num_samples_);
 }
 
+// // Verify that color parameter data are correctly extracted if the container has a 'colr' box;
+// TEST_F(MP4MediaParserTest, ColorParametersFromColrBox) {
+//   EXPECT_TRUE(ParseMP4File("bear-320x180-with-colr.mp4", 512));
+
+// }
+
+
 // Verify that the pixel width and pixel height are extracted correctly if
 // the container has a 'pasp' box.
 TEST_F(MP4MediaParserTest, PixelWidthPixelHeightFromPaspBox) {

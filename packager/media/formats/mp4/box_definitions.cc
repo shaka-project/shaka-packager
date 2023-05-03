@@ -1471,41 +1471,24 @@ FourCC ColorParameters::BoxType() const {
 
 bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
   if (buffer->reader()) {
-  VLOG(2) << "Readin!!!!";
-  RCHECK((buffer->reader())->ReadToString(&color_parameter_type, 4));
-  RCHECK((buffer->reader())->Read2(&color_primaries));
-  RCHECK((buffer->reader())->Read2(&transfer_characteristics));
-  RCHECK((buffer->reader())->Read2(&matrix_coefficients));
-  LOG(INFO) << "color_parameter_type " + color_parameter_type;
-  printf("color_primaries: %u\n", (unsigned int)color_primaries);
-  printf("transfer_characteristics: %u\n", (unsigned int)transfer_characteristics);
-  printf("matrix_coefficients: %u\n", (unsigned int)matrix_coefficients);
+    RCHECK((buffer->reader())->ReadToString(&color_parameter_type, 4) &&
+           (buffer->reader())->Read2(&color_primaries) &&
+           (buffer->reader())->Read2(&transfer_characteristics) &&
+           (buffer->reader())->Read2(&matrix_coefficients) &&
+           (buffer->reader())->Read1(&video_full_range_flag));
   }
-
-  // RCHECK(ReadWriteHeaderInternal(buffer) &&
-  //        buffer->ReadWriteUInt16(&transfer_characteristics) &&
-  //        buffer->ReadWriteUInt16(&matrix_coefficients));
-  // // ReadWriteUInt16 stores values as little endian
-  // // buffer->Read2(&color_primaries);
-
-  // VLOG(2) << "ReadWriteInternal";
-  // LOG(INFO) << "color_parameter_type " + color_parameter_type;
-  // printf("color_primaries: %u\n", (unsigned int)color_primaries);
-  // printf("transfer_characteristics: %u\n", (unsigned int)transfer_characteristics);
-  // printf("matrix_coefficients: %u\n", (unsigned int)matrix_coefficients);
-  // LOG(INFO) << "Caitlin: done parsing colr";
-
-
+  // TODO(caitlinocallaghan) Add the ability to write the colr atom and include
+  // it in the muxed mp4.
   return true;
 }
 
 size_t ColorParameters::ComputeSizeInternal() {
   // This box is optional. Skip it if it is not initialized.
-  if (color_primaries == 0 && transfer_characteristics == 0 && matrix_coefficients == 0)
+  if (color_parameter_type != "nclx")
     return 0;
-  // Both values must be positive.
-  DCHECK(color_primaries != 0 && transfer_characteristics != 0);
-  return HeaderSize() + sizeof(color_primaries) + sizeof(transfer_characteristics) + sizeof(matrix_coefficients);
+  return HeaderSize() + sizeof(color_parameter_type) + sizeof(color_primaries) +
+         sizeof(transfer_characteristics) + sizeof(matrix_coefficients) +
+         sizeof(video_full_range_flag);
 }
 
 
@@ -1520,9 +1503,6 @@ bool PixelAspectRatio::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&h_spacing) &&
          buffer->ReadWriteUInt32(&v_spacing));
-           VLOG(2) << "PixelAspectRatio::ReadWriteInternal";
-  LOG(INFO) << "h_spacing " + int(h_spacing);
-  printf("%u\n", (unsigned int)h_spacing);
   return true;
 }
 
@@ -1647,11 +1627,8 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&extra_codec_config));
   }
 
-  VLOG(2) << "Caitlin: RCHECK(buffer->TryReadWriteChild(&pixel_aspect));";
   RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
-  VLOG(2) << "Caitlin: RCHECK(buffer->TryReadWriteChild(&colr));";
   RCHECK(buffer->TryReadWriteChild(&colr));
-
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of VideoSampleEntry. See

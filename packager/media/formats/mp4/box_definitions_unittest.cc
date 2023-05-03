@@ -326,6 +326,14 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     Modify(&metadata->id3v2);
   }
 
+  void Fill(ColorParameters* colr) {
+
+  }
+
+  void Modify(ColorParameters* colr) {
+
+  }
+
   void Fill(PixelAspectRatio* pasp) {
     pasp->h_spacing = 5;
     pasp->v_spacing = 8;
@@ -361,6 +369,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     entry->width = 800;
     entry->height = 600;
     Fill(&entry->pixel_aspect);
+    Fill(&entry->colr);
     Fill(&entry->sinf);
     Fill(&entry->codec_configuration);
 

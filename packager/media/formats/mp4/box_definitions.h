@@ -272,9 +272,10 @@ struct ColorParameters : Box {
   DECLARE_BOX_METHODS(ColorParameters);
 
   std::string color_parameter_type;
-  uint16_t color_primaries = 0u;
-  uint16_t transfer_characteristics = 0u;
-  uint16_t matrix_coefficients = 0u;
+  uint16_t color_primaries = 1;
+  uint16_t transfer_characteristics = 1;
+  uint16_t matrix_coefficients = 1;
+  uint8_t video_full_range_flag = 0;
 };
 
 struct PixelAspectRatio : Box {
