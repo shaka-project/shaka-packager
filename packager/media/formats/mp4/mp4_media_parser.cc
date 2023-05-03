@@ -604,6 +604,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse av1c.";
             return false;
           }
+          // Generate the full codec string if the colr atom is present.
           if (entry.colr.color_parameter_type == "nclx") {
             codec_string = av1_config.GetCodecString(
                 entry.colr.color_primaries, entry.colr.transfer_characteristics,
