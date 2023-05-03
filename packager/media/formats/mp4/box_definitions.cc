@@ -1491,7 +1491,6 @@ size_t ColorParameters::ComputeSizeInternal() {
          sizeof(video_full_range_flag);
 }
 
-
 PixelAspectRatio::PixelAspectRatio() = default;
 PixelAspectRatio::~PixelAspectRatio() = default;
 
