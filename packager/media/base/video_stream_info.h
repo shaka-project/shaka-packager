@@ -90,7 +90,9 @@ class VideoStreamInfo : public StreamInfo {
                          size_t eme_init_data_size) {
     eme_init_data_.assign(eme_init_data, eme_init_data + eme_init_data_size);
   }
-
+  void color_parameters() {
+    return color_parameters_;
+  }
  private:
   // Extra codec configuration in a stream of mp4 boxes. It is only applicable
   // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.
@@ -128,6 +130,7 @@ class VideoStreamInfo : public StreamInfo {
   // https://w3c.github.io/encrypted-media/#initialization-data.
   std::vector<uint8_t> eme_init_data_;
 
+  std::unique_ptr<ColorParameters> color_parameters_;
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is
   // typically small, the performance impact is minimal.
