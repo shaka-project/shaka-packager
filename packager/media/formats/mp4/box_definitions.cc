@@ -1627,8 +1627,8 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&extra_codec_config));
   }
 
-  RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
   RCHECK(buffer->TryReadWriteChild(&colr));
+  RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of VideoSampleEntry. See

@@ -375,8 +375,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     entry->data_reference_index = 1;
     entry->width = 800;
     entry->height = 600;
-    Fill(&entry->pixel_aspect);
     Fill(&entry->colr);
+    Fill(&entry->pixel_aspect);
     Fill(&entry->sinf);
     Fill(&entry->codec_configuration);
 
