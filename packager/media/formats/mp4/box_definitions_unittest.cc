@@ -370,7 +370,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     entry->height = 600;
     Fill(&entry->colr);
     Fill(&entry->pixel_aspect);
-    Fill(&entry->colr);
     Fill(&entry->sinf);
     Fill(&entry->codec_configuration);
 
