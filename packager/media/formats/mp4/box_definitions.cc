@@ -1506,9 +1506,6 @@ bool PixelAspectRatio::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&h_spacing) &&
          buffer->ReadWriteUInt32(&v_spacing));
-           VLOG(2) << "PixelAspectRatio::ReadWriteInternal";
-  LOG(INFO) << "h_spacing " + int(h_spacing);
-  printf("%u\n", (unsigned int)h_spacing);
   return true;
 }
 
