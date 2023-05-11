@@ -271,7 +271,7 @@ struct CodecConfiguration : Box {
 struct ColorParameters : Box {
   DECLARE_BOX_METHODS(ColorParameters);
 
-  std::string color_parameter_type;
+  FourCC color_parameter_type = FOURCC_NULL;
   uint16_t color_primaries = 1;
   uint16_t transfer_characteristics = 1;
   uint16_t matrix_coefficients = 1;

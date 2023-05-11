@@ -103,6 +103,8 @@ enum FourCC : uint32_t {
   FOURCC_mp4v = 0x6d703476,
   FOURCC_mvex = 0x6d766578,
   FOURCC_mvhd = 0x6d766864,
+  FOURCC_nclc = 0x6e636c63,
+  FOURCC_nclx = 0x6e636c78,
   FOURCC_nmhd = 0x6e6d6864,
   FOURCC_pasp = 0x70617370,
   FOURCC_payl = 0x7061796c,

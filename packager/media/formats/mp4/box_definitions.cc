@@ -1471,11 +1471,15 @@ FourCC ColorParameters::BoxType() const {
 
 bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
   if (buffer->reader()) {
-    RCHECK((buffer->reader())->ReadToString(&color_parameter_type, 4) &&
+    RCHECK((buffer->reader())->ReadFourCC(&color_parameter_type) &&
            (buffer->reader())->Read2(&color_primaries) &&
            (buffer->reader())->Read2(&transfer_characteristics) &&
-           (buffer->reader())->Read2(&matrix_coefficients) &&
-           (buffer->reader())->Read1(&video_full_range_flag));
+           (buffer->reader())->Read2(&matrix_coefficients));
+    // Type nclc does not contain video_full_range_flag data, and thus, it has 1
+    // less byte than nclx. Only extract video_full_range_flag if of type nclx.
+    if (color_parameter_type == FOURCC_nclx) {
+      RCHECK((buffer->reader())->Read1(&video_full_range_flag));
+    }
   }
   // TODO(caitlinocallaghan) Add the ability to write the colr atom and include
   // it in the muxed mp4.
@@ -1484,9 +1488,9 @@ bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
 
 size_t ColorParameters::ComputeSizeInternal() {
   // This box is optional. Skip it if it is not initialized.
-  if (color_parameter_type != "nclx")
+  if (color_parameter_type == FOURCC_NULL)
     return 0;
-  return HeaderSize() + sizeof(color_parameter_type) + sizeof(color_primaries) +
+  return HeaderSize() + kFourCCSize + sizeof(color_primaries) +
          sizeof(transfer_characteristics) + sizeof(matrix_coefficients) +
          sizeof(video_full_range_flag);
 }

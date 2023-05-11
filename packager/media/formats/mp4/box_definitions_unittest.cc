@@ -327,7 +327,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(ColorParameters* colr) {
-    colr->color_parameter_type = "nclx";
+    colr->color_parameter_type = FOURCC_nclc;
     colr->color_primaries = 9;
     colr->transfer_characteristics = 16;
     colr->matrix_coefficients = 9;
@@ -335,6 +335,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Modify(ColorParameters* colr) {
+    colr->color_parameter_type = FOURCC_nclx;
     colr->color_primaries = 7;
     colr->transfer_characteristics = 14;
     colr->matrix_coefficients = 12;

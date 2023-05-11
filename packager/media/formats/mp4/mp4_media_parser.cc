@@ -605,7 +605,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             return false;
           }
           // Generate the full codec string if the colr atom is present.
-          if (entry.colr.color_parameter_type == "nclx") {
+          if (entry.colr.color_parameter_type != FOURCC_NULL) {
             codec_string = av1_config.GetCodecString(
                 entry.colr.color_primaries, entry.colr.transfer_characteristics,
                 entry.colr.matrix_coefficients,
