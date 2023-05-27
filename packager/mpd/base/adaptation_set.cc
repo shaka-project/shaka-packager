@@ -290,6 +290,14 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
+  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && transfer_characteristics_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:TransferCharacteristics",
+          std::to_string(transfer_characteristics_))) {
+    return base::nullopt;
+  }
+
   // Note: must be checked before checking segments_aligned_ (below). So that
   // segments_aligned_ is set before checking below.
   if (mpd_options_.mpd_type == MpdType::kStatic) {
