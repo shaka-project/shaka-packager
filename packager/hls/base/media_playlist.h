@@ -99,6 +99,7 @@ class MediaPlaylist {
   ///        to this playlist.
   /// @return true on success, false otherwise.
   virtual bool SetMediaInfo(const MediaInfo& media_info);
+  MediaInfo GetMediaInfo() const { return media_info_; }
 
   /// Set the sample duration. Sample duration is used to generate frame rate.
   /// Sample duration is not available right away especially. This allows

@@ -143,7 +143,8 @@ class MasterPlaylistTest : public ::testing::Test {
       : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
                                             kDefaultAudioLanguage,
                                             kDefaultTextLanguage,
-                                            !kIsIndependentSegments)),
+                                            !kIsIndependentSegments,
+                                            false)),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(std::filesystem::u8path(test_output_dir_) /
                               kDefaultMasterPlaylistName) {}
@@ -187,11 +188,9 @@ TEST_F(MasterPlaylistTest,
   const uint64_t kMaxBitrate = 435889;
   const uint64_t kAvgBitrate = 235889;
 
-  master_playlist_.reset(new MasterPlaylist(
-                             kDefaultMasterPlaylistName,
-                             kDefaultAudioLanguage,
-                             kDefaultTextLanguage,
-                             kIsIndependentSegments));
+  master_playlist_.reset(
+      new MasterPlaylist(kDefaultMasterPlaylistName, kDefaultAudioLanguage,
+                         kDefaultTextLanguage, kIsIndependentSegments, false));
 
   std::unique_ptr<MockMediaPlaylist> mock_playlist =
       CreateVideoPlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);

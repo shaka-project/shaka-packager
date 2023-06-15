@@ -160,6 +160,43 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetId) {
               AttributeEqual("id", std::to_string(kAdaptationSetId)));
 }
 
+// Verify that it sorts Representations by cl_index when force_cl_index is true.
+TEST_F(AdaptationSetTest, CheckForcedCommandline) {
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: CONTAINER_MP4\n";
+
+  mpd_options_.mpd_params.force_cl_index = true;
+  auto adaptation_set_v = CreateAdaptationSet(kNoLanguage);
+
+  adaptation_set_v->AddRepresentation(
+      ConvertToMediaInfo(std::string(kVideoMediaInfo).append("cl_index: 8\n")));
+  adaptation_set_v->AddRepresentation(
+      ConvertToMediaInfo(std::string(kVideoMediaInfo).append("cl_index: 2\n")));
+  adaptation_set_v->AddRepresentation(
+      ConvertToMediaInfo(std::string(kVideoMediaInfo).append("cl_index: 1\n")));
+
+  const char kExpectedOutput[] =
+      "<AdaptationSet id=\"1\" contentType=\"video\" "
+      "width=\"1280\" height=\"720\" frameRate=\"10/10\" par=\"16:9\">"
+      "  <Representation id=\"1\" bandwidth=\"0\" codecs=\"avc1\" "
+      "mimeType=\"video/mp4\" sar=\"1:1\"/>"
+      "  <Representation id=\"2\" bandwidth=\"0\" codecs=\"avc1\" "
+      "mimeType=\"video/mp4\" sar=\"1:1\"/>"
+      "  <Representation id=\"8\" bandwidth=\"0\" codecs=\"avc1\" "
+      "mimeType=\"video/mp4\" sar=\"1:1\"/>"
+      "</AdaptationSet>";
+  EXPECT_THAT(adaptation_set_v->GetXml(), XmlNodeEqual(kExpectedOutput));
+}
+
 // Verify AdaptationSet::AddAccessibilityElement() works.
 TEST_F(AdaptationSetTest, AddAccessibilityElement) {
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);

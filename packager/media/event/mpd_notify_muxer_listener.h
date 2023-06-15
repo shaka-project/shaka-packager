@@ -67,6 +67,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   void set_roles(const std::vector<std::string>& roles) { roles_ = roles; }
 
+  void set_cl_index(uint32_t idx) { cl_index_ = idx; }
+
  private:
   MpdNotifyMuxerListener(const MpdNotifyMuxerListener&) = delete;
   MpdNotifyMuxerListener& operator=(const MpdNotifyMuxerListener&) = delete;
@@ -79,6 +81,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   std::vector<std::string> accessibilities_;
   std::vector<std::string> roles_;
+
+  uint32_t cl_index_ = 0;
 
   bool is_encrypted_ = false;
   // Storage for values passed to OnEncryptionInfoReady().

@@ -62,6 +62,9 @@ struct PackagingParams {
   /// Only use a single thread to generate output.  This is useful in tests to
   /// avoid non-deterministic outputs.
   bool single_threaded = false;
+  /// Force the command-line order in the output manifest(s)
+  bool force_cl_index = false;
+
   /// DASH MPD related parameters.
   MpdParams mpd_params;
   /// HLS related parameters.
@@ -80,6 +83,9 @@ struct PackagingParams {
 
 /// Defines a single input/output stream.
 struct StreamDescriptor {
+  /// index of the stream in the command-line
+  uint32_t cl_index;
+
   /// Input/source media file path or network stream URL. Required.
   std::string input;
 

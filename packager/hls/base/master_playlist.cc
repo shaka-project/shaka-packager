@@ -194,6 +194,10 @@ std::list<Variant> BuildVariants(
   return merged;
 }
 
+bool ListOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
+  return a->GetMediaInfo().cl_index() < b->GetMediaInfo().cl_index();
+}
+
 void BuildStreamInfTag(const MediaPlaylist& playlist,
                        const Variant& variant,
                        const std::string& base_url,
@@ -363,10 +367,11 @@ void BuildMediaTags(
     const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
     const std::string& default_language,
     const std::string& base_url,
+    const bool force_cl_index,
     std::string* out) {
   for (const auto& group : groups) {
     const std::string& group_id = group.first;
-    const auto& playlists = group.second;
+    std::list<const MediaPlaylist*> playlists = group.second;
 
     // Tracks the language of the playlist in this group.
     // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
@@ -380,6 +385,9 @@ void BuildMediaTags(
     // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
     // |default_language_|.
     std::set<std::string> languages;
+
+    if (force_cl_index)
+      playlists.sort(ListOrderFn);
 
     for (const auto& playlist : playlists) {
       bool is_default = false;
@@ -411,6 +419,7 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& default_text_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
+                     const bool force_cl_index,
                      std::string* content) {
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
   std::map<std::string, std::list<const MediaPlaylist*>>
@@ -440,15 +449,17 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
     BuildMediaTags(audio_playlist_groups, default_audio_language, base_url,
-                   content);
+                   force_cl_index, content);
   }
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
     BuildMediaTags(subtitle_playlist_groups, default_text_language, base_url,
-                   content);
+                   force_cl_index, content);
   }
 
+  if (force_cl_index)
+    video_playlists.sort(ListOrderFn);
   std::list<Variant> variants =
       BuildVariants(audio_playlist_groups, subtitle_playlist_groups);
   for (const auto& variant : variants) {
@@ -460,6 +471,8 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
+  if (force_cl_index)
+    iframe_playlists.sort(ListOrderFn);
   if (!iframe_playlists.empty()) {
     content->append("\n");
     for (const auto& playlist : iframe_playlists) {
@@ -479,7 +492,10 @@ void AppendPlaylists(const std::string& default_audio_language,
       // null/empty/zero intentionally as the information is already available
       // in audio |playlist|.
       variant.audio_group_id = &playlist_group.first;
-      for (const auto& playlist : playlist_group.second) {
+      std::list<const MediaPlaylist*> playlists = playlist_group.second;
+      if (force_cl_index)
+        playlists.sort(ListOrderFn);
+      for (const auto& playlist : playlists) {
         BuildStreamInfTag(*playlist, variant, base_url, content);
       }
     }
@@ -491,11 +507,13 @@ void AppendPlaylists(const std::string& default_audio_language,
 MasterPlaylist::MasterPlaylist(const std::filesystem::path& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
-                               bool is_independent_segments)
+                               bool is_independent_segments,
+                               bool force_cl_index)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
       default_text_language_(default_text_language),
-      is_independent_segments_(is_independent_segments) {}
+      is_independent_segments_(is_independent_segments),
+      force_cl_index_(force_cl_index) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -510,7 +528,7 @@ bool MasterPlaylist::WriteMasterPlaylist(
     content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
   }
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
-                  playlists, &content);
+                  playlists, force_cl_index_, &content);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)

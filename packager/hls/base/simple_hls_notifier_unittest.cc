@@ -54,7 +54,8 @@ class MockMasterPlaylist : public MasterPlaylist {
       : MasterPlaylist(kMasterPlaylistName,
                        kDefaultAudioLanguage,
                        kDefaultTextLanguage,
-                       kIsIndependentSegments) {}
+                       kIsIndependentSegments,
+                       false) {}
 
   MOCK_METHOD3(WriteMasterPlaylist,
                bool(const std::string& prefix,

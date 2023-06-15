@@ -313,7 +313,8 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
       "reference_time_scale: 1111\n"
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
-      "media_duration_seconds: 10.5\n";
+      "media_duration_seconds: 10.5\n"
+      "cl_index: 0\n";
 
   const int32_t kReferenceTimeScale = 1111;  // Should match the protobuf.
 
@@ -361,6 +362,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReadySegmentList) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n"
+      "cl_index: 0\n"
       "subsegment_ranges {\n"
       "  begin: 222\n"
       "  end: 9999\n"
@@ -600,6 +602,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LowLatencyDash) {
       "  pixel_height: 1\n"
       "}\n"
       "media_duration_seconds: 20.0\n"
+      "cl_index: 0\n"
       "init_segment_name: \"liveinit.mp4\"\n"
       "segment_template: \"live-$NUMBER$.mp4\"\n"
       "reference_time_scale: 1000\n"
@@ -661,6 +664,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "  pixel_height: 1\n"
       "}\n"
       "media_duration_seconds: 20.0\n"
+      "cl_index: 0\n"
       "init_segment_name: \"liveinit.mp4\"\n"
       "segment_template: \"live-$NUMBER$.mp4\"\n"
       "reference_time_scale: 1000\n"
@@ -738,6 +742,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
       "  pixel_height: 1\n"
       "}\n"
       "media_duration_seconds: 20.0\n"
+      "cl_index: 0\n"
       "init_segment_name: \"liveinit.mp4\"\n"
       "segment_template: \"live-$NUMBER$.mp4\"\n"
       "reference_time_scale: 1000\n"

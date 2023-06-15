@@ -212,4 +212,6 @@ message MediaInfo {
   // with respect to the reference time scale.
   // Equal to the target segment duration times the reference time scale.
   optional uint64 segment_duration = 25;
+
+  optional uint32 cl_index = 28;
 }

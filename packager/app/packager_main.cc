@@ -506,6 +506,7 @@ std::optional<PackagingParams> GetPackagingParams() {
   mpd_params.include_mspr_pro =
       absl::GetFlag(FLAGS_include_mspr_pro_for_playready);
   mpd_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
+  mpd_params.force_cl_index = absl::GetFlag(FLAGS_force_cl_index);
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(absl::GetFlag(FLAGS_hls_playlist_type),
@@ -524,6 +525,7 @@ std::optional<PackagingParams> GetPackagingParams() {
   hls_params.default_text_language = absl::GetFlag(FLAGS_default_text_language);
   hls_params.media_sequence_number =
       absl::GetFlag(FLAGS_hls_media_sequence_number);
+  hls_params.force_cl_index = absl::GetFlag(FLAGS_force_cl_index);
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);
