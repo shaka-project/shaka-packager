@@ -14,4 +14,5 @@ set(ENABLE_TESTING OFF)
 set(GEN_FILES OFF)
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
+add_compile_options(-Wno-unused-but-set-variable)
 add_subdirectory(source)
