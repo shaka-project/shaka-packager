@@ -194,10 +194,6 @@ std::list<Variant> BuildVariants(
   return merged;
 }
 
-bool ListOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
-  return a->GetMediaInfo().cl_index() < b->GetMediaInfo().cl_index();
-}
-
 void BuildStreamInfTag(const MediaPlaylist& playlist,
                        const Variant& variant,
                        const std::string& base_url,
@@ -364,14 +360,13 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 }
 
 void BuildMediaTags(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
+    std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>& groups,
     const std::string& default_language,
     const std::string& base_url,
-    const bool force_cl_index,
     std::string* out) {
   for (const auto& group : groups) {
     const std::string& group_id = group.first;
-    std::list<const MediaPlaylist*> playlists = group.second;
+    const auto& playlists = group.second;
 
     // Tracks the language of the playlist in this group.
     // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
@@ -385,9 +380,6 @@ void BuildMediaTags(
     // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
     // |default_language_|.
     std::set<std::string> languages;
-
-    if (force_cl_index)
-      playlists.sort(ListOrderFn);
 
     for (const auto& playlist : playlists) {
       bool is_default = false;
@@ -413,6 +405,18 @@ void BuildMediaTags(
                     out);
     }
   }
+}
+
+bool ListOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
+  return a->GetMediaInfo().cl_index() < b->GetMediaInfo().cl_index();
+}
+
+bool GroupOrderFn(std::pair<std::string, std::list<const MediaPlaylist*>>& a,
+                  std::pair<std::string, std::list<const MediaPlaylist*>>& b) {
+  a.second.sort(ListOrderFn);
+  b.second.sort(ListOrderFn);
+  return a.second.front()->GetMediaInfo().cl_index() <
+         b.second.front()->GetMediaInfo().cl_index();
 }
 
 void AppendPlaylists(const std::string& default_audio_language,
@@ -446,20 +450,40 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
+  // convert the std::map to std::list and reorder if force_cl_index == true
+  std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
+      audio_groups_list(audio_playlist_groups.begin(),
+                        audio_playlist_groups.end());
+  std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
+      subtitle_groups_list(subtitle_playlist_groups.begin(),
+                           subtitle_playlist_groups.end());
+  if (force_cl_index) {
+    audio_groups_list.sort(GroupOrderFn);
+    for (const auto& group : audio_groups_list) {
+      std::list<const MediaPlaylist*> playlists = group.second;
+      playlists.sort(ListOrderFn);
+    }
+    subtitle_groups_list.sort(GroupOrderFn);
+    for (const auto& group : subtitle_groups_list) {
+      std::list<const MediaPlaylist*> playlists = group.second;
+      playlists.sort(ListOrderFn);
+    }
+    video_playlists.sort(ListOrderFn);
+    iframe_playlists.sort(ListOrderFn);
+  }
+
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(audio_playlist_groups, default_audio_language, base_url,
-                   force_cl_index, content);
+    BuildMediaTags(audio_groups_list, default_audio_language, base_url,
+                   content);
   }
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(subtitle_playlist_groups, default_text_language, base_url,
-                   force_cl_index, content);
+    BuildMediaTags(subtitle_groups_list, default_text_language, base_url,
+                   content);
   }
 
-  if (force_cl_index)
-    video_playlists.sort(ListOrderFn);
   std::list<Variant> variants =
       BuildVariants(audio_playlist_groups, subtitle_playlist_groups);
   for (const auto& variant : variants) {
@@ -471,8 +495,6 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
-  if (force_cl_index)
-    iframe_playlists.sort(ListOrderFn);
   if (!iframe_playlists.empty()) {
     content->append("\n");
     for (const auto& playlist : iframe_playlists) {
@@ -485,17 +507,14 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (!audio_playlist_groups.empty() && video_playlists.empty() &&
       subtitle_playlist_groups.empty()) {
     content->append("\n");
-    for (const auto& playlist_group : audio_playlist_groups) {
+    for (const auto& playlist_group : audio_groups_list) {
       Variant variant;
       // Populate |audio_group_id|, which will be propagated to "AUDIO" field.
       // Leaving other fields, e.g. xxx_audio_bitrate in |Variant|, as
       // null/empty/zero intentionally as the information is already available
       // in audio |playlist|.
       variant.audio_group_id = &playlist_group.first;
-      std::list<const MediaPlaylist*> playlists = playlist_group.second;
-      if (force_cl_index)
-        playlists.sort(ListOrderFn);
-      for (const auto& playlist : playlists) {
+      for (const auto& playlist : playlist_group.second) {
         BuildStreamInfTag(*playlist, variant, base_url, content);
       }
     }
