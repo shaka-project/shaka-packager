@@ -328,7 +328,8 @@ class AdaptationSet {
   // Transfer characteristics.
   uint32_t transfer_characteristics_ = 0;
 
-  uint32_t cl_index_ = UINT32_MAX;  
+  // the command-line index for this AdaptationSet
+  uint32_t cl_index_ = UINT32_MAX;
 };
 
 }  // namespace shaka
