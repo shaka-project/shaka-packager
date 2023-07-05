@@ -29,7 +29,7 @@ std::string ToTtmlTime(int64_t time, int32_t timescale) {
   remaining /= 60;
   const int hr = remaining;
 
-  return base::StringPrintf("%02d:%02d:%02d.%02d", hr, min, sec, ms);
+  return base::StringPrintf("%02d:%02d:%02d.%03d", hr, min, sec, ms);
 }
 
 std::string ToTtmlSize(const TextNumber& x, const TextNumber& y) {
