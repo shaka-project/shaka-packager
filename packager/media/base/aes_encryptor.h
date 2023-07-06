@@ -90,9 +90,9 @@ class AesCbcEncryptor : public AesCryptor {
                      uint8_t* ciphertext,
                      size_t* ciphertext_size) override;
   bool CryptInternal0(const uint8_t* plaintext,
-                     size_t plaintext_size,
-                     uint8_t* ciphertext,
-                     size_t* ciphertext_size);
+                      size_t plaintext_size,
+                      uint8_t* ciphertext,
+                      size_t* ciphertext_size);
   void SetIvInternal() override;
   size_t NumPaddingBytes(size_t size) const override;
 

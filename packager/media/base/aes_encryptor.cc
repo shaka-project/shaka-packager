@@ -129,18 +129,19 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
                                     size_t plaintext_size,
                                     uint8_t* ciphertext,
                                     size_t* ciphertext_size) {
-
   const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
   // mbedtls requires a buffer large enough for one extra block.
   const size_t required_ciphertext_size =
       plaintext_size + num_padding_bytes + AES_BLOCK_SIZE;
 
   if (*ciphertext_size < required_ciphertext_size) {
-    VLOG(1) << "Expected output size of at least "
-               << required_ciphertext_size << " bytes. Using temporary buffer.";
+    VLOG(1) << "Expected output size of at least " << required_ciphertext_size
+            << " bytes. Using temporary buffer.";
 
-    std::unique_ptr<uint8_t[]> ciphertext_buffer(new uint8_t[required_ciphertext_size]);
-    auto result = CryptInternal0(plaintext, plaintext_size, ciphertext_buffer.get(), ciphertext_size);
+    std::unique_ptr<uint8_t[]> ciphertext_buffer(
+        new uint8_t[required_ciphertext_size]);
+    auto result = CryptInternal0(plaintext, plaintext_size,
+                                 ciphertext_buffer.get(), ciphertext_size);
     if (result) {
       memcpy(ciphertext, ciphertext_buffer.get(), *ciphertext_size);
     }
@@ -151,15 +152,15 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
 }
 
 bool AesCbcEncryptor::CryptInternal0(const uint8_t* plaintext,
-                                    size_t plaintext_size,
-                                    uint8_t* ciphertext,
-                                    size_t* ciphertext_size) {
+                                     size_t plaintext_size,
+                                     uint8_t* ciphertext,
+                                     size_t* ciphertext_size) {
   const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
   const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
   // mbedtls requires a buffer large enough for one extra block.
   if (*ciphertext_size < plaintext_size + num_padding_bytes) {
     LOG(ERROR) << "Expecting output size of at least "
-               <<  plaintext_size + num_padding_bytes << " bytes.";
+               << plaintext_size + num_padding_bytes << " bytes.";
     return false;
   }
 
