@@ -67,8 +67,8 @@ TEST_F(TtmlMuxerTest, WithOneSegmentAndWithOneSample) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\">payload</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\">payload</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -86,8 +86,8 @@ TEST_F(TtmlMuxerTest, MultipleFragmentsWithNewlines) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\">foo bar<br/>baz</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\">foo bar<br/>baz</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -109,8 +109,8 @@ TEST_F(TtmlMuxerTest, HandlesStyles) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\">\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\">\n"
       "        <span tts:fontWeight=\"bold\">foo</span>\n"
       "        <span tts:fontStyle=\"italic\">bar</span>\n"
       "        <span tts:textDecoration=\"underline\">baz</span>\n"
@@ -141,8 +141,8 @@ TEST_F(TtmlMuxerTest, HandlesRegions) {
       "  </head>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" region=\"foo\">bar</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\" region=\"foo\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -169,8 +169,8 @@ TEST_F(TtmlMuxerTest, HandlesLanguage) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\">bar</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -192,8 +192,8 @@ TEST_F(TtmlMuxerTest, HandlesPosition) {
       "    <div>\n"
       "      <region xml:id=\"_shaka_region_0\" tts:origin=\"30% 4em\" "
       "tts:extent=\"100px 1em\"/>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" region=\"_shaka_region_0\">bar</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\" region=\"_shaka_region_0\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -216,8 +216,8 @@ TEST_F(TtmlMuxerTest, HandlesOtherSettings) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" tts:writingMode=\"tblr\" "
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\" tts:writingMode=\"tblr\" "
       "tts:textAlign=\"end\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
@@ -240,8 +240,8 @@ TEST_F(TtmlMuxerTest, HandlesCueId) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" xml:id=\"foo\">bar</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\" xml:id=\"foo\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -265,8 +265,8 @@ TEST_F(TtmlMuxerTest, EscapesSpecialChars) {
       "  </head>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" xml:id=\"foo&lt;a&amp;&quot;\" "
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\" xml:id=\"foo&lt;a&amp;&quot;\" "
       "region=\"&lt;a&amp;&quot;\">&lt;tag&gt;\"foo&amp;bar\"</p>\n"
       "    </div>\n"
       "  </body>\n"
@@ -290,8 +290,8 @@ TEST_F(TtmlMuxerTest, HandlesReset) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\">foo</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\">foo</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -302,8 +302,8 @@ TEST_F(TtmlMuxerTest, HandlesReset) {
       "  <head/>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:08.00\" "
-      "end=\"00:00:09.00\">bar</p>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:08.000\" "
+      "end=\"00:00:09.000\">bar</p>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -339,8 +339,8 @@ TEST_F(TtmlMuxerTest, HandlesImage) {
       "  </metadata>\n"
       "  <body>\n"
       "    <div>\n"
-      "      <p xml:space=\"preserve\" begin=\"00:00:05.00\" "
-      "end=\"00:00:06.00\" smpte:backgroundImage=\"#img_1\" xml:id=\"foo\"/>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:05.000\" "
+      "end=\"00:00:06.000\" smpte:backgroundImage=\"#img_1\" xml:id=\"foo\"/>\n"
       "    </div>\n"
       "  </body>\n"
       "</tt>\n";
@@ -349,6 +349,27 @@ TEST_F(TtmlMuxerTest, HandlesImage) {
   properties.id = "foo";
   properties.body.image = {1, 2, 3};
 
+  ParseSingleCue(kExpectedOutput, properties);
+}
+
+TEST_F(TtmlMuxerTest, FormatsTimeWithFixedNumberOfDigits) {
+  const char* kExpectedOutput =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<tt xmlns=\"http://www.w3.org/ns/ttml\" "
+      "xmlns:tts=\"http://www.w3.org/ns/ttml#styling\" xml:lang=\"\">\n"
+      "  <head/>\n"
+      "  <body>\n"
+      "    <div>\n"
+      "      <p xml:space=\"preserve\" begin=\"00:00:00.000\" "
+      "end=\"00:00:00.001\">payload</p>\n"
+      "    </div>\n"
+      "  </body>\n"
+      "</tt>\n";
+
+  TestProperties properties;
+  properties.body.body = "payload";
+  properties.start = 0;
+  properties.end = 1;
   ParseSingleCue(kExpectedOutput, properties);
 }
 
