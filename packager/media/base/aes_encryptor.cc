@@ -158,9 +158,11 @@ bool AesCbcEncryptor::CryptInternal0(const uint8_t* plaintext,
   const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
   const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
   // mbedtls requires a buffer large enough for one extra block.
-  if (*ciphertext_size < plaintext_size + num_padding_bytes) {
+  const size_t required_ciphertext_size = plaintext_size + num_padding_bytes;
+
+  if (*ciphertext_size < required_ciphertext_size) {
     LOG(ERROR) << "Expecting output size of at least "
-               << plaintext_size + num_padding_bytes << " bytes.";
+               << required_ciphertext_size << " bytes.";
     return false;
   }
 
