@@ -3,7 +3,7 @@
   <head/>
   <body>
     <div>
-      <p xml:space="preserve" begin="00:00:00.00" end="00:00:00.800" tts:textAlign="center">Yup, that's a bear, eh.</p>
+      <p xml:space="preserve" begin="00:00:00.000" end="00:00:00.800" tts:textAlign="center">Yup, that's a bear, eh.</p>
     </div>
   </body>
 </tt>
