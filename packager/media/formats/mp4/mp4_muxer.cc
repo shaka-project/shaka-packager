@@ -228,9 +228,7 @@ Status MP4Muxer::DelayInitializeMuxer() {
       if (codec_fourcc != FOURCC_NULL)
         ftyp->compatible_brands.push_back(codec_fourcc);
 
-      // https://professional.dolby.com/siteassets/content-creation/
-      // dolby-vision-for-content-creators/
-      // dolby_vision_bitstreams_within_the_iso_base_media_file_format_dec2017.pdf
+      // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolby_vision_bitstreams_within_the_iso_base_media_file_format_dec2017.pdf
       if (streams()[0].get()->codec_string().find("dvh") != std::string::npos)
         ftyp->compatible_brands.push_back(FOURCC_dby1);
     }
