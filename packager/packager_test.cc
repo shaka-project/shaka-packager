@@ -204,10 +204,9 @@ TEST_F(PackagerTest, UnrecognizedAudioLanguage) {
   stream_descriptors.push_back(stream_descriptor);
 
   Packager packager;
-  auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
-  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
-  EXPECT_THAT(status.error_message(),
-              HasSubstr("Unknown/invalid language specified"));
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(SetupPackagingParams(), stream_descriptors));
+  ASSERT_EQ(Status::OK, packager.Run());
 }
 
 TEST_F(PackagerTest, AudioLanguageCode_und) {

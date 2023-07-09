@@ -107,7 +107,9 @@ struct StreamDescriptor {
   /// parameter for segment names. If not specified, its value may be estimated.
   uint32_t bandwidth = 0;
   /// Optional value which contains a user-specified language tag. If specified,
-  /// this value overrides any language metadata in the input stream.
+  /// this value overrides any language metadata in the input stream. Invalid
+  /// language tags will be treated as 'und' which indicates the language is
+  /// undetermined.
   std::string language;
   /// Optional value for the index of the sub-stream to use. For some text
   /// formats, there are multiple "channels" in a single stream. This allows

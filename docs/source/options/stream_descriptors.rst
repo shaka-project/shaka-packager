@@ -49,7 +49,9 @@ These are the available fields:
 :language (lang):
 
     Optional value which contains a user-specified language tag. If specified,
-    this value overrides any language metadata in the input stream.
+    this value overrides any language metadata in the input stream. Invalid
+    language tags will be treated as 'und' which indicates the language is
+    undetermined.
 
 :output_format (format):
 
