@@ -34,6 +34,7 @@ void MpdNotifyMuxerListener::OnEncryptionInfoReady(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
+  UNUSED(iv);
   if (is_initial_encryption_info) {
     LOG_IF(WARNING, is_encrypted_)
         << "Updating initial encryption information.";
@@ -191,6 +192,7 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           int64_t start_time,
                                           int64_t duration,
                                           uint64_t segment_file_size) {
+  UNUSED(file_name);
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifyNewSegment(notification_id_.value(), start_time,
                                     duration, segment_file_size);
@@ -214,11 +216,14 @@ void MpdNotifyMuxerListener::OnKeyFrame(int64_t timestamp,
                                         uint64_t start_byte_offset,
                                         uint64_t size) {
   // NO-OP for DASH.
+  UNUSED(timestamp);
+  UNUSED(start_byte_offset);
+  UNUSED(size);
 }
 
 void MpdNotifyMuxerListener::OnCueEvent(int64_t timestamp,
                                         const std::string& cue_data) {
-  // Not using |cue_data| at this moment.
+  UNUSED(cue_data);
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifyCueEvent(notification_id_.value(), timestamp);
   } else {
