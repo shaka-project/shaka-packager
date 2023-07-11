@@ -390,7 +390,7 @@ void EncryptionHandler::EncryptBytes(const uint8_t* source,
   DCHECK(source);
   DCHECK(dest);
   DCHECK(encryptor_);
-  CHECK(encryptor_->Crypt(source, source_size, dest, &source_size));
+  CHECK(encryptor_->Crypt(source, source_size, dest));
 }
 
 void EncryptionHandler::InjectSubsampleGeneratorForTesting(

@@ -129,44 +129,17 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
                                     size_t plaintext_size,
                                     uint8_t* ciphertext,
                                     size_t* ciphertext_size) {
+  const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
   const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
   // mbedtls requires a buffer large enough for one extra block.
   const size_t required_ciphertext_size =
       plaintext_size + num_padding_bytes + AES_BLOCK_SIZE;
-
-  if (*ciphertext_size < required_ciphertext_size) {
-    VLOG(1) << "Expected output size of at least " << required_ciphertext_size
-            << " bytes. Using temporary buffer.";
-
-    std::unique_ptr<uint8_t[]> ciphertext_buffer(
-        new uint8_t[required_ciphertext_size]);
-    auto result = CryptInternal0(plaintext, plaintext_size,
-                                 ciphertext_buffer.get(), ciphertext_size);
-    if (result) {
-      memcpy(ciphertext, ciphertext_buffer.get(), *ciphertext_size);
-    }
-    return result;
-  }
-
-  return CryptInternal0(plaintext, plaintext_size, ciphertext, ciphertext_size);
-}
-
-bool AesCbcEncryptor::CryptInternal0(const uint8_t* plaintext,
-                                     size_t plaintext_size,
-                                     uint8_t* ciphertext,
-                                     size_t* ciphertext_size) {
-  const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
-  const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
-  // mbedtls requires a buffer large enough for one extra block.
-  const size_t required_ciphertext_size = plaintext_size + num_padding_bytes;
-
   if (*ciphertext_size < required_ciphertext_size) {
     LOG(ERROR) << "Expecting output size of at least "
                << required_ciphertext_size << " bytes.";
     return false;
   }
-
-  *ciphertext_size = plaintext_size + num_padding_bytes;
+  *ciphertext_size = required_ciphertext_size - AES_BLOCK_SIZE;
 
   // Encrypt everything but the residual block using CBC.
   const size_t cbc_size = plaintext_size - residual_block_size;
