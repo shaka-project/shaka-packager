@@ -9,8 +9,8 @@
 
 #include <gmock/gmock.h>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/synchronization/lock.h"
+#include "absl/synchronization/mutex.h"
+#include "packager/macros.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/mpd_builder.h"

@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/base64.h"
+#include <absl/strings/escaping.h>
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 

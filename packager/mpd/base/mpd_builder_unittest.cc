@@ -7,6 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/period.h"
@@ -20,14 +22,19 @@ namespace shaka {
 
 namespace {
 
-class TestClock : public base::Clock {
+class TestClock : public Clock {
  public:
-  explicit TestClock(const base::Time& t) : time_(t) {}
-  ~TestClock() override {}
-  base::Time Now() override { return time_; }
+  explicit TestClock(std::tm& utc_time) {
+    std::tm local_time = utc_time;
+    std::time_t utc_time_t = std::mktime(&local_time);
+    std::time_t offset = utc_time_t - std::mktime(std::gmtime(&utc_time_t));
+    mock_time_ = std::chrono::system_clock::from_time_t(utc_time_t + offset);
+  }
+
+  time_point now() noexcept override { return mock_time_; }
 
  private:
-  base::Time time_;
+  time_point mock_time_;
 };
 
 }  // namespace
@@ -117,17 +124,14 @@ class LiveMpdBuilderTest : public MpdBuilderTest<DashProfile::kLive> {
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
-    base::Time::Exploded test_time = { 2016,  // year.
-                                       1,  // month
-                                       1,  // day_of_week = Monday.
-                                       11,  // day_of_month
-                                       15,  // hour.
-                                       10,  // minute.
-                                       24,  // second.
-                                       0 };  // millisecond.
-    ASSERT_TRUE(test_time.HasValidValues());
-    mpd_.InjectClockForTesting(std::unique_ptr<base::Clock>(
-        new TestClock(base::Time::FromUTCExploded(test_time))));
+    std::tm test_time{};
+    test_time.tm_year = 2016 - 1900;  // Years since 1900
+    test_time.tm_mon = 0;             // Months since January (0-based)
+    test_time.tm_mday = 11;
+    test_time.tm_hour = 15;
+    test_time.tm_min = 10;
+    test_time.tm_sec = 24;
+    mpd_.InjectClockForTesting(std::make_unique<TestClock>(test_time));
   }
 };
 
