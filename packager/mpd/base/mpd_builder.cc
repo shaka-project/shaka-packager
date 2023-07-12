@@ -343,7 +343,7 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
   DCHECK(!periods_.empty());
   if (periods_.empty())
-    return false;    
+    return false;
   double timestamp = 0;
   double earliest_timestamp = -1;
   // TODO(kqyang): This is used to set availabilityStartTime. We may consider
