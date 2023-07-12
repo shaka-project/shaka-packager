@@ -51,4 +51,4 @@ target_link_libraries(media_event_unittest
     mock_muxer_listener
 )
 
-add_test(NAME media_base_unittest COMMAND media_event_unittest)
+add_test(NAME media_event_unittest COMMAND media_event_unittest)
