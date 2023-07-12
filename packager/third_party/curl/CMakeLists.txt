@@ -35,6 +35,7 @@ else()
 
   # Disable a warning about sprintf on macOS.
   add_compile_options(-Wno-deprecated-declarations)
+  add_compile_options(-Wno-unused-but-set-variable)
 endif()
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
