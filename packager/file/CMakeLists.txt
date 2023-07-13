@@ -48,5 +48,6 @@ target_link_libraries(file_unittest
     gmock
     gtest
     gtest_main
-    nlohmann_json)
+    nlohmann_json
+    test_web_server)
 add_test(NAME file_unittest COMMAND file_unittest)
