@@ -34,6 +34,12 @@ std::string generate_unique_temp_path() {
   return temp_path_template_string;
 }
 
+void delete_file(const std::string& path) {
+  std::error_code ec;
+  std::filesystem::remove(path, ec);
+  // Ignore errors.
+}
+
 TempFile::TempFile() : path_(generate_unique_temp_path()) {}
 
 TempFile::~TempFile() {

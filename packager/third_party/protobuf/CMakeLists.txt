@@ -32,6 +32,8 @@ if(MSVC)
     /wd4146  # sign comparison
     # src/google/protobuf/generated_message_tctable_lite.cc
     /wd4141  # multiple inline keywords
+    # src/google/protobuf/util/message_differencer.h
+    /wd4100  # unreferenced formal parameter
   )
 else()
   add_compile_options(

@@ -47,7 +47,9 @@ class CombinedMuxerListener : public MuxerListener {
                     uint64_t segment_file_size) override;
   void OnCompletedSegment(int64_t duration,
                           uint64_t segment_file_size) override;
-  void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
+  void OnKeyFrame(int64_t timestamp,
+                  uint64_t start_byte_offset,
+                  uint64_t size) override;
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 

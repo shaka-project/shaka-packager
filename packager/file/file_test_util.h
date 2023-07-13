@@ -43,6 +43,7 @@ namespace shaka {
 
 // Generate a unique filename.
 std::string generate_unique_temp_path();
+void delete_file(const std::string& path);
 
 // A temporary file that is removed from the filesystem when the object is
 // destroyed.  Useful in tests that use ASSERT to avoid leaving behind temp
