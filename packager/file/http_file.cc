@@ -264,6 +264,7 @@ int64_t HttpFile::Write(const void* buffer, uint64_t length) {
 }
 
 void HttpFile::CloseForWriting() {
+  VLOG(2) << "Closing further writes to " << url_;
   upload_cache_.Close();
 }
 
