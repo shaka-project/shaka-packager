@@ -212,23 +212,23 @@ TEST_F(HttpFileTest, MultipleWrites) {
 
   ASSERT_EQ(file->Write(data1.data(), data1.size()),
             static_cast<int64_t>(data1.size()));
-  ASSERT_TRUE(file->Flush());
   // Flush the first chunk.
+  ASSERT_TRUE(file->Flush());
 
   ASSERT_EQ(file->Write(data2.data(), data2.size()),
             static_cast<int64_t>(data2.size()));
-  ASSERT_TRUE(file->Flush());
   // Flush the second chunk.
+  ASSERT_TRUE(file->Flush());
 
   ASSERT_EQ(file->Write(data3.data(), data3.size()),
             static_cast<int64_t>(data3.size()));
-  ASSERT_TRUE(file->Flush());
   // Flush the third chunk.
+  ASSERT_TRUE(file->Flush());
 
   ASSERT_EQ(file->Write(data4.data(), data4.size()),
             static_cast<int64_t>(data4.size()));
-  ASSERT_TRUE(file->Flush());
   // Flush the fourth chunk.
+  ASSERT_TRUE(file->Flush());
 
   // Tells the server in a chunked upload that there will be no more chunks.
   // If we don't do this, the request can hang in libcurl.
