@@ -74,4 +74,3 @@ TEST(HttpKeyFetcherTest, BigTimeout) {
 
 }  // namespace media
 }  // namespace shaka
-
