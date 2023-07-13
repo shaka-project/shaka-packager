@@ -8,9 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include <chrono>
 #include <memory>
-#include <thread>
 #include <vector>
 
 #include "absl/strings/str_split.h"
