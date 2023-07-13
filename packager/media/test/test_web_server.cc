@@ -24,26 +24,26 @@
 namespace {
 
 // Get a string_view on mongoose's mg_string, which may not be nul-terminated.
-std::string_view view_mg_str(const mg_str& mg_string) {
+std::string_view MongooseStringView(const mg_str& mg_string) {
   return std::string_view(mg_string.ptr, mg_string.len);
 }
 
-bool is_mg_str_null(const mg_str& mg_string) {
+bool IsMongooseStringNull(const mg_str& mg_string) {
   return mg_string.ptr == NULL;
 }
 
-bool is_mg_str_null_or_blank(const mg_str& mg_string) {
+bool IsMongooseStringNullOrBlank(const mg_str& mg_string) {
   return mg_string.ptr == NULL || mg_string.len == 0;
 }
 
 // Get a string query parameter from a mongoose HTTP message.
-bool get_string_query_parameter(struct mg_http_message* message,
-                                const char* name,
-                                std::string_view* str) {
+bool GetStringQueryParameter(struct mg_http_message* message,
+                             const char* name,
+                             std::string_view* str) {
   struct mg_str value_mg_str = mg_http_var(message->query, mg_str(name));
 
-  if (!is_mg_str_null(value_mg_str)) {
-    *str = view_mg_str(value_mg_str);
+  if (!IsMongooseStringNull(value_mg_str)) {
+    *str = MongooseStringView(value_mg_str);
     return true;
   }
 
@@ -51,12 +51,12 @@ bool get_string_query_parameter(struct mg_http_message* message,
 }
 
 // Get an integer query parameter from a mongoose HTTP message.
-bool get_int_query_parameter(struct mg_http_message* message,
-                             const char* name,
-                             int* value) {
+bool GetIntQueryParameter(struct mg_http_message* message,
+                          const char* name,
+                          int* value) {
   std::string_view str;
 
-  if (get_string_query_parameter(message, name, &str)) {
+  if (GetStringQueryParameter(message, name, &str)) {
     return absl::SimpleAtoi(str, value);
   }
 
@@ -133,12 +133,9 @@ void TestWebServer::ThreadCallback(int port) {
     {
       absl::MutexLock lock(&mutex_);
       stopped = stopped_;
+      if (stopped)
+        status_ = kStopped;
     }
-  }
-
-  {
-    absl::MutexLock lock(&mutex_);
-    status_ = kStopped;
   }
 }
 
@@ -198,7 +195,7 @@ bool TestWebServer::HandleStatus(struct mg_http_message* message,
                                  struct mg_connection* connection) {
   int code = 0;
 
-  if (get_int_query_parameter(message, "code", &code)) {
+  if (GetIntQueryParameter(message, "code", &code)) {
     // Reply with the requested status code.
     mg_http_reply(connection, code, NULL /* headers */, "%s", "{}");
     return true;
@@ -220,7 +217,7 @@ bool TestWebServer::HandleDelay(struct mg_http_message* message,
   // Checking |message| here is a small safety measure, since we call this
   // method back a second time with message set to NULL.  That is supposed to
   // be handled above, but this is defense in depth against a crash.
-  if (message && get_int_query_parameter(message, "seconds", &seconds)) {
+  if (message && GetIntQueryParameter(message, "seconds", &seconds)) {
     // We can't block this thread, so compute the deadline and add the
     // connection to a map.  The main handler will call us back later if the
     // client doesn't hang up first.
@@ -237,19 +234,19 @@ bool TestWebServer::HandleReflect(struct mg_http_message* message,
   // Serialize a reply in JSON that reflects the request method, body, and
   // headers.
   nlohmann::json reply;
-  reply["method"] = view_mg_str(message->method);
-  if (!is_mg_str_null(message->body)) {
-    reply["body"] = view_mg_str(message->body);
+  reply["method"] = MongooseStringView(message->method);
+  if (!IsMongooseStringNull(message->body)) {
+    reply["body"] = MongooseStringView(message->body);
   }
 
   nlohmann::json headers;
   for (int i = 0; i < MG_MAX_HTTP_HEADERS; ++i) {
     struct mg_http_header header = message->headers[i];
-    if (is_mg_str_null_or_blank(header.name)) {
+    if (IsMongooseStringNullOrBlank(header.name)) {
       break;
     }
 
-    headers[view_mg_str(header.name)] = view_mg_str(header.value);
+    headers[MongooseStringView(header.name)] = MongooseStringView(header.value);
   }
   reply["headers"] = headers;
 
