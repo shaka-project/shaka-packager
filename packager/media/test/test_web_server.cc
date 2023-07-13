@@ -11,6 +11,7 @@
 
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
+#include "mongoose.h"
 #include "nlohmann/json.hpp"
 
 // A full replacement for our former use of httpbin.org in tests.  This

@@ -13,7 +13,10 @@
 
 #include "absl/synchronization/mutex.h"
 #include "absl/time/time.h"
-#include "mongoose.h"
+
+// Forward declare mongoose struct types, used as pointers below.
+struct mg_connection;
+struct mg_http_message;
 
 namespace shaka {
 namespace media {
