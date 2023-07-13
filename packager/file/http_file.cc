@@ -233,9 +233,12 @@ bool HttpFile::Open() {
 
 Status HttpFile::CloseWithStatus() {
   VLOG(2) << "Closing " << url_;
-  // Close the cache first so the thread will finish uploading. Otherwise it
-  // will wait for more data forever.
-  download_cache_.Close();
+
+  // Close the upload cache first so the thread will finish uploading.
+  // Otherwise it will wait for more data forever.
+  // Don't close the download cache, so that the server's response (HTTP status
+  // code at minimum) can still be written after uploading is complete.
+  // The task will close the download cache when it is complete.
   upload_cache_.Close();
   task_exit_event_.WaitForNotification();
 
@@ -258,6 +261,10 @@ int64_t HttpFile::Write(const void* buffer, uint64_t length) {
   DCHECK(!upload_cache_.closed());
   VLOG(2) << "Writing to " << url_ << ", length=" << length;
   return upload_cache_.Write(buffer, length);
+}
+
+void HttpFile::CloseForWriting() {
+  upload_cache_.Close();
 }
 
 int64_t HttpFile::Size() {

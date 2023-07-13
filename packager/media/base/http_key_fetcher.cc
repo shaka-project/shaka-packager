@@ -66,6 +66,7 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
   }
   file->Write(data.data(), data.size());
   file->Flush();
+  file->CloseForWriting();
 
   while (true) {
     char temp[kBufferSize];

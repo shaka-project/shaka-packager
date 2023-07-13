@@ -8,13 +8,16 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <memory>
+#include <thread>
 #include <vector>
 
 #include "absl/strings/str_split.h"
 #include "nlohmann/json.hpp"
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
+#include "packager/media/test/test_web_server.h"
 
 #define ASSERT_JSON_STRING(json, key, value) \
   ASSERT_EQ(GetJsonString((json), (key)), (value)) << "JSON is " << (json)
@@ -22,6 +25,23 @@
 namespace shaka {
 
 namespace {
+
+// A completely arbitrary port number, unlikely to be in use.
+const int kTestServerPort = 58405;
+// Reflects back the method, body, and headers of the request as JSON.
+const std::string kTestServerReflect = "http://localhost:58405/reflect";
+// Returns the requested HTTP status code.
+const std::string kTestServer404 = "http://localhost:58405/status?code=404";
+// Returns after the requested delay.
+const std::string kTestServerLongDelay =
+    "http://localhost:58405/delay?seconds=8";
+const std::string kTestServerShortDelay =
+    "http://localhost:58405/delay?seconds=1";
+
+const std::vector<std::string> kNoHeaders;
+const std::string kNoContentType;
+const std::string kBinaryContentType = "application/octet-stream";
+const int kDefaultTestTimeout = 10;  // For a local, embedded server
 
 using FilePtr = std::unique_ptr<HttpFile, FileCloser>;
 
@@ -64,10 +84,25 @@ nlohmann::json HandleResponse(const FilePtr& file) {
   return value;
 }
 
+// Quoting gtest docs:
+//   "For each TEST_F, GoogleTest will create a fresh test fixture object,
+//   immediately call SetUp(), run the test body, call TearDown(), and then
+//   delete the test fixture object."
+// So we don't need a TearDown method.  The destructor on TestWebServer is good
+// enough.
+class HttpFileTest : public testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(server_.Start(kTestServerPort)); }
+
+ private:
+  media::TestWebServer server_;
+};
+
 }  // namespace
 
-TEST(HttpFileTest, BasicGet) {
-  FilePtr file(new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything"));
+TEST_F(HttpFileTest, BasicGet) {
+  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerReflect,
+                            kNoContentType, kNoHeaders, kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -77,10 +112,10 @@ TEST(HttpFileTest, BasicGet) {
   ASSERT_JSON_STRING(json, "method", "GET");
 }
 
-TEST(HttpFileTest, CustomHeaders) {
+TEST_F(HttpFileTest, CustomHeaders) {
   std::vector<std::string> headers{"Host: foo", "X-My-Header: Something"};
-  FilePtr file(new HttpFile(HttpMethod::kGet, "https://httpbin.org/anything",
-                            "", headers, 0));
+  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerReflect,
+                            kNoContentType, headers, kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -93,8 +128,10 @@ TEST(HttpFileTest, CustomHeaders) {
   ASSERT_JSON_STRING(json, "headers.X-My-Header", "Something");
 }
 
-TEST(HttpFileTest, BasicPost) {
-  FilePtr file(new HttpFile(HttpMethod::kPost, "https://httpbin.org/anything"));
+TEST_F(HttpFileTest, BasicPost) {
+  FilePtr file(new HttpFile(HttpMethod::kPost, kTestServerReflect,
+                            kBinaryContentType, kNoHeaders,
+                            kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -103,14 +140,18 @@ TEST(HttpFileTest, BasicPost) {
   ASSERT_EQ(file->Write(data.data(), data.size()),
             static_cast<int64_t>(data.size()));
   ASSERT_TRUE(file->Flush());
+
+  // Tells the server in a chunked upload that there will be no more chunks.
+  // If we don't do this, the request can hang in libcurl.
+  file->CloseForWriting();
 
   auto json = HandleResponse(file);
   ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "POST");
-  ASSERT_JSON_STRING(json, "data", data);
-  ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
+  ASSERT_JSON_STRING(json, "body", data);
+  ASSERT_JSON_STRING(json, "headers.Content-Type", kBinaryContentType);
 
   // Curl may choose to send chunked or not based on the data.  We request
   // chunked encoding, but don't control if it is actually used.  If we get
@@ -123,8 +164,10 @@ TEST(HttpFileTest, BasicPost) {
   }
 }
 
-TEST(HttpFileTest, BasicPut) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything"));
+TEST_F(HttpFileTest, BasicPut) {
+  FilePtr file(new HttpFile(HttpMethod::kPut, kTestServerReflect,
+                            kBinaryContentType, kNoHeaders,
+                            kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -134,13 +177,17 @@ TEST(HttpFileTest, BasicPut) {
             static_cast<int64_t>(data.size()));
   ASSERT_TRUE(file->Flush());
 
+  // Tells the server in a chunked upload that there will be no more chunks.
+  // If we don't do this, the request can hang in libcurl.
+  file->CloseForWriting();
+
   auto json = HandleResponse(file);
   ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "PUT");
-  ASSERT_JSON_STRING(json, "data", data);
-  ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
+  ASSERT_JSON_STRING(json, "body", data);
+  ASSERT_JSON_STRING(json, "headers.Content-Type", kBinaryContentType);
 
   // Curl may choose to send chunked or not based on the data.  We request
   // chunked encoding, but don't control if it is actually used.  If we get
@@ -153,8 +200,10 @@ TEST(HttpFileTest, BasicPut) {
   }
 }
 
-TEST(HttpFileTest, MultipleWrites) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, "https://httpbin.org/anything"));
+TEST_F(HttpFileTest, MultipleWrites) {
+  FilePtr file(new HttpFile(HttpMethod::kPut, kTestServerReflect,
+                            kBinaryContentType, kNoHeaders,
+                            kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -165,21 +214,35 @@ TEST(HttpFileTest, MultipleWrites) {
 
   ASSERT_EQ(file->Write(data1.data(), data1.size()),
             static_cast<int64_t>(data1.size()));
+  ASSERT_TRUE(file->Flush());
+  // Flush the first chunk.
+
   ASSERT_EQ(file->Write(data2.data(), data2.size()),
             static_cast<int64_t>(data2.size()));
+  ASSERT_TRUE(file->Flush());
+  // Flush the second chunk.
+
   ASSERT_EQ(file->Write(data3.data(), data3.size()),
             static_cast<int64_t>(data3.size()));
+  ASSERT_TRUE(file->Flush());
+  // Flush the third chunk.
+
   ASSERT_EQ(file->Write(data4.data(), data4.size()),
             static_cast<int64_t>(data4.size()));
   ASSERT_TRUE(file->Flush());
+  // Flush the fourth chunk.
+
+  // Tells the server in a chunked upload that there will be no more chunks.
+  // If we don't do this, the request can hang in libcurl.
+  file->CloseForWriting();
 
   auto json = HandleResponse(file);
   ASSERT_TRUE(json.is_object());
   ASSERT_TRUE(file.release()->Close());
 
   ASSERT_JSON_STRING(json, "method", "PUT");
-  ASSERT_JSON_STRING(json, "data", data1 + data2 + data3 + data4);
-  ASSERT_JSON_STRING(json, "headers.Content-Type", "application/octet-stream");
+  ASSERT_JSON_STRING(json, "body", data1 + data2 + data3 + data4);
+  ASSERT_JSON_STRING(json, "headers.Content-Type", kBinaryContentType);
 
   // Curl may choose to send chunked or not based on the data.  We request
   // chunked encoding, but don't control if it is actually used.  If we get
@@ -195,9 +258,9 @@ TEST(HttpFileTest, MultipleWrites) {
 
 // TODO: Test chunked uploads explicitly.
 
-TEST(HttpFileTest, Error404) {
-  FilePtr file(
-      new HttpFile(HttpMethod::kGet, "https://httpbin.org/status/404"));
+TEST_F(HttpFileTest, Error404) {
+  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServer404, kNoContentType,
+                            kNoHeaders, kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -210,9 +273,10 @@ TEST(HttpFileTest, Error404) {
   ASSERT_EQ(status.error_code(), error::HTTP_FAILURE);
 }
 
-TEST(HttpFileTest, TimeoutTriggered) {
-  FilePtr file(
-      new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/8", "", {}, 1));
+TEST_F(HttpFileTest, TimeoutTriggered) {
+  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerLongDelay,
+                            kNoContentType, kNoHeaders,
+                            1 /* timeout in seconds */));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -225,9 +289,10 @@ TEST(HttpFileTest, TimeoutTriggered) {
   ASSERT_EQ(status.error_code(), error::TIME_OUT);
 }
 
-TEST(HttpFileTest, TimeoutNotTriggered) {
-  FilePtr file(
-      new HttpFile(HttpMethod::kGet, "https://httpbin.org/delay/1", "", {}, 5));
+TEST_F(HttpFileTest, TimeoutNotTriggered) {
+  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerShortDelay,
+                            kNoContentType, kNoHeaders,
+                            5 /* timeout in seconds */));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 

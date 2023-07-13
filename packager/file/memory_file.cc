@@ -152,6 +152,8 @@ int64_t MemoryFile::Write(const void* buffer, uint64_t length) {
   return length;
 }
 
+void MemoryFile::CloseForWriting() {}
+
 int64_t MemoryFile::Size() {
   DCHECK(file_);
   return file_->size();

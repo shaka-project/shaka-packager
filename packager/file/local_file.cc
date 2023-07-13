@@ -63,6 +63,8 @@ int64_t LocalFile::Write(const void* buffer, uint64_t length) {
   return bytes_written;
 }
 
+void LocalFile::CloseForWriting() {}
+
 int64_t LocalFile::Size() {
   DCHECK(internal_file_ != NULL);
 
