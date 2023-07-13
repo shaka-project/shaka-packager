@@ -176,7 +176,6 @@ HttpFile::HttpFile(HttpMethod method,
       download_cache_(absl::GetFlag(FLAGS_io_cache_size)),
       upload_cache_(absl::GetFlag(FLAGS_io_cache_size)),
       curl_(curl_easy_init()),
-      http_status_code_(0),
       status_(Status::OK),
       user_agent_(absl::GetFlag(FLAGS_user_agent)),
       ca_file_(absl::GetFlag(FLAGS_ca_file)),
@@ -230,10 +229,6 @@ bool HttpFile::Open() {
   ThreadPool::instance.PostTask(std::bind(&HttpFile::ThreadMain, this));
 
   return true;
-}
-
-int HttpFile::http_status_code() const {
-  return http_status_code_;
 }
 
 Status HttpFile::CloseWithStatus() {
@@ -360,7 +355,6 @@ void HttpFile::ThreadMain() {
     if (res == CURLE_HTTP_RETURNED_ERROR) {
       long response_code = 0;
       curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &response_code);
-      http_status_code_ = static_cast<int>(response_code);
       error_message += absl::StrFormat(", response code: %ld.", response_code);
     }
 
