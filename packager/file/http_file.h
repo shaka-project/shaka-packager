@@ -47,7 +47,6 @@ class HttpFile : public File {
   HttpFile(const HttpFile&) = delete;
   HttpFile& operator=(const HttpFile&) = delete;
 
-  int http_status_code() const;
   Status CloseWithStatus();
 
   /// @name File implementation overrides.
@@ -83,7 +82,6 @@ class HttpFile : public File {
   std::unique_ptr<CURL, CurlDelete> curl_;
   // The headers need to remain alive for the duration of the request.
   std::unique_ptr<curl_slist, CurlDelete> request_headers_;
-  int http_status_code_;
   Status status_;
   std::string user_agent_;
   std::string ca_file_;

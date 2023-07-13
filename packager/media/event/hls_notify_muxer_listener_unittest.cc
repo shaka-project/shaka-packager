@@ -177,8 +177,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
 // OnEncryptionInfoReady() and OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -211,8 +211,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
 // OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -278,8 +278,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
                          MuxerListener::kContainerMpeg2ts);
 
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
