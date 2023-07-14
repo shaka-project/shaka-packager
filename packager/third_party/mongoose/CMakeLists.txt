@@ -7,7 +7,13 @@
 # CMake build file for the mongoose library, which is used as a built-in web
 # server for testing certain HTTP client features of Packager.
 
-# Mongoose does not have its own CMakeLists.txt, but mongoose is very simple.
+# Mongoose does not have its own CMakeLists.txt, but mongoose is very simple to
+# build.
+
+if(MSVC)
+  # Disable integer truncation warnings
+  add_compile_options(/wd4244 /wd4267)
+endif()
 
 add_library(mongoose STATIC
     source/mongoose.c)
