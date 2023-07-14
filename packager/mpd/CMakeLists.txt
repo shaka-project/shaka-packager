@@ -61,7 +61,7 @@ add_library(mpd_mocks STATIC
   base/mock_mpd_notifier.h
   )
 
-target_link_libraries(mpd_mocks gmock absl::synchronization mpd_media_info_proto)
+target_link_libraries(mpd_mocks gmock absl::synchronization LibXml2 mpd_media_info_proto)
 
 add_executable(mpd_unittest
   base/adaptation_set_unittest.cc
