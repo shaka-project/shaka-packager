@@ -319,12 +319,12 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   }
 
   std::string trick_play_reference_ids;
-  for (const AdaptationSet* adaptation_set : trick_play_references_) {
+  for (const AdaptationSet* tp_adaptation_set : trick_play_references_) {
     // Should be a whitespace-separated list, see DASH-IOP 3.2.9.
     if (!trick_play_reference_ids.empty())
       trick_play_reference_ids += ' ';
-    CHECK(adaptation_set->has_id());
-    trick_play_reference_ids += std::to_string(adaptation_set->id());
+    CHECK(tp_adaptation_set->has_id());
+    trick_play_reference_ids += std::to_string(tp_adaptation_set->id());
   }
   if (!trick_play_reference_ids.empty() &&
       !adaptation_set.AddEssentialProperty(
@@ -333,12 +333,12 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   }
 
   std::string switching_ids;
-  for (const AdaptationSet* adaptation_set : switchable_adaptation_sets_) {
+  for (const AdaptationSet* s_adaptation_set : switchable_adaptation_sets_) {
     // Should be a comma-separated list, see DASH-IOP 3.8.
     if (!switching_ids.empty())
       switching_ids += ',';
-    CHECK(adaptation_set->has_id());
-    switching_ids += std::to_string(adaptation_set->id());
+    CHECK(s_adaptation_set->has_id());
+    switching_ids += std::to_string(s_adaptation_set->id());
   }
   if (!switching_ids.empty() &&
       !adaptation_set.AddSupplementalProperty(
@@ -373,7 +373,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
   }
 
-  return std::move(adaptation_set);
+  return adaptation_set;
 }
 
 void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
