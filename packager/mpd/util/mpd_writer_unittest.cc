@@ -43,7 +43,7 @@ class TestMpdNotifierFactory : public MpdNotifierFactory {
         .Times(2)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_notifier, Flush()).WillOnce(Return(true));
-    return std::move(mock_notifier);
+    return mock_notifier;
   }
 
   void SetExpectedBaseUrls(const std::vector<std::string>& base_urls) {

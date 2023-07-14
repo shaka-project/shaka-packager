@@ -313,7 +313,7 @@ std::optional<xml::XmlNode> Representation::GetXml() {
   // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.
 
   output_suppression_flags_ = 0;
-  return std::move(representation);
+  return representation;
 }
 
 void Representation::SuppressOnce(SuppressFlag flag) {
