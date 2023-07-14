@@ -34,6 +34,8 @@ if(MSVC)
     /wd4141  # multiple inline keywords
     # src/google/protobuf/util/message_differencer.h
     /wd4100  # unreferenced formal parameter
+    # src/google/protobuf/text_format.cc
+    /wd4805  # unsafe mix of type bool and uint64_t in operation
   )
 else()
   add_compile_options(
