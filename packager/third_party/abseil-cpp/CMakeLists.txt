@@ -13,10 +13,5 @@ set(ABSL_PROPAGATE_CXX_STD ON)
 # for one in the system.
 set(ABSL_USE_EXTERNAL_GOOGLETEST ON)
 
-if(MSVC)
-  # Silence warning about signed/unsigned mismatch in comparison
-  add_compile_options(/wd4018)
-endif()
-
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)

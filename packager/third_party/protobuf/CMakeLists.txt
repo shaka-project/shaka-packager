@@ -36,6 +36,8 @@ if(MSVC)
     /wd4100  # unreferenced formal parameter
     # src/google/protobuf/text_format.cc
     /wd4805  # unsafe mix of type bool and uint64_t in operation
+    # src/google/protobuf/compiler/cpp/field.cc via absl/log/internal/check_op.h
+    /wd4018  # signed/unsigned mismatch
   )
 else()
   add_compile_options(
