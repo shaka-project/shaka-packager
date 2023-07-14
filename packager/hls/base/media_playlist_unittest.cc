@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/stringprintf.h"
+#include <absl/strings/str_format.h>
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/file/file_test_util.h"
@@ -1032,8 +1032,8 @@ class MediaPlaylistDeleteSegmentsTest
 
   std::string GetSegmentName(int index) {
     if (segment_template_.find("$Time$") != std::string::npos)
-      return base::StringPrintf(kStringPrintTemplate, GetTime(index));
-    return base::StringPrintf(kStringPrintTemplate, index + 1);
+      return absl::StrFormat(kStringPrintTemplate, GetTime(index));
+    return absl::StrFormat(kStringPrintTemplate, index + 1);
   }
 
   bool SegmentDeleted(const std::string& segment_name) {

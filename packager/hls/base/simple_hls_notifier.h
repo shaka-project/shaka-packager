@@ -13,12 +13,13 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/base/synchronization/lock.h"
+#include <absl/synchronization/mutex.h>
+
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/master_playlist.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/hls/public/hls_params.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace hls {
@@ -91,7 +92,7 @@ class SimpleHlsNotifier : public HlsNotifier {
 
   uint32_t sequence_number_ = 0;
 
-  base::Lock lock_;
+  absl::Mutex lock_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleHlsNotifier);
 };
