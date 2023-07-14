@@ -27,6 +27,7 @@ class MemoryFile : public File {
   bool Close() override;
   int64_t Read(void* buffer, uint64_t length) override;
   int64_t Write(const void* buffer, uint64_t length) override;
+  void CloseForWriting() override;
   int64_t Size() override;
   bool Flush() override;
   bool Seek(uint64_t position) override;
