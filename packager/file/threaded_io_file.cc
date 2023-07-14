@@ -90,6 +90,8 @@ int64_t ThreadedIoFile::Write(const void* buffer, uint64_t length) {
   return bytes_written;
 }
 
+void ThreadedIoFile::CloseForWriting() {}
+
 int64_t ThreadedIoFile::Size() {
   DCHECK(internal_file_);
 

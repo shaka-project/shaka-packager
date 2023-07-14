@@ -37,6 +37,8 @@ int64_t CallbackFile::Write(const void* buffer, uint64_t length) {
   return callback_params_->write_func(name_, buffer, length);
 }
 
+void CallbackFile::CloseForWriting() {}
+
 int64_t CallbackFile::Size() {
   LOG(INFO) << "CallbackFile does not support Size().";
   return -1;

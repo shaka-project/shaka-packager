@@ -69,6 +69,12 @@ class SHAKA_EXPORT File {
   /// @return Number of bytes written, or a value < 0 on error.
   virtual int64_t Write(const void* buffer, uint64_t length) = 0;
 
+  /// Close the file for writing.  This signals that no more data will be
+  /// written.  Future writes are invalid and their behavior is undefined!
+  /// Data may still be read from the file after calling this method.
+  /// Some implementations may ignore this if they cannot use the signal.
+  virtual void CloseForWriting() = 0;
+
   /// @return Size of the file in bytes. A return value less than zero
   ///         indicates a problem getting the size.
   virtual int64_t Size() = 0;

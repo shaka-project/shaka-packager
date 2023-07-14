@@ -91,6 +91,14 @@ int64_t UdpFile::Write(const void* buffer, uint64_t length) {
   return -1;
 }
 
+void UdpFile::CloseForWriting() {
+#if defined(OS_WIN)
+  shutdown(socket_, SD_SEND);
+#else
+  shutdown(socket_, SHUT_WR);
+#endif
+}
+
 int64_t UdpFile::Size() {
   if (socket_ == INVALID_SOCKET)
     return -1;
