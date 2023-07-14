@@ -126,11 +126,13 @@ class ProducerConsumerQueue {
 
   mutable absl::Mutex mutex_;
   size_t head_pos_ ABSL_GUARDED_BY(mutex_);  // Head position.
-  std::deque<T> q_ ABSL_GUARDED_BY(mutex_);  // Internal queue holding the elements.
+  std::deque<T> q_
+      ABSL_GUARDED_BY(mutex_);  // Internal queue holding the elements.
   absl::CondVar not_empty_cv_ ABSL_GUARDED_BY(mutex_);
   absl::CondVar not_full_cv_ ABSL_GUARDED_BY(mutex_);
   absl::CondVar new_element_cv_ ABSL_GUARDED_BY(mutex_);
-  bool stop_requested_ ABSL_GUARDED_BY(mutex_);  // True after Stop has been called.
+  bool stop_requested_
+      ABSL_GUARDED_BY(mutex_);  // True after Stop has been called.
 
   DISALLOW_COPY_AND_ASSIGN(ProducerConsumerQueue);
 };
