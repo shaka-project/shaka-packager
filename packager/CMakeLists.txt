@@ -19,6 +19,8 @@ if(MSVC)
   add_compile_options(/wd4324)
   # Silence a warning about STL types in exported classes.
   add_compile_options(/wd4251)
+  # Silence a warning about constant conditional expressions.
+  add_compile_options(/wd4127)
 
   # Packager's macro for Windows-specific code.
   add_definitions(-DOS_WIN)

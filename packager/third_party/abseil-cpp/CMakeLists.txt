@@ -13,10 +13,5 @@ set(ABSL_PROPAGATE_CXX_STD ON)
 # for one in the system.
 set(ABSL_USE_EXTERNAL_GOOGLETEST ON)
 
-if(MSVC)
-  # Disable warnings about constant conditional expressions
-  add_compile_options(/wd4127)
-endif()
-
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
