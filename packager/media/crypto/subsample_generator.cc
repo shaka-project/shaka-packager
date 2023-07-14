@@ -270,11 +270,11 @@ Status SubsampleGenerator::GenerateSubsamplesFromVPxFrame(
   SubsampleOrganizer subsample_organizer(align_protected_data_, subsamples);
 
   size_t total_size = 0;
-  for (const VPxFrameInfo& frame : vpx_frames) {
+  for (const VPxFrameInfo& vpx_frame : vpx_frames) {
     subsample_organizer.AddSubsample(
-        frame.uncompressed_header_size,
-        frame.frame_size - frame.uncompressed_header_size);
-    total_size += frame.frame_size;
+        vpx_frame.uncompressed_header_size,
+        vpx_frame.frame_size - vpx_frame.uncompressed_header_size);
+    total_size += vpx_frame.frame_size;
   }
   // Add subsample for the superframe index if exists.
   const bool is_superframe = vpx_frames.size() > 1;

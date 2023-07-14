@@ -14,7 +14,7 @@
 #include "packager/media/codecs/av1_parser.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
-#include "packager/status_test_util.h"
+#include "packager/status/status_test_util.h"
 
 namespace shaka {
 namespace media {

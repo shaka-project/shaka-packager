@@ -147,11 +147,10 @@ MATCHER_P6(MatchEncryptionConfig,
            constant_iv,
            key_id,
            "") {
-  const std::string_view constant_iv_data =
-      byte_vector_to_string_view(constant_iv);
-  const std::string constant_iv_hex = absl::BytesToHexString(constant_iv_data);
-  const std::string key_id_data(arg.key_id.data(), arg.key_id.size());
-  const std::string key_id_hex = absl::BytesToHexString(key_id_data);
+  const std::string constant_iv_hex = absl::BytesToHexString(
+      std::string(std::begin(arg.constant_iv), std::end(arg.constant_iv)));
+  const std::string key_id_hex = absl::BytesToHexString(
+      std::string(std::begin(arg.key_id), std::end(arg.key_id)));
   const std::string protection_scheme_as_string =
       FourCCToString(arg.protection_scheme);
   // Convert to integers so that they will print as a number and not a uint8_t

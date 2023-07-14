@@ -84,6 +84,8 @@ class AesCbcEncryptor : public AesCryptor {
   bool InitializeWithIv(const std::vector<uint8_t>& key,
                         const std::vector<uint8_t>& iv) override;
 
+  size_t RequiredCiphertextSize(size_t plaintext_size) override;
+
  private:
   bool CryptInternal(const uint8_t* plaintext,
                      size_t plaintext_size,

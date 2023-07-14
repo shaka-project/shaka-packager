@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 #include "packager/media/base/buffer_reader.h"
 
 namespace shaka {
