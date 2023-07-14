@@ -37,10 +37,10 @@ class TestWebServer {
   };
 
   absl::Mutex mutex_;
-  TestWebServerStatus status_ GUARDED_BY(mutex_);
-  absl::CondVar started_ GUARDED_BY(mutex_);
-  absl::CondVar stop_ GUARDED_BY(mutex_);
-  bool stopped_ GUARDED_BY(mutex_);
+  TestWebServerStatus status_ ABSL_GUARDED_BY(mutex_);
+  absl::CondVar started_ ABSL_GUARDED_BY(mutex_);
+  absl::CondVar stop_ ABSL_GUARDED_BY(mutex_);
+  bool stopped_ ABSL_GUARDED_BY(mutex_);
 
   // Connections to be handled again later, mapped to the time at which we
   // should handle them again.  We can't block the server thread directly to

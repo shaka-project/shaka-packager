@@ -54,6 +54,12 @@ else()
     -Wno-unused-parameter
     # There are also redundant move calls.
     -Wno-redundant-move
+    # There are ignored qualifiers.
+    -Wno-ignored-qualifiers
+    # There are attributes that cannot be honored.
+    -Wno-attributes
+    # There are implicit fallthroughs.
+    -Wno-implicit-fallthrough
   )
 endif()
 

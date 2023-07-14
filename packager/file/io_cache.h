@@ -69,13 +69,13 @@ class IoCache {
 
   const uint64_t cache_size_;
   absl::Mutex mutex_;
-  absl::CondVar read_event_ GUARDED_BY(mutex_);
-  absl::CondVar write_event_ GUARDED_BY(mutex_);
-  std::vector<uint8_t> circular_buffer_ GUARDED_BY(mutex_);
-  const uint8_t* end_ptr_ GUARDED_BY(mutex_);
-  uint8_t* r_ptr_ GUARDED_BY(mutex_);
-  uint8_t* w_ptr_ GUARDED_BY(mutex_);
-  bool closed_ GUARDED_BY(mutex_);
+  absl::CondVar read_event_ ABSL_GUARDED_BY(mutex_);
+  absl::CondVar write_event_ ABSL_GUARDED_BY(mutex_);
+  std::vector<uint8_t> circular_buffer_ ABSL_GUARDED_BY(mutex_);
+  const uint8_t* end_ptr_ ABSL_GUARDED_BY(mutex_);
+  uint8_t* r_ptr_ ABSL_GUARDED_BY(mutex_);
+  uint8_t* w_ptr_ ABSL_GUARDED_BY(mutex_);
+  bool closed_ ABSL_GUARDED_BY(mutex_);
 
   DISALLOW_COPY_AND_ASSIGN(IoCache);
 };

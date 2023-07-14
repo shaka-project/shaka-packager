@@ -45,7 +45,7 @@ class Version {
   Version& operator=(const Version&) = delete;
 
   absl::Mutex mutex_;
-  std::string version_ GUARDED_BY(mutex_);
+  std::string version_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace

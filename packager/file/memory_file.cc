@@ -101,9 +101,9 @@ class FileSystem {
   FileSystem() = default;
 
   // Filename to file data map.
-  std::map<std::string, std::vector<uint8_t>> files_ GUARDED_BY(mutex_);
+  std::map<std::string, std::vector<uint8_t>> files_ ABSL_GUARDED_BY(mutex_);
   // Filename to file open modes map.
-  std::map<std::string, std::string> open_files_ GUARDED_BY(mutex_);
+  std::map<std::string, std::string> open_files_ ABSL_GUARDED_BY(mutex_);
 
   absl::Mutex mutex_;
 };

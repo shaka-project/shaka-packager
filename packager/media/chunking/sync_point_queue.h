@@ -60,7 +60,7 @@ class SyncPointQueue {
   std::shared_ptr<const CueEvent> PromoteAtNoLocking(double time_in_seconds);
 
   absl::Mutex mutex_;
-  absl::CondVar sync_condition_ GUARDED_BY(mutex_);
+  absl::CondVar sync_condition_ ABSL_GUARDED_BY(mutex_);
   size_t thread_count_ = 0;
   size_t waiting_thread_count_ = 0;
   bool cancelled_ = false;

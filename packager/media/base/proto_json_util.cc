@@ -18,7 +18,7 @@ std::string MessageToJsonString(const google::protobuf::Message& message) {
   json_print_options.preserve_proto_field_names = true;
 
   std::string result;
-  GOOGLE_CHECK_OK(google::protobuf::util::MessageToJsonString(
+  ABSL_CHECK_OK(google::protobuf::util::MessageToJsonString(
       message, &result, json_print_options));
   return result;
 }
