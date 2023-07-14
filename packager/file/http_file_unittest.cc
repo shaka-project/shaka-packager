@@ -137,9 +137,7 @@ TEST_F(HttpFileTest, BasicPost) {
 
   ASSERT_EQ(file->Write(data.data(), data.size()),
             static_cast<int64_t>(data.size()));
-  ASSERT_TRUE(file->Flush());
-
-  // Tells the server in a chunked upload that there will be no more chunks.
+  // Signal that there will be no more writes.
   // If we don't do this, the request can hang in libcurl.
   file->CloseForWriting();
 
@@ -173,9 +171,7 @@ TEST_F(HttpFileTest, BasicPut) {
 
   ASSERT_EQ(file->Write(data.data(), data.size()),
             static_cast<int64_t>(data.size()));
-  ASSERT_TRUE(file->Flush());
-
-  // Tells the server in a chunked upload that there will be no more chunks.
+  // Signal that there will be no more writes.
   // If we don't do this, the request can hang in libcurl.
   file->CloseForWriting();
 
@@ -212,25 +208,13 @@ TEST_F(HttpFileTest, MultipleWrites) {
 
   ASSERT_EQ(file->Write(data1.data(), data1.size()),
             static_cast<int64_t>(data1.size()));
-  // Flush the first chunk.
-  ASSERT_TRUE(file->Flush());
-
   ASSERT_EQ(file->Write(data2.data(), data2.size()),
             static_cast<int64_t>(data2.size()));
-  // Flush the second chunk.
-  ASSERT_TRUE(file->Flush());
-
   ASSERT_EQ(file->Write(data3.data(), data3.size()),
             static_cast<int64_t>(data3.size()));
-  // Flush the third chunk.
-  ASSERT_TRUE(file->Flush());
-
   ASSERT_EQ(file->Write(data4.data(), data4.size()),
             static_cast<int64_t>(data4.size()));
-  // Flush the fourth chunk.
-  ASSERT_TRUE(file->Flush());
-
-  // Tells the server in a chunked upload that there will be no more chunks.
+  // Signal that there will be no more writes.
   // If we don't do this, the request can hang in libcurl.
   file->CloseForWriting();
 
@@ -254,7 +238,52 @@ TEST_F(HttpFileTest, MultipleWrites) {
   }
 }
 
-// TODO: Test chunked uploads explicitly.
+TEST_F(HttpFileTest, MultipleChunks) {
+  FilePtr file(new HttpFile(HttpMethod::kPut, kTestServerReflect,
+                            kBinaryContentType, kNoHeaders,
+                            kDefaultTestTimeout));
+  ASSERT_TRUE(file);
+  ASSERT_TRUE(file->Open());
+
+  // Each of these is written as an explicit chunk to the server.
+  const std::string data1 = "abcd";
+  const std::string data2 = "efgh";
+  const std::string data3 = "ijkl";
+  const std::string data4 = "mnop";
+
+  ASSERT_EQ(file->Write(data1.data(), data1.size()),
+            static_cast<int64_t>(data1.size()));
+  // Flush the first chunk.
+  ASSERT_TRUE(file->Flush());
+
+  ASSERT_EQ(file->Write(data2.data(), data2.size()),
+            static_cast<int64_t>(data2.size()));
+  // Flush the second chunk.
+  ASSERT_TRUE(file->Flush());
+
+  ASSERT_EQ(file->Write(data3.data(), data3.size()),
+            static_cast<int64_t>(data3.size()));
+  // Flush the third chunk.
+  ASSERT_TRUE(file->Flush());
+
+  ASSERT_EQ(file->Write(data4.data(), data4.size()),
+            static_cast<int64_t>(data4.size()));
+  // Flush the fourth chunk.
+  ASSERT_TRUE(file->Flush());
+
+  // Signal that there will be no more writes.
+  // If we don't do this, the request can hang in libcurl.
+  file->CloseForWriting();
+
+  auto json = HandleResponse(file);
+  ASSERT_TRUE(json.is_object());
+  ASSERT_TRUE(file.release()->Close());
+
+  ASSERT_JSON_STRING(json, "method", "PUT");
+  ASSERT_JSON_STRING(json, "body", data1 + data2 + data3 + data4);
+  ASSERT_JSON_STRING(json, "headers.Content-Type", kBinaryContentType);
+  ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
+}
 
 TEST_F(HttpFileTest, Error404) {
   FilePtr file(new HttpFile(HttpMethod::kGet, kTestServer404, kNoContentType,
