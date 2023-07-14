@@ -62,11 +62,11 @@ class ThreadedIoFile : public File {
   std::atomic<int64_t> internal_file_error_;
 
   absl::Mutex flush_mutex_;
-  bool flushing_ GUARDED_BY(flush_mutex_);
-  bool flush_complete_ GUARDED_BY(flush_mutex_);
+  bool flushing_ ABSL_GUARDED_BY(flush_mutex_);
+  bool flush_complete_ ABSL_GUARDED_BY(flush_mutex_);
 
   absl::Mutex task_exited_mutex_;
-  bool task_exited_ GUARDED_BY(task_exited_mutex_);
+  bool task_exited_ ABSL_GUARDED_BY(task_exited_mutex_);
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedIoFile);
 };

@@ -103,7 +103,7 @@ jobs:
         # NOTE: cmake is already installed in GitHub Actions VMs, but not
         # necessarily in a self-hosted runner.
         run: |
-          sudo apt install -y \
+          sudo apt update && sudo apt install -y \
               cmake \
               libc-ares-dev
 

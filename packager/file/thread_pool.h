@@ -42,10 +42,10 @@ class ThreadPool {
   void ThreadMain();
 
   absl::Mutex mutex_;
-  absl::CondVar tasks_available_ GUARDED_BY(mutex_);
-  std::queue<Task> tasks_ GUARDED_BY(mutex_);
-  size_t num_idle_threads_ GUARDED_BY(mutex_);
-  bool terminated_ GUARDED_BY(mutex_);
+  absl::CondVar tasks_available_ ABSL_GUARDED_BY(mutex_);
+  std::queue<Task> tasks_ ABSL_GUARDED_BY(mutex_);
+  size_t num_idle_threads_ ABSL_GUARDED_BY(mutex_);
+  bool terminated_ ABSL_GUARDED_BY(mutex_);
 
   DISALLOW_COPY_AND_ASSIGN(ThreadPool);
 };
