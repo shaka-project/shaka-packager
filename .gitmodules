@@ -33,4 +33,4 @@
 	url = https://github.com/protocolbuffers/protobuf
 [submodule "packager/third_party/mongoose/source"]
 	path = packager/third_party/mongoose/source
-	url = https://github.com/joeyparrish/mongoose
+	url = https://github.com/cesanta/mongoose
