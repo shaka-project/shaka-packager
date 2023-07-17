@@ -188,13 +188,30 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
   return key;
 }
 
+std::string FloatToXmlString(double number) {
+  // Keep up to microsecond accuracy but trim trailing 0s
+  std::string formatted = absl::StrFormat("%.6g", number);
+  size_t decimalPos = formatted.find('.');
+  if (decimalPos != std::string::npos) {
+    size_t lastNonZeroPos = formatted.find_last_not_of('0');
+    if (lastNonZeroPos >= decimalPos) {
+      formatted.erase(lastNonZeroPos + 1);
+    }
+    if (formatted.back() == '.') {
+      formatted.pop_back();
+    }
+  }
+
+  return formatted;
+}
+
 std::string SecondsToXmlDuration(double seconds) {
   // Chrome internally uses time accurate to microseconds, which is implemented
   // per MSE spec (https://www.w3.org/TR/media-source/).
   // We need a string formatter that has at least microseconds accuracy for a
-  // normal video (with duration up to 3 hours). Chrome's DoubleToString
+  // normal video (with duration up to 3 hours). FloatToXmlString
   // implementation meets the requirement.
-  return absl::StrFormat("PT%gS", seconds);
+  return absl::StrFormat("PT%sS", FloatToXmlString(seconds));
 }
 
 bool GetDurationAttribute(xmlNodePtr node, float* duration) {

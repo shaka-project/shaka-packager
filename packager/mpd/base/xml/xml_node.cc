@@ -203,7 +203,7 @@ bool XmlNode::SetFloatingPointAttribute(const std::string& attribute_name,
                                         double number) {
   DCHECK(impl_->node);
   return xmlSetProp(impl_->node.get(), BAD_CAST attribute_name.c_str(),
-                    BAD_CAST(absl::StrFormat("%g", number).c_str())) != nullptr;
+                    BAD_CAST(FloatToXmlString(number).c_str())) != nullptr;
 }
 
 bool XmlNode::SetId(uint32_t id) {

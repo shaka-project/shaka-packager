@@ -50,6 +50,8 @@ std::string GetBaseCodec(const MediaInfo& media_info);
 // Returns a key made from the characteristics that separate AdaptationSets.
 std::string GetAdaptationSetKey(const MediaInfo& media_info, bool ignore_codec);
 
+std::string FloatToXmlString(double number);
+
 std::string SecondsToXmlDuration(double seconds);
 
 // Tries to get "duration" attribute from |node|. On success |duration| is set.
