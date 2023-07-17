@@ -22,4 +22,4 @@ target_link_libraries(status_unittest
     gmock
     gtest
     gtest_main)
-add_test(NAME status_unittest COMMAND status_unittest)
+add_gtest(status_unittest)

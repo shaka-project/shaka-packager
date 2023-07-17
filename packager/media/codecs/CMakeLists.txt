@@ -66,4 +66,4 @@ target_link_libraries(codecs_unittest
     gtest_main
     test_data_util)
 
-add_test(NAME codecs_unittest COMMAND codecs_unittest)
+add_gtest(codecs_unittest)

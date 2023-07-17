@@ -26,7 +26,6 @@ add_library(formats_webm STATIC
     webm_video_client.cc
     webm_webvtt_parser.cc
 )
-
 target_link_libraries(formats_webm
     webm
     file
@@ -48,7 +47,6 @@ add_executable(webm_unittest
     webm_tracks_parser_unittest.cc
     webm_webvtt_parser_unittest.cc
 )
-
 target_link_libraries(webm_unittest
     formats_webm
     gmock
@@ -56,5 +54,4 @@ target_link_libraries(webm_unittest
     gtest_main
     test_data_util
 )
-
-add_test(NAME webm_unittest COMMAND webm_unittest)
+add_gtest(webm_unittest)

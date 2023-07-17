@@ -14,5 +14,6 @@
 .repo
 .settings
 build/
-/packager/docs/
+junit-reports/
+packager/docs/
 .vscode/
