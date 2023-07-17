@@ -17,4 +17,4 @@ target_link_libraries(kv_pairs_unittest
     gmock
     gtest
     gtest_main)
-add_test(NAME kv_pairs_unittest COMMAND kv_pairs_unittest)
+add_gtest(kv_pairs_unittest)

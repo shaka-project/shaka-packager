@@ -13,7 +13,6 @@ add_library(media_event STATIC
     muxer_listener_internal.cc
     vod_media_info_dump_muxer_listener.cc
 )
-
 target_link_libraries(media_event
     file
     mpd_media_info_proto
@@ -24,7 +23,6 @@ target_link_libraries(media_event
 add_library(mock_muxer_listener STATIC
     mock_muxer_listener.cc
 )
-
 target_link_libraries(mock_muxer_listener
     gmock
     media_event
@@ -39,7 +37,6 @@ add_executable(media_event_unittest
     muxer_listener_test_helper.cc
     vod_media_info_dump_muxer_listener_unittest.cc
 )
-
 target_link_libraries(media_event_unittest
     file
     file_test_util
@@ -50,5 +47,4 @@ target_link_libraries(media_event_unittest
     media_event
     mock_muxer_listener
 )
-
-add_test(NAME media_event_unittest COMMAND media_event_unittest)
+add_gtest(media_event_unittest)

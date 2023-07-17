@@ -21,5 +21,4 @@ target_link_libraries(media_trick_play_unittest
     gmock
     gtest
     gtest_main)
-
-add_test(NAME media_trick_play_unittest COMMAND media_trick_play_unittest)
+add_gtest(media_trick_play_unittest)

@@ -152,6 +152,12 @@ jobs:
       - name: Test
         run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
 
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@150e2f992e4fad1379da2056d1d1c279f520e058
+        if: ${{ always() }}
+        with:
+          report_paths: 'junit-reports/TEST-*.xml'
+
       # TODO(joeyparrish): Prepare artifacts when build system is complete again
 #      - name: Prepare artifacts (static release only)
 #        run: |

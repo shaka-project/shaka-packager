@@ -28,5 +28,4 @@ target_link_libraries(media_crypto_unittest
         gmock
         gtest
         gtest_main)
-
-add_test(NAME media_crypto_unittest COMMAND media_crypto_unittest)
+add_gtest(media_crypto_unittest)

@@ -43,6 +43,9 @@ else()
   add_compile_options(-Wno-unknown-warning-option)
 endif()
 
+# Include our module for gtest-based testing.
+include("gtest.cmake")
+
 # Include our module for building protos.
 include("protobuf.cmake")
 
