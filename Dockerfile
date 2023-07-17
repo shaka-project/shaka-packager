@@ -4,15 +4,15 @@ FROM alpine:3.12 as builder
 RUN apk add --no-cache \
         bash curl \
         bsd-compat-headers c-ares-dev linux-headers \
-        build-base cmake git python3
+        build-base cmake git ninja python3
 
 # Build shaka-packager from the current directory, rather than what has been
 # merged.
 WORKDIR shaka-packager
 COPY . /shaka-packager/
 RUN mkdir build
-RUN cmake -S . -B build
-RUN make -C build
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
+RUN cmake --build build/ --config Debug --parallel
 
 # Copy only result binaries to our final image.
 FROM alpine:3.12

@@ -29,3 +29,15 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     message(FATAL_ERROR "GCC version must be at least 9! (Found ${CMAKE_CXX_COMPILER_VERSION})")
   endif()
 endif()
+
+# If the environment variable PACKAGER_LOW_MEMORY_BUILD is defined, limit the
+# number of parallel processes.  This is used in our workflow to keep our arm64
+# builds from failing.  There, we only have 4GB RAM to share among 6 CPUs.
+# NOTE: This only affects CMake's Ninja generator.
+if(DEFINED ENV{PACKAGER_LOW_MEMORY_BUILD})
+  set_property(GLOBAL PROPERTY JOB_POOLS
+               compile_jobs=4
+               link_jobs=1)
+  set(CMAKE_JOB_POOL_COMPILE compile_jobs)
+  set(CMAKE_JOB_POOL_LINK link_jobs)
+endif()
