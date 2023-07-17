@@ -1,20 +1,10 @@
-FROM centos:8
-
-# Fix up CentOS repo info, which is outdated and not maintained in DockerHub.
-# See https://stackoverflow.com/a/71309215
-RUN cd /etc/yum.repos.d/
-RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+FROM tgagor/centos:stream9
 
 # Install utilities, libraries, and dev tools.
 RUN yum install -y \
         which \
         c-ares-devel libatomic \
-        cmake gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ git python3
-
-# CentOS 8 is old, and the g++ version installed doesn't automatically link the
-# C++ filesystem library as it should.  Activate a newer dev environment.
-ENV PATH="/opt/rh/gcc-toolset-9/root/usr/bin:$PATH"
+        cmake gcc-c++ git python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

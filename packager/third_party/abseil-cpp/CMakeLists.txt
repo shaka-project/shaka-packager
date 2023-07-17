@@ -13,5 +13,10 @@ set(ABSL_PROPAGATE_CXX_STD ON)
 # for one in the system.
 set(ABSL_USE_EXTERNAL_GOOGLETEST ON)
 
+if(NOT MSVC)
+  # Silence a warning about ignored attributes.
+  add_compile_options(-Wno-ignored-attributes)
+endif()
+
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
