@@ -39,7 +39,7 @@ jobs:
               breathe
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
 
