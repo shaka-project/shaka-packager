@@ -11,15 +11,16 @@ namespace media {
 
 // Returns a file path for a file in the media/test/data directory.
 std::filesystem::path GetTestDataFilePath(const std::string& name) {
-  std::filesystem::path header_path(__FILE__);
-  return header_path.parent_path() / "data" / name;
+  std::filesystem::path data_dir(TEST_DATA_DIR);
+  return data_dir / name;
 }
 
 // Returns a file path for a file in the media/app/test/testdata directory.
 std::filesystem::path GetAppTestDataFilePath(const std::string& name) {
-  std::filesystem::path header_path(__FILE__);
-  return header_path.parent_path().parent_path() / "app" / "test" / "testdata" /
-         name;
+  std::filesystem::path data_dir(TEST_DATA_DIR);
+  auto app_data_dir =
+      data_dir.parent_path().parent_path() / "app" / "test" / "testdata";
+  return app_data_dir / name;
 }
 
 // Reads a test file from media/test/data directory and returns its content.
