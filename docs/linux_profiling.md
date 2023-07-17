@@ -1,16 +1,24 @@
 # Linux Profiling
 
-Profiling code is enabled when the `use_allocator` variable in gyp is set to
-`tcmalloc` and `profiling` variable in gyp is set to `1`. That will build the
-tcmalloc library, including the cpu profiling and heap profiling code into
-shaka-packager, e.g.
+Profiling code is enabled by setting certain special compiler flags when you
+invoke CMake.  For example:
 
-    GYP_DEFINES='profiling=1 use_allocator="tcmalloc"' gclient runhooks
+```sh
+cmake \
+  -DCMAKE_CXX_FLAGS_DEBUG=-pg \
+  -DCMAKE_EXE_LINKER_FLAGS_DEBUG=-pg \
+  -DCMAKE_SHARED_LINKER_FLAGS_DEBUG=-pg \
+  -DCMAKE_BUILD_TYPE=Debug
+```
 
-If the stack traces in your profiles are incomplete, this may be due to missing
-frame pointers in some of the libraries. A workaround is to use the
-`linux_keep_shadow_stacks=1` gyp option. This will keep a shadow stack using the
-`-finstrument-functions` option of gcc and consult the stack when unwinding.
+These flags work for both GCC and Clang.  For MSVC, the flags are:
+
+```sh
+cmake \
+  -DCMAKE_EXE_LINKER_FLAGS_DEBUG=/PROFILE \
+  -DCMAKE_BUILD_TYPE=Debug
+```
+
 
 ## CPU Profiling
 
@@ -32,78 +40,65 @@ pprof help output and the google-perftools documentation.
 For further information, please refer to
 http://google-perftools.googlecode.com/svn/trunk/doc/cpuprofile.html.
 
-## Heap Profiling
-
-To turn on the heap profiler on shaka-packager, use the `HEAPPROFILE`
-environment variable to specify a filename for the heap profile. For example:
-
-    HEAPPROFILE=/tmp/heapprofile out/Release/packager
-
-The heap profile will be dumped periodically to the filename specified in the
-`HEAPPROFILE` environment variable. The dumps can be analyzed using the same
-command as cpu profiling above.
-
-For further information, please refer to
-http://google-perftools.googlecode.com/svn/trunk/doc/heapprofile.html.
-
-Some tests fork short-living processes which have a small memory footprint. To
-catch those, use the `HEAP_PROFILE_ALLOCATION_INTERVAL` environment variable.
-
-#### Dumping a profile of a running process
-
-To programmatically generate a heap profile before exit, use code like:
-
-    #include "packager/third_party/tcmalloc/chromium/src/gperftools/heap-profiler.h"
-
-    // "foobar" will be included in the message printed to the console
-    HeapProfilerDump("foobar");
-
-Then add allocator.gyp dependency to the target with the above change:
-
-    'conditions': [
-      ['profiling==1', {
-        'dependencies': [
-          'base/allocator/allocator.gyp:allocator',
-        ],
-      }],
-    ],
-
-Or you can use gdb to attach at any point:
-
-1.  Attach gdb to the process: `$ gdb -p 12345`
-2.  Cause it to dump a profile: `(gdb) p HeapProfilerDump("foobar")`
-3.  The filename will be printed on the console, e.g.
-    "`Dumping heap profile to heap.0001.heap (foobar)`"
-
 
 ## Thread sanitizer (tsan)
 
 To compile with the thread sanitizer library (tsan), you must set clang as your
-compiler and set the `tsan=1` and `tsan_blacklist` configs:
+compiler and set the `-fsanitize=thread` compiler flag:
 
-    CC=clang CXX=clang++ GYP_DEFINES="tsan=1 tsan_blacklist=/path/to/src/packager/tools/memory/tsan_v2/ignores.txt" gclient runhooks
+```sh
+CC=clang CXX=clang++ \
+cmake \
+  -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=thread \
+  -DCMAKE_EXE_LINKER_FLAGS_DEBUG=-fsanitize=thread \
+  -DCMAKE_SHARED_LINKER_FLAGS_DEBUG=-fsanitize=thread \
+  -DCMAKE_BUILD_TYPE=Debug
+```
 
 NOTE: tsan and asan cannot be used at the same time.
+
+See also https://clang.llvm.org/docs/ThreadSanitizer.html
 
 
 ## Adddress sanitizer (asan)
 
 To compile with the address sanitizer library (asan), you must set clang as your
-compiler and set the `asan=1` config:
+compiler and set the `-fsanitize=address` compiler flag:
 
-    CC=clang CXX=clang++ GYP_DEFINES="asan=1" gclient runhooks
+```sh
+CC=clang CXX=clang++ \
+cmake \
+  -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=address \
+  -DCMAKE_EXE_LINKER_FLAGS_DEBUG=-fsanitize=address \
+  -DCMAKE_SHARED_LINKER_FLAGS_DEBUG=-fsanitize=address \
+  -DCMAKE_BUILD_TYPE=Debug
+```
 
 NOTE: tsan and asan cannot be used at the same time.
+
+See also https://clang.llvm.org/docs/AddressSanitizer.html
 
 
 ## Leak sanitizer (lsan)
 
 To compile with the leak sanitizer library (lsan), you must set clang as your
-compiler and set the `lsan=1` config:
+compiler and set the `-fsanitize=leak` compiler flag:
 
-    CC=clang CXX=clang++ GYP_DEFINES="lsan=1" gclient runhooks
+```sh
+CC=clang CXX=clang++ \
+cmake \
+  -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=leak \
+  -DCMAKE_EXE_LINKER_FLAGS_DEBUG=-fsanitize=leak \
+  -DCMAKE_SHARED_LINKER_FLAGS_DEBUG=-fsanitize=leak \
+  -DCMAKE_BUILD_TYPE=Debug
+```
+
+See also https://clang.llvm.org/docs/LeakSanitizer.html
 
 
-## Reference
+## Other sanitizers in Clang
 
-[Linux Profiling in Chromium](https://chromium.googlesource.com/chromium/src/+/master/docs/linux_profiling.md)
+See also:
+ - https://clang.llvm.org/docs/MemorySanitizer.html
+ - https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+ - https://clang.llvm.org/docs/DataFlowSanitizer.html
