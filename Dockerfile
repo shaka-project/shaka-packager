@@ -11,8 +11,8 @@ RUN apk add --no-cache \
 WORKDIR shaka-packager
 COPY . /shaka-packager/
 RUN mkdir build
-RUN cmake -S . -B build
-RUN make -C build
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
+RUN cmake --build build/ --config Debug --parallel
 
 # Copy only result binaries to our final image.
 FROM alpine:3.12

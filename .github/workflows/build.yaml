@@ -100,12 +100,19 @@ jobs:
 
       - name: Install Linux deps
         if: runner.os == 'Linux'
-        # NOTE: cmake is already installed in GitHub Actions VMs, but not
+        # NOTE: CMake is already installed in GitHub Actions VMs, but not
         # necessarily in a self-hosted runner.
         run: |
           sudo apt update && sudo apt install -y \
               cmake \
-              libc-ares-dev
+              libc-ares-dev \
+              ninja-build
+
+      - name: Install Mac deps
+        if: runner.os == 'macOS'
+        # NOTE: GitHub Action VMs do not install ninja by default.
+        run: |
+          brew install ninja
 
       - name: Generate build files
         run: |
@@ -115,6 +122,18 @@ jobs:
             LIBPACKAGER_SHARED="ON"
           else
             LIBPACKAGER_SHARED="OFF"
+          fi
+
+          # If set, override the default generator for the platform.
+          # Not every entry in the build matrix config defines this.
+          # If this is blank, CMake will choose the default generator.
+          export CMAKE_GENERATOR="${{ matrix.generator }}"
+
+          # If set, configure the build to restrict parallel operations.
+          # This helps us avoid the compiler failing due to a lack of RAM
+          # on our arm64 build devices (4GB RAM shared among 6 CPUs).
+          if [[ "${{ matrix.low_mem }}" != "" ]]; then
+            export PACKAGER_LOW_MEMORY_BUILD=yes
           fi
 
           cmake \
@@ -128,7 +147,7 @@ jobs:
         # Visual Studio on Windows.  Note that the VS generator is what cmake
         # calls a "multi-configuration" generator, and so the desired build
         # type must be specified for Windows.
-        run: cmake --build build/ --config "${{ matrix.build_type }}"
+        run: cmake --build build/ --config "${{ matrix.build_type }}" --parallel
 
       - name: Test
         run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
