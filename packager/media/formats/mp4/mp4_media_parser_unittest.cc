@@ -103,9 +103,13 @@ class MP4MediaParserTest : public testing::Test {
 
   bool ParseMP4File(const std::string& filename, int append_bytes) {
     InitializeParser(NULL);
+
     if (!parser_->LoadMoov(GetTestDataFilePath(filename).AsUTF8Unsafe()))
       return false;
+
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
+    ASSERT_FALSE(buffer.empty());
+
     return AppendDataInPieces(buffer.data(), buffer.size(), append_bytes);
   }
 };
@@ -206,6 +210,8 @@ TEST_F(MP4MediaParserTest, Flush) {
   InitializeParser(NULL);
 
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(2u, num_streams_);
@@ -226,6 +232,8 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
   InitializeParser(NULL);
 
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_TRUE(parser_->Flush());
 
@@ -255,6 +263,8 @@ TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {
 
   std::vector<uint8_t> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-aux.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   const int kFirstMoofOffset = 1646;
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), kFirstMoofOffset, 512));
   EXPECT_EQ(1u, num_streams_);
@@ -274,6 +284,8 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndAuxInMdat) {
 
   std::vector<uint8_t> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-aux.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(82u, num_samples_);
@@ -293,6 +305,8 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndSenc) {
 
   std::vector<uint8_t> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-senc.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(82u, num_samples_);

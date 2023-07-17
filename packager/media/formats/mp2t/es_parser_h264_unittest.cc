@@ -153,6 +153,7 @@ class EsParserH264Test : public testing::Test {
 
 void EsParserH264Test::LoadStream(const char* filename) {
   std::vector<uint8_t> buffer = ReadTestDataFile(filename);
+  ASSERT_FALSE(buffer.empty());
 
   // The input file does not have AUDs.
   std::vector<Packet> access_units_without_aud =

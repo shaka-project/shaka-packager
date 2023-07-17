@@ -46,6 +46,7 @@ const uint8_t kPps2[] = {
 
 TEST(H264ParserTest, StreamFileParsing) {
   std::vector<uint8_t> buffer = ReadTestDataFile("test-25fps.h264");
+  ASSERT_FALSE(buffer.empty());
 
   // Number of NALUs in the test stream to be parsed.
   int num_nalus = 759;
