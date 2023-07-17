@@ -6,6 +6,7 @@
 
 #include <gflags/gflags.h>
 #include <iostream>
+#include <locale>
 
 #include "packager/app/ad_cue_generator_flags.h"
 #include "packager/app/crypto_flags.h"
@@ -34,7 +35,6 @@
 #if defined(OS_WIN)
 #include <codecvt>
 #include <functional>
-#include <locale>
 #endif  // defined(OS_WIN)
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
@@ -575,12 +575,20 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
         delete[] utf8_args;
       });
   std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
   for (int idx = 0; idx < argc; ++idx) {
     std::string utf8_arg(converter.to_bytes(argv[idx]));
     utf8_arg += '\0';
     utf8_argv[idx] = new char[utf8_arg.size()];
     memcpy(utf8_argv[idx], &utf8_arg[0], utf8_arg.size());
   }
+
+  // Because we just converted wide character args into UTF8, and because
+  // std::filesystem::u8path is used to interpret all std::string paths as
+  // UTF8, we should set the locale to UTF8 as well, for the transition point
+  // to C library functions like fopen to work correctly with non-ASCII paths.
+  std::setlocale(LC_ALL, ".UTF8");
+
   return shaka::PackagerMain(argc, utf8_argv.get());
 }
 #else

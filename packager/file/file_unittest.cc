@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #include <filesystem>
+#include <locale>
 
 #include "absl/flags/declare.h"
 #include "packager/file/file.h"
@@ -31,13 +32,14 @@ void WriteFile(const std::string& path, const std::string& data) {
 
 void DeleteFile(const std::string& path) {
   std::error_code ec;
-  std::filesystem::remove(path, ec);
+  std::filesystem::remove(std::filesystem::u8path(path), ec);
   // Ignore errors.
 }
 
 int64_t FileSize(const std::string& path) {
   std::error_code ec;
-  int64_t file_size = std::filesystem::file_size(path, ec);
+  int64_t file_size =
+      std::filesystem::file_size(std::filesystem::u8path(path), ec);
   if (ec) {
     return -1;
   }
@@ -65,6 +67,17 @@ namespace shaka {
 
 class LocalFileTest : public testing::Test {
  protected:
+  static std::string original_locale_;
+
+  static void SetUpTestSuite() {
+    original_locale_ = setlocale(LC_ALL, NULL);
+    setlocale(LC_ALL, ".UTF8");
+  }
+
+  static void TearDownTestSuite() {
+    setlocale(LC_ALL, original_locale_.c_str());
+  }
+
   void SetUp() override {
     data_.resize(kDataSize);
     for (int i = 0; i < kDataSize; ++i)
@@ -96,6 +109,9 @@ class LocalFileTest : public testing::Test {
   // Same as |local_file_name_no_prefix_| but with the file prefix.
   std::string local_file_name_;
 };
+
+// static
+std::string LocalFileTest::original_locale_;
 
 TEST_F(LocalFileTest, ReadNotExist) {
   // Remove test file if it exists.
@@ -231,6 +247,42 @@ TEST_F(LocalFileTest, WriteFlushCheckSize) {
 TEST_F(LocalFileTest, IsLocalRegular) {
   WriteFile(local_file_name_no_prefix_, data_);
   ASSERT_TRUE(File::IsLocalRegularFile(local_file_name_.c_str()));
+}
+
+TEST_F(LocalFileTest, UnicodePath) {
+  // Delete the temp file already created.
+  DeleteFile(local_file_name_no_prefix_);
+
+  // Modify the local file name for this test to include non-ASCII characters.
+  // This is used in TearDown() to clean up the file we create in the test.
+  const std::string unicode_suffix = "από.txt";
+  local_file_name_ += unicode_suffix;
+  local_file_name_no_prefix_ += unicode_suffix;
+
+  // Write file using File API.
+  File* file = File::Open(local_file_name_.c_str(), "w");
+  ASSERT_TRUE(file != NULL);
+  EXPECT_EQ(kDataSize, file->Write(&data_[0], kDataSize));
+
+  // Check the size.
+  EXPECT_EQ(kDataSize, file->Size());
+  ASSERT_TRUE(file->Close());
+
+  // Open file using File API.
+  file = File::Open(local_file_name_.c_str(), "r");
+  ASSERT_TRUE(file != NULL);
+
+  // Read the entire file.
+  std::string read_data(kDataSize, 0);
+  EXPECT_EQ(kDataSize, file->Read(&read_data[0], kDataSize));
+
+  // Verify EOF.
+  uint8_t single_byte;
+  EXPECT_EQ(0, file->Read(&single_byte, sizeof(single_byte)));
+  ASSERT_TRUE(file->Close());
+
+  // Compare data written and read.
+  EXPECT_EQ(data_, read_data);
 }
 
 class ParamLocalFileTest : public LocalFileTest,

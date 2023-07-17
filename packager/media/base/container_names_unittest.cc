@@ -144,7 +144,7 @@ TEST(ContainerNamesTest, CheckFixedStrings) {
 
 // Determine the container type of a specified file.
 void TestFile(MediaContainerName expected, const std::string& name) {
-  std::filesystem::path path = GetTestDataFilePath(name);
+  auto path = GetTestDataFilePath(name);
   std::vector<uint8_t> data = ReadTestDataFile(name);
   ASSERT_FALSE(data.empty());
 

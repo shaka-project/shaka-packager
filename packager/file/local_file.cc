@@ -75,7 +75,8 @@ int64_t LocalFile::Size() {
   }
 
   std::error_code ec;
-  int64_t file_size = std::filesystem::file_size(file_name(), ec);
+  auto file_path = std::filesystem::u8path(file_name());
+  int64_t file_size = std::filesystem::file_size(file_path, ec);
   if (ec) {
     LOG(ERROR) << "Cannot get file size, error: " << ec;
     return -1;
@@ -112,7 +113,7 @@ bool LocalFile::Tell(uint64_t* position) {
 LocalFile::~LocalFile() {}
 
 bool LocalFile::Open() {
-  std::filesystem::path file_path(file_name());
+  auto file_path = std::filesystem::u8path(file_name());
 
   // Create upper level directories for write mode.
   if (file_mode_.find("w") != std::string::npos) {
@@ -133,9 +134,10 @@ bool LocalFile::Open() {
 }
 
 bool LocalFile::Delete(const char* file_name) {
+  auto file_path = std::filesystem::u8path(file_name);
   std::error_code ec;
   // On error (ec truthy), remove() will return false anyway.
-  return std::filesystem::remove(file_name, ec);
+  return std::filesystem::remove(file_path, ec);
 }
 
 }  // namespace shaka
