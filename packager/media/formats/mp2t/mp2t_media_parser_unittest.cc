@@ -122,6 +122,7 @@ class Mp2tMediaParserTest : public testing::Test {
     InitializeParser();
 
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
+    ASSERT_FALSE(buffer.empty());
     EXPECT_TRUE(AppendDataInPieces(buffer.data(),
                                    buffer.size(),
                                    append_bytes));

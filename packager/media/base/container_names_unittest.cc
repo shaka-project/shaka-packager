@@ -146,6 +146,7 @@ TEST(ContainerNamesTest, CheckFixedStrings) {
 void TestFile(MediaContainerName expected, const std::string& name) {
   std::filesystem::path path = GetTestDataFilePath(name);
   std::vector<uint8_t> data = ReadTestDataFile(name);
+  ASSERT_FALSE(data.empty());
 
   // Now verify the type.
   EXPECT_EQ(expected, DetermineContainer(data.data(), data.size()))
