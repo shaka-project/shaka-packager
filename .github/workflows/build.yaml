@@ -50,7 +50,7 @@ jobs:
       INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
       OS: ${{ steps.configure.outputs.OS }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
 
@@ -67,8 +67,13 @@ jobs:
           const os = include.map((config) => config.os);
 
           // Output JSON objects consumed by the build matrix below.
-          console.log(`::set-output name=INCLUDE::${ JSON.stringify(include) }`);
-          console.log(`::set-output name=OS::${ JSON.stringify(os) }`);
+          const fs = require('fs');
+          fs.writeFileSync(process.env.GITHUB_OUTPUT,
+              [
+                `INCLUDE=${ JSON.stringify(include) }`,
+                `OS=${ JSON.stringify(os) }`,
+              ].join('\n'),
+              {flag: 'a'});
 
           // Log the outputs, for the sake of debugging this script.
           console.log({enableSelfHosted, include, os});
@@ -93,7 +98,7 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive

@@ -29,7 +29,7 @@ jobs:
     outputs:
       MATRIX: ${{ steps.configure.outputs.MATRIX }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
 
@@ -44,7 +44,9 @@ jobs:
           });
 
           // Output a JSON object consumed by the build matrix below.
-          console.log(`::set-output name=MATRIX::${ JSON.stringify(matrix) }`);
+          fs.writeFileSync(process.env.GITHUB_OUTPUT,
+              `MATRIX=${ JSON.stringify(matrix) }`,
+              {flag: 'a'});
 
           // Log the outputs, for the sake of debugging this script.
           console.log({matrix});
@@ -63,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive

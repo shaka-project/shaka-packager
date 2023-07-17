@@ -34,7 +34,7 @@ jobs:
           echo "TARGET_REF=${{ github.event.inputs.ref || github.event.release.tag_name }}" >> $GITHUB_ENV
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ env.TARGET_REF }}
           submodules: recursive

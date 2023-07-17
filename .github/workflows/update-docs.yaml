@@ -36,7 +36,7 @@ jobs:
           echo "::set-output name=ref::${{ github.event.inputs.ref || github.event.release.tag_name }}"
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ steps.ref.outputs.ref }}
 
