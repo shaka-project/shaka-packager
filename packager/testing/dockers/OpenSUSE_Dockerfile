@@ -4,7 +4,7 @@ FROM opensuse/leap:15.5
 RUN zypper in -y \
         curl which \
         c-ares-devel \
-        cmake gcc9-c++ git python3
+        cmake gcc9-c++ git ninja python3
 
 # OpenSuse 15 doesn't have the required gcc 9+ by default, but we can install
 # it as gcc9 and symlink it.
