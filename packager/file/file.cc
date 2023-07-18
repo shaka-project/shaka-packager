@@ -73,8 +73,8 @@ bool DeleteLocalFile(const char* file_name) {
 
 bool WriteLocalFileAtomically(const char* file_name,
                               const std::string& contents) {
-  const std::filesystem::path file_path(file_name);
-  const std::filesystem::path dir_path = file_path.parent_path();
+  const auto file_path = std::filesystem::u8path(file_name);
+  const auto dir_path = file_path.parent_path();
 
   std::string temp_file_name;
   if (!TempFilePath(dir_path.string(), &temp_file_name))
@@ -83,7 +83,8 @@ bool WriteLocalFileAtomically(const char* file_name,
     return false;
 
   std::error_code ec;
-  std::filesystem::rename(temp_file_name, file_name, ec);
+  auto temp_file_path = std::filesystem::u8path(temp_file_name);
+  std::filesystem::rename(temp_file_path, file_name, ec);
   if (ec) {
     LOG(ERROR) << "Failed to replace file '" << file_name << "' with '"
                << temp_file_name << "', error: " << ec;
@@ -405,7 +406,8 @@ bool File::IsLocalRegularFile(const char* file_name) {
     return false;
 
   std::error_code ec;
-  return std::filesystem::is_regular_file(real_file_name, ec);
+  auto real_file_path = std::filesystem::u8path(real_file_name);
+  return std::filesystem::is_regular_file(real_file_path, ec);
 }
 
 std::string File::MakeCallbackFileName(

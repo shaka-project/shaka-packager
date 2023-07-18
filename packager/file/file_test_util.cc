@@ -16,8 +16,8 @@ std::string generate_unique_temp_path() {
   // Generate a unique name for a temporary file, using standard library
   // routines, to avoid a circular dependency on any of our own code for
   // generating temporary files.  The template must end in 6 X's.
-  std::filesystem::path temp_path_template =
-      (std::filesystem::temp_directory_path() / "packager-test.XXXXXX");
+  auto temp_path_template =
+      std::filesystem::temp_directory_path() / "packager-test.XXXXXX";
   std::string temp_path_template_string = temp_path_template.string();
 #if defined(OS_WIN)
   // _mktemp will modify the string passed to it to reflect the generated name
@@ -36,7 +36,7 @@ std::string generate_unique_temp_path() {
 
 void delete_file(const std::string& path) {
   std::error_code ec;
-  std::filesystem::remove(path, ec);
+  std::filesystem::remove(std::filesystem::u8path(path), ec);
   // Ignore errors.
 }
 
@@ -44,7 +44,7 @@ TempFile::TempFile() : path_(generate_unique_temp_path()) {}
 
 TempFile::~TempFile() {
   std::error_code ec;
-  std::filesystem::remove(path_, ec);
+  std::filesystem::remove(std::filesystem::u8path(path_), ec);
   // Ignore errors.
 }
 
