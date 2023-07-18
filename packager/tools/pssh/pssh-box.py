@@ -20,6 +20,17 @@ import os
 import struct
 import sys
 
+
+def to_code_point(value):
+  """
+  Return the unicode code point with `int` passthrough
+  """
+  if isinstance(value, int):
+    return value
+
+  return ord(value)
+
+
 _script_dir = os.path.dirname(os.path.realpath(__file__))
 _proto_path = os.path.join(_script_dir, 'pyproto')
 _widevine_proto_path = os.path.join(_proto_path, 'packager/media/base')
@@ -64,9 +75,9 @@ class BinaryReader(object):
     ret = 0
     for i in range(0, size):
       if self.little_endian:
-        ret |= (ord(data[i]) << (8 * i))
+        ret |= (to_code_point(data[i]) << (8 * i))
       else:
-        ret |= (ord(data[i]) << (8 * (size - i - 1)))
+        ret |= (to_code_point(data[i]) << (8 * (size - i - 1)))
     return ret
 
 

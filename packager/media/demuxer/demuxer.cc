@@ -162,13 +162,16 @@ Status Demuxer::InitializeParser() {
 
   // Read enough bytes before detecting the container.
   int64_t bytes_read = 0;
+  bool eof = false;
   while (static_cast<size_t>(bytes_read) < kInitBufSize) {
     int64_t read_result =
         media_file_->Read(buffer_.get() + bytes_read, kInitBufSize);
     if (read_result < 0)
       return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
-    if (read_result == 0)
+    if (read_result == 0) {
+      eof = true;
       break;
+    }
     bytes_read += read_result;
   }
   container_name_ = DetermineContainer(buffer_.get(), bytes_read);
@@ -224,7 +227,7 @@ Status Demuxer::InitializeParser() {
     // descriptor |media_file_| instead of opening the same file again.
     static_cast<mp4::MP4MediaParser*>(parser_.get())->LoadMoov(file_name_);
   }
-  if (!parser_->Parse(buffer_.get(), bytes_read)) {
+  if (!parser_->Parse(buffer_.get(), bytes_read) || (eof && !parser_->Flush())) {
     return Status(error::PARSER_FAILURE,
                   "Cannot parse media file " + file_name_);
   }
