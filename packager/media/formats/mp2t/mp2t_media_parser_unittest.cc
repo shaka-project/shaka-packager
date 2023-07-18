@@ -122,17 +122,16 @@ class Mp2tMediaParserTest : public testing::Test {
     InitializeParser();
 
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
-    ASSERT_FALSE(buffer.empty());
-    EXPECT_TRUE(AppendDataInPieces(buffer.data(),
-                                   buffer.size(),
-                                   append_bytes));
-    return true;
+    if (buffer.empty())
+      return false;
+
+    return AppendDataInPieces(buffer.data(), buffer.size(), append_bytes);
   }
 };
 
 TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H264) {
   // Test small, non-segment-aligned appends.
-  ParseMpeg2TsFile("bear-640x360.ts", 17);
+  ASSERT_TRUE(ParseMpeg2TsFile("bear-640x360.ts", 17));
   EXPECT_EQ(79, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
@@ -140,7 +139,7 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H264) {
 
 TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H264) {
   // Test small, non-segment-aligned appends.
-  ParseMpeg2TsFile("bear-640x360.ts", 512);
+  ASSERT_TRUE(ParseMpeg2TsFile("bear-640x360.ts", 512));
   EXPECT_EQ(79, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
@@ -148,7 +147,7 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H264) {
 
 TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H265) {
   // Test small, non-segment-aligned appends.
-  ParseMpeg2TsFile("bear-640x360-hevc.ts", 17);
+  ASSERT_TRUE(ParseMpeg2TsFile("bear-640x360-hevc.ts", 17));
   EXPECT_EQ(78, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
@@ -156,7 +155,7 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H265) {
 
 TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H265) {
   // Test small, non-segment-aligned appends.
-  ParseMpeg2TsFile("bear-640x360-hevc.ts", 512);
+  ASSERT_TRUE(ParseMpeg2TsFile("bear-640x360-hevc.ts", 512));
   EXPECT_EQ(78, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
@@ -166,7 +165,7 @@ TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
   // "bear-640x360_ptszero_dtswraparound.ts" has been transcoded from
   // bear-640x360.mp4 by applying a time offset of 95442s (close to 2^33 /
   // 90000) which results in timestamp wrap around in the Mpeg2 TS stream.
-  ParseMpeg2TsFile("bear-640x360_ptswraparound.ts", 512);
+  ASSERT_TRUE(ParseMpeg2TsFile("bear-640x360_ptswraparound.ts", 512));
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
   EXPECT_LT(video_min_dts_, static_cast<int64_t>(1) << 33);
@@ -177,7 +176,7 @@ TEST_F(Mp2tMediaParserTest, PtsZeroDtsWrapAround) {
   // "bear-640x360.ts" has been transcoded from bear-640x360.mp4 by applying a
   // dts (close to 2^33 / 90000) and pts 1433 which results in dts
   // wrap around in the Mpeg2 TS stream but pts does not.
-  ParseMpeg2TsFile("bear-640x360_ptszero_dtswraparound.ts", 512);
+  ASSERT_TRUE(ParseMpeg2TsFile("bear-640x360_ptszero_dtswraparound.ts", 512));
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(64, video_frame_count_);
   // DTS was subjected to unroll

@@ -108,7 +108,8 @@ class MP4MediaParserTest : public testing::Test {
       return false;
 
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
-    ASSERT_FALSE(buffer.empty());
+    if (buffer.empty())
+      return false;
 
     return AppendDataInPieces(buffer.data(), buffer.size(), append_bytes);
   }
@@ -117,7 +118,7 @@ class MP4MediaParserTest : public testing::Test {
 TEST_F(MP4MediaParserTest, UnalignedAppend) {
   // Test small, non-segment-aligned appends (small enough to exercise
   // incremental append system)
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -126,7 +127,7 @@ TEST_F(MP4MediaParserTest, UnalignedAppend) {
 // the container has a 'pasp' box.
 TEST_F(MP4MediaParserTest, PixelWidthPixelHeightFromPaspBox) {
   // This content has a 'pasp' box that has the aspect ratio.
-  EXPECT_TRUE(ParseMP4File("bear-640x360-non_square_pixel-with_pasp.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-non_square_pixel-with_pasp.mp4", 512));
 
   const int kVideoTrackId = 1;
   EXPECT_EQ(8u,
@@ -144,7 +145,7 @@ TEST_F(MP4MediaParserTest,
        PixelWidthPixelHeightFromAVCDecoderConfigurationRecord) {
   // This file doesn't have pasp. The stream should extract pixel width and
   // height from SPS.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ParseMP4File("bear-640x360-non_square_pixel-without_pasp.mp4", 512));
 
   const int kVideoTrackId = 1;
@@ -164,7 +165,7 @@ TEST_F(MP4MediaParserTest,
   // This file doesn't have pasp. SPS for the video has
   // sar_width = sar_height = 0. So the stream info should return 1 for both
   // pixel_width and pixel_height.
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
 
   const int kVideoTrackId = 1;
   EXPECT_EQ(1u,
@@ -177,7 +178,7 @@ TEST_F(MP4MediaParserTest,
 
 TEST_F(MP4MediaParserTest, BytewiseAppend) {
   // Ensure no incremental errors occur when parsing
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 1));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 1));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -185,13 +186,13 @@ TEST_F(MP4MediaParserTest, BytewiseAppend) {
 TEST_F(MP4MediaParserTest, MultiFragmentAppend) {
   // Large size ensures multiple fragments are appended in one call (size is
   // larger than this particular test file)
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 300000));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 300000));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 
 TEST_F(MP4MediaParserTest, TrailingMoov) {
-  EXPECT_TRUE(ParseMP4File("bear-640x360-trailing-moov.mp4", 1024));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-trailing-moov.mp4", 1024));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -199,7 +200,7 @@ TEST_F(MP4MediaParserTest, TrailingMoov) {
 TEST_F(MP4MediaParserTest, TrailingMoovAndAdditionalMdat) {
   // The additional mdat should just be ignored, so the parse is still
   // successful with the same result.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ParseMP4File("bear-640x360-trailing-moov-additional-mdat.mp4", 1024));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
@@ -222,7 +223,7 @@ TEST_F(MP4MediaParserTest, Flush) {
 }
 
 TEST_F(MP4MediaParserTest, MPEG2_AAC_LC) {
-  EXPECT_TRUE(ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(119u, num_samples_);
 }
@@ -243,13 +244,13 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
 }
 
 TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
-  EXPECT_TRUE(ParseMP4File("bear-640x360.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 
 TEST_F(MP4MediaParserTest, CencWithoutDecryptionSource) {
-  EXPECT_TRUE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
   // Check if pssh is present.
   const int kVideoTrackId = 1;
