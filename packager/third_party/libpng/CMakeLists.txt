@@ -22,9 +22,31 @@ set(SKIP_INSTALL_ALL ON)
 # A confusing name, but this means "let us tell you where to find zlib".
 set(PNG_BUILD_ZLIB ON)
 # Tell libpng where to find zlib headers.
-set(ZLIB_INCLUDE_DIR ../zlib/source/)
+set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../zlib/source/")
 # Tell libpng where to find zlib library to link to.
 set(ZLIB_LIBRARY zlibstatic)
 
+# Silence these warnings:
+if(MSVC)
+  add_compile_options(
+    /wd4244
+  )
+else()
+  add_compile_options(
+    -Wno-maybe-uninitialized
+    -Wno-unused-but-set-variable
+    -Wno-unused-parameter
+    -Wno-sign-compare
+    -Wno-null-pointer-subtraction
+  )
+endif()
+
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
+
+# Add missing include directories for users of png_static:
+target_include_directories(png_static PUBLIC
+  # For png.h, pngconf.h:
+  source
+  # For pnglibconf.h:
+  ${CMAKE_CURRENT_BINARY_DIR}/source)
