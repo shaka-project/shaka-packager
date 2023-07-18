@@ -24,18 +24,6 @@ namespace shaka {
 
 namespace {
 
-// A completely arbitrary port number, unlikely to be in use.
-const int kTestServerPort = 58405;
-// Reflects back the method, body, and headers of the request as JSON.
-const std::string kTestServerReflect = "http://localhost:58405/reflect";
-// Returns the requested HTTP status code.
-const std::string kTestServer404 = "http://localhost:58405/status?code=404";
-// Returns after the requested delay.
-const std::string kTestServerLongDelay =
-    "http://localhost:58405/delay?seconds=8";
-const std::string kTestServerShortDelay =
-    "http://localhost:58405/delay?seconds=1";
-
 const std::vector<std::string> kNoHeaders;
 const std::string kNoContentType;
 const std::string kBinaryContentType = "application/octet-stream";
@@ -90,16 +78,15 @@ nlohmann::json HandleResponse(const FilePtr& file) {
 // enough.
 class HttpFileTest : public testing::Test {
  protected:
-  void SetUp() override { ASSERT_TRUE(server_.Start(kTestServerPort)); }
+  void SetUp() override { ASSERT_TRUE(server_.Start()); }
 
- private:
   media::TestWebServer server_;
 };
 
 }  // namespace
 
 TEST_F(HttpFileTest, BasicGet) {
-  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerReflect,
+  FilePtr file(new HttpFile(HttpMethod::kGet, server_.ReflectUrl(),
                             kNoContentType, kNoHeaders, kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
@@ -112,7 +99,7 @@ TEST_F(HttpFileTest, BasicGet) {
 
 TEST_F(HttpFileTest, CustomHeaders) {
   std::vector<std::string> headers{"Host: foo", "X-My-Header: Something"};
-  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerReflect,
+  FilePtr file(new HttpFile(HttpMethod::kGet, server_.ReflectUrl(),
                             kNoContentType, headers, kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
@@ -127,7 +114,7 @@ TEST_F(HttpFileTest, CustomHeaders) {
 }
 
 TEST_F(HttpFileTest, BasicPost) {
-  FilePtr file(new HttpFile(HttpMethod::kPost, kTestServerReflect,
+  FilePtr file(new HttpFile(HttpMethod::kPost, server_.ReflectUrl(),
                             kBinaryContentType, kNoHeaders,
                             kDefaultTestTimeout));
   ASSERT_TRUE(file);
@@ -161,7 +148,7 @@ TEST_F(HttpFileTest, BasicPost) {
 }
 
 TEST_F(HttpFileTest, BasicPut) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, kTestServerReflect,
+  FilePtr file(new HttpFile(HttpMethod::kPut, server_.ReflectUrl(),
                             kBinaryContentType, kNoHeaders,
                             kDefaultTestTimeout));
   ASSERT_TRUE(file);
@@ -195,7 +182,7 @@ TEST_F(HttpFileTest, BasicPut) {
 }
 
 TEST_F(HttpFileTest, MultipleWrites) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, kTestServerReflect,
+  FilePtr file(new HttpFile(HttpMethod::kPut, server_.ReflectUrl(),
                             kBinaryContentType, kNoHeaders,
                             kDefaultTestTimeout));
   ASSERT_TRUE(file);
@@ -239,7 +226,7 @@ TEST_F(HttpFileTest, MultipleWrites) {
 }
 
 TEST_F(HttpFileTest, MultipleChunks) {
-  FilePtr file(new HttpFile(HttpMethod::kPut, kTestServerReflect,
+  FilePtr file(new HttpFile(HttpMethod::kPut, server_.ReflectUrl(),
                             kBinaryContentType, kNoHeaders,
                             kDefaultTestTimeout));
   ASSERT_TRUE(file);
@@ -286,8 +273,8 @@ TEST_F(HttpFileTest, MultipleChunks) {
 }
 
 TEST_F(HttpFileTest, Error404) {
-  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServer404, kNoContentType,
-                            kNoHeaders, kDefaultTestTimeout));
+  FilePtr file(new HttpFile(HttpMethod::kGet, server_.StatusCodeUrl(404),
+                            kNoContentType, kNoHeaders, kDefaultTestTimeout));
   ASSERT_TRUE(file);
   ASSERT_TRUE(file->Open());
 
@@ -301,7 +288,7 @@ TEST_F(HttpFileTest, Error404) {
 }
 
 TEST_F(HttpFileTest, TimeoutTriggered) {
-  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerLongDelay,
+  FilePtr file(new HttpFile(HttpMethod::kGet, server_.DelayUrl(8),
                             kNoContentType, kNoHeaders,
                             1 /* timeout in seconds */));
   ASSERT_TRUE(file);
@@ -317,7 +304,7 @@ TEST_F(HttpFileTest, TimeoutTriggered) {
 }
 
 TEST_F(HttpFileTest, TimeoutNotTriggered) {
-  FilePtr file(new HttpFile(HttpMethod::kGet, kTestServerShortDelay,
+  FilePtr file(new HttpFile(HttpMethod::kGet, server_.DelayUrl(1),
                             kNoContentType, kNoHeaders,
                             5 /* timeout in seconds */));
   ASSERT_TRUE(file);

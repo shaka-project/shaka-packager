@@ -7,6 +7,7 @@
 #include "packager/media/test/test_web_server.h"
 
 #include <chrono>
+#include <random>
 #include <string_view>
 
 #include "absl/strings/numbers.h"
@@ -22,6 +23,12 @@
 // 3. Delay a response by a requested amount of time
 
 namespace {
+
+// A random HTTP port will be chosen, and if there is a collision, we will try
+// again up to |kMaxPortTries| times.
+const int kMinPortNumber = 58000;
+const int kMaxPortNumber = 58999;
+const int kMaxPortTries = 10;
 
 // Get a string_view on mongoose's mg_string, which may not be nul-terminated.
 std::string_view MongooseStringView(const mg_str& mg_string) {
@@ -82,8 +89,8 @@ TestWebServer::~TestWebServer() {
   thread_.reset();
 }
 
-bool TestWebServer::Start(int port) {
-  thread_.reset(new std::thread(&TestWebServer::ThreadCallback, this, port));
+bool TestWebServer::Start() {
+  thread_.reset(new std::thread(&TestWebServer::ThreadCallback, this));
 
   absl::MutexLock lock(&mutex_);
   while (status_ == kNew) {
@@ -93,12 +100,19 @@ bool TestWebServer::Start(int port) {
   return status_ == kStarted;
 }
 
-void TestWebServer::ThreadCallback(int port) {
+bool TestWebServer::TryListenOnPort(struct mg_mgr* manager, int port) {
   // Mongoose needs an HTTP server address in string format.
   // "127.0.0.1" is "localhost", and is not visible to other machines on the
   // network.
-  std::string http_address = absl::StrFormat("http://127.0.0.1:%d", port);
+  base_url_ = absl::StrFormat("http://127.0.0.1:%d", port);
 
+  auto connection =
+      mg_http_listen(manager, base_url_.c_str(), &TestWebServer::HandleEvent,
+                     this /* callback_data */);
+  return connection != NULL;
+}
+
+void TestWebServer::ThreadCallback() {
   // Set up the manager structure to be automatically cleaned up when it leaves
   // scope.
   std::unique_ptr<struct mg_mgr, decltype(&mg_mgr_free)> manager(
@@ -106,20 +120,29 @@ void TestWebServer::ThreadCallback(int port) {
   // Then initialize it.
   mg_mgr_init(manager.get());
 
-  auto connection =
-      mg_http_listen(manager.get(), http_address.c_str(),
-                     &TestWebServer::HandleEvent, this /* callback_data */);
-  if (connection == NULL) {
-    // Failed to listen to the requested port.  Mongoose has already printed an
-    // error message.
-    absl::MutexLock lock(&mutex_);
-    status_ = kFailed;
-    started_.Signal();
-    return;
+  // Prepare to choose a random port.
+  std::random_device r;
+  std::default_random_engine e1(r());
+  std::uniform_int_distribution<int> uniform_dist(kMinPortNumber,
+                                                  kMaxPortNumber);
+
+  bool ok = false;
+  for (int i = 0; !ok && i < kMaxPortTries; ++i) {
+    // Choose a random port in the range.
+    int port = uniform_dist(e1);
+    ok = TryListenOnPort(manager.get(), port);
   }
 
   {
     absl::MutexLock lock(&mutex_);
+    if (!ok) {
+      // Failed to find a port to listen on.  Mongoose has already printed an
+      // error message.
+      status_ = kFailed;
+      started_.Signal();
+      return;
+    }
+
     status_ = kStarted;
     started_.Signal();
   }
