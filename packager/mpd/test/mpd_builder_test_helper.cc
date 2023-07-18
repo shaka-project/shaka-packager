@@ -19,13 +19,13 @@
 namespace shaka {
 
 std::filesystem::path GetTestDataFilePath(const std::string& name) {
-  std::filesystem::path header_path(__FILE__);
-  return header_path.parent_path() / "data" / name;
+  auto data_dir = std::filesystem::path(TEST_DATA_DIR);
+  return data_dir / name;
 }
 
 std::filesystem::path GetSchemaPath() {
-  std::filesystem::path header_path(__FILE__);
-  return header_path.parent_path() / "schema" / "DASH-MPD.xsd";
+  auto schema_dir = std::filesystem::path(TEST_SCHEMA_DIR);
+  return schema_dir / "DASH-MPD.xsd";
 }
 
 std::string GetPathContent(std::filesystem::path& file_path) {

@@ -79,6 +79,13 @@ add_executable(mpd_unittest
   util/mpd_writer_unittest.cc
   )
 
+target_compile_definitions(mpd_unittest
+  PRIVATE
+  # We used to build off of __FILE__, but that is not always an absolute
+  # path, depending on the version of CMake.  This is consistent.
+  TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/data"
+  TEST_SCHEMA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test/schema")
+
 target_link_libraries(mpd_unittest
   file
   file_test_util
