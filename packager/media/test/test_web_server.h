@@ -17,6 +17,7 @@
 // Forward declare mongoose struct types, used as pointers below.
 struct mg_connection;
 struct mg_http_message;
+struct mg_mgr;
 
 namespace shaka {
 namespace media {
@@ -26,7 +27,20 @@ class TestWebServer {
   TestWebServer();
   ~TestWebServer();
 
-  bool Start(int port);
+  bool Start();
+
+  // Reflects back the request characteristics as a JSON response.
+  std::string ReflectUrl() { return base_url_ + "/reflect"; }
+
+  // Responds with a specific HTTP status code.
+  std::string StatusCodeUrl(int code) {
+    return base_url_ + "/status?code=" + std::to_string(code);
+  }
+
+  // Responds with HTTP 200 after a delay.
+  std::string DelayUrl(int seconds) {
+    return base_url_ + "/delay?seconds=" + std::to_string(seconds);
+  }
 
  private:
   enum TestWebServerStatus {
@@ -49,7 +63,12 @@ class TestWebServer {
 
   std::unique_ptr<std::thread> thread_;
 
-  void ThreadCallback(int port);
+  std::string base_url_;
+
+  // Sets base_url_.
+  bool TryListenOnPort(struct mg_mgr* manager, int port);
+
+  void ThreadCallback();
 
   static void HandleEvent(struct mg_connection* connection,
                           int event,
