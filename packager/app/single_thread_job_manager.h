@@ -22,7 +22,7 @@ class SingleThreadJobManager : public JobManager {
   //        fails or is cancelled. It can be NULL.
   explicit SingleThreadJobManager(std::unique_ptr<SyncPointQueue> sync_points);
 
-  Status InitializeJobs() override;
+  // Run all registered jobs serially in this thread.
   Status RunJobs() override;
 };
 
