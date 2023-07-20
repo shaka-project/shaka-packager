@@ -6,7 +6,6 @@
 
 #include "packager/app/job_manager.h"
 
-#include <functional>
 #include <set>
 
 #include "packager/media/chunking/sync_point_queue.h"
