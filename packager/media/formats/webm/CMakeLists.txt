@@ -30,7 +30,7 @@ target_link_libraries(formats_webm
     webm
     file
     media_base
-    codecs
+    media_codecs
 )
 
 add_executable(webm_unittest

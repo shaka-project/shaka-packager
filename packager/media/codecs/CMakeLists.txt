@@ -4,7 +4,7 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
-add_library(codecs STATIC
+add_library(media_codecs STATIC
     aac_audio_specific_config.cc
     ac3_audio_util.cc
     av1_codec_configuration_record.cc
@@ -31,10 +31,10 @@ add_library(codecs STATIC
     vp9_parser.cc
 )
 
-target_link_libraries(codecs
+target_link_libraries(media_codecs
     media_base)
 
-add_executable(codecs_unittest
+add_executable(media_codecs_unittest
     aac_audio_specific_config_unittest.cc
     ac3_audio_util_unittest.cc
     av1_codec_configuration_record_unittest.cc
@@ -59,11 +59,11 @@ add_executable(codecs_unittest
     vp9_parser_unittest.cc
 )
 
-target_link_libraries(codecs_unittest
-    codecs
+target_link_libraries(media_codecs_unittest
     gmock
     gtest
     gtest_main
+    media_codecs
     test_data_util)
 
-add_gtest(codecs_unittest)
+add_gtest(media_codecs_unittest)
