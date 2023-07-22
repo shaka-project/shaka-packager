@@ -165,7 +165,7 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
 
     if (GetBaseCodec(media_info).find("dvh") == 0) {
       key.append(":");
-      key.append(std::to_string(16));
+      key.append(std::to_string(kTransferFunctionPQ));
     } else if (media_info.video_info().has_transfer_characteristics()) {
       key.append(":");
       key.append(
