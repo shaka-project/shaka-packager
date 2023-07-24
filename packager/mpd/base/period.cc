@@ -276,11 +276,12 @@ bool Period::SetNewAdaptationSetAttributes(
     // - Common CCIP values.
     // Dolby vision:
     // https://professionalsupport.dolby.com/s/article/How-to-signal-Dolby-Vision-in-MPEG-DASH
-    if (new_adaptation_set->codec().find("dvh") == 0) {
-      new_adaptation_set->set_transfer_characteristics(kTransferFunctionPQ);
-    } else if (media_info.video_info().has_transfer_characteristics()) {
+    if (media_info.video_info().has_transfer_characteristics()) {
       new_adaptation_set->set_transfer_characteristics(
           media_info.video_info().transfer_characteristics());
+    } else if (new_adaptation_set->codec().find("dvh") == 0) {
+      // Dolby Vision (dvh1 or dvhe) is always HDR.
+      new_adaptation_set->set_transfer_characteristics(kTransferFunctionPQ);
     }
 
   } else if (media_info.has_text_info()) {
