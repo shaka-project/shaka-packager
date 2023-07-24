@@ -1482,11 +1482,12 @@ bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
     if (color_parameter_type == FOURCC_nclx) {
       RCHECK((buffer->reader())->Read1(&video_full_range_flag));
     }
-  } else  {
+  } else if (buffer->writer()) {
     buffer->ReadWriteFourCC(&color_parameter_type);
     buffer->writer()->AppendInt(color_primaries);
     buffer->writer()->AppendInt(transfer_characteristics);
     buffer->writer()->AppendInt(matrix_coefficients);
+    buffer->writer()->AppendInt(video_full_range_flag);
   }
   return true;
 }
