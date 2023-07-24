@@ -189,11 +189,8 @@ class BoxBuffer {
       return reader_->TryReadChild(box);
     // The box is optional, i.e. it can be skipped if the box size is 0.
     VLOG(2) << "box name: " << FourCCToString(box->BoxType());
-    if (box->box_size() != 0) {
+    if (box->box_size() != 0)
       CHECK(box->ReadWriteInternal(this));
-    } else {
-    VLOG(2) << "size is 0";
-    }
     return true;
   }
 

@@ -90,6 +90,7 @@ class VideoStreamInfo : public StreamInfo {
                          size_t eme_init_data_size) {
     eme_init_data_.assign(eme_init_data, eme_init_data + eme_init_data_size);
   }
+
  private:
   // Extra codec configuration in a stream of mp4 boxes. It is only applicable
   // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.

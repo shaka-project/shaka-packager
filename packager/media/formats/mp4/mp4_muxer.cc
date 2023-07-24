@@ -462,17 +462,16 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
                                   video_info->extra_config().size());
     return false;
   }
-  // if (pixel_width != 1 || pixel_height != 1) {
-    video.pixel_aspect.h_spacing = 100;
-    video.pixel_aspect.v_spacing = 200;
-  // }
+  if (pixel_width != 1 || pixel_height != 1) {
+    video.pixel_aspect.h_spacing = pixel_width;
+    video.pixel_aspect.v_spacing = pixel_height;
+  }
 
   SampleDescription& sample_description =
       trak->media.information.sample_table.description;
   sample_description.type = kVideo;
   sample_description.video_entries.push_back(video);
 
-  LOG(INFO) << "asdf Hi";
   if (video_info->is_encrypted()) {
     if (video_info->has_clear_lead()) {
       // Add a second entry for clear content.
