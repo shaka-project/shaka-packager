@@ -433,6 +433,11 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   if (video.format == FOURCC_av01) {
     auto av1_color_info = base::SplitString(video_info->codec_string(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (av1_color_info.size() == 10) {
+      // Extract colr atom info if the full AV1 codec string is available.
+      // https://aomediacodec.github.io/av1-isobmff/#codecsparam
+      //   <sample entry 4CC>.<profile>.<level><tier>.<bitDepth>.<monochrome>.
+      //   <chromaSubsampling>.<colorPrimaries>.<transferCharacteristics>.
+      //   <matrixCoefficients>.<videoFullRangeFlag>
       unsigned int color_primaries;
       unsigned int transfer_characteristics;
       unsigned int matrix_coefficients;

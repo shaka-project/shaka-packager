@@ -1470,32 +1470,29 @@ FourCC ColorParameters::BoxType() const {
 }
 
 bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer));
-
-  if (buffer->reader()) {
-    RCHECK((buffer->reader())->ReadFourCC(&color_parameter_type) &&
-           (buffer->reader())->Read2(&color_primaries) &&
-           (buffer->reader())->Read2(&transfer_characteristics) &&
-           (buffer->reader())->Read2(&matrix_coefficients));
-    // Type nclc does not contain video_full_range_flag data, and thus, it has 1
-    // less byte than nclx. Only extract video_full_range_flag if of type nclx.
-    if (color_parameter_type == FOURCC_nclx) {
-      RCHECK((buffer->reader())->Read1(&video_full_range_flag));
-    }
-  } else if (buffer->writer()) {
-    buffer->ReadWriteFourCC(&color_parameter_type);
-    buffer->writer()->AppendInt(color_primaries);
-    buffer->writer()->AppendInt(transfer_characteristics);
-    buffer->writer()->AppendInt(matrix_coefficients);
-    buffer->writer()->AppendInt(video_full_range_flag);
+  RCHECK(ReadWriteHeaderInternal(buffer) && 
+         buffer->ReadWriteFourCC(&color_parameter_type) &&
+         buffer->ReadWriteUInt16(&color_primaries) &&
+         buffer->ReadWriteUInt16(&transfer_characteristics) &&
+         buffer->ReadWriteUInt16(&matrix_coefficients)
+  );
+  // Type nclc does not contain video_full_range_flag data, and thus, it has 1
+  // less byte than nclx. Only extract video_full_range_flag if of type nclx.
+  if (color_parameter_type == FOURCC_nclx) {
+    RCHECK(buffer->ReadWriteUInt8(&video_full_range_flag));
   }
   return true;
 }
 
 size_t ColorParameters::ComputeSizeInternal() {
-  // This box is optional. Skip it if it is not initialized.
-  if (color_parameter_type == FOURCC_NULL)
+  if (color_parameter_type == FOURCC_NULL) {
+    // This box is optional. Skip it if it is not initialized.
     return 0;
+  } else if (color_parameter_type == FOURCC_nclc) {
+    // Type nclc does not contain video_full_range_flag data.
+    return HeaderSize() + kFourCCSize + sizeof(color_primaries) +
+         sizeof(transfer_characteristics) + sizeof(matrix_coefficients);
+  }
   return HeaderSize() + kFourCCSize + sizeof(color_primaries) +
          sizeof(transfer_characteristics) + sizeof(matrix_coefficients) +
          sizeof(video_full_range_flag);
