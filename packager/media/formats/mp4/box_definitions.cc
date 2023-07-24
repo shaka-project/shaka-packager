@@ -1470,12 +1470,11 @@ FourCC ColorParameters::BoxType() const {
 }
 
 bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer) && 
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteFourCC(&color_parameter_type) &&
          buffer->ReadWriteUInt16(&color_primaries) &&
          buffer->ReadWriteUInt16(&transfer_characteristics) &&
-         buffer->ReadWriteUInt16(&matrix_coefficients)
-  );
+         buffer->ReadWriteUInt16(&matrix_coefficients));
   // Type nclc does not contain video_full_range_flag data, and thus, it has 1
   // less byte than nclx. Only extract video_full_range_flag if of type nclx.
   if (color_parameter_type == FOURCC_nclx) {
@@ -1491,7 +1490,7 @@ size_t ColorParameters::ComputeSizeInternal() {
   } else if (color_parameter_type == FOURCC_nclc) {
     // Type nclc does not contain video_full_range_flag data.
     return HeaderSize() + kFourCCSize + sizeof(color_primaries) +
-         sizeof(transfer_characteristics) + sizeof(matrix_coefficients);
+           sizeof(transfer_characteristics) + sizeof(matrix_coefficients);
   }
   return HeaderSize() + kFourCCSize + sizeof(color_primaries) +
          sizeof(transfer_characteristics) + sizeof(matrix_coefficients) +
@@ -1654,10 +1653,11 @@ size_t VideoSampleEntry::ComputeSizeInternal() {
   DCHECK_NE(codec_configuration.box_type, FOURCC_NULL);
   size_t size = HeaderSize() + sizeof(data_reference_index) + sizeof(width) +
                 sizeof(height) + sizeof(kVideoResolution) * 2 +
-                sizeof(kVideoFrameCount) + sizeof(kVideoDepth) + colr.ComputeSize() +
-                pixel_aspect.ComputeSize() + sinf.ComputeSize() +
-                codec_configuration.ComputeSize() + kCompressorNameSize + 6 +
-                4 + 16 + 2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
+                sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
+                colr.ComputeSize() + pixel_aspect.ComputeSize() +
+                sinf.ComputeSize() + codec_configuration.ComputeSize() +
+                kCompressorNameSize + 6 + 4 + 16 +
+                2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
   for (CodecConfiguration& codec_config : extra_codec_configs)
     size += codec_config.ComputeSize();
   return size;
