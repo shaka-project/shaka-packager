@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_split.h"
 #include "packager/base/time/clock.h"
 #include "packager/base/time/time.h"
 #include "packager/file/file.h"
@@ -429,6 +430,29 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   VideoSampleEntry video;
   video.format =
       CodecToFourCC(video_info->codec(), video_info->h26x_stream_format());
+  if (video.format == FOURCC_av01) {
+    auto av1_color_info = base::SplitString(video_info->codec_string(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (av1_color_info.size() == 10) {
+      unsigned int color_primaries;
+      unsigned int transfer_characteristics;
+      unsigned int matrix_coefficients;
+      unsigned int video_full_range_flag;
+      video.colr.color_parameter_type = FOURCC_nclx;
+      if(base::StringToUint(av1_color_info[6], &color_primaries)) {
+        video.colr.color_primaries = color_primaries;
+      }
+      if (base::StringToUint(av1_color_info[7], &transfer_characteristics)) {
+        video.colr.transfer_characteristics = transfer_characteristics;
+      }
+      if (base::StringToUint(av1_color_info[8], &matrix_coefficients)) {
+        video.colr.matrix_coefficients = matrix_coefficients;
+      }
+      if (base::StringToUint(av1_color_info[9], &video_full_range_flag)) {
+        video.colr.video_full_range_flag = video_full_range_flag;
+      }
+    }
+  }
+
   video.width = video_info->width();
   video.height = video_info->height();
   video.codec_configuration.data = video_info->codec_config();
@@ -441,16 +465,6 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   // if (pixel_width != 1 || pixel_height != 1) {
     video.pixel_aspect.h_spacing = 100;
     video.pixel_aspect.v_spacing = 200;
-  // }
-
-  // TODO: caitlin - write colr info here if it is available :)
-  // if () {
-    video.colr = video_info->color_parameters();
-
-    // video.colr.color_parameter_type = "nclx";
-    // video.colr.color_primaries = 16;
-    // video.colr.matrix_coefficients = 9;
-    // video.colr.transfer_characteristics = 9;
   // }
 
   SampleDescription& sample_description =

@@ -1490,7 +1490,7 @@ bool ColorParameters::ReadWriteInternal(BoxBuffer* buffer) {
   //        buffer->writer()->AppendInt(color_primaries) &&
   //        buffer->writer()->AppendInt(transfer_characteristics) &&
   //        buffer->writer()->AppendInt(matrix_coefficients));
-         buffer->ReadWriteString(&color_parameter_type, color_parameter_type.size());
+         buffer->ReadWriteFourCC(&color_parameter_type);
   printf("color_primaries: %u\n", (unsigned int)color_primaries);
          buffer->writer()->AppendInt(color_primaries);
          buffer->writer()->AppendInt(transfer_characteristics);
