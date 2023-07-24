@@ -334,14 +334,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     colr->video_full_range_flag = 0;
   }
 
-  void Modify(ColorParameters* colr) {
-    colr->color_parameter_type = FOURCC_nclx;
-    colr->color_primaries = 7;
-    colr->transfer_characteristics = 14;
-    colr->matrix_coefficients = 12;
-    colr->video_full_range_flag = 1;
-  }
-
   void Fill(PixelAspectRatio* pasp) {
     pasp->h_spacing = 5;
     pasp->v_spacing = 8;
