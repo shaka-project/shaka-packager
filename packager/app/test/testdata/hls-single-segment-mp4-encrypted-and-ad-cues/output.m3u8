@@ -1,7 +1,7 @@
 #EXTM3U
 ## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
 
-#EXT-X-MEDIA:TYPE=AUDIO,URI="bear-640x360-audio.m3u8",GROUP-ID="default-audio-group",NAME="stream_0",AUTOSELECT=YES,CHANNELS="2"
+#EXT-X-MEDIA:TYPE=AUDIO,URI="bear-640x360-audio.m3u8",GROUP-ID="default-audio-group",NAME="stream_0",DEFAULT=NO,AUTOSELECT=YES,CHANNELS="2"
 
 #EXT-X-STREAM-INF:BANDWIDTH=1111200,AVERAGE-BANDWIDTH=1009412,CODECS="avc1.64001e,mp4a.40.2",RESOLUTION=640x360,AUDIO="default-audio-group"
 bear-640x360-video.m3u8

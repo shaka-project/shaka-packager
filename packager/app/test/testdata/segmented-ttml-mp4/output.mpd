@@ -4,7 +4,7 @@
   <Period id="0" start="PT0S">
     <AdaptationSet id="0" contentType="text" segmentAlignment="true">
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="subtitle"/>
-      <Representation id="0" bandwidth="4112" codecs="stpp" mimeType="application/mp4">
+      <Representation id="0" bandwidth="4120" codecs="stpp" mimeType="application/mp4">
         <SegmentTemplate timescale="1000" initialization="bear-english-text-init.mp4" media="bear-english-text-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
             <S t="0" d="1000" r="4"/>

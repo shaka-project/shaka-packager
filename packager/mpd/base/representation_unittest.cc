@@ -559,8 +559,8 @@ TEST_F(SegmentTemplateTest, OneSegmentLowLatency) {
       " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
       "  <SegmentTemplate timescale=\"1000\" "
       "   duration=\"5000\" availabilityTimeOffset=\"4.995\" "
-      "   initialization=\"init.mp4\" media=\"$Time$.mp4\" "
-      "   startNumber=\"1\"/>\n"
+      "   availabilityTimeComplete=\"false\" initialization=\"init.mp4\" "
+      "   media=\"$Time$.mp4\" startNumber=\"1\"/>\n"
       "</Representation>\n";
   EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(kOutputTemplate));
 }
