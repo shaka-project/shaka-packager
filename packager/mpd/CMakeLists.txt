@@ -51,6 +51,7 @@ target_link_libraries(mpd_builder
   media_base
   manifest_base
   mpd_media_info_proto
+  utils_clock
 )
 
 
@@ -96,6 +97,7 @@ target_link_libraries(mpd_unittest
   mpd_util
   gmock
   gtest
+  utils_test_clock
   gtest_main)
 
 add_test(NAME mpd_unittest COMMAND mpd_unittest)

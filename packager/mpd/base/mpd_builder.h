@@ -20,6 +20,7 @@
 #include <string>
 
 #include "packager/macros.h"
+#include "packager/utils/clock.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/xml/xml_node.h"
 
@@ -32,14 +33,7 @@ class AdaptationSet;
 class MediaInfo;
 class Period;
 
-class Clock {
- public:
-  using time_point = std::chrono::system_clock::time_point;
 
-  virtual ~Clock() = default;
-
-  virtual time_point now() noexcept { return std::chrono::system_clock::now(); }
-};
 
 /// This class generates DASH MPDs (Media Presentation Descriptions).
 class MpdBuilder {

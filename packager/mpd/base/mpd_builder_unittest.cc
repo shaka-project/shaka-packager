@@ -15,29 +15,12 @@
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/version/version.h"
+#include "packager/utils/clock.h"
+#include "packager/utils/test_clock.h"
 
 using ::testing::HasSubstr;
 
 namespace shaka {
-
-namespace {
-
-class TestClock : public Clock {
- public:
-  explicit TestClock(std::tm& utc_time) {
-    std::tm local_time = utc_time;
-    std::time_t utc_time_t = std::mktime(&local_time);
-    std::time_t offset = utc_time_t - std::mktime(std::gmtime(&utc_time_t));
-    mock_time_ = std::chrono::system_clock::from_time_t(utc_time_t + offset);
-  }
-
-  time_point now() noexcept override { return mock_time_; }
-
- private:
-  time_point mock_time_;
-};
-
-}  // namespace
 
 template <DashProfile profile>
 class MpdBuilderTest : public ::testing::Test {
@@ -124,14 +107,7 @@ class LiveMpdBuilderTest : public MpdBuilderTest<DashProfile::kLive> {
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
-    std::tm test_time{};
-    test_time.tm_year = 2016 - 1900;  // Years since 1900
-    test_time.tm_mon = 0;             // Months since January (0-based)
-    test_time.tm_mday = 11;
-    test_time.tm_hour = 15;
-    test_time.tm_min = 10;
-    test_time.tm_sec = 24;
-    mpd_.InjectClockForTesting(std::make_unique<TestClock>(test_time));
+    mpd_.InjectClockForTesting(std::make_unique<TestClock>("2016-01-11T15:10:24"));
   }
 };
 
