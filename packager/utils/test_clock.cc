@@ -6,25 +6,28 @@
 
 #import "packager/utils/test_clock.h"
 
-#include <ctime>
-#include <string>
-#include <iostream>
 #include <absl/strings/str_split.h>
 #include <absl/strings/string_view.h>
+#include <ctime>
+#include <iostream>
+#include <string>
 
 std::tm parseISO8601(const std::string& date_string) {
   std::tm tm = {};
-  std::vector<absl::string_view> date_time_parts = absl::StrSplit(date_string, 'T');
+  std::vector<absl::string_view> date_time_parts =
+      absl::StrSplit(date_string, 'T');
   if (date_time_parts.size() == 2) {
-    std::vector<absl::string_view> date_parts = absl::StrSplit(date_time_parts[0], '-');
-    std::vector<absl::string_view> time_parts = absl::StrSplit(date_time_parts[1], ':');
+    std::vector<absl::string_view> date_parts =
+        absl::StrSplit(date_time_parts[0], '-');
+    std::vector<absl::string_view> time_parts =
+        absl::StrSplit(date_time_parts[1], ':');
     if (date_parts.size() == 3 && time_parts.size() == 3) {
       tm.tm_year = std::stoi(std::string(date_parts[0])) - 1900;
-      tm.tm_mon  = std::stoi(std::string(date_parts[1])) - 1;
+      tm.tm_mon = std::stoi(std::string(date_parts[1])) - 1;
       tm.tm_mday = std::stoi(std::string(date_parts[2]));
       tm.tm_hour = std::stoi(std::string(time_parts[0]));
-      tm.tm_min  = std::stoi(std::string(time_parts[1]));
-      tm.tm_sec  = std::stoi(std::string(time_parts[2]));
+      tm.tm_min = std::stoi(std::string(time_parts[1]));
+      tm.tm_sec = std::stoi(std::string(time_parts[2]));
     }
   }
   return tm;

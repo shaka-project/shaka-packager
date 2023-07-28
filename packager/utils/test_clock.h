@@ -22,6 +22,6 @@ class TestClock : public Clock {
   time_point mock_time_;
 };
 
-}  // namespace
+}  // namespace shaka
 
 #endif

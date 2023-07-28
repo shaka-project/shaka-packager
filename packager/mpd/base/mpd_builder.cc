@@ -90,7 +90,6 @@ bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
 
 std::string MakePathRelative(const std::filesystem::path& media_path,
                              const std::filesystem::path& parent_path) {
-
   auto relative_path = std::filesystem::relative(media_path, parent_path);
   if (relative_path.empty() || *relative_path.begin() == "..") {
     // Not related.

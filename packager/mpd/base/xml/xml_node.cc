@@ -543,7 +543,8 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     if (ec3_channel_mpeg_value == NO_MAPPING) {
       // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
       // Interoperability Points v3.0 9.2.1.2.
-      audio_channel_config_value = absl::StrFormat("%04X", codec_data.channel_mask());
+      audio_channel_config_value =
+          absl::StrFormat("%04X", codec_data.channel_mask());
       audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
     } else {
@@ -587,7 +588,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       //
       // this needs to print only 3 bytes of the 32-bit value
       audio_channel_config_value =
-          absl::StrFormat("%06X", codec_data.channel_mask() );
+          absl::StrFormat("%06X", codec_data.channel_mask());
       // Note that the channel config schemes for EC-3 and AC-4 are different.
       // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
       audio_channel_config_scheme =

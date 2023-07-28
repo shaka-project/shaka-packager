@@ -14,9 +14,9 @@
 #include "packager/mpd/base/period.h"
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/version/version.h"
 #include "packager/utils/clock.h"
 #include "packager/utils/test_clock.h"
+#include "packager/version/version.h"
 
 using ::testing::HasSubstr;
 
@@ -107,7 +107,8 @@ class LiveMpdBuilderTest : public MpdBuilderTest<DashProfile::kLive> {
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
-    mpd_.InjectClockForTesting(std::make_unique<TestClock>("2016-01-11T15:10:24"));
+    mpd_.InjectClockForTesting(
+        std::make_unique<TestClock>("2016-01-11T15:10:24"));
   }
 };
 

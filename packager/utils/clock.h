@@ -20,6 +20,6 @@ class Clock {
   virtual time_point now() noexcept { return std::chrono::system_clock::now(); }
 };
 
-}
+}  // namespace shaka
 
 #endif  // SHAKA_PACKAGER_CLOCK_H
