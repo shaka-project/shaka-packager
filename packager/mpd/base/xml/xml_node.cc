@@ -543,11 +543,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     if (ec3_channel_mpeg_value == NO_MAPPING) {
       // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
       // Interoperability Points v3.0 9.2.1.2.
-      const uint16_t ec3_channel_map =
-          absl::big_endian::FromHost16(codec_data.channel_mask());
-      uint8_t byte1 = ec3_channel_map & 0xFF;
-      uint8_t byte2 = ec3_channel_map >> 8;
-      audio_channel_config_value = absl::StrFormat("%02X%02X", byte1, byte2);
+      audio_channel_config_value = absl::StrFormat("%04X", codec_data.channel_mask());
       audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
     } else {
@@ -588,13 +584,10 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       // Calculate AC-4 channel mask. Spec: ETSI TS 103 190-2 V1.2.1 Digital
       // Audio Compression (AC-4) Standard; Part 2: Immersive and personalized
       // audio G.3.1.
-      const uint32_t ac4_channel_mask =
-          absl::big_endian::FromHost32(codec_data.channel_mask() << 8);
-      absl::Span<const uint8_t> bytes(
-          reinterpret_cast<const uint8_t*>(&ac4_channel_mask),
-          sizeof(ac4_channel_mask));
+      //
+      // this needs to print only 3 bytes of the 32-bit value
       audio_channel_config_value =
-          absl::StrFormat("%02X%02X%02X", bytes[0], bytes[1], bytes[2]);
+          absl::StrFormat("%06X", codec_data.channel_mask() );
       // Note that the channel config schemes for EC-3 and AC-4 are different.
       // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
       audio_channel_config_scheme =
