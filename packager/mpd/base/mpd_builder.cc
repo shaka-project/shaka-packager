@@ -88,22 +88,16 @@ bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
          mpd->SetStringAttribute(attr_name, SecondsToXmlDuration(value));
 }
 
-bool IsBasePathParent(const std::filesystem::path& path,
-                      const std::filesystem::path& base_path) {
-  std::string path_str = path.string();
-  std::string base_path_str = base_path.string();
-  return path_str.substr(0, base_path_str.length()) == base_path_str;
-}
-
 std::string MakePathRelative(const std::filesystem::path& media_path,
                              const std::filesystem::path& parent_path) {
-  if (IsBasePathParent(media_path, parent_path)) {
-    std::filesystem::path relative_path =
-        std::filesystem::relative(media_path, parent_path);
-    return relative_path.lexically_normal().string();
+
+  auto relative_path = std::filesystem::relative(media_path, parent_path);
+  if (relative_path.empty() || *relative_path.begin() == "..") {
+    // Not related.
+    relative_path = media_path;
   }
 
-  return media_path.lexically_normal().string();
+  return relative_path.lexically_normal().string();
 }
 
 // Spooky static initialization/cleanup of libxml.
