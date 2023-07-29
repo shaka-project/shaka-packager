@@ -44,9 +44,6 @@ std::filesystem::path GetTestDataFilePath(const std::string& file_name);
 // Get path to DASH MPD schema.
 std::filesystem::path GetSchemaPath();
 
-// Get the content of |file_path|. Returns empty string on error.
-std::string GetPathContent(const std::filesystem::path& file_path);
-
 // Convert |media_info_string| to MediaInfo.
 MediaInfo ConvertToMediaInfo(const std::string& media_info_string);
 

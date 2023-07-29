@@ -24,6 +24,10 @@ std::filesystem::path GetAppTestDataFilePath(const std::string& name);
 std::vector<uint8_t> ReadTestDataFile(const std::string& name);
 
 }  // namespace media
+
+// Get the content of |file_path|. Returns empty string on error.
+std::string GetPathContent(std::filesystem::path& file_path);
+
 }  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_TEST_TEST_DATA_UTIL_H_

@@ -541,8 +541,8 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     const uint32_t ec3_channel_mpeg_value = codec_data.channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ec3_channel_mpeg_value == NO_MAPPING) {
-      // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
-      // Interoperability Points v3.0 9.2.1.2.
+      // Convert EC3 channel map into string of hexadecimal digits. Spec:
+      // DASH-IF Interoperability Points v3.0 9.2.1.2.
       audio_channel_config_value =
           absl::StrFormat("%04X", codec_data.channel_mask());
       audio_channel_config_scheme =

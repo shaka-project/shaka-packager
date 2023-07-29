@@ -11,8 +11,8 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 
+#include "packager/media/test/test_data_util.h"
 #include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 #include "packager/mpd/test/xml_compare.h"
 
@@ -26,23 +26,6 @@ std::filesystem::path GetTestDataFilePath(const std::string& name) {
 std::filesystem::path GetSchemaPath() {
   auto schema_dir = std::filesystem::path(TEST_SCHEMA_DIR);
   return schema_dir / "DASH-MPD.xsd";
-}
-
-std::string GetPathContent(std::filesystem::path& file_path) {
-  std::string content;
-
-  FILE* f = fopen(file_path.string().c_str(), "rb");
-  if (!f) {
-    LOG(FATAL) << "Failed to read test data from " << file_path;
-    return std::string{};
-  }
-
-  content.resize(std::filesystem::file_size(file_path));
-  size_t size = fread(content.data(), 1, content.size(), f);
-  content.resize(size);
-  fclose(f);
-
-  return content;
 }
 
 MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
