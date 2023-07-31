@@ -17,7 +17,7 @@ class Clock {
 
   virtual ~Clock() = default;
 
-  virtual time_point now() noexcept { return std::chrono::system_clock::now(); }
+  virtual time_point now() noexcept;
 };
 
 }  // namespace shaka
