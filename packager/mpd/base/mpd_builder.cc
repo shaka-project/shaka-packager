@@ -96,7 +96,7 @@ std::string MakePathRelative(const std::filesystem::path& media_path,
     relative_path = media_path;
   }
 
-  return relative_path.lexically_normal().string();
+  return relative_path.lexically_normal().generic_string();
 }
 
 // Spooky static initialization/cleanup of libxml.
