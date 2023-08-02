@@ -3,10 +3,10 @@
 ## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:3
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="sparks_dovi_5-video.mp4",BYTERANGE="1366@0"
+#EXT-X-MAP:URI="sparks_dovi_5-video.mp4",BYTERANGE="1370@0"
 #EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",KEYFORMAT="identity"
 #EXTINF:2.002,
-#EXT-X-BYTERANGE:185521@1446
+#EXT-X-BYTERANGE:185521@1450
 sparks_dovi_5-video.mp4
 #EXTINF:2.002,
 #EXT-X-BYTERANGE:197565
