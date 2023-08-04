@@ -123,12 +123,7 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr) {
                                "11223344556677889900AABBCCDDEEFF"
                                "0000000430313233");
 
-    std::string pssh_hex_str = absl::HexStringToBytes(pssh_str);
-    absl::string_view pssh_str_view(pssh_hex_str);
-    absl::Span<const uint8_t> span(
-        reinterpret_cast<const uint8_t*>(pssh_str_view.data()),
-        pssh_str_view.size());
-    std::vector<uint8_t> pssh = std::vector<uint8_t>(span.begin(), span.end());
+    std::string pssh = absl::HexStringToBytes(pssh_str);
 
     const char kMediaInfoWithContentProtection[] =
         "video_info {"
