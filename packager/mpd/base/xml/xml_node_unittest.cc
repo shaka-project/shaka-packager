@@ -353,7 +353,8 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
 
 class LiveSegmentTimelineTest : public ::testing::Test {
  public:
-  LiveSegmentTimelineTest() : saver(&FLAGS_segment_template_constant_duration) {}
+  LiveSegmentTimelineTest()
+      : saver(&FLAGS_segment_template_constant_duration) {}
 
  protected:
   void SetUp() override {
@@ -540,7 +541,8 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
       {kStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  FlagSaver<bool> segment_number_saver(&FLAGS_dash_add_last_segment_number_when_needed);
+  FlagSaver<bool> segment_number_saver(
+      &FLAGS_dash_add_last_segment_number_when_needed);
   absl::SetFlag(&FLAGS_dash_add_last_segment_number_when_needed, true);
 
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,

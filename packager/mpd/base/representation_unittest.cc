@@ -236,7 +236,6 @@ TEST_F(RepresentationTest, CheckVideoInfoVp9CodecInWebm) {
 }
 
 TEST_F(RepresentationTest, CheckVideoInfoLegacyVp9CodecInWebm) {
-
   FlagSaver<bool> saver(&FLAGS_use_legacy_vp9_codec_string);
   absl::SetFlag(&FLAGS_use_legacy_vp9_codec_string, true);
 
