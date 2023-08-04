@@ -15,6 +15,7 @@
 
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
+#include "packager/flag_saver.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
@@ -235,6 +236,8 @@ TEST_F(RepresentationTest, CheckVideoInfoVp9CodecInWebm) {
 }
 
 TEST_F(RepresentationTest, CheckVideoInfoLegacyVp9CodecInWebm) {
+
+  FlagSaver<bool> saver(&FLAGS_use_legacy_vp9_codec_string);
   absl::SetFlag(&FLAGS_use_legacy_vp9_codec_string, true);
 
   const char kTestMediaInfoCodecVp9[] =

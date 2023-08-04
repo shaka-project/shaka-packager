@@ -13,6 +13,7 @@
 #include <list>
 
 #include <glog/logging.h>
+#include "packager/flag_saver.h"
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
@@ -351,17 +352,19 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
 }
 
 class LiveSegmentTimelineTest : public ::testing::Test {
+ public:
+  LiveSegmentTimelineTest() : saver(&FLAGS_segment_template_constant_duration) {}
+
  protected:
   void SetUp() override {
     absl::SetFlag(&FLAGS_segment_template_constant_duration, true);
     media_info_.set_segment_template_url("$Number$.m4s");
   }
 
-  void TearDown() override {
-    absl::SetFlag(&FLAGS_segment_template_constant_duration, false);
-  }
-
   MediaInfo media_info_;
+
+ private:
+  FlagSaver<bool> saver;
 };
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
@@ -537,6 +540,7 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
       {kStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
+  FlagSaver<bool> segment_number_saver(&FLAGS_dash_add_last_segment_number_when_needed);
   absl::SetFlag(&FLAGS_dash_add_last_segment_number_when_needed, true);
 
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
@@ -550,7 +554,6 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
                    "  <SegmentTemplate media=\"$Number$.m4s\" "
                    "                   startNumber=\"1\" duration=\"100\"/>"
                    "</Representation>"));
-  absl::SetFlag(&FLAGS_dash_add_last_segment_number_when_needed, false);
 }
 
 // Creating a separate Test Suite for RepresentationXmlNode::AddVODOnlyInfo
