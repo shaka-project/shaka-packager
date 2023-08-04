@@ -28,6 +28,8 @@ TEST(AV1CodecConfigurationRecordTest, Success) {
                            std::end(kAV1CodecConfigurationData))));
 
   EXPECT_EQ(av1_config.GetCodecString(), "av01.0.04M.10");
+  EXPECT_EQ(av1_config.GetCodecString(10, 8, 4, 1),
+            "av01.0.04M.10.0.112.10.08.04.1");
 }
 
 TEST(AV1CodecConfigurationRecordTest, Success2) {
@@ -47,6 +49,8 @@ TEST(AV1CodecConfigurationRecordTest, Success2) {
                            std::end(kAV1CodecConfigurationData))));
 
   EXPECT_EQ(av1_config.GetCodecString(), "av01.1.21H.12");
+  EXPECT_EQ(av1_config.GetCodecString(1, 1, 1, 0),
+            "av01.1.21H.12.1.010.01.01.01.0");
 }
 
 TEST(AV1CodecConfigurationRecordTest, InsufficientData) {

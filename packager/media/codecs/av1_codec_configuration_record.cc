@@ -81,11 +81,26 @@ bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, size_t data_size) {
 // mandatory fields.
 // All the other fields (including their leading '.') are optional, mutually
 // inclusive (all or none) fields.
-// Since some of the optional fields (e.g. colorPrimaries) are not present in
-// AV1CodecConfigurationRecord, we omit all the optional fields.
+
+// When color info is NOT available, generate the basic codec string without the
+// optional fields
 std::string AV1CodecConfigurationRecord::GetCodecString() const {
   return base::StringPrintf("av01.%d.%02d%c.%02d", profile_, level_,
                             tier_ ? 'H' : 'M', bit_depth_);
+}
+
+// When color info IS available, generate the full codec string with optional
+// fields
+std::string AV1CodecConfigurationRecord::GetCodecString(
+    uint16_t color_primaries,
+    uint16_t transfer_characteristics,
+    uint16_t matrix_coefficients,
+    uint8_t video_full_range_flag) const {
+  return base::StringPrintf(
+      "av01.%d.%02d%c.%02d.%d.%d%d%d.%02d.%02d.%02d.%d", profile_, level_,
+      tier_ ? 'H' : 'M', bit_depth_, mono_chrome_, chroma_subsampling_x_,
+      chroma_subsampling_y_, chroma_sample_position_, color_primaries,
+      transfer_characteristics, matrix_coefficients, video_full_range_flag);
 }
 
 }  // namespace media
