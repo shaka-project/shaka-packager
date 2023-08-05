@@ -11,11 +11,10 @@
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
-#include <absl/strings/str_format.h>
 #include <glog/logging.h>
 #include <filesystem>
 #include <optional>
-#include "packager/hls/base/media_playlist.h"
+#include "packager/file/file_util.h"
 #include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/proto_json_util.h"
@@ -67,33 +66,13 @@ std::string VectorToString(const std::vector<uint8_t>& v) {
     return std::string(v.begin(), v.end());
 }
 
-// TODO: this is duplicated with MPD module
-bool IsBasePathParent(const std::filesystem::path& path,
-                      const std::filesystem::path& base_path) {
-    std::string path_str = path.string();
-    std::string base_path_str = base_path.string();
-    return path_str.substr(0, base_path_str.length()) == base_path_str;
-}
-
-// TODO: this is duplicated with MPD module
-std::string MakePathRelative(const std::filesystem::path& media_path,
-                             const std::filesystem::path& parent_path) {
-    if (IsBasePathParent(media_path, parent_path)) {
-      std::filesystem::path relative_path =
-          std::filesystem::relative(media_path, parent_path);
-      return relative_path.lexically_normal().string();
-    }
-
-    return media_path.lexically_normal().string();
-}
-
 // Segment URL is relative to either output directory or the directory
 // containing the media playlist depends on whether base_url is set.
 std::string GenerateSegmentUrl(const std::string& segment_name,
                                const std::string& base_url,
                                const std::string& output_dir,
                                const std::string& playlist_file_name) {
-    std::filesystem::path output_path(output_dir);
+    auto output_path = std::filesystem::u8path(output_dir);
     if (!base_url.empty()) {
       // Media segment URL is base_url + segment path relative to output
       // directory.
@@ -256,8 +235,7 @@ bool HandleWidevineKeyFormats(
 
 bool WriteMediaPlaylist(const std::string& output_dir,
                         MediaPlaylist* playlist) {
-  std::filesystem::path file_path =
-      std::filesystem::path(output_dir) / playlist->file_name();
+  auto file_path = std::filesystem::u8path(output_dir) / playlist->file_name();
   if (!playlist->WriteToFile(file_path)) {
     LOG(ERROR) << "Failed to write playlist " << file_path;
     return false;
@@ -281,8 +259,8 @@ std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
 SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
     : HlsNotifier(hls_params),
       media_playlist_factory_(new MediaPlaylistFactory()) {
-  const std::filesystem::path master_playlist_path(
-      std::filesystem::path(hls_params.master_playlist_output));
+  const auto master_playlist_path =
+      std::filesystem::u8path(hls_params.master_playlist_output);
   master_playlist_dir_ = master_playlist_path.parent_path().string();
   const std::string& default_audio_langauge = hls_params.default_language;
   const std::string& default_text_language =
@@ -308,7 +286,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   DCHECK(stream_id);
 
   const std::string relative_playlist_path = MakePathRelative(
-      playlist_name, std::filesystem::path(master_playlist_dir_));
+      playlist_name, std::filesystem::u8path(master_playlist_dir_));
 
   std::unique_ptr<MediaPlaylist> media_playlist =
       media_playlist_factory_->Create(hls_params(), relative_playlist_path,

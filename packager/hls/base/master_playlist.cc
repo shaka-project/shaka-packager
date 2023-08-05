@@ -514,8 +514,7 @@ bool MasterPlaylist::WriteMasterPlaylist(
   if (content == written_playlist_)
     return true;
 
-  std::filesystem::path file_path =
-      std::filesystem::path(output_dir) / file_name_;
+  auto file_path = std::filesystem::u8path(output_dir) / file_name_;
   if (!File::WriteFileAtomically(file_path.string().c_str(), content)) {
     LOG(ERROR) << "Failed to write master playlist to: " << file_path.string();
     return false;

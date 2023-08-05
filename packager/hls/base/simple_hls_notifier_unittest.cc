@@ -13,6 +13,7 @@
 
 #include <absl/strings/escaping.h>
 #include <filesystem>
+#include "packager/flag_saver.h"
 #include "packager/hls/base/mock_media_playlist.h"
 #include "packager/hls/base/simple_hls_notifier.h"
 #include "packager/media/base/protection_system_ids.h"
@@ -249,7 +250,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(
       *mock_media_playlist,
       WriteToFile(StrEq(
-          (std::filesystem::path(kAnyOutputDir) / "playlist.m3u8").string())))
+          (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8").string())))
       .WillOnce(Return(true));
   EXPECT_TRUE(notifier.Flush());
 }
@@ -560,7 +561,7 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(
       *mock_media_playlist,
       WriteToFile(StrEq(
-          (std::filesystem::path(kAnyOutputDir) / "playlist.m3u8").string())))
+          (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8").string())))
       .WillOnce(Return(true));
 
   hls_params_.playlist_type = GetParam();
@@ -626,17 +627,17 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   // SetTargetDuration and update all playlists as target duration is updated.
   EXPECT_CALL(*mock_media_playlist1, SetTargetDuration(kTargetDuration))
       .Times(1);
-  EXPECT_CALL(
-      *mock_media_playlist1,
-      WriteToFile(StrEq(
-          (std::filesystem::path(kAnyOutputDir) / "playlist1.m3u8").string())))
+  EXPECT_CALL(*mock_media_playlist1,
+              WriteToFile(StrEq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist1.m3u8")
+                      .string())))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist2, SetTargetDuration(kTargetDuration))
       .Times(1);
-  EXPECT_CALL(
-      *mock_media_playlist2,
-      WriteToFile(StrEq(
-          (std::filesystem::path(kAnyOutputDir) / "playlist2.m3u8").string())))
+  EXPECT_CALL(*mock_media_playlist2,
+              WriteToFile(StrEq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8")
+                      .string())))
       .WillOnce(Return(true));
   EXPECT_CALL(
       *mock_master_playlist_ptr,
@@ -650,10 +651,10 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*mock_media_playlist2, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
   // Not updating other playlists as target duration does not change.
-  EXPECT_CALL(
-      *mock_media_playlist2,
-      WriteToFile(StrEq(
-          (std::filesystem::path(kAnyOutputDir) / "playlist2.m3u8").string())))
+  EXPECT_CALL(*mock_media_playlist2,
+              WriteToFile(StrEq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8")
+                      .string())))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _, _))
       .WillOnce(Return(true));
@@ -670,12 +671,16 @@ class WidevineSimpleHlsNotifierTest : public SimpleHlsNotifierTest,
                                       public WithParamInterface<bool> {
  protected:
   WidevineSimpleHlsNotifierTest()
-      : enable_legacy_widevine_hls_signaling_(GetParam()) {
+      : enable_legacy_widevine_hls_signaling_(GetParam()),
+        saver(&FLAGS_enable_legacy_widevine_hls_signaling) {
     absl::SetFlag(&FLAGS_enable_legacy_widevine_hls_signaling,
                   enable_legacy_widevine_hls_signaling_);
   }
 
   bool enable_legacy_widevine_hls_signaling_ = false;
+
+ private:
+  FlagSaver<bool> saver;
 };
 
 TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdate) {

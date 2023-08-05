@@ -142,7 +142,7 @@ class MasterPlaylistTest : public ::testing::Test {
                                             kDefaultTextLanguage,
                                             !kIsIndependentSegments)),
         test_output_dir_("memory://test_dir"),
-        master_playlist_path_(std::filesystem::path(test_output_dir_) /
+        master_playlist_path_(std::filesystem::u8path(test_output_dir_) /
                               kDefaultMasterPlaylistName) {}
 
   void SetUp() override { SetPackagerVersionForTesting("test"); }

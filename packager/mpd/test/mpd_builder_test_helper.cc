@@ -19,12 +19,12 @@
 namespace shaka {
 
 std::filesystem::path GetTestDataFilePath(const std::string& name) {
-  auto data_dir = std::filesystem::path(TEST_DATA_DIR);
+  auto data_dir = std::filesystem::u8path(TEST_DATA_DIR);
   return data_dir / name;
 }
 
 std::filesystem::path GetSchemaPath() {
-  auto schema_dir = std::filesystem::path(TEST_SCHEMA_DIR);
+  auto schema_dir = std::filesystem::u8path(TEST_SCHEMA_DIR);
   return schema_dir / "DASH-MPD.xsd";
 }
 

@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <optional>
 
+#include "packager/file/file_util.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_utils.h"
@@ -86,17 +87,6 @@ std::string XmlDateTimeNowWithOffset(int32_t offset_seconds, Clock* clock) {
 bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
   return !Positive(value) ||
          mpd->SetStringAttribute(attr_name, SecondsToXmlDuration(value));
-}
-
-std::string MakePathRelative(const std::filesystem::path& media_path,
-                             const std::filesystem::path& parent_path) {
-  auto relative_path = std::filesystem::relative(media_path, parent_path);
-  if (relative_path.empty() || *relative_path.begin() == "..") {
-    // Not related.
-    relative_path = media_path;
-  }
-
-  return relative_path.lexically_normal().generic_string();
 }
 
 // Spooky static initialization/cleanup of libxml.
