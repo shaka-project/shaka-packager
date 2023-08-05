@@ -72,17 +72,17 @@ std::string GenerateSegmentUrl(const std::string& segment_name,
                                const std::string& base_url,
                                const std::string& output_dir,
                                const std::string& playlist_file_name) {
-    auto output_path = std::filesystem::u8path(output_dir);
-    if (!base_url.empty()) {
-      // Media segment URL is base_url + segment path relative to output
-      // directory.
-      return base_url + MakePathRelative(segment_name, output_path);
-    }
+  auto output_path = std::filesystem::u8path(output_dir);
+  if (!base_url.empty()) {
+    // Media segment URL is base_url + segment path relative to output
+    // directory.
+    return base_url + MakePathRelative(segment_name, output_path);
+  }
   // Media segment URL is segment path relative to the directory containing the
   // playlist.
-    const std::filesystem::path playlist_dir =
-        (output_path / playlist_file_name).parent_path() / "";
-    return MakePathRelative(segment_name, playlist_dir);
+  const std::filesystem::path playlist_dir =
+      (output_path / playlist_file_name).parent_path() / "";
+  return MakePathRelative(segment_name, playlist_dir);
 }
 
 MediaInfo MakeMediaInfoPathsRelativeToPlaylist(
