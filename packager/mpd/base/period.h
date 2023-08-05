@@ -12,7 +12,7 @@
 #include <list>
 #include <map>
 
-#include "packager/base/optional.h"
+#include <optional>
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/xml/xml_node.h"
@@ -46,7 +46,7 @@ class Period {
   /// Generates <Period> xml element with its child AdaptationSet elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  base::Optional<xml::XmlNode> GetXml(bool output_period_duration);
+  std::optional<xml::XmlNode> GetXml(bool output_period_duration);
 
   /// @return The list of AdaptationSets in this Period.
   const std::list<AdaptationSet*> GetAdaptationSets() const;

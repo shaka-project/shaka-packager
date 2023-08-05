@@ -43,4 +43,23 @@ std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
 }
 
 }  // namespace media
+
+// Get the content of |file_path|. Returns empty string on error.
+std::string GetPathContent(std::filesystem::path& file_path) {
+  std::string content;
+
+  FILE* f = fopen(file_path.string().c_str(), "rb");
+  if (!f) {
+    LOG(FATAL) << "Failed to read test data from " << file_path;
+    return std::string{};
+  }
+
+  content.resize(std::filesystem::file_size(file_path));
+  size_t size = fread(content.data(), 1, content.size(), f);
+  content.resize(size);
+  fclose(f);
+
+  return content;
+}
+
 }  // namespace shaka

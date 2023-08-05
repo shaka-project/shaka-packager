@@ -6,13 +6,13 @@
 
 #include "packager/mpd/base/mpd_utils.h"
 
-#include <gflags/gflags.h>
+#include <absl/flags/flag.h>
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
+#include <glog/logging.h>
 #include <libxml/tree.h>
 
-#include "packager/base/base64.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include "absl/strings/str_format.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/mpd/base/adaptation_set.h"
@@ -20,7 +20,8 @@
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
-DEFINE_bool(
+ABSL_FLAG(
+    bool,
     use_legacy_vp9_codec_string,
     false,
     "Use legacy vp9 codec string 'vp9' if set to true; otherwise new style "
@@ -107,7 +108,7 @@ std::string GetCodecs(const MediaInfo& media_info) {
       // new codec strings.
       if (codec == "vp08")
         return "vp8";
-      if (FLAGS_use_legacy_vp9_codec_string) {
+      if (absl::GetFlag(FLAGS_use_legacy_vp9_codec_string)) {
         if (codec == "vp09")
           return "vp9";
       }
@@ -121,7 +122,7 @@ std::string GetCodecs(const MediaInfo& media_info) {
   if (media_info.has_text_info())
     return TextCodecString(media_info);
 
-  NOTREACHED();
+  NOTIMPLEMENTED();
   return "";
 }
 
@@ -187,13 +188,30 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
   return key;
 }
 
+std::string FloatToXmlString(double number) {
+  // Keep up to microsecond accuracy but trim trailing 0s
+  std::string formatted = absl::StrFormat("%.6g", number);
+  size_t decimalPos = formatted.find('.');
+  if (decimalPos != std::string::npos) {
+    size_t lastNonZeroPos = formatted.find_last_not_of('0');
+    if (lastNonZeroPos >= decimalPos) {
+      formatted.erase(lastNonZeroPos + 1);
+    }
+    if (formatted.back() == '.') {
+      formatted.pop_back();
+    }
+  }
+
+  return formatted;
+}
+
 std::string SecondsToXmlDuration(double seconds) {
   // Chrome internally uses time accurate to microseconds, which is implemented
   // per MSE spec (https://www.w3.org/TR/media-source/).
   // We need a string formatter that has at least microseconds accuracy for a
-  // normal video (with duration up to 3 hours). Chrome's DoubleToString
+  // normal video (with duration up to 3 hours). FloatToXmlString
   // implementation meets the requirement.
-  return "PT" + base::DoubleToString(seconds) + "S";
+  return absl::StrFormat("PT%sS", FloatToXmlString(seconds));
 }
 
 bool GetDurationAttribute(xmlNodePtr node, float* duration) {
@@ -207,8 +225,8 @@ bool GetDurationAttribute(xmlNodePtr node, float* duration) {
     return false;
 
   double duration_double_precision = 0.0;
-  if (!base::StringToDouble(reinterpret_cast<const char*>(duration_value.get()),
-                            &duration_double_precision)) {
+  if (!absl::SimpleAtod(reinterpret_cast<const char*>(duration_value.get()),
+                        &duration_double_precision)) {
     return false;
   }
 
@@ -235,35 +253,28 @@ bool HexToUUID(const std::string& data, std::string* uuid_format) {
   if (data.size() != kExpectedUUIDSize) {
     LOG(ERROR) << "UUID size is expected to be " << kExpectedUUIDSize
                << " but is " << data.size() << " and the data in hex is "
-               << base::HexEncode(data.data(), data.size());
+               << absl::BytesToHexString(data);
     return false;
   }
 
   const std::string hex_encoded =
-      base::ToLowerASCII(base::HexEncode(data.data(), data.size()));
+      absl::AsciiStrToLower(absl::BytesToHexString(data));
   DCHECK_EQ(hex_encoded.size(), kExpectedUUIDSize * 2);
-  base::StringPiece all(hex_encoded);
+  std::string_view all(hex_encoded);
   // Note UUID has 5 parts separated with dashes.
   // e.g. 123e4567-e89b-12d3-a456-426655440000
   // These StringPieces have each part.
-  base::StringPiece first = all.substr(0, 8);
-  base::StringPiece second = all.substr(8, 4);
-  base::StringPiece third = all.substr(12, 4);
-  base::StringPiece fourth = all.substr(16, 4);
-  base::StringPiece fifth = all.substr(20, 12);
+  std::string_view first = all.substr(0, 8);
+  std::string_view second = all.substr(8, 4);
+  std::string_view third = all.substr(12, 4);
+  std::string_view fourth = all.substr(16, 4);
+  std::string_view fifth = all.substr(20, 12);
 
   // 32 hexadecimal characters with 4 hyphens.
   const size_t kHumanReadableUUIDSize = 36;
   uuid_format->reserve(kHumanReadableUUIDSize);
-  first.CopyToString(uuid_format);
-  uuid_format->append("-");
-  second.AppendToString(uuid_format);
-  uuid_format->append("-");
-  third.AppendToString(uuid_format);
-  uuid_format->append("-");
-  fourth.AppendToString(uuid_format);
-  uuid_format->append("-");
-  fifth.AppendToString(uuid_format);
+  absl::StrAppendFormat(uuid_format, "%s-%s-%s-%s-%s", first, second, third,
+                        fourth, fifth);
   return true;
 }
 
@@ -327,8 +338,9 @@ const char kMarlinUUID[] = "5e629af5-38da-4063-8977-97ffbd9902d4";
 const char kFairPlayUUID[] = "29701fe4-3cc7-4a34-8c5b-ae90c7439a47";
 // String representation of media::kPlayReadySystemId.
 const char kPlayReadyUUID[] = "9a04f079-9840-4286-ab92-e65be0885f95";
-// It is RECOMMENDED to include the @value attribute with name and version "MSPR 2.0".
-// See https://docs.microsoft.com/en-us/playready/specifications/mpeg-dash-playready#221-general.
+// It is RECOMMENDED to include the @value attribute with name and version
+// "MSPR 2.0". See
+// https://docs.microsoft.com/en-us/playready/specifications/mpeg-dash-playready#221-general.
 const char kContentProtectionValueMSPR20[] = "MSPR 2.0";
 
 Element GenerateMarlinContentIds(const std::string& key_id) {
@@ -341,7 +353,7 @@ Element GenerateMarlinContentIds(const std::string& key_id) {
   marlin_content_id.name = kMarlinContentIdName;
   marlin_content_id.content =
       kMarlinContentIdPrefix +
-      base::ToLowerASCII(base::HexEncode(key_id.data(), key_id.size()));
+      absl::AsciiStrToLower(absl::BytesToHexString(key_id));
 
   Element marlin_content_ids;
   marlin_content_ids.name = kMarlinContentIdsName;
@@ -352,7 +364,7 @@ Element GenerateMarlinContentIds(const std::string& key_id) {
 
 Element GenerateCencPsshElement(const std::string& pssh) {
   std::string base64_encoded_pssh;
-  base::Base64Encode(base::StringPiece(pssh.data(), pssh.size()),
+  absl::Base64Escape(std::string_view(pssh.data(), pssh.size()),
                      &base64_encoded_pssh);
   Element cenc_pssh;
   cenc_pssh.name = kPsshElementName;
@@ -371,12 +383,10 @@ Element GenerateMsprProElement(const std::string& pssh) {
 
   const std::vector<uint8_t> *p_pssh = &b->pssh_data();
   std::string base64_encoded_mspr;
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(p_pssh->data()),
-          p_pssh->size()),
-      &base64_encoded_mspr
-  );
+  absl::Base64Escape(
+      std::string_view(reinterpret_cast<const char*>(p_pssh->data()),
+                       p_pssh->size()),
+      &base64_encoded_mspr);
   Element mspr_pro;
   mspr_pro.name = kMsproElementName;
   mspr_pro.content = base64_encoded_mspr;
@@ -440,7 +450,7 @@ void AddContentProtectionElementsHelperTemplated(
     } else if (entry.uuid() == kMarlinUUID) {
       // Marlin requires its uuid to be in upper case. See #525 for details.
       drm_content_protection.scheme_id_uri =
-          "urn:uuid:" + base::ToUpperASCII(entry.uuid());
+          "urn:uuid:" + absl::AsciiStrToUpper(entry.uuid());
       drm_content_protection.subelements.push_back(
           GenerateMarlinContentIds(protected_content.default_key_id()));
     } else {

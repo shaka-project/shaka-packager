@@ -13,8 +13,8 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 
-#include "packager/base/optional.h"
 #include "packager/mpd/base/bandwidth_estimator.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
@@ -125,7 +125,7 @@ class Representation {
   virtual const MediaInfo& GetMediaInfo() const;
 
   /// @return Copy of <Representation>.
-  base::Optional<xml::XmlNode> GetXml();
+  std::optional<xml::XmlNode> GetXml();
 
   /// By calling this methods, the next time GetXml() is
   /// called, the corresponding attributes will not be set.

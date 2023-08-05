@@ -6,8 +6,7 @@
 
 #include "packager/mpd/base/mpd_notifier_util.h"
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include "glog/logging.h"
 #include "packager/file/file.h"
 #include "packager/mpd/base/mpd_utils.h"
 
@@ -49,7 +48,7 @@ ContentType GetContentType(const MediaInfo& media_info) {
 std::string Uint8VectorToBase64(const std::vector<uint8_t>& input) {
   std::string output;
   std::string input_in_string(input.begin(), input.end());
-  base::Base64Encode(input_in_string, &output);
+  absl::Base64Escape(input_in_string, &output);
   return output;
 }
 

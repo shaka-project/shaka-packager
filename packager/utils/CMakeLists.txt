@@ -4,6 +4,16 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
+add_library(utils_clock STATIC
+  clock.h
+  clock.cc)
+
+add_library(utils_test_clock STATIC
+  test_clock.cc
+  test_clock.h)
+
+target_link_libraries(utils_test_clock utils_clock absl::strings)
+
 add_library(hex_parser STATIC
     hex_parser.cc)
 

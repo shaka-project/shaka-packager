@@ -10,7 +10,7 @@
 #include <cmath>
 #include <numeric>
 
-#include "packager/base/logging.h"
+#include "glog/logging.h"
 
 namespace shaka {
 
@@ -106,7 +106,7 @@ uint64_t BandwidthEstimator::GetBitrate(const Block& block,
     VLOG(1) << "Exclude short segment (duration " << block.duration
             << ", target_duration " << target_block_duration
             << ") in peak bandwidth computation.";
-    return 0.0;
+    return 0;
   }
   return static_cast<uint64_t>(ceil(block.size_in_bits / block.duration));
 }
