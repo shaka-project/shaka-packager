@@ -604,7 +604,15 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse av1c.";
             return false;
           }
-          codec_string = av1_config.GetCodecString();
+          // Generate the full codec string if the colr atom is present.
+          if (entry.colr.color_parameter_type != FOURCC_NULL) {
+            codec_string = av1_config.GetCodecString(
+                entry.colr.color_primaries, entry.colr.transfer_characteristics,
+                entry.colr.matrix_coefficients,
+                entry.colr.video_full_range_flag);
+          } else {
+            codec_string = av1_config.GetCodecString();
+          }
           break;
         }
         case FOURCC_avc1:

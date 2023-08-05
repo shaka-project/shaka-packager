@@ -326,6 +326,14 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     Modify(&metadata->id3v2);
   }
 
+  void Fill(ColorParameters* colr) {
+    colr->color_parameter_type = FOURCC_nclc;
+    colr->color_primaries = 9;
+    colr->transfer_characteristics = 16;
+    colr->matrix_coefficients = 9;
+    colr->video_full_range_flag = 0;
+  }
+
   void Fill(PixelAspectRatio* pasp) {
     pasp->h_spacing = 5;
     pasp->v_spacing = 8;
@@ -360,6 +368,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     entry->data_reference_index = 1;
     entry->width = 800;
     entry->height = 600;
+    Fill(&entry->colr);
     Fill(&entry->pixel_aspect);
     Fill(&entry->sinf);
     Fill(&entry->codec_configuration);
