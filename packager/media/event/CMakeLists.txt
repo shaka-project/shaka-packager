@@ -31,8 +31,7 @@ target_link_libraries(mock_muxer_listener
 add_executable(media_event_unittest
     hls_notify_muxer_listener_unittest.cc
     muxer_listener_internal_unittest.cc
-    # TODO(cmake): Re-enable when mpd/base is ported (needs MockMpdNotifier)
-    # mpd_notify_muxer_listener_unittest.cc
+    mpd_notify_muxer_listener_unittest.cc
     multi_codec_muxer_listener_unittest.cc
     muxer_listener_test_helper.cc
     vod_media_info_dump_muxer_listener_unittest.cc
@@ -40,6 +39,7 @@ add_executable(media_event_unittest
 target_link_libraries(media_event_unittest
     file
     file_test_util
+    mpd_mocks
     mpd_media_info_proto
     gmock
     gtest
