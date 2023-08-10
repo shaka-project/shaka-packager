@@ -54,6 +54,8 @@ class VideoStreamInfo : public StreamInfo {
   std::unique_ptr<StreamInfo> Clone() const override;
   /// @}
 
+  const std::string supplemental_codec() const { return supplemental_codec_; }
+  FourCC compatible_brand() const { return compatible_brand_; }
   const std::vector<uint8_t>& extra_config() const { return extra_config_; }
   H26xStreamFormat h26x_stream_format() const { return h26x_stream_format_; }
   uint16_t width() const { return width_; }
@@ -70,6 +72,12 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t playback_rate() const { return playback_rate_; }
   const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
 
+  void set_supplemental_codec(const std::string supplemental_codec) {
+    supplemental_codec_ = supplemental_codec;
+  }
+  void set_compatible_brand(const FourCC compatible_brand) {
+    compatible_brand_ = compatible_brand;
+  }
   void set_extra_config(const std::vector<uint8_t>& extra_config) {
     extra_config_ = extra_config;
   }
@@ -94,6 +102,8 @@ class VideoStreamInfo : public StreamInfo {
  private:
   // Extra codec configuration in a stream of mp4 boxes. It is only applicable
   // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.
+  std::string supplemental_codec_;
+  FourCC compatible_brand_;
   std::vector<uint8_t> extra_config_;
   H26xStreamFormat h26x_stream_format_;
   uint16_t width_;
