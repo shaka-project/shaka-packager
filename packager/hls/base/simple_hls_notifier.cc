@@ -237,7 +237,7 @@ bool WriteMediaPlaylist(const std::string& output_dir,
                         MediaPlaylist* playlist) {
   auto file_path = std::filesystem::u8path(output_dir) / playlist->file_name();
   if (!playlist->WriteToFile(file_path)) {
-    LOG(ERROR) << "Failed to write playlist " << file_path;
+    LOG(ERROR) << "Failed to write playlist " << file_path.string();
     return false;
   }
   return true;

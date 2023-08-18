@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
+#include <filesystem>
 #include <list>
 #include <memory>
 #include <string>
@@ -160,7 +161,7 @@ class MediaPlaylist {
   /// @param file_path is the output file path accepted by the File
   ///        implementation.
   /// @return true on success, false otherwise.
-  virtual bool WriteToFile(const std::string& file_path);
+  virtual bool WriteToFile(const std::filesystem::path& file_path);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.

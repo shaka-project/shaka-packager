@@ -470,7 +470,7 @@ void MediaPlaylist::AddPlacementOpportunity() {
   entries_.emplace_back(new PlacementOpportunityEntry());
 }
 
-bool MediaPlaylist::WriteToFile(const std::string& file_path) {
+bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
@@ -486,8 +486,8 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
     content += "#EXT-X-ENDLIST\n";
   }
 
-  if (!File::WriteFileAtomically(file_path.c_str(), content)) {
-    LOG(ERROR) << "Failed to write playlist to: " << file_path;
+  if (!File::WriteFileAtomically(file_path.string().c_str(), content)) {
+    LOG(ERROR) << "Failed to write playlist to: " << file_path.string();
     return false;
   }
   return true;

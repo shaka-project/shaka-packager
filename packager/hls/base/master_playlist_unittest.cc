@@ -314,7 +314,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
        spanish_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -374,7 +375,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -421,7 +423,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -466,7 +469,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       {video1.get(), video2.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -508,7 +512,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
                                                    {video.get(), text.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"

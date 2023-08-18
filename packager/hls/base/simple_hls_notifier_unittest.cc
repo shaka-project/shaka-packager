@@ -247,10 +247,9 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kTargetDuration))
       .Times(1);
-  EXPECT_CALL(
-      *mock_media_playlist,
-      WriteToFile(StrEq(
-          (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8").string())))
+  EXPECT_CALL(*mock_media_playlist,
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_TRUE(notifier.Flush());
 }
@@ -558,10 +557,9 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kTargetDuration))
       .Times(1);
-  EXPECT_CALL(
-      *mock_media_playlist,
-      WriteToFile(StrEq(
-          (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8").string())))
+  EXPECT_CALL(*mock_media_playlist,
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8"))))
       .WillOnce(Return(true));
 
   hls_params_.playlist_type = GetParam();
@@ -628,16 +626,14 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*mock_media_playlist1, SetTargetDuration(kTargetDuration))
       .Times(1);
   EXPECT_CALL(*mock_media_playlist1,
-              WriteToFile(StrEq(
-                  (std::filesystem::u8path(kAnyOutputDir) / "playlist1.m3u8")
-                      .string())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist1.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist2, SetTargetDuration(kTargetDuration))
       .Times(1);
   EXPECT_CALL(*mock_media_playlist2,
-              WriteToFile(StrEq(
-                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8")
-                      .string())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_CALL(
       *mock_master_playlist_ptr,
@@ -652,9 +648,8 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
       .WillOnce(Return(kLongestSegmentDuration));
   // Not updating other playlists as target duration does not change.
   EXPECT_CALL(*mock_media_playlist2,
-              WriteToFile(StrEq(
-                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8")
-                      .string())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _, _))
       .WillOnce(Return(true));

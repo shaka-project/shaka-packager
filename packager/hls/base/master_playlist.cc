@@ -486,7 +486,7 @@ void AppendPlaylists(const std::string& default_audio_language,
 
 }  // namespace
 
-MasterPlaylist::MasterPlaylist(const std::string& file_name,
+MasterPlaylist::MasterPlaylist(const std::filesystem::path& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
                                bool is_independent_segments)
