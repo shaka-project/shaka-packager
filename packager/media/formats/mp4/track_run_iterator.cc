@@ -284,10 +284,11 @@ bool TrackRunIterator::Init() {
 bool TrackRunIterator::Init(const MovieFragment& moof) {
   runs_.clear();
 
-  next_fragment_start_dts_.resize(moof.tracks.size(), 0);
+  const auto track_count = std::max(moof.tracks.size(), moov_->tracks.size());
+  next_fragment_start_dts_.resize(track_count, 0);
   for (size_t i = 0; i < moof.tracks.size(); i++) {
     const TrackFragment& traf = moof.tracks[i];
-
+    const auto track_index = traf.header.track_id - 1;
     const Track* trak = NULL;
     for (size_t t = 0; t < moov_->tracks.size(); t++) {
       if (moov_->tracks[t].header.track_id == traf.header.track_id)
@@ -351,7 +352,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     }
 
     int64_t run_start_dts = traf.decode_time_absent
-                                ? next_fragment_start_dts_[i]
+                                ? next_fragment_start_dts_[track_index]
                                 : traf.decode_time.decode_time;
 
     // dts is directly adjusted, which then propagates to pts as pts is encoded
@@ -426,7 +427,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       runs_.push_back(tri);
       sample_count_sum += trun.sample_count;
     }
-    next_fragment_start_dts_[i] = run_start_dts;
+    next_fragment_start_dts_[track_index] = run_start_dts;
   }
 
   std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());

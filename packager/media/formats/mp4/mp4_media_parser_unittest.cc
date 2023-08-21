@@ -298,6 +298,13 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndSenc) {
   EXPECT_EQ(82u, num_samples_);
 }
 
+TEST_F(MP4MediaParserTest, NonInterleavedFMP4) {
+  // Test small, non-interleaved fragment MP4 with one track per fragment.
+  EXPECT_TRUE(ParseMP4File("BigBuckBunny_10s.ismv", 512));
+  EXPECT_EQ(2u, num_streams_);
+  EXPECT_EQ(770u, num_samples_);
+}
+
 }  // namespace mp4
 }  // namespace media
 }  // namespace shaka
