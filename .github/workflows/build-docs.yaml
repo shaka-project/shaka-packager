@@ -33,6 +33,7 @@ jobs:
         run: |
           sudo apt install -y doxygen
           python3 -m pip install \
+              sphinx==7.1.2 \
               sphinxcontrib.plantuml \
               recommonmark \
               cloud_sptheme \
