@@ -2,7 +2,7 @@ FROM tgagor/centos:stream9
 
 # For CentOS, Ninja is only available from the "CRB" ("Code Ready Builder")
 # repo.  Enable that first.
-RUN dnf update
+RUN dnf update -y
 RUN dnf install -y yum-utils
 RUN dnf config-manager --set-enabled crb
 

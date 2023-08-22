@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_path.h"
+#include <filesystem>
 #include "packager/file/file.h"
 #include "packager/hls/base/master_playlist.h"
 #include "packager/hls/base/media_playlist.h"
@@ -17,9 +17,9 @@
 namespace shaka {
 namespace hls {
 
-using base::FilePath;
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::DoAll;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -138,20 +138,18 @@ class MasterPlaylistTest : public ::testing::Test {
  protected:
   MasterPlaylistTest()
       : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
-                         kDefaultAudioLanguage,
-                         kDefaultTextLanguage,
-                         !kIsIndependentSegments)),
+                                            kDefaultAudioLanguage,
+                                            kDefaultTextLanguage,
+                                            !kIsIndependentSegments)),
         test_output_dir_("memory://test_dir"),
-        master_playlist_path_(
-            FilePath::FromUTF8Unsafe(test_output_dir_)
-                .Append(FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName))
-                .AsUTF8Unsafe()) {}
+        master_playlist_path_(std::filesystem::u8path(test_output_dir_) /
+                              kDefaultMasterPlaylistName) {}
 
   void SetUp() override { SetPackagerVersionForTesting("test"); }
 
   std::unique_ptr<MasterPlaylist> master_playlist_;
   std::string test_output_dir_;
-  std::string master_playlist_path_;
+  std::filesystem::path master_playlist_path_;
 };
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
@@ -166,7 +164,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
                                                    {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -200,7 +199,8 @@ TEST_F(MasterPlaylistTest,
                                                   {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -229,7 +229,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideoWithFrameRate) {
                                                    {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -257,7 +258,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
                                                    {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -312,7 +314,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
        spanish_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -372,7 +375,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -419,7 +423,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -464,7 +469,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       {video1.get(), video2.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -506,7 +512,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
                                                    {video.get(), text.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -548,7 +555,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {
       kBaseUrl, test_output_dir_, {video.get(), dvs_audio.get(), audio.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -590,7 +598,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       {video.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -636,7 +645,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       kBaseUrl, test_output_dir_, {video.get(), audio.get(), text.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -709,7 +719,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -812,7 +823,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -864,7 +876,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyJOC) {
     media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -916,7 +929,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4IMS) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -969,7 +983,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4CBI) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
