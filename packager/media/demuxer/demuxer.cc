@@ -8,9 +8,11 @@
 
 #include <algorithm>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
+#include <functional>
 #include "packager/file/file.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/key_source.h"
@@ -45,7 +47,7 @@ std::string GetStreamLabel(size_t stream_index) {
     case kBaseTextOutputStreamIndex:
       return "text";
     default:
-      return base::SizeTToString(stream_index);
+      return absl::StrFormat("%u", stream_index);
   }
 }
 
@@ -59,7 +61,7 @@ bool GetStreamIndex(const std::string& stream_label, size_t* stream_index) {
     *stream_index = kBaseTextOutputStreamIndex;
   } else {
     // Expect stream_label to be a zero based stream id.
-    if (!base::StringToSizeT(stream_label, stream_index)) {
+    if (!absl::SimpleAtoi(stream_label, stream_index)) {
       LOG(ERROR) << "Invalid argument --stream=" << stream_label << "; "
                  << "should be 'audio', 'video', 'text', or a number";
       return false;
@@ -203,8 +205,9 @@ Status Demuxer::InitializeParser() {
     case CONTAINER_UNKNOWN: {
       const int64_t kDumpSizeLimit = 512;
       LOG(ERROR) << "Failed to detect the container type from the buffer: "
-                 << base::HexEncode(buffer_.get(),
-                                    std::min(bytes_read, kDumpSizeLimit));
+                 << absl::BytesToHexString(absl::string_view(
+                        reinterpret_cast<const char*>(buffer_.get()),
+                        std::min(bytes_read, kDumpSizeLimit)));
       return Status(error::INVALID_ARGUMENT,
                     "Failed to detect the container type.");
     }
@@ -215,9 +218,11 @@ Status Demuxer::InitializeParser() {
   }
 
   parser_->Init(
-      base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
-      base::Bind(&Demuxer::NewMediaSampleEvent, base::Unretained(this)),
-      base::Bind(&Demuxer::NewTextSampleEvent, base::Unretained(this)),
+      std::bind(&Demuxer::ParserInitEvent, this, std::placeholders::_1),
+      std::bind(&Demuxer::NewMediaSampleEvent, this, std::placeholders::_1,
+                std::placeholders::_2),
+      std::bind(&Demuxer::NewTextSampleEvent, this, std::placeholders::_1,
+                std::placeholders::_2),
       key_source_.get());
 
   // Handle trailing 'moov'.
