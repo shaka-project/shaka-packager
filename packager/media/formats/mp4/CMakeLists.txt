@@ -41,7 +41,7 @@ add_library(mp4 STATIC
 target_link_libraries(mp4
   media_base
   mpd_builder
-  boringssl
+  mbedtls
   media_codecs
   media_event
   absl::flags
