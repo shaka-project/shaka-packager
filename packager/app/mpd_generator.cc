@@ -7,13 +7,14 @@
 #include <iostream>
 #include <locale>
 
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
 #include "packager/app/mpd_generator_flags.h"
 #include "packager/app/vlog_flags.h"
-#include "packager/base/at_exit.h"
-#include "packager/base/command_line.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_split.h"
-#include "packager/base/strings/stringprintf.h"
+// #include "packager/base/at_exit.h"
+// #include "packager/base/command_line.h"
+#include <absl/strings/str_split.h>
+#include "absl/flags/parse.h"
 #include "packager/mpd/util/mpd_writer.h"
 #include "packager/tools/license_notice.h"
 #include "packager/version/version.h"
@@ -23,10 +24,11 @@
 #include <functional>
 #endif  // defined(OS_WIN)
 
-DEFINE_bool(licenses, false, "Dump licenses.");
-DEFINE_string(test_packager_version,
-              "",
-              "Packager version for testing. Should be used for testing only.");
+ABSL_FLAG(bool, licenses, false, "Dump licenses.");
+ABSL_FLAG(std::string,
+          test_packager_version,
+          "",
+          "Packager version for testing. Should be used for testing only.");
 
 namespace shaka {
 namespace {
@@ -51,12 +53,12 @@ enum ExitStatus {
 };
 
 ExitStatus CheckRequiredFlags() {
-  if (FLAGS_input.empty()) {
+  if (absl::GetFlag(FLAGS_input).empty()) {
     LOG(ERROR) << "--input is required.";
     return kEmptyInputError;
   }
 
-  if (FLAGS_output.empty()) {
+  if (absl::GetFlag(FLAGS_output).empty()) {
     LOG(ERROR) << "--output is required.";
     return kEmptyOutputError;
   }
@@ -69,12 +71,12 @@ ExitStatus RunMpdGenerator() {
   std::vector<std::string> base_urls;
   typedef std::vector<std::string>::const_iterator Iterator;
 
-  std::vector<std::string> input_files = base::SplitString(
-      FLAGS_input, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> input_files =
+      absl::StrSplit(absl::GetFlag(FLAGS_input), ",", absl::AllowEmpty());
 
-  if (!FLAGS_base_urls.empty()) {
-    base_urls = base::SplitString(FLAGS_base_urls, ",", base::KEEP_WHITESPACE,
-                                  base::SPLIT_WANT_ALL);
+  if (!absl::GetFlag(FLAGS_base_urls).empty()) {
+    base_urls =
+        absl::StrSplit(absl::GetFlag(FLAGS_base_urls), ",", absl::AllowEmpty());
   }
 
   MpdWriter mpd_writer;
@@ -87,8 +89,8 @@ ExitStatus RunMpdGenerator() {
     }
   }
 
-  if (!mpd_writer.WriteMpdToFile(FLAGS_output.c_str())) {
-    LOG(ERROR) << "Failed to write MPD to " << FLAGS_output;
+  if (!mpd_writer.WriteMpdToFile(absl::GetFlag(FLAGS_output).c_str())) {
+    LOG(ERROR) << "Failed to write MPD to " << absl::GetFlag(FLAGS_output);
     return kFailedToWriteMpdToFileError;
   }
 
@@ -96,19 +98,20 @@ ExitStatus RunMpdGenerator() {
 }
 
 int MpdMain(int argc, char** argv) {
-  base::AtExitManager exit;
+  //  base::AtExitManager exit;
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
-  base::CommandLine::Init(argc, argv);
+  //  base::CommandLine::Init(argc, argv);
 
   // Set up logging.
-  logging::LoggingSettings log_settings;
-  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
-  CHECK(logging::InitLogging(log_settings));
+  //  logging::LoggingSettings log_settings;
+  //  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  //  CHECK(logging::InitLogging(log_settings));
 
-  google::SetVersionString(GetPackagerVersion());
-  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
-  google::ParseCommandLineFlags(&argc, &argv, true);
-  if (FLAGS_licenses) {
+  //  google::SetVersionString(GetPackagerVersion());
+  auto usage = absl::StrFormat(kUsage, argv[0]);
+  absl::ParseCommandLine(argc, argv);
+
+  if (absl::GetFlag(FLAGS_licenses)) {
     for (const char* line : kLicenseNotice)
       std::cout << line << std::endl;
     return kSuccess;
@@ -116,12 +119,12 @@ int MpdMain(int argc, char** argv) {
 
   ExitStatus status = CheckRequiredFlags();
   if (status != kSuccess) {
-    google::ShowUsageWithFlags("Usage");
+    std::cerr << "Usage " << usage;
     return status;
   }
 
-  if (!FLAGS_test_packager_version.empty())
-    SetPackagerVersionForTesting(FLAGS_test_packager_version);
+  if (!absl::GetFlag(FLAGS_test_packager_version).empty())
+    SetPackagerVersionForTesting(absl::GetFlag(FLAGS_test_packager_version));
 
   return RunMpdGenerator();
 }

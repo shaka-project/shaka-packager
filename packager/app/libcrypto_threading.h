@@ -7,7 +7,7 @@
 #ifndef APP_LIBCRYPTO_THREADING_H_
 #define APP_LIBCRYPTO_THREADING_H_
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {

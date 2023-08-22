@@ -18,7 +18,7 @@
 #include "packager/media/public/crypto_params.h"
 #include "packager/media/public/mp4_output_params.h"
 #include "packager/mpd/public/mpd_params.h"
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 

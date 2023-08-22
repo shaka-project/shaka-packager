@@ -8,21 +8,21 @@
 
 #include <algorithm>
 
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
+#include <filesystem>
+#include <optional>
 #include "packager/app/job_manager.h"
 #include "packager/app/libcrypto_threading.h"
 #include "packager/app/muxer_factory.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/single_thread_job_manager.h"
 #include "packager/app/stream_descriptor.h"
-#include "packager/base/at_exit.h"
-#include "packager/base/files/file_path.h"
-#include "packager/base/logging.h"
-#include "packager/base/optional.h"
-#include "packager/base/path_service.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/base/threading/simple_thread.h"
-#include "packager/base/time/clock.h"
+// #include "packager/base/at_exit.h"
+// #include "packager/base/path_service.h"
+// #include "packager/base/threading/simple_thread.h"
+#include <chrono>
+#include "absl/strings/match.h"
 #include "packager/file/file.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/simple_hls_notifier.h"
@@ -49,7 +49,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -129,8 +129,8 @@ MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
     return format;
   }
 
-  base::Optional<MediaContainerName> format_from_output;
-  base::Optional<MediaContainerName> format_from_segment;
+  std::optional<MediaContainerName> format_from_output;
+  std::optional<MediaContainerName> format_from_segment;
   if (!descriptor.output.empty()) {
     format_from_output = DetermineContainerFromFileName(descriptor.output);
     if (format_from_output.value() == CONTAINER_UNKNOWN) {
@@ -169,12 +169,10 @@ MediaContainerName GetTextOutputCodec(const StreamDescriptor& descriptor) {
     return output_container;
 
   const auto input_container = DetermineContainerFromFileName(descriptor.input);
-  if (base::EqualsCaseInsensitiveASCII(descriptor.output_format, "vtt+mp4") ||
-      base::EqualsCaseInsensitiveASCII(descriptor.output_format,
-                                       "webvtt+mp4")) {
+  if (absl::AsciiStrToLower(descriptor.output_format) == "vtt+mp4" ||
+      absl::AsciiStrToLower(descriptor.output_format) == "webvtt+mp4") {
     return CONTAINER_WEBVTT;
-  } else if (!base::EqualsCaseInsensitiveASCII(descriptor.output_format,
-                                               "ttml+mp4") &&
+  } else if (absl::AsciiStrToLower(descriptor.output_format) != "ttml+mp4" &&
              input_container == CONTAINER_WEBVTT) {
     // With WebVTT input, default to WebVTT output.
     return CONTAINER_WEBVTT;
@@ -187,9 +185,9 @@ MediaContainerName GetTextOutputCodec(const StreamDescriptor& descriptor) {
 bool IsTextStream(const StreamDescriptor& stream) {
   if (stream.stream_selector == "text")
     return true;
-  if (base::EqualsCaseInsensitiveASCII(stream.output_format, "vtt+mp4") ||
-      base::EqualsCaseInsensitiveASCII(stream.output_format, "webvtt+mp4") ||
-      base::EqualsCaseInsensitiveASCII(stream.output_format, "ttml+mp4")) {
+  if (absl::AsciiStrToLower(stream.output_format) == "vtt+mp4" ||
+      absl::AsciiStrToLower(stream.output_format) == "webvtt+mp4" ||
+      absl::AsciiStrToLower(stream.output_format) == "ttml+mp4") {
     return true;
   }
 
@@ -321,8 +319,7 @@ Status ValidateParams(const PackagingParams& packaging_params,
     RETURN_IF_ERROR(ValidateStreamDescriptor(
         packaging_params.test_params.dump_stream_info, descriptor));
 
-    if (base::StartsWith(descriptor.input, "udp://",
-                         base::CompareCase::SENSITIVE)) {
+    if (absl::StartsWith(descriptor.input, "udp://")) {
       const HlsParams& hls_params = packaging_params.hls_params;
       if (!hls_params.master_playlist_output.empty() &&
           hls_params.playlist_type == HlsPlaylistType::kVod) {
@@ -419,9 +416,11 @@ bool StreamDescriptorCompareFn(const StreamDescriptor& a,
 
 // A fake clock that always return time 0 (epoch). Should only be used for
 // testing.
-class FakeClock : public base::Clock {
+class FakeClock : public Clock {
  public:
-  base::Time Now() override { return base::Time(); }
+  time_point now() noexcept override {
+    return std::chrono::system_clock::time_point(std::chrono::seconds(0));
+  }
 };
 
 bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
@@ -568,7 +567,7 @@ Status CreateTtmlJobs(
     if (!stream.output.empty()) {
       if (!File::Copy(stream.input.c_str(), stream.output.c_str())) {
         std::string error;
-        base::StringAppendF(
+        absl::StrAppendFormat(
             &error, "Failed to copy the input file (%s) to output file (%s).",
             stream.input.c_str(), stream.output.c_str());
         return Status(error::FILE_FAILURE, error);
@@ -834,7 +833,7 @@ Status Packager::Initialize(
     const PackagingParams& packaging_params,
     const std::vector<StreamDescriptor>& stream_descriptors) {
   // Needed by base::WorkedPool used in ThreadedIoFile.
-  static base::AtExitManager exit;
+  //  static base::AtExitManager exit;
   static media::LibcryptoThreading libcrypto_threading;
 
   if (internal_)

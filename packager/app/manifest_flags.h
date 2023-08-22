@@ -9,11 +9,12 @@
 #ifndef PACKAGER_APP_MANIFEST_FLAGS_H_
 #define PACKAGER_APP_MANIFEST_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_double(time_shift_buffer_depth);
-DECLARE_uint64(preserved_segments_outside_live_window);
-DECLARE_string(default_language);
-DECLARE_string(default_text_language);
+ABSL_DECLARE_FLAG(double, time_shift_buffer_depth);
+ABSL_DECLARE_FLAG(uint64_t, preserved_segments_outside_live_window);
+ABSL_DECLARE_FLAG(std::string, default_language);
+ABSL_DECLARE_FLAG(std::string, default_text_language);
 
 #endif  // PACKAGER_APP_MANIFEST_FLAGS_H_

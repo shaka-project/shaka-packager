@@ -7,9 +7,10 @@
 #ifndef APP_VLOG_FLAGS_H_
 #define APP_VLOG_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_int32(v);
-DECLARE_string(vmodule);
+// ABSL_DECLARE_FLAG(int32_t, v);
+// ABSL_DECLARE_FLAG(std::string, vmodule);
 
 #endif  // APP_VLOG_FLAGS_H_

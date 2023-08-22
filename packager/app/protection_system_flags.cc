@@ -8,7 +8,8 @@
 
 #include "packager/app/protection_system_flags.h"
 
-DEFINE_string(
+ABSL_FLAG(
+    std::string,
     protection_systems,
     "",
     "Protection systems to be generated. Supported protection systems include "

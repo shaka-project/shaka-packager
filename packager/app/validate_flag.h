@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "packager/base/strings/stringprintf.h"
+#include <absl/strings/str_format.h>
 
 namespace shaka {
 
@@ -41,13 +41,12 @@ bool ValidateFlag(const char* flag_name,
                   const char* label) {
   if (flag_value.empty()) {
     if (!optional && condition) {
-      PrintError(
-          base::StringPrintf("--%s is required if %s.", flag_name, label));
+      PrintError(absl::StrFormat("--%s is required if %s.", flag_name, label));
       return false;
     }
   } else if (!condition) {
-    PrintError(base::StringPrintf(
-        "--%s should be specified only if %s.", flag_name, label));
+    PrintError(absl::StrFormat("--%s should be specified only if %s.",
+                               flag_name, label));
     return false;
   }
   return true;

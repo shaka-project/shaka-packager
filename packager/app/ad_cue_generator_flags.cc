@@ -8,12 +8,13 @@
 
 #include "packager/app/ad_cue_generator_flags.h"
 
-DEFINE_string(ad_cues,
-              "",
-              "List of cuepoint markers."
-              "This flag accepts semicolon separated pairs and components in "
-              "the pair are separated by a comma and the second component "
-              "duration is optional. For example --ad_cues "
-              "{start_time}[,{duration}][;{start_time}[,{duration}]]..."
-              "The start_time represents the start of the cue marker in "
-              "seconds relative to the start of the program.");
+ABSL_FLAG(std::string,
+          ad_cues,
+          "",
+          "List of cuepoint markers."
+          "This flag accepts semicolon separated pairs and components in "
+          "the pair are separated by a comma and the second component "
+          "duration is optional. For example --ad_cues "
+          "{start_time}[,{duration}][;{start_time}[,{duration}]]..."
+          "The start_time represents the start of the cue marker in "
+          "seconds relative to the start of the program.");

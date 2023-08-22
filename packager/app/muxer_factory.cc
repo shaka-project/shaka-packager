@@ -6,7 +6,7 @@
 
 #include "packager/app/muxer_factory.h"
 
-#include "packager/base/time/clock.h"
+#include <chrono>
 #include "packager/media/base/muxer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/formats/mp2t/ts_muxer.h"
@@ -80,7 +80,7 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
   return muxer;
 }
 
-void MuxerFactory::OverrideClock(base::Clock* clock) {
+void MuxerFactory::OverrideClock(Clock* clock) {
   clock_ = clock;
 }
 }  // namespace media

@@ -64,4 +64,115 @@ add_subdirectory(third_party)
 add_subdirectory(tools)
 add_subdirectory(utils)
 add_subdirectory(version)
-add_subdirectory(app)
+
+set(libpackager_sources
+  app/job_manager.cc
+  app/job_manager.h
+  app/muxer_factory.cc
+  app/muxer_factory.h
+  app/libcrypto_threading.cc
+  app/libcrypto_threading.h
+  app/packager_util.cc
+  app/packager_util.h
+  app/single_thread_job_manager.cc
+  app/single_thread_job_manager.h
+  packager.cc
+  packager.h
+  )
+
+if(LIBPACKAGER_SHARED)
+  add_library(libpackager SHARED ${libpackager_sources})
+else()
+  add_library(libpackager STATIC ${libpackager_sources})
+endif()
+
+target_link_libraries(libpackager
+  file
+  hls_builder
+  media_chunking
+  media_codecs
+  media_crypto
+  demuxer
+  media_event
+  dvb
+  mp2t
+  mp4
+  packed_audio
+  ttml
+  formats_webm
+  wvm
+#  media_public
+  media_replicator
+  media_trick_play
+  mpd_builder
+  mbedtls
+  version
+)
+
+add_executable(packager
+  app/ad_cue_generator_flags.cc
+  app/ad_cue_generator_flags.h
+  app/crypto_flags.cc
+  app/crypto_flags.h
+  app/gflags_hex_bytes.cc
+  app/gflags_hex_bytes.h
+  app/hls_flags.cc
+  app/hls_flags.h
+  app/manifest_flags.cc
+  app/manifest_flags.h
+  app/mpd_flags.cc
+  app/mpd_flags.h
+  app/muxer_flags.cc
+  app/muxer_flags.h
+  app/packager_main.cc
+  app/playready_key_encryption_flags.cc
+  app/playready_key_encryption_flags.h
+  app/raw_key_encryption_flags.cc
+  app/raw_key_encryption_flags.h
+  app/protection_system_flags.cc
+  app/protection_system_flags.h
+  app/retired_flags.cc
+  app/retired_flags.h
+  app/stream_descriptor.cc
+  app/stream_descriptor.h
+  app/validate_flag.cc
+  app/validate_flag.h
+  app/vlog_flags.cc
+  app/vlog_flags.h
+  app/widevine_encryption_flags.cc
+  app/widevine_encryption_flags.h
+)
+target_link_libraries(packager
+  libpackager
+  hex_bytes_flags
+  absl::flags
+  absl::flags_parse
+  license_notice
+  glog
+  absl::strings
+)
+
+add_executable(mpd_generator
+  app/mpd_generator.cc
+  app/mpd_generator_flags.h
+  app/vlog_flags.cc
+  app/vlog_flags.h
+)
+target_link_libraries(mpd_generator
+  mpd_builder
+  mpd_util
+  absl::flags
+  absl::flags_parse
+  absl::strings
+  glog
+  license_notice
+  )
+
+add_executable(packager_test
+  packager_test.cc
+  )
+target_link_libraries(packager_test
+  libpackager
+  gmock
+  gtest
+  gtest_main)
