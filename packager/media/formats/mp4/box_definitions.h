@@ -735,6 +735,7 @@ struct TrackFragmentHeader : FullBox {
   };
 
   enum SampleFlagsMasks {
+    kUnset = 0x00000000,
     kReservedMask = 0xFC000000,
     kSampleDependsOnMask = 0x03000000,
     kSampleIsDependedOnMask = 0x00C00000,
