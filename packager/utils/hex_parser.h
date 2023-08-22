@@ -8,6 +8,7 @@
 #define PACKAGER_UTILS_HEX_PARSER_H_
 
 #include <string>
+#include <vector>
 
 namespace shaka {
 
