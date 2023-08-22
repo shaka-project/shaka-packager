@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp4/composition_offset_iterator.h"
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 
 namespace shaka {
 namespace media {

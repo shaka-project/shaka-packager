@@ -5,6 +5,7 @@
 #include "packager/media/formats/mp2t/ts_packet.h"
 
 #include <memory>
+#include "packager/macros.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 

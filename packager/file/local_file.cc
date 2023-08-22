@@ -122,7 +122,7 @@ bool LocalFile::Open() {
     // first if it needs to be created.
     auto parent_path = file_path.parent_path();
     std::error_code ec;
-    if (!std::filesystem::is_directory(parent_path, ec)) {
+    if (parent_path != "" && !std::filesystem::is_directory(parent_path, ec)) {
       if (!std::filesystem::create_directories(parent_path, ec)) {
         return false;
       }

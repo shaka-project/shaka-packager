@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "packager/base/optional.h"
+#include <optional>
 #include "packager/media/base/muxer.h"
 
 namespace shaka {
@@ -54,11 +54,11 @@ class MP4Muxer : public Muxer {
 
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.
-  base::Optional<Range> GetInitRangeStartAndEnd();
+  std::optional<Range> GetInitRangeStartAndEnd();
 
   // Gets |start| and |end| index range. Returns true if there is an index range
   // and sets start-end byte-range-spec specified in RFC2616.
-  base::Optional<Range> GetIndexRangeStartAndEnd();
+  std::optional<Range> GetIndexRangeStartAndEnd();
 
   // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
   void FireOnMediaStartEvent();
@@ -69,7 +69,7 @@ class MP4Muxer : public Muxer {
 
   // Assumes single stream (multiplexed a/v not supported yet).
   bool to_be_initialized_ = true;
-  base::Optional<int64_t> edit_list_offset_;
+  std::optional<int64_t> edit_list_offset_;
 
   std::unique_ptr<Segmenter> segmenter_;
 

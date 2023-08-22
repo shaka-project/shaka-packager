@@ -6,9 +6,9 @@
 
 #include "packager/media/crypto/sample_aes_ec3_cryptor.h"
 
+#include <glog/logging.h>
 #include <algorithm>
 
-#include "glog/logging.h"
 #include "packager/media/base/buffer_reader.h"
 
 namespace shaka {

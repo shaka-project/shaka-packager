@@ -13,7 +13,7 @@
 #include "packager/media/formats/mp4/box_buffer.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/webvtt/webvtt_utils.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -218,8 +218,8 @@ Status WebVttToMp4Handler::DispatchCurrentSegment(int64_t segment_start,
           break;
         }
         default: {
-          NOTREACHED() << "Unsupported DisplayActionType "
-                       << static_cast<int>(action.type);
+          NOTIMPLEMENTED() << "Unsupported DisplayActionType "
+                           << static_cast<int>(action.type);
           break;
         }
       }

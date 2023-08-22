@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/hls_audio_util.h"

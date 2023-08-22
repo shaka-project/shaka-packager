@@ -13,7 +13,7 @@
 #include "packager/media/base/id3_tag.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/status_test_util.h"
+#include "packager/status/status_test_util.h"
 
 using ::testing::_;
 using ::testing::ByMove;

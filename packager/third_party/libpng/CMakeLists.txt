@@ -8,7 +8,7 @@
 
 # Turn these features on.
 set(PNG_STATIC ON)
-set(PNG_HARDWARE_OPTIMIZATIONS ON)
+set(PNG_HARDWARE_OPTIMIZATIONS OFF)
 
 # Turn these features off.
 set(PNG_SHARED OFF)
@@ -25,6 +25,7 @@ set(PNG_BUILD_ZLIB ON)
 set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../zlib/source/")
 # Tell libpng where to find zlib library to link to.
 set(ZLIB_LIBRARY zlibstatic)
+
 
 # Silence these warnings:
 if(MSVC)

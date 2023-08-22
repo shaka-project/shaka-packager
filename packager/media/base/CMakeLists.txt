@@ -64,6 +64,7 @@ target_link_libraries(media_base
     glog
     hex_parser
     mbedtls
+    utils_clock
     status
     widevine_protos
     LibXml2)

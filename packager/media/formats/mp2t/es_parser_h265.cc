@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
@@ -60,7 +60,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
         decoder_config_check_pending_ = true;
       else if (status == H265Parser::kUnsupportedStream)
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       else
         return false;
       break;
@@ -73,7 +73,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
         decoder_config_check_pending_ = true;
       } else if (status == H265Parser::kUnsupportedStream) {
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       } else {
         // Allow PPS parsing to fail if waiting for SPS.
         if (last_video_decoder_config_)
@@ -95,7 +95,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
           video_slice_info->pps_id = shdr.pic_parameter_set_id;
         } else if (status == H265Parser::kUnsupportedStream) {
           // Indicate the stream can't be parsed.
-          new_stream_info_cb_.Run(nullptr);
+          new_stream_info_cb_(nullptr);
         } else {
           // Only accept an invalid SPS/PPS at the beginning when the stream
           // does not necessarily start with an SPS/PPS/IDR.
@@ -179,7 +179,7 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
       nalu_length_size, std::string(), false);
 
   // Video config notification.
-  new_stream_info_cb_.Run(last_video_decoder_config_);
+  new_stream_info_cb_(last_video_decoder_config_);
 
   return true;
 }

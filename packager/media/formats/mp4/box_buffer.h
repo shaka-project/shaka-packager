@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "packager/base/compiler_specific.h"
+#include "packager/macros.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/box_reader.h"

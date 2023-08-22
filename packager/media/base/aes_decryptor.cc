@@ -44,6 +44,11 @@ bool AesCbcDecryptor::InitializeWithIv(const std::vector<uint8_t>& key,
   return SetIv(iv);
 }
 
+size_t AesCbcDecryptor::RequiredOutputSize(size_t plaintext_size) {
+  // mbedtls requires a buffer large enough for one extra block.
+  return plaintext_size + AES_BLOCK_SIZE;
+}
+
 bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
                                     size_t ciphertext_size,
                                     uint8_t* plaintext,

@@ -20,12 +20,8 @@ const bool kInitialEncryptionInfo = true;
 const int64_t kStartTime = 0;
 }  // namespace
 
-uint64_t DefaultMuxerClock() {
-  return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-}
-
 Muxer::Muxer(const MuxerOptions& options)
-    : options_(options), clock_(DefaultMuxerClock) {
+    : options_(options), clock_(new Clock) {
   // "$" is only allowed if the output file name is a template, which is used to
   // support one file per Representation per Period when there are Ad Cues.
   if (options_.output_file_name.find("$") != std::string::npos)

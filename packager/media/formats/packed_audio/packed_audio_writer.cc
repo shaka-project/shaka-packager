@@ -8,7 +8,7 @@
 
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/formats/packed_audio/packed_audio_segmenter.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

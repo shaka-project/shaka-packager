@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/bind.h"
+#include <functional>
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/text_sample.h"
 
@@ -49,9 +49,11 @@ class WebVttParserTest : public testing::Test {
   void SetUpAndInitialize() {
     parser_ = std::make_shared<WebVttParser>();
     parser_->Init(
-        base::Bind(&WebVttParserTest::InitCB, base::Unretained(this)),
-        base::Bind(&WebVttParserTest::NewMediaSampleCB, base::Unretained(this)),
-        base::Bind(&WebVttParserTest::NewTextSampleCB, base::Unretained(this)),
+        std::bind(&WebVttParserTest::InitCB, this, std::placeholders::_1),
+        std::bind(&WebVttParserTest::NewMediaSampleCB, this,
+                  std::placeholders::_1, std::placeholders::_2),
+        std::bind(&WebVttParserTest::NewTextSampleCB, this,
+                  std::placeholders::_1, std::placeholders::_2),
         nullptr);
   }
 

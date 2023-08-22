@@ -7,10 +7,9 @@
 #include <algorithm>
 #include <limits>
 
-#include "packager/base/callback.h"
-#include "packager/base/callback_helpers.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include <absl/strings/numbers.h>
+#include <glog/logging.h>
+#include <functional>
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/base/audio_stream_info.h"
@@ -23,11 +22,11 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/base/video_util.h"
 #include "packager/media/codecs/ac3_audio_util.h"
+#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/dovi_decoder_configuration_record.h"
 #include "packager/media/codecs/ec3_audio_util.h"
-#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
@@ -188,9 +187,9 @@ void MP4MediaParser::Init(const InitCB& init_cb,
                           const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
-  DCHECK(init_cb_.is_null());
-  DCHECK(!init_cb.is_null());
-  DCHECK(!new_media_sample_cb.is_null());
+  DCHECK(init_cb_ == nullptr);
+  DCHECK(init_cb != nullptr);
+  DCHECK(new_media_sample_cb != nullptr);
 
   ChangeState(kParsingBoxes);
   init_cb_ = init_cb;
@@ -742,7 +741,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     }
   }
 
-  init_cb_.Run(streams);
+  init_cb_(streams);
   if (!FetchKeysIfNecessary(moov_->pssh))
     return false;
   runs_.reset(new TrackRunIterator(moov_.get()));
@@ -892,7 +891,7 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
            << ", cts=" << runs_->cts()
            << ", size=" << runs_->sample_size();
 
-  if (!new_sample_cb_.Run(runs_->track_id(), stream_sample)) {
+  if (!new_sample_cb_(runs_->track_id(), stream_sample)) {
     *err = true;
     LOG(ERROR) << "Failed to process the sample.";
     return false;

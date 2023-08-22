@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp4/box.h"
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/formats/mp4/box_buffer.h"
 
 namespace shaka {

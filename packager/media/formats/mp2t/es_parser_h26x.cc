@@ -6,8 +6,7 @@
 
 #include <stdint.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/numerics/safe_conversions.h"
+#include <glog/logging.h>
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
@@ -103,7 +102,7 @@ bool EsParserH26x::Flush() {
       pending_sample_duration_ = CalculateSampleDuration(pending_sample_pps_id_);
     }
     pending_sample_->set_duration(pending_sample_duration_);
-    emit_sample_cb_.Run(std::move(pending_sample_));
+    emit_sample_cb_(std::move(pending_sample_));
   }
   return true;
 }
@@ -342,7 +341,7 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
 
       pending_sample_duration_ = sample_duration;
     }
-    emit_sample_cb_.Run(std::move(pending_sample_));
+    emit_sample_cb_(std::move(pending_sample_));
   }
   pending_sample_ = media_sample;
   pending_sample_pps_id_ = pps_id;

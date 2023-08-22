@@ -4,9 +4,10 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include <absl/strings/numbers.h>
+#include <glog/logging.h>
 #include "packager/media/formats/mp2t/adts_header.h"
+#include "packager/utils/hex_parser.h"
 
 namespace {
 
@@ -41,7 +42,7 @@ namespace mp2t {
 class AdtsHeaderTest : public testing::Test {
  public:
   void SetUp() override {
-    ASSERT_TRUE(base::HexStringToBytes(kValidAdtsFrame, &adts_frame_));
+    ASSERT_TRUE(shaka::ValidHexStringToBytes(kValidAdtsFrame, &adts_frame_));
   }
 
  protected:
@@ -65,11 +66,11 @@ TEST_F(AdtsHeaderTest, ParseSuccess) {
   EXPECT_EQ(kExpectedNumChannels, adts_header.GetNumChannels());
   std::vector<uint8_t> audio_specific_config;
   adts_header.GetAudioSpecificConfig(&audio_specific_config);
-  EXPECT_EQ(arraysize(kExpectedAudioSpecificConfig),
+  EXPECT_EQ(std::size(kExpectedAudioSpecificConfig),
             audio_specific_config.size());
   EXPECT_EQ(std::vector<uint8_t>(kExpectedAudioSpecificConfig,
                                  kExpectedAudioSpecificConfig +
-                                     arraysize(kExpectedAudioSpecificConfig)),
+                                     std::size(kExpectedAudioSpecificConfig)),
             audio_specific_config);
 }
 

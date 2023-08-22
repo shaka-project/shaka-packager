@@ -4,12 +4,13 @@
 
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
-#include <gflags/gflags.h>
+#include <absl/flags/flag.h>
 
-DEFINE_bool(mp4_reset_initial_composition_offset_to_zero,
-            true,
-            "MP4 only. If it is true, reset the initial composition offset to "
-            "zero, i.e. by assuming that there is a missing EditList.");
+ABSL_FLAG(bool,
+          mp4_reset_initial_composition_offset_to_zero,
+          true,
+          "MP4 only. If it is true, reset the initial composition offset to "
+          "zero, i.e. by assuming that there is a missing EditList.");
 
 #include <algorithm>
 #include <limits>
@@ -331,7 +332,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
         video_sample_entry = &stsd.video_entries[desc_idx];
         break;
       default:
-        NOTREACHED();
+        NOTIMPLEMENTED();
         break;
     }
 
@@ -700,7 +701,7 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
       LOG(WARNING) << "Seeing non-zero composition offset "
                    << composition_offset
                    << ". An EditList is probably missing.";
-      if (FLAGS_mp4_reset_initial_composition_offset_to_zero) {
+      if (absl::GetFlag(FLAGS_mp4_reset_initial_composition_offset_to_zero)) {
         LOG(WARNING)
             << "Adjusting timestamps by " << -composition_offset
             << ". Please file a bug to "

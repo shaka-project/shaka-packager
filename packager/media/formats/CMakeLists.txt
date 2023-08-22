@@ -5,4 +5,11 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
+add_subdirectory(dvb)
+add_subdirectory(packed_audio)
+add_subdirectory(ttml)
+add_subdirectory(mp4)
+add_subdirectory(mp2t)
 add_subdirectory(webm)
+add_subdirectory(webvtt)
+add_subdirectory(wvm)

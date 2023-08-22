@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-#include "packager/base/strings/string_piece.h"
+#include <string_view>
 #include "packager/media/base/text_sample.h"
 #include "packager/media/base/text_stream_info.h"
 
@@ -23,7 +23,7 @@ namespace media {
 // Parse a timestamp into milliseconds using the two patterns defined by WebVtt:
 //  LONG  : ##:##:##.### (long can have 2 or more hour digits)
 //  SHORT :    ##:##:###
-bool WebVttTimestampToMs(const base::StringPiece& source, int64_t* out);
+bool WebVttTimestampToMs(const std::string_view& source, int64_t* out);
 
 // Create a long form timestamp encoded as a string.
 std::string MsToWebVttTimestamp(uint64_t ms);

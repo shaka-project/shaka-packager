@@ -7,8 +7,10 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include "packager/utils/hex_parser.h"
+
+#include <absl/strings/numbers.h>
+#include <glog/logging.h>
 #include "packager/media/formats/mp2t/ac3_header.h"
 
 using ::testing::ElementsAreArray;
@@ -51,12 +53,12 @@ namespace mp2t {
 class Ac3HeaderTest : public testing::Test {
  public:
   void SetUp() override {
-    ASSERT_TRUE(base::HexStringToBytes(kValidPartialAc3Frame44100Hz,
-                                       &ac3_frame_44100_hz_));
-    ASSERT_TRUE(
-        base::HexStringToBytes(kValidPartialAc3Frame48kHz, &ac3_frame_48k_hz_));
-    ASSERT_TRUE(base::HexStringToBytes(kValidPartialAc3FrameSixChannels,
-                                       &ac3_frame_six_channels_));
+    ASSERT_TRUE(shaka::ValidHexStringToBytes(kValidPartialAc3Frame44100Hz,
+                                             &ac3_frame_44100_hz_));
+    ASSERT_TRUE(shaka::ValidHexStringToBytes(kValidPartialAc3Frame48kHz,
+                                             &ac3_frame_48k_hz_));
+    ASSERT_TRUE(shaka::ValidHexStringToBytes(kValidPartialAc3FrameSixChannels,
+                                             &ac3_frame_six_channels_));
   }
 
  protected:

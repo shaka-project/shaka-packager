@@ -10,7 +10,7 @@
 #include <cstring>
 #include <tuple>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 
 namespace shaka {
 namespace media {
@@ -134,7 +134,7 @@ RgbaColor DvbImageColorSpace::GetColor(BitDepth bit_depth,
       break;
     default:
       // Windows can't detect that all enums are handled and doesn't like
-      // NOTREACHED.
+      // NOTIMPLEMENTED.
       return kNoColor;
   }
 
@@ -186,7 +186,7 @@ RgbaColor DvbImageColorSpace::GetColorRaw(BitDepth bit_depth,
     case BitDepth::k8Bit:
       return color_map_8_[entry_id];
   }
-  // Not reached, but Windows doesn't like NOTREACHED.
+  // Not reached, but Windows doesn't like NOTIMPLEMENTED.
   return kNoColor;
 }
 

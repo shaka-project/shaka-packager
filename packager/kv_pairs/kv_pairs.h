@@ -12,6 +12,8 @@
 namespace shaka {
 
 typedef std::pair<std::string, std::string> KVPair;
-std::vector<KVPair> SplitStringIntoKeyValuePairs(std::string_view str);
+std::vector<KVPair> SplitStringIntoKeyValuePairs(std::string_view str,
+                                                 char kv_separator = '=',
+                                                 char list_separator = '&');
 
 }  // namespace shaka

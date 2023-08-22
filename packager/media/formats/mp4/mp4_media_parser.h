@@ -13,7 +13,6 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/callback_forward.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/offset_byte_queue.h"
@@ -38,8 +37,8 @@ class MP4MediaParser : public MediaParser {
             const NewMediaSampleCB& new_media_sample_cb,
             const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
-  bool Flush() override WARN_UNUSED_RESULT;
-  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
+  [[nodiscard]] bool Parse(const uint8_t* buf, int size) override;
   /// @}
 
   /// Handles ISO-BMFF containers which have the 'moov' box trailing the

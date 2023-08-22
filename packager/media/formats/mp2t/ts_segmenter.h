@@ -12,7 +12,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/formats/mp2t/pes_packet_generator.h"
 #include "packager/media/formats/mp2t/ts_writer.h"
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

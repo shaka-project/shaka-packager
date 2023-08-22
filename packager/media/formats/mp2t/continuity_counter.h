@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_CONTINUITY_COUNTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_CONTINUITY_COUNTER_H_
 
-#include "packager/base/macros.h"
+#include "packager/macros.h"
 
 namespace shaka {
 namespace media {
