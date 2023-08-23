@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <stdint.h>
 #include <memory>
+#include "packager/flag_saver.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
 ABSL_DECLARE_FLAG(bool, mp4_reset_initial_composition_offset_to_zero);
@@ -431,6 +432,7 @@ TEST_F(TrackRunIteratorTest, NormalEditTest) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest) {
+  FlagSaver<bool> saver(&FLAGS_mp4_reset_initial_composition_offset_to_zero);
   absl::SetFlag(&FLAGS_mp4_reset_initial_composition_offset_to_zero, false);
 
   // Test frame reordering. The frames have the following
@@ -473,6 +475,7 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest_WithEditList) {
+  FlagSaver<bool> saver(&FLAGS_mp4_reset_initial_composition_offset_to_zero);
   absl::SetFlag(&FLAGS_mp4_reset_initial_composition_offset_to_zero, false);
 
   // See the test above for background.
@@ -509,6 +512,7 @@ TEST_F(TrackRunIteratorTest, ReorderingTest_WithEditList) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest_ResetInitialCompositionOffset) {
+  FlagSaver<bool> saver(&FLAGS_mp4_reset_initial_composition_offset_to_zero);
   absl::SetFlag(&FLAGS_mp4_reset_initial_composition_offset_to_zero, true);
 
   // See the test above for background.
