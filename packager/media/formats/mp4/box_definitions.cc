@@ -390,7 +390,8 @@ bool SampleEncryption::ParseFromSampleEncryptionData(
   l_sample_encryption_entries->resize(sample_count);
   for (auto& sample_encryption_entry : *l_sample_encryption_entries) {
     RCHECK(sample_encryption_entry.ParseFromBuffer(
-               l_iv_size, (flags & kUseSubsampleEncryption) != 0, &reader) != 0);
+               l_iv_size, (flags & kUseSubsampleEncryption) != 0, &reader) !=
+           0);
   }
   return true;
 }
