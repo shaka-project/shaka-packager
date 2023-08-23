@@ -378,19 +378,19 @@ size_t SampleEncryption::ComputeSizeInternal() {
 }
 
 bool SampleEncryption::ParseFromSampleEncryptionData(
-    uint8_t iv_size,
-    std::vector<SampleEncryptionEntry>* sample_encryption_entries) const {
-  DCHECK(IsIvSizeValid(iv_size));
+    uint8_t l_iv_size,
+    std::vector<SampleEncryptionEntry>* l_sample_encryption_entries) const {
+  DCHECK(IsIvSizeValid(l_iv_size));
 
   BufferReader reader(sample_encryption_data.data(),
                       sample_encryption_data.size());
   uint32_t sample_count = 0;
   RCHECK(reader.Read4(&sample_count));
 
-  sample_encryption_entries->resize(sample_count);
-  for (auto& sample_encryption_entry : *sample_encryption_entries) {
+  l_sample_encryption_entries->resize(sample_count);
+  for (auto& sample_encryption_entry : *l_sample_encryption_entries) {
     RCHECK(sample_encryption_entry.ParseFromBuffer(
-               iv_size, (flags & kUseSubsampleEncryption) != 0, &reader) != 0);
+               l_iv_size, (flags & kUseSubsampleEncryption) != 0, &reader) != 0);
   }
   return true;
 }
@@ -1661,8 +1661,8 @@ size_t VideoSampleEntry::ComputeSizeInternal() {
   return size;
 }
 
-FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
-  switch (format) {
+FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC l_format) const {
+  switch (l_format) {
     case FOURCC_av01:
       return FOURCC_av1C;
     case FOURCC_avc1:
@@ -1677,7 +1677,7 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
     case FOURCC_vp09:
       return FOURCC_vpcC;
     default:
-      LOG(ERROR) << FourCCToString(format) << " is not supported.";
+      LOG(ERROR) << FourCCToString(l_format) << " is not supported.";
       return FOURCC_NULL;
   }
 }

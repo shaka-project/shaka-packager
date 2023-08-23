@@ -347,9 +347,6 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       .WillByDefault(Return(true));
   ON_CALL(*mock_pes_packet_generator_, Flush()).WillByDefault(Return(true));
 
-  const uint8_t kAnyData[] = {
-      0x01, 0x0F, 0x3C,
-  };
   std::shared_ptr<MediaSample> sample1 =
       MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
   sample1->set_duration(kTimeScale * 2);
