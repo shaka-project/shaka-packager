@@ -154,9 +154,9 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
   }
 
   DCHECK_LT(stream_id, fragmenters_.size());
-  Fragmenter* fragmenter = fragmenters_[stream_id].get();
-  DCHECK(fragmenter);
-  Status status = fragmenter->FinalizeFragment();
+  Fragmenter* specified_fragmenter = fragmenters_[stream_id].get();
+  DCHECK(specified_fragmenter);
+  Status status = specified_fragmenter->FinalizeFragment();
   if (!status.ok())
     return status;
 
@@ -228,14 +228,14 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
-    Status status = DoFinalizeChunk();
+    status = DoFinalizeChunk();
     if (!status.ok())
       return status;
   }
 
   if (!segment_info.is_subsegment || segment_info.is_final_chunk_in_seg) {
     // Finalize the segment.
-    Status status = DoFinalizeSegment();
+    status = DoFinalizeSegment();
     // Reset segment information to initial state.
     sidx_->references.clear();
     key_frame_infos_.clear();
