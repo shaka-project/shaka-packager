@@ -7,6 +7,7 @@
 #ifndef PACKAGER_UTILS_HEX_PARSER_H_
 #define PACKAGER_UTILS_HEX_PARSER_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
