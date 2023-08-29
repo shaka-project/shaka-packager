@@ -69,6 +69,7 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t trick_play_factor() const { return trick_play_factor_; }
   uint32_t playback_rate() const { return playback_rate_; }
   const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
+  const std::vector<uint8_t>& colr_data() const { return colr_data_; }
 
   void set_extra_config(const std::vector<uint8_t>& extra_config) {
     extra_config_ = extra_config;
@@ -89,6 +90,9 @@ class VideoStreamInfo : public StreamInfo {
   void set_eme_init_data(const uint8_t* eme_init_data,
                          size_t eme_init_data_size) {
     eme_init_data_.assign(eme_init_data, eme_init_data + eme_init_data_size);
+  }
+  void set_colr_data(const uint8_t* colr_data, size_t colr_data_size) {
+    colr_data_.assign(colr_data, colr_data + colr_data_size);
   }
 
  private:
@@ -127,6 +131,9 @@ class VideoStreamInfo : public StreamInfo {
   // Container-specific data used by CDM to generate a license request:
   // https://w3c.github.io/encrypted-media/#initialization-data.
   std::vector<uint8_t> eme_init_data_;
+
+  // Raw colr atom data. It is only applicable to the mp4 container.
+  std::vector<uint8_t> colr_data_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

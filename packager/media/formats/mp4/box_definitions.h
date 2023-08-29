@@ -276,6 +276,7 @@ struct ColorParameters : Box {
   uint16_t transfer_characteristics = 1;
   uint16_t matrix_coefficients = 1;
   uint8_t video_full_range_flag = 0;
+  std::vector<uint8_t> raw_box;
 };
 
 struct PixelAspectRatio : Box {
