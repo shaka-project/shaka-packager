@@ -9,6 +9,7 @@
 # Build static libs by default, or shared if LIBPACKAGER_SHARED is defined.
 if(LIBPACKAGER_SHARED)
   add_definitions(-DSHARED_LIBRARY_BUILD)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 # Global C++ flags.
