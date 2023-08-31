@@ -19,3 +19,12 @@ add_library(hex_parser STATIC
 
 target_link_libraries(hex_parser
     absl::strings)
+
+add_library(hex_bytes_flags STATIC
+  absl_flag_hexbytes.cc
+  absl_flag_hexbytes.h)
+
+target_link_libraries(hex_bytes_flags
+  hex_parser
+  absl::strings
+  absl::flags)

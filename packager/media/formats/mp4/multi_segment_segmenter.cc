@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/base/buffer_writer.h"
@@ -18,7 +18,7 @@
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_frame_info.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

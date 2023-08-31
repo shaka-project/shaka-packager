@@ -10,8 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/status.h"
+#include <glog/logging.h>
+#include "packager/macros.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {

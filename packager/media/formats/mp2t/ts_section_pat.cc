@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
@@ -66,7 +66,6 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   std::vector<int> program_number_array(pmt_pid_count);
   std::vector<int> pmt_pid_array(pmt_pid_count);
   for (int k = 0; k < pmt_pid_count; k++) {
-    int reserved;
     RCHECK(bit_reader->ReadBits(16, &program_number_array[k]));
     RCHECK(bit_reader->ReadBits(3, &reserved));
     RCHECK(bit_reader->ReadBits(13, &pmt_pid_array[k]));
@@ -103,7 +102,7 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   for (int k = 0; k < pmt_pid_count; k++) {
     if (program_number_array[k] != 0) {
       // Program numbers different from 0 correspond to PMT.
-      register_pmt_cb_.Run(program_number_array[k], pmt_pid_array[k]);
+      register_pmt_cb_(program_number_array[k], pmt_pid_array[k]);
       // Even if there are multiple programs, only one can be supported now.
       // HLS: "Transport Stream segments MUST contain a single MPEG-2 Program."
       break;

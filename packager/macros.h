@@ -39,4 +39,7 @@
 /// AES block size in bytes, regardless of key size.
 #define AES_BLOCK_SIZE 16
 
+#define DVLOG_IF(verboselevel, condition) \
+  static_cast<void>(0), !(condition) ? (void)0 : VLOG(verboselevel)
+
 #endif  // PACKAGER_MACROS_H_

@@ -13,8 +13,8 @@
 #include <memory>
 #include <utility>
 
-#include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
+#include <functional>
+#include "packager/macros.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {

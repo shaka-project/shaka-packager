@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 #include "packager/media/formats/mp2t/ts_stream_type.h"
@@ -122,8 +122,8 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
 
   // Once the PMT has been proved to be correct, register the PIDs.
   for (auto& info : pid_info) {
-    register_pes_cb_.Run(info.pid_es, info.stream_type, info.descriptor,
-                         info.descriptor_length);
+    register_pes_cb_(info.pid_es, info.stream_type, info.descriptor,
+                     info.descriptor_length);
   }
 
   return true;

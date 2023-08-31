@@ -43,7 +43,14 @@ std::string TempFileName() {
 }  // namespace
 
 bool TempFilePath(const std::string& temp_dir, std::string* temp_file_path) {
-  auto temp_dir_path = std::filesystem::u8path(temp_dir);
+  std::filesystem::path temp_dir_path;
+
+  if (temp_dir.empty()) {
+    temp_dir_path = std::filesystem::temp_directory_path();
+  } else {
+    temp_dir_path = std::filesystem::u8path(temp_dir);
+  }
+
   *temp_file_path = (temp_dir_path / TempFileName()).string();
   return true;
 }

@@ -9,7 +9,7 @@
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/formats/webvtt/webvtt_utils.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

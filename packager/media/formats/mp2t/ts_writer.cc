@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/mp2t/pes_packet.h"
@@ -167,7 +167,7 @@ TsWriter::~TsWriter() {}
 
 bool TsWriter::NewSegment(BufferWriter* buffer) {
   BufferWriter psi;
-  WritePatToBuffer(kPat, arraysize(kPat), &pat_continuity_counter_, &psi);
+  WritePatToBuffer(kPat, std::size(kPat), &pat_continuity_counter_, &psi);
   if (encrypted_) {
     if (!pmt_writer_->EncryptedSegmentPmt(&psi)) {
       return false;

@@ -6,8 +6,8 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 
 #include <stdint.h>
+#include <functional>
 #include <memory>
-#include "packager/base/callback.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {

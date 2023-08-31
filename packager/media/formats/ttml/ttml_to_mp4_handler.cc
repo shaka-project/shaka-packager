@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/ttml/ttml_to_mp4_handler.h"
 
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

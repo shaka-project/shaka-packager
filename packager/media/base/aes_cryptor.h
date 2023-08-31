@@ -41,7 +41,7 @@ class AesCryptor {
   virtual bool InitializeWithIv(const std::vector<uint8_t>& key,
                                 const std::vector<uint8_t>& iv) = 0;
 
-  virtual size_t RequiredCiphertextSize(size_t plaintext_size) {
+  virtual size_t RequiredOutputSize(size_t plaintext_size) {
     return plaintext_size;
   }
 

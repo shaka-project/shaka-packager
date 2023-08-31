@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

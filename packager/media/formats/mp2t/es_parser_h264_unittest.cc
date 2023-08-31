@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
+#include <glog/logging.h>
+#include <functional>
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
@@ -170,8 +170,8 @@ void EsParserH264Test::ProcessPesPackets(
 
   EsParserH264 es_parser(
       0,
-      base::Bind(&EsParserH264Test::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH264Test::EmitSample, base::Unretained(this)));
+      std::bind(&EsParserH264Test::NewVideoConfig, this, std::placeholders::_1),
+      std::bind(&EsParserH264Test::EmitSample, this, std::placeholders::_1));
 
   size_t au_idx = 0;
   for (size_t k = 0; k < pes_packets.size(); k++) {

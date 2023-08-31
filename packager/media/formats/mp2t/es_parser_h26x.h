@@ -11,8 +11,8 @@
 #include <list>
 #include <memory>
 
-#include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
+#include <functional>
+#include "packager/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 

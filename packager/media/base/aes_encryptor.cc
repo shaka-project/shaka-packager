@@ -125,7 +125,7 @@ bool AesCbcEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
   return SetIv(iv);
 }
 
-size_t AesCbcEncryptor::RequiredCiphertextSize(size_t plaintext_size) {
+size_t AesCbcEncryptor::RequiredOutputSize(size_t plaintext_size) {
   // mbedtls requires a buffer large enough for one extra block.
   return plaintext_size + NumPaddingBytes(plaintext_size) + AES_BLOCK_SIZE;
 }
@@ -136,8 +136,7 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
                                     size_t* ciphertext_size) {
   const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
   const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
-  const size_t required_ciphertext_size =
-      RequiredCiphertextSize(plaintext_size);
+  const size_t required_ciphertext_size = RequiredOutputSize(plaintext_size);
 
   if (*ciphertext_size < required_ciphertext_size) {
     LOG(ERROR) << "Expecting output size of at least "

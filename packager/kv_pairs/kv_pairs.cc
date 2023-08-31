@@ -10,7 +10,9 @@
 
 namespace shaka {
 
-std::vector<KVPair> SplitStringIntoKeyValuePairs(std::string_view str) {
+std::vector<KVPair> SplitStringIntoKeyValuePairs(std::string_view str,
+                                                 char kv_separator,
+                                                 char list_separator) {
   std::vector<KVPair> kv_pairs;
 
   // Edge case: 0 pairs.
@@ -18,9 +20,9 @@ std::vector<KVPair> SplitStringIntoKeyValuePairs(std::string_view str) {
     return kv_pairs;
   }
 
-  std::vector<std::string> kv_strings = absl::StrSplit(str, '&');
+  std::vector<std::string> kv_strings = absl::StrSplit(str, list_separator);
   for (const auto& kv_string : kv_strings) {
-    KVPair pair = absl::StrSplit(kv_string, absl::MaxSplits('=', 1));
+    KVPair pair = absl::StrSplit(kv_string, absl::MaxSplits(kv_separator, 1));
     kv_pairs.push_back(pair);
   }
 

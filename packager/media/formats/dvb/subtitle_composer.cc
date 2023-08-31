@@ -9,7 +9,7 @@
 #include <png.h>
 #include <string.h>
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 
 namespace shaka {
 namespace media {

@@ -9,8 +9,9 @@
 #include <algorithm>
 #include <list>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
+#include <glog/logging.h>
 #include "packager/media/base/audio_timestamp_helper.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/media_sample.h"
@@ -102,7 +103,8 @@ EsParserAudio::EsParserAudio(uint32_t pid,
   } else if (stream_type == TsStreamType::kMpeg1Audio) {
     audio_header_.reset(new Mpeg1Header);
   } else {
-    DCHECK_EQ(stream_type, TsStreamType::kAdtsAac);
+    DCHECK_EQ(static_cast<int>(stream_type),
+              static_cast<int>(TsStreamType::kAdtsAac));
     audio_header_.reset(new AdtsHeader);
   }
 }
@@ -135,8 +137,9 @@ bool EsParserAudio::Parse(const uint8_t* buf,
     DVLOG(LOG_LEVEL_ES) << "syncword @ pos=" << es_position
                         << " frame_size=" << audio_header_->GetFrameSize();
     DVLOG(LOG_LEVEL_ES) << "header: "
-                        << base::HexEncode(frame_ptr,
-                                           audio_header_->GetHeaderSize());
+                        << absl::BytesToHexString(absl::string_view(
+                               reinterpret_cast<const char*>(frame_ptr),
+                               audio_header_->GetHeaderSize()));
 
     // Do not process the frame if this one is a partial frame.
     int remaining_size = raw_es_size - es_position;
@@ -167,7 +170,7 @@ bool EsParserAudio::Parse(const uint8_t* buf,
     sample->set_pts(current_pts);
     sample->set_dts(current_pts);
     sample->set_duration(frame_duration);
-    emit_sample_cb_.Run(sample);
+    emit_sample_cb_(sample);
 
     // Update the PTS of the next frame.
     audio_timestamp_helper_->AddFrames(audio_header_->GetSamplesPerFrame());
@@ -247,7 +250,7 @@ bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
   }
 
   // Audio config notification.
-  new_stream_info_cb_.Run(last_audio_decoder_config_);
+  new_stream_info_cb_(last_audio_decoder_config_);
 
   return true;
 }

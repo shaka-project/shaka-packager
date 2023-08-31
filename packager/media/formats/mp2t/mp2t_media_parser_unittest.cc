@@ -7,9 +7,8 @@
 #include <algorithm>
 #include <string>
 
-#include "packager/base/bind.h"
-#include "packager/base/bind_helpers.h"
-#include "packager/base/logging.h"
+#include <glog/logging.h>
+#include <functional>
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/timestamp.h"
@@ -111,10 +110,11 @@ class Mp2tMediaParserTest : public testing::Test {
 
   void InitializeParser() {
     parser_->Init(
-        base::Bind(&Mp2tMediaParserTest::OnInit, base::Unretained(this)),
-        base::Bind(&Mp2tMediaParserTest::OnNewSample, base::Unretained(this)),
-        base::Bind(&Mp2tMediaParserTest::OnNewTextSample,
-                   base::Unretained(this)),
+        std::bind(&Mp2tMediaParserTest::OnInit, this, std::placeholders::_1),
+        std::bind(&Mp2tMediaParserTest::OnNewSample, this,
+                  std::placeholders::_1, std::placeholders::_2),
+        std::bind(&Mp2tMediaParserTest::OnNewTextSample, this,
+                  std::placeholders::_1, std::placeholders::_2),
         NULL);
   }
 

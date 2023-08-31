@@ -8,9 +8,8 @@
 #include <algorithm>
 #include <string>
 
-#include "packager/base/bind.h"
-#include "packager/base/bind_helpers.h"
-#include "packager/base/logging.h"
+#include <glog/logging.h>
+#include <functional>
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/raw_key_source.h"
@@ -143,10 +142,11 @@ class WvmMediaParserTest : public testing::Test {
 
   void InitializeParser() {
     parser_->Init(
-        base::Bind(&WvmMediaParserTest::OnInit, base::Unretained(this)),
-        base::Bind(&WvmMediaParserTest::OnNewSample, base::Unretained(this)),
-        base::Bind(&WvmMediaParserTest::OnNewTextSample,
-                   base::Unretained(this)),
+        std::bind(&WvmMediaParserTest::OnInit, this, std::placeholders::_1),
+        std::bind(&WvmMediaParserTest::OnNewSample, this, std::placeholders::_1,
+                  std::placeholders::_2),
+        std::bind(&WvmMediaParserTest::OnNewTextSample, this,
+                  std::placeholders::_1, std::placeholders::_2),
         key_source_.get());
   }
 

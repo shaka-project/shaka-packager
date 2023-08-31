@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "absl/base/internal/endian.h"
-#include "packager/base/compiler_specific.h"
+#include "packager/macros.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
 
@@ -59,8 +59,8 @@ class WvmMediaParser : public MediaParser {
             const NewMediaSampleCB& new_media_sample_cb,
             const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
-  bool Flush() override WARN_UNUSED_RESULT;
-  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
+  [[nodiscard]] bool Parse(const uint8_t* buf, int size) override;
   /// @}
 
  private:
@@ -190,7 +190,7 @@ class WvmMediaParser : public MediaParser {
     } else if (length == sizeof(uint64_t)) {
       *value = absl::big_endian::Load64(start_index);
     } else if (length == sizeof(int64_t)) {
-      *value = (int64_t)(abs::big_endian::Load64(start_index));
+      *value = (int64_t)(absl::big_endian::Load64(start_index));
     } else {
       *value = 0;
     }

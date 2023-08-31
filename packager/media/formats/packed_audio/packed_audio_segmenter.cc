@@ -12,7 +12,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/codecs/aac_audio_specific_config.h"
 #include "packager/media/codecs/hls_audio_util.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

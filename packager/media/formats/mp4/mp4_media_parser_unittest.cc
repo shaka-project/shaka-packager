@@ -7,8 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
+#include <glog/logging.h>
+#include <functional>
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/stream_info.h"
@@ -95,16 +95,18 @@ class MP4MediaParserTest : public testing::Test {
 
   void InitializeParser(KeySource* decryption_key_source) {
     parser_->Init(
-        base::Bind(&MP4MediaParserTest::InitF, base::Unretained(this)),
-        base::Bind(&MP4MediaParserTest::NewSampleF, base::Unretained(this)),
-        base::Bind(&MP4MediaParserTest::NewTextSampleF, base::Unretained(this)),
+        std::bind(&MP4MediaParserTest::InitF, this, std::placeholders::_1),
+        std::bind(&MP4MediaParserTest::NewSampleF, this, std::placeholders::_1,
+                  std::placeholders::_2),
+        std::bind(&MP4MediaParserTest::NewTextSampleF, this,
+                  std::placeholders::_1, std::placeholders::_2),
         decryption_key_source);
   }
 
   bool ParseMP4File(const std::string& filename, int append_bytes) {
     InitializeParser(NULL);
 
-    if (!parser_->LoadMoov(GetTestDataFilePath(filename).AsUTF8Unsafe()))
+    if (!parser_->LoadMoov(GetTestDataFilePath(filename).string()))
       return false;
 
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);

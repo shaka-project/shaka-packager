@@ -11,11 +11,11 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/optional.h"
+#include <optional>
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/range.h"
 #include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/status.h"
+#include "packager/status/status.h"
 
 namespace shaka {
 namespace media {
@@ -77,7 +77,7 @@ class Segmenter {
   Status FinalizeSegment(size_t stream_id, const SegmentInfo& segment_info);
 
   // TODO(rkuroiwa): Change these Get*Range() methods to return
-  // base::Optional<Range> as well.
+  // std::optional<Range> as well.
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.
   virtual bool GetInitRange(size_t* offset, size_t* size) = 0;

@@ -13,7 +13,7 @@
 #include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/mock_muxer_listener.h"
 #include "packager/media/formats/webvtt/webvtt_muxer.h"
-#include "packager/status_test_util.h"
+#include "packager/status/status_test_util.h"
 
 namespace shaka {
 namespace media {

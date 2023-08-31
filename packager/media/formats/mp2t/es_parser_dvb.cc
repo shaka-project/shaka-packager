@@ -76,7 +76,7 @@ bool EsParserDvb::Parse(const uint8_t* buf,
       info->AddSubStream(pair.first, {pair.second});
     }
 
-    new_stream_info_cb_.Run(info);
+    new_stream_info_cb_(info);
   }
 
   // TODO: Handle buffering and multiple reads?  All content so far has been
@@ -91,7 +91,7 @@ bool EsParserDvb::Flush() {
 
     for (auto sample : samples) {
       sample->set_sub_stream_index(pair.first);
-      emit_sample_cb_.Run(sample);
+      emit_sample_cb_(sample);
     }
   }
   return true;
@@ -127,7 +127,7 @@ bool EsParserDvb::ParseInternal(const uint8_t* data, size_t size, int64_t pts) {
                                    &samples));
     for (auto sample : samples) {
       sample->set_sub_stream_index(page_id);
-      emit_sample_cb_.Run(sample);
+      emit_sample_cb_(sample);
     }
 
     RCHECK(reader.SkipBytes(segment_length));

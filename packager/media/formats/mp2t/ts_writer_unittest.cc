@@ -7,8 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_path.h"
-#include "packager/base/files/file_util.h"
+#include <filesystem>
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/video_stream_info.h"
@@ -68,14 +67,14 @@ const uint8_t kMockPmtWriterData[] = {
 
 ACTION(WriteOnePmt) {
   BufferWriter* writer = arg0;
-  writer->AppendArray(kMockPmtWriterData, arraysize(kMockPmtWriterData));
+  writer->AppendArray(kMockPmtWriterData, std::size(kMockPmtWriterData));
   return true;
 }
 
 ACTION(WriteTwoPmts) {
   BufferWriter* writer = arg0;
-  writer->AppendArray(kMockPmtWriterData, arraysize(kMockPmtWriterData));
-  writer->AppendArray(kMockPmtWriterData, arraysize(kMockPmtWriterData));
+  writer->AppendArray(kMockPmtWriterData, std::size(kMockPmtWriterData));
+  writer->AppendArray(kMockPmtWriterData, std::size(kMockPmtWriterData));
   return true;
 }
 
@@ -133,7 +132,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       0xA6,  // Adaptation Field length.
       0x00,  // All adaptation field flags 0.
   };
-  const int kExpectedPatPrefixSize = arraysize(kExpectedPatPrefix);
+  const int kExpectedPatPrefixSize = std::size(kExpectedPatPrefix);
   const uint8_t kExpectedPatPayload[] = {
       0x00,  // pointer field
       0x00,
@@ -153,7 +152,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
       kExpectedPatPrefix, kExpectedPatPrefixSize, 165, kExpectedPatPayload,
-      arraysize(kExpectedPatPayload), buffer_writer.Buffer()));
+      std::size(kExpectedPatPayload), buffer_writer.Buffer()));
 
   EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
                       kTsPacketSize));
@@ -300,7 +299,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
   const uint8_t kAnyData[] = {
       0x12, 0x88, 0x4f, 0x4a,
   };
-  pes->mutable_data()->assign(kAnyData, kAnyData + arraysize(kAnyData));
+  pes->mutable_data()->assign(kAnyData, kAnyData + std::size(kAnyData));
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes), &buffer_writer));
   
@@ -342,8 +341,8 @@ TEST_F(TsWriterTest, AddPesPacket) {
       0x12, 0x88, 0x4f, 0x4a,  // Payload.
   };
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kExpectedOutputPrefix, arraysize(kExpectedOutputPrefix), 153,
-      kExpectedPayload, arraysize(kExpectedPayload),
+      kExpectedOutputPrefix, std::size(kExpectedOutputPrefix), 153,
+      kExpectedPayload, std::size(kExpectedPayload),
       buffer_writer.Buffer() + kPesStartPosition));
 }
 
@@ -393,7 +392,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   const uint8_t kAnyData[] = {
       0x12, 0x88, 0x4F, 0x4A,
   };
-  pes->mutable_data()->assign(kAnyData, kAnyData + arraysize(kAnyData));
+  pes->mutable_data()->assign(kAnyData, kAnyData + std::size(kAnyData));
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes), &buffer_writer));
 
@@ -429,8 +428,8 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
       0x12, 0x88, 0x4F, 0x4A,  // Payload.
   };
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kExpectedOutputPrefix, arraysize(kExpectedOutputPrefix), 158,
-      kExpectedPayload, arraysize(kExpectedPayload),
+      kExpectedOutputPrefix, std::size(kExpectedOutputPrefix), 158,
+      kExpectedPayload, std::size(kExpectedPayload),
       buffer_writer.Buffer() + kPesStartPosition));
 }
 

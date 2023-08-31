@@ -9,8 +9,8 @@
 #include <limits>
 #include <memory>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
 #include "packager/media/formats/mp4/box.h"
 
 namespace shaka {
@@ -118,8 +118,8 @@ bool BoxReader::ReadHeader(bool* err) {
 
   if (size == 0) {
     // Boxes that run to EOS are not supported.
-    NOTIMPLEMENTED() << base::StringPrintf("Box '%s' run to EOS.",
-                                           FourCCToString(type_).c_str());
+    NOTIMPLEMENTED() << absl::StrFormat("Box '%s' run to EOS.",
+                                        FourCCToString(type_).c_str());
     *err = true;
     return false;
   } else if (size == 1) {
@@ -129,10 +129,9 @@ bool BoxReader::ReadHeader(bool* err) {
 
   // The box should have at least the size of what have been parsed.
   if (size < pos()) {
-    LOG(ERROR) << base::StringPrintf("Box '%s' with size (%" PRIu64
-                                     ") is invalid.",
-                                     FourCCToString(type_).c_str(),
-                                     size);
+    LOG(ERROR) << absl::StrFormat("Box '%s' with size (%" PRIu64
+                                  ") is invalid.",
+                                  FourCCToString(type_).c_str(), size);
     *err = true;
     return false;
   }
@@ -140,10 +139,8 @@ bool BoxReader::ReadHeader(bool* err) {
   // 'mdat' box could have a 64-bit size; other boxes should be very small.
   if (size > static_cast<uint64_t>(std::numeric_limits<int32_t>::max()) &&
       type_ != FOURCC_mdat) {
-    LOG(ERROR) << base::StringPrintf("Box '%s' size (%" PRIu64
-                                     ") is too large.",
-                                     FourCCToString(type_).c_str(),
-                                     size);
+    LOG(ERROR) << absl::StrFormat("Box '%s' size (%" PRIu64 ") is too large.",
+                                  FourCCToString(type_).c_str(), size);
     *err = true;
     return false;
   }

@@ -21,6 +21,10 @@ if(MSVC)
   add_compile_options(/wd4251)
   # Silence a warning about constant conditional expressions.
   add_compile_options(/wd4127)
+  # We use long-jumps in subtitle_composer.cc due to API of libpng
+  add_compile_options(/wd4611)
+  # need /bigobj for box definitions
+  add_compile_options(/bigobj)
 
   # Packager's macro for Windows-specific code.
   add_definitions(-DOS_WIN)

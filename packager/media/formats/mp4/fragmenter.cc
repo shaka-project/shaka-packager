@@ -14,7 +14,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_frame_info.h"
-#include "packager/status_macros.h"
+#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -80,7 +80,8 @@ Status Fragmenter::AddSample(const MediaSample& sample) {
       static_cast<uint32_t>(sample.data_size()));
   traf_->runs[0].sample_durations.push_back(duration);
   traf_->runs[0].sample_flags.push_back(
-      sample.is_key_frame() ? 0 : TrackFragmentHeader::kNonKeySampleMask);
+      sample.is_key_frame() ? TrackFragmentHeader::kUnset
+                            : TrackFragmentHeader::kNonKeySampleMask);
 
   if (sample.decrypt_config()) {
     NewSampleEncryptionEntry(

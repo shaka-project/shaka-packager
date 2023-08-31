@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
-#include "packager/base/compiler_specific.h"
+#include "packager/macros.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/formats/mp2t/ts_section.h"
 

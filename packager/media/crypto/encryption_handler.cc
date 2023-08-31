@@ -300,7 +300,7 @@ Status EncryptionHandler::ProcessMediaSample(
   }
 
   size_t ciphertext_size =
-      encryptor_->RequiredCiphertextSize(clear_sample->data_size());
+      encryptor_->RequiredOutputSize(clear_sample->data_size());
 
   std::shared_ptr<uint8_t> cipher_sample_data(new uint8_t[ciphertext_size],
                                               std::default_delete<uint8_t[]>());

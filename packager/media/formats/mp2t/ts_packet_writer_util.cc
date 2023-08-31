@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp2t/ts_packet_writer_util.h"
 
-#include "packager/base/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
 
@@ -53,7 +53,7 @@ const uint8_t kPaddingBytes[] = {
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 };
-static_assert(arraysize(kPaddingBytes) >= kTsPacketMaximumPayloadSize,
+static_assert(std::size(kPaddingBytes) >= kTsPacketMaximumPayloadSize,
               "Padding array is not big enough.");
 
 // |remaining_data_size| is the amount of data that has to be written. This may
@@ -106,7 +106,7 @@ void WriteAdaptationField(bool has_pcr,
   if (remaining_bytes == 0)
     return;
 
-  DCHECK_GE(static_cast<int>(arraysize(kPaddingBytes)), remaining_bytes);
+  DCHECK_GE(static_cast<int>(std::size(kPaddingBytes)), remaining_bytes);
   writer->AppendArray(kPaddingBytes, remaining_bytes);
 }
 
