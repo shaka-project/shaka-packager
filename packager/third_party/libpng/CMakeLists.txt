@@ -8,9 +8,9 @@
 
 # Turn these features on.
 set(PNG_STATIC ON)
-set(PNG_HARDWARE_OPTIMIZATIONS OFF)
 
 # Turn these features off.
+set(PNG_HARDWARE_OPTIMIZATIONS OFF)
 set(PNG_SHARED OFF)
 set(PNG_TESTS OFF)
 set(PNG_FRAMEWORK OFF)

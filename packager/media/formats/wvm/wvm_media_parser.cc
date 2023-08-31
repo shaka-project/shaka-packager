@@ -8,18 +8,16 @@
 #include <sstream>
 #include <vector>
 
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
+#include "absl/base/internal/endian.h"
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/aac_audio_specific_config.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/formats/mp2t/adts_header.h"
-#include "packager/status/status.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
@@ -87,15 +85,6 @@ enum Type {
 namespace shaka {
 namespace media {
 namespace wvm {
-
-uint32_t ntohlFromBuffer(const void* buffer) {
-  const uint8_t* buf = static_cast<const uint8_t*>(buffer);
-  uint32_t value = static_cast<uint32_t>(buf[0]) << 24;
-  value |= static_cast<uint32_t>(buf[1]) << 16;
-  value |= static_cast<uint32_t>(buf[2]) << 8;
-  value |= static_cast<uint32_t>(buf[3]);
-  return value;
-}
 
 WvmMediaParser::WvmMediaParser()
     : is_initialized_(false),
@@ -558,16 +547,16 @@ bool WvmMediaParser::ParseIndexEntry() {
   }
 
   const uint8_t* read_ptr = index_data_.data();
-  if (ntohlFromBuffer(read_ptr) != kIndexMagic) {
+  if (absl::big_endian::Load32(read_ptr) != kIndexMagic) {
     index_data_.clear();
     return false;
   }
   read_ptr += 4;
 
-  uint32_t version = ntohlFromBuffer(read_ptr);
+  uint32_t version = absl::big_endian::Load32(read_ptr);
   read_ptr += 4;
   if (version == kVersion4) {
-    index_size = kIndexVersion4HeaderSize + ntohlFromBuffer(read_ptr);
+    index_size = kIndexVersion4HeaderSize + absl::big_endian::Load32(read_ptr);
     if (index_data_.size() < index_size) {
       // We do not yet have the full index. Keep accumulating index data.
       return true;
@@ -609,7 +598,7 @@ bool WvmMediaParser::ParseIndexEntry() {
       ++read_ptr;
       uint8_t type = *read_ptr;
       ++read_ptr;
-      uint32_t length = ntohlFromBuffer(read_ptr);
+      uint32_t length = absl::big_endian::Load32(read_ptr);
       read_ptr += sizeof(uint32_t);
       index_metadata_max_size -= (2 * sizeof(uint8_t)) + sizeof(uint32_t);
       if (index_metadata_max_size < length) {
@@ -1075,7 +1064,7 @@ bool WvmMediaParser::GetAssetKey(const uint8_t* asset_id,
       std::vector<uint8_t>(asset_id, asset_id + sizeof(uint32_t)));
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
-               << ntohlFromBuffer(asset_id) << ", error = " << status;
+               << absl::big_endian::Load32(asset_id) << ", error = " << status;
     return false;
   }
 
@@ -1083,7 +1072,7 @@ bool WvmMediaParser::GetAssetKey(const uint8_t* asset_id,
   status = decryption_key_source_->GetKey(kHdStreamLabel, encryption_key);
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
-               << ntohlFromBuffer(asset_id) << ", error = " << status;
+               << absl::big_endian::Load32(asset_id) << ", error = " << status;
     return false;
   }
 
@@ -1114,7 +1103,7 @@ bool WvmMediaParser::ProcessEcm() {
   }
   if (encryption_key.key.size() < kAssetKeySizeBytes) {
     LOG(ERROR) << "Asset Key size of " << encryption_key.key.size()
-               << " for AssetID = " << ntohlFromBuffer(ecm_data)
+               << " for AssetID = " << absl::big_endian::Load32(ecm_data)
                << " is less than minimum asset key size.";
     return false;
   }

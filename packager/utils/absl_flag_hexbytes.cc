@@ -1,9 +1,8 @@
+// Copyright 2023 Google LLC. All rights reserved.
 //
-// Created by Cosmin Stejerean on 7/18/23.
-//
-//
-// Created by Cosmin Stejerean on 7/18/23.
-//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 #include "packager/utils/absl_flag_hexbytes.h"
 #include "packager/utils/hex_parser.h"
@@ -28,7 +27,6 @@ bool AbslParseFlag(absl::string_view text, HexBytes* flag, std::string* error) {
 
   if (hexString.empty()) {
     flag->bytes = std::vector<uint8_t>(0, 0);
-    //    *error = "Empty hex byte array";
     return true;
   }
 
