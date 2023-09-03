@@ -153,7 +153,7 @@ class SHAKA_EXPORT Status {
   // generated copy constructor and assignment operator.
 };
 
-SHAKA_EXPORT std::ostream& operator<<(std::ostream& os, const Status& x);
+std::ostream& operator<<(std::ostream& os, const Status& x);
 
 }  // namespace shaka
 
