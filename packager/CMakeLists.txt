@@ -81,6 +81,7 @@ set(libpackager_sources
 
 if(LIBPACKAGER_SHARED)
   add_library(libpackager SHARED ${libpackager_sources})
+  target_compile_definitions(libpackager PUBLIC SHAKA_IMPLEMENTATION)
 else()
   add_library(libpackager STATIC ${libpackager_sources})
 endif()

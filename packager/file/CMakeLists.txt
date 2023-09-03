@@ -29,6 +29,10 @@ target_link_libraries(file
     status
     version)
 
+if(LIBPACKAGER_SHARED)
+    target_compile_definitions(file PUBLIC SHAKA_IMPLEMENTATION)
+endif()
+
 add_library(file_test_util STATIC
     file_test_util.cc)
 target_link_libraries(file_test_util
