@@ -13,7 +13,6 @@
 #include <filesystem>
 #include <optional>
 #include "packager/app/job_manager.h"
-#include "packager/app/libcrypto_threading.h"
 #include "packager/app/muxer_factory.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/single_thread_job_manager.h"
@@ -834,7 +833,6 @@ Status Packager::Initialize(
     const std::vector<StreamDescriptor>& stream_descriptors) {
   // Needed by base::WorkedPool used in ThreadedIoFile.
   //  static base::AtExitManager exit;
-  static media::LibcryptoThreading libcrypto_threading;
 
   if (internal_)
     return Status(error::INVALID_ARGUMENT, "Already initialized.");

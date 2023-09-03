@@ -71,8 +71,6 @@ set(libpackager_sources
   app/job_manager.h
   app/muxer_factory.cc
   app/muxer_factory.h
-  app/libcrypto_threading.cc
-  app/libcrypto_threading.h
   app/packager_util.cc
   app/packager_util.h
   app/single_thread_job_manager.cc
@@ -102,7 +100,6 @@ target_link_libraries(libpackager
   ttml
   formats_webm
   wvm
-#  media_public
   media_replicator
   media_trick_play
   mpd_builder
