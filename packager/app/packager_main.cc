@@ -15,6 +15,7 @@
 #include <optional>
 #include "absl/flags/parse.h"
 #include "absl/flags/usage.h"
+#include "absl/flags/usage_config.h"
 #include "packager/app/ad_cue_generator_flags.h"
 #include "packager/app/crypto_flags.h"
 #include "packager/app/hls_flags.h"
@@ -575,21 +576,14 @@ std::optional<PackagingParams> GetPackagingParams() {
 }
 
 int PackagerMain(int argc, char** argv) {
-  // Needed to enable VLOG/DVLOG through --vmodule or --v.
-  // TODO init command line VLOG, DVLOG through --vmodule or --v.
-  //
-  //  base::CommandLine::Init(argc, argv);
+  absl::FlagsUsageConfig flag_config;
+  flag_config.version_string = []() -> std::string {
+    return "packager version " + shaka::Packager::GetLibraryVersion() + "\n";
+  };
+  flag_config.contains_help_flags =
+      [](absl::string_view flag_file_name) -> bool { return true; };
+  absl::SetFlagsUsageConfig(flag_config);
 
-  // Set up logging.
-  //  logging::LoggingSettings log_settings;
-  //  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
-  //  CHECK(logging::InitLogging(log_settings));
-
-  if (argc > 1 && std::string(argv[1]) == "--help") {
-    argv[1] = const_cast<char*>("--helpfull");
-  }
-
-  //  google::SetVersionString(shaka::Packager::GetLibraryVersion());
   auto usage = absl::StrFormat(kUsage, argv[0]);
   absl::SetProgramUsageMessage(usage);
 
