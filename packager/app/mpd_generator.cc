@@ -5,16 +5,14 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <iostream>
-#include <locale>
 
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
-#include "packager/app/mpd_generator_flags.h"
-#include "packager/app/vlog_flags.h"
-// #include "packager/base/at_exit.h"
-// #include "packager/base/command_line.h"
 #include <absl/strings/str_split.h>
+#include <glog/logging.h>
 #include "absl/flags/parse.h"
+#include "absl/flags/usage.h"
+#include "absl/flags/usage_config.h"
+#include "packager/app/mpd_generator_flags.h"
 #include "packager/mpd/util/mpd_writer.h"
 #include "packager/tools/license_notice.h"
 #include "packager/version/version.h"
@@ -98,17 +96,16 @@ ExitStatus RunMpdGenerator() {
 }
 
 int MpdMain(int argc, char** argv) {
-  //  base::AtExitManager exit;
-  // Needed to enable VLOG/DVLOG through --vmodule or --v.
-  //  base::CommandLine::Init(argc, argv);
+  absl::FlagsUsageConfig flag_config;
+  flag_config.version_string = []() -> std::string {
+    return "mpd_generator version " + GetPackagerVersion() + "\n";
+  };
+  flag_config.contains_help_flags =
+      [](absl::string_view flag_file_name) -> bool { return true; };
+  absl::SetFlagsUsageConfig(flag_config);
 
-  // Set up logging.
-  //  logging::LoggingSettings log_settings;
-  //  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
-  //  CHECK(logging::InitLogging(log_settings));
-
-  //  google::SetVersionString(GetPackagerVersion());
   auto usage = absl::StrFormat(kUsage, argv[0]);
+  absl::SetProgramUsageMessage(usage);
   absl::ParseCommandLine(argc, argv);
 
   if (absl::GetFlag(FLAGS_licenses)) {
@@ -119,7 +116,7 @@ int MpdMain(int argc, char** argv) {
 
   ExitStatus status = CheckRequiredFlags();
   if (status != kSuccess) {
-    std::cerr << "Usage " << usage;
+    std::cerr << "Usage " << absl::ProgramUsageMessage();
     return status;
   }
 
