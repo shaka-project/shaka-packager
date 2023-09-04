@@ -113,8 +113,6 @@ add_executable(packager
   app/ad_cue_generator_flags.h
   app/crypto_flags.cc
   app/crypto_flags.h
-  app/gflags_hex_bytes.cc
-  app/gflags_hex_bytes.h
   app/hls_flags.cc
   app/hls_flags.h
   app/manifest_flags.cc
