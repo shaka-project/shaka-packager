@@ -269,6 +269,22 @@ bool Period::SetNewAdaptationSetAttributes(
       }
     }
 
+    // Set transfer characteristics.
+    // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+    // ISO/IEC 23001-8 MPEG systems technologies — Part 8: Coding-independent
+    // code points. https://en.wikipedia.org/wiki/Coding-independent_code_points
+    // - Common CCIP values.
+    // Dolby vision:
+    // https://professionalsupport.dolby.com/s/article/How-to-signal-Dolby-Vision-in-MPEG-DASH
+    // Transfer characteristics for Dolby Vision (dvh1 or dvhe) must be PQ
+    // irrespective of value present in SPS VUI.
+    if (new_adaptation_set->codec().find("dvh") == 0) {
+      new_adaptation_set->set_transfer_characteristics(kTransferFunctionPQ);
+    } else if (media_info.video_info().has_transfer_characteristics()) {
+      new_adaptation_set->set_transfer_characteristics(
+          media_info.video_info().transfer_characteristics());
+    }
+
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
     // true, so carelessly set it to true.
