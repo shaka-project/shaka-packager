@@ -13,6 +13,7 @@
 
 #include "packager/file/public/buffer_callback_params.h"
 #include "packager/hls/public/hls_params.h"
+#include "packager/macros.h"
 #include "packager/media/public/ad_cue_generator_params.h"
 #include "packager/media/public/chunking_params.h"
 #include "packager/media/public/crypto_params.h"
