@@ -28,3 +28,10 @@ target_link_libraries(hex_bytes_flags
   hex_parser
   absl::strings
   absl::flags)
+
+add_library(string_utils
+  string_trim_split.cc
+)
+target_link_libraries(string_utils
+  absl::strings
+)

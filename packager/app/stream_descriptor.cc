@@ -6,6 +6,7 @@
 
 #include "packager/app/stream_descriptor.h"
 #include "packager/kv_pairs/kv_pairs.h"
+#include "packager/utils/string_trim_split.h"
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_split.h>
@@ -200,57 +201,25 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
         descriptor.drm_label = pair.second;
         break;
       case kHlsCharacteristicsField:
-        tokens = absl::StrSplit(pair.second, ';', absl::SkipEmpty());
-        {
-          std::vector<std::string> hls_characteristics;
-          for (const absl::string_view& token : tokens) {
-            std::string trimmed = std::string(token);
-            absl::StripAsciiWhitespace(&trimmed);
-            if (!trimmed.empty()) {
-              hls_characteristics.push_back(trimmed);
-            }
-          }
-          descriptor.hls_characteristics = hls_characteristics;
-        }
+        descriptor.hls_characteristics =
+            SplitAndTrimSkipEmpty(pair.second, ';');
         break;
-      case kDashAccessiblitiesField:
-        tokens = absl::StrSplit(pair.second, ';', absl::SkipEmpty());
-        {
-          // Trim whitespace from each result and skip any empty ones
-          std::vector<std::string> dash_accessiblities;
-          for (const absl::string_view& token : tokens) {
-            std::string trimmed = std::string(token);
-            absl::StripAsciiWhitespace(&trimmed);
-            if (!trimmed.empty()) {
-              dash_accessiblities.push_back(trimmed);
-            }
-          }
-          descriptor.dash_accessiblities = dash_accessiblities;
-          for (const std::string& accessibility :
-               descriptor.dash_accessiblities) {
-            size_t pos = accessibility.find('=');
-            if (pos == std::string::npos) {
-              LOG(ERROR) << "Accessibility should be in scheme=value format, "
-                            "but seeing "
-                         << accessibility;
-              return std::nullopt;
-            }
+      case kDashAccessiblitiesField: {
+        descriptor.dash_accessiblities =
+            SplitAndTrimSkipEmpty(pair.second, ';');
+        for (const std::string& accessibility :
+             descriptor.dash_accessiblities) {
+          size_t pos = accessibility.find('=');
+          if (pos == std::string::npos) {
+            LOG(ERROR) << "Accessibility should be in scheme=value format, "
+                          "but seeing "
+                       << accessibility;
+            return std::nullopt;
           }
         }
-        break;
+      } break;
       case kDashRolesField:
-        tokens = absl::StrSplit(pair.second, ';', absl::SkipEmpty());
-        {
-          std::vector<std::string> dash_roles;
-          for (const absl::string_view& token : tokens) {
-            std::string trimmed = std::string(token);
-            absl::StripAsciiWhitespace(&trimmed);
-            if (!trimmed.empty()) {
-              dash_roles.push_back(trimmed);
-            }
-          }
-          descriptor.dash_roles = dash_roles;
-        }
+        descriptor.dash_roles = SplitAndTrimSkipEmpty(pair.second, ';');
         break;
       case kDashOnlyField:
         unsigned dash_only_value;

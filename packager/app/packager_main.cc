@@ -6,7 +6,6 @@
 
 #include <absl/flags/flag.h>
 #include <iostream>
-#include <locale>
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
@@ -22,17 +21,15 @@
 #include "packager/app/manifest_flags.h"
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
-#include "packager/app/packager_util.h"
 #include "packager/app/playready_key_encryption_flags.h"
 #include "packager/app/protection_system_flags.h"
 #include "packager/app/raw_key_encryption_flags.h"
 #include "packager/app/stream_descriptor.h"
-#include "packager/app/vlog_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
 #include "packager/file/file.h"
 #include "packager/kv_pairs/kv_pairs.h"
-#include "packager/packager.h"
 #include "packager/tools/license_notice.h"
+#include "packager/utils/string_trim_split.h"
 #include "retired_flags.h"
 
 #if defined(OS_WIN)
@@ -193,15 +190,7 @@ bool GetProtectionScheme(uint32_t* protection_scheme) {
 }
 
 bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
-  auto tokens = absl::StrSplit(keys, ',', absl::SkipEmpty());
-  std::vector<std::string> keys_data;
-  for (const absl::string_view& token : tokens) {
-    std::string trimmed = std::string(token);
-    absl::StripAsciiWhitespace(&trimmed);
-    if (!trimmed.empty()) {
-      keys_data.push_back(trimmed);
-    }
-  }
+  std::vector<std::string> keys_data = SplitAndTrimSkipEmpty(keys, ',');
 
   for (const std::string& key_data : keys_data) {
     std::vector<KVPair> string_pairs =
@@ -264,29 +253,11 @@ bool GetRawKeyParams(RawKeyParams* raw_key) {
 bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
   // Track if optional field is supplied consistently across all cue points.
   size_t duration_count = 0;
-
-  auto tokens = absl::StrSplit(ad_cues, ';', absl::SkipEmpty());
-  std::vector<std::string> ad_cues_vec;
-  for (const absl::string_view& token : tokens) {
-    std::string trimmed = std::string(token);
-    absl::StripAsciiWhitespace(&trimmed);
-    if (!trimmed.empty()) {
-      ad_cues_vec.push_back(trimmed);
-    }
-  }
+  std::vector<std::string> ad_cues_vec = SplitAndTrimSkipEmpty(ad_cues, ';');
 
   for (const std::string& ad_cue : ad_cues_vec) {
     Cuepoint cuepoint;
-
-    tokens = absl::StrSplit(ad_cue, ',', absl::SkipEmpty());
-    std::vector<std::string> split_ad_cue;
-    for (const absl::string_view& token : tokens) {
-      std::string trimmed = std::string(token);
-      absl::StripAsciiWhitespace(&trimmed);
-      if (!trimmed.empty()) {
-        split_ad_cue.push_back(trimmed);
-      }
-    }
+    std::vector<std::string> split_ad_cue = SplitAndTrimSkipEmpty(ad_cue, ',');
 
     if (split_ad_cue.size() > 2) {
       LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
@@ -331,16 +302,8 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
       {"widevine", ProtectionSystem::kWidevine},
   };
 
-  auto tokens = absl::StrSplit(absl::AsciiStrToLower(protection_systems_str),
-                               ',', absl::SkipEmpty());
-  std::vector<std::string> protection_systems_vec;
-  for (const absl::string_view& token : tokens) {
-    std::string trimmed = std::string(token);
-    absl::StripAsciiWhitespace(&trimmed);
-    if (!trimmed.empty()) {
-      protection_systems_vec.push_back(trimmed);
-    }
-  }
+  std::vector<std::string> protection_systems_vec =
+      SplitAndTrimSkipEmpty(absl::AsciiStrToLower(protection_systems_str), ',');
 
   for (const std::string& protection_system : protection_systems_vec) {
     auto iter = mapping.find(protection_system);
@@ -500,16 +463,8 @@ std::optional<PackagingParams> GetPackagingParams() {
   MpdParams& mpd_params = packaging_params.mpd_params;
   mpd_params.mpd_output = absl::GetFlag(FLAGS_mpd_output);
 
-  auto tokens =
-      absl::StrSplit(absl::GetFlag(FLAGS_base_urls), ',', absl::SkipEmpty());
-  std::vector<std::string> base_urls;
-  for (const absl::string_view& token : tokens) {
-    std::string trimmed = std::string(token);
-    absl::StripAsciiWhitespace(&trimmed);
-    if (!trimmed.empty()) {
-      base_urls.push_back(trimmed);
-    }
-  }
+  std::vector<std::string> base_urls =
+      SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_base_urls), ',');
 
   mpd_params.base_urls = base_urls;
   mpd_params.min_buffer_time = absl::GetFlag(FLAGS_min_buffer_time);

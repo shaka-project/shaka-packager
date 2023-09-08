@@ -105,6 +105,7 @@ target_link_libraries(libpackager
   media_trick_play
   mpd_builder
   mbedtls
+  string_utils
   version
 )
 
@@ -147,6 +148,7 @@ target_link_libraries(packager
   license_notice
   glog
   absl::strings
+  string_utils
 )
 
 add_executable(mpd_generator

@@ -10,18 +10,15 @@
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+#include <chrono>
 #include <filesystem>
 #include <optional>
+#include "absl/strings/match.h"
 #include "packager/app/job_manager.h"
 #include "packager/app/muxer_factory.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/single_thread_job_manager.h"
 #include "packager/app/stream_descriptor.h"
-// #include "packager/base/at_exit.h"
-// #include "packager/base/path_service.h"
-// #include "packager/base/threading/simple_thread.h"
-#include <chrono>
-#include "absl/strings/match.h"
 #include "packager/file/file.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/simple_hls_notifier.h"
@@ -831,9 +828,6 @@ Packager::~Packager() {}
 Status Packager::Initialize(
     const PackagingParams& packaging_params,
     const std::vector<StreamDescriptor>& stream_descriptors) {
-  // Needed by base::WorkedPool used in ThreadedIoFile.
-  //  static base::AtExitManager exit;
-
   if (internal_)
     return Status(error::INVALID_ARGUMENT, "Already initialized.");
 
