@@ -7,6 +7,7 @@
 #ifndef SHAKA_PACKAGER_STRING_TRIM_SPLIT_H
 
 #include <string>
+#include <vector>
 
 namespace shaka {
 std::vector<std::string> SplitAndTrimSkipEmpty(const std::string& str,
