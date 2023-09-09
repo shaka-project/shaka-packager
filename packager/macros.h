@@ -42,4 +42,27 @@
 #define DVLOG_IF(verboselevel, condition) \
   static_cast<void>(0), !(condition) ? (void)0 : VLOG(verboselevel)
 
+#if defined(SHARED_LIBRARY_BUILD)
+#if defined(_WIN32)
+
+#if defined(SHAKA_IMPLEMENTATION)
+#define SHAKA_EXPORT __declspec(dllexport)
+#else
+#define SHAKA_EXPORT __declspec(dllimport)
+#endif  // defined(SHAKA_IMPLEMENTATION)
+
+#else  // defined(_WIN32)
+
+#if defined(SHAKA_IMPLEMENTATION)
+#define SHAKA_EXPORT __attribute__((visibility("default")))
+#else
+#define SHAKA_EXPORT
+#endif
+
+#endif  // defined(_WIN32)
+
+#else  // defined(SHARED_LIBRARY_BUILD)
+#define SHAKA_EXPORT
+#endif  // defined(SHARED_LIBRARY_BUILD)
+
 #endif  // PACKAGER_MACROS_H_

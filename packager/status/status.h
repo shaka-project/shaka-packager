@@ -10,28 +10,7 @@
 #include <iostream>
 #include <string>
 
-#if defined(SHARED_LIBRARY_BUILD)
-#if defined(_WIN32)
-
-#if defined(SHAKA_IMPLEMENTATION)
-#define SHAKA_EXPORT __declspec(dllexport)
-#else
-#define SHAKA_EXPORT __declspec(dllimport)
-#endif  // defined(SHAKA_IMPLEMENTATION)
-
-#else  // defined(_WIN32)
-
-#if defined(SHAKA_IMPLEMENTATION)
-#define SHAKA_EXPORT __attribute__((visibility("default")))
-#else
-#define SHAKA_EXPORT
-#endif
-
-#endif  // defined(_WIN32)
-
-#else  // defined(SHARED_LIBRARY_BUILD)
-#define SHAKA_EXPORT
-#endif  // defined(SHARED_LIBRARY_BUILD)
+#include "packager/macros.h"
 
 namespace shaka {
 
@@ -153,7 +132,7 @@ class SHAKA_EXPORT Status {
   // generated copy constructor and assignment operator.
 };
 
-SHAKA_EXPORT std::ostream& operator<<(std::ostream& os, const Status& x);
+std::ostream& operator<<(std::ostream& os, const Status& x);
 
 }  // namespace shaka
 

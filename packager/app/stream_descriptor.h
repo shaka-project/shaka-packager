@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "packager/base/optional.h"
+#include <optional>
 #include "packager/packager.h"
 
 namespace shaka {
@@ -21,7 +21,7 @@ namespace shaka {
 /// @param descriptor_list is a pointer to the sorted descriptor list into
 ///        which the new descriptor should be inserted.
 /// @return true if successful, false otherwise. May print error messages.
-base::Optional<StreamDescriptor> ParseStreamDescriptor(
+std::optional<StreamDescriptor> ParseStreamDescriptor(
     const std::string& descriptor_string);
 
 }  // namespace shaka

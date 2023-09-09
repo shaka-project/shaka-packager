@@ -24,6 +24,7 @@ target_link_libraries(webvtt
   media_base
   mp4
   media_origin
+  string_utils
   )
 
 add_executable(webvtt_unittest

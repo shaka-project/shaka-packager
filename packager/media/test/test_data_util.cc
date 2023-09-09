@@ -18,8 +18,8 @@ std::filesystem::path GetTestDataFilePath(const std::string& name) {
 // Returns a file path for a file in the media/app/test/testdata directory.
 std::filesystem::path GetAppTestDataFilePath(const std::string& name) {
   auto data_dir = std::filesystem::u8path(TEST_DATA_DIR);
-  auto app_data_dir =
-      data_dir.parent_path().parent_path() / "app" / "test" / "testdata";
+  auto app_data_dir = data_dir.parent_path().parent_path().parent_path() /
+                      "app" / "test" / "testdata";
   return app_data_dir / name;
 }
 

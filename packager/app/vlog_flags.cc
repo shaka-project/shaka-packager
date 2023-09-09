@@ -8,11 +8,13 @@
 
 #include "packager/app/vlog_flags.h"
 
-DEFINE_int32(v,
-             0,
-             "Show all VLOG(m) or DVLOG(m) messages for m <= this. "
-             "Overridable by --vmodule.");
-DEFINE_string(
+ABSL_FLAG(int32_t,
+          v,
+          0,
+          "Show all VLOG(m) or DVLOG(m) messages for m <= this. "
+          "Overridable by --vmodule.");
+ABSL_FLAG(
+    std::string,
     vmodule,
     "",
     "Per-module verbose level."

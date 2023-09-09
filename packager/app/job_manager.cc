@@ -47,8 +47,10 @@ const Status& Job::Run() {
 }
 
 void Job::Join() {
-  if (thread_)
+  if (thread_) {
     thread_->join();
+    thread_ = nullptr;
+  }
 }
 
 JobManager::JobManager(std::unique_ptr<SyncPointQueue> sync_points)

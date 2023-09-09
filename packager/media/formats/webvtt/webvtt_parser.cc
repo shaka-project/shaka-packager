@@ -13,6 +13,7 @@
 #include "packager/kv_pairs/kv_pairs.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_utils.h"
+#include "packager/utils/string_trim_split.h"
 
 namespace shaka {
 namespace media {
@@ -91,19 +92,7 @@ bool ParsePercent(const std::string& str, float* value) {
 }
 
 bool ParseDoublePercent(const std::string& str, float* a, float* b) {
-  // Split the string by ','
-  std::vector<absl::string_view> tokens =
-      absl::StrSplit(str, ',', absl::SkipEmpty());
-
-  // Trim whitespace from each result and skip any empty ones
-  std::vector<std::string> percents;
-  for (const absl::string_view& token : tokens) {
-    std::string trimmed = std::string(token);
-    absl::StripAsciiWhitespace(&trimmed);
-    if (!trimmed.empty()) {
-      percents.push_back(trimmed);
-    }
-  }
+  std::vector<std::string> percents = SplitAndTrimSkipEmpty(str, ',');
 
   if (percents.size() != 2) {
     return false;
@@ -400,19 +389,8 @@ bool WebVttParser::ParseCueWithId(const std::vector<std::string>& block) {
 bool WebVttParser::ParseCue(const std::string& id,
                             const std::string* block,
                             size_t block_size) {
-  // Split the string by ','
-  std::vector<absl::string_view> tokens =
-      absl::StrSplit(block[0], ' ', absl::SkipEmpty());
-
-  // Trim whitespace from each result and skip any empty ones
-  std::vector<std::string> time_and_style;
-  for (const absl::string_view& token : tokens) {
-    std::string trimmed = std::string(token);
-    absl::StripAsciiWhitespace(&trimmed);
-    if (!trimmed.empty()) {
-      time_and_style.push_back(trimmed);
-    }
-  }
+  std::vector<std::string> time_and_style =
+      SplitAndTrimSkipEmpty(block[0], ' ');
 
   int64_t start_time = 0;
   int64_t end_time = 0;
