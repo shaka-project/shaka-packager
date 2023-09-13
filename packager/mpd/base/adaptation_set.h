@@ -180,6 +180,17 @@ class AdaptationSet {
   /// @param codec is the new codec to be set.
   void set_codec(const std::string& codec) { codec_ = codec; };
 
+  /// @return transfer_characteristics.
+  const uint32_t transfer_characteristics() const {
+    return transfer_characteristics_;
+  }
+
+  /// Set AdaptationSet's video transfer characteristics.
+  /// @param transfer_characteristics is the video transfer characteristics.
+  void set_transfer_characteristics(const uint32_t& transfer_characteristics) {
+    transfer_characteristics_ = transfer_characteristics;
+  };
+
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
@@ -314,6 +325,9 @@ class AdaptationSet {
   // and HD videos in different AdaptationSets can share the same trick play
   // stream.
   std::vector<const AdaptationSet*> trick_play_references_;
+
+  // Transfer characteristics.
+  uint32_t transfer_characteristics_ = 0;
 };
 
 }  // namespace shaka
