@@ -181,7 +181,7 @@ class AdaptationSet {
   void set_codec(const std::string& codec) { codec_ = codec; };
 
   /// @return transfer_characteristics.
-  const uint32_t transfer_characteristics() const {
+  uint32_t transfer_characteristics() const {
     return transfer_characteristics_;
   }
 

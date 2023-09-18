@@ -296,7 +296,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       !adaptation_set.AddSupplementalProperty(
           "urn:mpeg:mpegB:cicp:TransferCharacteristics",
           std::to_string(transfer_characteristics_))) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   // Note: must be checked before checking segments_aligned_ (below). So that
