@@ -11,6 +11,7 @@
 
 #include <libxml/tree.h>
 
+#include <cstdint>
 #include <list>
 #include <string>
 
