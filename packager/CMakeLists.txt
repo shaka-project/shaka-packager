@@ -92,6 +92,13 @@ else()
   add_library(libpackager STATIC ${libpackager_sources})
 endif()
 
+set(LIBPACKAGER_HEADER_FILES
+  file/file.h
+  macros.h
+  packager.h
+  status/status.h
+)
+
 target_link_libraries(libpackager
   file
   hls_builder
@@ -114,6 +121,8 @@ target_link_libraries(libpackager
   string_utils
   version
 )
+set_target_properties(libpackager PROPERTIES PUBLIC_HEADER "${LIBPACKAGER_HEADER_FILES}")
+set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
 
 add_executable(packager
   app/ad_cue_generator_flags.cc
@@ -183,3 +192,13 @@ target_link_libraries(packager_test
   gmock
   gtest
   gtest_main)
+
+configure_file(packager.pc.in packager.pc @ONLY)
+
+
+install(TARGETS mpd_generator packager libpackager
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(FILES tools/pssh/pssh-box.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
