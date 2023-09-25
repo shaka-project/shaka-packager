@@ -31,6 +31,7 @@
 #include "packager/tools/license_notice.h"
 #include "packager/utils/string_trim_split.h"
 #include "retired_flags.h"
+#include "vlog_flags.h"
 
 #if defined(OS_WIN)
 #include <codecvt>
@@ -554,6 +555,8 @@ int PackagerMain(int argc, char** argv) {
   }
   if (absl::GetFlag(FLAGS_quiet))
     google::SetStderrLogging(google::GLOG_WARNING);
+
+  register_flags_with_glog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
       !ValidatePRCryptoFlags() || !ValidateCryptoFlags() ||
