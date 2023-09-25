@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-#include "absl/types/span.h"
+#include <absl/types/span.h>
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"

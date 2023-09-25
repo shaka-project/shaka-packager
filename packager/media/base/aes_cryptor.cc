@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "glog/logging.h"
-#include "mbedtls/entropy.h"
+#include <glog/logging.h>
+#include <mbedtls/entropy.h>
 
 namespace {
 

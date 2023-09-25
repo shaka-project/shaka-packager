@@ -12,10 +12,10 @@
 #include <filesystem>
 #include <memory>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/numbers.h"
-#include "absl/strings/str_format.h"
-#include "glog/logging.h"
+#include <absl/flags/flag.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
 
 #include "packager/file/callback_file.h"
 #include "packager/file/file_util.h"

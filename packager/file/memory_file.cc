@@ -13,8 +13,8 @@
 #include <memory>
 #include <set>
 
-#include "absl/synchronization/mutex.h"
-#include "glog/logging.h"
+#include <absl/synchronization/mutex.h>
+#include <glog/logging.h>
 
 namespace shaka {
 namespace {

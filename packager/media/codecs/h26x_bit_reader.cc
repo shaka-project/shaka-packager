@@ -4,7 +4,7 @@
 
 #include "packager/media/codecs/h26x_bit_reader.h"
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 
 namespace shaka {
 namespace media {

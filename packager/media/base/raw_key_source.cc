@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
+#include <absl/strings/escaping.h>
+#include <glog/logging.h>
 #include "packager/media/base/key_source.h"
 #include "packager/status/status_macros.h"
 #include "packager/utils/bytes_to_string_view.h"

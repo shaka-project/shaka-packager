@@ -6,7 +6,7 @@
 
 #include "packager/kv_pairs/kv_pairs.h"
 
-#include "absl/strings/str_split.h"
+#include <absl/strings/str_split.h>
 
 namespace shaka {
 

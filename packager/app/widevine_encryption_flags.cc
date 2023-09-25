@@ -11,11 +11,9 @@
 #include <absl/flags/flag.h>
 #include <absl/strings/ascii.h>
 #include <absl/strings/match.h>
-#include <absl/strings/str_format.h>
 #include <glog/logging.h>
 #include <string_view>
 #include "packager/app/validate_flag.h"
-#include "packager/utils/absl_flag_hexbytes.h"
 
 ABSL_FLAG(bool,
           enable_widevine_encryption,

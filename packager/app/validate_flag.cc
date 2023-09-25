@@ -8,7 +8,7 @@
 
 #include "packager/app/validate_flag.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace shaka {
 

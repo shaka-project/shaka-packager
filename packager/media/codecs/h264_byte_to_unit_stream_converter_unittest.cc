@@ -7,9 +7,8 @@
 #include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
 
 #include <gtest/gtest.h>
-#include <stdio.h>
 
-#include "absl/strings/escaping.h"
+#include <absl/strings/escaping.h>
 #include "packager/media/test/test_data_util.h"
 
 namespace {

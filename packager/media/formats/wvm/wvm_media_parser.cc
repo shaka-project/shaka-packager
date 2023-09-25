@@ -8,8 +8,8 @@
 #include <sstream>
 #include <vector>
 
+#include <absl/base/internal/endian.h>
 #include <absl/strings/str_format.h>
-#include "absl/base/internal/endian.h"
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/key_source.h"

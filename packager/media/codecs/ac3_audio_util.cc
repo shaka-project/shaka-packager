@@ -6,7 +6,7 @@
 
 #include "packager/media/codecs/ac3_audio_util.h"
 
-#include "absl/strings/escaping.h"
+#include <absl/strings/escaping.h>
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/utils/bytes_to_string_view.h"

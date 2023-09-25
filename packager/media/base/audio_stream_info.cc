@@ -8,8 +8,8 @@
 
 #include <inttypes.h>
 
-#include "absl/strings/str_format.h"
-#include "glog/logging.h"
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
 #include "packager/macros.h"
 #include "packager/media/base/limits.h"
 

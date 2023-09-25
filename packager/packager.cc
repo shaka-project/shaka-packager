@@ -8,27 +8,21 @@
 
 #include <algorithm>
 
+#include <absl/strings/match.h>
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
 #include <chrono>
-#include <filesystem>
 #include <optional>
-#include "absl/strings/match.h"
 #include "packager/app/job_manager.h"
 #include "packager/app/muxer_factory.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/single_thread_job_manager.h"
-#include "packager/app/stream_descriptor.h"
 #include "packager/file/file.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/simple_hls_notifier.h"
 #include "packager/media/base/cc_stream_filter.h"
-#include "packager/media/base/container_names.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/key_source.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/media/base/muxer.h"
-#include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/chunking/cue_alignment_handler.h"
@@ -43,7 +37,6 @@
 #include "packager/media/replicator/replicator.h"
 #include "packager/media/trick_play/trick_play_handler.h"
 #include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
 #include "packager/status/status_macros.h"
 #include "packager/version/version.h"

@@ -4,10 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include <filesystem>
 #include <iterator>
 
-#include "packager/macros.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/test/test_data_util.h"
 

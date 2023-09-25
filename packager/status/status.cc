@@ -6,8 +6,8 @@
 
 #include "packager/status/status.h"
 
-#include "absl/strings/str_format.h"
-#include "glog/logging.h"
+#include <absl/strings/str_format.h>
+#include <glog/logging.h>
 #include "packager/macros.h"
 
 namespace shaka {

@@ -6,7 +6,7 @@
 
 #include "packager/file/local_file.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -16,7 +16,7 @@
 
 #include <filesystem>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 
 namespace shaka {
 

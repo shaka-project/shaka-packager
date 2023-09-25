@@ -8,7 +8,7 @@
 
 #include <iterator>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/macros.h"
 
 namespace {

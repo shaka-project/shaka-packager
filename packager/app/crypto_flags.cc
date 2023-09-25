@@ -7,7 +7,7 @@
 #include "packager/app/crypto_flags.h"
 #include <absl/flags/flag.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 ABSL_FLAG(std::string,
           protection_scheme,

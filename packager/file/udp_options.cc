@@ -8,10 +8,10 @@
 
 #include <iterator>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/numbers.h"
-#include "absl/strings/str_split.h"
-#include "glog/logging.h"
+#include <absl/flags/flag.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_split.h>
+#include <glog/logging.h>
 #include "packager/kv_pairs/kv_pairs.h"
 #include "packager/macros.h"
 

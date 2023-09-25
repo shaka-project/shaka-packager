@@ -10,8 +10,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "absl/strings/escaping.h"
-#include "absl/strings/numbers.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/utils/bytes_to_string_view.h"

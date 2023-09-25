@@ -9,9 +9,9 @@
 
 #include "packager/utils/hex_parser.h"
 
-#include "absl/flags/flag.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/escaping.h"
+#include <absl/flags/flag.h>
+#include <absl/strings/ascii.h>
+#include <absl/strings/escaping.h>
 
 // Custom flag type for hexadecimal byte array
 namespace shaka {

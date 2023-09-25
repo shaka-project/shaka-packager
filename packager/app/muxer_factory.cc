@@ -6,9 +6,7 @@
 
 #include "packager/app/muxer_factory.h"
 
-#include <chrono>
 #include "packager/media/base/muxer.h"
-#include "packager/media/base/muxer_options.h"
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/formats/packed_audio/packed_audio_writer.h"

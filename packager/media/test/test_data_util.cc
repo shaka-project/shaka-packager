@@ -4,7 +4,7 @@
 
 #include "packager/media/test/test_data_util.h"
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 
 namespace shaka {
 namespace media {

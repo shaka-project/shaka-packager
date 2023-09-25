@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "absl/strings/escaping.h"
+#include <absl/strings/escaping.h>
 #include "packager/media/base/raw_key_source.h"
 #include "packager/status/status_test_util.h"
 

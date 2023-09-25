@@ -12,7 +12,7 @@
 #include <glog/logging.h>
 #include <libxml/tree.h>
 
-#include "absl/strings/str_format.h"
+#include <absl/strings/str_format.h>
 #include "packager/media/base/language_utils.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/mpd/base/adaptation_set.h"

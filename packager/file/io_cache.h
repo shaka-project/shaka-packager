@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include "absl/synchronization/mutex.h"
+#include <absl/synchronization/mutex.h>
 #include "packager/macros.h"
 
 namespace shaka {

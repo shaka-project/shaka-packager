@@ -6,14 +6,10 @@
 
 #include "packager/media/formats/webm/segmenter.h"
 
-#include "common/webmids.h"
-#include "mkvmuxer/mkvmuxerutil.h"
+#include <mkvmuxer/mkvmuxerutil.h>
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_handler.h"
-#include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
 #include "packager/media/event/muxer_listener.h"

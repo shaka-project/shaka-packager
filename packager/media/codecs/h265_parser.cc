@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 

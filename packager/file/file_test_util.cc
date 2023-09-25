@@ -6,8 +6,6 @@
 
 #include "packager/file/file_test_util.h"
 
-#include <stdlib.h>
-
 #include <filesystem>
 
 namespace shaka {

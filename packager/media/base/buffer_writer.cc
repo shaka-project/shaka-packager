@@ -6,8 +6,8 @@
 
 #include "packager/media/base/buffer_writer.h"
 
-#include "absl/base/internal/endian.h"
-#include "glog/logging.h"
+#include <absl/base/internal/endian.h>
+#include <glog/logging.h>
 #include "packager/file/file.h"
 
 namespace shaka {
