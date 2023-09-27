@@ -122,7 +122,9 @@ target_link_libraries(libpackager
   version
 )
 set_target_properties(libpackager PROPERTIES PUBLIC_HEADER "${LIBPACKAGER_HEADER_FILES}")
-set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
+if(NOT MSVC)
+  set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
+endif()
 
 add_executable(packager
   app/ad_cue_generator_flags.cc
