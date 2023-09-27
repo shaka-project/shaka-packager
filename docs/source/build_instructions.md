@@ -40,12 +40,13 @@ brew install ninja
 * Visual Studio 2017 or newer.
 * Windows 10 or newer.
 
-Install Visual Studio 2017 or later - Community Edition should work if
-its license is appropriate for you. Use the Custom Install option and select:
+Recommended version of Visual Studio is 2022, the Community edition
+should work for open source development of tools like Shaka Packager
+but please check the Community license terms for your specific
+situation.
 
-- Visual C++, which will select three sub-categories including MFC
-- Universal Windows Apps Development Tools > Tools (1.4.1) and Windows 10 SDK
-  (10.0.14393)
+Install the "Desktop development with C++" workload which will install
+CMake and other needed tools.
 
 ## Get the code
 
@@ -61,7 +62,7 @@ git clone --recurse-submodules https://github.com/shaka-project/shaka-packager.g
 #### Linux and Mac
 
 Shaka Packager uses [CMake](https://cmake.org) as the main build tool,
-with the Ninja as the recommended generator.
+with the Ninja as the recommended generator (outside of Windows).
 
 
 ```shell
@@ -83,10 +84,17 @@ After configuring CMake you can run the build with
 cmake --build build --parallel
 ```
 
-
 #### Windows
 
-TODO: add proper Windows instructions
+Windows build instructions are similar. Using Tools > Command Line >
+Developer Command Prompt should open a terminal with cmake and ctest
+in path, then the commands are the same, but omit the `-G Ninja` to
+use the default backend.
+
+``` shell
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+```
 
 ### Build artifacts
 
