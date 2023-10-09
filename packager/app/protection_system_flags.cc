@@ -6,7 +6,7 @@
 //
 // Defines command line flags for protection systems.
 
-#include "packager/app/protection_system_flags.h"
+#include <packager/app/protection_system_flags.h>
 
 ABSL_FLAG(
     std::string,

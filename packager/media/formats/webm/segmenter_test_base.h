@@ -9,18 +9,18 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/file/file_closer.h"
-#include "packager/file/file_test_util.h"
-#include "packager/file/memory_file.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/media/formats/webm/segmenter.h"
-#include "packager/media/formats/webm/webm_parser.h"
-#include "packager/status/status.h"
-#include "packager/status/status_test_util.h"
+#include <packager/file/file_closer.h>
+#include <packager/file/file_test_util.h>
+#include <packager/file/memory_file.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/segmenter.h>
+#include <packager/media/formats/webm/webm_parser.h>
+#include <packager/status/status.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

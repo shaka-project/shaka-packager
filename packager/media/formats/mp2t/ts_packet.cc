@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/ts_packet.h"
+#include <packager/media/formats/mp2t/ts_packet.h>
 
+#include <packager/macros.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 #include <memory>
-#include "packager/macros.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace shaka {
 namespace media {

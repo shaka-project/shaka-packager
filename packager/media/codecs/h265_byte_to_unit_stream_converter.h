@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
 namespace shaka {
 namespace media {

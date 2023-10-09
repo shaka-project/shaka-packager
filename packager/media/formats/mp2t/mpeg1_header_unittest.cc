@@ -3,8 +3,8 @@
 
 #include <absl/strings/numbers.h>
 #include <glog/logging.h>
-#include "packager/media/formats/mp2t/mpeg1_header.h"
-#include "packager/utils/hex_parser.h"
+#include <packager/media/formats/mp2t/mpeg1_header.h>
+#include <packager/utils/hex_parser.h>
 
 using ::testing::ElementsAreArray;
 

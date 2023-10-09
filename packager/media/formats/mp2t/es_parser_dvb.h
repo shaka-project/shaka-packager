@@ -9,10 +9,10 @@
 
 #include <unordered_map>
 
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/formats/dvb/dvb_sub_parser.h>
+#include <packager/media/formats/mp2t/es_parser.h>
 #include <functional>
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/formats/dvb/dvb_sub_parser.h"
-#include "packager/media/formats/mp2t/es_parser.h"
 
 namespace shaka {
 namespace media {

@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/adts_header.h"
+#include <packager/media/formats/mp2t/adts_header.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/bit_writer.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/bit_writer.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace {
 const size_t kAdtsHeaderMinSize = 7;

@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "packager/file/file.h"
+#include <packager/file/file.h>
 
 #if defined(OS_WIN)
 #include <windows.h>

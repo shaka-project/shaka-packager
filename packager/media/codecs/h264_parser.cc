@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/codecs/h264_parser.h"
+#include <packager/media/codecs/h264_parser.h>
 
 #include <memory>
 
 #include <glog/logging.h>
-#include "packager/media/base/buffer_reader.h"
+#include <packager/media/base/buffer_reader.h>
 
 #define LOG_ERROR_ONCE(msg)             \
   do {                                  \

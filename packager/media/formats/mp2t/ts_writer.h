@@ -12,11 +12,11 @@
 #include <memory>
 #include <vector>
 
+#include <packager/file/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
 #include <optional>
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
 
 namespace shaka {
 namespace media {

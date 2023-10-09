@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "packager/macros.h"
+#include <packager/macros.h>
 
 namespace shaka {
 namespace media {

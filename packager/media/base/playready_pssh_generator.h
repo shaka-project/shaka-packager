@@ -9,8 +9,8 @@
 
 #include <string>
 
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/pssh_generator.h"
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/pssh_generator.h>
 
 namespace shaka {
 namespace media {

@@ -11,8 +11,8 @@
 
 #include <vector>
 
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {

@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/ts_muxer.h"
+#include <packager/media/formats/mp2t/ts_muxer.h>
 
 namespace shaka {
 namespace media {

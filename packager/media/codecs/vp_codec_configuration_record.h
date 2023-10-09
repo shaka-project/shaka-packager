@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/base/video_stream_info.h"
+#include <packager/macros.h>
+#include <packager/media/base/video_stream_info.h>
 
 namespace shaka {
 namespace media {

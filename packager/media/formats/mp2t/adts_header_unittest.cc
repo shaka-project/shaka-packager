@@ -6,8 +6,8 @@
 
 #include <absl/strings/numbers.h>
 #include <glog/logging.h>
-#include "packager/media/formats/mp2t/adts_header.h"
-#include "packager/utils/hex_parser.h"
+#include <packager/media/formats/mp2t/adts_header.h>
+#include <packager/utils/hex_parser.h>
 
 namespace {
 

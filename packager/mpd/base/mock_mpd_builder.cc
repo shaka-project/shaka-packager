@@ -1,6 +1,6 @@
-#include "packager/mpd/base/mock_mpd_builder.h"
+#include <packager/mpd/base/mock_mpd_builder.h>
 
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 namespace {

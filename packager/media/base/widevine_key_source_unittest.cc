@@ -13,12 +13,12 @@
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
-#include "packager/media/base/key_fetcher.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/widevine_key_source.h"
-#include "packager/media/base/widevine_pssh_generator.h"
-#include "packager/status/status_test_util.h"
+#include <packager/media/base/key_fetcher.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/widevine_key_source.h>
+#include <packager/media/base/widevine_pssh_generator.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 using ::testing::Bool;

@@ -13,10 +13,10 @@
 #include <string>
 #include <vector>
 
-#include "packager/hls/public/hls_params.h"
-#include "packager/macros.h"
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/hls/public/hls_params.h>
+#include <packager/macros.h>
+#include <packager/mpd/base/bandwidth_estimator.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 

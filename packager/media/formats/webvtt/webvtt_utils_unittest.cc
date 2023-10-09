@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/formats/webvtt/webvtt_utils.h"
+#include <packager/media/formats/webvtt/webvtt_utils.h>
 
 namespace shaka {
 namespace media {

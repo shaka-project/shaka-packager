@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/file/file.h"
+#include <packager/file/file.h>
 
 namespace shaka {
 

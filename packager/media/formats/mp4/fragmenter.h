@@ -11,8 +11,8 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include "packager/macros.h"
-#include "packager/status/status.h"
+#include <packager/macros.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 namespace media {

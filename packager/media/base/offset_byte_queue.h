@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "packager/media/base/byte_queue.h"
+#include <packager/media/base/byte_queue.h>
 
 namespace shaka {
 namespace media {

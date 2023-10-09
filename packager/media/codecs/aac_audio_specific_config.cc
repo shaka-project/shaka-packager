@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/codecs/aac_audio_specific_config.h"
+#include <packager/media/codecs/aac_audio_specific_config.h>
 
 #include <algorithm>
 
 #include <glog/logging.h>
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/av1_codec_configuration_record.h"
+#include <packager/media/codecs/av1_codec_configuration_record.h>
 
 #include <absl/strings/str_format.h>
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

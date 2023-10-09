@@ -10,9 +10,9 @@
 #include <memory>
 #include <string>
 
-#include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/media/formats/webm/single_segment_segmenter.h"
-#include "packager/status/status.h"
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/single_segment_segmenter.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 namespace media {

@@ -4,20 +4,20 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/muxer_listener_factory.h"
+#include <packager/media/event/muxer_listener_factory.h>
 
 #include <list>
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/event/combined_muxer_listener.h"
-#include "packager/media/event/hls_notify_muxer_listener.h"
-#include "packager/media/event/mpd_notify_muxer_listener.h"
-#include "packager/media/event/multi_codec_muxer_listener.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
-#include "packager/mpd/base/mpd_notifier.h"
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/media/event/combined_muxer_listener.h>
+#include <packager/media/event/hls_notify_muxer_listener.h>
+#include <packager/media/event/mpd_notify_muxer_listener.h>
+#include <packager/media/event/multi_codec_muxer_listener.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/event/vod_media_info_dump_muxer_listener.h>
+#include <packager/mpd/base/mpd_notifier.h>
 
 namespace shaka {
 namespace media {

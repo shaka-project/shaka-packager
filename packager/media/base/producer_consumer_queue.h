@@ -13,8 +13,8 @@
 #include <absl/strings/str_format.h>
 #include <absl/synchronization/mutex.h>
 #include <absl/time/time.h>
-#include "packager/macros.h"
-#include "packager/status/status.h"
+#include <packager/macros.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 namespace media {

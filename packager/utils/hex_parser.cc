@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/utils/hex_parser.h"
+#include <packager/utils/hex_parser.h>
 
 #include <absl/strings/escaping.h>
 #include <absl/types/span.h>

@@ -7,8 +7,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_TTML_TTML_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_TTML_TTML_MUXER_H_
 
-#include "packager/media/base/text_muxer.h"
-#include "packager/media/formats/ttml/ttml_generator.h"
+#include <packager/media/base/text_muxer.h>
+#include <packager/media/formats/ttml/ttml_generator.h>
 
 namespace shaka {
 namespace media {

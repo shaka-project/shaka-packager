@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/subsample_generator.h"
+#include <packager/media/crypto/subsample_generator.h>
 
 #include <algorithm>
 #include <limits>
 
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/av1_parser.h"
-#include "packager/media/codecs/video_slice_header_parser.h"
-#include "packager/media/codecs/vp8_parser.h"
-#include "packager/media/codecs/vp9_parser.h"
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/av1_parser.h>
+#include <packager/media/codecs/video_slice_header_parser.h>
+#include <packager/media/codecs/vp8_parser.h>
+#include <packager/media/codecs/vp9_parser.h>
 
 namespace shaka {
 namespace media {

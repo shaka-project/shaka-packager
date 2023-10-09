@@ -6,9 +6,9 @@
 //
 // Defines command line flags for raw key encryption/decryption.
 
-#include "packager/utils/absl_flag_hexbytes.h"
+#include <packager/utils/absl_flag_hexbytes.h>
 
-#include "packager/app/validate_flag.h"
+#include <packager/app/validate_flag.h>
 
 ABSL_FLAG(bool,
           enable_fixed_key_encryption,

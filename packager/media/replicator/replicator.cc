@@ -6,7 +6,7 @@
 
 #include <glog/logging.h>
 
-#include "packager/media/replicator/replicator.h"
+#include <packager/media/replicator/replicator.h>
 
 namespace shaka {
 namespace media {

@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "packager/app/job_manager.h"
+#include <packager/app/job_manager.h>
 
 namespace shaka {
 namespace media {

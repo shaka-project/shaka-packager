@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/status/status.h"
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 namespace media {

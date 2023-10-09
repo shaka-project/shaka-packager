@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/file.h"
+#include <packager/file/file.h>
 
 #include <inttypes.h>
 
@@ -17,13 +17,13 @@
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
 
-#include "packager/file/callback_file.h"
-#include "packager/file/file_util.h"
-#include "packager/file/http_file.h"
-#include "packager/file/local_file.h"
-#include "packager/file/memory_file.h"
-#include "packager/file/threaded_io_file.h"
-#include "packager/file/udp_file.h"
+#include <packager/file/callback_file.h>
+#include <packager/file/file_util.h>
+#include <packager/file/http_file.h>
+#include <packager/file/local_file.h>
+#include <packager/file/memory_file.h>
+#include <packager/file/threaded_io_file.h>
+#include <packager/file/udp_file.h>
 
 ABSL_FLAG(uint64_t,
           io_cache_size,

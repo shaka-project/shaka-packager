@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/cue_alignment_handler.h"
+#include <packager/media/chunking/cue_alignment_handler.h>
 
 #include <algorithm>
 
-#include "packager/status/status_macros.h"
+#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/kv_pairs/kv_pairs.h"
+#include <packager/kv_pairs/kv_pairs.h>
 
 namespace shaka {
 

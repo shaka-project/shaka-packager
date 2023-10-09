@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/mpd_notifier_util.h"
+#include <packager/mpd/base/mpd_notifier_util.h>
 
 #include <glog/logging.h>
-#include "packager/file/file.h"
-#include "packager/mpd/base/mpd_utils.h"
+#include <packager/file/file.h>
+#include <packager/mpd/base/mpd_utils.h>
 
 namespace shaka {
 

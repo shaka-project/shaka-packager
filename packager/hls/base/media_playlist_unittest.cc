@@ -8,11 +8,11 @@
 #include <gtest/gtest.h>
 
 #include <absl/strings/str_format.h>
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/file/file_test_util.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/version/version.h"
+#include <packager/file/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/file/file_test_util.h>
+#include <packager/hls/base/media_playlist.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {

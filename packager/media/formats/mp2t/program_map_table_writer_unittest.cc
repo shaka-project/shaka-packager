@@ -8,9 +8,9 @@
 
 #include <vector>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
-#include "packager/media/formats/mp2t/program_map_table_writer.h"
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
+#include <packager/media/formats/mp2t/program_map_table_writer.h>
 
 namespace shaka {
 namespace media {

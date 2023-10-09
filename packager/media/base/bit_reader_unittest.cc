@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/base/bit_reader.h"
+#include <packager/media/base/bit_reader.h>
 
 namespace shaka {
 namespace media {

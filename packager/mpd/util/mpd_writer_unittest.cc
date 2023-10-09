@@ -8,11 +8,11 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 
-#include "packager/file/file_test_util.h"
-#include "packager/mpd/base/mock_mpd_notifier.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/util/mpd_writer.h"
+#include <packager/file/file_test_util.h>
+#include <packager/mpd/base/mock_mpd_notifier.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/util/mpd_writer.h>
 
 namespace shaka {
 

@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/mpd_utils.h"
+#include <packager/mpd/base/mpd_utils.h>
 
 #include <absl/flags/flag.h>
 #include <absl/strings/escaping.h>
@@ -13,12 +13,12 @@
 #include <libxml/tree.h>
 
 #include <absl/strings/str_format.h>
-#include "packager/media/base/language_utils.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include <packager/media/base/language_utils.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
 
 ABSL_FLAG(
     bool,

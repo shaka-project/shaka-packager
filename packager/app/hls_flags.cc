@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/app/hls_flags.h"
+#include <packager/app/hls_flags.h>
 
 ABSL_FLAG(std::string,
           hls_master_playlist_output,

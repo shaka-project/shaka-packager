@@ -10,8 +10,8 @@
 #include <deque>
 #include <list>
 
-#include "packager/media/base/media_handler.h"
-#include "packager/media/chunking/sync_point_queue.h"
+#include <packager/media/base/media_handler.h>
+#include <packager/media/chunking/sync_point_queue.h>
 
 namespace shaka {
 namespace media {

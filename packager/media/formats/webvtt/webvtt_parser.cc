@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_parser.h"
+#include <packager/media/formats/webvtt/webvtt_parser.h>
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
-#include "packager/kv_pairs/kv_pairs.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/formats/webvtt/webvtt_utils.h"
-#include "packager/utils/string_trim_split.h"
+#include <packager/kv_pairs/kv_pairs.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
+#include <packager/utils/string_trim_split.h>
 
 namespace shaka {
 namespace media {

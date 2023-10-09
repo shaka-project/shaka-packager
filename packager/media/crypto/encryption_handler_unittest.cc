@@ -4,20 +4,20 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/encryption_handler.h"
+#include <packager/media/crypto/encryption_handler.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <glog/logging.h>
-#include "packager/media/base/aes_cryptor.h"
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/mock_aes_cryptor.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/crypto/aes_encryptor_factory.h"
-#include "packager/media/crypto/subsample_generator.h"
-#include "packager/status/status_test_util.h"
+#include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/mock_aes_cryptor.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/crypto/aes_encryptor_factory.h>
+#include <packager/media/crypto/subsample_generator.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/widevine_key_source.h"
+#include <packager/media/base/widevine_key_source.h>
 
 #include <functional>
 #include <iterator>
@@ -12,15 +12,15 @@
 #include <absl/base/internal/endian.h>
 #include <absl/flags/flag.h>
 #include <absl/strings/escaping.h>
-#include "packager/media/base/http_key_fetcher.h"
-#include "packager/media/base/producer_consumer_queue.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/proto_json_util.h"
-#include "packager/media/base/pssh_generator_util.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/widevine_common_encryption.pb.h"
+#include <packager/media/base/http_key_fetcher.h>
+#include <packager/media/base/producer_consumer_queue.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/proto_json_util.h>
+#include <packager/media/base/pssh_generator_util.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/widevine_common_encryption.pb.h>
 
 ABSL_FLAG(std::string,
           video_feature,

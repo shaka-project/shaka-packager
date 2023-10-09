@@ -7,12 +7,12 @@
 #ifndef MPD_BASE_MOCK_MPD_NOTIFIER_H_
 #define MPD_BASE_MOCK_MPD_NOTIFIER_H_
 
-#include "packager/mpd/base/mpd_notifier.h"
+#include <packager/mpd/base/mpd_notifier.h>
 
 #include <gmock/gmock.h>
 
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 

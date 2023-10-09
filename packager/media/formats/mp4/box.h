@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 
-#include "packager/media/base/fourccs.h"
+#include <packager/media/base/fourccs.h>
 
 namespace shaka {
 namespace media {

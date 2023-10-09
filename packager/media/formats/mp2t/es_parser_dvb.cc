@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/es_parser_dvb.h"
+#include <packager/media/formats/mp2t/es_parser_dvb.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {

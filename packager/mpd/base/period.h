@@ -12,10 +12,10 @@
 #include <list>
 #include <map>
 
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/xml/xml_node.h>
 #include <optional>
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/xml/xml_node.h"
 
 namespace shaka {
 

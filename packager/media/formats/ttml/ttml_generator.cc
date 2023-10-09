@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/ttml/ttml_generator.h"
+#include <packager/media/formats/ttml/ttml_generator.h>
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
-#include "packager/media/base/rcheck.h"
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

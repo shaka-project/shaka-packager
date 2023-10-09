@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/base/muxer_util.h"
+#include <packager/media/base/muxer_util.h>
 
 namespace shaka {
 namespace media {

@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/aes_cryptor.h"
+#include <packager/media/base/aes_cryptor.h>
 
 #ifndef PACKAGER_MEDIA_CRYPTO_SAMPLE_AES_EC3_CRYPTOR_H_
 #define PACKAGER_MEDIA_CRYPTO_SAMPLE_AES_EC3_CRYPTOR_H_

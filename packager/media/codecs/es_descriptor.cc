@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/codecs/es_descriptor.h"
+#include <packager/media/codecs/es_descriptor.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/rcheck.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

@@ -10,10 +10,10 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/formats/dvb/dvb_image.h"
-#include "packager/media/formats/dvb/subtitle_composer.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/dvb/dvb_image.h>
+#include <packager/media/formats/dvb/subtitle_composer.h>
 
 namespace shaka {
 namespace media {

@@ -11,8 +11,8 @@
 
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/formats/mp4/box_definitions.h"
+#include <packager/macros.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {

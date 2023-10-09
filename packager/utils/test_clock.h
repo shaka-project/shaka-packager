@@ -7,9 +7,9 @@
 #ifndef SHAKA_PACKAGER_TEST_CLOCK_H
 #define SHAKA_PACKAGER_TEST_CLOCK_H
 
+#include <packager/utils/clock.h>
 #include <chrono>
 #include <string>
-#include "packager/utils/clock.h"
 
 namespace shaka {
 

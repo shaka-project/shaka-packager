@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/demuxer/demuxer.h"
+#include <packager/media/demuxer/demuxer.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/test/test_data_util.h"
-#include "packager/status/status_test_util.h"
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/test/test_data_util.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

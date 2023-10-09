@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 
 #include <stdint.h>
 
 #include <glog/logging.h>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/offset_byte_queue.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/offset_byte_queue.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {

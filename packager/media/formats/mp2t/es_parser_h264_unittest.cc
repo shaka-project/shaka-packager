@@ -8,13 +8,13 @@
 #include <vector>
 
 #include <glog/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/formats/mp2t/es_parser_h264.h>
+#include <packager/media/test/test_data_util.h>
 #include <functional>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h264_parser.h"
-#include "packager/media/formats/mp2t/es_parser_h264.h"
-#include "packager/media/test/test_data_util.h"
 
 namespace shaka {
 namespace media {

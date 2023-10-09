@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
+#include <packager/mpd/base/xml/xml_node.h>
 #include <optional>
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
-#include "packager/mpd/base/xml/xml_node.h"
 
 namespace shaka {
 

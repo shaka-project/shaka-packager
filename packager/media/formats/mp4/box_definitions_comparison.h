@@ -9,7 +9,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 
-#include "packager/media/formats/mp4/box_definitions.h"
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {

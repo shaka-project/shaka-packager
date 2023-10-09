@@ -10,8 +10,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "packager/macros.h"
-#include "packager/media/base/decrypt_config.h"
+#include <packager/macros.h>
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {

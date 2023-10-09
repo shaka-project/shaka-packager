@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/base/container_names.h"
+#include <packager/media/base/container_names.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -14,8 +14,8 @@
 #include <limits>
 
 #include <glog/logging.h>
-#include "packager/media/base/bit_reader.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
 
 namespace shaka {
 namespace media {

@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/udp_file.h"
+#include <packager/file/udp_file.h>
 
 #if defined(OS_WIN)
 #include <ws2tcpip.h>
@@ -29,7 +29,7 @@
 #include <limits>
 
 #include <glog/logging.h>
-#include "packager/file/udp_options.h"
+#include <packager/file/udp_options.h>
 
 namespace shaka {
 

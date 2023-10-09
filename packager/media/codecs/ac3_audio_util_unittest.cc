@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/codecs/ac3_audio_util.h"
+#include <packager/media/codecs/ac3_audio_util.h>
 
 namespace shaka {
 namespace media {

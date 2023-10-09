@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <gtest/gtest.h>
+#include <packager/media/base/offset_byte_queue.h>
 #include <stdint.h>
 #include <string.h>
 #include <memory>
-#include "packager/media/base/offset_byte_queue.h"
 
 namespace shaka {
 namespace media {

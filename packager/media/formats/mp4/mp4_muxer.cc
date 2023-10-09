@@ -4,29 +4,29 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/mp4_muxer.h"
+#include <packager/media/formats/mp4/mp4_muxer.h>
 
 #include <algorithm>
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
+#include <packager/file/file.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/low_latency_segment_segmenter.h>
+#include <packager/media/formats/mp4/multi_segment_segmenter.h>
+#include <packager/media/formats/mp4/single_segment_segmenter.h>
+#include <packager/media/formats/ttml/ttml_generator.h>
+#include <packager/status/status_macros.h>
 #include <chrono>
-#include "packager/file/file.h"
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/es_descriptor.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/low_latency_segment_segmenter.h"
-#include "packager/media/formats/mp4/multi_segment_segmenter.h"
-#include "packager/media/formats/mp4/single_segment_segmenter.h"
-#include "packager/media/formats/ttml/ttml_generator.h"
-#include "packager/status/status_macros.h"
 
 namespace shaka {
 namespace media {

@@ -13,9 +13,9 @@
 #include <vector>
 
 #include <absl/base/internal/endian.h>
-#include "packager/macros.h"
-#include "packager/media/base/media_parser.h"
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+#include <packager/macros.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
 
 namespace shaka {
 namespace media {

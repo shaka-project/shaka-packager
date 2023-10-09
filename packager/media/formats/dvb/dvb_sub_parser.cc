@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/dvb/dvb_sub_parser.h"
+#include <packager/media/formats/dvb/dvb_sub_parser.h>
 
 #include <algorithm>
 
 #include <glog/logging.h>
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {

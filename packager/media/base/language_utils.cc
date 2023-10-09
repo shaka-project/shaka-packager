@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/language_utils.h"
+#include <packager/media/base/language_utils.h>
 
 #include <iterator>
 
 #include <glog/logging.h>
-#include "packager/macros.h"
+#include <packager/macros.h>
 
 namespace {
 

@@ -10,8 +10,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "packager/macros.h"
-#include "packager/media/codecs/vp_codec_configuration_record.h"
+#include <packager/macros.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
 
 namespace shaka {
 namespace media {

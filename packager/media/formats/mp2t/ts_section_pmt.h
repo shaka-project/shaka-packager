@@ -5,10 +5,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 
+#include <packager/macros.h>
+#include <packager/media/formats/mp2t/ts_section_psi.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 #include <functional>
-#include "packager/macros.h"
-#include "packager/media/formats/mp2t/ts_section_psi.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {

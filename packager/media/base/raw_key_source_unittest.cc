@@ -8,8 +8,8 @@
 #include <gtest/gtest.h>
 
 #include <absl/strings/escaping.h>
-#include "packager/media/base/raw_key_source.h"
-#include "packager/status/status_test_util.h"
+#include <packager/media/base/raw_key_source.h>
+#include <packager/status/status_test_util.h>
 
 #define EXPECT_HEX_EQ(expected_hex, actual)                          \
   {                                                                  \

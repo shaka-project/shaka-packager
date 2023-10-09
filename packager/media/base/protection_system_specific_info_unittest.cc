@@ -8,8 +8,8 @@
 
 #include <iterator>
 
-#include "packager/macros.h"
-#include "packager/media/base/protection_system_specific_info.h"
+#include <packager/macros.h>
+#include <packager/media/base/protection_system_specific_info.h>
 
 namespace shaka {
 namespace media {

@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <absl/strings/str_format.h>
-#include "packager/status/status.h"
+#include <packager/status/status.h>
 
 namespace shaka {
 

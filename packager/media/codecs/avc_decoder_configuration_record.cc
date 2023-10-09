@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
 
 #include <absl/strings/ascii.h>
 #include <absl/strings/escaping.h>
-#include "packager/macros.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/codecs/h264_parser.h"
-#include "packager/utils/bytes_to_string_view.h"
+#include <packager/macros.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace shaka {
 namespace media {

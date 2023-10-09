@@ -7,7 +7,7 @@
 // Defines retired / deprecated flags. These flags will be removed in later
 // versions.
 
-#include "packager/app/retired_flags.h"
+#include <packager/app/retired_flags.h>
 
 #include <cstdio>
 

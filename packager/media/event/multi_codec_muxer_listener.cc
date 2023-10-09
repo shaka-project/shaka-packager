@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/multi_codec_muxer_listener.h"
+#include <packager/media/event/multi_codec_muxer_listener.h>
 
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
-#include "packager/media/base/stream_info.h"
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

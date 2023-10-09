@@ -18,7 +18,7 @@
 #include <set>
 #include <vector>
 
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 

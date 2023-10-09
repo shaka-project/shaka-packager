@@ -13,7 +13,7 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include "packager/media/base/decrypt_config.h"
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {
