@@ -14,7 +14,6 @@ include("packager/policies.cmake")
 
 # Project name.  May not contain spaces.  Versioning is managed elsewhere.
 project(shaka-packager VERSION "")
-include(GNUInstallDirs)
 
 # The only build option for Shaka Packager is whether to build a shared
 # libpackager library.  By default, don't.
@@ -25,3 +24,4 @@ enable_testing()
 
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)
+add_subdirectory(link-test)

@@ -6,6 +6,9 @@
 
 # Packager CMake build file.
 
+# Include a module to define standard install directories.
+include(GNUInstallDirs)
+
 # Build static libs by default, or shared if LIBPACKAGER_SHARED is defined.
 if(LIBPACKAGER_SHARED)
   add_definitions(-DSHARED_LIBRARY_BUILD)
@@ -92,13 +95,6 @@ else()
   add_library(libpackager STATIC ${libpackager_sources})
 endif()
 
-set(LIBPACKAGER_HEADER_FILES
-  file/file.h
-  macros.h
-  packager.h
-  status/status.h
-)
-
 target_link_libraries(libpackager
   file
   hls_builder
@@ -121,7 +117,7 @@ target_link_libraries(libpackager
   string_utils
   version
 )
-set_target_properties(libpackager PROPERTIES PUBLIC_HEADER "${LIBPACKAGER_HEADER_FILES}")
+# Avoid liblibpackager on Windows:
 if(NOT MSVC)
   set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
 endif()
@@ -199,8 +195,9 @@ configure_file(packager.pc.in packager.pc @ONLY)
 
 
 install(TARGETS mpd_generator packager libpackager
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY ../include/packager
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(FILES tools/pssh/pssh-box.py DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
