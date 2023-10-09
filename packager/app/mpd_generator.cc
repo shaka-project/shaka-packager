@@ -16,6 +16,7 @@
 #include "packager/mpd/util/mpd_writer.h"
 #include "packager/tools/license_notice.h"
 #include "packager/version/version.h"
+#include "vlog_flags.h"
 
 #if defined(OS_WIN)
 #include <codecvt>
@@ -119,6 +120,8 @@ int MpdMain(int argc, char** argv) {
     std::cerr << "Usage " << absl::ProgramUsageMessage();
     return status;
   }
+
+  register_flags_with_glog();
 
   if (!absl::GetFlag(FLAGS_test_packager_version).empty())
     SetPackagerVersionForTesting(absl::GetFlag(FLAGS_test_packager_version));
