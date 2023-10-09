@@ -7,9 +7,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "absl/base/internal/endian.h"
-#include "glog/logging.h"
-#include "packager/media/base/decrypt_config.h"
+#include <absl/base/internal/endian.h>
+#include <glog/logging.h>
 #include "packager/media/base/timestamp.h"
 #include "packager/media/codecs/vp8_parser.h"
 #include "packager/media/codecs/vp9_parser.h"

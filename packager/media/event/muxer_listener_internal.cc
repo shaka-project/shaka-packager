@@ -9,8 +9,8 @@
 #include <google/protobuf/util/message_differencer.h>
 #include <math.h>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
+#include <absl/strings/escaping.h>
+#include <glog/logging.h>
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/protection_system_specific_info.h"

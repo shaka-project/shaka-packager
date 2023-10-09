@@ -4,8 +4,8 @@
 
 #include "packager/media/formats/webm/webm_crypto_helpers.h"
 
-#include "absl/base/internal/endian.h"
-#include "glog/logging.h"
+#include <absl/base/internal/endian.h>
+#include <glog/logging.h>
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/formats/webm/webm_constants.h"
 

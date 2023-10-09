@@ -6,7 +6,7 @@
 
 #include "packager/media/base/text_stream_info.h"
 
-#include "absl/strings/str_format.h"
+#include <absl/strings/str_format.h>
 
 namespace shaka {
 namespace media {

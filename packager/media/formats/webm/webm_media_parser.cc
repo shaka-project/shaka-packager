@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/webm_cluster_parser.h"

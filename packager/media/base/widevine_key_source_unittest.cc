@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_format.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/str_format.h>
 #include "packager/media/base/key_fetcher.h"
 #include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/request_signer.h"

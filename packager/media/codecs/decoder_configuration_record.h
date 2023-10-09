@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 

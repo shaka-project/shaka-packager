@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "absl/strings/str_split.h"
-#include "nlohmann/json.hpp"
+#include <absl/strings/str_split.h>
+#include <nlohmann/json.hpp>
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/test/test_web_server.h"

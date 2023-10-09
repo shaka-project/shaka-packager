@@ -13,7 +13,7 @@
 #include <iterator>
 #include <limits>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/bit_reader.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 

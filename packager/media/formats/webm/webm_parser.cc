@@ -13,7 +13,7 @@
 
 #include <limits>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace shaka {

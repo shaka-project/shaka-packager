@@ -10,7 +10,7 @@
 #include <atomic>
 #include <memory>
 
-#include "absl/synchronization/mutex.h"
+#include <absl/synchronization/mutex.h>
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/file/io_cache.h"

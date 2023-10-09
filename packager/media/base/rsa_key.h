@@ -12,9 +12,9 @@
 
 #include <string>
 
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/pk.h"
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/pk.h>
 #include "packager/macros.h"
 
 namespace shaka {

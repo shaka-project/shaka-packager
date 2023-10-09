@@ -6,8 +6,8 @@
 
 #include "packager/utils/hex_parser.h"
 
-#include "absl/strings/escaping.h"
-#include "absl/types/span.h"
+#include <absl/strings/escaping.h>
+#include <absl/types/span.h>
 
 namespace shaka {
 

@@ -10,8 +10,8 @@
 #include <functional>
 #include <queue>
 
-#include "absl/base/thread_annotations.h"
-#include "absl/synchronization/mutex.h"
+#include <absl/base/thread_annotations.h>
+#include <absl/synchronization/mutex.h>
 #include "packager/macros.h"
 
 namespace shaka {

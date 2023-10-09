@@ -4,7 +4,7 @@
 
 #include "packager/media/base/audio_timestamp_helper.h"
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/timestamp.h"
 
 namespace shaka {

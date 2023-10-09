@@ -6,8 +6,8 @@
 
 #include "packager/media/codecs/vp_codec_configuration_record.h"
 
-#include "absl/strings/str_format.h"
-#include "absl/strings/str_replace.h"
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_replace.h>
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"

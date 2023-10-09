@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <memory>
 
-#include "glog/logging.h"
+#include <glog/logging.h>
 #include "packager/media/base/rsa_key.h"
 #include "packager/media/base/test/rsa_test_data.h"
 #include "packager/media/test/test_data_util.h"

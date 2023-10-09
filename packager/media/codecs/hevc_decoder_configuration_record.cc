@@ -6,9 +6,9 @@
 
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_format.h"
-#include "absl/strings/str_join.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_join.h>
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/codecs/h265_parser.h"

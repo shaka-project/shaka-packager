@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
+#include <absl/strings/escaping.h>
+#include <glog/logging.h>
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/key_source.h"

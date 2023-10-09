@@ -6,8 +6,6 @@
 
 #include "packager/file/file_util.h"
 
-#include <inttypes.h>
-
 #if defined(OS_WIN)
 #include <windows.h>
 #else
@@ -17,7 +15,7 @@
 #include <filesystem>
 #include <thread>
 
-#include "absl/strings/str_format.h"
+#include <absl/strings/str_format.h>
 
 namespace shaka {
 namespace {

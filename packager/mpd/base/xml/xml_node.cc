@@ -16,8 +16,8 @@
 #include <limits>
 #include <set>
 
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_format.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/str_format.h>
 #include "packager/macros.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/mpd/base/media_info.pb.h"

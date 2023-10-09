@@ -6,12 +6,12 @@
 
 #include <iostream>
 
+#include <absl/flags/parse.h>
+#include <absl/flags/usage.h>
+#include <absl/flags/usage_config.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
-#include "absl/flags/parse.h"
-#include "absl/flags/usage.h"
-#include "absl/flags/usage_config.h"
 #include "packager/app/mpd_generator_flags.h"
 #include "packager/mpd/util/mpd_writer.h"
 #include "packager/tools/license_notice.h"
