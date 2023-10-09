@@ -10,7 +10,8 @@
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 
-// ABSL_DECLARE_FLAG(int32_t, v);
-// ABSL_DECLARE_FLAG(std::string, vmodule);
+namespace shaka {
+void register_flags_with_glog();
+}
 
 #endif  // APP_VLOG_FLAGS_H_
