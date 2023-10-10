@@ -6,9 +6,9 @@
 
 #include <packager/media/codecs/h265_byte_to_unit_stream_converter.h>
 
+#include <absl/strings/escaping.h>
 #include <gtest/gtest.h>
 
-#include <absl/strings/escaping.h>
 #include <packager/media/codecs/hevc_decoder_configuration_record.h>
 #include <packager/media/test/test_data_util.h>
 

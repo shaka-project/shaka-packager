@@ -4,11 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/hls/base/master_playlist.h>
+
+#include <filesystem>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/file/file.h>
-#include <packager/hls/base/master_playlist.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/mock_media_playlist.h>
 #include <packager/version/version.h>

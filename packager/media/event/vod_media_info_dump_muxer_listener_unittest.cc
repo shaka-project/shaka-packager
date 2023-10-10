@@ -6,12 +6,12 @@
 
 #include <packager/media/event/vod_media_info_dump_muxer_listener.h>
 
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
-
-#include <vector>
 
 #include <packager/file/file.h>
 #include <packager/file/file_test_util.h>

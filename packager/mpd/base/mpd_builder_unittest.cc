@@ -4,13 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <packager/mpd/base/mpd_builder.h>
 
 #include <memory>
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <packager/mpd/base/adaptation_set.h>
-#include <packager/mpd/base/mpd_builder.h>
 #include <packager/mpd/base/period.h>
 #include <packager/mpd/base/representation.h>
 #include <packager/mpd/test/mpd_builder_test_helper.h>

@@ -4,6 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/mp2t/ts_writer.h>
+
+#include <filesystem>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -12,7 +16,6 @@
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/formats/mp2t/pes_packet.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
-#include <packager/media/formats/mp2t/ts_writer.h>
 #include <filesystem>
 
 using ::testing::InSequence;

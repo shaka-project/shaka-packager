@@ -6,10 +6,10 @@
 
 #include <packager/media/base/decryptor_source.h>
 
+#include <iterator>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include <iterator>
 
 #include <packager/macros.h>
 #include <packager/media/base/raw_key_source.h>

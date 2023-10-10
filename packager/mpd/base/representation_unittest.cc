@@ -6,12 +6,13 @@
 
 #include <packager/mpd/base/representation.h>
 
+#include <cinttypes>
+
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 #include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <inttypes.h>
 
 #include <packager/file/file.h>
 #include <packager/file/file_closer.h>

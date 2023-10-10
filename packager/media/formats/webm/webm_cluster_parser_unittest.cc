@@ -4,9 +4,6 @@
 
 #include <packager/media/formats/webm/webm_cluster_parser.h>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include <algorithm>
 #include <cstdlib>
 #include <functional>
@@ -15,6 +12,9 @@
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/timestamp.h>

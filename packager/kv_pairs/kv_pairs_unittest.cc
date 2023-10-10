@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/kv_pairs/kv_pairs.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include <packager/kv_pairs/kv_pairs.h>
 
 namespace shaka {
 

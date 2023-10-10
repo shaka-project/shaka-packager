@@ -4,11 +4,11 @@
 
 #include <packager/media/formats/webm/webm_content_encodings_client.h>
 
-#include <gtest/gtest.h>
-
 #include <string>
 
 #include <absl/strings/numbers.h>
+#include <gtest/gtest.h>
+
 #include <packager/media/formats/webm/webm_constants.h>
 #include <packager/media/formats/webm/webm_parser.h>
 

@@ -4,14 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/mp2t/ac3_header.h>
+
+#include <absl/strings/numbers.h>
+#include <glog/logging.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/utils/hex_parser.h>
-
-#include <absl/strings/numbers.h>
-#include <glog/logging.h>
-#include <packager/media/formats/mp2t/ac3_header.h>
 
 using ::testing::ElementsAreArray;
 

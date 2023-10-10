@@ -6,12 +6,13 @@
 
 #include <packager/media/event/mpd_notify_muxer_listener.h>
 
+#include <algorithm>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
-#include <algorithm>
-#include <vector>
 
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/event/muxer_listener_test_helper.h>
