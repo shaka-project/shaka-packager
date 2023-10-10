@@ -6,6 +6,8 @@
 
 #include <packager/media/formats/webm/mkv_writer.h>
 
+#include <absl/log/check.h>
+
 namespace shaka {
 namespace media {
 

@@ -8,10 +8,12 @@
 #include <cstdint>
 #include <list>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
-#include <glog/logging.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/audio_timestamp_helper.h>
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/media_sample.h>

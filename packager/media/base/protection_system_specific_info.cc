@@ -8,6 +8,8 @@
 
 #include <map>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>

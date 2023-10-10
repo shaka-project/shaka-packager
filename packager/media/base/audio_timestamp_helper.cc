@@ -4,7 +4,8 @@
 
 #include <packager/media/base/audio_timestamp_helper.h>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/timestamp.h>
 

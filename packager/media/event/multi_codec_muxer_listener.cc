@@ -6,8 +6,8 @@
 
 #include <packager/media/event/multi_codec_muxer_listener.h>
 
+#include <absl/log/log.h>
 #include <absl/strings/str_split.h>
-#include <glog/logging.h>
 
 #include <packager/media/base/stream_info.h>
 

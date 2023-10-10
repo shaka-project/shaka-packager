@@ -8,9 +8,10 @@
 #include <functional>
 #include <string>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/timestamp.h>

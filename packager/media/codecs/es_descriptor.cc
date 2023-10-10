@@ -4,6 +4,8 @@
 
 #include <packager/media/codecs/es_descriptor.h>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/rcheck.h>

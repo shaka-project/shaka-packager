@@ -8,11 +8,13 @@
 #include <functional>
 #include <limits>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
-#include <glog/logging.h>
 
 #include <packager/file/file.h>
 #include <packager/file/file_closer.h>
+#include <packager/macros.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/decrypt_config.h>

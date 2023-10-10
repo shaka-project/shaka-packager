@@ -4,8 +4,8 @@
 
 #include <packager/media/formats/mp2t/adts_header.h>
 
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
-#include <glog/logging.h>
 #include <gtest/gtest.h>
 
 #include <packager/utils/hex_parser.h>

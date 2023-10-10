@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <chrono>
 
+#include <packager/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/status/status_macros.h>

@@ -7,6 +7,9 @@
 #include <functional>
 #include <memory>
 
+#include <absl/log/check.h>
+
+#include <packager/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>
@@ -22,7 +25,6 @@
 #include <packager/media/formats/mp2t/ts_section_pes.h>
 #include <packager/media/formats/mp2t/ts_section_pmt.h>
 #include <packager/media/formats/mp2t/ts_stream_type.h>
-#include <functional>
 
 namespace shaka {
 namespace media {
@@ -261,7 +263,9 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   // if there is already one registered.
   for (const auto& pair : pids_) {
     if (pair.second->pid_type() == PidState::kPidPmt) {
-      DVLOG_IF(1, pmt_pid != pair.first) << "More than one program is defined";
+      if (pmt_pid != pair.first) {
+        DVLOG(1) << "More than one program is defined";
+      }
       return;
     }
   }

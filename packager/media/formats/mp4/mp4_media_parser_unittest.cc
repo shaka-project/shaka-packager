@@ -8,10 +8,11 @@
 
 #include <functional>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/stream_info.h>

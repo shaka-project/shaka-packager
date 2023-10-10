@@ -8,8 +8,9 @@
 
 #include <cinttypes>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
 
 namespace shaka {
 namespace media {

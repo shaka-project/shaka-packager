@@ -6,6 +6,8 @@
 
 #include <packager/media/formats/webm/webm_muxer.h>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>

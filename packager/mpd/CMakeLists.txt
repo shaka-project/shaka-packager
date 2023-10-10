@@ -12,7 +12,7 @@ add_library(manifest_base STATIC
   )
 
 target_link_libraries(manifest_base
-  glog
+  absl::log
   )
 
 add_library(mpd_builder STATIC
@@ -43,13 +43,13 @@ add_library(mpd_builder STATIC
 
 target_link_libraries(mpd_builder
   absl::flags
+  absl::log
   absl::strings
   absl::str_format
-  glog
-  LibXml2
   file
-  media_base
+  LibXml2
   manifest_base
+  media_base
   mpd_media_info_proto
   utils_clock
 )

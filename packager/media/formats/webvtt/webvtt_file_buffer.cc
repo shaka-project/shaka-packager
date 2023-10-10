@@ -6,6 +6,7 @@
 
 #include <packager/media/formats/webvtt/webvtt_file_buffer.h>
 
+#include <absl/log/check.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/media/base/text_sample.h>

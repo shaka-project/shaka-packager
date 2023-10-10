@@ -10,10 +10,10 @@ add_library(media_crypto STATIC
         sample_aes_ec3_cryptor.cc
         subsample_generator.cc)
 target_link_libraries(media_crypto
-        media_base
-        media_codecs
         absl::base
-        glog)
+        absl::log
+        media_base
+        media_codecs)
 
 add_executable(media_crypto_unittest
         encryption_handler_unittest.cc

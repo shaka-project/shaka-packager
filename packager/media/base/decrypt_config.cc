@@ -4,7 +4,8 @@
 
 #include <packager/media/base/decrypt_config.h>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

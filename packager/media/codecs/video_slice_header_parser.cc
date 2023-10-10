@@ -6,6 +6,9 @@
 
 #include <packager/media/codecs/video_slice_header_parser.h>
 
+#include <absl/log/check.h>
+
+#include <packager/macros.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/media/codecs/avc_decoder_configuration_record.h>
 #include <packager/media/codecs/hevc_decoder_configuration_record.h>

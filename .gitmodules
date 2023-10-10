@@ -7,9 +7,6 @@
 [submodule "packager/third_party/curl/source"]
 	path = packager/third_party/curl/source
 	url = https://github.com/curl/curl
-[submodule "packager/third_party/glog/source"]
-	path = packager/third_party/glog/source
-	url = https://github.com/google/glog
 [submodule "packager/third_party/json/source"]
 	path = packager/third_party/json/source
 	url = https://github.com/nlohmann/json

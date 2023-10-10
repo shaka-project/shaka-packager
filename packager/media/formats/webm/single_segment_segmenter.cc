@@ -6,6 +6,7 @@
 
 #include <packager/media/formats/webm/single_segment_segmenter.h>
 
+#include <absl/log/check.h>
 #include <mkvmuxer/mkvmuxer.h>
 
 #include <packager/media/base/muxer_options.h>

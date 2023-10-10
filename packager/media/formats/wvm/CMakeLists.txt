@@ -10,10 +10,10 @@ add_library(wvm STATIC
   )
 
 target_link_libraries(wvm
+  absl::log
   media_base
   media_codecs
   mp2t
-  glog
 )
 
 add_executable(wvm_unittest
@@ -21,18 +21,18 @@ add_executable(wvm_unittest
   )
 
 target_link_libraries(wvm_unittest
-  wvm
+  absl::flags
+  absl::log
   file
   file_test_util
-  test_data_util
-  absl::flags
-  media_event
-  media_handler_test_base
-  mock_muxer_listener
-  glog
   gmock
   gtest
   gtest_main
+  media_event
+  media_handler_test_base
+  mock_muxer_listener
+  test_data_util
+  wvm
   )
 
 add_test(NAME wvm_unittest COMMAND wvm_unittest)

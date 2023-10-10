@@ -8,6 +8,8 @@
 
 #include <set>
 
+#include <absl/log/check.h>
+
 #include <packager/media/chunking/sync_point_queue.h>
 #include <packager/media/origin/origin_handler.h>
 

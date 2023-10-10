@@ -6,6 +6,7 @@
 
 #include <packager/media/formats/webvtt/webvtt_to_mp4_handler.h>
 
+#include <absl/log/check.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

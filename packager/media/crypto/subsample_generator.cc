@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/av1_parser.h>

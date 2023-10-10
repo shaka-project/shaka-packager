@@ -6,7 +6,8 @@
 
 #include <packager/media/base/decryptor_source.h>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/aes_decryptor.h>
 #include <packager/media/base/aes_pattern_cryptor.h>

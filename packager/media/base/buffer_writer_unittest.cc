@@ -10,7 +10,7 @@
 #include <limits>
 #include <memory>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/file/file.h>
 #include <packager/file/file_test_util.h>

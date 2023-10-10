@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <cstdint>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 
@@ -102,9 +104,10 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
   // There should not be any trailing bytes after a PMT.
   // Instead, the pointer field should be used to stuff bytes.
-  DVLOG_IF(1, raw_psi_size > psi_length)
-      << "Trailing bytes after a PSI section: "
-      << psi_length << " vs " << raw_psi_size;
+  if (raw_psi_size > psi_length) {
+    DVLOG(1) << "Trailing bytes after a PSI section: "
+             << psi_length << " vs " << raw_psi_size;
+  }
 
   // Verify the CRC.
   RCHECK(IsCrcValid(raw_psi, psi_length));

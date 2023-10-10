@@ -6,6 +6,8 @@
 
 #include <packager/file/threaded_io_file.h>
 
+#include <absl/log/check.h>
+
 #include <packager/file/thread_pool.h>
 
 namespace shaka {

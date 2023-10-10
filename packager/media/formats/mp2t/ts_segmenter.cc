@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/base/video_stream_info.h>

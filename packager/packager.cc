@@ -10,9 +10,10 @@
 #include <chrono>
 #include <optional>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/match.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
 
 #include <packager/app/job_manager.h>
 #include <packager/app/muxer_factory.h>
@@ -21,6 +22,7 @@
 #include <packager/file/file.h>
 #include <packager/hls/base/hls_notifier.h>
 #include <packager/hls/base/simple_hls_notifier.h>
+#include <packager/macros.h>
 #include <packager/media/base/cc_stream_filter.h>
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/muxer.h>

@@ -6,6 +6,8 @@
 
 #include <packager/media/codecs/hls_audio_util.h>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/codecs/aac_audio_specific_config.h>

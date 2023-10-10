@@ -5,7 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_RCHECK_H_
 #define PACKAGER_MEDIA_BASE_RCHECK_H_
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #define RCHECK(x)                                       \
   do {                                                  \

@@ -6,9 +6,9 @@
 
 #include <packager/app/stream_descriptor.h>
 
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_split.h>
-#include <glog/logging.h>
 
 #include <packager/kv_pairs/kv_pairs.h>
 #include <packager/utils/string_trim_split.h>

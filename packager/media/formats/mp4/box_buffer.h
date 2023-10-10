@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include <absl/log/check.h>
+
 #include <packager/macros.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp4/box.h>

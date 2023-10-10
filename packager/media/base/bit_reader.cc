@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <absl/log/check.h>
+
 namespace shaka {
 namespace media {
 

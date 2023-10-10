@@ -11,10 +11,11 @@
 #include <filesystem>
 #include <optional>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/synchronization/mutex.h>
-#include <glog/logging.h>
 
 #include <packager/file/file_util.h>
 #include <packager/media/base/rcheck.h>

@@ -9,9 +9,11 @@
 #include <limits>
 
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <glog/logging.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/utils/bytes_to_string_view.h>
 

@@ -7,12 +7,14 @@
 #include <packager/mpd/base/mpd_utils.h>
 
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
 #include <libxml/tree.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/mpd/base/adaptation_set.h>
@@ -485,9 +487,10 @@ void AddContentProtectionElementsHelperTemplated(
     parent->AddContentProtectionElement(drm_content_protection);
   }
 
-  VLOG_IF(1, protected_content.content_protection_entry().size() == 0)
-      << "The media is encrypted but no content protection specified (can "
-         "happen with key rotation).";
+  if (protected_content.content_protection_entry().size() == 0) {
+    VLOG(1) << "The media is encrypted but no content protection specified "
+            << "(can happen with key rotation).";
+  }
 }
 }  // namespace
 

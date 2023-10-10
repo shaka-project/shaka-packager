@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/id3_tag.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/codecs/aac_audio_specific_config.h>

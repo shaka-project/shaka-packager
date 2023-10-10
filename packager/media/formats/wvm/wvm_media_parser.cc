@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <absl/base/internal/endian.h>
+#include <absl/log/check.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/media/base/aes_decryptor.h>

@@ -10,6 +10,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <absl/log/check.h>
+
+#include <packager/macros.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/common_pssh_generator.h>

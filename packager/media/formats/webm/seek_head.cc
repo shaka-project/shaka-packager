@@ -9,8 +9,9 @@
 #include <algorithm>
 #include <limits>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <common/webmids.h>
-#include <glog/logging.h>
 #include <mkvmuxer/mkvmuxerutil.h>
 
 using namespace mkvmuxer;

@@ -9,7 +9,8 @@
 #include <functional>
 #include <vector>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 #include <packager/media/base/media_sample.h>

@@ -10,6 +10,7 @@
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
 #include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -11,7 +11,7 @@
 #include <optional>
 #include <queue>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/media_handler.h>
 #include <packager/media/public/chunking_params.h>

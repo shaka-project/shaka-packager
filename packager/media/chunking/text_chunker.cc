@@ -6,6 +6,8 @@
 
 #include <packager/media/chunking/text_chunker.h>
 
+#include <absl/log/check.h>
+
 #include <packager/status/status_macros.h>
 
 namespace shaka {

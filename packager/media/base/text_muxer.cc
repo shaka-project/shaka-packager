@@ -6,6 +6,8 @@
 
 #include <packager/media/base/text_muxer.h>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/muxer_util.h>
 #include <packager/status/status_macros.h>
 

@@ -6,7 +6,8 @@
 
 #include <packager/media/base/request_signer.h>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <mbedtls/md.h>
 
 #include <packager/media/base/aes_encryptor.h>

@@ -6,6 +6,8 @@
 
 #include <packager/media/formats/ttml/ttml_to_mp4_handler.h>
 
+#include <absl/log/check.h>
+
 #include <packager/status/status_macros.h>
 
 namespace shaka {

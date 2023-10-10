@@ -9,10 +9,12 @@
 #include <algorithm>
 
 #include <absl/flags/declare.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
 
 #include <packager/file/file.h>
+#include <packager/macros.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/mpd_utils.h>

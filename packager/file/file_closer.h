@@ -7,7 +7,7 @@
 #ifndef MEDIA_FILE_FILE_CLOSER_H_
 #define MEDIA_FILE_FILE_CLOSER_H_
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/file/file.h>
 

@@ -10,10 +10,11 @@
 #include <string>
 #include <vector>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
-#include <glog/logging.h>
 
 #include <packager/media/base/video_stream_info.h>
 

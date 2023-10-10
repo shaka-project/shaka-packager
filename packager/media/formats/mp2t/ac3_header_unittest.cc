@@ -6,8 +6,8 @@
 
 #include <packager/media/formats/mp2t/ac3_header.h>
 
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
-#include <glog/logging.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

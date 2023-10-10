@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include <absl/log/check.h>
+
 #include <packager/macros.h>
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
@@ -39,7 +41,9 @@ int TsPacket::Sync(const uint8_t* buf, int size) {
       break;
   }
 
-  DVLOG_IF(1, k != 0) << "SYNC: nbytes_skipped=" << k;
+  if (k != 0) {
+    DVLOG(1) << "SYNC: nbytes_skipped=" << k;
+  }
   return k;
 }
 

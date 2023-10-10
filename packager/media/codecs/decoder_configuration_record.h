@@ -9,7 +9,8 @@
 
 #include <vector>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/macros.h>
 #include <packager/media/codecs/nalu_reader.h>

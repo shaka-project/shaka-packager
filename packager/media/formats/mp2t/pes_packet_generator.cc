@@ -10,6 +10,8 @@
 #include <cstring>
 #include <memory>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/media_sample.h>

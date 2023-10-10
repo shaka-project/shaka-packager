@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/media_handler.h>
 
 namespace shaka {
