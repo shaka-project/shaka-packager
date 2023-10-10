@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/base/raw_key_source.h>
+
+#include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <absl/strings/escaping.h>
-#include <packager/media/base/raw_key_source.h>
 #include <packager/status/status_test_util.h>
 
 #define EXPECT_HEX_EQ(expected_hex, actual)                          \

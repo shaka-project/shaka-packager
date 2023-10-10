@@ -6,10 +6,10 @@
 
 #include <packager/media/crypto/encryption_handler.h>
 
+#include <glog/logging.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <glog/logging.h>
 #include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/media_handler_test_base.h>
 #include <packager/media/base/mock_aes_cryptor.h>

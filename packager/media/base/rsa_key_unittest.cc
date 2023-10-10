@@ -6,12 +6,14 @@
 //
 // Unit test for rsa_key RSA encryption and signing.
 
-#include <gtest/gtest.h>
+#include <packager/media/base/rsa_key.h>
+
 #include <filesystem>
 #include <memory>
 
 #include <glog/logging.h>
-#include <packager/media/base/rsa_key.h>
+#include <gtest/gtest.h>
+
 #include <packager/media/base/test/rsa_test_data.h>
 #include <packager/media/test/test_data_util.h>
 

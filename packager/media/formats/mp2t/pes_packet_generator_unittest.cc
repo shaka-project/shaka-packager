@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/mp2t/pes_packet_generator.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -14,7 +16,6 @@
 #include <packager/media/codecs/aac_audio_specific_config.h>
 #include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
 #include <packager/media/formats/mp2t/pes_packet.h>
-#include <packager/media/formats/mp2t/pes_packet_generator.h>
 
 namespace shaka {
 namespace media {

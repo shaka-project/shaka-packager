@@ -4,9 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
 #include <packager/media/formats/mp4/composition_offset_iterator.h>
+
 #include <memory>
+
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {

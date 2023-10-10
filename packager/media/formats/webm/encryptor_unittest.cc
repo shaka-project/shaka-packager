@@ -6,9 +6,9 @@
 
 #include <packager/media/formats/webm/encryptor.h>
 
-#include <gtest/gtest.h>
-
 #include <memory>
+
+#include <gtest/gtest.h>
 
 #include <packager/media/base/media_sample.h>
 #include <packager/media/formats/webm/webm_constants.h>

@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/base/aes_pattern_cryptor.h>
+
+#include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <absl/strings/escaping.h>
-#include <packager/media/base/aes_pattern_cryptor.h>
 #include <packager/media/base/mock_aes_cryptor.h>
 
 using ::testing::_;

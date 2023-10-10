@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 #include <packager/file/file_test_util.h>
 #include <packager/media/base/buffer_reader.h>

@@ -4,14 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 #include <limits>
 #include <memory>
 
+#include <gtest/gtest.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/protection_system_specific_info.h>
-#include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_definitions_comparison.h>
 #include <packager/media/formats/mp4/box_reader.h>
 

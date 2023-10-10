@@ -4,10 +4,12 @@
 
 #include <packager/media/formats/webm/multi_segment_segmenter.h>
 
+#include <memory>
+
 #include <gtest/gtest.h>
+
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/formats/webm/segmenter_test_base.h>
-#include <memory>
 
 namespace shaka {
 namespace media {

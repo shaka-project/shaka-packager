@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
+#include <packager/media/base/audio_timestamp_helper.h>
 
 #include <iterator>
 
-#include <packager/media/base/audio_timestamp_helper.h>
+#include <gtest/gtest.h>
+
 #include <packager/media/base/timestamp.h>
 
 namespace shaka {

@@ -4,14 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
-#include <cstdio>
+#include <packager/file/file.h>
 
+#include <cstdio>
 #include <filesystem>
 #include <locale>
 
 #include <absl/flags/declare.h>
-#include <packager/file/file.h>
+#include <gtest/gtest.h>
+
 #include <packager/file/file_test_util.h>
 #include <packager/flag_saver.h>
 
