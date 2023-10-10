@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_MP4_CUE_HANDLER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_MP4_CUE_HANDLER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <queue>
 

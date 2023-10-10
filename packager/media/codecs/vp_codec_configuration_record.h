@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_VP_CODEC_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_VP_CODEC_CONFIGURATION_RECORD_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>

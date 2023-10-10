@@ -11,13 +11,13 @@
 #ifndef MPD_BASE_MPD_BUILDER_H_
 #define MPD_BASE_MPD_BUILDER_H_
 
-#include <libxml/tree.h>
-
 #include <chrono>
 #include <list>
 #include <memory>
 #include <optional>
 #include <string>
+
+#include <libxml/tree.h>
 
 #include <packager/macros.h>
 #include <packager/mpd/base/mpd_options.h>

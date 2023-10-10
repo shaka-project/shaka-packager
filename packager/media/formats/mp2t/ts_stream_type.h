@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_STREAM_TYPE_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_STREAM_TYPE_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace shaka {
 namespace media {

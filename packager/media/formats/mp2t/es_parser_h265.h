@@ -7,8 +7,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H265_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H265_H_
 
-#include <stdint.h>
-
+#include <cstdint>
+#include <functional>
 #include <list>
 #include <memory>
 #include <utility>

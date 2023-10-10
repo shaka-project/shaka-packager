@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_PROGRAM_MAP_TABLE_WRITER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_PROGRAM_MAP_TABLE_WRITER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
 #include <packager/media/base/buffer_writer.h>

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <glog/logging.h>
+
 #include <packager/macros.h>
 #include <packager/status/status.h>
 

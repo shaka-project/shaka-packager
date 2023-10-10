@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_BOX_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <packager/media/base/fourccs.h>
 

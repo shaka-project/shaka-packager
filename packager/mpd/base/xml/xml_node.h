@@ -10,8 +10,7 @@
 #ifndef MPD_BASE_XML_XML_NODE_H_
 #define MPD_BASE_XML_XML_NODE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <set>
 #include <string>

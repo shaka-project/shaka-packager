@@ -5,8 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_CONTAINER_NAMES_H_
 #define PACKAGER_MEDIA_BASE_CONTAINER_NAMES_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
 namespace shaka {
