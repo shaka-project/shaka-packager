@@ -9,8 +9,8 @@
 #include <memory>
 
 #include <glog/logging.h>
-#include "packager/media/base/rcheck.h"
-#include "packager/media/formats/mp4/box_buffer.h"
+#include <packager/media/base/rcheck.h>
+#include <packager/media/formats/mp4/box_buffer.h>
 
 namespace shaka {
 namespace media {

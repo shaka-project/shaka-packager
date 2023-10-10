@@ -7,7 +7,7 @@
 #ifndef PACKAGER_STATUS_MACROS_H_
 #define PACKAGER_STATUS_MACROS_H_
 
-#include "packager/status/status.h"
+#include <packager/status/status.h>
 
 // Evaluates an expression that produces a `Status`. If the status is not
 // ok, returns it from the current function.

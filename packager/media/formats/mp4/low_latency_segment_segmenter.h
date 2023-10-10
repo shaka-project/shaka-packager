@@ -7,10 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_LOW_LATENCY_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_LOW_LATENCY_SEGMENT_SEGMENTER_H_
 
-#include "packager/media/formats/mp4/segmenter.h"
+#include <packager/media/formats/mp4/segmenter.h>
 
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
+#include <packager/file/file.h>
+#include <packager/file/file_closer.h>
 
 namespace shaka {
 namespace media {

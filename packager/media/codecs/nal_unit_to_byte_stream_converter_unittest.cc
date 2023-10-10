@@ -7,9 +7,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_sample.h"
-#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
-#include "packager/media/formats/mp4/box_definitions_comparison.h"
+#include <packager/media/base/media_sample.h>
+#include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
+#include <packager/media/formats/mp4/box_definitions_comparison.h>
 
 namespace shaka {
 namespace media {

@@ -9,7 +9,7 @@
 
 #include <gmock/gmock.h>
 
-#include "packager/hls/base/media_playlist.h"
+#include <packager/hls/base/media_playlist.h>
 
 namespace shaka {
 namespace hls {

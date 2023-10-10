@@ -1,4 +1,4 @@
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/mpd/test/xml_compare.h>
 
 #include <absl/strings/strip.h>
 #include <glog/logging.h>

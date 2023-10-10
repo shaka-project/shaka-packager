@@ -15,8 +15,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/mpd/base/mpd_options.h"
+#include <packager/macros.h>
+#include <packager/mpd/base/mpd_options.h>
 
 namespace shaka {
 

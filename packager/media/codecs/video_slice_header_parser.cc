@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/video_slice_header_parser.h"
+#include <packager/media/codecs/video_slice_header_parser.h>
 
-#include "packager/media/base/rcheck.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
+#include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {

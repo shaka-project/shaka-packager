@@ -5,10 +5,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 #include <stdint.h>
 #include <functional>
 #include <memory>
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {
 namespace media {

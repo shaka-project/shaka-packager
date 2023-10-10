@@ -10,12 +10,12 @@
 #include <gmock/gmock.h>
 
 #include <absl/synchronization/mutex.h>
-#include "packager/macros.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/mpd_builder.h"
-#include "packager/mpd/base/period.h"
-#include "packager/mpd/base/representation.h"
+#include <packager/macros.h>
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/mpd_builder.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
 
 namespace shaka {
 

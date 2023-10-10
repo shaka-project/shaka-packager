@@ -10,8 +10,8 @@
 
 #include <absl/synchronization/notification.h>
 #include <glog/logging.h>
-#include "packager/media/base/producer_consumer_queue.h"
-#include "packager/status/status_test_util.h"
+#include <packager/media/base/producer_consumer_queue.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace {

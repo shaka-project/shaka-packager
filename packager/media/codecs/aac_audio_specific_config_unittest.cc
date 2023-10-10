@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/codecs/aac_audio_specific_config.h"
+#include <packager/media/codecs/aac_audio_specific_config.h>
 
 namespace shaka {
 namespace media {

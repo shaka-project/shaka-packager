@@ -4,18 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/representation.h"
+#include <packager/mpd/base/representation.h>
 
 #include <absl/flags/declare.h>
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
 #include <algorithm>
 
-#include "packager/file/file.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/file/file.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/box_reader.h"
+#include <packager/media/formats/mp4/box_reader.h>
 
 #include <inttypes.h>
 
@@ -11,7 +11,7 @@
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
-#include "packager/media/formats/mp4/box.h"
+#include <packager/media/formats/mp4/box.h>
 
 namespace shaka {
 namespace media {

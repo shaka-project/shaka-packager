@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/encryption_config.h"
+#include <packager/media/base/encryption_config.h>
 
 namespace shaka {
 namespace media {

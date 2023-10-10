@@ -10,9 +10,9 @@
 #include <memory>
 #include <string>
 
-#include "packager/media/base/container_names.h"
-#include "packager/media/public/mp4_output_params.h"
-#include "packager/mpd/base/mpd_builder.h"
+#include <packager/media/base/container_names.h>
+#include <packager/media/public/mp4_output_params.h>
+#include <packager/mpd/base/mpd_builder.h>
 
 namespace shaka {
 struct PackagingParams;

@@ -53,7 +53,7 @@ catch those, use the `HEAP_PROFILE_ALLOCATION_INTERVAL` environment variable.
 
 To programmatically generate a heap profile before exit, use code like:
 
-    #include "packager/third_party/tcmalloc/chromium/src/gperftools/heap-profiler.h"
+    #include <packager/third_party/tcmalloc/chromium/src/gperftools/heap-profiler.h>
 
     // "foobar" will be included in the message printed to the console
     HeapProfilerDump("foobar");

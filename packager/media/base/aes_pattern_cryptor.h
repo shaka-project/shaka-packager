@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/aes_cryptor.h"
+#include <packager/media/base/aes_cryptor.h>
 
 #include <memory>
 
-#include "packager/macros.h"
+#include <packager/macros.h>
 
 namespace shaka {
 namespace media {

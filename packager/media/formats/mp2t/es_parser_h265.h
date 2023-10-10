@@ -13,9 +13,9 @@
 #include <memory>
 #include <utility>
 
+#include <packager/macros.h>
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 #include <functional>
-#include "packager/macros.h"
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {
 namespace media {

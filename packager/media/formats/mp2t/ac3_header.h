@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include "packager/media/formats/mp2t/audio_header.h"
+#include <packager/media/formats/mp2t/audio_header.h>
 
 namespace shaka {
 namespace media {

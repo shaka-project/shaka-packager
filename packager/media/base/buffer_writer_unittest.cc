@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/buffer_writer.h"
+#include <packager/media/base/buffer_writer.h>
 
 #include <filesystem>
 #include <limits>
 #include <memory>
 
 #include <glog/logging.h>
-#include "packager/file/file.h"
-#include "packager/file/file_test_util.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/status/status_test_util.h"
+#include <packager/file/file.h>
+#include <packager/file/file_test_util.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/status/status_test_util.h>
 
 namespace {
 const int kReservedBufferCapacity = 1000;

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include "packager/media/public/crypto_params.h"
+#include <packager/media/public/crypto_params.h>
 
 namespace shaka {
 namespace media {

@@ -9,11 +9,11 @@
 #include <memory>
 
 #include <absl/types/span.h>
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 namespace shaka {
 namespace {

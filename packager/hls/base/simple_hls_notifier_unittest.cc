@@ -12,13 +12,13 @@
 #include <memory>
 
 #include <absl/strings/escaping.h>
+#include <packager/flag_saver.h>
+#include <packager/hls/base/mock_media_playlist.h>
+#include <packager/hls/base/simple_hls_notifier.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/widevine_pssh_data.pb.h>
 #include <filesystem>
-#include "packager/flag_saver.h"
-#include "packager/hls/base/mock_media_playlist.h"
-#include "packager/hls/base/simple_hls_notifier.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/widevine_pssh_data.pb.h"
 
 ABSL_DECLARE_FLAG(bool, enable_legacy_widevine_hls_signaling);
 

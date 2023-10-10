@@ -9,12 +9,12 @@
 #include <memory>
 #include <utility>
 
+#include <packager/macros.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/formats/mp2t/es_parser.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 #include <functional>
-#include "packager/macros.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/formats/mp2t/es_parser.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {

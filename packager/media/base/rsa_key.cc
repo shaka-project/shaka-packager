@@ -16,7 +16,7 @@
 //   Mask generation function: mgf1SHA1
 //   Label (encoding paramter): empty std::string
 
-#include "packager/media/base/rsa_key.h"
+#include <packager/media/base/rsa_key.h>
 
 #include <memory>
 #include <vector>

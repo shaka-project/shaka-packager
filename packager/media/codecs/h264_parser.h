@@ -13,8 +13,8 @@
 #include <map>
 #include <memory>
 
-#include "packager/media/codecs/h26x_bit_reader.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/media/codecs/h26x_bit_reader.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {

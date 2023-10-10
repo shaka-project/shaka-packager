@@ -6,7 +6,7 @@
 //
 // Defines Mpd flags.
 
-#include "packager/app/mpd_flags.h"
+#include <packager/app/mpd_flags.h>
 
 ABSL_FLAG(bool,
           generate_static_live_mpd,

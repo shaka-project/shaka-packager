@@ -6,9 +6,9 @@
 //
 // Defines command line flags for PlayReady encryption.
 
-#include "packager/app/playready_key_encryption_flags.h"
+#include <packager/app/playready_key_encryption_flags.h>
 
-#include "packager/app/validate_flag.h"
+#include <packager/app/validate_flag.h>
 
 ABSL_FLAG(bool,
           enable_playready_encryption,

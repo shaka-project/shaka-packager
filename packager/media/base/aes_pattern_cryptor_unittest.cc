@@ -8,8 +8,8 @@
 #include <gtest/gtest.h>
 
 #include <absl/strings/escaping.h>
-#include "packager/media/base/aes_pattern_cryptor.h"
-#include "packager/media/base/mock_aes_cryptor.h"
+#include <packager/media/base/aes_pattern_cryptor.h>
+#include <packager/media/base/mock_aes_cryptor.h>
 
 using ::testing::_;
 using ::testing::Invoke;

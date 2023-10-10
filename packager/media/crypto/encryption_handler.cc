@@ -4,26 +4,26 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/encryption_handler.h"
+#include <packager/media/crypto/encryption_handler.h>
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/common_pssh_generator.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/playready_pssh_generator.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/widevine_pssh_generator.h"
-#include "packager/media/crypto/aes_encryptor_factory.h"
-#include "packager/media/crypto/subsample_generator.h"
-#include "packager/status/status_macros.h"
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/common_pssh_generator.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/macros.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/playready_pssh_generator.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/widevine_pssh_generator.h>
+#include <packager/media/crypto/aes_encryptor_factory.h>
+#include <packager/media/crypto/subsample_generator.h>
+#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

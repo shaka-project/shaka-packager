@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/macros.h>
+#include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 typedef struct _xmlNode xmlNode;
 

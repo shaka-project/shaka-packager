@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/app/muxer_factory.h"
+#include <packager/app/muxer_factory.h>
 
-#include "packager/media/base/muxer.h"
-#include "packager/media/formats/mp2t/ts_muxer.h"
-#include "packager/media/formats/mp4/mp4_muxer.h"
-#include "packager/media/formats/packed_audio/packed_audio_writer.h"
-#include "packager/media/formats/ttml/ttml_muxer.h"
-#include "packager/media/formats/webm/webm_muxer.h"
-#include "packager/media/formats/webvtt/webvtt_muxer.h"
-#include "packager/packager.h"
+#include <packager/media/base/muxer.h>
+#include <packager/media/formats/mp2t/ts_muxer.h>
+#include <packager/media/formats/mp4/mp4_muxer.h>
+#include <packager/media/formats/packed_audio/packed_audio_writer.h>
+#include <packager/media/formats/ttml/ttml_muxer.h>
+#include <packager/media/formats/webm/webm_muxer.h>
+#include <packager/media/formats/webvtt/webvtt_muxer.h>
+#include <packager/packager.h>
 
 namespace shaka {
 namespace media {

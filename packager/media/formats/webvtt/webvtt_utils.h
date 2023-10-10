@@ -13,9 +13,9 @@
 #include <memory>
 #include <string>
 
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 #include <string_view>
-#include "packager/media/base/text_sample.h"
-#include "packager/media/base/text_stream_info.h"
 
 namespace shaka {
 namespace media {

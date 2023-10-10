@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/base/audio_timestamp_helper.h"
+#include <packager/media/base/audio_timestamp_helper.h>
 
 #include <glog/logging.h>
-#include "packager/media/base/timestamp.h"
+#include <packager/media/base/timestamp.h>
 
 namespace shaka {
 namespace media {

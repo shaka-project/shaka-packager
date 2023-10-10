@@ -11,9 +11,9 @@
 
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include <packager/macros.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {

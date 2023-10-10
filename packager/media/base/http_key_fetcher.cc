@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/http_key_fetcher.h"
+#include <packager/media/base/http_key_fetcher.h>
 
-#include "packager/file/file_closer.h"
+#include <packager/file/file_closer.h>
 
 namespace shaka {
 namespace media {

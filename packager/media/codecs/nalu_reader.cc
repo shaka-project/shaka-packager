@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/media/codecs/nalu_reader.h>
 
 #include <iostream>
 
 #include <glog/logging.h>
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/codecs/h264_parser.h"
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/codecs/h264_parser.h>
 
 namespace shaka {
 namespace media {

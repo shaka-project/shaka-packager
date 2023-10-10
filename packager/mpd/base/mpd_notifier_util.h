@@ -14,8 +14,8 @@
 #include <vector>
 
 #include <absl/strings/escaping.h>
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_builder.h"
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_builder.h>
 
 namespace shaka{
 

@@ -6,14 +6,14 @@
 //
 // Defines command line flags for widevine_encryption.
 
-#include "packager/app/widevine_encryption_flags.h"
+#include <packager/app/widevine_encryption_flags.h>
 
 #include <absl/flags/flag.h>
 #include <absl/strings/ascii.h>
 #include <absl/strings/match.h>
 #include <glog/logging.h>
+#include <packager/app/validate_flag.h>
 #include <string_view>
-#include "packager/app/validate_flag.h"
 
 ABSL_FLAG(bool,
           enable_widevine_encryption,

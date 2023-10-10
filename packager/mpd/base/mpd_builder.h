@@ -19,10 +19,10 @@
 #include <optional>
 #include <string>
 
-#include "packager/macros.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/xml/xml_node.h"
-#include "packager/utils/clock.h"
+#include <packager/macros.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/xml/xml_node.h>
+#include <packager/utils/clock.h>
 
 // TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
 // the MPD (XML) generation functions take care of assigning an ID to each

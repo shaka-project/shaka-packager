@@ -12,8 +12,8 @@
 #include <list>
 #include <queue>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_handler.h"
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {

@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/widevine_pssh_generator.h"
+#include <packager/media/base/widevine_pssh_generator.h>
 
-#include "packager/macros.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/widevine_pssh_data.pb.h"
+#include <packager/macros.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/widevine_pssh_data.pb.h>
 
 namespace shaka {
 namespace media {

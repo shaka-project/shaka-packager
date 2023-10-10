@@ -6,8 +6,8 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/codecs/h265_parser.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/media/codecs/h265_parser.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {

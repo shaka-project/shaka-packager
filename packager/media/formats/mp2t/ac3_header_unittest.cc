@@ -7,11 +7,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/utils/hex_parser.h"
+#include <packager/utils/hex_parser.h>
 
 #include <absl/strings/numbers.h>
 #include <glog/logging.h>
-#include "packager/media/formats/mp2t/ac3_header.h"
+#include <packager/media/formats/mp2t/ac3_header.h>
 
 using ::testing::ElementsAreArray;
 

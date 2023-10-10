@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/http_file.h"
+#include <packager/file/http_file.h>
 
 #include <curl/curl.h>
 
@@ -14,9 +14,9 @@
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
 
-#include "packager/file/thread_pool.h"
-#include "packager/macros.h"
-#include "packager/version/version.h"
+#include <packager/file/thread_pool.h>
+#include <packager/macros.h>
+#include <packager/version/version.h>
 
 ABSL_FLAG(std::string,
           user_agent,

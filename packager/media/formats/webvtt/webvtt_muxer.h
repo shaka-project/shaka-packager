@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include "packager/media/base/text_muxer.h"
-#include "packager/media/formats/webvtt/webvtt_file_buffer.h"
+#include <packager/media/base/text_muxer.h>
+#include <packager/media/formats/webvtt/webvtt_file_buffer.h>
 
 namespace shaka {
 namespace media {

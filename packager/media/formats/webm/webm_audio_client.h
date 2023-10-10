@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/formats/webm/webm_parser.h"
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/hls_notify_muxer_listener.h"
+#include <packager/media/event/hls_notify_muxer_listener.h>
 
 #include <memory>
 
 #include <glog/logging.h>
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/event/muxer_listener_internal.h"
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/event/muxer_listener_internal.h>
 
 namespace shaka {
 namespace media {

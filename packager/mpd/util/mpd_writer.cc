@@ -4,18 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/util/mpd_writer.h"
+#include <packager/mpd/util/mpd_writer.h>
 
 #include <absl/flags/flag.h>
 #include <glog/logging.h>
 #include <google/protobuf/text_format.h>
 #include <stdint.h>
 
-#include "packager/file/file.h"
-#include "packager/mpd/base/mpd_builder.h"
-#include "packager/mpd/base/mpd_notifier.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/simple_mpd_notifier.h"
+#include <packager/file/file.h>
+#include <packager/mpd/base/mpd_builder.h>
+#include <packager/mpd/base/mpd_notifier.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/simple_mpd_notifier.h>
 
 ABSL_FLAG(bool,
           generate_dash_if_iop_compliant_mpd,

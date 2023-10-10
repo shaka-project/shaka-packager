@@ -8,13 +8,13 @@
 #include <gtest/gtest.h>
 
 #include <glog/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/formats/mp4/mp4_media_parser.h>
+#include <packager/media/test/test_data_util.h>
 #include <functional>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/mp4/mp4_media_parser.h"
-#include "packager/media/test/test_data_util.h"
 
 using ::testing::_;
 using ::testing::DoAll;

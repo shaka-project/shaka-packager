@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/ts_packet_writer_util.h"
+#include <packager/media/formats/mp2t/ts_packet_writer_util.h>
 
 #include <glog/logging.h>
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
 
 namespace shaka {
 namespace media {

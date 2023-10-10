@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/xml_node.h>
 
 #include <absl/base/internal/endian.h>
 #include <absl/flags/flag.h>
@@ -18,12 +18,12 @@
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
-#include "packager/macros.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include <packager/macros.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/segment_info.h>
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
 
 ABSL_FLAG(bool,
           segment_template_constant_duration,

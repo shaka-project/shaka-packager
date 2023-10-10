@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/codecs/decoder_configuration_record.h"
+#include <packager/macros.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/codecs/decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {

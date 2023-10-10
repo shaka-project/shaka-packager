@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_crypto_helpers.h"
+#include <packager/media/formats/webm/webm_crypto_helpers.h>
 
 #include <absl/base/internal/endian.h>
 #include <glog/logging.h>
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/formats/webm/webm_constants.h"
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {
 namespace media {

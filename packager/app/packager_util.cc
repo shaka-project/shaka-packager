@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/app/packager_util.h"
+#include <packager/app/packager_util.h>
 
 #include <glog/logging.h>
-#include "packager/file/file.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/playready_key_source.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/widevine_key_source.h"
-#include "packager/mpd/base/mpd_options.h"
+#include <packager/file/file.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/playready_key_source.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/widevine_key_source.h>
+#include <packager/mpd/base/mpd_options.h>
 
 namespace shaka {
 namespace media {

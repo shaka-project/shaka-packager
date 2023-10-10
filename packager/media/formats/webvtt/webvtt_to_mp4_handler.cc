@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
+#include <packager/media/formats/webvtt/webvtt_to_mp4_handler.h>
 
 #include <algorithm>
 #include <map>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp4/box_buffer.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/webvtt/webvtt_utils.h"
-#include "packager/status/status_macros.h"
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp4/box_buffer.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
+#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

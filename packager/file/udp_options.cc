@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/udp_options.h"
+#include <packager/file/udp_options.h>
 
 #include <iterator>
 
@@ -12,8 +12,8 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
-#include "packager/kv_pairs/kv_pairs.h"
-#include "packager/macros.h"
+#include <packager/kv_pairs/kv_pairs.h>
+#include <packager/macros.h>
 
 ABSL_FLAG(std::string,
           udp_interface_address,

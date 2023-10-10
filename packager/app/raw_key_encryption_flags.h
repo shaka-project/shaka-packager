@@ -12,7 +12,7 @@
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 
-#include "packager/utils/absl_flag_hexbytes.h"
+#include <packager/utils/absl_flag_hexbytes.h>
 
 ABSL_DECLARE_FLAG(bool, enable_raw_key_encryption);
 ABSL_DECLARE_FLAG(bool, enable_raw_key_decryption);

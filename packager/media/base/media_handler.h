@@ -11,10 +11,10 @@
 #include <memory>
 #include <utility>
 
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/status/status.h"
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 namespace media {

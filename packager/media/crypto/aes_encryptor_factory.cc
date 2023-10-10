@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/aes_encryptor_factory.h"
+#include <packager/media/crypto/aes_encryptor_factory.h>
 
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/aes_pattern_cryptor.h"
-#include "packager/media/crypto/sample_aes_ec3_cryptor.h"
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/aes_pattern_cryptor.h>
+#include <packager/media/crypto/sample_aes_ec3_cryptor.h>
 
 namespace shaka {
 namespace media {

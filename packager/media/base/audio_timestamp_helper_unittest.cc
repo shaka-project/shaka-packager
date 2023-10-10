@@ -6,8 +6,8 @@
 
 #include <iterator>
 
-#include "packager/media/base/audio_timestamp_helper.h"
-#include "packager/media/base/timestamp.h"
+#include <packager/media/base/audio_timestamp_helper.h>
+#include <packager/media/base/timestamp.h>
 
 namespace shaka {
 namespace media {

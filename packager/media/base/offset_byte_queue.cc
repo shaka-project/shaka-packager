@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/base/offset_byte_queue.h"
+#include <packager/media/base/offset_byte_queue.h>
 
 #include <stdint.h>
 

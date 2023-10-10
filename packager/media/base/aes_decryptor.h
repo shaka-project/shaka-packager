@@ -11,9 +11,9 @@
 
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/base/aes_cryptor.h"
-#include "packager/media/base/aes_encryptor.h"
+#include <packager/macros.h>
+#include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/aes_encryptor.h>
 
 namespace shaka {
 namespace media {

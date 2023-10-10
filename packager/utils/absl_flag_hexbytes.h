@@ -7,7 +7,7 @@
 #ifndef SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 #define SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 
-#include "packager/utils/hex_parser.h"
+#include <packager/utils/hex_parser.h>
 
 #include <absl/flags/flag.h>
 #include <absl/strings/ascii.h>

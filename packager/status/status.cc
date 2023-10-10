@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/status/status.h"
+#include <packager/status/status.h>
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
-#include "packager/macros.h"
+#include <packager/macros.h>
 
 namespace shaka {
 

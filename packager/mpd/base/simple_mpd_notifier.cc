@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/simple_mpd_notifier.h"
+#include <packager/mpd/base/simple_mpd_notifier.h>
 
 #include <glog/logging.h>
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_builder.h"
-#include "packager/mpd/base/mpd_notifier_util.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/period.h"
-#include "packager/mpd/base/representation.h"
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_builder.h>
+#include <packager/mpd/base/mpd_notifier_util.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
 
 namespace shaka {
 

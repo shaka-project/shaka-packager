@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/callback_file.h"
+#include <packager/file/callback_file.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <memory>
 
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
+#include <packager/file/file.h>
+#include <packager/file/file_closer.h>
 
 using testing::_;
 using testing::Eq;

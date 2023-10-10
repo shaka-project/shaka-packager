@@ -11,15 +11,15 @@
 #include <string>
 #include <vector>
 
-#include "packager/file/public/buffer_callback_params.h"
-#include "packager/hls/public/hls_params.h"
-#include "packager/macros.h"
-#include "packager/media/public/ad_cue_generator_params.h"
-#include "packager/media/public/chunking_params.h"
-#include "packager/media/public/crypto_params.h"
-#include "packager/media/public/mp4_output_params.h"
-#include "packager/mpd/public/mpd_params.h"
-#include "packager/status/status.h"
+#include <packager/file/public/buffer_callback_params.h>
+#include <packager/hls/public/hls_params.h>
+#include <packager/macros.h>
+#include <packager/media/public/ad_cue_generator_params.h>
+#include <packager/media/public/chunking_params.h>
+#include <packager/media/public/crypto_params.h>
+#include <packager/media/public/mp4_output_params.h>
+#include <packager/mpd/public/mpd_params.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 

@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_MOCK_AES_CRYPTOR_H_
 #define PACKAGER_MEDIA_BASE_MOCK_AES_CRYPTOR_H_
 
-#include "packager/media/base/aes_cryptor.h"
+#include <packager/media/base/aes_cryptor.h>
 
 namespace shaka {
 namespace media {

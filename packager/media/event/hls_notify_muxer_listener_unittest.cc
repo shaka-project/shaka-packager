@@ -7,11 +7,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/event/hls_notify_muxer_listener.h"
-#include "packager/media/event/muxer_listener_test_helper.h"
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/event/hls_notify_muxer_listener.h>
+#include <packager/media/event/muxer_listener_test_helper.h>
 
 namespace shaka {
 namespace media {

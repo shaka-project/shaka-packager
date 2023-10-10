@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/muxer_util.h"
+#include <packager/media/base/muxer_util.h>
 
 #include <inttypes.h>
 
@@ -15,7 +15,7 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
-#include "packager/media/base/video_stream_info.h"
+#include <packager/media/base/video_stream_info.h>
 
 namespace shaka {
 namespace {

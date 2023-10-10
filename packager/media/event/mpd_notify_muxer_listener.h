@@ -13,9 +13,9 @@
 #include <optional>
 #include <vector>
 
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/event_info.h"
-#include "packager/media/event/muxer_listener.h"
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/event_info.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 

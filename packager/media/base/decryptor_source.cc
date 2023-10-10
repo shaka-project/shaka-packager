@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/decryptor_source.h"
+#include <packager/media/base/decryptor_source.h>
 
 #include <glog/logging.h>
-#include "packager/media/base/aes_decryptor.h"
-#include "packager/media/base/aes_pattern_cryptor.h"
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_pattern_cryptor.h>
 
 namespace {
 // Return true if [encrypted_buffer, encrypted_buffer + buffer_size) overlaps

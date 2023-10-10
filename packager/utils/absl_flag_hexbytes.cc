@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/utils/absl_flag_hexbytes.h"
-#include "packager/utils/hex_parser.h"
+#include <packager/utils/absl_flag_hexbytes.h>
+#include <packager/utils/hex_parser.h>
 
 #include <absl/flags/flag.h>
 #include <absl/flags/parse.h>

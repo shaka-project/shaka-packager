@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/codecs/h26x_bit_reader.h"
+#include <packager/media/codecs/h26x_bit_reader.h>
 
 namespace shaka {
 namespace media {

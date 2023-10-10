@@ -11,9 +11,9 @@
 
 #include <string>
 
-#include "packager/file/public/buffer_callback_params.h"
-#include "packager/macros.h"
-#include "packager/status/status.h"
+#include <packager/file/public/buffer_callback_params.h>
+#include <packager/macros.h>
+#include <packager/status/status.h>
 
 namespace shaka {
 
