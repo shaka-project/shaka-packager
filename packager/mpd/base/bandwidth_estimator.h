@@ -7,8 +7,7 @@
 #ifndef MPD_BASE_BANDWIDTH_ESTIMATOR_H_
 #define MPD_BASE_BANDWIDTH_ESTIMATOR_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

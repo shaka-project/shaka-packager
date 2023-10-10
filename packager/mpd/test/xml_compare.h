@@ -1,14 +1,20 @@
+// Copyright 2023 Google LLC. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+
 #ifndef MPD_TEST_XML_COMPARE_H_
 #define MPD_TEST_XML_COMPARE_H_
+
+#include <optional>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <libxml/tree.h>
 
-#include <string>
-
 #include <packager/mpd/base/xml/scoped_xml_ptr.h>
 #include <packager/mpd/base/xml/xml_node.h>
-#include <optional>
 
 namespace shaka {
 

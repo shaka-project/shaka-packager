@@ -8,6 +8,7 @@
 #include <memory>
 
 #include <absl/synchronization/mutex.h>
+
 #include <packager/media/public/ad_cue_generator_params.h>
 
 namespace shaka {

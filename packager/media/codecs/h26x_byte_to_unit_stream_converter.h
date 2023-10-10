@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 #define PACKAGER_MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
 #include <packager/media/base/video_stream_info.h>

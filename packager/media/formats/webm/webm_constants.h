@@ -5,8 +5,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 namespace shaka {
 namespace media {

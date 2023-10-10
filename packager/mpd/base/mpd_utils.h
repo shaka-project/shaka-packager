@@ -9,11 +9,11 @@
 #ifndef MPD_BASE_MPD_UTILS_H_
 #define MPD_BASE_MPD_UTILS_H_
 
-#include <libxml/tree.h>
-
 #include <cstdint>
 #include <list>
 #include <string>
+
+#include <libxml/tree.h>
 
 namespace shaka {
 

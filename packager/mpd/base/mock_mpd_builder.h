@@ -7,9 +7,9 @@
 #ifndef MPD_BASE_MOCK_MPD_BUILDER_H_
 #define MPD_BASE_MOCK_MPD_BUILDER_H_
 
+#include <absl/synchronization/mutex.h>
 #include <gmock/gmock.h>
 
-#include <absl/synchronization/mutex.h>
 #include <packager/macros.h>
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/content_protection_element.h>

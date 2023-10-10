@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_
 #define PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
 #include <packager/macros.h>

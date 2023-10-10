@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 #include <packager/media/base/key_source.h>

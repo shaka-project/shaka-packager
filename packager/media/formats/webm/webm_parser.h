@@ -5,8 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_PARSER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 

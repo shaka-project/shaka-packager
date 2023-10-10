@@ -7,6 +7,7 @@
 #ifndef APP_STREAM_DESCRIPTOR_H_
 #define APP_STREAM_DESCRIPTOR_H_
 
+#include <optional>
 #include <string>
 
 #include <packager/packager.h>

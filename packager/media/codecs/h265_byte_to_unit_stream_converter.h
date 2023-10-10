@@ -7,9 +7,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_H265_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 #define PACKAGER_MEDIA_CODECS_H265_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>

@@ -4,6 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#ifndef PACKAGER_VERSION_VERSION_H_
+#define PACKAGER_VERSION_VERSION_H_
+
 #include <string>
 
 namespace shaka {
@@ -19,3 +22,5 @@ std::string GetPackagerVersion();
 void SetPackagerVersionForTesting(const std::string& version);
 
 }  // namespace shaka
+
+#endif  // PACKAGER_VERSION_VERSION_H_
