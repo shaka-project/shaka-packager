@@ -7,6 +7,7 @@
 #include <packager/mpd/base/simple_mpd_notifier.h>
 
 #include <glog/logging.h>
+
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/mpd_builder.h>
 #include <packager/mpd/base/mpd_notifier_util.h>

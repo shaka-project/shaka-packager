@@ -7,6 +7,7 @@
 #include <packager/media/codecs/dovi_decoder_configuration_record.h>
 
 #include <absl/strings/str_format.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/rcheck.h>
 

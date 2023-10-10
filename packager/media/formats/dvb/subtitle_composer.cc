@@ -6,10 +6,10 @@
 
 #include <packager/media/formats/dvb/subtitle_composer.h>
 
-#include <png.h>
-#include <string.h>
+#include <cstring>
 
 #include <glog/logging.h>
+#include <png.h>
 
 namespace shaka {
 namespace media {

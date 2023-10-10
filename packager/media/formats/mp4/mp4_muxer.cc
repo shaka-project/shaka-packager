@@ -7,9 +7,11 @@
 #include <packager/media/formats/mp4/mp4_muxer.h>
 
 #include <algorithm>
+#include <chrono>
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
+
 #include <packager/file/file.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
@@ -26,7 +28,6 @@
 #include <packager/media/formats/mp4/single_segment_segmenter.h>
 #include <packager/media/formats/ttml/ttml_generator.h>
 #include <packager/status/status_macros.h>
-#include <chrono>
 
 namespace shaka {
 namespace media {

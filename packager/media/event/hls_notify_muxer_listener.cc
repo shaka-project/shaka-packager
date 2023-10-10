@@ -9,6 +9,7 @@
 #include <memory>
 
 #include <glog/logging.h>
+
 #include <packager/hls/base/hls_notifier.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>

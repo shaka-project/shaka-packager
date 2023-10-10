@@ -7,6 +7,7 @@
 #include <packager/media/formats/mp2t/ts_packet_writer_util.h>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp2t/continuity_counter.h>
 

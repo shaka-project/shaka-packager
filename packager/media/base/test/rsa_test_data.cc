@@ -6,7 +6,7 @@
 
 #include <packager/media/base/test/rsa_test_data.h>
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace {
 const uint8_t kTestRsaPrivateKey_3072[] = {

@@ -6,9 +6,8 @@
 
 #include <packager/file/file.h>
 
-#include <inttypes.h>
-
 #include <algorithm>
+#include <cinttypes>
 #include <filesystem>
 #include <memory>
 

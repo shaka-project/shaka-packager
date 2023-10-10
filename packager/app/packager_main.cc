@@ -4,9 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <absl/flags/flag.h>
 #include <iostream>
+#include <optional>
 
+#if defined(OS_WIN)
+#include <codecvt>
+#include <functional>
+#endif  // defined(OS_WIN)
+
+#include <absl/flags/flag.h>
 #include <absl/flags/parse.h>
 #include <absl/flags/usage.h>
 #include <absl/flags/usage_config.h>
@@ -14,6 +20,7 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
+
 #include <packager/app/ad_cue_generator_flags.h>
 #include <packager/app/crypto_flags.h>
 #include <packager/app/hls_flags.h>
@@ -31,12 +38,6 @@
 #include <packager/kv_pairs/kv_pairs.h>
 #include <packager/tools/license_notice.h>
 #include <packager/utils/string_trim_split.h>
-#include <optional>
-
-#if defined(OS_WIN)
-#include <codecvt>
-#include <functional>
-#endif  // defined(OS_WIN)
 
 ABSL_FLAG(bool, dump_stream_info, false, "Dump demuxed stream info.");
 ABSL_FLAG(bool, licenses, false, "Dump licenses.");

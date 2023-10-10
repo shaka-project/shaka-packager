@@ -5,6 +5,7 @@
 #include <packager/media/formats/webm/tracks_builder.h>
 
 #include <glog/logging.h>
+
 #include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {

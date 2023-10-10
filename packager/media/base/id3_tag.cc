@@ -7,6 +7,7 @@
 #include <packager/media/base/id3_tag.h>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>
 

@@ -6,11 +6,12 @@
 
 #include <packager/mpd/base/adaptation_set.h>
 
-#include <absl/strings/numbers.h>
-#include <glog/logging.h>
 #include <cmath>
 
+#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
+#include <glog/logging.h>
+
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/mpd_utils.h>

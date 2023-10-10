@@ -7,6 +7,7 @@
 #include <packager/app/packager_util.h>
 
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 #include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer_options.h>

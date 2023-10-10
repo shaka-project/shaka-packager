@@ -6,11 +6,11 @@
 
 #include <packager/media/event/vod_media_info_dump_muxer_listener.h>
 
-#include <google/protobuf/text_format.h>
-
 #include <cmath>
 
 #include <glog/logging.h>
+#include <google/protobuf/text_format.h>
+
 #include <packager/file/file.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>

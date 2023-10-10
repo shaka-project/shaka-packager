@@ -4,7 +4,7 @@
 
 #include <packager/media/base/offset_byte_queue.h>
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <glog/logging.h>
 

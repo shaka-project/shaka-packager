@@ -6,10 +6,11 @@
 
 #include <packager/mpd/base/representation.h>
 
+#include <algorithm>
+
 #include <absl/flags/declare.h>
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
-#include <algorithm>
 
 #include <packager/file/file.h>
 #include <packager/media/base/muxer_util.h>

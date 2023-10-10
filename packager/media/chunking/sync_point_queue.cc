@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <packager/media/base/media_handler.h>
 #include <packager/media/chunking/sync_point_queue.h>
 
 #include <algorithm>
 #include <limits>
+
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {

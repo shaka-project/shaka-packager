@@ -6,9 +6,8 @@
 
 #include <packager/file/io_cache.h>
 
-#include <string.h>
-
 #include <algorithm>
+#include <cstring>
 
 #include <glog/logging.h>
 
