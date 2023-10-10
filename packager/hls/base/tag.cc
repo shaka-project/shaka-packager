@@ -6,8 +6,9 @@
 
 #include <packager/hls/base/tag.h>
 
+#include <cinttypes>
+
 #include <absl/strings/str_format.h>
-#include <inttypes.h>
 
 namespace shaka {
 namespace hls {

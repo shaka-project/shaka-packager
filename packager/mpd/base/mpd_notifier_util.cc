@@ -7,6 +7,7 @@
 #include <packager/mpd/base/mpd_notifier_util.h>
 
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 #include <packager/mpd/base/mpd_utils.h>
 

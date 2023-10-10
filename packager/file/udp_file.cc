@@ -29,6 +29,7 @@
 #include <limits>
 
 #include <glog/logging.h>
+
 #include <packager/file/udp_options.h>
 
 namespace shaka {

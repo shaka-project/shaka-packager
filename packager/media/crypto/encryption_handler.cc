@@ -6,10 +6,9 @@
 
 #include <packager/media/crypto/encryption_handler.h>
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>

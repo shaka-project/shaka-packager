@@ -6,10 +6,11 @@
 
 #include <packager/mpd/util/mpd_writer.h>
 
+#include <cstdint>
+
 #include <absl/flags/flag.h>
 #include <glog/logging.h>
 #include <google/protobuf/text_format.h>
-#include <stdint.h>
 
 #include <packager/file/file.h>
 #include <packager/mpd/base/mpd_builder.h>

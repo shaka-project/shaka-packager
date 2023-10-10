@@ -4,11 +4,12 @@
 
 #include <packager/media/formats/mp4/box_definitions.h>
 
-#include <absl/flags/flag.h>
 #include <algorithm>
 #include <limits>
 
+#include <absl/flags/flag.h>
 #include <glog/logging.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/macros.h>
 #include <packager/media/base/rcheck.h>

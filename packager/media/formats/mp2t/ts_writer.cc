@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/formats/mp2t/pes_packet.h>

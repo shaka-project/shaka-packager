@@ -4,6 +4,7 @@
 
 #include <packager/media/formats/mp2t/mp2t_media_parser.h>
 
+#include <functional>
 #include <memory>
 
 #include <packager/media/base/media_sample.h>

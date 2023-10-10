@@ -6,9 +6,8 @@
 
 #include <packager/file/memory_file.h>
 
-#include <string.h>  // for memcpy
-
 #include <algorithm>
+#include <cstring>  // for memcpy
 #include <map>
 #include <memory>
 #include <set>

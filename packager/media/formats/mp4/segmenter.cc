@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/id3_tag.h>
 #include <packager/media/base/media_sample.h>

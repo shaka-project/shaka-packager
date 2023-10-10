@@ -6,14 +6,13 @@
 
 #include <packager/file/local_file.h>
 
-#include <cstdio>
-
 #if defined(OS_WIN)
 #include <windows.h>
 #else
 #include <sys/stat.h>
 #endif  // defined(OS_WIN)
 
+#include <cstdio>
 #include <filesystem>
 
 #include <glog/logging.h>

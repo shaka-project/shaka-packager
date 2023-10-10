@@ -6,15 +6,15 @@
 
 #include <packager/hls/base/media_playlist.h>
 
-#include <inttypes.h>
-
 #include <algorithm>
+#include <cinttypes>
 #include <cmath>
 #include <memory>
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 #include <packager/hls/base/tag.h>
 #include <packager/media/base/language_utils.h>

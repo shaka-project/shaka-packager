@@ -6,6 +6,7 @@
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+
 #include <packager/media/base/timestamp.h>
 #include <packager/media/formats/webm/webm_constants.h>
 #include <packager/media/formats/webm/webm_content_encodings.h>

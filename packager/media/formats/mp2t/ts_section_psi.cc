@@ -4,11 +4,11 @@
 
 #include <packager/media/formats/mp2t/ts_section_psi.h>
 
-#include <stdint.h>
-
 #include <algorithm>
+#include <cstdint>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 

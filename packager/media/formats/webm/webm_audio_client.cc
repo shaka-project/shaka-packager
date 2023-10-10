@@ -5,6 +5,7 @@
 #include <packager/media/formats/webm/webm_audio_client.h>
 
 #include <glog/logging.h>
+
 #include <packager/media/formats/webm/webm_constants.h>
 
 namespace {

@@ -6,14 +6,15 @@
 
 #include <packager/mpd/base/mpd_builder.h>
 
-#include <absl/strings/numbers.h>
-#include <absl/strings/str_format.h>
-#include <absl/synchronization/mutex.h>
-#include <glog/logging.h>
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
 #include <optional>
+
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/synchronization/mutex.h>
+#include <glog/logging.h>
 
 #include <packager/file/file_util.h>
 #include <packager/media/base/rcheck.h>

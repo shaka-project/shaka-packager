@@ -5,12 +5,13 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <packager/app/stream_descriptor.h>
-#include <packager/kv_pairs/kv_pairs.h>
-#include <packager/utils/string_trim_split.h>
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
+
+#include <packager/kv_pairs/kv_pairs.h>
+#include <packager/utils/string_trim_split.h>
 
 namespace shaka {
 

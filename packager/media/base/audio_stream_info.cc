@@ -6,10 +6,11 @@
 
 #include <packager/media/base/audio_stream_info.h>
 
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+
 #include <packager/macros.h>
 #include <packager/media/base/limits.h>
 

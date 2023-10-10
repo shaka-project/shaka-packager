@@ -7,18 +7,18 @@
 #include <packager/hls/base/master_playlist.h>
 
 #include <algorithm>  // std::max
-
-#include <inttypes.h>
+#include <cstdint>
+#include <filesystem>
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/tag.h>
 #include <packager/version/version.h>
-#include <filesystem>
 
 namespace shaka {
 namespace hls {

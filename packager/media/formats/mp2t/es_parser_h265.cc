@@ -6,9 +6,10 @@
 
 #include <packager/media/formats/mp2t/es_parser_h265.h>
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/offset_byte_queue.h>
 #include <packager/media/base/timestamp.h>

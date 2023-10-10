@@ -4,9 +4,10 @@
 
 #include <packager/media/formats/mp2t/es_parser_h264.h>
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/timestamp.h>
 #include <packager/media/base/video_stream_info.h>

@@ -6,8 +6,7 @@
 
 #include <packager/media/base/muxer_util.h>
 
-#include <inttypes.h>
-
+#include <cinttypes>
 #include <string>
 #include <vector>
 
@@ -15,6 +14,7 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
+
 #include <packager/media/base/video_stream_info.h>
 
 namespace shaka {

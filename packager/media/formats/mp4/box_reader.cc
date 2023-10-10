@@ -4,13 +4,13 @@
 
 #include <packager/media/formats/mp4/box_reader.h>
 
-#include <inttypes.h>
-
+#include <cinttypes>
 #include <limits>
 #include <memory>
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+
 #include <packager/media/formats/mp4/box.h>
 
 namespace shaka {
