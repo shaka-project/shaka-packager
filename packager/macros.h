@@ -51,15 +51,7 @@
 #ifndef NDEBUG
 #define DVLOG(verboselevel) VLOG(verboselevel)
 #else
-class VoidifyLogs {
-  // An operator with higher precedence than <<.
-  void operator&(std::ostream&) {}
-};
-// LOG(INFO) will eat up <<, then it gets combined with VoidifyLogs() through &
-// and becomes void.  The whole expression gets simplified out through the
-// ternary, and we don't get any compiler warnings.  There are simpler
-// versions, but avoiding warnings about "unused values" is tricky.
-#define DVLOG(verboselevel) true ? (void)0 : VoidifyLogs() & LOG(INFO)
+#define DVLOG(verboselevel) if (false) VLOG(verboselevel)
 #endif
 
 #if defined(SHARED_LIBRARY_BUILD)
