@@ -51,6 +51,8 @@
 #ifndef NDEBUG
 #define DVLOG(verboselevel) VLOG(verboselevel)
 #else
+// We need this expression to work with << after it, so this is a simple way to
+// turn DVLOG into a no-op in release builds.
 #define DVLOG(verboselevel) if (false) VLOG(verboselevel)
 #endif
 
