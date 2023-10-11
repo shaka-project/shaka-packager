@@ -98,8 +98,8 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   if (version_number_ >= 0)
     expected_version_number = (version_number_ + 1) % 32;
   if (version_number != expected_version_number) {
-    VLOG(1) << "Unexpected version number: "
-            << version_number << " vs " << version_number_;
+    VLOG(1) << "Unexpected version number: " << version_number << " vs "
+            << version_number_;
   }
 #endif
   for (int k = 0; k < pmt_pid_count; k++) {

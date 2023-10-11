@@ -46,7 +46,7 @@
   LOG(LEVEL(static_cast<absl::LogSeverity>(-verboselevel)))
 
 #define VLOG_IS_ON(verboselevel) \
-    (static_cast<int>(absl::MinLogLevel()) <= -verboselevel)
+  (static_cast<int>(absl::MinLogLevel()) <= -verboselevel)
 
 #ifndef NDEBUG
 #define DVLOG(verboselevel) VLOG(verboselevel)

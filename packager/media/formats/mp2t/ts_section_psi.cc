@@ -105,8 +105,8 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
   // There should not be any trailing bytes after a PMT.
   // Instead, the pointer field should be used to stuff bytes.
   if (raw_psi_size > psi_length) {
-    DVLOG(1) << "Trailing bytes after a PSI section: "
-             << psi_length << " vs " << raw_psi_size;
+    DVLOG(1) << "Trailing bytes after a PSI section: " << psi_length << " vs "
+             << raw_psi_size;
   }
 
   // Verify the CRC.
