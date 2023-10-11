@@ -5,10 +5,12 @@
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 
 #include <absl/strings/numbers.h>
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/media/base/audio_stream_info.h>
@@ -32,7 +34,6 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/track_run_iterator.h>
-#include <functional>
 
 namespace shaka {
 namespace media {

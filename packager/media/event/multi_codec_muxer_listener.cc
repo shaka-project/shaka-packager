@@ -8,6 +8,7 @@
 
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
+
 #include <packager/media/base/stream_info.h>
 
 namespace shaka {

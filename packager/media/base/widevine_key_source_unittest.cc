@@ -4,19 +4,20 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-#include <inttypes.h>
+#include <packager/media/base/widevine_key_source.h>
 
 #include <algorithm>
+#include <cinttypes>
 #include <iterator>
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <packager/media/base/key_fetcher.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/request_signer.h>
-#include <packager/media/base/widevine_key_source.h>
 #include <packager/media/base/widevine_pssh_generator.h>
 #include <packager/status/status_test_util.h>
 

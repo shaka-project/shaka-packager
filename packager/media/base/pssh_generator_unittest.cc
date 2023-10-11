@@ -4,12 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include <packager/media/base/common_pssh_generator.h>
 #include <packager/media/base/playready_pssh_generator.h>
 #include <packager/media/base/widevine_pssh_generator.h>
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <packager/status/status_test_util.h>
 
 using ::testing::ElementsAreArray;

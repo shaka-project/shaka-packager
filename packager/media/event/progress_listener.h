@@ -9,7 +9,7 @@
 #ifndef PACKAGER_MEDIA_EVENT_PROGRESS_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_PROGRESS_LISTENER_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <packager/macros.h>
 

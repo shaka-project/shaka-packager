@@ -10,10 +10,10 @@
 #ifndef MPD_BASE_XML_SCOPED_XML_PTR_H_
 #define MPD_BASE_XML_SCOPED_XML_PTR_H_
 
+#include <memory>
+
 #include <libxml/tree.h>
 #include <libxml/xmlschemas.h>
-
-#include <memory>
 
 namespace shaka {
 namespace xml {

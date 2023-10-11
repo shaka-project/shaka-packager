@@ -7,8 +7,7 @@
 #ifndef MEDIA_FILE_MEDIA_FILE_H_
 #define MEDIA_FILE_MEDIA_FILE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 

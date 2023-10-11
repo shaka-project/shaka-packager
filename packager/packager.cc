@@ -7,10 +7,13 @@
 #include <packager/packager.h>
 
 #include <algorithm>
+#include <chrono>
+#include <optional>
 
 #include <absl/strings/match.h>
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>
+
 #include <packager/app/job_manager.h>
 #include <packager/app/muxer_factory.h>
 #include <packager/app/packager_util.h>
@@ -38,8 +41,6 @@
 #include <packager/mpd/base/simple_mpd_notifier.h>
 #include <packager/status/status_macros.h>
 #include <packager/version/version.h>
-#include <chrono>
-#include <optional>
 
 namespace shaka {
 

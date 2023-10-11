@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <glog/logging.h>
+
 #include <packager/media/test/test_web_server.h>
 #include <packager/status/status_test_util.h>
 

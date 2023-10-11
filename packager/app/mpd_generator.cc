@@ -6,22 +6,23 @@
 
 #include <iostream>
 
+#if defined(OS_WIN)
+#include <codecvt>
+#include <functional>
+#endif  // defined(OS_WIN)
+
 #include <absl/flags/parse.h>
 #include <absl/flags/usage.h>
 #include <absl/flags/usage_config.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 #include <glog/logging.h>
+
 #include <packager/app/mpd_generator_flags.h>
 #include <packager/app/vlog_flags.h>
 #include <packager/mpd/util/mpd_writer.h>
 #include <packager/tools/license_notice.h>
 #include <packager/version/version.h>
-
-#if defined(OS_WIN)
-#include <codecvt>
-#include <functional>
-#endif  // defined(OS_WIN)
 
 ABSL_FLAG(bool, licenses, false, "Dump licenses.");
 ABSL_FLAG(std::string,

@@ -6,7 +6,7 @@
 
 #include <packager/media/base/media_sample.h>
 
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <absl/strings/str_format.h>
 #include <glog/logging.h>

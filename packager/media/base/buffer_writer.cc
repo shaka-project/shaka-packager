@@ -8,6 +8,7 @@
 
 #include <absl/base/internal/endian.h>
 #include <glog/logging.h>
+
 #include <packager/file/file.h>
 
 namespace shaka {

@@ -4,17 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/mp4/mp4_media_parser.h>
+
+#include <functional>
+
+#include <glog/logging.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <glog/logging.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
-#include <packager/media/formats/mp4/mp4_media_parser.h>
 #include <packager/media/test/test_data_util.h>
-#include <functional>
 
 using ::testing::_;
 using ::testing::DoAll;

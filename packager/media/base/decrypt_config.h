@@ -5,8 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_DECRYPT_CONFIG_H_
 #define PACKAGER_MEDIA_BASE_DECRYPT_CONFIG_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 

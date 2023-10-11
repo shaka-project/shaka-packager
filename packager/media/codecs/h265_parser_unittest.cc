@@ -4,9 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/codecs/h265_parser.h>
+
 #include <gtest/gtest.h>
 
-#include <packager/media/codecs/h265_parser.h>
 #include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {

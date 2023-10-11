@@ -6,8 +6,8 @@
 //
 // Flag validation help functions.
 
-#ifndef APP_VALIDATE_FLAG_H_
-#define APP_VALIDATE_FLAG_H_
+#ifndef PACKAGER_APP_VALIDATE_FLAG_H_
+#define PACKAGER_APP_VALIDATE_FLAG_H_
 
 #include <string>
 
@@ -54,4 +54,4 @@ bool ValidateFlag(const char* flag_name,
 
 }  // namespace shaka
 
-#endif  // APP_VALIDATE_FLAG_H_
+#endif  // PACKAGER_APP_VALIDATE_FLAG_H_

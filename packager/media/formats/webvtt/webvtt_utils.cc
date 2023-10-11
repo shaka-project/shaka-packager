@@ -6,10 +6,9 @@
 
 #include <packager/media/formats/webvtt/webvtt_utils.h>
 
-#include <ctype.h>
-#include <inttypes.h>
-
 #include <algorithm>
+#include <cctype>
+#include <cinttypes>
 #include <unordered_set>
 
 #include <absl/strings/numbers.h>

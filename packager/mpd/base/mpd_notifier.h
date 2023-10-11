@@ -10,8 +10,7 @@
 #ifndef MPD_BASE_MPD_NOTIFIER_H_
 #define MPD_BASE_MPD_NOTIFIER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 

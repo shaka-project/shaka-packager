@@ -7,8 +7,7 @@
 #ifndef PACKAGER_FILE_FILE_H_
 #define PACKAGER_FILE_FILE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
 #include <packager/file/public/buffer_callback_params.h>

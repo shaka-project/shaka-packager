@@ -5,9 +5,9 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <deque>
+#include <functional>
 #include <list>
 #include <memory>
 

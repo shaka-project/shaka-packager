@@ -7,9 +7,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_AUDIO_HEADER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_AUDIO_HEADER_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

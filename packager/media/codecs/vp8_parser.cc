@@ -7,6 +7,7 @@
 #include <packager/media/codecs/vp8_parser.h>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/rcheck.h>
 

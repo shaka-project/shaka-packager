@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <vector>

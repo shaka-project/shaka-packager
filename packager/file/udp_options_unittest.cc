@@ -6,10 +6,10 @@
 
 #include <packager/file/udp_options.h>
 
-#include <gtest/gtest.h>
-
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
+#include <gtest/gtest.h>
+
 #include <packager/flag_saver.h>
 
 ABSL_DECLARE_FLAG(std::string, udp_interface_address);

@@ -5,7 +5,9 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <packager/utils/absl_flag_hexbytes.h>
-#include <packager/utils/hex_parser.h>
+
+#include <iostream>
+#include <vector>
 
 #include <absl/flags/flag.h>
 #include <absl/flags/parse.h>
@@ -15,8 +17,8 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>
 #include <absl/strings/str_split.h>
-#include <iostream>
-#include <vector>
+
+#include <packager/utils/hex_parser.h>
 
 namespace shaka {
 

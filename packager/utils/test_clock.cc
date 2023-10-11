@@ -1,16 +1,17 @@
-//  Copyright 2023 Google LLC. All rights reserved.
+// Copyright 2023 Google LLC. All rights reserved.
 //
-//  Use of this source code is governed by a BSD-style
-//  license that can be found in the LICENSE file or at
-//  https://developers.google.com/open-source/licenses/bsd
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 #include <packager/utils/test_clock.h>
 
-#include <absl/strings/str_split.h>
-#include <absl/strings/string_view.h>
 #include <ctime>
 #include <iostream>
 #include <string>
+
+#include <absl/strings/str_split.h>
+#include <absl/strings/string_view.h>
 
 std::tm parseISO8601(const std::string& date_string) {
   std::tm tm = {};

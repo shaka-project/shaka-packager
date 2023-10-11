@@ -1,12 +1,13 @@
 // Copyright 2014 The Chromium Authors. All rights reserved.
+//
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <packager/media/codecs/h264_parser.h>
 
+#include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include <glog/logging.h>
 #include <packager/media/test/test_data_util.h>
 
 namespace shaka {

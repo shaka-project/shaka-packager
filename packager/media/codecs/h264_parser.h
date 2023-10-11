@@ -7,9 +7,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_H264_PARSER_H_
 #define PACKAGER_MEDIA_CODECS_H264_PARSER_H_
 
-#include <stdint.h>
-#include <stdlib.h>
-
+#include <cstdint>
+#include <cstdlib>
 #include <map>
 #include <memory>
 

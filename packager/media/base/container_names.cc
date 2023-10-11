@@ -4,16 +4,16 @@
 
 #include <packager/media/base/container_names.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <stdint.h>
-
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <iterator>
 #include <limits>
 
 #include <glog/logging.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/mpd/base/xml/scoped_xml_ptr.h>
 

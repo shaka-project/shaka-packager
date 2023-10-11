@@ -6,16 +6,16 @@
 
 #include <packager/file/http_file.h>
 
-#include <gtest/gtest.h>
-
 #include <memory>
 #include <vector>
 
 #include <absl/strings/str_split.h>
+#include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
+
 #include <packager/file/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/media/test/test_web_server.h>
-#include <nlohmann/json.hpp>
 
 #define ASSERT_JSON_STRING(json, key, value) \
   ASSERT_EQ(GetJsonString((json), (key)), (value)) << "JSON is " << (json)

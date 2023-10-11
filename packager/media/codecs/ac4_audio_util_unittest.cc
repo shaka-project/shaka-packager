@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
-
 #include <packager/media/codecs/ac4_audio_util.h>
+
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {

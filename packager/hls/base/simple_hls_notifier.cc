@@ -6,19 +6,20 @@
 
 #include <packager/hls/base/simple_hls_notifier.h>
 
-#include <absl/flags/flag.h>
 #include <cmath>
+#include <filesystem>
+#include <optional>
 
+#include <absl/flags/flag.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <glog/logging.h>
+
 #include <packager/file/file_util.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/proto_json_util.h>
 #include <packager/media/base/widevine_pssh_data.pb.h>
-#include <filesystem>
-#include <optional>
 
 ABSL_FLAG(bool,
           enable_legacy_widevine_hls_signaling,

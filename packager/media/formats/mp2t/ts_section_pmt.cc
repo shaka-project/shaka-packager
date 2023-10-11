@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 #include <packager/media/formats/mp2t/ts_stream_type.h>

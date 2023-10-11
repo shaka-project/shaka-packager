@@ -5,8 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_WEBVTT_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_WEBVTT_PARSER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
 #include <packager/macros.h>

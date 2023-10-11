@@ -7,6 +7,7 @@
 #include <memory>
 
 #include <glog/logging.h>
+
 #include <packager/media/base/buffer_reader.h>
 
 #define LOG_ERROR_ONCE(msg)             \
