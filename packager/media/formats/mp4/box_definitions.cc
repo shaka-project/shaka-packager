@@ -2522,6 +2522,31 @@ size_t TrackFragmentDecodeTime::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) * (1 + version);
 }
 
+SmoothUUID::SmoothUUID() = default;
+SmoothUUID::~SmoothUUID() = default;
+
+FourCC SmoothUUID::BoxType() const {
+  return FOURCC_uuid;
+  // return FOURCC_tfxd;
+}
+
+bool SmoothUUID::ReadWriteInternal(BoxBuffer* buffer) {
+  buffer->IgnoreBytes(16);
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t num_bytes = (version == 1) ? sizeof(uint64_t) : sizeof(uint32_t);
+
+  RCHECK(buffer->ReadWriteUInt64NBytes(&time, num_bytes));
+  RCHECK(buffer->ReadWriteUInt64NBytes(&duration, num_bytes));
+  return true;
+}
+
+size_t SmoothUUID::ComputeSizeInternal() {
+  // TODO(dchen): hack
+  // version = IsFitIn32Bits(time) ? 0 : 1;
+  version = 1;
+  return HeaderSize() + sizeof(uint32_t) * (1 + version);
+}
+
 MovieFragmentHeader::MovieFragmentHeader() = default;
 MovieFragmentHeader::~MovieFragmentHeader() = default;
 
@@ -2731,15 +2756,26 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteChild(&header));
   if (buffer->Reading()) {
     DCHECK(buffer->reader());
-    decode_time_absent = !buffer->reader()->ChildExist(&decode_time);
-    if (!decode_time_absent)
-      RCHECK(buffer->ReadWriteChild(&decode_time));
+    uuid_exists = buffer->reader()->ChildExist(&smooth_uuid);
+    decode_time_absent = !buffer->reader()->ChildExist(&decode_time) && !uuid_exists;
+    if (!decode_time_absent) {
+      if(uuid_exists) {
+        RCHECK(buffer->ReadWriteChild(&smooth_uuid));
+      } else {
+        RCHECK(buffer->ReadWriteChild(&decode_time));
+      }
+    }
     RCHECK(buffer->reader()->TryReadChildren(&runs) &&
            buffer->reader()->TryReadChildren(&sample_group_descriptions) &&
            buffer->reader()->TryReadChildren(&sample_to_groups));
   } else {
-    if (!decode_time_absent)
-      RCHECK(buffer->ReadWriteChild(&decode_time));
+    if (!decode_time_absent) {
+      if(uuid_exists) {
+        RCHECK(buffer->ReadWriteChild(&smooth_uuid));
+      } else {
+        RCHECK(buffer->ReadWriteChild(&decode_time));
+      }
+    }
     for (uint32_t i = 0; i < runs.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&runs[i]));
     for (uint32_t i = 0; i < sample_to_groups.size(); ++i)

@@ -173,6 +173,7 @@ enum FourCC : uint32_t {
   FOURCC_zacp = 0x7A616370,
   FOURCC_zavc = 0x7A617663,
   FOURCC_zec3 = 0x7A656333,
+  FOURCC_tfxd = 0x74667864,
 };
 
 const FourCC kAppleSampleAesProtectionScheme = FOURCC_cbca;

@@ -718,6 +718,13 @@ struct TrackFragmentDecodeTime : FullBox {
   uint64_t decode_time = 0u;
 };
 
+struct SmoothUUID : FullBox {
+  DECLARE_BOX_METHODS(SmoothUUID);
+
+  uint64_t time = 0u;
+  uint64_t duration = 0u;
+};
+
 struct MovieFragmentHeader : FullBox {
   DECLARE_BOX_METHODS(MovieFragmentHeader);
 
@@ -782,6 +789,9 @@ struct TrackFragment : Box {
   std::vector<TrackFragmentRun> runs;
   bool decode_time_absent = false;
   TrackFragmentDecodeTime decode_time;
+  // TODO(dchen): is this the correct box name?
+  SmoothUUID smooth_uuid;
+  bool uuid_exists = false;
   std::vector<SampleGroupDescription> sample_group_descriptions;
   std::vector<SampleToGroup> sample_to_groups;
   SampleAuxiliaryInformationSize auxiliary_size;

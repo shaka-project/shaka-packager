@@ -77,6 +77,8 @@ set(libpackager_sources
   app/single_thread_job_manager.h
   packager.cc
   packager.h
+  live_packager.cc
+  live_packager.h
   )
 
 if(LIBPACKAGER_SHARED)

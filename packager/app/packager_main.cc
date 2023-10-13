@@ -39,6 +39,9 @@
 #include <packager/tools/license_notice.h>
 #include <packager/utils/string_trim_split.h>
 
+#include <fstream>
+#include <packager/live_packager.h>
+
 ABSL_FLAG(bool, dump_stream_info, false, "Dump demuxed stream info.");
 ABSL_FLAG(bool, licenses, false, "Dump licenses.");
 ABSL_FLAG(bool, quiet, false, "When enabled, LOG(INFO) output is suppressed.");
@@ -627,7 +630,25 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
   return shaka::PackagerMain(argc, utf8_argv.get());
 }
 #else
+
+int testLivePackager(int argc, char **argv) {
+  shaka::Segment initSegment(argv[1]);
+  shaka::LivePackager packager;
+
+  for(int i(2); i < argc; ++i) {
+    std::cout << std::string(argv[i]) << std::endl;
+    shaka::Segment segment(argv[i]);
+    packager.Package(initSegment, segment);
+  }
+
+  return 0;
+}
+
 int main(int argc, char** argv) {
+  if(true) {
+    return testLivePackager(argc, argv);
+  }
+
   return shaka::PackagerMain(argc, argv);
 }
 #endif  // defined(OS_WIN)
