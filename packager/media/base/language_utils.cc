@@ -11,8 +11,6 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros.h>
-
 namespace {
 
 // A map from 3-letter language codes (ISO 639-2) to 2-letter language codes

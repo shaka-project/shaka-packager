@@ -12,12 +12,12 @@
 
 #include <absl/log/check.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/common_pssh_generator.h>
 #include <packager/media/base/key_source.h>
-#include <packager/media/base/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/playready_pssh_generator.h>
 #include <packager/media/base/protection_system_ids.h>
@@ -25,7 +25,6 @@
 #include <packager/media/base/widevine_pssh_generator.h>
 #include <packager/media/crypto/aes_encryptor_factory.h>
 #include <packager/media/crypto/subsample_generator.h>
-#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

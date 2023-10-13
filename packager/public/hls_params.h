@@ -4,9 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
-#define PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
+#ifndef PACKAGER_PUBLIC_HLS_PARAMS_H_
+#define PACKAGER_PUBLIC_HLS_PARAMS_H_
 
+#include <cstdint>
 #include <string>
 
 namespace shaka {
@@ -66,4 +67,4 @@ struct HlsParams {
 
 }  // namespace shaka
 
-#endif  // PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
+#endif  // PACKAGER_PUBLIC_HLS_PARAMS_H_

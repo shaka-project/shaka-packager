@@ -11,11 +11,12 @@
 
 #include <absl/log/check.h>
 
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp4/box_buffer.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/webvtt/webvtt_utils.h>
-#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

@@ -10,9 +10,9 @@
 
 #include <absl/log/check.h>
 
-#include <packager/file/file.h>
 #include <packager/file/file_closer.h>
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer_options.h>
@@ -21,7 +21,7 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/fragmenter.h>
 #include <packager/media/formats/mp4/key_frame_info.h>
-#include <packager/status/status_macros.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

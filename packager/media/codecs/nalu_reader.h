@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/decrypt_config.h>
 
 namespace shaka {

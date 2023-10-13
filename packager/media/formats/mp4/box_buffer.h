@@ -11,7 +11,7 @@
 
 #include <absl/log/check.h>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp4/box.h>
 #include <packager/media/formats/mp4/box_reader.h>

@@ -11,7 +11,8 @@
 #include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/limits.h>
 
 namespace shaka {

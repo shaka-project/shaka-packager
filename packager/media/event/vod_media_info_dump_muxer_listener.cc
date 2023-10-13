@@ -12,12 +12,14 @@
 #include <absl/log/log.h>
 #include <google/protobuf/text_format.h>
 
-#include <packager/file/file.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/event/muxer_listener_internal.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

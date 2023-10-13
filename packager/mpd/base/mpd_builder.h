@@ -19,7 +19,7 @@
 
 #include <libxml/tree.h>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/xml/xml_node.h>
 #include <packager/utils/clock.h>

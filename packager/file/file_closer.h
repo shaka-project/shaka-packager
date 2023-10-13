@@ -9,7 +9,7 @@
 
 #include <absl/log/log.h>
 
-#include <packager/file/file.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 

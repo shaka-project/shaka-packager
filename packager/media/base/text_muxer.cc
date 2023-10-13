@@ -8,8 +8,9 @@
 
 #include <absl/log/check.h>
 
+#include <packager/macros/compiler.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/muxer_util.h>
-#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

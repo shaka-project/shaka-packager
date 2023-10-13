@@ -16,6 +16,8 @@
 #include <absl/log/log.h>
 #include <absl/synchronization/mutex.h>
 
+#include <packager/macros/logging.h>
+
 namespace shaka {
 namespace {
 

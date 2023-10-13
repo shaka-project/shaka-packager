@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/nalu_reader.h>
 

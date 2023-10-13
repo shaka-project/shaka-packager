@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/decryptor_source.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/offset_byte_queue.h>

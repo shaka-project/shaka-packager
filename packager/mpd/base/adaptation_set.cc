@@ -13,7 +13,8 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/mpd_utils.h>

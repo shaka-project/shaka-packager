@@ -6,7 +6,8 @@
 
 #include <packager/media/base/widevine_pssh_generator.h>
 
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/widevine_pssh_data.pb.h>
 

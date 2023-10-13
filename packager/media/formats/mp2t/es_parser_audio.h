@@ -10,7 +10,7 @@
 #include <memory>
 #include <utility>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/byte_queue.h>
 #include <packager/media/formats/mp2t/es_parser.h>

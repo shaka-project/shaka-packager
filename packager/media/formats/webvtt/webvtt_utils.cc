@@ -16,7 +16,7 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace media {

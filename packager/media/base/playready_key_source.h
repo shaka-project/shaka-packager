@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/key_source.h>
 
 namespace shaka {

@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
 namespace shaka {

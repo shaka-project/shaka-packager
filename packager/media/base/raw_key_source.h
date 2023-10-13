@@ -12,7 +12,7 @@
 #include <vector>
 
 #include <packager/media/base/key_source.h>
-#include <packager/media/public/crypto_params.h>
+#include <packager/public/crypto_params.h>
 
 namespace shaka {
 namespace media {

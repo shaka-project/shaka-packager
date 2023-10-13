@@ -13,11 +13,11 @@
 #include <absl/log/log.h>
 #include <google/protobuf/text_format.h>
 
-#include <packager/file/file.h>
 #include <packager/mpd/base/mpd_builder.h>
 #include <packager/mpd/base/mpd_notifier.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/simple_mpd_notifier.h>
+#include <packager/public/file.h>
 
 ABSL_FLAG(bool,
           generate_dash_if_iop_compliant_mpd,

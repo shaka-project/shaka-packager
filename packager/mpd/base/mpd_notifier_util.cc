@@ -9,8 +9,9 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/file/file.h>
+#include <packager/macros/logging.h>
 #include <packager/mpd/base/mpd_utils.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 

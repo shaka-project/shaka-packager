@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/aes_cryptor.h>
 
 namespace shaka {

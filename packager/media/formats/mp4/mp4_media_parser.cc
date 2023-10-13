@@ -12,14 +12,13 @@
 #include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 
-#include <packager/file/file.h>
 #include <packager/file/file_closer.h>
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/key_source.h>
-#include <packager/media/base/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/media/base/video_stream_info.h>
@@ -36,6 +35,7 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/track_run_iterator.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

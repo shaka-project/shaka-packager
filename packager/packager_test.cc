@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/packager.h>
+#include <packager/public/packager.h>
 
 using testing::_;
 using testing::HasSubstr;

@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <packager/file/file.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

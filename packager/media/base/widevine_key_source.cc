@@ -14,7 +14,7 @@
 #include <absl/log/check.h>
 #include <absl/strings/escaping.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/http_key_fetcher.h>
 #include <packager/media/base/producer_consumer_queue.h>
 #include <packager/media/base/protection_system_ids.h>

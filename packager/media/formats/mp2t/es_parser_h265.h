@@ -13,7 +13,7 @@
 #include <memory>
 #include <utility>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/formats/mp2t/es_parser_h26x.h>
 #include <functional>
 

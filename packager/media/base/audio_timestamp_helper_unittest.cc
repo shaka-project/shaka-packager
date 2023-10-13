@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/timestamp.h>
 
 namespace shaka {

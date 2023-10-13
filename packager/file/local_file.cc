@@ -18,7 +18,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 
 namespace shaka {
 

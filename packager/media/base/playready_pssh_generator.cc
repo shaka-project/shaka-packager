@@ -16,6 +16,9 @@
 #include <absl/strings/escaping.h>
 #include <mbedtls/cipher.h>
 
+#include <packager/macros/compiler.h>
+#include <packager/macros/crypto.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/protection_system_ids.h>
 

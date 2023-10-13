@@ -9,6 +9,8 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/macros/crypto.h>
+
 namespace {
 
 // Increment an 8-byte counter by 1. Return true if overflowed.

@@ -12,7 +12,7 @@
 #include <absl/log/log.h>
 #include <gtest/gtest.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/timestamp.h>
 #include <packager/media/base/video_stream_info.h>

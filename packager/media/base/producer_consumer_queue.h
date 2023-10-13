@@ -16,8 +16,8 @@
 #include <absl/synchronization/mutex.h>
 #include <absl/time/time.h>
 
-#include <packager/macros.h>
-#include <packager/status/status.h>
+#include <packager/macros/classes.h>
+#include <packager/public/status.h>
 
 namespace shaka {
 namespace media {

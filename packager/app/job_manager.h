@@ -15,7 +15,7 @@
 
 #include <absl/synchronization/mutex.h>
 
-#include <packager/status/status.h>
+#include <packager/public/status.h>
 
 namespace shaka {
 namespace media {

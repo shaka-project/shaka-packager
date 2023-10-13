@@ -12,6 +12,7 @@
 #include <absl/log/log.h>
 
 #include <packager/hls/base/hls_notifier.h>
+#include <packager/macros/compiler.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/event/muxer_listener_internal.h>

@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

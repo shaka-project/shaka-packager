@@ -17,7 +17,8 @@
 typedef int SOCKET;
 #endif  // defined(OS_WIN)
 
-#include <packager/file/file.h>
+#include <packager/macros/classes.h>
+#include <packager/public/file.h>
 
 namespace shaka {
 

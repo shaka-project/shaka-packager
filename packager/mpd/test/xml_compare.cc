@@ -17,7 +17,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 
 namespace shaka {
 

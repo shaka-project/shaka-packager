@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/event/muxer_listener.h>
 

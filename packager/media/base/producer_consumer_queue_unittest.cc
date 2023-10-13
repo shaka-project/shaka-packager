@@ -12,6 +12,8 @@
 #include <absl/synchronization/notification.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {

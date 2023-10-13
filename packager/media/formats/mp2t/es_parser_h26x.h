@@ -11,7 +11,7 @@
 #include <list>
 #include <memory>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/codecs/nalu_reader.h>
 #include <packager/media/formats/mp2t/es_parser.h>
 #include <functional>

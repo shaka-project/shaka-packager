@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/text_track_config.h>
 #include <packager/media/base/video_stream_info.h>

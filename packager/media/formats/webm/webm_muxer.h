@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_MUXER_H_
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/muxer.h>
 
 namespace shaka {

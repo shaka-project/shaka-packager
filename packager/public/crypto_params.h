@@ -4,15 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_MEDIA_PUBLIC_CRYPTO_PARAMS_H_
-#define PACKAGER_MEDIA_PUBLIC_CRYPTO_PARAMS_H_
+#ifndef PACKAGER_PUBLIC_CRYPTO_PARAMS_H_
+#define PACKAGER_PUBLIC_CRYPTO_PARAMS_H_
 
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
-
-#include <packager/status/status.h>
 
 namespace shaka {
 
@@ -237,4 +235,4 @@ struct DecryptionParams {
 
 }  // namespace shaka
 
-#endif  // PACKAGER_MEDIA_PUBLIC_CRYPTO_PARAMS_H_
+#endif  // PACKAGER_PUBLIC_CRYPTO_PARAMS_H_

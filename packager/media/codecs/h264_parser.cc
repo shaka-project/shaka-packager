@@ -9,7 +9,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
 
 #define LOG_ERROR_ONCE(msg)             \

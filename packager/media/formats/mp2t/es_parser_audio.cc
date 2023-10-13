@@ -13,7 +13,7 @@
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/audio_timestamp_helper.h>
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/media_sample.h>

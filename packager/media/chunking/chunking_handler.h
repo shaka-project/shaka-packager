@@ -14,7 +14,7 @@
 #include <absl/log/log.h>
 
 #include <packager/media/base/media_handler.h>
-#include <packager/media/public/chunking_params.h>
+#include <packager/public/chunking_params.h>
 
 namespace shaka {
 namespace media {

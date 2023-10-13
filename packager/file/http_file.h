@@ -12,8 +12,8 @@
 
 #include <absl/synchronization/notification.h>
 
-#include <packager/file/file.h>
 #include <packager/file/io_cache.h>
+#include <packager/public/file.h>
 
 typedef void CURL;
 struct curl_slist;

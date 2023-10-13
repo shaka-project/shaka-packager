@@ -11,6 +11,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/macros/compiler.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/video_stream_info.h>
