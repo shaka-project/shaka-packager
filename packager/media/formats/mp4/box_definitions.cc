@@ -2527,10 +2527,10 @@ SmoothUUID::~SmoothUUID() = default;
 
 FourCC SmoothUUID::BoxType() const {
   return FOURCC_uuid;
-  // return FOURCC_tfxd;
 }
 
 bool SmoothUUID::ReadWriteInternal(BoxBuffer* buffer) {
+  // Skip 16-bytes of uuid
   buffer->IgnoreBytes(16);
   RCHECK(ReadWriteHeaderInternal(buffer));
   size_t num_bytes = (version == 1) ? sizeof(uint64_t) : sizeof(uint32_t);
@@ -2541,9 +2541,7 @@ bool SmoothUUID::ReadWriteInternal(BoxBuffer* buffer) {
 }
 
 size_t SmoothUUID::ComputeSizeInternal() {
-  // TODO(dchen): hack
-  // version = IsFitIn32Bits(time) ? 0 : 1;
-  version = 1;
+  version = IsFitIn32Bits(duration) ? 0 : 1;
   return HeaderSize() + sizeof(uint32_t) * (1 + version);
 }
 
