@@ -8,6 +8,7 @@
 
 #include <absl/log/log.h>
 
+#include <packager/file.h>
 #include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/playready_key_source.h>
@@ -15,7 +16,6 @@
 #include <packager/media/base/request_signer.h>
 #include <packager/media/base/widevine_key_source.h>
 #include <packager/mpd/base/mpd_options.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

@@ -15,12 +15,12 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/flag_saver.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/test/mpd_builder_test_helper.h>
 #include <packager/mpd/test/xml_compare.h>
-#include <packager/public/file.h>
 
 using ::testing::Bool;
 using ::testing::Not;

@@ -15,7 +15,7 @@
 #include <packager/media/base/range.h>
 #include <packager/media/formats/webm/mkv_writer.h>
 #include <packager/media/formats/webm/seek_head.h>
-#include <packager/public/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

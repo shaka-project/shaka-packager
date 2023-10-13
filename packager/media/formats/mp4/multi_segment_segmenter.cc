@@ -12,6 +12,7 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
@@ -21,7 +22,6 @@
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/key_frame_info.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

@@ -8,8 +8,8 @@
 
 #include <gtest/gtest.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 namespace {

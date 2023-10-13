@@ -10,9 +10,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/file/file_test_util.h>
-#include <packager/public/file.h>
 #include <packager/version/version.h>
 
 namespace shaka {

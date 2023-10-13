@@ -6,7 +6,7 @@
 
 #include <packager/hls/base/mock_media_playlist.h>
 
-#include <packager/public/hls_params.h>
+#include <packager/hls_params.h>
 
 namespace shaka {
 namespace hls {

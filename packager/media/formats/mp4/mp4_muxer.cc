@@ -13,6 +13,7 @@
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 
+#include <packager/file.h>
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/aes_encryptor.h>
@@ -29,7 +30,6 @@
 #include <packager/media/formats/mp4/multi_segment_segmenter.h>
 #include <packager/media/formats/mp4/single_segment_segmenter.h>
 #include <packager/media/formats/ttml/ttml_generator.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

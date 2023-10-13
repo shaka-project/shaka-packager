@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <packager/file.h>
 #include <packager/macros/classes.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 

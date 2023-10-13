@@ -12,15 +12,15 @@
 #include <string>
 #include <vector>
 
-#include <packager/public/ad_cue_generator_params.h>
-#include <packager/public/buffer_callback_params.h>
-#include <packager/public/chunking_params.h>
-#include <packager/public/crypto_params.h>
-#include <packager/public/export.h>
-#include <packager/public/hls_params.h>
-#include <packager/public/mp4_output_params.h>
-#include <packager/public/mpd_params.h>
-#include <packager/public/status.h>
+#include <packager/ad_cue_generator_params.h>
+#include <packager/buffer_callback_params.h>
+#include <packager/chunking_params.h>
+#include <packager/crypto_params.h>
+#include <packager/export.h>
+#include <packager/hls_params.h>
+#include <packager/mp4_output_params.h>
+#include <packager/mpd_params.h>
+#include <packager/status.h>
 
 namespace shaka {
 

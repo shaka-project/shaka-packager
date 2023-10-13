@@ -12,10 +12,10 @@
 
 #include <absl/log/log.h>
 
+#include <packager/file.h>
 #include <packager/file/file_test_util.h>
 #include <packager/macros/classes.h>
 #include <packager/media/base/buffer_reader.h>
-#include <packager/public/file.h>
 #include <packager/status/status_test_util.h>
 
 namespace {

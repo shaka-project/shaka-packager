@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <packager/public/packager.h>
+#include <packager/packager.h>
 
 #include <algorithm>
 #include <chrono>
@@ -19,6 +19,7 @@
 #include <packager/app/muxer_factory.h>
 #include <packager/app/packager_util.h>
 #include <packager/app/single_thread_job_manager.h>
+#include <packager/file.h>
 #include <packager/hls/base/hls_notifier.h>
 #include <packager/hls/base/simple_hls_notifier.h>
 #include <packager/macros/logging.h>
@@ -41,7 +42,6 @@
 #include <packager/media/trick_play/trick_play_handler.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/simple_mpd_notifier.h>
-#include <packager/public/file.h>
 #include <packager/version/version.h>
 
 namespace shaka {

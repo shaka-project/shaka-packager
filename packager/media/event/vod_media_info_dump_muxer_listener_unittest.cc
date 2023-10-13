@@ -14,6 +14,7 @@
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 
+#include <packager/file.h>
 #include <packager/file/file_test_util.h>
 #include <packager/macros/classes.h>
 #include <packager/media/base/fourccs.h>
@@ -21,7 +22,6 @@
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/event/muxer_listener_test_helper.h>
 #include <packager/mpd/base/media_info.pb.h>
-#include <packager/public/file.h>
 
 namespace {
 const bool kEnableEncryption = true;

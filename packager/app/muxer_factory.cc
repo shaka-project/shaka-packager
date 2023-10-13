@@ -13,7 +13,7 @@
 #include <packager/media/formats/ttml/ttml_muxer.h>
 #include <packager/media/formats/webm/webm_muxer.h>
 #include <packager/media/formats/webvtt/webvtt_muxer.h>
-#include <packager/public/packager.h>
+#include <packager/packager.h>
 
 namespace shaka {
 namespace media {

@@ -14,7 +14,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/public/crypto_params.h>
+#include <packager/crypto_params.h>
 
 namespace shaka {
 namespace media {

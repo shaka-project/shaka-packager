@@ -36,8 +36,8 @@
 #include <packager/app/stream_descriptor.h>
 #include <packager/app/vlog_flags.h>
 #include <packager/app/widevine_encryption_flags.h>
+#include <packager/file.h>
 #include <packager/kv_pairs/kv_pairs.h>
-#include <packager/public/file.h>
 #include <packager/tools/license_notice.h>
 #include <packager/utils/string_trim_split.h>
 

@@ -17,7 +17,7 @@
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp2t/pes_packet.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
-#include <packager/public/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -6,8 +6,8 @@
 
 #include <packager/media/formats/ttml/ttml_muxer.h>
 
+#include <packager/file.h>
 #include <packager/macros/status.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

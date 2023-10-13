@@ -12,6 +12,7 @@
 #include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
@@ -35,7 +36,6 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/track_run_iterator.h>
-#include <packager/public/file.h>
 
 namespace shaka {
 namespace media {

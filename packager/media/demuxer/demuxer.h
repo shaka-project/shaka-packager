@@ -14,7 +14,7 @@
 #include <packager/macros/classes.h>
 #include <packager/media/base/container_names.h>
 #include <packager/media/origin/origin_handler.h>
-#include <packager/public/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 
-#include <packager/public/export.h>
+#include <packager/export.h>
 
 namespace shaka {
 

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <packager/macros/classes.h>
-#include <packager/public/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 

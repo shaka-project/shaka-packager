@@ -13,7 +13,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/public/file.h>
+#include <packager/file.h>
 
 namespace shaka {
 
