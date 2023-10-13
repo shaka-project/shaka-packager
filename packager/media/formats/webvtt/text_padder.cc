@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include <absl/log/check.h>
+
 #include <packager/status/status_macros.h>
 
 namespace shaka {

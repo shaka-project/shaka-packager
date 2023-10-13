@@ -8,11 +8,13 @@
 
 #include <algorithm>
 
+#include <absl/log/check.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/file/file.h>
 #include <packager/file/file_closer.h>
+#include <packager/macros.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>

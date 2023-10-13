@@ -10,10 +10,11 @@
 #include <chrono>
 #include <deque>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 #include <absl/synchronization/mutex.h>
 #include <absl/time/time.h>
-#include <glog/logging.h>
 
 #include <packager/macros.h>
 #include <packager/status/status.h>

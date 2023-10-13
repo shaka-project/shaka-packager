@@ -10,8 +10,8 @@
 #include <iterator>
 #include <memory>
 
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <glog/logging.h>
 #include <gtest/gtest.h>
 
 #include <packager/utils/bytes_to_string_view.h>

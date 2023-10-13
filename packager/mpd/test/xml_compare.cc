@@ -11,10 +11,13 @@
 #include <string>
 #include <utility>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/strip.h>
-#include <glog/logging.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+
+#include <packager/macros.h>
 
 namespace shaka {
 

@@ -12,9 +12,10 @@
 #include <memory>
 
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
 
 #include <packager/file/callback_file.h>
 #include <packager/file/file_util.h>
@@ -23,6 +24,7 @@
 #include <packager/file/memory_file.h>
 #include <packager/file/threaded_io_file.h>
 #include <packager/file/udp_file.h>
+#include <packager/macros.h>
 
 ABSL_FLAG(uint64_t,
           io_cache_size,

@@ -20,15 +20,15 @@ add_library(hls_builder
   )
 
 target_link_libraries(hls_builder
-  file
-  media_base
-  widevine_protos
-  manifest_base
-  mpd_media_info_proto
   absl::flags
+  absl::log
   absl::strings
   absl::str_format
-  glog
+  file
+  manifest_base
+  media_base
+  mpd_media_info_proto
+  widevine_protos
   )
 
 add_executable(hls_unittest
@@ -40,13 +40,13 @@ add_executable(hls_unittest
   )
 
 target_link_libraries(hls_unittest
+  absl::flags
   file
   file_test_util
-  test_data_util
-  absl::flags
-  hls_builder
   gmock
   gtest
-  gtest_main)
+  gtest_main
+  hls_builder
+  test_data_util)
 
 add_test(NAME hls_unittest COMMAND hls_unittest)

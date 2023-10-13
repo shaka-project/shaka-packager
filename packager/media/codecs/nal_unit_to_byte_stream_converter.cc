@@ -8,7 +8,8 @@
 
 #include <list>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/buffer_reader.h>

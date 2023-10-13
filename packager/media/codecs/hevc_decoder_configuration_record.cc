@@ -6,6 +6,7 @@
 
 #include <packager/media/codecs/hevc_decoder_configuration_record.h>
 
+#include <absl/log/check.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>

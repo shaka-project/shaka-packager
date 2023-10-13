@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include <absl/log/check.h>
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>

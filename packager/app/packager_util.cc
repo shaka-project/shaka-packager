@@ -6,7 +6,7 @@
 
 #include <packager/app/packager_util.h>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/file/file.h>
 #include <packager/media/base/media_handler.h>

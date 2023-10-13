@@ -6,8 +6,8 @@
 
 #include <packager/media/base/proto_json_util.h>
 
+#include <absl/log/log.h>
 #include <google/protobuf/util/json_util.h>
-#include <glog/logging.h>
 
 namespace shaka {
 namespace media {

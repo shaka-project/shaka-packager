@@ -11,8 +11,9 @@
 #include <set>
 #include <vector>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <glog/logging.h>
 #include <mbedtls/cipher.h>
 
 #include <packager/media/base/buffer_writer.h>

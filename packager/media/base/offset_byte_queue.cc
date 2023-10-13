@@ -6,7 +6,9 @@
 
 #include <cstdint>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
+
+#include <packager/macros.h>
 
 namespace shaka {
 namespace media {

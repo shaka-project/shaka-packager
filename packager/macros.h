@@ -9,6 +9,9 @@
 
 #include <type_traits>
 
+#include <absl/log/globals.h>
+#include <absl/log/log.h>
+
 /// A macro to disable copying and assignment. Usage:
 /// class Foo {
 ///  private:
@@ -39,8 +42,21 @@
 /// AES block size in bytes, regardless of key size.
 #define AES_BLOCK_SIZE 16
 
-#define DVLOG_IF(verboselevel, condition) \
-  static_cast<void>(0), !(condition) ? (void)0 : VLOG(verboselevel)
+#define VLOG(verboselevel) \
+  LOG(LEVEL(static_cast<absl::LogSeverity>(-verboselevel)))
+
+#define VLOG_IS_ON(verboselevel) \
+  (static_cast<int>(absl::MinLogLevel()) <= -verboselevel)
+
+#ifndef NDEBUG
+#define DVLOG(verboselevel) VLOG(verboselevel)
+#else
+// We need this expression to work with << after it, so this is a simple way to
+// turn DVLOG into a no-op in release builds.
+#define DVLOG(verboselevel) \
+  if (false)                \
+  VLOG(verboselevel)
+#endif
 
 #if defined(SHARED_LIBRARY_BUILD)
 #if defined(_WIN32)

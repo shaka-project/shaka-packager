@@ -6,7 +6,8 @@
 
 #include <packager/mpd/base/period.h>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/mpd_options.h>

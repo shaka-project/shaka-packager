@@ -6,6 +6,8 @@
 
 #include <packager/media/formats/webm/encryptor.h>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/formats/webm/webm_constants.h>

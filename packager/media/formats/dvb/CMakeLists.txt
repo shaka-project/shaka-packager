@@ -21,16 +21,16 @@ add_library(dvb STATIC
   subtitle_composer.h
   )
 target_link_libraries(dvb
-  file
-  media_base
-  widevine_protos
-  manifest_base
-  mpd_media_info_proto
-  png_static
   absl::flags
+  absl::log
   absl::strings
   absl::str_format
-  glog
+  file
+  manifest_base
+  media_base
+  mpd_media_info_proto
+  png_static
+  widevine_protos
   )
 
 add_executable(dvb_unittest

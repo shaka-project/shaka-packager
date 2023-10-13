@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <map>
 
+#include <absl/log/check.h>
+
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp4/box_buffer.h>
 #include <packager/media/formats/mp4/box_definitions.h>

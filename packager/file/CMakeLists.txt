@@ -19,13 +19,13 @@ add_library(file STATIC
 target_link_libraries(file
     absl::base
     absl::flags
+    absl::log
     absl::str_format
     absl::strings
     absl::synchronization
     absl::time
-    libcurl
-    glog
     kv_pairs
+    libcurl
     status
     version)
 
@@ -36,6 +36,7 @@ endif()
 add_library(file_test_util STATIC
     file_test_util.cc)
 target_link_libraries(file_test_util
+    absl::log
     gmock)
 
 add_executable(file_unittest
@@ -47,6 +48,8 @@ add_executable(file_unittest
     memory_file_unittest.cc
     udp_options_unittest.cc)
 target_link_libraries(file_unittest
+    absl::check
+    absl::log
     file
     file_test_util
     gmock

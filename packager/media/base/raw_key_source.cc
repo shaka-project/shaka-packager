@@ -8,8 +8,9 @@
 
 #include <algorithm>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <glog/logging.h>
 
 #include <packager/media/base/key_source.h>
 #include <packager/status/status_macros.h>

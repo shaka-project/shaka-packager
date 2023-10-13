@@ -7,8 +7,8 @@
 add_library(kv_pairs STATIC
     kv_pairs.cc)
 target_link_libraries(kv_pairs
-    absl::str_format
-    glog)
+    absl::log
+    absl::str_format)
 
 add_executable(kv_pairs_unittest
     kv_pairs_unittest.cc)

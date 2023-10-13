@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include <absl/log/check.h>
+
 #include <packager/file/file_util.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/muxer_options.h>

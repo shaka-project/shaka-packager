@@ -141,13 +141,14 @@ add_executable(packager
   app/widevine_encryption_flags.h
 )
 target_link_libraries(packager
-  libpackager
-  hex_bytes_flags
   absl::flags
   absl::flags_parse
-  license_notice
-  glog
+  absl::log
+  absl::log_flags
   absl::strings
+  hex_bytes_flags
+  libpackager
+  license_notice
   string_utils
 )
 
@@ -158,13 +159,14 @@ add_executable(mpd_generator
   app/vlog_flags.h
 )
 target_link_libraries(mpd_generator
-  mpd_builder
-  mpd_util
   absl::flags
   absl::flags_parse
+  absl::log
+  absl::log_flags
   absl::strings
-  glog
   license_notice
+  mpd_builder
+  mpd_util
   )
 
 add_executable(packager_test

@@ -58,10 +58,10 @@ add_library(media_base STATIC
 target_link_libraries(media_base
     absl::base
     absl::flags
+    absl::log
     absl::str_format
     absl::strings
     file
-    glog
     hex_parser
     mbedtls
     mpd_media_info_proto
@@ -73,8 +73,8 @@ target_link_libraries(media_base
 add_library(media_handler_test_base STATIC
     media_handler_test_base.cc)
 target_link_libraries(media_handler_test_base
+    absl::log
     absl::strings
-    glog
     gmock)
 
 add_executable(media_base_unittest

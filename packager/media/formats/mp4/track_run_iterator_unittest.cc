@@ -9,7 +9,7 @@
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
-#include <glog/logging.h>
+#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 #include <packager/flag_saver.h>

@@ -7,7 +7,6 @@
 # Root-level CMake build file.
 
 # Minimum CMake version.  This must be in the root level CMakeLists.txt.
-# We could require as low as 3.10, but glog requires 3.16.
 cmake_minimum_required(VERSION 3.16)
 
 # These policy settings should be included before the project definition.

@@ -11,8 +11,10 @@
 
 #include <absl/base/internal/endian.h>
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
 #include <absl/strings/escaping.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/http_key_fetcher.h>
 #include <packager/media/base/producer_consumer_queue.h>
 #include <packager/media/base/protection_system_ids.h>

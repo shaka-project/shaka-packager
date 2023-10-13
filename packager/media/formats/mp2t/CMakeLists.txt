@@ -55,12 +55,12 @@ add_library(mp2t STATIC
   )
 
 target_link_libraries(mp2t
+  absl::log
+  dvb
   media_base
-  glog
+  media_codecs
   media_crypto
   hex_parser
-  media_codecs
-  dvb
 )
 
 add_executable(mp2t_unittest
@@ -77,18 +77,18 @@ ts_writer_unittest.cc
   )
 
 target_link_libraries(mp2t_unittest
-  mp2t
+  absl::flags
+  absl::log
   file
   file_test_util
-  test_data_util
-  absl::flags
+  gmock
+  gtest
+  gtest_main
   media_event
   media_handler_test_base
   mock_muxer_listener
-  glog
-  gmock
-  gtest
-  gtest_main)
+  mp2t
+  test_data_util)
 
 add_test(NAME mp2t_unittest COMMAND mp2t_unittest)
 

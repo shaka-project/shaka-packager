@@ -10,7 +10,8 @@
 #include <iterator>
 #include <limits>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 

@@ -8,8 +8,9 @@
 
 #include <thread>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/time/time.h>
-#include <glog/logging.h>
 
 namespace shaka {
 

@@ -6,8 +6,10 @@
 
 #include <cstdint>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
+#include <packager/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/offset_byte_queue.h>
 #include <packager/media/base/timestamp.h>
@@ -53,8 +55,9 @@ bool EsParserH26x::Parse(const uint8_t* buf,
   // HLS recommendation: "In AVC video, you should have both a DTS and a
   // PTS in each PES header".
   // However, some streams do not comply with this recommendation.
-  DVLOG_IF(1, pts == kNoTimestamp) << "Each video PES should have a PTS";
-  if (pts != kNoTimestamp) {
+  if (pts == kNoTimestamp) {
+    DVLOG(1) << "Each video PES should have a PTS";
+  } else {
     TimingDesc timing_desc;
     timing_desc.pts = pts;
     timing_desc.dts = (dts != kNoTimestamp) ? dts : pts;

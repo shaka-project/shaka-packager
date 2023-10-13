@@ -8,7 +8,8 @@
 
 #include <cmath>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <google/protobuf/text_format.h>
 
 #include <packager/file/file.h>

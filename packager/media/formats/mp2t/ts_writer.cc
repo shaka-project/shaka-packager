@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/media_sample.h>

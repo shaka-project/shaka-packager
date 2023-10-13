@@ -11,7 +11,7 @@
 #include <absl/flags/flag.h>
 
 namespace shaka {
-void register_flags_with_glog();
+void handle_vlog_flags();
 }
 
 #endif  // APP_VLOG_FLAGS_H_

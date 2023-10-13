@@ -6,6 +6,8 @@
 
 #include <packager/media/base/bit_writer.h>
 
+#include <absl/log/check.h>
+
 namespace shaka {
 namespace media {
 

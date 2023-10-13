@@ -14,9 +14,11 @@
 #include <absl/flags/parse.h>
 #include <absl/flags/usage.h>
 #include <absl/flags/usage_config.h>
+#include <absl/log/check.h>
+#include <absl/log/initialize.h>
+#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
-#include <glog/logging.h>
 
 #include <packager/app/mpd_generator_flags.h>
 #include <packager/app/vlog_flags.h>
@@ -122,7 +124,9 @@ int MpdMain(int argc, char** argv) {
     return status;
   }
 
-  register_flags_with_glog();
+  handle_vlog_flags();
+
+  absl::InitializeLog();
 
   if (!absl::GetFlag(FLAGS_test_packager_version).empty())
     SetPackagerVersionForTesting(absl::GetFlag(FLAGS_test_packager_version));

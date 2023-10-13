@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <functional>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

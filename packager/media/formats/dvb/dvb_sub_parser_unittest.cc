@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <absl/log/check.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

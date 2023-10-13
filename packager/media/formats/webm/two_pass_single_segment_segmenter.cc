@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include <absl/log/check.h>
 #include <mkvmuxer/mkvmuxer.h>
 #include <mkvmuxer/mkvmuxerutil.h>
 

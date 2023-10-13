@@ -9,10 +9,12 @@
 #include <algorithm>
 #include <chrono>
 
+#include <absl/log/check.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 
 #include <packager/file/file.h>
+#include <packager/macros.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/fourccs.h>

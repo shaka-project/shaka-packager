@@ -6,6 +6,8 @@
 
 #include <packager/media/formats/mp2t/ts_muxer.h>
 
+#include <absl/log/check.h>
+
 namespace shaka {
 namespace media {
 namespace mp2t {

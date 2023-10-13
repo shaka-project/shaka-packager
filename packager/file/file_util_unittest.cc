@@ -6,7 +6,7 @@
 
 #include <packager/file/file_util.h>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 namespace shaka {

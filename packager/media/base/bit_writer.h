@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <vector>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

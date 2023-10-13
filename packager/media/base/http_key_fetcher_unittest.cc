@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/media/test/test_web_server.h>
 #include <packager/status/status_test_util.h>

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>

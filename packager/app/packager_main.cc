@@ -16,10 +16,12 @@
 #include <absl/flags/parse.h>
 #include <absl/flags/usage.h>
 #include <absl/flags/usage_config.h>
+#include <absl/log/globals.h>
+#include <absl/log/initialize.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
-#include <glog/logging.h>
 
 #include <packager/app/ad_cue_generator_flags.h>
 #include <packager/app/crypto_flags.h>
@@ -550,14 +552,19 @@ int PackagerMain(int argc, char** argv) {
       std::cout << line << std::endl;
     return kSuccess;
   }
+
   if (remaining_args.size() < 2) {
     std::cerr << "Usage: " << absl::ProgramUsageMessage();
     return kSuccess;
   }
-  if (absl::GetFlag(FLAGS_quiet))
-    google::SetStderrLogging(google::GLOG_WARNING);
 
-  register_flags_with_glog();
+  if (absl::GetFlag(FLAGS_quiet)) {
+    absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
+  }
+
+  handle_vlog_flags();
+
+  absl::InitializeLog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
       !ValidatePRCryptoFlags() || !ValidateCryptoFlags() ||

@@ -8,10 +8,11 @@
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>
-#include <glog/logging.h>
 
 #include <packager/file/thread_pool.h>
 #include <packager/macros.h>

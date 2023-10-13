@@ -4,7 +4,7 @@
 
 #include <packager/media/formats/webm/webm_audio_client.h>
 
-#include <glog/logging.h>
+#include <absl/log/log.h>
 
 #include <packager/media/formats/webm/webm_constants.h>
 
