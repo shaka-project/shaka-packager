@@ -8,6 +8,7 @@
 
 #include <absl/log/check.h>
 
+#include <packager/macros/compiler.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/video_stream_info.h>

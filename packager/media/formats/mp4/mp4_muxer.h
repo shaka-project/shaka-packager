@@ -10,8 +10,8 @@
 #include <optional>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/muxer.h>
-#include <optional>
 
 namespace shaka {
 namespace media {

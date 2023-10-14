@@ -14,8 +14,9 @@
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_test_util.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/video_stream_info.h>

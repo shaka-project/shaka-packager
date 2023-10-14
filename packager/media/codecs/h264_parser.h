@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 
+#include <packager/macros/classes.h>
 #include <packager/media/codecs/h26x_bit_reader.h>
 #include <packager/media/codecs/nalu_reader.h>
 

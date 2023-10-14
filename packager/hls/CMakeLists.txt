@@ -16,7 +16,6 @@ add_library(hls_builder
   base/simple_hls_notifier.h
   base/tag.cc
   base/tag.h
-  public/hls_params.h
   )
 
 target_link_libraries(hls_builder

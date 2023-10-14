@@ -17,7 +17,7 @@
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/event/progress_listener.h>
 #include <packager/mpd/base/mpd_builder.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -11,7 +11,7 @@
 
 #include <mkvmuxer/mkvmuxer.h>
 
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

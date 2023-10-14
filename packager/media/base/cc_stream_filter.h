@@ -11,7 +11,7 @@
 
 #include <packager/media/base/media_handler.h>
 #include <packager/media/base/text_sample.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

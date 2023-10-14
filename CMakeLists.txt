@@ -19,10 +19,6 @@ project(shaka-packager VERSION "")
 # libpackager library.  By default, don't.
 option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
 
-# Global include paths.
-# Project root, to reference packager/foo/bar/...
-include_directories(.)
-
 # Enable CMake's test infrastructure.
 enable_testing()
 

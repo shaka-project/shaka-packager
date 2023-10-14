@@ -18,8 +18,8 @@
 #include <packager/hls/base/hls_notifier.h>
 #include <packager/hls/base/master_playlist.h>
 #include <packager/hls/base/media_playlist.h>
-#include <packager/hls/public/hls_params.h>
-#include <packager/macros.h>
+#include <packager/hls_params.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace hls {

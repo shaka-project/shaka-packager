@@ -8,7 +8,7 @@
 
 #include <absl/log/log.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {

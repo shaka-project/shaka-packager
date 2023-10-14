@@ -11,8 +11,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
+#include <packager/macros/compiler.h>
 
 using testing::_;
 using testing::Eq;

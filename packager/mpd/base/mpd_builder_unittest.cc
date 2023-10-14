@@ -11,6 +11,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/period.h>
 #include <packager/mpd/base/representation.h>

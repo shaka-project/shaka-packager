@@ -9,10 +9,11 @@
 #include <algorithm>
 #include <chrono>
 
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_util.h>
-#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

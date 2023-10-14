@@ -16,9 +16,9 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/hls/base/tag.h>
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/version/version.h>

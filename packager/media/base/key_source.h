@@ -12,11 +12,11 @@
 #include <string>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/pssh_generator.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

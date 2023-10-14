@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_STATUS_H_
-#define PACKAGER_STATUS_H_
+#ifndef PACKAGER_PUBLIC_STATUS_H_
+#define PACKAGER_PUBLIC_STATUS_H_
 
 #include <iostream>
 #include <string>
 
-#include <packager/macros.h>
+#include <packager/export.h>
 
 namespace shaka {
 
@@ -136,4 +136,4 @@ std::ostream& operator<<(std::ostream& os, const Status& x);
 
 }  // namespace shaka
 
-#endif  // PACKAGER_STATUS_H_
+#endif  // PACKAGER_PUBLIC_STATUS_H_

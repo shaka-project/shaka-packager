@@ -13,6 +13,9 @@
 #include <absl/log/log.h>
 #include <mbedtls/entropy.h>
 
+#include <packager/macros/compiler.h>
+#include <packager/macros/crypto.h>
+
 namespace {
 
 // According to ISO/IEC 23001-7:2016 CENC spec, IV should be either

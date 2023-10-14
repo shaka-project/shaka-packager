@@ -9,7 +9,7 @@
 
 #include <absl/synchronization/mutex.h>
 
-#include <packager/media/public/ad_cue_generator_params.h>
+#include <packager/ad_cue_generator_params.h>
 
 namespace shaka {
 namespace media {

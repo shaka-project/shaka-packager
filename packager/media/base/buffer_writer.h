@@ -10,8 +10,8 @@
 #include <cstdint>
 #include <vector>
 
-#include <packager/macros.h>
-#include <packager/status/status.h>
+#include <packager/macros/classes.h>
+#include <packager/status.h>
 
 namespace shaka {
 

@@ -20,7 +20,7 @@
 #include <absl/strings/str_format.h>
 #include <libxml/tree.h>
 
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/mpd_utils.h>

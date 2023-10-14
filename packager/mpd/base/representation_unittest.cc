@@ -15,7 +15,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/flag_saver.h>
 #include <packager/mpd/base/mpd_options.h>

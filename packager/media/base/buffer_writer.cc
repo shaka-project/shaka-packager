@@ -10,7 +10,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 
 namespace shaka {
 namespace media {

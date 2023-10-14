@@ -48,6 +48,12 @@ else()
   add_compile_options(-Wno-unknown-warning-option)
 endif()
 
+# Global include paths.
+# Project root, to reference internal headers as packager/foo/bar/...
+include_directories(..)
+# Public include folder, to reference public headers as packager/foo.h
+include_directories(../include)
+
 # Include our module for gtest-based testing.
 include("gtest.cmake")
 
@@ -76,7 +82,7 @@ set(libpackager_sources
   app/single_thread_job_manager.cc
   app/single_thread_job_manager.h
   packager.cc
-  packager.h
+  ../include/packager/packager.h
   )
 
 if(LIBPACKAGER_SHARED)

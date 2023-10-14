@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/byte_queue.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/stream_info.h>

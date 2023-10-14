@@ -13,8 +13,8 @@
 #include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/file/file.h>
-#include <packager/macros.h>
+#include <packager/file.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/mpd_utils.h>

@@ -18,6 +18,8 @@
 #include <absl/synchronization/mutex.h>
 
 #include <packager/file/file_util.h>
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/mpd_utils.h>

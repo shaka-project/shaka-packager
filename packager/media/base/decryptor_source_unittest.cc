@@ -11,7 +11,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/macros.h>
 #include <packager/media/base/raw_key_source.h>
 
 using ::testing::_;

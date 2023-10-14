@@ -15,10 +15,11 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/decryptor_source.h>
 #include <packager/media/base/key_source.h>
-#include <packager/media/base/macros.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/formats/mp2t/mp2t_media_parser.h>

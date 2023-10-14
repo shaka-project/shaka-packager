@@ -12,7 +12,7 @@
 #include <absl/log/log.h>
 #include <png.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace media {

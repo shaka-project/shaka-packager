@@ -13,6 +13,7 @@
 #include <absl/strings/numbers.h>
 
 #include <packager/kv_pairs/kv_pairs.h>
+#include <packager/macros/logging.h>
 
 ABSL_FLAG(int,
           v,

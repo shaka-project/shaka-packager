@@ -15,7 +15,6 @@
 #include <absl/strings/str_split.h>
 
 #include <packager/kv_pairs/kv_pairs.h>
-#include <packager/macros.h>
 
 ABSL_FLAG(std::string,
           udp_interface_address,

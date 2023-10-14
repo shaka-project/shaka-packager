@@ -13,9 +13,9 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/test/test_web_server.h>
 
 #define ASSERT_JSON_STRING(json, key, value) \

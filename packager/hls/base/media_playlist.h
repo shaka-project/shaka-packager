@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 
-#include <packager/hls/public/hls_params.h>
-#include <packager/macros.h>
+#include <packager/hls_params.h>
+#include <packager/macros/classes.h>
 #include <packager/mpd/base/bandwidth_estimator.h>
 #include <packager/mpd/base/media_info.pb.h>
 

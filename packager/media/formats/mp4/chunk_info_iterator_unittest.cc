@@ -12,6 +12,8 @@
 #include <absl/log/log.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
+
 namespace {
 struct ChunkProperty {
   uint32_t samples_per_chunk;

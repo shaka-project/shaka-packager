@@ -10,7 +10,7 @@
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>

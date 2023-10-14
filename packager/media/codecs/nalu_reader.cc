@@ -11,7 +11,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/codecs/h264_parser.h>
 

@@ -12,6 +12,7 @@
 #include <absl/log/log.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros/logging.h>
 #include <packager/media/base/rcheck.h>
 
 namespace shaka {

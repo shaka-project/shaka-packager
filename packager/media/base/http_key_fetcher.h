@@ -10,9 +10,9 @@
 #include <string>
 
 #include <packager/file/http_file.h>
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/key_fetcher.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

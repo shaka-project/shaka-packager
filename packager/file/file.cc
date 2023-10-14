@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 
 #include <algorithm>
 #include <cinttypes>
@@ -24,7 +24,8 @@
 #include <packager/file/memory_file.h>
 #include <packager/file/threaded_io_file.h>
 #include <packager/file/udp_file.h>
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 
 ABSL_FLAG(uint64_t,
           io_cache_size,

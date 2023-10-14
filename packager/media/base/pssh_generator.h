@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <packager/media/base/protection_system_specific_info.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 // TODO(hmchen): move pssh related files into a sperate folder.
 namespace shaka {

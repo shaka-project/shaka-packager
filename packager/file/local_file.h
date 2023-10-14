@@ -10,7 +10,8 @@
 #include <cstdint>
 #include <string>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 

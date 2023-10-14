@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <packager/media/base/audio_stream_info.h>
-#include <packager/media/base/macros.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/event/mock_muxer_listener.h>
 #include <packager/media/formats/mp2t/pes_packet.h>

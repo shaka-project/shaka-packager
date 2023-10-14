@@ -13,7 +13,7 @@
 #include <optional>
 #include <vector>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp2t/continuity_counter.h>

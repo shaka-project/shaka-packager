@@ -9,12 +9,12 @@
 #include <absl/log/check.h>
 #include <mkvmuxer/mkvmuxer.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/event/muxer_listener.h>
-#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

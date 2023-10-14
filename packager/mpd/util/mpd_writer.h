@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/mpd/base/mpd_notifier.h>
 #include <packager/mpd/base/mpd_options.h>
 

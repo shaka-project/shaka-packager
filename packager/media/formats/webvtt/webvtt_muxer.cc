@@ -6,10 +6,10 @@
 
 #include <packager/media/formats/webvtt/webvtt_muxer.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
+#include <packager/macros/status.h>
 #include <packager/media/formats/webvtt/webvtt_utils.h>
-#include <packager/status/status_macros.h>
 
 namespace shaka {
 namespace media {

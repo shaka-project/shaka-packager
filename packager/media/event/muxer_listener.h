@@ -14,7 +14,8 @@
 #include <string>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
+#include <packager/macros/compiler.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/range.h>
 

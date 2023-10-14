@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/decryptor_source.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/media_sample.h>

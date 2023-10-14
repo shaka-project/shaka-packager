@@ -16,9 +16,10 @@
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/tag.h>
+#include <packager/macros/logging.h>
 #include <packager/version/version.h>
 
 namespace shaka {

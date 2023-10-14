@@ -10,6 +10,8 @@
 
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
+
 namespace shaka {
 namespace media {
 namespace mp4 {

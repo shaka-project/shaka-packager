@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/byte_queue.h>
 #include <packager/media/formats/mp2t/ts_section.h>
 

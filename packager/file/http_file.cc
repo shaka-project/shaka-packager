@@ -15,7 +15,8 @@
 #include <curl/curl.h>
 
 #include <packager/file/thread_pool.h>
-#include <packager/macros.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 #include <packager/version/version.h>
 
 ABSL_FLAG(std::string,

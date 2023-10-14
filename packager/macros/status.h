@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_STATUS_MACROS_H_
-#define PACKAGER_STATUS_MACROS_H_
+#ifndef PACKAGER_MACROS_STATUS_H_
+#define PACKAGER_MACROS_STATUS_H_
 
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 // Evaluates an expression that produces a `Status`. If the status is not
 // ok, returns it from the current function.
@@ -21,4 +21,4 @@
 
 // TODO(kqyang): Support build Status and update Status message through "<<".
 
-#endif  // PACKAGER_STATUS_MACROS_H_
+#endif  // PACKAGER_MACROS_STATUS_H_

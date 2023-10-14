@@ -11,7 +11,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/mock_media_playlist.h>
 #include <packager/version/version.h>

@@ -11,7 +11,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/timestamp.h>
 #include <packager/media/codecs/vp8_parser.h>
 #include <packager/media/codecs/vp9_parser.h>

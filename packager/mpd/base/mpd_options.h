@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <packager/mpd/public/mpd_params.h>
+#include <packager/mpd_params.h>
 
 namespace shaka {
 

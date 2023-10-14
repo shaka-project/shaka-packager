@@ -13,7 +13,7 @@
 #include <absl/log/log.h>
 #include <google/protobuf/text_format.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/mpd/base/mpd_builder.h>
 #include <packager/mpd/base/mpd_notifier.h>
 #include <packager/mpd/base/mpd_utils.h>

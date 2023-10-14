@@ -11,10 +11,10 @@
 #include <memory>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/container_names.h>
 #include <packager/media/origin/origin_handler.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 

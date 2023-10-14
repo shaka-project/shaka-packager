@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 

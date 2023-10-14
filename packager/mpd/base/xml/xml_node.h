@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/media_info.pb.h>
 

@@ -12,9 +12,10 @@
 
 #include <absl/synchronization/mutex.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/file/io_cache.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 

@@ -4,22 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_PACKAGER_H_
-#define PACKAGER_PACKAGER_H_
+#ifndef PACKAGER_PUBLIC_PACKAGER_H_
+#define PACKAGER_PUBLIC_PACKAGER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <packager/file/public/buffer_callback_params.h>
-#include <packager/hls/public/hls_params.h>
-#include <packager/macros.h>
-#include <packager/media/public/ad_cue_generator_params.h>
-#include <packager/media/public/chunking_params.h>
-#include <packager/media/public/crypto_params.h>
-#include <packager/media/public/mp4_output_params.h>
-#include <packager/mpd/public/mpd_params.h>
-#include <packager/status/status.h>
+#include <packager/ad_cue_generator_params.h>
+#include <packager/buffer_callback_params.h>
+#include <packager/chunking_params.h>
+#include <packager/crypto_params.h>
+#include <packager/export.h>
+#include <packager/hls_params.h>
+#include <packager/mp4_output_params.h>
+#include <packager/mpd_params.h>
+#include <packager/status.h>
 
 namespace shaka {
 
@@ -152,9 +153,8 @@ class SHAKA_EXPORT Packager {
   /// @param packaging_params contains the packaging parameters.
   /// @param stream_descriptors a list of stream descriptors.
   /// @return OK on success, an appropriate error code on failure.
-  Status Initialize(
-      const PackagingParams& packaging_params,
-      const std::vector<StreamDescriptor>& stream_descriptors);
+  Status Initialize(const PackagingParams& packaging_params,
+                    const std::vector<StreamDescriptor>& stream_descriptors);
 
   /// Run the pipeline to completion (or failed / been cancelled). Note
   /// that it blocks until completion.
@@ -202,4 +202,4 @@ class SHAKA_EXPORT Packager {
 
 }  // namespace shaka
 
-#endif  // PACKAGER_PACKAGER_H_
+#endif  // PACKAGER_PUBLIC_PACKAGER_H_

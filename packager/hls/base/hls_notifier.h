@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include <packager/hls/public/hls_params.h>
+#include <packager/hls_params.h>
 #include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {

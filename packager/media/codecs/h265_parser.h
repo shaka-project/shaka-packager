@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include <packager/macros/classes.h>
 #include <packager/media/codecs/h26x_bit_reader.h>
 
 namespace shaka {

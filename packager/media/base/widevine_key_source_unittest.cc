@@ -15,6 +15,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/key_fetcher.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/request_signer.h>

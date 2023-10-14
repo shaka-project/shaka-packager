@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <vector>
 
-#include <packager/macros.h>
+#include <packager/macros/classes.h>
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/codecs/avc_decoder_configuration_record.h>
 

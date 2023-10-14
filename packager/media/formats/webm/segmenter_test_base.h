@@ -19,7 +19,7 @@
 #include <packager/media/formats/webm/mkv_writer.h>
 #include <packager/media/formats/webm/segmenter.h>
 #include <packager/media/formats/webm/webm_parser.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {

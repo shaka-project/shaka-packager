@@ -8,7 +8,7 @@
 #include <absl/log/log.h>
 #include <gtest/gtest.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/test/test_data_util.h>
 
 namespace shaka {

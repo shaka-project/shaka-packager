@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <string>
 
-#include <packager/media/public/mp4_output_params.h>
+#include <packager/mp4_output_params.h>
 
 namespace shaka {
 namespace media {

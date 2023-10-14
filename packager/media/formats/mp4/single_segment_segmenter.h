@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 
 #include <packager/file/file_closer.h>
+#include <packager/macros/classes.h>
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp4/segmenter.h>
 

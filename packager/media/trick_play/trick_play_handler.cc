@@ -10,7 +10,7 @@
 #include <absl/log/log.h>
 
 #include <packager/media/base/video_stream_info.h>
-#include <packager/status/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

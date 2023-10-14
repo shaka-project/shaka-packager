@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/byte_queue.h>
 
 namespace shaka {

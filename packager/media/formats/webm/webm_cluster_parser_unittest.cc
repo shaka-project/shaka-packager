@@ -16,6 +16,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/macros/classes.h>
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/timestamp.h>

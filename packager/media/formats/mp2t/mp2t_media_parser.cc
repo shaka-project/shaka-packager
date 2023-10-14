@@ -9,7 +9,7 @@
 
 #include <absl/log/check.h>
 
-#include <packager/macros.h>
+#include <packager/macros/logging.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>

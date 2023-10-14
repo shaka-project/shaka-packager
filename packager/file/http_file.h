@@ -12,7 +12,7 @@
 
 #include <absl/synchronization/notification.h>
 
-#include <packager/file/file.h>
+#include <packager/file.h>
 #include <packager/file/io_cache.h>
 
 typedef void CURL;
