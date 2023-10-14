@@ -7,6 +7,7 @@
 #ifndef PACKAGER_PUBLIC_CRYPTO_PARAMS_H_
 #define PACKAGER_PUBLIC_CRYPTO_PARAMS_H_
 
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
