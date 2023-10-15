@@ -14,7 +14,7 @@ if(LIBPACKAGER_SHARED)
     DEPENDS packager
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND
-      ${CMAKE_COMMAND} --install . --prefix ${TEST_INSTALL_DIR} >/dev/null)
+      ${CMAKE_COMMAND} --install . --prefix ${TEST_INSTALL_DIR})
 
   # Then try to build a very simplistic test app to prove that we can include
   # the headers and link the library.
