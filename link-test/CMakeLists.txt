@@ -10,11 +10,13 @@
 if(LIBPACKAGER_SHARED)
   # Install the library and headers to a temporary location.
   set(TEST_INSTALL_DIR ${CMAKE_BINARY_DIR}/test-install)
+  message(WARNING "CMake version ${CMAKE_VERSION}")
+
   add_custom_target(test-install ALL
     DEPENDS mpd_generator packager libpackager
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND
-      ${CMAKE_COMMAND} --install . --prefix ${TEST_INSTALL_DIR})
+      ${CMAKE_COMMAND} --install . --prefix ${TEST_INSTALL_DIR} --verbose)
 
   # Then try to build a very simplistic test app to prove that we can include
   # the headers and link the library.
