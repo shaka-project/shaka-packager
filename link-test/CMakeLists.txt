@@ -11,7 +11,7 @@ if(LIBPACKAGER_SHARED)
   # Install the library and headers to a temporary location.
   set(TEST_INSTALL_DIR ${CMAKE_BINARY_DIR}/test-install)
   add_custom_target(test-install ALL
-    DEPENDS packager
+    DEPENDS mpd_generator packager libpackager
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND
       ${CMAKE_COMMAND} --install . --prefix ${TEST_INSTALL_DIR})
@@ -19,7 +19,6 @@ if(LIBPACKAGER_SHARED)
   # Then try to build a very simplistic test app to prove that we can include
   # the headers and link the library.
   add_executable(packager_link_test test.cc)
-  add_dependencies(test-install mpd_generator packager libpackager)
   add_dependencies(packager_link_test test-install)
   target_link_directories(packager_link_test PRIVATE ${TEST_INSTALL_DIR}/lib)
   target_include_directories(packager_link_test PRIVATE ${TEST_INSTALL_DIR}/include)
