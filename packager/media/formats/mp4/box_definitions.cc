@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/box_definitions.h"
+#include <packager/media/formats/mp4/box_definitions.h>
 
-#include <absl/flags/flag.h>
 #include <algorithm>
 #include <limits>
 
-#include <glog/logging.h>
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/formats/mp4/box_buffer.h"
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/formats/mp4/box_buffer.h>
 
 ABSL_FLAG(bool,
           mvex_before_trak,

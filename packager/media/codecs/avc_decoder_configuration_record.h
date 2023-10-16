@@ -7,14 +7,13 @@
 #ifndef PACKAGER_MEDIA_CODECS_AVC_DECODER_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_AVC_DECODER_CONFIGURATION_RECORD_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/codecs/decoder_configuration_record.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/codecs/decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {

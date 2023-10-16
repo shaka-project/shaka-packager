@@ -4,10 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/app/crypto_flags.h"
-#include <absl/flags/flag.h>
+#include <packager/app/crypto_flags.h>
 
-#include <stdio.h>
+#include <cstdio>
+
+#include <absl/flags/flag.h>
 
 ABSL_FLAG(std::string,
           protection_scheme,

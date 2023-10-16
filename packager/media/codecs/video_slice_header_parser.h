@@ -9,9 +9,9 @@
 
 #include <vector>
 
-#include "packager/media/base/macros.h"
-#include "packager/media/codecs/h264_parser.h"
-#include "packager/media/codecs/h265_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/codecs/h265_parser.h>
 
 namespace shaka {
 namespace media {

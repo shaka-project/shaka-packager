@@ -13,8 +13,9 @@
 #include <thread>
 #include <vector>
 
-#include "absl/synchronization/mutex.h"
-#include "packager/status/status.h"
+#include <absl/synchronization/mutex.h>
+
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

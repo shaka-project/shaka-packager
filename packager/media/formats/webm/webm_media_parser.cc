@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_media_parser.h"
+#include <packager/media/formats/webm/webm_media_parser.h>
 
 #include <string>
 
-#include "glog/logging.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/formats/webm/webm_cluster_parser.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/media/formats/webm/webm_content_encodings.h"
-#include "packager/media/formats/webm/webm_info_parser.h"
-#include "packager/media/formats/webm/webm_tracks_parser.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/formats/webm/webm_cluster_parser.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_content_encodings.h>
+#include <packager/media/formats/webm/webm_info_parser.h>
+#include <packager/media/formats/webm/webm_tracks_parser.h>
 
 namespace shaka {
 namespace media {

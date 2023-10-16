@@ -4,7 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "string_trim_split.h"
+#include <packager/utils/string_trim_split.h>
+
 #include <absl/strings/str_split.h>
 
 namespace shaka {

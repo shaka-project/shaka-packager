@@ -4,11 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/trick_play/trick_play_handler.h"
+#include <packager/media/trick_play/trick_play_handler.h>
 
-#include "glog/logging.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/status/status.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/media/base/video_stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

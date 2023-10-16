@@ -11,9 +11,10 @@
 #include <optional>
 #include <queue>
 
-#include "glog/logging.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/public/chunking_params.h"
+#include <absl/log/log.h>
+
+#include <packager/chunking_params.h>
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {

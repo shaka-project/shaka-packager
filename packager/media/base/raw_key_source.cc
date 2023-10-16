@@ -4,15 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/raw_key_source.h"
+#include <packager/media/base/raw_key_source.h>
 
 #include <algorithm>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
-#include "packager/media/base/key_source.h"
-#include "packager/status/status_macros.h"
-#include "packager/utils/bytes_to_string_view.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/key_source.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace {
 const char kEmptyDrmLabel[] = "";

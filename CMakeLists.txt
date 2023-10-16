@@ -7,7 +7,6 @@
 # Root-level CMake build file.
 
 # Minimum CMake version.  This must be in the root level CMakeLists.txt.
-# We could require as low as 3.10, but glog requires 3.16.
 cmake_minimum_required(VERSION 3.16)
 
 # These policy settings should be included before the project definition.
@@ -19,10 +18,6 @@ project(shaka-packager VERSION "")
 # The only build option for Shaka Packager is whether to build a shared
 # libpackager library.  By default, don't.
 option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
-
-# Global include paths.
-# Project root, to reference packager/foo/bar/...
-include_directories(.)
 
 # Enable CMake's test infrastructure.
 enable_testing()

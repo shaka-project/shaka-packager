@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_CODECS_NALU_READER_H_
 #define PACKAGER_MEDIA_CODECS_NALU_READER_H_
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
-#include "packager/macros.h"
-#include "packager/media/base/decrypt_config.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {

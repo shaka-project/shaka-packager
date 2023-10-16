@@ -9,7 +9,7 @@
 #ifndef PACKAGER_MEDIA_BASE_RANGE_H_
 #define PACKAGER_MEDIA_BASE_RANGE_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace shaka {
 namespace media {

@@ -5,8 +5,9 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_
 
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/base/media_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/base/media_parser.h>
 
 namespace shaka {
 namespace media {

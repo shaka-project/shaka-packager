@@ -7,11 +7,10 @@
 #ifndef PACKAGER_MEDIA_BASE_MUXER_OPTIONS_H_
 #define PACKAGER_MEDIA_BASE_MUXER_OPTIONS_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
-#include "packager/media/public/mp4_output_params.h"
+#include <packager/mp4_output_params.h>
 
 namespace shaka {
 namespace media {

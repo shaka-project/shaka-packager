@@ -2,25 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/es_parser_audio.h"
-
-#include <stdint.h>
+#include <packager/media/formats/mp2t/es_parser_audio.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <list>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
-#include <glog/logging.h>
-#include "packager/media/base/audio_timestamp_helper.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/formats/mp2t/ac3_header.h"
-#include "packager/media/formats/mp2t/adts_header.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
-#include "packager/media/formats/mp2t/mpeg1_header.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_timestamp_helper.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/formats/mp2t/ac3_header.h>
+#include <packager/media/formats/mp2t/adts_header.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
+#include <packager/media/formats/mp2t/mpeg1_header.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 
 namespace shaka {
 namespace media {

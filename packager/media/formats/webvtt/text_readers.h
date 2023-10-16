@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/byte_queue.h"
-#include "packager/status/status.h"
+#include <packager/media/base/byte_queue.h>
+#include <packager/status.h>
 
 namespace shaka {
 class File;

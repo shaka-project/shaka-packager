@@ -4,22 +4,24 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/hls/base/media_playlist.h"
-
-#include <inttypes.h>
+#include <packager/hls/base/media_playlist.h>
 
 #include <algorithm>
+#include <cinttypes>
 #include <cmath>
 #include <memory>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
-#include "packager/file/file.h"
-#include "packager/hls/base/tag.h"
-#include "packager/media/base/language_utils.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/version/version.h"
+
+#include <packager/file.h>
+#include <packager/hls/base/tag.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/language_utils.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {

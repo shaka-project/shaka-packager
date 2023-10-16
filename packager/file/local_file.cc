@@ -4,9 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/local_file.h"
-
-#include <stdio.h>
+#include <packager/file/local_file.h>
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -14,9 +12,13 @@
 #include <sys/stat.h>
 #endif  // defined(OS_WIN)
 
+#include <cstdio>
 #include <filesystem>
 
-#include "glog/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 

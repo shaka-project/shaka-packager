@@ -5,9 +5,9 @@
 #ifndef PACKAGER_MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 #define PACKAGER_MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "packager/macros.h"
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

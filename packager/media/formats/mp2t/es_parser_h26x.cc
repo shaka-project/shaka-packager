@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 
-#include <stdint.h>
+#include <cstdint>
 
-#include <glog/logging.h>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/offset_byte_queue.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/offset_byte_queue.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {
@@ -52,8 +55,9 @@ bool EsParserH26x::Parse(const uint8_t* buf,
   // HLS recommendation: "In AVC video, you should have both a DTS and a
   // PTS in each PES header".
   // However, some streams do not comply with this recommendation.
-  DVLOG_IF(1, pts == kNoTimestamp) << "Each video PES should have a PTS";
-  if (pts != kNoTimestamp) {
+  if (pts == kNoTimestamp) {
+    DVLOG(1) << "Each video PES should have a PTS";
+  } else {
     TimingDesc timing_desc;
     timing_desc.pts = pts;
     timing_desc.dts = (dts != kNoTimestamp) ? dts : pts;

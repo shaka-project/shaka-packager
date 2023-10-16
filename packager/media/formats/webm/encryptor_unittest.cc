@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/encryptor.h"
-
-#include <gtest/gtest.h>
+#include <packager/media/formats/webm/encryptor.h>
 
 #include <memory>
 
-#include "packager/media/base/media_sample.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/status/status_test_util.h"
+#include <gtest/gtest.h>
+
+#include <packager/media/base/media_sample.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

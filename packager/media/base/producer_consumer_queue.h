@@ -10,11 +10,14 @@
 #include <chrono>
 #include <deque>
 
-#include "absl/strings/str_format.h"
-#include "absl/synchronization/mutex.h"
-#include "absl/time/time.h"
-#include "packager/macros.h"
-#include "packager/status/status.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+#include <absl/synchronization/mutex.h>
+#include <absl/time/time.h>
+
+#include <packager/macros/classes.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

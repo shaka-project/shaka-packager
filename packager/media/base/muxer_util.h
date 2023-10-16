@@ -9,9 +9,9 @@
 #ifndef PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
 #define PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "packager/status/status.h"
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

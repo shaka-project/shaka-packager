@@ -4,22 +4,25 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/muxer_listener_internal.h"
+#include <packager/media/event/muxer_listener_internal.h>
 
+#include <cmath>
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
 #include <google/protobuf/util/message_differencer.h>
-#include <math.h>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/ac4_audio_util.h"
-#include "packager/media/codecs/ec3_audio_util.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/utils/bytes_to_string_view.h"
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/ac4_audio_util.h>
+#include <packager/media/codecs/ec3_audio_util.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 using ::google::protobuf::util::MessageDifferencer;
 

@@ -4,9 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/composition_offset_iterator.h"
+#include <packager/media/formats/mp4/composition_offset_iterator.h>
 
-#include <glog/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

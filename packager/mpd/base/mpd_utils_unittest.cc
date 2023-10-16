@@ -4,16 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <absl/strings/escaping.h>
-#include <gtest/gtest.h>
+#include <packager/mpd/base/mpd_utils.h>
+
 #include <memory>
 
-#include "absl/types/span.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <absl/strings/escaping.h>
+#include <absl/types/span.h>
+#include <gtest/gtest.h>
+
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 namespace shaka {
 namespace {

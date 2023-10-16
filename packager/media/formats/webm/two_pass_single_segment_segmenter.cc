@@ -4,17 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
+#include <packager/media/formats/webm/two_pass_single_segment_segmenter.h>
 
 #include <algorithm>
 
-#include "common/webmids.h"
-#include "mkvmuxer/mkvmuxer.h"
-#include "mkvmuxer/mkvmuxerutil.h"
-#include "packager/file/file_util.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/stream_info.h"
+#include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxer.h>
+#include <mkvmuxer/mkvmuxerutil.h>
+
+#include <packager/file/file_util.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

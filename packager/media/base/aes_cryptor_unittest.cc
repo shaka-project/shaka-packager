@@ -4,16 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_encryptor.h>
 
 #include <iterator>
 #include <memory>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
-#include "packager/media/base/aes_decryptor.h"
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/utils/bytes_to_string_view.h"
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+#include <gtest/gtest.h>
+
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace {
 

@@ -4,13 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/period.h"
-#include <glog/logging.h>
+#include <packager/mpd/base/period.h>
 
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {

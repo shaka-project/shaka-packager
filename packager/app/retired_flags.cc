@@ -7,9 +7,9 @@
 // Defines retired / deprecated flags. These flags will be removed in later
 // versions.
 
-#include "packager/app/retired_flags.h"
+#include <packager/app/retired_flags.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 ABSL_FLAG(std::string, profile, "", "This flag is deprecated. Do not use.");
 ABSL_FLAG(bool, single_segment, true, "This flag is deprecated. Do not use.");

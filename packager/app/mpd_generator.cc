@@ -6,21 +6,25 @@
 
 #include <iostream>
 
-#include <absl/strings/str_format.h>
-#include <absl/strings/str_split.h>
-#include <glog/logging.h>
-#include "absl/flags/parse.h"
-#include "absl/flags/usage.h"
-#include "absl/flags/usage_config.h"
-#include "packager/app/mpd_generator_flags.h"
-#include "packager/mpd/util/mpd_writer.h"
-#include "packager/tools/license_notice.h"
-#include "packager/version/version.h"
-
 #if defined(OS_WIN)
 #include <codecvt>
 #include <functional>
 #endif  // defined(OS_WIN)
+
+#include <absl/flags/parse.h>
+#include <absl/flags/usage.h>
+#include <absl/flags/usage_config.h>
+#include <absl/log/check.h>
+#include <absl/log/initialize.h>
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
+
+#include <packager/app/mpd_generator_flags.h>
+#include <packager/app/vlog_flags.h>
+#include <packager/mpd/util/mpd_writer.h>
+#include <packager/tools/license_notice.h>
+#include <packager/version/version.h>
 
 ABSL_FLAG(bool, licenses, false, "Dump licenses.");
 ABSL_FLAG(std::string,
@@ -119,6 +123,10 @@ int MpdMain(int argc, char** argv) {
     std::cerr << "Usage " << absl::ProgramUsageMessage();
     return status;
   }
+
+  handle_vlog_flags();
+
+  absl::InitializeLog();
 
   if (!absl::GetFlag(FLAGS_test_packager_version).empty())
     SetPackagerVersionForTesting(absl::GetFlag(FLAGS_test_packager_version));

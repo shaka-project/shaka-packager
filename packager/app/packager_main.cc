@@ -4,38 +4,42 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <absl/flags/flag.h>
 #include <iostream>
-
-#include <absl/strings/numbers.h>
-#include <absl/strings/str_format.h>
-#include <absl/strings/str_split.h>
-#include <glog/logging.h>
 #include <optional>
-#include "absl/flags/parse.h"
-#include "absl/flags/usage.h"
-#include "absl/flags/usage_config.h"
-#include "packager/app/ad_cue_generator_flags.h"
-#include "packager/app/crypto_flags.h"
-#include "packager/app/hls_flags.h"
-#include "packager/app/manifest_flags.h"
-#include "packager/app/mpd_flags.h"
-#include "packager/app/muxer_flags.h"
-#include "packager/app/playready_key_encryption_flags.h"
-#include "packager/app/protection_system_flags.h"
-#include "packager/app/raw_key_encryption_flags.h"
-#include "packager/app/stream_descriptor.h"
-#include "packager/app/widevine_encryption_flags.h"
-#include "packager/file/file.h"
-#include "packager/kv_pairs/kv_pairs.h"
-#include "packager/tools/license_notice.h"
-#include "packager/utils/string_trim_split.h"
-#include "retired_flags.h"
 
 #if defined(OS_WIN)
 #include <codecvt>
 #include <functional>
 #endif  // defined(OS_WIN)
+
+#include <absl/flags/flag.h>
+#include <absl/flags/parse.h>
+#include <absl/flags/usage.h>
+#include <absl/flags/usage_config.h>
+#include <absl/log/globals.h>
+#include <absl/log/initialize.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
+
+#include <packager/app/ad_cue_generator_flags.h>
+#include <packager/app/crypto_flags.h>
+#include <packager/app/hls_flags.h>
+#include <packager/app/manifest_flags.h>
+#include <packager/app/mpd_flags.h>
+#include <packager/app/muxer_flags.h>
+#include <packager/app/playready_key_encryption_flags.h>
+#include <packager/app/protection_system_flags.h>
+#include <packager/app/raw_key_encryption_flags.h>
+#include <packager/app/retired_flags.h>
+#include <packager/app/stream_descriptor.h>
+#include <packager/app/vlog_flags.h>
+#include <packager/app/widevine_encryption_flags.h>
+#include <packager/file.h>
+#include <packager/kv_pairs/kv_pairs.h>
+#include <packager/tools/license_notice.h>
+#include <packager/utils/string_trim_split.h>
 
 ABSL_FLAG(bool, dump_stream_info, false, "Dump demuxed stream info.");
 ABSL_FLAG(bool, licenses, false, "Dump licenses.");
@@ -548,12 +552,19 @@ int PackagerMain(int argc, char** argv) {
       std::cout << line << std::endl;
     return kSuccess;
   }
+
   if (remaining_args.size() < 2) {
     std::cerr << "Usage: " << absl::ProgramUsageMessage();
     return kSuccess;
   }
-  if (absl::GetFlag(FLAGS_quiet))
-    google::SetStderrLogging(google::GLOG_WARNING);
+
+  if (absl::GetFlag(FLAGS_quiet)) {
+    absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
+  }
+
+  handle_vlog_flags();
+
+  absl::InitializeLog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
       !ValidatePRCryptoFlags() || !ValidateCryptoFlags() ||

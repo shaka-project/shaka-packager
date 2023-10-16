@@ -7,12 +7,11 @@
 #ifndef PACKAGER_MEDIA_BASE_BUFFER_READER_H_
 #define PACKAGER_MEDIA_BASE_BUFFER_READER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

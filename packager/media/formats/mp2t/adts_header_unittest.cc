@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <packager/media/formats/mp2t/adts_header.h>
+
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
 #include <gtest/gtest.h>
 
-#include <absl/strings/numbers.h>
-#include <glog/logging.h>
-#include "packager/media/formats/mp2t/adts_header.h"
-#include "packager/utils/hex_parser.h"
+#include <packager/utils/hex_parser.h>
 
 namespace {
 

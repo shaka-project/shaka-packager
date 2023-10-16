@@ -7,11 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_AC3_HEADER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_AC3_HEADER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
-#include "packager/media/formats/mp2t/audio_header.h"
+#include <packager/media/formats/mp2t/audio_header.h>
 
 namespace shaka {
 namespace media {

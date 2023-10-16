@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/kv_pairs/kv_pairs.h"
+#include <packager/kv_pairs/kv_pairs.h>
 
-#include "absl/strings/str_split.h"
+#include <absl/strings/str_split.h>
 
 namespace shaka {
 

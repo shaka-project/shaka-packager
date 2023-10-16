@@ -7,11 +7,11 @@
 #ifndef SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 #define SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 
-#include "packager/utils/hex_parser.h"
+#include <absl/flags/flag.h>
+#include <absl/strings/ascii.h>
+#include <absl/strings/escaping.h>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/escaping.h"
+#include <packager/utils/hex_parser.h>
 
 // Custom flag type for hexadecimal byte array
 namespace shaka {

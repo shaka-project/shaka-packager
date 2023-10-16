@@ -4,14 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/muxer.h"
+#include <packager/media/base/muxer.h>
 
 #include <algorithm>
 #include <chrono>
 
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/status/status_macros.h"
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_util.h>
 
 namespace shaka {
 namespace media {

@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/es_parser_h264.h"
+#include <packager/media/formats/mp2t/es_parser_h264.h>
 
-#include <stdint.h>
+#include <cstdint>
 
-#include <glog/logging.h>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
-#include "packager/media/codecs/h264_parser.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {

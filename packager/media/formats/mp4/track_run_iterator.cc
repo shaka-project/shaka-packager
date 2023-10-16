@@ -2,26 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/track_run_iterator.h"
+#include <packager/media/formats/mp4/track_run_iterator.h>
+
+#include <algorithm>
+#include <limits>
 
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/formats/mp4/chunk_info_iterator.h>
+#include <packager/media/formats/mp4/composition_offset_iterator.h>
+#include <packager/media/formats/mp4/decoding_time_iterator.h>
+#include <packager/media/formats/mp4/sync_sample_iterator.h>
 
 ABSL_FLAG(bool,
           mp4_reset_initial_composition_offset_to_zero,
           true,
           "MP4 only. If it is true, reset the initial composition offset to "
           "zero, i.e. by assuming that there is a missing EditList.");
-
-#include <algorithm>
-#include <limits>
-
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/formats/mp4/chunk_info_iterator.h"
-#include "packager/media/formats/mp4/composition_offset_iterator.h"
-#include "packager/media/formats/mp4/decoding_time_iterator.h"
-#include "packager/media/formats/mp4/sync_sample_iterator.h"
 
 namespace {
 const int64_t kInvalidOffset = std::numeric_limits<int64_t>::max();

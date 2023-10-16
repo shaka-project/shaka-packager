@@ -4,11 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/segmenter_test_base.h"
+#include <packager/media/formats/webm/segmenter_test_base.h>
 
-#include "packager/file/memory_file.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+
+#include <packager/file/memory_file.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace media {

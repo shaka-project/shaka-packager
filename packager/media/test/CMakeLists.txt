@@ -12,7 +12,7 @@ target_compile_definitions(test_data_util
     # path, depending on the version of CMake.  This is consistent.
     TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data")
 target_link_libraries(test_data_util
-    glog)
+    absl::log)
 
 add_library(test_web_server STATIC
     test_web_server.cc)

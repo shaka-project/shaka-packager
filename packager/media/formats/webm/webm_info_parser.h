@@ -7,7 +7,8 @@
 
 #include <chrono>
 
-#include "packager/media/formats/webm/webm_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

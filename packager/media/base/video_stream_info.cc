@@ -4,12 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/video_stream_info.h"
+#include <packager/media/base/video_stream_info.h>
 
-#include "absl/strings/str_format.h"
-#include "glog/logging.h"
-#include "packager/macros.h"
-#include "packager/media/base/limits.h"
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/limits.h>
 
 namespace shaka {
 namespace media {

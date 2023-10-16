@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_CODECS_VP9_PARSER_H_
 #define PACKAGER_MEDIA_CODECS_VP9_PARSER_H_
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
-#include "packager/macros.h"
-#include "packager/media/codecs/vpx_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/codecs/vpx_parser.h>
 
 namespace shaka {
 namespace media {

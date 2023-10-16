@@ -4,15 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/hls/base/media_playlist.h>
+
+#include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <absl/strings/str_format.h>
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/file/file_test_util.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/version/version.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/file/file_test_util.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {

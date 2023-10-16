@@ -7,9 +7,9 @@
 add_library(media_trick_play STATIC
     trick_play_handler.cc)
 target_link_libraries(media_trick_play
-    media_base
     absl::base
-    glog)
+    absl::log
+    media_base)
 
 add_executable(media_trick_play_unittest
     trick_play_handler_unittest.cc)

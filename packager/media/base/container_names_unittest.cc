@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
+#include <packager/media/base/container_names.h>
 
-#include <filesystem>
 #include <iterator>
 
-#include "packager/macros.h"
-#include "packager/media/base/container_names.h"
-#include "packager/media/test/test_data_util.h"
+#include <gtest/gtest.h>
+
+#include <packager/media/test/test_data_util.h>
 
 namespace shaka {
 namespace media {

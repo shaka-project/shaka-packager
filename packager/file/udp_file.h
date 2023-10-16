@@ -7,11 +7,8 @@
 #ifndef MEDIA_FILE_UDP_FILE_H_
 #define MEDIA_FILE_UDP_FILE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
-
-#include "packager/file/file.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -19,6 +16,9 @@
 #else
 typedef int SOCKET;
 #endif  // defined(OS_WIN)
+
+#include <packager/file.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 

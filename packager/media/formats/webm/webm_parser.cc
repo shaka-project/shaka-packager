@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_parser.h"
-
 // This file contains code to parse WebM file elements. It was created
 // from information in the Matroska spec.
 // http://www.matroska.org/technical/specs/index.html
+//
 // This file contains code for encrypted WebM. Current WebM
 // encrypted request for comments specification is here
 // http://wiki.webmproject.org/encryption/webm-encryption-rfc
 
+#include <packager/media/formats/webm/webm_parser.h>
+
 #include <limits>
 
-#include "glog/logging.h"
-#include "packager/media/formats/webm/webm_constants.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {
 namespace media {

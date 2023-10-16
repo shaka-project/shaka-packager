@@ -4,13 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/chunking_handler.h"
+#include <packager/media/chunking/chunking_handler.h>
 
 #include <algorithm>
 
-#include "glog/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/status/status_macros.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/media_sample.h>
 
 namespace shaka {
 namespace media {

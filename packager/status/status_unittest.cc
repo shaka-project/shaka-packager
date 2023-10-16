@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/status.h>
+
+#include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include "absl/strings/str_format.h"
-#include "packager/status/status.h"
 
 namespace shaka {
 

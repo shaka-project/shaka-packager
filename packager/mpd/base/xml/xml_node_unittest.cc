@@ -4,20 +4,21 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/mpd/base/xml/xml_node.h>
+
+#include <list>
+
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
 
-#include <list>
-
-#include <glog/logging.h>
-#include "packager/flag_saver.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/xml_node.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/flag_saver.h>
+#include <packager/mpd/base/segment_info.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 ABSL_DECLARE_FLAG(bool, segment_template_constant_duration);
 ABSL_DECLARE_FLAG(bool, dash_add_last_segment_number_when_needed);

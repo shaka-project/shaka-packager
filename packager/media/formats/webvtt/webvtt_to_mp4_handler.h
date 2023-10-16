@@ -7,13 +7,12 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_MP4_CUE_HANDLER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_MP4_CUE_HANDLER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <queue>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_handler.h"
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {

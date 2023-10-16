@@ -4,9 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/file_util.h"
-
-#include <inttypes.h>
+#include <packager/file/file_util.h>
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -17,7 +15,7 @@
 #include <filesystem>
 #include <thread>
 
-#include "absl/strings/str_format.h"
+#include <absl/strings/str_format.h>
 
 namespace shaka {
 namespace {

@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/fourccs.h"
+#include <packager/media/base/fourccs.h>
 
 namespace shaka {
 

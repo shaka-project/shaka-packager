@@ -4,19 +4,21 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/es_parser_h265.h"
+#include <packager/media/formats/mp2t/es_parser_h265.h>
 
-#include <stdint.h>
+#include <cstdint>
 
-#include <glog/logging.h>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/offset_byte_queue.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h265_byte_to_unit_stream_converter.h"
-#include "packager/media/codecs/h265_parser.h"
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/offset_byte_queue.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/h265_byte_to_unit_stream_converter.h>
+#include <packager/media/codecs/h265_parser.h>
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {

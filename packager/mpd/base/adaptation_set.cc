@@ -4,18 +4,22 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/adaptation_set.h"
+#include <packager/mpd/base/adaptation_set.h>
 
-#include <absl/strings/numbers.h>
-#include <glog/logging.h>
 #include <cmath>
 
-#include "absl/strings/str_format.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {

@@ -4,17 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_utils.h"
-
-#include <ctype.h>
-#include <inttypes.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
 
 #include <algorithm>
+#include <cctype>
+#include <cinttypes>
 #include <unordered_set>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace media {

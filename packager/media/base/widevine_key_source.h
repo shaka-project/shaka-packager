@@ -11,10 +11,12 @@
 #include <memory>
 #include <thread>
 
-#include "absl/synchronization/mutex.h"
-#include "absl/synchronization/notification.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/key_source.h"
+#include <absl/synchronization/mutex.h>
+#include <absl/synchronization/notification.h>
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 

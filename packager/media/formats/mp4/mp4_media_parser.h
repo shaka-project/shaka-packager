@@ -7,15 +7,15 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/decryptor_source.h"
-#include "packager/media/base/media_parser.h"
-#include "packager/media/base/offset_byte_queue.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/offset_byte_queue.h>
 
 namespace shaka {
 namespace media {

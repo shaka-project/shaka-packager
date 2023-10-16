@@ -4,17 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/memory_file.h"
-
-#include <string.h>  // for memcpy
+#include <packager/file/memory_file.h>
 
 #include <algorithm>
+#include <cstring>  // for memcpy
 #include <map>
 #include <memory>
 #include <set>
 
-#include "absl/synchronization/mutex.h"
-#include "glog/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/synchronization/mutex.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace {

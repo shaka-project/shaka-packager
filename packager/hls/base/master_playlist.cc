@@ -4,21 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/hls/base/master_playlist.h"
+#include <packager/hls/base/master_playlist.h>
 
 #include <algorithm>  // std::max
+#include <cstdint>
+#include <filesystem>
 
-#include <inttypes.h>
-
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>
-#include <glog/logging.h>
-#include <filesystem>
-#include "packager/file/file.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/hls/base/tag.h"
-#include "packager/version/version.h"
+
+#include <packager/file.h>
+#include <packager/hls/base/media_playlist.h>
+#include <packager/hls/base/tag.h>
+#include <packager/macros/logging.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {

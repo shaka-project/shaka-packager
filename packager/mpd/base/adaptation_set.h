@@ -9,8 +9,7 @@
 #ifndef PACKAGER_MPD_BASE_ADAPTATION_SET_H_
 #define PACKAGER_MPD_BASE_ADAPTATION_SET_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>
@@ -18,7 +17,7 @@
 #include <set>
 #include <vector>
 
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 

@@ -4,13 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_parser.h"
+#include <packager/media/formats/webvtt/webvtt_parser.h>
+
+#include <functional>
 
 #include <gtest/gtest.h>
 
-#include <functional>
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 
 namespace shaka {
 namespace media {

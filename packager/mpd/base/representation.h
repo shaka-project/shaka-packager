@@ -9,16 +9,15 @@
 #ifndef PACKAGER_MPD_BASE_REPRESENTATION_H_
 #define PACKAGER_MPD_BASE_REPRESENTATION_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <optional>
 
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/bandwidth_estimator.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/segment_info.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 

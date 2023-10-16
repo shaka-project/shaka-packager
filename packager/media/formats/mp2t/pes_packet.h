@@ -7,10 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_PES_PACKET_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_PES_PACKET_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-#include "packager/macros.h"
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

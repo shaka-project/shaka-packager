@@ -4,13 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+#include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
 
+#include <absl/strings/escaping.h>
 #include <gtest/gtest.h>
-#include <stdio.h>
 
-#include "absl/strings/escaping.h"
-#include "packager/media/test/test_data_util.h"
+#include <packager/media/test/test_data_util.h>
 
 namespace {
 const char kExpectedConfigRecord[] =

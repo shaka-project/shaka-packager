@@ -5,9 +5,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_AAC_AUDIO_SPECIFIC_CONFIG_H_
 #define PACKAGER_MEDIA_CODECS_AAC_AUDIO_SPECIFIC_CONFIG_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

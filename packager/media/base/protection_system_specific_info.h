@@ -7,12 +7,14 @@
 #ifndef PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_
 #define PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
-#include "glog/logging.h"
-#include "packager/media/public/crypto_params.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/crypto_params.h>
 
 namespace shaka {
 namespace media {

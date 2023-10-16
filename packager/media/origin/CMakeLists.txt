@@ -8,5 +8,5 @@ add_library(media_origin STATIC
     origin_handler.cc)
 
 target_link_libraries(media_origin
-    status
-    glog)
+    absl::log
+    status)

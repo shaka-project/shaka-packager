@@ -4,9 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/threaded_io_file.h"
+#include <packager/file/threaded_io_file.h>
 
-#include "packager/file/thread_pool.h"
+#include <absl/log/check.h>
+
+#include <packager/file/thread_pool.h>
 
 namespace shaka {
 

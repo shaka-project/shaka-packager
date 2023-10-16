@@ -9,11 +9,13 @@
 
 #include <memory>
 
-#include "mkvmuxer/mkvmuxer.h"
-#include "packager/media/base/range.h"
-#include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/media/formats/webm/seek_head.h"
-#include "packager/status/status.h"
+#include <mkvmuxer/mkvmuxer.h>
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/range.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/seek_head.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -4,19 +4,21 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <packager/mpd/base/mpd_builder.h>
 
 #include <memory>
 
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_builder.h"
-#include "packager/mpd/base/period.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/utils/clock.h"
-#include "packager/utils/test_clock.h"
-#include "packager/version/version.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <packager/macros/classes.h>
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/utils/clock.h>
+#include <packager/utils/test_clock.h>
+#include <packager/version/version.h>
 
 using ::testing::HasSubstr;
 

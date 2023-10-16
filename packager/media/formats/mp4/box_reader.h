@@ -9,11 +9,14 @@
 #include <memory>
 #include <vector>
 
-#include <glog/logging.h>
-#include "packager/macros.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

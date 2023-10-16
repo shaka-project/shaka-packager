@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/app/manifest_flags.h"
+#include <packager/app/manifest_flags.h>
 
 ABSL_FLAG(double,
           time_shift_buffer_depth,

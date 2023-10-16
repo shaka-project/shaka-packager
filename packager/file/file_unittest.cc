@@ -4,18 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
+#include <packager/file.h>
 
+#include <cstdio>
 #include <filesystem>
 #include <locale>
 
-#include "absl/flags/declare.h"
-#include "packager/file/file.h"
-#include "packager/file/file_test_util.h"
-#include "packager/flag_saver.h"
+#include <absl/flags/declare.h>
+#include <gtest/gtest.h>
+
+#include <packager/file/file_test_util.h>
+#include <packager/flag_saver.h>
 
 ABSL_DECLARE_FLAG(uint64_t, io_cache_size);
 ABSL_DECLARE_FLAG(uint64_t, io_block_size);

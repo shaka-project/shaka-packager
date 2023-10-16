@@ -11,9 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "mbedtls/cipher.h"
-#include "packager/macros.h"
-#include "packager/media/base/fourccs.h"
+#include <mbedtls/cipher.h>
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
 
 namespace shaka {
 namespace media {

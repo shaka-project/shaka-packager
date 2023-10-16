@@ -1,11 +1,15 @@
-// Copyright 2016 Google LLC. All rights reserved.
+// Copyright 2023 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_MEDIA_BASE_MACROS_H_
-#define PACKAGER_MEDIA_BASE_MACROS_H_
+#ifndef PACKAGER_MACROS_COMPILER_H_
+#define PACKAGER_MACROS_COMPILER_H_
+
+/// A macro to declare that you intentionally did not use a parameter.  Useful
+/// when implementing abstract interfaces.
+#define UNUSED(x) (void)(x)
 
 // The FALLTHROUGH_INTENDED macro can be used to annotate implicit fall-through
 // between switch labels:
@@ -49,4 +53,4 @@
 #define FALLTHROUGH_INTENDED [[fallthrough]]
 #endif
 
-#endif  // PACKAGER_MEDIA_BASE_MACROS_H_
+#endif  // PACKAGER_MACROS_COMPILER_H_

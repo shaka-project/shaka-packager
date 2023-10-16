@@ -6,6 +6,7 @@
 
 add_library(media_replicator STATIC
     replicator.cc)
+
 target_link_libraries(media_replicator
-    glog
-    absl::base)
+    absl::base
+    absl::log)

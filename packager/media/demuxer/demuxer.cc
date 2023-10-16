@@ -4,26 +4,29 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/demuxer/demuxer.h"
+#include <packager/media/demuxer/demuxer.h>
 
 #include <algorithm>
+#include <functional>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <glog/logging.h>
-#include <functional>
-#include "packager/file/file.h"
-#include "packager/media/base/decryptor_source.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/formats/mp2t/mp2t_media_parser.h"
-#include "packager/media/formats/mp4/mp4_media_parser.h"
-#include "packager/media/formats/webm/webm_media_parser.h"
-#include "packager/media/formats/webvtt/webvtt_parser.h"
-#include "packager/media/formats/wvm/wvm_media_parser.h"
+
+#include <packager/file.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/mp2t_media_parser.h>
+#include <packager/media/formats/mp4/mp4_media_parser.h>
+#include <packager/media/formats/webm/webm_media_parser.h>
+#include <packager/media/formats/webvtt/webvtt_parser.h>
+#include <packager/media/formats/wvm/wvm_media_parser.h>
 
 namespace {
 // 65KB, sufficient to determine the container and likely all init data.

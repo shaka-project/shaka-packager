@@ -4,10 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/callback_file.h"
+#include <packager/file/callback_file.h>
 
-#include "glog/logging.h"
-#include "packager/macros.h"
+#include <absl/log/log.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 
 namespace shaka {
 

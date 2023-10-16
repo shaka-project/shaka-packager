@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_cluster_parser.h"
+#include <packager/media/formats/webm/webm_cluster_parser.h>
 
 #include <algorithm>
 #include <vector>
 
-#include "absl/base/internal/endian.h"
-#include "glog/logging.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/codecs/vp8_parser.h"
-#include "packager/media/codecs/vp9_parser.h"
-#include "packager/media/codecs/webvtt_util.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/media/formats/webm/webm_crypto_helpers.h"
-#include "packager/media/formats/webm/webm_webvtt_parser.h"
+#include <absl/base/internal/endian.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/codecs/vp8_parser.h>
+#include <packager/media/codecs/vp9_parser.h>
+#include <packager/media/codecs/webvtt_util.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_crypto_helpers.h>
+#include <packager/media/formats/webm/webm_webvtt_parser.h>
 
 namespace shaka {
 namespace media {

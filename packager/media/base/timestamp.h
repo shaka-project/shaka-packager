@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_TIMESTAMP_H_
 #define PACKAGER_MEDIA_BASE_TIMESTAMP_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <limits>
 
 namespace shaka {

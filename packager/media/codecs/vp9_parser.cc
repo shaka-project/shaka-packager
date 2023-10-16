@@ -4,11 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/vp9_parser.h"
+#include <packager/media/codecs/vp9_parser.h>
 
-#include "glog/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

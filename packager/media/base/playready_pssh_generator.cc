@@ -4,18 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/playready_pssh_generator.h"
+#include <packager/media/base/playready_pssh_generator.h>
 
 #include <algorithm>
 #include <memory>
 #include <set>
 #include <vector>
 
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
-#include "mbedtls/cipher.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/protection_system_ids.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+#include <mbedtls/cipher.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/crypto.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/protection_system_ids.h>
 
 namespace shaka {
 namespace media {

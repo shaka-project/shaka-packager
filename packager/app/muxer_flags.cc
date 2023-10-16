@@ -6,7 +6,7 @@
 //
 // Defines Muxer flags.
 
-#include "packager/app/muxer_flags.h"
+#include <packager/app/muxer_flags.h>
 
 ABSL_FLAG(double,
           clear_lead,

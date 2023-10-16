@@ -11,9 +11,10 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/aes_decryptor.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/key_source.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 namespace media {

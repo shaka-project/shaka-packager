@@ -9,8 +9,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_WRITER_UTIL_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_WRITER_UTIL_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 namespace shaka {
 namespace media {

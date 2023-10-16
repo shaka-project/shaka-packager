@@ -9,7 +9,8 @@
 
 #include <chrono>
 #include <string>
-#include "packager/utils/clock.h"
+
+#include <packager/utils/clock.h>
 
 namespace shaka {
 

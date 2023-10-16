@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/media_handler.h"
+#include <packager/media/base/media_handler.h>
 
-#include "packager/status/status_macros.h"
+#include <packager/macros/status.h>
 
 namespace shaka {
 namespace media {

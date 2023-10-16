@@ -7,8 +7,8 @@
 add_library(status STATIC
     status.cc)
 target_link_libraries(status
-    absl::str_format
-    glog)
+    absl::log
+    absl::str_format)
 
 if(LIBPACKAGER_SHARED)
   target_compile_definitions(status PUBLIC SHAKA_IMPLEMENTATION)

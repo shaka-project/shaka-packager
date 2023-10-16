@@ -5,8 +5,7 @@
 #ifndef PACKAGER_MEDIA_TEST_TEST_DATA_UTIL_H_
 #define PACKAGER_MEDIA_TEST_TEST_DATA_UTIL_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <filesystem>
 #include <string>
 #include <vector>

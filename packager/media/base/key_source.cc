@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/key_source.h"
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 namespace media {

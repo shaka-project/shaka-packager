@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_parser.h"
+#include <packager/media/formats/webm/webm_parser.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/formats/webm/cluster_builder.h"
-#include "packager/media/formats/webm/webm_constants.h"
+#include <packager/media/formats/webm/cluster_builder.h>
+#include <packager/media/formats/webm/webm_constants.h>
 
 using ::testing::InSequence;
 using ::testing::Return;

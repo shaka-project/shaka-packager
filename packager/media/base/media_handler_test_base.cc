@@ -4,12 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/media_handler_test_base.h"
+#include <packager/media/base/media_handler_test_base.h>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/status/status_test_util.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/status/status_test_util.h>
 
 namespace {
 

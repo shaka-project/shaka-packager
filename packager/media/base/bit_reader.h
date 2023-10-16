@@ -5,11 +5,13 @@
 #ifndef PACKAGER_MEDIA_BASE_BIT_READER_H_
 #define PACKAGER_MEDIA_BASE_BIT_READER_H_
 
-#include <stdint.h>
-#include <sys/types.h>
+#include <cstddef>
+#include <cstdint>
 
-#include "glog/logging.h"
-#include "packager/macros.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

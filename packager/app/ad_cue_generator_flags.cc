@@ -6,7 +6,7 @@
 //
 // Defines cuepoint generator flags.
 
-#include "packager/app/ad_cue_generator_flags.h"
+#include <packager/app/ad_cue_generator_flags.h>
 
 ABSL_FLAG(std::string,
           ad_cues,

@@ -4,17 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/fragmenter.h"
+#include <packager/media/formats/mp4/fragmenter.h>
 
 #include <algorithm>
 #include <limits>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/key_frame_info.h"
-#include "packager/status/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/status.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/key_frame_info.h>
 
 namespace shaka {
 namespace media {

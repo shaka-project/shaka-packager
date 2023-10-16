@@ -9,7 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/formats/mp4/box_definitions.h"
+#include <packager/macros/classes.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {

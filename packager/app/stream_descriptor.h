@@ -7,10 +7,10 @@
 #ifndef APP_STREAM_DESCRIPTOR_H_
 #define APP_STREAM_DESCRIPTOR_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
-#include "packager/packager.h"
+#include <packager/packager.h>
 
 namespace shaka {
 

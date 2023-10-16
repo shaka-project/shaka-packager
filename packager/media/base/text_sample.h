@@ -7,8 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_SAMPLE_H_
 #define PACKAGER_MEDIA_BASE_TEXT_SAMPLE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>

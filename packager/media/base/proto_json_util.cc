@@ -4,11 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/proto_json_util.h"
+#include <packager/media/base/proto_json_util.h>
 
+#include <absl/log/log.h>
 #include <google/protobuf/util/json_util.h>
-
-#include "glog/logging.h"
 
 namespace shaka {
 namespace media {

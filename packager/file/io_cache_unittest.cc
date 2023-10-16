@@ -4,14 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/io_cache.h"
-
-#include <gtest/gtest.h>
-#include <string.h>
+#include <packager/file/io_cache.h>
 
 #include <algorithm>
 #include <chrono>
+#include <cstring>
 #include <thread>
+
+#include <gtest/gtest.h>
 
 namespace {
 const uint64_t kBlockSize = 256;

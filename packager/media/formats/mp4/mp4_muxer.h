@@ -7,10 +7,11 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_MP4_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_MP4_MUXER_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
-#include "packager/media/base/muxer.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/muxer.h>
 
 namespace shaka {
 namespace media {

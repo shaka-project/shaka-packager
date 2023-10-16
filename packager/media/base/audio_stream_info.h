@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "packager/media/base/stream_info.h"
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

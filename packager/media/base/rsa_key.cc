@@ -16,14 +16,15 @@
 //   Mask generation function: mgf1SHA1
 //   Label (encoding paramter): empty std::string
 
-#include "packager/media/base/rsa_key.h"
+#include <packager/media/base/rsa_key.h>
 
 #include <memory>
 #include <vector>
 
-#include "glog/logging.h"
-#include "mbedtls/error.h"
-#include "mbedtls/md.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <mbedtls/error.h>
+#include <mbedtls/md.h>
 
 namespace {
 

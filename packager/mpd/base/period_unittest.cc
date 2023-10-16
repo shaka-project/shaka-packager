@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/period.h"
+#include <packager/mpd/base/period.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/mpd/base/mock_mpd_builder.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/mpd/base/mock_mpd_builder.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 using ::testing::_;
 using ::testing::ByMove;

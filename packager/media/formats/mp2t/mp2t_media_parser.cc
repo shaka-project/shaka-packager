@@ -2,26 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/mp2t_media_parser.h"
-
-#include <memory>
+#include <packager/media/formats/mp2t/mp2t_media_parser.h>
 
 #include <functional>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/formats/mp2t/es_parser.h"
-#include "packager/media/formats/mp2t/es_parser_audio.h"
-#include "packager/media/formats/mp2t/es_parser_dvb.h"
-#include "packager/media/formats/mp2t/es_parser_h264.h"
-#include "packager/media/formats/mp2t/es_parser_h265.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
-#include "packager/media/formats/mp2t/ts_packet.h"
-#include "packager/media/formats/mp2t/ts_section.h"
-#include "packager/media/formats/mp2t/ts_section_pat.h"
-#include "packager/media/formats/mp2t/ts_section_pes.h"
-#include "packager/media/formats/mp2t/ts_section_pmt.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
+#include <memory>
+
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/mp2t/es_parser.h>
+#include <packager/media/formats/mp2t/es_parser_audio.h>
+#include <packager/media/formats/mp2t/es_parser_dvb.h>
+#include <packager/media/formats/mp2t/es_parser_h264.h>
+#include <packager/media/formats/mp2t/es_parser_h265.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
+#include <packager/media/formats/mp2t/ts_packet.h>
+#include <packager/media/formats/mp2t/ts_section.h>
+#include <packager/media/formats/mp2t/ts_section_pat.h>
+#include <packager/media/formats/mp2t/ts_section_pes.h>
+#include <packager/media/formats/mp2t/ts_section_pmt.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 
 namespace shaka {
 namespace media {
@@ -260,7 +263,9 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   // if there is already one registered.
   for (const auto& pair : pids_) {
     if (pair.second->pid_type() == PidState::kPidPmt) {
-      DVLOG_IF(1, pmt_pid != pair.first) << "More than one program is defined";
+      if (pmt_pid != pair.first) {
+        DVLOG(1) << "More than one program is defined";
+      }
       return;
     }
   }

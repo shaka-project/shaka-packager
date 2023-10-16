@@ -4,12 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/webvtt/text_readers.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/file/file.h"
-#include "packager/media/formats/webvtt/text_readers.h"
-#include "packager/status/status_test_util.h"
+#include <packager/file.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

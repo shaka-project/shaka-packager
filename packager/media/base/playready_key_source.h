@@ -11,7 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/key_source.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 namespace media {

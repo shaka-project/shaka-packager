@@ -4,16 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/webvtt/webvtt_muxer.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/file/file_test_util.h"
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/event/combined_muxer_listener.h"
-#include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/formats/webvtt/webvtt_muxer.h"
-#include "packager/status/status_test_util.h"
+#include <packager/file/file_test_util.h>
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/event/combined_muxer_listener.h>
+#include <packager/media/event/mock_muxer_listener.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

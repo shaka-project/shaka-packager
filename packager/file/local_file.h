@@ -7,11 +7,11 @@
 #ifndef PACKAGER_FILE_LOCAL_FILE_H_
 #define PACKAGER_FILE_LOCAL_FILE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
-#include "packager/file/file.h"
+#include <packager/file.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 

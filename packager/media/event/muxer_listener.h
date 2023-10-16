@@ -9,15 +9,15 @@
 #ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/macros.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/range.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/compiler.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/range.h>
 
 namespace shaka {
 namespace media {

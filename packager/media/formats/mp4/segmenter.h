@@ -9,13 +9,14 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/range.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/status/status.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/range.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

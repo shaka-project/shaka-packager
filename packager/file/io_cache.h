@@ -7,12 +7,12 @@
 #ifndef PACKAGER_FILE_IO_CACHE_H_
 #define PACKAGER_FILE_IO_CACHE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
-#include "absl/synchronization/mutex.h"
-#include "packager/macros.h"
+#include <absl/synchronization/mutex.h>
+
+#include <packager/macros/classes.h>
 
 namespace shaka {
 

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_content_encodings.h"
+#include <packager/media/formats/webm/webm_content_encodings.h>
 
-#include "glog/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

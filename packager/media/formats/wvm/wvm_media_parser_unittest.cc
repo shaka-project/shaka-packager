@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <packager/media/formats/wvm/wvm_media_parser.h>
+
+#include <algorithm>
+#include <functional>
+#include <string>
+
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <string>
-
-#include <glog/logging.h>
-#include <functional>
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/wvm/wvm_media_parser.h"
-#include "packager/media/test/test_data_util.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/test/test_data_util.h>
 
 namespace {
 const char kWvmFile[] = "bear-640x360.wvm";

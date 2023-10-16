@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/av1_parser.h"
+#include <packager/media/codecs/av1_parser.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/test/test_data_util.h"
+#include <packager/media/test/test_data_util.h>
 
 using ::testing::ElementsAre;
 

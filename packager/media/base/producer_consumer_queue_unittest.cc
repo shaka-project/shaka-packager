@@ -4,14 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/base/producer_consumer_queue.h>
 
 #include <thread>
 
-#include "absl/synchronization/notification.h"
-#include "glog/logging.h"
-#include "packager/media/base/producer_consumer_queue.h"
-#include "packager/status/status_test_util.h"
+#include <absl/log/log.h>
+#include <absl/synchronization/notification.h>
+#include <gtest/gtest.h>
+
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace {

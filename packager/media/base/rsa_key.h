@@ -12,10 +12,11 @@
 
 #include <string>
 
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/pk.h"
-#include "packager/macros.h"
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/pk.h>
+
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

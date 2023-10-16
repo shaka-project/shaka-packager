@@ -4,21 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/representation.h"
+#include <packager/mpd/base/representation.h>
+
+#include <cinttypes>
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
+#include <absl/log/check.h>
 #include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <inttypes.h>
 
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/flag_saver.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/flag_saver.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 using ::testing::Bool;
 using ::testing::Not;

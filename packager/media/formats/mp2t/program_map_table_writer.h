@@ -7,14 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_PROGRAM_MAP_TABLE_WRITER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_PROGRAM_MAP_TABLE_WRITER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
-#include "packager/media/base/buffer_writer.h"
+#include <packager/media/base/buffer_writer.h>
 // TODO(kqyang): Move codec to codec.h.
-#include "packager/media/base/stream_info.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
+#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
 
 namespace shaka {
 namespace media {

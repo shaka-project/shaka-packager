@@ -4,15 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
 #include <limits>
 
-#include "absl/flags/flag.h"
-#include "absl/strings/escaping.h"
-#include "glog/logging.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/utils/bytes_to_string_view.h"
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 // TODO(kqyang): Move byte to unit stream convertion to muxer and make it a
 // muxer option.

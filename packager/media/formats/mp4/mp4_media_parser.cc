@@ -2,37 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/mp4_media_parser.h"
+#include <packager/media/formats/mp4/mp4_media_parser.h>
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
-#include <glog/logging.h>
-#include <functional>
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/video_util.h"
-#include "packager/media/codecs/ac3_audio_util.h"
-#include "packager/media/codecs/ac4_audio_util.h"
-#include "packager/media/codecs/av1_codec_configuration_record.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
-#include "packager/media/codecs/dovi_decoder_configuration_record.h"
-#include "packager/media/codecs/ec3_audio_util.h"
-#include "packager/media/codecs/es_descriptor.h"
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
-#include "packager/media/codecs/vp_codec_configuration_record.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/box_reader.h"
-#include "packager/media/formats/mp4/track_run_iterator.h"
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/video_util.h>
+#include <packager/media/codecs/ac3_audio_util.h>
+#include <packager/media/codecs/ac4_audio_util.h>
+#include <packager/media/codecs/av1_codec_configuration_record.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/dovi_decoder_configuration_record.h>
+#include <packager/media/codecs/ec3_audio_util.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_reader.h>
+#include <packager/media/formats/mp4/track_run_iterator.h>
 
 namespace shaka {
 namespace media {

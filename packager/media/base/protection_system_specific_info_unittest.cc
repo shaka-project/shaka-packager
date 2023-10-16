@@ -4,12 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/base/protection_system_specific_info.h>
 
 #include <iterator>
 
-#include "packager/macros.h"
-#include "packager/media/base/protection_system_specific_info.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {

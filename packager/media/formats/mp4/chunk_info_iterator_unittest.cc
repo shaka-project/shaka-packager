@@ -4,10 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/chunk_info_iterator.h"
-#include <glog/logging.h>
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp4/chunk_info_iterator.h>
+
 #include <memory>
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/macros/classes.h>
 
 namespace {
 struct ChunkProperty {

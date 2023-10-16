@@ -9,8 +9,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_AC3_AUDIO_UTIL_H_
 #define PACKAGER_MEDIA_CODECS_AC3_AUDIO_UTIL_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

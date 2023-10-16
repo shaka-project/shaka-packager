@@ -4,24 +4,28 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/mpd_builder.h"
+#include <packager/mpd/base/mpd_builder.h>
 
-#include <absl/strings/numbers.h>
-#include <absl/strings/str_format.h>
-#include <absl/synchronization/mutex.h>
-#include <glog/logging.h>
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
 #include <optional>
 
-#include "packager/file/file_util.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/period.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/synchronization/mutex.h>
+
+#include <packager/file/file_util.h>
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 
