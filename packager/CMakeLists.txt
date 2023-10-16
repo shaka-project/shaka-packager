@@ -6,6 +6,9 @@
 
 # Packager CMake build file.
 
+# Include a module to define standard install directories.
+include(GNUInstallDirs)
+
 # Build static libs by default, or shared if LIBPACKAGER_SHARED is defined.
 if(LIBPACKAGER_SHARED)
   add_definitions(-DSHARED_LIBRARY_BUILD)
@@ -114,6 +117,10 @@ target_link_libraries(libpackager
   string_utils
   version
 )
+# Avoid liblibpackager on Windows:
+if(NOT MSVC)
+  set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
+endif()
 
 add_executable(packager
   app/ad_cue_generator_flags.cc
@@ -183,3 +190,14 @@ target_link_libraries(packager_test
   gmock
   gtest
   gtest_main)
+
+configure_file(packager.pc.in packager.pc @ONLY)
+
+
+install(TARGETS mpd_generator packager libpackager
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY ../include/packager
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(FILES tools/pssh/pssh-box.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

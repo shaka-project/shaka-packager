@@ -24,3 +24,4 @@ enable_testing()
 
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)
+add_subdirectory(link-test)
