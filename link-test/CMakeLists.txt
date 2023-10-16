@@ -19,6 +19,7 @@ if(LIBPACKAGER_SHARED)
   # Then try to build a very simplistic test app to prove that we can include
   # the headers and link the library.
   add_executable(packager_link_test test.cc)
+  add_dependencies(test-install mpd_generator packager libpackager)
   add_dependencies(packager_link_test test-install)
   target_link_directories(packager_link_test PRIVATE ${TEST_INSTALL_DIR}/lib)
   target_include_directories(packager_link_test PRIVATE ${TEST_INSTALL_DIR}/include)
