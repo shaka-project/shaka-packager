@@ -4,7 +4,7 @@ Shaka Packager supports building on Windows, Mac and Linux host systems.
 
 ## Linux build dependencies
 
-Most development is done on Ubuntu (currently 14.04, Trusty Tahr). The
+Most development is done on Ubuntu (currently 22.04 LTS, Jammy Jellyfish).  The
 dependencies mentioned here are only for Ubuntu. There are some instructions
 for [other distros below](#notes-for-other-linux-distros).
 
@@ -13,182 +13,115 @@ sudo apt-get update
 sudo apt-get install -y \
         curl \
         libc-ares-dev \
-        build-essential git python python3
+        build-essential cmake git ninja-build python3
 ```
 
-Note that `Git` must be v1.7.5 or above.
+Note that `git` must be v1.7.6 or above to support relative paths in submodules.
 
 ## Mac system requirements
 
-*   [Xcode](https://developer.apple.com/xcode) 7.3+.
-*   The OS X 10.10 SDK or later. Run
+ * [Xcode](https://developer.apple.com/xcode) 7.3+.
+ * The OS X 10.10 SDK or later. Run
 
-    ```shell
-    ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
-    ```
+   ```shell
+   ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+   ```
 
-    to check whether you have it.
+   to check whether you have it.
 
-*   Note that there is a known problem with 10.15 SDK or later right now. You
-    can workaround it by using 10.14 SDK. See
-    [#660](https://github.com/shaka-project/shaka-packager/issues/660#issuecomment-552576341)
-    for details.
+## Install Ninja (recommended) using Homebrew
+
+```shell
+brew install ninja
+```
 
 ## Windows system requirements
 
-* Visual Studio 2015 Update 3, 2017, or 2019. (See below.)
-* Windows 7 or newer.
+* Visual Studio 2017 or newer.
+* Windows 10 or newer.
 
-Install Visual Studio 2015 Update 3 or later - Community Edition should work if
-its license is appropriate for you. Use the Custom Install option and select:
+Recommended version of Visual Studio is 2022, the Community edition
+should work for open source development of tools like Shaka Packager
+but please check the Community license terms for your specific
+situation.
 
-- Visual C++, which will select three sub-categories including MFC
-- Universal Windows Apps Development Tools > Tools (1.4.1) and Windows 10 SDK
-  (10.0.14393)
+Install the "Desktop development with C++" workload which will install
+CMake and other needed tools.
 
-If using VS 2017 or VS 2019, you must set the following environment variables,
-with versions and paths adjusted to match your actual system:
+If you use chocolatey, you can install these dependencies with:
 
-```shell
-GYP_MSVS_VERSION="2019"
-GYP_MSVS_OVERRIDE_PATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community"
+```ps1
+choco install -y `
+  git cmake ninja python `
+  visualstudio2022community visualstudio2022-workload-nativedesktop `
+  visualstudio2022buildtools windows-sdk-10.0
+
+# Find python install
+$pythonpath = Get-Item c:\Python* | sort CreationDate | Select-Object -First 1
+
+# Symlink python3 to python
+New-Item -ItemType SymbolicLink `
+  -Path "$pythonpath/python3.exe" -Target "$pythonpath/python.exe"
+
+# Update global PATH
+$env:PATH += ";C:\Program Files\Git\bin;c:\Program Files\CMake\bin;$pythonpath"
+setx PATH "$env:PATH"
 ```
-
-## Install `depot_tools`
-
-Clone a particular branch of the `depot_tools` repository from Chromium:
-
-```shell
-git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-touch depot_tools/.disable_auto_update
-```
-
-The latest version of depot_tools will not work, so please use that branch!
-
-
-### Linux and Mac
-
-Add `depot_tools` to the end of your PATH (you will probably want to put this
-in your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
-`/path/to/depot_tools`:
-
-```shell
-export PATH="$PATH:/path/to/depot_tools"
-```
-
-### Windows
-
-Add depot_tools to the start of your PATH (must be ahead of any installs of
-Python). Assuming you cloned the repo to C:\src\depot_tools, open:
-
-Control Panel → System and Security → System → Advanced system settings
-
-If you have Administrator access, Modify the PATH system variable and
-put `C:\src\depot_tools` at the front (or at least in front of any directory
-that might already have a copy of Python or Git).
-
-If you don't have Administrator access, you can add a user-level PATH
-environment variable and put `C:\src\depot_tools` at the front, but
-if your system PATH has a Python in it, you will be out of luck.
-
-From a cmd.exe shell, run the command gclient (without arguments). On first
-run, gclient will install all the Windows-specific bits needed to work with
-the code, including msysgit and python.
-
-* If you run gclient from a non-cmd shell (e.g., cygwin, PowerShell),
-  it may appear to run properly, but msysgit, python, and other tools
-  may not get installed correctly.
-* If you see strange errors with the file system on the first run of gclient,
-  you may want to
-  [disable Windows Indexing](http://tortoisesvn.tigris.org/faq.html#cantmove2).
 
 ## Get the code
 
-Create a `shaka_packager` directory for the checkout and change to it (you can
-call this whatever you like and put it wherever you like, as long as the full
-path has no spaces):
+Dependencies are now managed via git submodules. To get a complete
+checkout you can run:
 
 ```shell
-mkdir shaka_packager && cd shaka_packager
-```
-
-Run the `gclient` tool from `depot_tools` to check out the code and its
-dependencies.
-
-```shell
-gclient config https://github.com/shaka-project/shaka-packager.git --name=src --unmanaged
-gclient sync -r main
-```
-
-To sync to a particular commit or version, add the '-r \<revision\>' flag to
-`gclient sync`, e.g.
-
-```shell
-gclient sync -r 4cb5326355e1559d60b46167740e04624d0d2f51
-```
-
-```shell
-gclient sync -r v1.2.0
-```
-
-If you don't want the full repo history, you can save some time by adding the
-`--no-history` flag to `gclient sync`.
-
-When the above commands completes, it will have created a hidden `.gclient` file
-and a directory called `src` in the working directory. The remaining
-instructions assume you have switched to the `src` directory:
-
-```shell
-cd src
+git clone --recurse-submodules https://github.com/shaka-project/shaka-packager.git
 ```
 
 ### Build Shaka Packager
 
 #### Linux and Mac
 
-Shaka Packager uses [Ninja](https://ninja-build.org) as its main build tool,
-which is bundled in depot_tools.
+Shaka Packager uses [CMake](https://cmake.org) as the main build tool,
+with Ninja as the recommended generator (outside of Windows).
 
-To build the code, run `ninja` command:
 
 ```shell
-ninja -C out/Release
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 ```
 
 If you want to build debug code, replace `Release` above with `Debug`.
 
-We also provide a mechanism to change build settings, for example,
-you can change build system to `make` by overriding `GYP_GENERATORS`:
+You can change other build settings with `-D` flags to CMake, for example
+you can build a shared `libpackager` instead of static by adding
 
 ```shell
-GYP_GENERATORS='make' gclient runhooks
+-DLIBPACKAGER_SHARED="ON"
+```
+
+After configuring CMake you can run the build with
+
+```shell
+cmake --build build --parallel
 ```
 
 #### Windows
 
-The instructions are similar, except that Windows allows using either `/` or `\`
-as path separator:
+Windows build instructions are similar. Using Tools > Command Line >
+Developer Command Prompt should open a terminal with cmake and ctest in the
+PATH.  Omit the `-G Ninja` to use the default backend, and pass `--config`
+during build to select the desired configuration from Visual Studio.
 
 ```shell
-ninja -C out/Release
-ninja -C out\Release
-```
-
-Also, unlike Linux / Mac, 32-bit is chosen by default even if the system is
-64-bit. 64-bit has to be enabled explicitly and the output directory is
-configured to `out/%CONFIGURATION%_x64`, i.e.:
-
-```shell
-SET GYP_DEFINES='target_arch=x64'
-gclient runhooks
-ninja -C out/Release_x64
+cmake -B build
+cmake --build build --parallel --config Release
 ```
 
 ### Build artifacts
 
 After a successful build, you can find build artifacts including the main
-`packager` binary in build output directory (`out/Release` or `out/Release_x64`
-for release build).
+`packager` binary in build output directory (`build/packager/` for a Ninja
+build, `build/packager/Release/` for a Visual Studio release build, or
+`build/packager/Debug/` for a Visual Studio debug build).
 
 See [Shaka Packager Documentation](https://shaka-project.github.io/shaka-packager/html/)
 on how to use `Shaka Packager`.
@@ -199,38 +132,19 @@ To update an existing checkout, you can run
 
 ```shell
 git pull origin main --rebase
-gclient sync
+git submodule update --init --recursive
 ```
 
 The first command updates the primary Packager source repository and rebases on
 top of tip-of-tree (aka the Git branch `origin/main`). You can also use other
 common Git commands to update the repo.
 
-The second command syncs dependencies to the appropriate versions and re-runs
-hooks as needed.
-
-## Cross compiling for ARM on Ubuntu host
-
-The install-build-deps script can be used to install all the compiler
-and library dependencies directly from Ubuntu:
-
-```shell
-./packager/build/install-build-deps.sh
-```
-
-Install sysroot image and others using `gclient`:
-
-```shell
-GYP_CROSSCOMPILE=1 GYP_DEFINES="target_arch=arm" gclient runhooks
-```
-
-The build command is the same as in Ubuntu:
-
-```shell
-ninja -C out/Release
-```
+The second updates submodules for third-party dependencies.
 
 ## Notes for other linux distros
+
+The docker files at `packager/testing/dockers` have the most up to
+date commands for installing dependencies. For example:
 
 ### Alpine Linux
 
@@ -240,23 +154,7 @@ Use `apk` command to install dependencies:
 apk add --no-cache \
         bash curl \
         bsd-compat-headers c-ares-dev linux-headers \
-        build-base git ninja python2 python3
-```
-
-Alpine uses musl which does not have mallinfo defined in malloc.h. It is
-required by one of Shaka Packager's dependency. To workaround the problem, a
-dummy structure has to be defined in /usr/include/malloc.h, e.g.
-
-```shell
-sed -i \
-  '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
-  /usr/include/malloc.h
-```
-
-We also need to enable musl in the build config:
-
-```shell
-export GYP_DEFINES='musl=1'
+        build-base cmake git ninja python3
 ```
 
 ### Arch Linux
@@ -264,40 +162,70 @@ export GYP_DEFINES='musl=1'
 Instead of running `sudo apt-get install` to install build dependencies, run:
 
 ```shell
-sudo pacman -Sy --needed \
+pacman -Suy --needed --noconfirm \
         core/which \
         c-ares \
-        gcc git python2 python3
+        cmake gcc git ninja python3
 ```
 
 ### Debian
 
 Same as Ubuntu.
 
+```shell
+apt-get install -y \
+        curl \
+        libc-ares-dev \
+        build-essential cmake git ninja-build python3
+```
+
 ### Fedora
 
 Instead of running `sudo apt-get install` to install build dependencies, run:
 
 ```shell
-su -c 'yum install -y \
+yum install -y \
         which \
         c-ares-devel libatomic \
-        gcc-c++ git python2'
+        cmake gcc-c++ git ninja-build python3
 ```
 
 ### CentOS
 
-Same as Fedora.
+For CentOS, Ninja is only available from the CRB (Code Ready Builder) repo
+
+```shell
+dnf update -y
+dnf install -y yum-utils
+dnf config-manager --set-enabled crb
+```
+
+then same as Fedora
+
+```shell
+yum install -y \
+        which \
+        c-ares-devel libatomic \
+        cmake gcc-c++ git ninja-build python3
+```
 
 ### OpenSUSE
 
 Use `zypper` command to install dependencies:
 
 ```shell
-sudo zypper in -y \
+zypper in -y \
         curl which \
         c-ares-devel \
-        gcc-c++ git python python3
+        cmake gcc9-c++ git ninja python3
+```
+
+OpenSuse 15 doesn't have the required gcc 9+ by default, but we can install
+it as gcc9 and symlink it.
+
+```shell
+ln -s g++-9 /usr/bin/g++
+ln -s gcc-9 /usr/bin/gcc
 ```
 
 ## Tips, tricks, and troubleshooting
@@ -322,41 +250,10 @@ Only accepting for all users of the machine requires root:
 sudo xcodebuild -license
 ```
 
-### Missing curl CA bundle
-
-If you are getting the error
-
-> gyp: Call to 'config/mac/find_curl_ca_bundle.sh' returned exit status 1 ...
-
-curl CA bundle is not able to be located. Installing curl with openssl should
-resolve the issue:
-
-```shell
-brew install curl --with-openssl
-```
-
 ### Using an IDE
 
-No specific instructions are available.
-
-You might find Gyp generators helpful. Output is not guaranteed to work.
-Manual editing might be necessary.
-
-To generate CMakeLists.txt in out/Release and out/Debug use:
-
-```shell
-GYP_GENERATORS=cmake gclient runhooks
-```
-
-To generate IDE project files in out/Release and out/Debug use:
-
-```shell
-GYP_GENERATORS=eclipse gclient runhooks
-GYP_GENERATORS=xcode gclient runhooks
-GYP_GENERATORS=xcode_test gclient runhooks
-GYP_GENERATORS=msvs gclient runhooks
-GYP_GENERATORS=msvs_test gclient runhooks
-```
+No specific instructions are available. However most IDEs with CMake
+support should work out of the box
 
 ## Contributing
 
@@ -367,12 +264,22 @@ details.
 We have continue integration tests setup on pull requests. You can also verify
 locally by running the tests manually.
 
-If you know which tests are affected by your change, you can limit which tests
-are run using the `--gtest_filter` arg, e.g.:
-
 ```shell
-out/Debug/mp4_unittest --gtest_filter="MP4MediaParserTest.*"
+ctest -C Debug -V --test-dir build
 ```
 
 You can find out more about GoogleTest at its
 [GitHub page](https://github.com/google/googletest).
+
+You should install `clang-format` (using `apt install` or `brew
+install` depending on platform) to ensure that all code changes are
+properly formatted.
+
+You should commit or stage (with `git add`) any code changes first. Then run
+
+```shell
+git clang-format --style Chromium origin/main
+```
+
+This will run formatting over just the files you modified (any changes
+since origin/main).

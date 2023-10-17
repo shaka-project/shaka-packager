@@ -1,16 +1,13 @@
 # Linux Profiling
 
-Profiling code is enabled when the `use_allocator` variable in gyp is set to
-`tcmalloc` and `profiling` variable in gyp is set to `1`. That will build the
-tcmalloc library, including the cpu profiling and heap profiling code into
-shaka-packager, e.g.
+In theory we should be able to build packager using
+[gperftools](https://github.com/gperftools/gperftools/tree/master) to
+get back the profiling functionality described below. However actually
+integrating this into the CMake build is not yet done. Pull requests
+welcome. See https://github.com/shaka-project/shaka-packager/issues/1277
 
-    GYP_DEFINES='profiling=1 use_allocator="tcmalloc"' gclient runhooks
-
-If the stack traces in your profiles are incomplete, this may be due to missing
-frame pointers in some of the libraries. A workaround is to use the
-`linux_keep_shadow_stacks=1` gyp option. This will keep a shadow stack using the
-`-finstrument-functions` option of gcc and consult the stack when unwinding.
+If packager was linked using `-ltcmalloc` then the following
+instructions should work:
 
 ## CPU Profiling
 
@@ -53,20 +50,10 @@ catch those, use the `HEAP_PROFILE_ALLOCATION_INTERVAL` environment variable.
 
 To programmatically generate a heap profile before exit, use code like:
 
-    #include <packager/third_party/tcmalloc/chromium/src/gperftools/heap-profiler.h>
+    #include <gperftools/heap-profiler.h>
 
     // "foobar" will be included in the message printed to the console
     HeapProfilerDump("foobar");
-
-Then add allocator.gyp dependency to the target with the above change:
-
-    'conditions': [
-      ['profiling==1', {
-        'dependencies': [
-          'base/allocator/allocator.gyp:allocator',
-        ],
-      }],
-    ],
 
 Or you can use gdb to attach at any point:
 
@@ -79,31 +66,18 @@ Or you can use gdb to attach at any point:
 ## Thread sanitizer (tsan)
 
 To compile with the thread sanitizer library (tsan), you must set clang as your
-compiler and set the `tsan=1` and `tsan_blacklist` configs:
-
-    CC=clang CXX=clang++ GYP_DEFINES="tsan=1 tsan_blacklist=/path/to/src/packager/tools/memory/tsan_v2/ignores.txt" gclient runhooks
+compiler and set `-fsanitize=thread` in compiler flags.
 
 NOTE: tsan and asan cannot be used at the same time.
-
 
 ## Adddress sanitizer (asan)
 
 To compile with the address sanitizer library (asan), you must set clang as your
-compiler and set the `asan=1` config:
-
-    CC=clang CXX=clang++ GYP_DEFINES="asan=1" gclient runhooks
+compiler and set `-fsanitize=address` in compiler and linker flags.
 
 NOTE: tsan and asan cannot be used at the same time.
-
 
 ## Leak sanitizer (lsan)
 
 To compile with the leak sanitizer library (lsan), you must set clang as your
-compiler and set the `lsan=1` config:
-
-    CC=clang CXX=clang++ GYP_DEFINES="lsan=1" gclient runhooks
-
-
-## Reference
-
-[Linux Profiling in Chromium](https://chromium.googlesource.com/chromium/src/+/master/docs/linux_profiling.md)
+compiler and use `-fsanitize=leak` in compiler and linker flags.
