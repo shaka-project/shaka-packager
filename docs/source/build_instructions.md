@@ -16,7 +16,7 @@ sudo apt-get install -y \
         build-essential cmake git ninja-build python3
 ```
 
-Note that `Git` must be v1.7.5 or above.
+Note that `git` must be v1.7.6 or above to support relative paths in submodules.
 
 ## Mac system requirements
 
