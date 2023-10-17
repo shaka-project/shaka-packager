@@ -17,3 +17,5 @@ add_library(license_notice STATIC
 
 # Anyone who depends on this library will need this include directory.
 target_include_directories(license_notice PUBLIC "${CMAKE_BINARY_DIR}")
+
+add_subdirectory(pssh)

@@ -7,7 +7,8 @@
 # Define a custom function to create protobuf libraries.  This is similar to
 # the one defined in the CMake FindProtobuf.cmake module, but allows us to more
 # easily hook into the protobuf submodule to do the work instead of searching
-# for a system-wide installation.
+# for a system-wide installation.  Generates both C++ library targets and
+# Python proto modules.
 
 function(add_proto_library NAME)
   cmake_parse_arguments(PARSE_ARGV
@@ -51,9 +52,13 @@ function(add_proto_library NAME)
     add_custom_command(
       OUTPUT ${_generated_cpp} ${_generated_h}
       COMMAND protoc
-      ARGS -I${CMAKE_CURRENT_SOURCE_DIR}/${_dir} --cpp_out=${CMAKE_CURRENT_BINARY_DIR}/${_dir} ${CMAKE_CURRENT_SOURCE_DIR}/${_path}
+      ARGS
+        -I${CMAKE_CURRENT_SOURCE_DIR}/${_dir}
+        --cpp_out=${CMAKE_CURRENT_BINARY_DIR}/${_dir}
+        --python_out=${CMAKE_CURRENT_BINARY_DIR}/${_dir}
+        ${CMAKE_CURRENT_SOURCE_DIR}/${_path}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_path} protoc
-      COMMENT "Running C++ protocol buffer compiler on ${_path}"
+      COMMENT "Running protocol buffer compiler on ${_path}"
       VERBATIM)
   endforeach()
 

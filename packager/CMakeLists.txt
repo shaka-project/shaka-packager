@@ -194,10 +194,15 @@ target_link_libraries(packager_test
 configure_file(packager.pc.in packager.pc @ONLY)
 
 
-install(TARGETS mpd_generator packager libpackager
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY ../include/packager
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(FILES tools/pssh/pssh-box.py DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(TARGETS mpd_generator packager libpackager)
+
+install(PROGRAMS ${CMAKE_BINARY_DIR}/pssh-box.py
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/pssh-box-protos
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
