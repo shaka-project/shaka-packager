@@ -48,6 +48,26 @@ situation.
 Install the "Desktop development with C++" workload which will install
 CMake and other needed tools.
 
+If you use chocolatey, you can install these dependencies with:
+
+```ps1
+choco install -y `
+  git cmake ninja python `
+  visualstudio2022community visualstudio2022-workload-nativedesktop `
+  visualstudio2022buildtools windows-sdk-10.0
+
+# Find python install
+$pythonpath = Get-Item c:\Python* | sort CreationDate | Select-Object -First 1
+
+# Symlink python3 to python
+New-Item -ItemType SymbolicLink `
+  -Path "$pythonpath/python3.exe" -Target "$pythonpath/python.exe"
+
+# Update global PATH
+$env:PATH += ";C:\Program Files\Git\bin;c:\Program Files\CMake\bin;$pythonpath"
+setx PATH "$env:PATH"
+```
+
 ## Get the code
 
 Dependencies are now managed via git submodules. To get a complete
