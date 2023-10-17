@@ -119,8 +119,9 @@ cmake --build build --parallel --config Release
 ### Build artifacts
 
 After a successful build, you can find build artifacts including the main
-`packager` binary in build output directory (`out/Release` or `out/Release_x64`
-for release build).
+`packager` binary in build output directory (`build/packager/` for a Ninja
+build, `build/packager/Release/` for a Visual Studio release build, or
+`build/packager/Debug/` for a Visual Studio debug build).
 
 See [Shaka Packager Documentation](https://shaka-project.github.io/shaka-packager/html/)
 on how to use `Shaka Packager`.
