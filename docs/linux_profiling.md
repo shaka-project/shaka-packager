@@ -4,7 +4,7 @@ In theory we should be able to build packager using
 [gperftools](https://github.com/gperftools/gperftools/tree/master) to
 get back the profiling functionality described below. However actually
 integrating this into the CMake build is not yet done. Pull requests
-welcome.
+welcome. See https://github.com/shaka-project/shaka-packager/issues/1277
 
 If packager was linked using `-ltcmalloc` then the following
 instructions should work:
