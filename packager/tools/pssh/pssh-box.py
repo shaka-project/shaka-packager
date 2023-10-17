@@ -32,11 +32,12 @@ def to_code_point(value):
 
 
 _script_dir = os.path.dirname(os.path.realpath(__file__))
-_proto_path = os.path.join(_script_dir, 'pyproto')
+_proto_path = os.path.join(_script_dir, 'pssh-box-protos')
 _widevine_proto_path = os.path.join(_proto_path, 'packager/media/base')
 
 assert os.path.exists(_proto_path), (
-    'Please run from output directory, e.g. out/Debug/pssh-box.py')
+    'Failed to find proto, please run built/installed version. ' +
+    ' e.g. build/packager/pssh-box.py')
 
 sys.path.insert(0, _proto_path)
 sys.path.insert(0, _widevine_proto_path)
