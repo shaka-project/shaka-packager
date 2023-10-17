@@ -333,9 +333,8 @@ namespace {
 // UUID for Marlin Adaptive Streaming Specification – Simple Profile from
 // https://dashif.org/identifiers/content_protection/.
 const char kMarlinUUID[] = "5e629af5-38da-4063-8977-97ffbd9902d4";
-// Unofficial FairPlay system id extracted from
-// https://forums.developer.apple.com/thread/6185.
-const char kFairPlayUUID[] = "29701fe4-3cc7-4a34-8c5b-ae90c7439a47";
+// String representation of media::kFairPlaySystemId.
+const char kFairPlayUUID[] = "94ce86fb-07ff-4f43-adb8-93d2fa968ca2";
 // String representation of media::kPlayReadySystemId.
 const char kPlayReadyUUID[] = "9a04f079-9840-4286-ab92-e65be0885f95";
 // It is RECOMMENDED to include the @value attribute with name and version "MSPR 2.0".
