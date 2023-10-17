@@ -107,13 +107,13 @@ cmake --build build --parallel
 #### Windows
 
 Windows build instructions are similar. Using Tools > Command Line >
-Developer Command Prompt should open a terminal with cmake and ctest
-in path, then the commands are the same, but omit the `-G Ninja` to
-use the default backend.
+Developer Command Prompt should open a terminal with cmake and ctest in the
+PATH.  Omit the `-G Ninja` to use the default backend, and pass `--config`
+during build to select the desired configuration from Visual Studio.
 
 ```shell
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
+cmake -B build
+cmake --build build --parallel --config Release
 ```
 
 ### Build artifacts
