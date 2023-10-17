@@ -4,7 +4,7 @@ Shaka Packager supports building on Windows, Mac and Linux host systems.
 
 ## Linux build dependencies
 
-Most development is done on Ubuntu (currently 14.04, Trusty Tahr). The
+Most development is done on Ubuntu (currently 22.04 LTS, Jammy Jellyfish).  The
 dependencies mentioned here are only for Ubuntu. There are some instructions
 for [other distros below](#notes-for-other-linux-distros).
 
