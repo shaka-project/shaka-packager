@@ -64,7 +64,7 @@ Or you can use gdb to attach at any point:
 
 
 ## Thread sanitizer (tsan)
-``
+
 To compile with the thread sanitizer library (tsan), you must set clang as your
 compiler and set `-fsanitize=thread` in compiler flags.
 

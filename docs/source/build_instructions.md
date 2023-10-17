@@ -20,18 +20,18 @@ Note that `Git` must be v1.7.5 or above.
 
 ## Mac system requirements
 
-*   [Xcode](https://developer.apple.com/xcode) 7.3+.
-*   The OS X 10.10 SDK or later. Run
+ * [Xcode](https://developer.apple.com/xcode) 7.3+.
+ * The OS X 10.10 SDK or later. Run
 
-    ```shell
-    ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
-    ```
+   ```shell
+   ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+   ```
 
-    to check whether you have it.
+   to check whether you have it.
 
-Install Ninja (recommended) using Homebrew
+## Install Ninja (recommended) using Homebrew
 
-``` shell
+```shell
 brew install ninja
 ```
 
@@ -53,7 +53,7 @@ CMake and other needed tools.
 Dependencies are now managed via git submodules. To get a complete
 checkout you can run:
 
-``` shell
+```shell
 git clone --recurse-submodules https://github.com/shaka-project/shaka-packager.git
 ```
 
@@ -62,7 +62,7 @@ git clone --recurse-submodules https://github.com/shaka-project/shaka-packager.g
 #### Linux and Mac
 
 Shaka Packager uses [CMake](https://cmake.org) as the main build tool,
-with the Ninja as the recommended generator (outside of Windows).
+with Ninja as the recommended generator (outside of Windows).
 
 
 ```shell
@@ -74,13 +74,13 @@ If you want to build debug code, replace `Release` above with `Debug`.
 You can change other build settings with `-D` flags to CMake, for example
 you can build a shared `libpackager` instead of static by adding
 
-``` shell
+```shell
 -DLIBPACKAGER_SHARED="ON"
 ```
 
 After configuring CMake you can run the build with
 
-``` shell
+```shell
 cmake --build build --parallel
 ```
 
@@ -91,7 +91,7 @@ Developer Command Prompt should open a terminal with cmake and ctest
 in path, then the commands are the same, but omit the `-G Ninja` to
 use the default backend.
 
-``` shell
+```shell
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
@@ -123,7 +123,7 @@ The second updates submodules for third-party dependencies.
 ## Notes for other linux distros
 
 The docker files at `packager/testing/dockers` have the most up to
-date commands for installing dependencies. For example
+date commands for installing dependencies. For example:
 
 ### Alpine Linux
 
@@ -151,7 +151,7 @@ pacman -Suy --needed --noconfirm \
 
 Same as Ubuntu.
 
-``` shell
+```shell
 apt-get install -y \
         curl \
         libc-ares-dev \
@@ -173,7 +173,7 @@ yum install -y \
 
 For CentOS, Ninja is only available from the CRB (Code Ready Builder) repo
 
-``` shell
+```shell
 dnf update -y
 dnf install -y yum-utils
 dnf config-manager --set-enabled crb
@@ -181,7 +181,7 @@ dnf config-manager --set-enabled crb
 
 then same as Fedora
 
-``` shell
+```shell
 yum install -y \
         which \
         c-ares-devel libatomic \
@@ -202,7 +202,7 @@ zypper in -y \
 OpenSuse 15 doesn't have the required gcc 9+ by default, but we can install
 it as gcc9 and symlink it.
 
-``` shell
+```shell
 ln -s g++-9 /usr/bin/g++
 ln -s gcc-9 /usr/bin/gcc
 ```
@@ -243,7 +243,7 @@ details.
 We have continue integration tests setup on pull requests. You can also verify
 locally by running the tests manually.
 
-``` shell
+```shell
 ctest -C Debug -V --test-dir build
 ```
 
@@ -256,7 +256,7 @@ properly formatted.
 
 You should commit or stage (with `git add`) any code changes first. Then run
 
-``` shell
+```shell
 git clang-format --style Chromium origin/main
 ```
 
