@@ -29,7 +29,7 @@ target_link_libraries(hex_bytes_flags
   absl::strings
   absl::flags)
 
-add_library(string_utils
+add_library(string_utils STATIC
   string_trim_split.cc
 )
 target_link_libraries(string_utils
