@@ -86,16 +86,9 @@ set(libpackager_sources
   app/single_thread_job_manager.h
   packager.cc
   ../include/packager/packager.h
-  )
+)
 
-if(BUILD_SHARED_LIBS)
-  add_library(libpackager SHARED ${libpackager_sources})
-  target_compile_definitions(libpackager PUBLIC SHAKA_IMPLEMENTATION)
-else()
-  add_library(libpackager STATIC ${libpackager_sources})
-endif()
-
-target_link_libraries(libpackager
+set(libpackager_deps
   file
   hls_builder
   media_chunking
@@ -117,9 +110,38 @@ target_link_libraries(libpackager
   string_utils
   version
 )
-# Avoid liblibpackager on Windows:
+
+# A static library target is always built.
+add_library(libpackager_static STATIC ${libpackager_sources})
+target_link_libraries(libpackager_static ${libpackager_deps})
+
+# And always installed as libpackager.a:
 if(NOT MSVC)
-  set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
+  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME packager)
+else()
+  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME libpackager)
+endif()
+
+# A shared library target is conditional (default OFF):
+if(BUILD_SHARED_LIBS)
+  add_library(libpackager_shared SHARED ${libpackager_sources})
+  target_link_libraries(libpackager_shared ${libpackager_deps})
+  target_compile_definitions(libpackager_shared PUBLIC SHAKA_IMPLEMENTATION)
+
+  # And always installed as libpackager.so / libpackager.dll:
+  if(NOT MSVC)
+    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME packager)
+  else()
+    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME libpackager)
+  endif()
+
+  # If we're building a shared library, this is what the "libpackager" target
+  # aliases to.
+  add_library(libpackager ALIAS libpackager_shared)
+else()
+  # If we're not building a shared library, the "libpackager" target aliases to
+  # the static library.
+  add_library(libpackager ALIAS libpackager_static)
 endif()
 
 add_executable(packager
@@ -223,15 +245,22 @@ endif()
 
 configure_file(packager.pc.in packager.pc @ONLY)
 
-install(DIRECTORY ../include/packager
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+# Always install the binaries.
+install(TARGETS mpd_generator packager)
 
-install(TARGETS mpd_generator packager libpackager)
-
+# Always install the python tools.
 install(PROGRAMS ${CMAKE_BINARY_DIR}/pssh-box.py
   DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY ${CMAKE_BINARY_DIR}/pssh-box-protos
   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+# With shared libraries, also install the library, headers, and pkgconfig.
+# The static library isn't usable as a standalone because it doesn't include
+# its static dependencies (zlib, absl, etc).
+if(BUILD_SHARED_LIBS)
+  install(TARGETS libpackager_shared)
+  install(DIRECTORY ../include/packager
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+endif()
