@@ -182,6 +182,14 @@ target_link_libraries(mpd_generator
   mpd_util
   )
 
+# A static build on Linux should truly be a static executable.
+# If the build fails with this, we had hidden dependencies on the build host's
+# environment.
+if(NOT LIBPACKAGER_SHARED AND UNIX AND NOT APPLE)
+  target_link_options(packager PRIVATE -static)
+  target_link_options(mpd_generator PRIVATE -static)
+endif()
+
 add_executable(packager_test
   packager_test.cc
   )
