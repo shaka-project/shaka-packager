@@ -22,6 +22,8 @@ option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
 # Enable CMake's test infrastructure.
 enable_testing()
 
+option(SKIP_INTEGRATION_TESTS "Skip the packager integration tests" OFF)
+
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)
 add_subdirectory(link-test)

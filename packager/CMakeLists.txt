@@ -214,6 +214,13 @@ add_custom_target(packager_test_py_copy ALL
   SOURCES ${packager_test_py_sources}
 )
 
+if(NOT SKIP_INTEGRATION_TESTS)
+  add_test (NAME packager_test_py
+    COMMAND ${PYTHON_EXECUTABLE} packager_test.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+endif()
+
 configure_file(packager.pc.in packager.pc @ONLY)
 
 install(DIRECTORY ../include/packager
