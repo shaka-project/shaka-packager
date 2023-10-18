@@ -31,3 +31,6 @@
 [submodule "packager/third_party/mongoose/source"]
 	path = packager/third_party/mongoose/source
 	url = https://github.com/cesanta/mongoose
+[submodule "packager/third_party/c-ares/source"]
+	path = packager/third_party/c-ares/source
+	url = https://github.com/c-ares/c-ares

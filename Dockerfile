@@ -3,7 +3,7 @@ FROM alpine:3.12 as builder
 # Install utilities, libraries, and dev tools.
 RUN apk add --no-cache \
         bash curl \
-        bsd-compat-headers c-ares-dev linux-headers \
+        bsd-compat-headers linux-headers \
         build-base cmake git ninja python3
 
 # Build shaka-packager from the current directory, rather than what has been

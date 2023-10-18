@@ -3,7 +3,6 @@ FROM archlinux:latest
 # Install utilities, libraries, and dev tools.
 RUN pacman -Suy --needed --noconfirm \
         core/which \
-        c-ares \
         cmake gcc git ninja python3
 
 # Build and run this docker by mapping shaka-packager with

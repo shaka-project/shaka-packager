@@ -110,7 +110,6 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y \
               cmake \
-              libc-ares-dev \
               ninja-build
 
       - name: Install Mac deps
