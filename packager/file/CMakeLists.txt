@@ -29,8 +29,8 @@ target_link_libraries(file
     status
     version)
 
-if(LIBPACKAGER_SHARED)
-    target_compile_definitions(file PUBLIC SHAKA_IMPLEMENTATION)
+if(BUILD_SHARED_LIBS)
+  target_compile_definitions(file PUBLIC SHAKA_IMPLEMENTATION)
 endif()
 
 add_library(file_test_util STATIC

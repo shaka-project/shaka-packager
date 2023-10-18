@@ -123,9 +123,9 @@ jobs:
           mkdir -p build/
 
           if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
-            LIBPACKAGER_SHARED="ON"
+            BUILD_SHARED_LIBS="ON"
           else
-            LIBPACKAGER_SHARED="OFF"
+            BUILD_SHARED_LIBS="OFF"
           fi
 
           # If set, override the default generator for the platform.
@@ -142,7 +142,7 @@ jobs:
 
           cmake \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
-            -DLIBPACKAGER_SHARED="$LIBPACKAGER_SHARED" \
+            -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
             -S . \
             -B build/
 

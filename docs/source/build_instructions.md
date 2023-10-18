@@ -94,7 +94,7 @@ You can change other build settings with `-D` flags to CMake, for example
 you can build a shared `libpackager` instead of static by adding
 
 ```shell
--DLIBPACKAGER_SHARED="ON"
+-DBUILD_SHARED_LIBS="ON"
 ```
 
 After configuring CMake you can run the build with
