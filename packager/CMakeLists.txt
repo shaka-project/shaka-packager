@@ -191,8 +191,30 @@ target_link_libraries(packager_test
   gtest
   gtest_main)
 
-configure_file(packager.pc.in packager.pc @ONLY)
+list(APPEND packager_test_py_sources
+  "${CMAKE_CURRENT_SOURCE_DIR}/app/test/packager_app.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/app/test/packager_test.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/app/test/test_env.py")
 
+list(APPEND packager_test_py_output
+  "${CMAKE_CURRENT_BINARY_DIR}/packager_app.py"
+  "${CMAKE_CURRENT_BINARY_DIR}/packager_test.py"
+  "${CMAKE_CURRENT_BINARY_DIR}/test_env.py")
+
+add_custom_command(
+  OUTPUT ${packager_test_py_output}
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/app/test/packager_app.py ${CMAKE_CURRENT_BINARY_DIR}/packager_app.py
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/app/test/packager_test.py ${CMAKE_CURRENT_BINARY_DIR}/packager_test.py
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/app/test/test_env.py ${CMAKE_CURRENT_BINARY_DIR}/test_env.py
+  DEPENDS ${packager_test_py_sources}
+)
+
+add_custom_target(packager_test_py_copy ALL
+  DEPENDS ${packager_test_py_output} packager
+  SOURCES ${packager_test_py_sources}
+)
+
+configure_file(packager.pc.in packager.pc @ONLY)
 
 install(DIRECTORY ../include/packager
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
