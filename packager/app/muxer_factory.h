@@ -37,7 +37,7 @@ class MuxerFactory {
 
   /// For testing, if you need to replace the clock that muxers work with
   /// this will replace the clock for all muxers created after this call.
-  void OverrideClock(Clock* clock);
+  void OverrideClock(std::shared_ptr<Clock> clock);
 
   void SetTsStreamOffset(int32_t offset_ms) {
     transport_stream_timestamp_offset_ms_ = offset_ms;
@@ -50,7 +50,7 @@ class MuxerFactory {
   const Mp4OutputParams mp4_params_;
   const std::string temp_dir_;
   int32_t transport_stream_timestamp_offset_ms_ = 0;
-  Clock* clock_ = nullptr;
+  std::shared_ptr<Clock> clock_ = nullptr;
 };
 
 }  // namespace media
