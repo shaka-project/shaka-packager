@@ -16,8 +16,12 @@ set(CURL_USE_LIBSSH2 OFF)
 set(CURL_ZLIB OFF)
 
 if(UNIX AND NOT APPLE)
-  # Use libcares to fix static linking on Linux.
-  set(ENABLE_ARES ON)
+  # Use c-ares to fix static linking on Linux.  Set USE_ARES directly, not the
+  # ENABLE_ARES option that triggers a search for c-ares on the system.
+  set(USE_ARES 1)
+  # This is necessary when we hack the c-ares search, because we break the
+  # export target.  We didn't need it anyway.
+  set(CURL_ENABLE_EXPORT_TARGET OFF)
 endif()
 
 if(WIN32)
@@ -40,3 +44,9 @@ endif()
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
+
+# Our enabling of c-ares doesn't automatically set a dependency between libcurl
+# and c-ares.  Fix that now.
+if(USE_ARES)
+  target_link_libraries(libcurl c-ares)
+endif()

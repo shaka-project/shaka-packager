@@ -9,7 +9,7 @@ RUN dnf config-manager --set-enabled crb
 # Install utilities, libraries, and dev tools.
 RUN yum install -y \
         which \
-        c-ares-devel libatomic \
+        libatomic \
         cmake gcc-c++ git ninja-build python3
 
 # Build and run this docker by mapping shaka-packager with

@@ -12,7 +12,6 @@ for [other distros below](#notes-for-other-linux-distros).
 sudo apt-get update
 sudo apt-get install -y \
         curl \
-        libc-ares-dev \
         build-essential cmake git ninja-build python3
 ```
 
@@ -153,7 +152,7 @@ Use `apk` command to install dependencies:
 ```shell
 apk add --no-cache \
         bash curl \
-        bsd-compat-headers c-ares-dev linux-headers \
+        bsd-compat-headers linux-headers \
         build-base cmake git ninja python3
 ```
 
@@ -164,7 +163,6 @@ Instead of running `sudo apt-get install` to install build dependencies, run:
 ```shell
 pacman -Suy --needed --noconfirm \
         core/which \
-        c-ares \
         cmake gcc git ninja python3
 ```
 
@@ -175,7 +173,6 @@ Same as Ubuntu.
 ```shell
 apt-get install -y \
         curl \
-        libc-ares-dev \
         build-essential cmake git ninja-build python3
 ```
 
@@ -186,7 +183,7 @@ Instead of running `sudo apt-get install` to install build dependencies, run:
 ```shell
 yum install -y \
         which \
-        c-ares-devel libatomic \
+        libatomic \
         cmake gcc-c++ git ninja-build python3
 ```
 
@@ -205,7 +202,7 @@ then same as Fedora
 ```shell
 yum install -y \
         which \
-        c-ares-devel libatomic \
+        libatomic \
         cmake gcc-c++ git ninja-build python3
 ```
 
@@ -216,7 +213,6 @@ Use `zypper` command to install dependencies:
 ```shell
 zypper in -y \
         curl which \
-        c-ares-devel \
         cmake gcc9-c++ git ninja python3
 ```
 
