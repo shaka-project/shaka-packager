@@ -24,7 +24,7 @@
 	url = https://github.com/webmproject/libwebm
 [submodule "packager/third_party/libxml2/source"]
 	path = packager/third_party/libxml2/source
-	url = https://gitlab.gnome.org/GNOME/libxml2
+	url = https://github.com/GNOME/libxml2
 [submodule "packager/third_party/protobuf/source"]
 	path = packager/third_party/protobuf/source
 	url = https://github.com/protocolbuffers/protobuf
