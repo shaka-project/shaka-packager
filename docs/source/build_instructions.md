@@ -125,6 +125,24 @@ build, `build/packager/Release/` for a Visual Studio release build, or
 See [Shaka Packager Documentation](https://shaka-project.github.io/shaka-packager/html/)
 on how to use `Shaka Packager`.
 
+### Installation
+
+To install Shaka Packager, run:
+
+```shell
+cmake --install build/ --strip --config Release
+```
+
+You can customize the output location with `--prefix` (default `/usr/local` on
+Linux and macOS) and the `DESTDIR` environment variable.  These are provided by
+CMake and follow standard conventions for installation.  For example, to build
+a package by installing to `foo` instead of the system root, and to use `/usr`
+instead of `/usr/local`, you could run:
+
+```shell
+DESTDIR=foo cmake --install build/ --strip --config Release --prefix=/usr
+```
+
 ### Update your checkout
 
 To update an existing checkout, you can run
