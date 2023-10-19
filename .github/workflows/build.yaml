@@ -110,6 +110,7 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y \
               cmake \
+              libc6-dev \
               ninja-build
 
       - name: Install Mac deps
