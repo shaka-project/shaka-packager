@@ -17,7 +17,7 @@ project(shaka-packager VERSION "")
 
 # The only build option for Shaka Packager is whether to build a shared
 # libpackager library.  By default, don't.
-option(LIBPACKAGER_SHARED "Build libpackager as a shared library" OFF)
+option(BUILD_SHARED_LIBS "Build libpackager as a shared library" OFF)
 
 # Enable CMake's test infrastructure.
 enable_testing()

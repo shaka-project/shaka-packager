@@ -10,7 +10,7 @@ target_link_libraries(status
     absl::log
     absl::str_format)
 
-if(LIBPACKAGER_SHARED)
+if(BUILD_SHARED_LIBS)
   target_compile_definitions(status PUBLIC SHAKA_IMPLEMENTATION)
 endif()
 

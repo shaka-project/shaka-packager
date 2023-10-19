@@ -7,7 +7,7 @@
 # If we're building a shared library, make sure it works.  We only do this for
 # a shared library because the static library won't wrap the third-party
 # dependencies like absl.
-if(LIBPACKAGER_SHARED)
+if(BUILD_SHARED_LIBS)
   # Install the library and headers to a temporary location.
   set(TEST_INSTALL_DIR ${CMAKE_BINARY_DIR}/test-install)
 

@@ -9,8 +9,8 @@
 # Include a module to define standard install directories.
 include(GNUInstallDirs)
 
-# Build static libs by default, or shared if LIBPACKAGER_SHARED is defined.
-if(LIBPACKAGER_SHARED)
+# Build static libs by default, or shared if BUILD_SHARED_LIBS is on.
+if(BUILD_SHARED_LIBS)
   add_definitions(-DSHARED_LIBRARY_BUILD)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -88,7 +88,7 @@ set(libpackager_sources
   ../include/packager/packager.h
   )
 
-if(LIBPACKAGER_SHARED)
+if(BUILD_SHARED_LIBS)
   add_library(libpackager SHARED ${libpackager_sources})
   target_compile_definitions(libpackager PUBLIC SHAKA_IMPLEMENTATION)
 else()
