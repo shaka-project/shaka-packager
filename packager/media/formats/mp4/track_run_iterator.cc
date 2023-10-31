@@ -354,9 +354,13 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
           default_per_sample_iv_size, &sample_encryption_entries));
     }
 
-    int64_t run_start_dts = traf.decode_time_absent
-                                ? next_fragment_start_dts_[track_index]
-                                : traf.decode_time.decode_time;
+    int64_t run_start_dts = traf.smooth_uuid.tfxd_exists ?
+        traf.smooth_uuid.time 
+        : 
+        traf.decode_time_absent ? 
+            next_fragment_start_dts_[track_index]
+            : 
+            traf.decode_time.decode_time;                                
 
     // dts is directly adjusted, which then propagates to pts as pts is encoded
     // as difference (composition offset) to dts in mp4.

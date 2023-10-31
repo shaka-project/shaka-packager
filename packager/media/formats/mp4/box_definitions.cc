@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <vector>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
@@ -74,6 +75,9 @@ bool IsIvSizeValid(uint8_t per_sample_iv_size) {
 // bit(1) ReservedBoxPresent // 0 = none
 // bit(5) Reserved // 0
 const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
+
+const std::vector<uint8_t> kTfxdBoxUUID = {0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5, 0x44, 0xe6,
+                                           0x80, 0xe2, 0x14, 0x1d, 0xaf, 0xf7, 0x57, 0xb2};
 
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
@@ -2523,6 +2527,35 @@ size_t TrackFragmentDecodeTime::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) * (1 + version);
 }
 
+SmoothUUID::SmoothUUID() = default;
+SmoothUUID::~SmoothUUID() = default;
+
+FourCC SmoothUUID::BoxType() const {
+  return FOURCC_uuid;
+}
+
+bool SmoothUUID::ReadWriteInternal(BoxBuffer* buffer) {
+  // Read and compare 16-bytes of uuid to check for existence a 'tfxd' box
+  std::vector<uint8_t> uuid(kTfxdBoxUUID.size());
+  if(!buffer->ReadWriteVector(&uuid, uuid.size()) && (kTfxdBoxUUID != uuid)) {
+    return true;
+  }
+
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t num_bytes = (version == 1) ? sizeof(uint64_t) : sizeof(uint32_t);
+
+  RCHECK(buffer->ReadWriteUInt64NBytes(&time, num_bytes));
+  RCHECK(buffer->ReadWriteUInt64NBytes(&duration, num_bytes));
+  tfxd_exists = true;
+
+  return true;
+}
+
+size_t SmoothUUID::ComputeSizeInternal() {
+  version = IsFitIn32Bits(duration) ? 0 : 1;
+  return HeaderSize() + sizeof(uint32_t) * (1 + version);
+}
+
 MovieFragmentHeader::MovieFragmentHeader() = default;
 MovieFragmentHeader::~MovieFragmentHeader() = default;
 
@@ -2732,15 +2765,26 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteChild(&header));
   if (buffer->Reading()) {
     DCHECK(buffer->reader());
-    decode_time_absent = !buffer->reader()->ChildExist(&decode_time);
-    if (!decode_time_absent)
-      RCHECK(buffer->ReadWriteChild(&decode_time));
+    uuid_exists = buffer->reader()->ChildExist(&smooth_uuid);
+    decode_time_absent = !buffer->reader()->ChildExist(&decode_time) && !uuid_exists;
+    if (!decode_time_absent) {
+      if(uuid_exists) {
+        RCHECK(buffer->ReadWriteChild(&smooth_uuid));
+      } else {
+        RCHECK(buffer->ReadWriteChild(&decode_time));
+      }
+    }
     RCHECK(buffer->reader()->TryReadChildren(&runs) &&
            buffer->reader()->TryReadChildren(&sample_group_descriptions) &&
            buffer->reader()->TryReadChildren(&sample_to_groups));
   } else {
-    if (!decode_time_absent)
-      RCHECK(buffer->ReadWriteChild(&decode_time));
+    if (!decode_time_absent) {
+      if(uuid_exists) {
+        RCHECK(buffer->ReadWriteChild(&smooth_uuid));
+      } else {
+        RCHECK(buffer->ReadWriteChild(&decode_time));
+      }
+    }
     for (uint32_t i = 0; i < runs.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&runs[i]));
     for (uint32_t i = 0; i < sample_to_groups.size(); ++i)
