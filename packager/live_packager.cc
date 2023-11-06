@@ -153,8 +153,12 @@ Status LivePackager::Package(const Segment &in, FullSegmentBuffer &out) {
   init_callback_params.write_func = [&out](const std::string &name,
                                            const void *data,
                                            uint64_t size) {
-    // TODO: this gets called more than once, why?
-    // TODO: this is a workaround to write this only once 
+    // For live packaging it is observed that the init segment callback is
+    // invoked more than once. The initial callback does not contain the MEHD
+    // box data and furthermore does not contain fragment duration.
+    // If an MP4 file is created in real-time, such as used in live-streaming,
+    // it is not likely that the fragment_duration is known in advance and this
+    // box may be omitted.
     if(out.InitSegmentSize() == 0) {
       out.SetInitSegment(reinterpret_cast<const uint8_t *>(data), size);
     }
