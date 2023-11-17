@@ -27,6 +27,8 @@
         'decoder_configuration_record.h',
         'dovi_decoder_configuration_record.cc',
         'dovi_decoder_configuration_record.h',
+        'dts_audio_specific_config.cc',
+        'dts_audio_specific_config.h',
         'ec3_audio_util.cc',
         'ec3_audio_util.h',
         'ac4_audio_util.cc',
