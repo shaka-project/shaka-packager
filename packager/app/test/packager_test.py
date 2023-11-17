@@ -889,6 +889,13 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('acc-he')
 
+  def testDtsx(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio'], test_files=['bear-dtsx.mp4']),
+        self._GetFlags(output_dash=True))
+    self._CheckTestResults('dtsx-dash')
+
   def testVideoAudioWebVTT(self):
     audio_video_streams = self._GetStreams(['audio', 'video'])
     text_stream = self._GetStreams(['text'], test_files=['bear-english.vtt'])
