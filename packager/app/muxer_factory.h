@@ -51,6 +51,9 @@ class MuxerFactory {
   const std::string temp_dir_;
   int32_t transport_stream_timestamp_offset_ms_ = 0;
   Clock* clock_ = nullptr;
+
+  // enable init segment packaging separately
+  bool init_segment_only_;
 };
 
 }  // namespace media

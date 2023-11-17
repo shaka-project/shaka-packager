@@ -36,6 +36,23 @@ class MP4Muxer : public Muxer {
   explicit MP4Muxer(const MuxerOptions& options);
   ~MP4Muxer() override;
 
+ protected:
+  // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
+  uint64_t IsoTimeNow();
+
+  // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
+  void FireOnMediaStartEvent();
+
+  // Generate Audio/Video Track box.
+  void InitializeTrak(const StreamInfo* info, Track* trak);
+  bool GenerateAudioTrak(const AudioStreamInfo* audio_info, Track* trak);
+  bool GenerateVideoTrak(const VideoStreamInfo* video_info, Track* trak);
+  bool GenerateTextTrak(const TextStreamInfo* video_info, Track* trak);
+
+  // Assumes single stream (multiplexed a/v not supported yet).
+  bool to_be_initialized_ = true;
+  std::unique_ptr<Segmenter> segmenter_;
+
  private:
   // Muxer implementation overrides.
   Status InitializeMuxer() override;
@@ -47,12 +64,6 @@ class MP4Muxer : public Muxer {
   Status DelayInitializeMuxer();
   Status UpdateEditListOffsetFromSample(const MediaSample& sample);
 
-  // Generate Audio/Video Track box.
-  void InitializeTrak(const StreamInfo* info, Track* trak);
-  bool GenerateAudioTrak(const AudioStreamInfo* audio_info, Track* trak);
-  bool GenerateVideoTrak(const VideoStreamInfo* video_info, Track* trak);
-  bool GenerateTextTrak(const TextStreamInfo* video_info, Track* trak);
-
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.
   std::optional<Range> GetInitRangeStartAndEnd();
@@ -61,18 +72,9 @@ class MP4Muxer : public Muxer {
   // and sets start-end byte-range-spec specified in RFC2616.
   std::optional<Range> GetIndexRangeStartAndEnd();
 
-  // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
-  void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
 
-  // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
-  uint64_t IsoTimeNow();
-
-  // Assumes single stream (multiplexed a/v not supported yet).
-  bool to_be_initialized_ = true;
   std::optional<int64_t> edit_list_offset_;
-
-  std::unique_ptr<Segmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4Muxer);
 };

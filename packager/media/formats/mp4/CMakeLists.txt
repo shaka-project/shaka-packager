@@ -37,7 +37,9 @@ add_library(mp4 STATIC
   sync_sample_iterator.h
   track_run_iterator.cc
   track_run_iterator.h
-  )
+  mp4_init_muxer.h
+  mp4_init_muxer.cc
+)
 target_link_libraries(mp4
   media_base
   mpd_builder
