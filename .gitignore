@@ -17,4 +17,4 @@ build/
 junit-reports/
 packager/docs/
 .vscode/
-cmake-build-debug
+cmake-build-debug/

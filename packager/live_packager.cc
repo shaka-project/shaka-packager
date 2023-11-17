@@ -127,7 +127,7 @@ const uint8_t* FullSegmentBuffer::Data() const {
 }
 
 LivePackager::LivePackager(const LiveConfig& config) : config_(config) {
-  absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
+  absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
 }
 
 LivePackager::~LivePackager() {}
@@ -151,7 +151,7 @@ Status LivePackager::PackageInit(const Segment& init_segment,
   init_callback_params.write_func = [&output](const std::string& name,
                                               const void* data, uint64_t size) {
     if (output.InitSegmentSize() == 0) {
-      LOG(WARNING) << "INITIAL segment callback, name: " << name;
+      LOG(INFO) << "init segment callback, name: " << name << " size: " << size;
       output.SetInitSegment(reinterpret_cast<const uint8_t*>(data), size);
     }
     return size;

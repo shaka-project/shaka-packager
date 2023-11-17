@@ -5,7 +5,6 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <gtest/gtest.h>
-#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <string>
@@ -30,7 +29,7 @@ class LivePackagerTest : public ::testing::Test {
     empty_live_config_.segment_duration_sec = kSegmentDurationInSeconds;
   }
 
-  std::filesystem::path GetTestDataFilePath(const std::string& name) {
+  static std::filesystem::path GetTestDataFilePath(const std::string& name) {
     auto data_dir = std::filesystem::u8path(TEST_DATA_DIR);
     return data_dir / name;
   }
@@ -80,30 +79,9 @@ TEST_F(LivePackagerTest, Success) {
     ASSERT_EQ(kSegmentDurationInSeconds,
               empty_live_config_.segment_duration_sec);
     ASSERT_EQ(Status::OK, livePackager.Package(in, out));
-    LOG(WARNING) << "Init Segment Size: " << out.InitSegmentSize();
+    ASSERT_GT(out.InitSegmentSize(), 0);
+    ASSERT_GT(out.SegmentSize(), 0);
   }
-}
-
-TEST_F(LivePackagerTest, InitWithOneMedia) {
-  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
-  ASSERT_FALSE(init_segment_buffer.empty());
-
-  std::vector<uint8_t> segment_buffer = ReadTestDataFile("0000.m4s");
-  ASSERT_FALSE(segment_buffer.empty());
-
-  FullSegmentBuffer in;
-  in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-  in.AppendData(segment_buffer.data(), segment_buffer.size());
-
-  FullSegmentBuffer out;
-
-  LiveConfig live_config = empty_live_config_;
-  live_config.format = LiveConfig::OutputFormat::FMP4;
-  live_config.track_type = LiveConfig::TrackType::VIDEO;
-  LivePackager livePackager(live_config);
-  ASSERT_EQ(kSegmentDurationInSeconds, empty_live_config_.segment_duration_sec);
-  ASSERT_EQ(Status::OK, livePackager.Package(in, out));
-  LOG(WARNING) << "Init Segment Size: " << out.InitSegmentSize();
 }
 
 TEST_F(LivePackagerTest, InitSegmentOnly) {
@@ -120,6 +98,7 @@ TEST_F(LivePackagerTest, InitSegmentOnly) {
   live_config.track_type = LiveConfig::TrackType::VIDEO;
   LivePackager livePackager(live_config);
   ASSERT_EQ(Status::OK, livePackager.PackageInit(in, out));
-  LOG(WARNING) << "Init Segment Size: " << out.InitSegmentSize();
+  ASSERT_GT(out.InitSegmentSize(), 0);
+  ASSERT_EQ(out.SegmentSize(), 0);
 }
 }  // namespace shaka

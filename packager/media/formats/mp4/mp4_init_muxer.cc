@@ -29,6 +29,7 @@ namespace mp4 {
 
 namespace {
 
+// TODO: is there a better option to reuse this functionality from mp4_muxer?
 FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
   switch (codec) {
     case kCodecAV1:
@@ -93,10 +94,8 @@ MP4InitMuxer::~MP4InitMuxer() {}
 Status MP4InitMuxer::Finalize() {
   if (!segmenter_) {
     DCHECK(to_be_initialized_);
+    LOG(INFO) << "Packaging init segment '" << options().output_file_name;
     RETURN_IF_ERROR(DelayInitializeMuxer());
-    LOG(INFO) << "INIT SEGMENT PROCESSING ONLY";
-    LOG(INFO) << "Skip stream '" << options().output_file_name
-              << "' which does not contain any sample.";
     return Status::OK;
   }
   return Status::OK;

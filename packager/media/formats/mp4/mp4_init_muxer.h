@@ -29,16 +29,16 @@ class Segmenter;
 struct ProtectionSchemeInfo;
 struct Track;
 
-/// Implements MP4 Muxer for ISO-BMFF. Please refer to ISO/IEC 14496-12: ISO
-/// base media file format for details.
+/// An MP4 Muxer implementation for ISO-BMFF for init segments only.
+/// Please refer to ISO/IEC 14496-12: ISO base media file format for details.
 class MP4InitMuxer : public MP4Muxer {
  public:
-  /// Create a MP4Muxer object from MuxerOptions.
+  /// Create a MP4InitMuxer object from MuxerOptions.
   explicit MP4InitMuxer(const MuxerOptions& options);
   ~MP4InitMuxer() override;
 
  private:
-  // Muxer implementation overrides.
+  // Init segment Muxer implementation overrides.
   Status Finalize() override;
   Status DelayInitializeMuxer();
 
