@@ -38,7 +38,7 @@ class MP4Muxer : public Muxer {
 
  protected:
   Status DelayInitializeMuxer();
-  
+
   // Assumes single stream (multiplexed a/v not supported yet).
   bool to_be_initialized_ = true;
   std::unique_ptr<Segmenter> segmenter_;
@@ -50,7 +50,6 @@ class MP4Muxer : public Muxer {
   Status AddMediaSample(size_t stream_id, const MediaSample& sample) override;
   Status FinalizeSegment(size_t stream_id,
                          const SegmentInfo& segment_info) override;
-
 
   Status UpdateEditListOffsetFromSample(const MediaSample& sample);
 
