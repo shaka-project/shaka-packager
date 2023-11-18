@@ -7,7 +7,6 @@
 #include <packager/media/formats/mp4/mp4_init_muxer.h>
 
 #include <absl/log/check.h>
-#include <absl/strings/numbers.h>
 
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>

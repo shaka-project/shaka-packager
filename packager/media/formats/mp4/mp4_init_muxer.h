@@ -15,11 +15,6 @@ namespace shaka {
 namespace media {
 namespace mp4 {
 
-class Segmenter;
-
-struct ProtectionSchemeInfo;
-struct Track;
-
 /// An MP4 Muxer implementation for ISO-BMFF for init segments only.
 /// Please refer to ISO/IEC 14496-12: ISO base media file format for details.
 class MP4InitMuxer : public MP4Muxer {
