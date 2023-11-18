@@ -7,21 +7,12 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_MP4_INIT_MUXER_H
 #define PACKAGER_MEDIA_FORMATS_MP4_MP4_INIT_MUXER_H
 
-#include <optional>
-#include <vector>
-
 #include <packager/macros/classes.h>
 #include <packager/media/base/muxer.h>
 #include <packager/media/formats/mp4/mp4_muxer.h>
 
 namespace shaka {
 namespace media {
-
-class AudioStreamInfo;
-class StreamInfo;
-class TextStreamInfo;
-class VideoStreamInfo;
-
 namespace mp4 {
 
 class Segmenter;
@@ -40,7 +31,6 @@ class MP4InitMuxer : public MP4Muxer {
  private:
   // Init segment Muxer implementation overrides.
   Status Finalize() override;
-  Status DelayInitializeMuxer();
 
   DISALLOW_COPY_AND_ASSIGN(MP4InitMuxer);
 };

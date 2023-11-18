@@ -37,18 +37,8 @@ class MP4Muxer : public Muxer {
   ~MP4Muxer() override;
 
  protected:
-  // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
-  uint64_t IsoTimeNow();
-
-  // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
-  void FireOnMediaStartEvent();
-
-  // Generate Audio/Video Track box.
-  void InitializeTrak(const StreamInfo* info, Track* trak);
-  bool GenerateAudioTrak(const AudioStreamInfo* audio_info, Track* trak);
-  bool GenerateVideoTrak(const VideoStreamInfo* video_info, Track* trak);
-  bool GenerateTextTrak(const TextStreamInfo* video_info, Track* trak);
-
+  Status DelayInitializeMuxer();
+  
   // Assumes single stream (multiplexed a/v not supported yet).
   bool to_be_initialized_ = true;
   std::unique_ptr<Segmenter> segmenter_;
@@ -61,8 +51,14 @@ class MP4Muxer : public Muxer {
   Status FinalizeSegment(size_t stream_id,
                          const SegmentInfo& segment_info) override;
 
-  Status DelayInitializeMuxer();
+
   Status UpdateEditListOffsetFromSample(const MediaSample& sample);
+
+  // Generate Audio/Video Track box.
+  void InitializeTrak(const StreamInfo* info, Track* trak);
+  bool GenerateAudioTrak(const AudioStreamInfo* audio_info, Track* trak);
+  bool GenerateVideoTrak(const VideoStreamInfo* video_info, Track* trak);
+  bool GenerateTextTrak(const TextStreamInfo* video_info, Track* trak);
 
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.
@@ -72,7 +68,12 @@ class MP4Muxer : public Muxer {
   // and sets start-end byte-range-spec specified in RFC2616.
   std::optional<Range> GetIndexRangeStartAndEnd();
 
+  // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
+  void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
+
+  // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
+  uint64_t IsoTimeNow();
 
   std::optional<int64_t> edit_list_offset_;
 
