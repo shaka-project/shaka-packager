@@ -18,7 +18,6 @@ env:
 jobs:
   draft_release:
     name: Create GitHub Nightly draft release
-    needs: setup
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.draft_release.outputs.id }}
@@ -40,7 +39,6 @@ jobs:
           body: "Latest build of the development branch"
 
   lint:
-    needs: setup
     name: Lint
     uses: ./.github/workflows/lint.yaml
     with:
