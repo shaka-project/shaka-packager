@@ -16,8 +16,42 @@ env:
   DEVELOPMENT_BRANCH: "pluto-cmake"
 
 jobs:
+  build_linux:
+    name: Build artifacts and upload to GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install build tools
+        run: |
+          sudo apt update && sudo apt install -y \
+              cmake
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEVELOPMENT_BRANCH }}
+
+      - name: Generate build files
+        run: |
+          mkdir -p build/
+
+          cmake \
+            -DCMAKE_BUILD_TYPE="Release" \
+            -DBUILD_SHARED_LIBS=1 \
+            -S . \
+            -B build/
+
+      - name: Build
+        run: cmake --build build/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-build
+          path: build/packager/libpackager.so
+
   draft_release:
-    name: Create GitHub Nightly draft release
+    needs: [build_linux]
+    name: Create GitHub nightly draft release
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.draft_release.outputs.id }}
@@ -37,9 +71,3 @@ jobs:
           draft: true
           body: "Latest build of the development branch"
 
-  build_and_test:
-    needs: [draft_release]
-    name: Build and test
-    uses: ./.github/workflows/build.yaml
-    with:
-      ref: "pluto-cmake"
