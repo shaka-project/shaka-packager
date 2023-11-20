@@ -12,45 +12,12 @@ on:
     branches: [ feature/TRANS-4831-nighty-builds ]
   workflow_dispatch:
 
-jobs:
-  setup:
-    name: Setup
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.compute_tag.outputs.tag }}
-    steps:
-      - name: Checkout development branch
-        uses: actions/checkout@v2
-        with:
-          ref: 'pluto-cmake'
-      - name: Remove tag
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "tags/nightly"
-            })
-      - name: Create tag
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/nightly',
-              sha: context.sha
-            })
-      - name: Compute tag
-        id: compute_tag
-        run: |
-          # Strip refs/tags/ from the input to get the tag name, then store
-          # that in output.
-          echo "::set-output name=tag::nightly" 
+env:
+  DEVELOPMENT_BRANCH: "pluto-cmake"
 
+jobs:
   draft_release:
-    name: Create GitHub release
+    name: Create GitHub Nightly draft release
     needs: setup
     runs-on: ubuntu-latest
     outputs:
@@ -59,28 +26,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ needs.setup.outputs.tag }}
+          ref: $DEVELOPMENT_BRANCH
 
       - name: Draft release
         id: draft_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1.13.0
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
         with:
-          tag_name: ${{ needs.setup.outputs.tag }}
-          release_name: ${{ needs.setup.outputs.tag }}
+          tag: ${{ needs.setup.outputs.tag }}
+          name: "Nightly Build"
           draft: true
+          body: "Latest build of the development branch"
 
   lint:
     needs: setup
     name: Lint
     uses: ./.github/workflows/lint.yaml
     with:
-      ref: ${{ needs.setup.outputs.tag }}
+      ref: $DEVELOPMENT_BRANCH
 
   build_and_test:
     needs: [setup, lint, draft_release]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
-      ref: ${{ needs.setup.outputs.tag }}
+      ref: $DEVELOPMENT_BRANCH
