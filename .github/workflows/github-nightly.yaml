@@ -45,7 +45,7 @@ jobs:
       ref: $DEVELOPMENT_BRANCH
 
   build_and_test:
-    needs: [setup, lint, draft_release]
+    needs: [lint, draft_release]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
