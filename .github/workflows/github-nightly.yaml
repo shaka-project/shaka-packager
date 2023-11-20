@@ -14,6 +14,7 @@ on:
 
 env:
   DEVELOPMENT_BRANCH: "pluto-cmake"
+  ARTIFACT_NAME: "nightly"
 
 jobs:
   build_linux:
@@ -44,10 +45,10 @@ jobs:
       - name: Build
         run: cmake --build build/
 
-      - name: Upload artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: nightly-build
+          name: ${{ env.ARTIFACT_NAME }}
           path: build/packager/libpackager.so
 
   draft_release:
@@ -57,6 +58,11 @@ jobs:
     outputs:
       release_id: ${{ steps.draft_release.outputs.id }}
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -65,6 +71,8 @@ jobs:
         uses: ncipollo/release-action@v1.13.0
         with:
           allowUpdates: true
+          replacesArtifacts: true
+          artifacts: ${{ env.ARTIFACT_NAME }}
           token: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
           commit: ${{ env.DEVELOPMENT_BRANCH }}
           name: "Nightly Build"
