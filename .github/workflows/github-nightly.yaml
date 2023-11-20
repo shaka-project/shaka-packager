@@ -66,6 +66,9 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
 
+      - name: Display structure of downloaded files
+        run: ls -la
+
       - name: Draft release
         id: draft_release
         uses: ncipollo/release-action@v1.13.0
