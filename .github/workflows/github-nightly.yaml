@@ -61,10 +61,6 @@ jobs:
         with:
           ref: ${{ needs.setup.outputs.tag }}
 
-      - name: Create dummy release body
-        run: |
-          echo "Nightly build of the latest development branch" > ../RELEASE_NOTES.md
-
       - name: Draft release
         id: draft_release
         uses: actions/create-release@v1
@@ -73,7 +69,6 @@ jobs:
         with:
           tag_name: ${{ needs.setup.outputs.tag }}
           release_name: ${{ needs.setup.outputs.tag }}
-          body_path: RELEASE_NOTES.md
           draft: true
 
   lint:
