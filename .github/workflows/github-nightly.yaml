@@ -8,6 +8,8 @@
 name: GitHub Nightly Build
 
 on:
+  push:
+    branches: [ feature/TRANS-4831-nighty-builds ]
   workflow_dispatch:
 
 jobs:
