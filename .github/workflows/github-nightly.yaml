@@ -41,11 +41,11 @@ jobs:
     name: Lint
     uses: ./.github/workflows/lint.yaml
     with:
-      ref: ${{ env.DEVELOPMENT_BRANCH }}
+      ref: "pluto-cmake"
 
   build_and_test:
     needs: [lint, draft_release]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
-      ref: ${{ env.DEVELOPMENT_BRANCH }}
+      ref: "pluto-cmake"
