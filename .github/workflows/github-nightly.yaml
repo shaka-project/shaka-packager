@@ -24,27 +24,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          ref: ${{ env.DEVELOPMENT_BRANCH }}
 
       - name: Draft release
         id: draft_release
         uses: ncipollo/release-action@v1.13.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
         with:
+          allowUpdates: true
+          token: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
+          commit: ${{ env.DEVELOPMENT_BRANCH }}
           name: "Nightly Build"
+          tag: "nightly"
           draft: true
           body: "Latest build of the development branch"
 
-  lint:
-    name: Lint
-    uses: ./.github/workflows/lint.yaml
-    with:
-      ref: "pluto-cmake"
-
   build_and_test:
-    needs: [lint, draft_release]
+    needs: [draft_release]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
