@@ -25,7 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: $DEVELOPMENT_BRANCH
+          ref: ${{ env.DEVELOPMENT_BRANCH }}
 
       - name: Draft release
         id: draft_release
@@ -33,7 +33,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
         with:
-          tag: ${{ needs.setup.outputs.tag }}
           name: "Nightly Build"
           draft: true
           body: "Latest build of the development branch"
@@ -42,11 +41,11 @@ jobs:
     name: Lint
     uses: ./.github/workflows/lint.yaml
     with:
-      ref: $DEVELOPMENT_BRANCH
+      ref: ${{ env.DEVELOPMENT_BRANCH }}
 
   build_and_test:
     needs: [lint, draft_release]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
-      ref: $DEVELOPMENT_BRANCH
+      ref: ${{ env.DEVELOPMENT_BRANCH }}
