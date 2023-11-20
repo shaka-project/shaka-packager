@@ -52,10 +52,9 @@ jobs:
         with:
           ref: ${{ needs.setup.outputs.tag }}
 
-      - name: Extract release notes
+      - name: Create dummy release body
         run: |
-          packager/tools/extract_from_changelog.py --release_notes \
-              | tee ../RELEASE_NOTES.md
+          echo "Nightly build of the latest development branch" > ../RELEASE_NOTES.md
 
       - name: Draft release
         id: draft_release
