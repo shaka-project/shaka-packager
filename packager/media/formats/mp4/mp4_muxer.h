@@ -39,10 +39,6 @@ class MP4Muxer : public Muxer {
  protected:
   Status DelayInitializeMuxer();
 
-  // Assumes single stream (multiplexed a/v not supported yet).
-  bool to_be_initialized_ = true;
-  std::unique_ptr<Segmenter> segmenter_;
-
  private:
   // Muxer implementation overrides.
   Status InitializeMuxer() override;
@@ -74,7 +70,11 @@ class MP4Muxer : public Muxer {
   // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
   uint64_t IsoTimeNow();
 
+  // Assumes single stream (multiplexed a/v not supported yet).
+  bool to_be_initialized_ = true;
   std::optional<int64_t> edit_list_offset_;
+
+  std::unique_ptr<Segmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4Muxer);
 };

@@ -6,8 +6,6 @@
 
 #include <packager/media/formats/mp4/mp4_init_muxer.h>
 
-#include <absl/log/check.h>
-
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
 
@@ -20,12 +18,8 @@ MP4InitMuxer::MP4InitMuxer(const MuxerOptions& options) : MP4Muxer(options) {}
 MP4InitMuxer::~MP4InitMuxer() {}
 
 Status MP4InitMuxer::Finalize() {
-  if (!segmenter_) {
-    DCHECK(to_be_initialized_);
-    LOG(INFO) << "Packaging init segment '" << options().output_file_name;
-    RETURN_IF_ERROR(DelayInitializeMuxer());
-    return Status::OK;
-  }
+  LOG(INFO) << "Packaging init segment '" << options().output_file_name;
+  RETURN_IF_ERROR(DelayInitializeMuxer());
   return Status::OK;
 }
 
