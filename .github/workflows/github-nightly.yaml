@@ -23,6 +23,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'pluto-cmake'
+      - name: Remove tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "tags/nightly"
+            })
       - name: Create tag
         uses: actions/github-script@v5
         with:
