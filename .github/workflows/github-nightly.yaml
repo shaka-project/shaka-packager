@@ -66,6 +66,7 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
 
+      # Debug
       - name: Display structure of downloaded files
         run: ls -la
 
@@ -75,7 +76,7 @@ jobs:
         with:
           allowUpdates: true
           replacesArtifacts: true
-          artifacts: ${{ env.ARTIFACT_NAME }}.zip
+          artifacts: libpackager.so
           token: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
           commit: ${{ env.DEVELOPMENT_BRANCH }}
           name: "Nightly Build"
