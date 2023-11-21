@@ -5,7 +5,7 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
-name: GitHub Nightly Build
+name: GitHub Development Snapshot Build
 
 on:
   push:
@@ -14,7 +14,10 @@ on:
 
 env:
   DEVELOPMENT_BRANCH: "pluto-cmake"
-  ARTIFACT_NAME: "nightly"
+  # default development tag
+  # TODO(sasha): provide tag on workflow dispatch
+  DEVELOPMENT_TAG: "develop"
+  ARTIFACT_NAME: "develop"
 
 jobs:
   build_linux:
@@ -51,15 +54,51 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/packager/libpackager.so
 
+  setup_tag:
+    name: Setup snapshot tag
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.compute_tag.outputs.tag }}
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEVELOPMENT_BRANCH }}
+      - name: Remove tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: tags/${{ env.DEVELOPMENT_TAG }}
+            })
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: refs/tags/${{ env.DEVELOPMENT_TAG }},
+              sha: context.sha
+            })
+      - name: Compute tag
+        id: compute_tag
+        run: |
+          # Strip refs/tags/ from the input to get the tag name, then store
+          # that in output.
+          echo "tag=$DEVELOPMENT_TAG" >> $GITHUB_OUTPUT
+
   draft_release:
-    needs: [build_linux]
+    needs: [build_linux, setup_tag]
     name: Create GitHub nightly draft release
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.draft_release.outputs.id }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -79,8 +118,8 @@ jobs:
           artifacts: libpackager.so
           token: ${{ secrets.BUILD_TOKEN_EPHEMERAL}}
           commit: ${{ env.DEVELOPMENT_BRANCH }}
-          name: "Nightly Build"
-          tag: "nightly"
+          name: "Development snapshot"
+          tag: ${{ needs.setup_tag.outputs.tag }}
           draft: true
           body: "Latest build of the development branch"
 
