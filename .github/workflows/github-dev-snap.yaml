@@ -71,7 +71,7 @@ jobs:
             github.rest.git.deleteRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: tags/develop
+              ref: "tags/${{ env.DEVELOPMENT_TAG }}"
             })
       - name: Create tag
         uses: actions/github-script@v5
@@ -80,7 +80,7 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: refs/tags/${{ env.DEVELOPMENT_TAG }},
+              ref: "refs/tags/${{ env.DEVELOPMENT_TAG }}",
               sha: context.sha
             })
       - name: Compute tag
