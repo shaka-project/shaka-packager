@@ -71,7 +71,7 @@ jobs:
             github.rest.git.deleteRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: tags/${{ env.DEVELOPMENT_TAG }}
+              ref: tags/develop
             })
       - name: Create tag
         uses: actions/github-script@v5
