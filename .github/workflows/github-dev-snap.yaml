@@ -114,8 +114,8 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -la
 
-      - name: Draft release
-        id: draft_release
+      - name: Publish release
+        id: publish_release
         uses: ncipollo/release-action@v1.13.0
         with:
           allowUpdates: true
@@ -125,6 +125,5 @@ jobs:
           commit: ${{ env.DEVELOPMENT_BRANCH }}
           name: "Development snapshot"
           tag: ${{ needs.setup_tag.outputs.tag }}
-          draft: true
+          draft: false
           body: "Latest build of the development branch"
-
