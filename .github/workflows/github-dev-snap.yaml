@@ -35,8 +35,13 @@ jobs:
           ref: ${{ env.DEVELOPMENT_BRANCH }}
           submodules: recursive
 
+      - name: Apply ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+
       - name: Generate build files
         run: |
+          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+
           mkdir -p build/
 
           cmake \
@@ -92,7 +97,7 @@ jobs:
 
   draft_release:
     needs: [build_linux, setup_tag]
-    name: Create GitHub nightly draft release
+    name: Create GitHub development snapshot draft release
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.draft_release.outputs.id }}
