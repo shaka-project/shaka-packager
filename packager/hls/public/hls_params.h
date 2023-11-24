@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
 #define PACKAGER_HLS_PUBLIC_HLS_PARAMS_H_
 
+#include <cstdint>
 #include <string>
 
 namespace shaka {
