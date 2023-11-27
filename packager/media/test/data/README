@@ -29,6 +29,12 @@ bear-640x360.ts - AVC + AAC encode, multiplexed into an MPEG2-TS container.
 bear-640x360_ptswraparound.ts - Same as bear-640x360.ts, with a timestamp wrap-around in the middle, created with the below command:
                                 ffmpeg -itsoffset 95442 -i bear-640x360.ts -c:v copy -c:a copy -muxdelay 0 bear-640x360_ptswraparound.ts
 bear-640x360-hevc.ts - HEVC + AAC encode, multiplexed into an MPEG2-TS container.
+bear-eng-visualy-impaired-audio.ts - Audio stream from bear-640x360.ts marked as english with commentary for visually impaired viewer using the below commands:
+  tsp -I file bear-640x360.ts \
+    -P filter --video --negate
+    -P inject --replace --pid 4096 --xml bear-visualy-impaired-eng-audio-pmt.xml \
+    -O file bear-visualy-impaired-eng-audio.ts
+  (xml template can be obtained by command "tsp -I file bear-640x360.ts -P tables --pid 4096 --tid 2 --max 1 --xml pmt.xml -O drop")
 
 // ISO-BMFF streams.
 bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.
