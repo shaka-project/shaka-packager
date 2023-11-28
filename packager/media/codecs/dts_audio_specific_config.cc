@@ -4,7 +4,6 @@
 
 #include "packager/media/codecs/dts_audio_specific_config.h"
 
-
 #include "packager/base/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
@@ -12,7 +11,7 @@
 namespace shaka {
 namespace media {
 
-bool GetDTSXChannelMask(const std::vector<uint8_t> &udts, uint32_t &mask) {
+bool GetDTSXChannelMask(const std::vector<uint8_t>& udts, uint32_t& mask) {
   // udts is the DTS-UHD Specific Box: ETSI TS 103 491 V1.2.1 Table B-2
   // DecoderProfileCode(6 bits)
   // FrameDurationCode(2 bits)

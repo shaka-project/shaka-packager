@@ -15,7 +15,7 @@ namespace media {
 
 class BitReader;
 
-bool GetDTSXChannelMask(const std::vector<uint8_t> &udts, uint32_t &mask);
+bool GetDTSXChannelMask(const std::vector<uint8_t>& udts, uint32_t& mask);
 
 }  // namespace media
 }  // namespace shaka
