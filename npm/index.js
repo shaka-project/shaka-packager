@@ -24,8 +24,8 @@ if (!(process.platform in commandNames)) {
   throw new Error('Platform not supported: ' + process.platform);
 }
 if (!(process.arch in commandNames[process.platform])) {
-  throw new Error('Architecture not supported: ' +
-      process.platform + '/' + process.arch);
+  throw new Error(
+      'Architecture not supported: ' + process.platform + '/' + process.arch);
 }
 var commandName = commandNames[process.platform][process.arch];
 var binaryPath = path.resolve(__dirname, 'bin', commandName);
