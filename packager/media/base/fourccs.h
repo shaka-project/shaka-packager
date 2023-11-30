@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_FOURCCS_H_
 #define PACKAGER_MEDIA_BASE_FOURCCS_H_
 
+#include <cstdint>
 #include <string>
 
 namespace shaka {

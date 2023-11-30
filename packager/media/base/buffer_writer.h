@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_BUFFER_WRITER_H_
 #define PACKAGER_MEDIA_BASE_BUFFER_WRITER_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "packager/base/macros.h"

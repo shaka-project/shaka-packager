@@ -7,6 +7,7 @@
 #ifndef PACKAGER_PACKAGER_H_
 #define PACKAGER_PACKAGER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
