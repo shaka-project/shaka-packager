@@ -2,6 +2,7 @@
   "name": "",
   "description": "A media packaging tool and SDK.",
   "version": "",
+  "private": false,
   "homepage": "https://github.com/shaka-project/shaka-packager",
   "author": "Google",
   "maintainers": [

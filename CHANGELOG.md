@@ -1,3 +1,6 @@
+# Changelog
+
+
 ## [2.6.1] - 2021-10-14
 ### Fixed
  - Fix crash in static-linked linux builds (#996)

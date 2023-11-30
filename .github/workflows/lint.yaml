@@ -45,8 +45,8 @@ jobs:
 
           # NOTE: Must use base.sha instead of base.ref, since we don't have
           # access to the branch name that base.ref would give us.
-          # NOTE: Must also use fetch-depth: 2 in actions/checkout to have access
-          # to the base ref for comparison.
+          # NOTE: Must also use fetch-depth: 2 in actions/checkout to have
+          # access to the base ref for comparison.
           packager/tools/git/check_formatting.py \
               --binary /usr/bin/clang-format \
               ${{ github.event.pull_request.base.sha || 'HEAD^' }}

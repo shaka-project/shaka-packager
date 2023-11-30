@@ -115,7 +115,7 @@ set(libpackager_deps
 add_library(libpackager_static STATIC ${libpackager_sources})
 target_link_libraries(libpackager_static ${libpackager_deps})
 
-# And always installed as libpackager.a:
+# And always installed as libpackager.a / libpackager.lib:
 if(NOT MSVC)
   set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME packager)
 else()
@@ -249,9 +249,9 @@ configure_file(packager.pc.in packager.pc @ONLY)
 install(TARGETS mpd_generator packager)
 
 # Always install the python tools.
-install(PROGRAMS ${CMAKE_BINARY_DIR}/pssh-box.py
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/pssh-box.py
   DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(DIRECTORY ${CMAKE_BINARY_DIR}/pssh-box-protos
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pssh-box-protos
   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # With shared libraries, also install the library, headers, and pkgconfig.
@@ -261,6 +261,6 @@ if(BUILD_SHARED_LIBS)
   install(TARGETS libpackager_shared)
   install(DIRECTORY ../include/packager
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-  install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/packager.pc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 endif()

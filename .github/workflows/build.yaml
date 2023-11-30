@@ -26,12 +26,6 @@ on:
         type: boolean
         default: false
 
-    secrets:
-      # The GITHUB_TOKEN name is reserved, but not passed through implicitly.
-      # So we call our secret parameter simply TOKEN.
-      TOKEN:
-        required: false
-
 # By default, run all commands in a bash shell.  On Windows, the default would
 # otherwise be powershell.
 defaults:
@@ -114,7 +108,7 @@ jobs:
 
       - name: Install Mac deps
         if: runner.os == 'macOS'
-        # NOTE: GitHub Action VMs do not install ninja by default.
+        # NOTE: GitHub Actions VMs on Mac do not install ninja by default.
         run: |
           brew install ninja
 
@@ -162,66 +156,59 @@ jobs:
         with:
           report_paths: 'junit-reports/TEST-*.xml'
 
-      # TODO(joeyparrish): Prepare artifacts when build system is complete again
-#      - name: Prepare artifacts (static release only)
-#        run: |
-#          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
-#          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
-#            echo "Skipping artifacts for $BUILD_CONFIG."
-#            exit 0
-#          fi
-#          if [[ "${{ runner.os }}" == "Linux" ]]; then
-#            echo "::group::Check for static executables"
-#            (
-#              cd build/Release
-#              # Prove that we built static executables on Linux.  First, check that
-#              # the executables exist, and fail if they do not.  Then check "ldd",
-#              # which will fail if the executable is not dynamically linked.  If
-#              # "ldd" succeeds, we fail the workflow.  Finally, we call "true" so
-#              # that the last executed statement will be a success, and the step
-#              # won't be failed if we get that far.
-#              ls packager mpd_generator >/dev/null || exit 1
-#              ldd packager 2>&1 && exit 1
-#              ldd mpd_generator 2>&1 && exit 1
-#              true
-#            )
-#            echo "::endgroup::"
-#          fi
-#          echo "::group::Prepare artifacts folder"
-#          mkdir artifacts
-#          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
-#          cd build/Release
-#          echo "::endgroup::"
-#          echo "::group::Strip executables"
-#          strip packager${{ matrix.exe_ext }}
-#          strip mpd_generator${{ matrix.exe_ext }}
-#          echo "::endgroup::"
-#          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
-#          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
-#          echo "::group::Copy packager"
-#          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
-#          echo "::endgroup::"
-#          echo "::group::Copy mpd_generator"
-#          cp mpd_generator${{ matrix.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
-#          echo "::endgroup::"
-#          # The pssh-box bundle is OS and architecture independent.  So only do
-#          # it on this one OS and architecture, and give it a more generic
-#          # filename.
-#          if [[ '${{ matrix.os_name }}' == 'linux' && '${{ matrix.target_arch }}' == 'x64' ]]; then
-#            echo "::group::Tar pssh-box"
-#            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pyproto pssh-box.py
-#            echo "::endgroup::"
-#          fi
+      - name: Prepare artifacts (static release only)
+        run: |
+          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
+          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
+            echo "Skipping artifacts for $BUILD_CONFIG."
+            exit 0
+          fi
 
-      # TODO(joeyparrish): Attach artifacts when build system is complete again
-#      - name: Attach artifacts to release
-#        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
-#        uses: dwenegar/upload-release-assets@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          release_id: ${{ needs.draft_release.outputs.release_id }}
-#          assets_path: artifacts
+          # TODO: Check static executables?
+
+          echo "::group::Prepare artifacts folder"
+          mkdir artifacts
+          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cd build/packager/Release
+          else
+            cd build/packager
+          fi
+          echo "::endgroup::"
+
+          echo "::group::Strip executables"
+          strip packager${{ matrix.exe_ext }}
+          strip mpd_generator${{ matrix.exe_ext }}
+          echo "::endgroup::"
+
+          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
+          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
+
+          echo "::group::Copy packager"
+          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
+          echo "::endgroup::"
+
+          echo "::group::Copy mpd_generator"
+          cp mpd_generator${{ matrix.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
+          echo "::endgroup::"
+
+          # The pssh-box bundle is OS and architecture independent.  So only do
+          # it on this one OS and architecture, and give it a more generic
+          # filename.
+          if [[ '${{ matrix.os_name }}' == 'linux' && '${{ matrix.target_arch }}' == 'x64' ]]; then
+            echo "::group::Tar pssh-box"
+            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pssh-box.py pssh-box-protos
+            echo "::endgroup::"
+          fi
+
+      - name: Upload static release build artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
+        with:
+          name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 5
 
       - name: Debug
         uses: mxschmitt/action-tmate@v3.6

@@ -61,6 +61,15 @@ jobs:
           cp -a build/doxygen/html gh-pages/docs
           cp docs/index.html gh-pages/index.html
 
+          # Now set permissions on the generated docs.
+          # https://github.com/actions/upload-pages-artifact#file-permissions
+          chmod -R +rX gh-pages/
+
+      - name: Upload docs artifacts
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: gh-pages
+
       - name: Debug
         uses: mxschmitt/action-tmate@v3.6
         with:
