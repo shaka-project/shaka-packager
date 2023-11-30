@@ -69,6 +69,8 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   DCHECK(video_stream_info);
   DCHECK(media_info);
   MediaInfo_VideoInfo* video_info = media_info->mutable_video_info();
+  video_info->set_supplemental_codec(video_stream_info->supplemental_codec());
+  video_info->set_compatible_brand(video_stream_info->compatible_brand());
   video_info->set_codec(video_stream_info->codec_string());
   video_info->set_width(video_stream_info->width());
   video_info->set_height(video_stream_info->height());
