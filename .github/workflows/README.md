@@ -8,11 +8,20 @@
  - `build-docs.yaml`:
    Build Packager docs.  Runs only on Linux.
 
- - `docker-image.yaml`:
+ - `build-docker.yaml`:
    Build the official Docker image.
 
  - `lint.yaml`:
    Lint Shaka Packager.
+
+ - `publish-docs.yaml`:
+   Publish Packager docs.  Runs on the latest release.
+
+ - `publish-docker.yaml`:
+   Publish the official docker image.  Runs on all releases.
+
+ - `publish-npm.yaml`:
+   Publish binaries to NPM.  Runs on all releases.
 
  - `test-linux-distros.yaml`:
    Test the build on all Linux distros via docker.
@@ -22,23 +31,23 @@
    - `lint.yaml`
    - `build.yaml`
    - `build-docs.yaml`
-   - `docker-image.yaml`
+   - `build-docker.yaml`
    - `test-linux-distros.yaml`
 
- - On release tag (`github-release.yaml`):
-   - Create a draft release
-   - Invoke:
-     - `lint.yaml`
-     - `build.yaml`
-     - `test-linux-distros.yaml`
-   - Publish the release with binaries from `build.yaml` attached
-
- - On release published:
-   - `docker-hub-release.yaml`, publishes the official Docker image
-   - `npm-release.yaml`, publishes the official NPM package
-   - `update-docs.yaml`:
-     - Invoke `build-docs.yaml`
-     - Push the output to the `gh-pages` branch
+## Release workflow
+ - `release-please.yaml`
+   - Updates changelogs, version numbers based on conventional commits syntax
+     and semantic versioning
+     - https://conventionalcommits.org/
+     - https://semver.org/
+   - Generates/updates a PR on each push
+   - When the PR is merged, runs additional steps:
+     - Creates a GitHub release
+     - Invokes `publish-docs.yaml` to publish the docs
+     - Invokes `publish-docker.yaml` to publish the docker image
+     - Invokes `build.yaml`
+     - Attaches the binaries from `build.yaml` to the GitHub release
+     - Invokes `publish-npm.yaml` to publish the binaries to NPM
 
 ## Common workflows from shaka-project
  - `sync-labels.yaml`
@@ -46,6 +55,9 @@
  - `validate-pr-title.yaml`
 
 ## Required Repo Secrets
+ - `RELEASE_PLEASE_TOKEN`: A PAT for `shaka-bot` to run the `release-please`
+   action.  If missing, the release workflow will use the default
+   `GITHUB_TOKEN`
  - `DOCKERHUB_CI_USERNAME`: The username of the Docker Hub CI account
  - `DOCKERHUB_CI_TOKEN`: An access token for Docker Hub
    - To generate, visit https://hub.docker.com/settings/security

@@ -83,7 +83,7 @@ for DOCKER_FILE in ${SCRIPT_DIR}/dockers/*; do
   CONTAINER="$( echo "packager_test_${OS_NAME}" | tr A-Z a-z )"
 
   RAN_SOMETHING=1
-  docker build --pull -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}/dockers/
+  docker buildx build --pull -t ${CONTAINER} -f ${DOCKER_FILE} ${SCRIPT_DIR}/dockers/
   mkdir -p "${TEMP_BUILD_DIR}"
   docker_run cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Debug -G Ninja
   docker_run cmake --build build/ --config Debug --parallel
