@@ -809,7 +809,7 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
 }  // namespace media
 
 struct Packager::PackagerInternal {
-  media::FakeClock fake_clock;
+  std::shared_ptr<media::FakeClock> fake_clock;
   std::unique_ptr<KeySource> encryption_key_source;
   std::unique_ptr<MpdNotifier> mpd_notifier;
   std::unique_ptr<hls::HlsNotifier> hls_notifier;
@@ -942,7 +942,7 @@ Status Packager::Initialize(
 
   media::MuxerFactory muxer_factory(packaging_params);
   if (packaging_params.test_params.inject_fake_clock) {
-    muxer_factory.OverrideClock(&internal->fake_clock);
+    muxer_factory.OverrideClock(internal->fake_clock);
   }
 
   media::MuxerListenerFactory muxer_listener_factory(
