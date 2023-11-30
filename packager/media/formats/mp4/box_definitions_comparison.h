@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 
-#include "packager/media/formats/mp4/box_definitions.h"
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {
@@ -346,8 +346,8 @@ inline bool operator==(const SoundMediaHeader& lhs,
   return lhs.balance == rhs.balance;
 }
 
-inline bool operator==(const SubtitleMediaHeader& lhs,
-                       const SubtitleMediaHeader& rhs) {
+inline bool operator==(const SubtitleMediaHeader& /*lhs*/,
+                       const SubtitleMediaHeader& /*rhs*/) {
   return true;
 }
 
@@ -488,7 +488,8 @@ inline bool operator==(const CuePayloadBox& lhs,
   return lhs.cue_text == rhs.cue_text;
 }
 
-inline bool operator==(const VTTEmptyCueBox& lhs, const VTTEmptyCueBox& rhs) {
+inline bool operator==(const VTTEmptyCueBox& /*lhs*/,
+                       const VTTEmptyCueBox& /*rhs*/) {
   return true;
 }
 

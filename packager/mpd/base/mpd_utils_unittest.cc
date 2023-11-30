@@ -4,16 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/mpd_utils.h"
+#include <packager/mpd/base/mpd_utils.h>
 
-#include <gtest/gtest.h>
 #include <memory>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <absl/strings/escaping.h>
+#include <absl/types/span.h>
+#include <gtest/gtest.h>
+
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 namespace shaka {
 namespace {
@@ -122,8 +124,8 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr) {
                                "98404286AB92E65BE0885F9500000001"
                                "11223344556677889900AABBCCDDEEFF"
                                "0000000430313233");
-    std::vector<uint8_t> pssh;
-    base::HexStringToBytes(pssh_str, &pssh);
+
+    std::string pssh = absl::HexStringToBytes(pssh_str);
 
     const char kMediaInfoWithContentProtection[] =
         "video_info {"
@@ -179,8 +181,13 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
         "98404286AB92E65BE0885F9500000001"
         "11223344556677889900AABBCCDDEEFF"
         "0000000430313233");
-    std::vector<uint8_t> pssh;
-    base::HexStringToBytes(pssh_str, &pssh);
+
+    std::string pssh_hex_str = absl::HexStringToBytes(pssh_str);
+    absl::string_view pssh_str_view(pssh_hex_str);
+    absl::Span<const uint8_t> span(
+        reinterpret_cast<const uint8_t*>(pssh_str_view.data()),
+        pssh_str_view.size());
+    std::vector<uint8_t> pssh = std::vector<uint8_t>(span.begin(), span.end());
 
     const char kMediaInfoWithContentProtection[] =
         "video_info {"
@@ -219,10 +226,12 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
         "  <ContentProtection"
         "      schemeIdUri='urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95'>"
         "    <cenc:pssh>"
-        "AAAAOHBzc2gBAAAAmgTweZhAQoarkuZb4IhflQAAAAERIjNEVWZ3iJkAqrvM3e7/AAAABDAxMjM="
+        "AAAAOHBzc2gBAAAAmgTweZhAQoarkuZb4IhflQAAAAERIjNEVWZ3iJkAqrvM3e7/"
+        "AAAABDAxMjM="
         "    </cenc:pssh>"
         "  </ContentProtection>"
-        "  <Representation id='0' bandwidth='0' codecs='avc1' mimeType='video/mp4'/>"
+        "  <Representation id='0' bandwidth='0' codecs='avc1' "
+        "mimeType='video/mp4'/>"
         "</AdaptationSet>";
 
     EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));

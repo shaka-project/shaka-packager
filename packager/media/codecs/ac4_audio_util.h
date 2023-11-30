@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc. All rights reserved.
+// Copyright 2020 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,8 +9,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_AC4_AUDIO_UTIL_H_
 #define PACKAGER_MEDIA_CODECS_AC4_AUDIO_UTIL_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

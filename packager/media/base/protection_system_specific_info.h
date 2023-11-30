@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,14 @@
 #ifndef PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_
 #define PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/media/public/crypto_params.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/crypto_params.h>
 
 namespace shaka {
 namespace media {

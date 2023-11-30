@@ -1,16 +1,18 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/encryptor.h"
+#include <packager/media/formats/webm/encryptor.h>
+
+#include <memory>
 
 #include <gtest/gtest.h>
-#include <memory>
-#include "packager/media/base/media_sample.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/status_test_util.h"
+
+#include <packager/media/base/media_sample.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {
@@ -139,14 +141,14 @@ namespace {
 EncryptionTestCase kEncryptionTestCases[] = {
     // Special case with no subsamples.
     {nullptr, 0, nullptr, 0},
-    {kSubsamples1, arraysize(kSubsamples1), kSubsamplePartitionData1,
-     arraysize(kSubsamplePartitionData1)},
-    {kSubsamples2, arraysize(kSubsamples2), kSubsamplePartitionData2,
-     arraysize(kSubsamplePartitionData2)},
-    {kSubsamples3, arraysize(kSubsamples3), kSubsamplePartitionData3,
-     arraysize(kSubsamplePartitionData3)},
-    {kSubsamples4, arraysize(kSubsamples4), kSubsamplePartitionData4,
-     arraysize(kSubsamplePartitionData4)},
+    {kSubsamples1, std::size(kSubsamples1), kSubsamplePartitionData1,
+     std::size(kSubsamplePartitionData1)},
+    {kSubsamples2, std::size(kSubsamples2), kSubsamplePartitionData2,
+     std::size(kSubsamplePartitionData2)},
+    {kSubsamples3, std::size(kSubsamples3), kSubsamplePartitionData3,
+     std::size(kSubsamplePartitionData3)},
+    {kSubsamples4, std::size(kSubsamples4), kSubsamplePartitionData4,
+     std::size(kSubsamplePartitionData4)},
 };
 }  // namespace
 

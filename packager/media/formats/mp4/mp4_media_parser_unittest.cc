@@ -1,20 +1,23 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/mp4/mp4_media_parser.h>
+
+#include <functional>
+
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/mp4/mp4_media_parser.h"
-#include "packager/media/test/test_data_util.h"
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/test/test_data_util.h>
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -95,17 +98,24 @@ class MP4MediaParserTest : public testing::Test {
 
   void InitializeParser(KeySource* decryption_key_source) {
     parser_->Init(
-        base::Bind(&MP4MediaParserTest::InitF, base::Unretained(this)),
-        base::Bind(&MP4MediaParserTest::NewSampleF, base::Unretained(this)),
-        base::Bind(&MP4MediaParserTest::NewTextSampleF, base::Unretained(this)),
+        std::bind(&MP4MediaParserTest::InitF, this, std::placeholders::_1),
+        std::bind(&MP4MediaParserTest::NewSampleF, this, std::placeholders::_1,
+                  std::placeholders::_2),
+        std::bind(&MP4MediaParserTest::NewTextSampleF, this,
+                  std::placeholders::_1, std::placeholders::_2),
         decryption_key_source);
   }
 
   bool ParseMP4File(const std::string& filename, int append_bytes) {
     InitializeParser(NULL);
-    if (!parser_->LoadMoov(GetTestDataFilePath(filename).AsUTF8Unsafe()))
+
+    if (!parser_->LoadMoov(GetTestDataFilePath(filename).string()))
       return false;
+
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
+    if (buffer.empty())
+      return false;
+
     return AppendDataInPieces(buffer.data(), buffer.size(), append_bytes);
   }
 };
@@ -113,7 +123,7 @@ class MP4MediaParserTest : public testing::Test {
 TEST_F(MP4MediaParserTest, UnalignedAppend) {
   // Test small, non-segment-aligned appends (small enough to exercise
   // incremental append system)
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -122,7 +132,7 @@ TEST_F(MP4MediaParserTest, UnalignedAppend) {
 // the container has a 'pasp' box.
 TEST_F(MP4MediaParserTest, PixelWidthPixelHeightFromPaspBox) {
   // This content has a 'pasp' box that has the aspect ratio.
-  EXPECT_TRUE(ParseMP4File("bear-640x360-non_square_pixel-with_pasp.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-non_square_pixel-with_pasp.mp4", 512));
 
   const int kVideoTrackId = 1;
   EXPECT_EQ(8u,
@@ -140,7 +150,7 @@ TEST_F(MP4MediaParserTest,
        PixelWidthPixelHeightFromAVCDecoderConfigurationRecord) {
   // This file doesn't have pasp. The stream should extract pixel width and
   // height from SPS.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ParseMP4File("bear-640x360-non_square_pixel-without_pasp.mp4", 512));
 
   const int kVideoTrackId = 1;
@@ -160,7 +170,7 @@ TEST_F(MP4MediaParserTest,
   // This file doesn't have pasp. SPS for the video has
   // sar_width = sar_height = 0. So the stream info should return 1 for both
   // pixel_width and pixel_height.
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
 
   const int kVideoTrackId = 1;
   EXPECT_EQ(1u,
@@ -173,7 +183,7 @@ TEST_F(MP4MediaParserTest,
 
 TEST_F(MP4MediaParserTest, BytewiseAppend) {
   // Ensure no incremental errors occur when parsing
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 1));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 1));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -181,13 +191,13 @@ TEST_F(MP4MediaParserTest, BytewiseAppend) {
 TEST_F(MP4MediaParserTest, MultiFragmentAppend) {
   // Large size ensures multiple fragments are appended in one call (size is
   // larger than this particular test file)
-  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 300000));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 300000));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 
 TEST_F(MP4MediaParserTest, TrailingMoov) {
-  EXPECT_TRUE(ParseMP4File("bear-640x360-trailing-moov.mp4", 1024));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-trailing-moov.mp4", 1024));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -195,7 +205,7 @@ TEST_F(MP4MediaParserTest, TrailingMoov) {
 TEST_F(MP4MediaParserTest, TrailingMoovAndAdditionalMdat) {
   // The additional mdat should just be ignored, so the parse is still
   // successful with the same result.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ParseMP4File("bear-640x360-trailing-moov-additional-mdat.mp4", 1024));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
@@ -206,6 +216,8 @@ TEST_F(MP4MediaParserTest, Flush) {
   InitializeParser(NULL);
 
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(2u, num_streams_);
@@ -216,7 +228,7 @@ TEST_F(MP4MediaParserTest, Flush) {
 }
 
 TEST_F(MP4MediaParserTest, MPEG2_AAC_LC) {
-  EXPECT_TRUE(ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(119u, num_samples_);
 }
@@ -226,6 +238,8 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
   InitializeParser(NULL);
 
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_TRUE(parser_->Flush());
 
@@ -235,13 +249,13 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
 }
 
 TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
-  EXPECT_TRUE(ParseMP4File("bear-640x360.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 
 TEST_F(MP4MediaParserTest, CencWithoutDecryptionSource) {
-  EXPECT_TRUE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
+  ASSERT_TRUE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
   // Check if pssh is present.
   const int kVideoTrackId = 1;
@@ -255,6 +269,8 @@ TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {
 
   std::vector<uint8_t> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-aux.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   const int kFirstMoofOffset = 1646;
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), kFirstMoofOffset, 512));
   EXPECT_EQ(1u, num_streams_);
@@ -274,6 +290,8 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndAuxInMdat) {
 
   std::vector<uint8_t> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-aux.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(82u, num_samples_);
@@ -293,6 +311,8 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndSenc) {
 
   std::vector<uint8_t> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-senc.mp4");
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(82u, num_samples_);

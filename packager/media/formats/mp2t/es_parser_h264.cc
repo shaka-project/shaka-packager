@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/es_parser_h264.h"
+#include <packager/media/formats/mp2t/es_parser_h264.h>
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
-#include "packager/media/codecs/h264_parser.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {
@@ -57,7 +59,7 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
         decoder_config_check_pending_ = true;
       else if (status == H264Parser::kUnsupportedStream)
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       else
         return false;
       break;
@@ -70,7 +72,7 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
         decoder_config_check_pending_ = true;
       } else if (status == H264Parser::kUnsupportedStream) {
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       } else {
         // Allow PPS parsing to fail if waiting for SPS.
         if (last_video_decoder_config_)
@@ -91,7 +93,7 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
         video_slice_info->pps_id = shdr.pic_parameter_set_id;
       } else if (status == H264Parser::kUnsupportedStream) {
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       } else {
         // Only accept an invalid SPS/PPS at the beginning when the stream
         // does not necessarily start with an SPS/PPS/IDR.
@@ -179,7 +181,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
   DVLOG(1) << "log2_max_frame_num_minus4: " << sps->log2_max_frame_num_minus4;
 
   // Video config notification.
-  new_stream_info_cb_.Run(last_video_decoder_config_);
+  new_stream_info_cb_(last_video_decoder_config_);
 
   return true;
 }

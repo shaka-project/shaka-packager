@@ -1,12 +1,12 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/codecs/video_slice_header_parser.h>
 
-#include "packager/media/codecs/video_slice_header_parser.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {
@@ -36,13 +36,13 @@ TEST(H264VideoSliceHeaderParserTest, BasicSupport) {
     0xc8, 0xc3, 0xa5, 0xcb, 0x77, 0x60, 0x50, 0x85, 0xd9, 0xfc
   };
   const std::vector<uint8_t> extra_data(kExtraData,
-                                        kExtraData + arraysize(kExtraData));
+                                        kExtraData + std::size(kExtraData));
 
   H264VideoSliceHeaderParser parser;
   ASSERT_TRUE(parser.Initialize(extra_data));
 
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kData, arraysize(kData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kData, std::size(kData)));
   // Real header size is 34 bits, but we round up to 5 bytes.
   EXPECT_EQ(5, parser.GetHeaderSize(nalu));
 }
@@ -84,7 +84,7 @@ TEST(H264VideoSliceHeaderParserTest, SupportsMultipleEntriesInExtraData) {
     0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0
   };
   const std::vector<uint8_t> extra_data(kExtraData,
-                                        kExtraData + arraysize(kExtraData));
+                                        kExtraData + std::size(kExtraData));
 
   H264VideoSliceHeaderParser parser;
   EXPECT_TRUE(parser.Initialize(extra_data));
@@ -108,7 +108,7 @@ TEST(H264VideoSliceHeaderParserTest, IgnoresExtraDataAtEnd) {
     0x00, 0x19, 0x67, 0x64, 0x00
   };
   const std::vector<uint8_t> extra_data(kExtraData,
-                                        kExtraData + arraysize(kExtraData));
+                                        kExtraData + std::size(kExtraData));
 
   H264VideoSliceHeaderParser parser;
   EXPECT_TRUE(parser.Initialize(extra_data));
@@ -128,7 +128,7 @@ TEST(H264VideoSliceHeaderParserTest, ErrorsForEOSAfterEntry) {
     0x96,
   };
   const std::vector<uint8_t> extra_data(kExtraData,
-                                        kExtraData + arraysize(kExtraData));
+                                        kExtraData + std::size(kExtraData));
 
   H264VideoSliceHeaderParser parser;
   EXPECT_FALSE(parser.Initialize(extra_data));
@@ -145,7 +145,7 @@ TEST(H264VideoSliceHeaderParserTest, ErrorsForEOSWithinEntry) {
     0x67, 0x64, 0x00, 0x1e, 0xac, 0xd9, 0x40, 0xa0,
   };
   const std::vector<uint8_t> extra_data(kExtraData,
-                                        kExtraData + arraysize(kExtraData));
+                                        kExtraData + std::size(kExtraData));
 
   H264VideoSliceHeaderParser parser;
   EXPECT_FALSE(parser.Initialize(extra_data));

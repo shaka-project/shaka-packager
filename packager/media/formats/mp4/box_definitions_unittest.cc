@@ -1,19 +1,20 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 #include <limits>
 #include <memory>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/box_definitions_comparison.h"
-#include "packager/media/formats/mp4/box_reader.h"
+#include <gtest/gtest.h>
+
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/formats/mp4/box_definitions_comparison.h>
+#include <packager/media/formats/mp4/box_reader.h>
 
 namespace shaka {
 namespace media {
@@ -147,7 +148,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(ProtectionSystemSpecificHeader* pssh) {
-    pssh->raw_box.assign(kPsshBox, kPsshBox + arraysize(kPsshBox));
+    pssh->raw_box.assign(kPsshBox, kPsshBox + std::size(kPsshBox));
   }
 
   void Modify(ProtectionSystemSpecificHeader* pssh) {
@@ -155,7 +156,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(SampleAuxiliaryInformationOffset* saio) {
-    saio->offsets.assign(kData32, kData32 + arraysize(kData32));
+    saio->offsets.assign(kData32, kData32 + std::size(kData32));
   }
 
   void Modify(SampleAuxiliaryInformationOffset* saio) {
@@ -164,8 +165,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(SampleAuxiliaryInformationSize* saiz) {
     saiz->default_sample_info_size = 0;
-    saiz->sample_info_sizes.assign(kData8, kData8 + arraysize(kData8));
-    saiz->sample_count = arraysize(kData8);
+    saiz->sample_info_sizes.assign(kData8, kData8 + std::size(kData8));
+    saiz->sample_count = std::size(kData8);
   }
 
   void Modify(SampleAuxiliaryInformationSize* saiz) {
@@ -178,7 +179,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     senc->flags = SampleEncryption::kUseSubsampleEncryption;
     senc->sample_encryption_entries.resize(2);
     senc->sample_encryption_entries[0].initialization_vector.assign(
-        kData8Bytes, kData8Bytes + arraysize(kData8Bytes));
+        kData8Bytes, kData8Bytes + std::size(kData8Bytes));
     senc->sample_encryption_entries[0].subsamples.resize(2);
     senc->sample_encryption_entries[0].subsamples[0].clear_bytes = 17;
     senc->sample_encryption_entries[0].subsamples[0].cipher_bytes = 3456;
@@ -212,7 +213,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     tenc->default_is_protected = 1;
     tenc->default_per_sample_iv_size = 8;
     tenc->default_kid.assign(kData16Bytes,
-                             kData16Bytes + arraysize(kData16Bytes));
+                             kData16Bytes + std::size(kData16Bytes));
     tenc->default_skip_byte_block = 2;
     tenc->default_crypt_byte_block = 8;
     tenc->version = 1;
@@ -349,7 +350,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         0x00, 0x06, 0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0};
     codec_configuration->data.assign(
         kCodecConfigurationData,
-        kCodecConfigurationData + arraysize(kCodecConfigurationData));
+        kCodecConfigurationData + std::size(kCodecConfigurationData));
   }
 
   void Modify(CodecConfiguration* codec_configuration) {
@@ -360,7 +361,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         0x01, 0x00, 0x05, 0x68, 0xeb, 0xec, 0xb2, 0x2c};
     codec_configuration->data.assign(
         kCodecConfigurationData,
-        kCodecConfigurationData + arraysize(kCodecConfigurationData));
+        kCodecConfigurationData + std::size(kCodecConfigurationData));
   }
 
   void Fill(VideoSampleEntry* entry) {
@@ -409,7 +410,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     ddts->sampling_frequency = 48000;
     ddts->pcm_sample_depth = 16;
     ddts->extra_data.assign(kDdtsExtraData,
-                            kDdtsExtraData + arraysize(kDdtsExtraData));
+                            kDdtsExtraData + std::size(kDdtsExtraData));
   }
 
   void Modify(DTSSpecific* ddts) {
@@ -418,22 +419,22 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(AC3Specific* dac3) {
     const uint8_t kAc3Data[] = {0x50, 0x11, 0x60};
-    dac3->data.assign(kAc3Data, kAc3Data + arraysize(kAc3Data));
+    dac3->data.assign(kAc3Data, kAc3Data + std::size(kAc3Data));
   }
 
   void Modify(AC3Specific* dac3) {
     const uint8_t kAc3Data[] = {0x50, 0x11, 0x40};
-    dac3->data.assign(kAc3Data, kAc3Data + arraysize(kAc3Data));
+    dac3->data.assign(kAc3Data, kAc3Data + std::size(kAc3Data));
   }
 
   void Fill(EC3Specific* dec3) {
     const uint8_t kEc3Data[] = {0x08, 0x00, 0x20, 0x0f, 0x00};
-    dec3->data.assign(kEc3Data, kEc3Data + arraysize(kEc3Data));
+    dec3->data.assign(kEc3Data, kEc3Data + std::size(kEc3Data));
   }
 
   void Modify(EC3Specific* dec3) {
     const uint8_t kEc3Data[] = {0x07, 0x00, 0x60, 0x04, 0x00};
-    dec3->data.assign(kEc3Data, kEc3Data + arraysize(kEc3Data));
+    dec3->data.assign(kEc3Data, kEc3Data + std::size(kEc3Data));
   }
 
   void Fill(OpusSpecific* dops) {
@@ -442,7 +443,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x01, 0x11};
     dops->opus_identification_header.assign(
         kOpusIdentificationHeader,
-        kOpusIdentificationHeader + arraysize(kOpusIdentificationHeader));
+        kOpusIdentificationHeader + std::size(kOpusIdentificationHeader));
     dops->preskip = 0x0403;
   }
 
@@ -559,8 +560,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(SampleSize* stsz) {
     stsz->sample_size = 0;
-    stsz->sizes.assign(kData8, kData8 + arraysize(kData8));
-    stsz->sample_count = arraysize(kData8);
+    stsz->sizes.assign(kData8, kData8 + std::size(kData8));
+    stsz->sample_count = std::size(kData8);
   }
 
   void Modify(SampleSize* stsz) {
@@ -570,28 +571,28 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(CompactSampleSize* stz2) {
     stz2->field_size = 4;
-    stz2->sizes.assign(kData4, kData4 + arraysize(kData4));
+    stz2->sizes.assign(kData4, kData4 + std::size(kData4));
   }
 
   void Modify(CompactSampleSize* stz2) {
     stz2->field_size = 8;
-    stz2->sizes.assign(kData8, kData8 + arraysize(kData8));
+    stz2->sizes.assign(kData8, kData8 + std::size(kData8));
   }
 
   void Fill(ChunkLargeOffset* co64) {
-    co64->offsets.assign(kData64, kData64 + arraysize(kData64));
+    co64->offsets.assign(kData64, kData64 + std::size(kData64));
   }
 
   void Modify(ChunkLargeOffset* co64) { co64->offsets.pop_back(); }
 
   void Fill(ChunkOffset* stco) {
-    stco->offsets.assign(kData32, kData32 + arraysize(kData32));
+    stco->offsets.assign(kData32, kData32 + std::size(kData32));
   }
 
   void Modify(ChunkOffset* stco) { stco->offsets.push_back(10); }
 
   void Fill(SyncSample* stss) {
-    stss->sample_number.assign(kData32, kData32 + arraysize(kData32));
+    stss->sample_number.assign(kData32, kData32 + std::size(kData32));
   }
 
   void Modify(SyncSample* stss) { stss->sample_number.pop_back(); }
@@ -602,7 +603,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sgpd->cenc_sample_encryption_info_entries[0].is_protected = 1;
     sgpd->cenc_sample_encryption_info_entries[0].per_sample_iv_size = 8;
     sgpd->cenc_sample_encryption_info_entries[0].key_id.assign(
-        kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
+        kData16Bytes, kData16Bytes + std::size(kData16Bytes));
     sgpd->cenc_sample_encryption_info_entries[0].crypt_byte_block = 3;
     sgpd->cenc_sample_encryption_info_entries[0].skip_byte_block = 7;
     sgpd->cenc_sample_encryption_info_entries[1].is_protected = 0;
@@ -616,7 +617,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sgpd->cenc_sample_encryption_info_entries[0].is_protected = 1;
     sgpd->cenc_sample_encryption_info_entries[0].per_sample_iv_size = 0;
     sgpd->cenc_sample_encryption_info_entries[0].constant_iv.assign(
-        kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
+        kData16Bytes, kData16Bytes + std::size(kData16Bytes));
     sgpd->cenc_sample_encryption_info_entries[0].key_id.resize(16);
     sgpd->version = 1;
   }
@@ -692,19 +693,19 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(DataEntryUrl* url) {
     url->flags = 2;
-    url->location.assign(kData8, kData8 + arraysize(kData8));
+    url->location.assign(kData8, kData8 + std::size(kData8));
   }
 
   void Modify(DataEntryUrl* url) {
     url->flags += 1;
-    url->location.assign(kData4, kData4 + arraysize(kData4));
+    url->location.assign(kData4, kData4 + std::size(kData4));
   }
 
   void Fill(DataReference* dref) {
     dref->data_entry.resize(2);
     Fill(&dref->data_entry[0]);
     Fill(&dref->data_entry[1]);
-    dref->data_entry[1].location.assign(kData4, kData4 + arraysize(kData4));
+    dref->data_entry[1].location.assign(kData4, kData4 + std::size(kData4));
   }
 
   void Modify(DataReference* dref) {
@@ -823,14 +824,14 @@ class BoxDefinitionsTestGeneral : public testing::Test {
                   TrackFragmentRun::kSampleFlagsPresentMask |
                   TrackFragmentRun::kSampleCompTimeOffsetsPresentMask;
     trun->data_offset = 783246;
-    trun->sample_count = arraysize(kData32);
-    trun->sample_flags.assign(kData32, kData32 + arraysize(kData32));
+    trun->sample_count = std::size(kData32);
+    trun->sample_flags.assign(kData32, kData32 + std::size(kData32));
     trun->sample_sizes = trun->sample_flags;
     trun->sample_sizes[0] += 1000;
     trun->sample_durations = trun->sample_flags;
     trun->sample_durations[1] += 2343;
     trun->sample_composition_time_offsets.assign(kData32,
-                                                 kData32 + arraysize(kData32));
+                                                 kData32 + std::size(kData32));
     trun->sample_composition_time_offsets[2] = -89782;
     trun->version = 1;
   }
@@ -1327,7 +1328,7 @@ TEST_F(BoxDefinitionsTest, SampleEntryExtraCodecConfigs) {
 TEST_F(BoxDefinitionsTest, CompactSampleSize_FieldSize16) {
   CompactSampleSize stz2;
   stz2.field_size = 16;
-  stz2.sizes.assign(kData16, kData16 + arraysize(kData16));
+  stz2.sizes.assign(kData16, kData16 + std::size(kData16));
   stz2.Write(this->buffer_.get());
 
   CompactSampleSize stz2_readback;
@@ -1337,7 +1338,7 @@ TEST_F(BoxDefinitionsTest, CompactSampleSize_FieldSize16) {
 
 TEST_F(BoxDefinitionsTest, ChunkLargeOffsetSmallOffset) {
   ChunkLargeOffset co64;
-  co64.offsets.assign(kData32, kData32 + arraysize(kData32));
+  co64.offsets.assign(kData32, kData32 + std::size(kData32));
   co64.Write(this->buffer_.get());
 
   // The data is stored in ChunkOffset box instead.
@@ -1376,9 +1377,9 @@ TEST_F(BoxDefinitionsTest, TrackEncryptionConstantIv) {
   TrackEncryption tenc;
   tenc.default_is_protected = 1;
   tenc.default_per_sample_iv_size = 0;
-  tenc.default_kid.assign(kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
+  tenc.default_kid.assign(kData16Bytes, kData16Bytes + std::size(kData16Bytes));
   tenc.default_constant_iv.assign(kData16Bytes,
-                                  kData16Bytes + arraysize(kData16Bytes));
+                                  kData16Bytes + std::size(kData16Bytes));
   tenc.Write(buffer_.get());
 
   TrackEncryption tenc_readback;

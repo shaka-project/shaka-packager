@@ -7,9 +7,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_AV1_PARSER_H_
 #define PACKAGER_MEDIA_CODECS_AV1_PARSER_H_
 
-#include <stdint.h>
-#include <stdlib.h>
-
+#include <cstdint>
+#include <cstdlib>
 #include <vector>
 
 namespace shaka {

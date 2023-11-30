@@ -1,0 +1,74 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+# A workflow to test building in various Linux distros.
+name: Test Linux Distros
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+# By default, run all commands in a bash shell.  On Windows, the default would
+# otherwise be powershell.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Configure the build matrix based on files in the repo.
+  docker_matrix_config:
+    name: Matrix configuration
+    runs-on: ubuntu-latest
+    outputs:
+      MATRIX: ${{ steps.configure.outputs.MATRIX }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Configure Build Matrix
+        id: configure
+        shell: node {0}
+        run: |
+          const fs = require('fs');
+          const files = fs.readdirSync('packager/testing/dockers/');
+          const matrix = files.map((file) => {
+            return { os_name: file.replace('_Dockerfile', '') };
+          });
+
+          // Output a JSON object consumed by the build matrix below.
+          fs.writeFileSync(process.env.GITHUB_OUTPUT,
+              `MATRIX=${ JSON.stringify(matrix) }`,
+              {flag: 'a'});
+
+          // Log the outputs, for the sake of debugging this script.
+          console.log({matrix});
+
+  # Build each dockerfile in parallel in a different CI job.
+  build:
+    needs: docker_matrix_config
+    strategy:
+      # Let other matrix entries complete, so we have all results on failure
+      # instead of just the first failure.
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.docker_matrix_config.outputs.MATRIX) }}
+
+    name: ${{ matrix.os_name }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+          submodules: recursive
+
+      - name: Build in Docker
+        run: ./packager/testing/test_dockers.sh "${{ matrix.os_name }}"

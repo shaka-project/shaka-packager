@@ -1,12 +1,15 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/language_utils.h"
+#include <packager/media/base/language_utils.h>
 
-#include "packager/base/logging.h"
+#include <iterator>
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 namespace {
 
@@ -102,7 +105,7 @@ std::string LanguageToShortestForm(const std::string& language) {
     return main_language + subtag;
   }
 
-  for (size_t i = 0; i < arraysize(kLanguageMap); ++i) {
+  for (size_t i = 0; i < std::size(kLanguageMap); ++i) {
     if (main_language == kLanguageMap[i].iso_639_2) {
       return kLanguageMap[i].iso_639_1 + subtag;
     }
@@ -124,7 +127,7 @@ std::string LanguageToISO_639_2(const std::string& language) {
     return main_language + subtag;
   }
 
-  for (size_t i = 0; i < arraysize(kLanguageMap); ++i) {
+  for (size_t i = 0; i < std::size(kLanguageMap); ++i) {
     if (main_language == kLanguageMap[i].iso_639_1) {
       return kLanguageMap[i].iso_639_2 + subtag;
     }

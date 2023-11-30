@@ -11,9 +11,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/formats/dvb/dvb_image.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/dvb/dvb_image.h>
 
 namespace shaka {
 namespace media {

@@ -12,10 +12,11 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/media/base/media_parser.h"
-#include "packager/media/base/network_util.h"
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+#include <absl/base/internal/endian.h>
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
 
 namespace shaka {
 namespace media {
@@ -59,8 +60,8 @@ class WvmMediaParser : public MediaParser {
             const NewMediaSampleCB& new_media_sample_cb,
             const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
-  bool Flush() override WARN_UNUSED_RESULT;
-  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
+  [[nodiscard]] bool Parse(const uint8_t* buf, int size) override;
   /// @}
 
  private:
@@ -176,21 +177,21 @@ class WvmMediaParser : public MediaParser {
              const uint8_t* start_index,
              T* value) {
     if (length == sizeof(uint8_t)) {
-      *value = (uint8_t)(*start_index);
+      *value = *start_index;
     } else if (length == sizeof(int8_t)) {
       *value = (int8_t)(*start_index);
     } else if (length == sizeof(uint16_t)) {
-      *value = (uint16_t)(ntohsFromBuffer(start_index));
+      *value = absl::big_endian::Load16(start_index);
     } else if (length == sizeof(int16_t)) {
-      *value = (int16_t)(ntohsFromBuffer(start_index));
+      *value = (int16_t)(absl::big_endian::Load16(start_index));
     } else if (length == sizeof(uint32_t)) {
-      *value = (uint32_t)(ntohlFromBuffer(start_index));
+      *value = absl::big_endian::Load32(start_index);
     } else if (length == sizeof(int32_t)) {
-      *value = (int32_t)(ntohlFromBuffer(start_index));
+      *value = (int32_t)(absl::big_endian::Load32(start_index));
     } else if (length == sizeof(uint64_t)) {
-      *value = (uint64_t)(ntohllFromBuffer(start_index));
+      *value = absl::big_endian::Load64(start_index);
     } else if (length == sizeof(int64_t)) {
-      *value = (int64_t)(ntohllFromBuffer(start_index));
+      *value = (int64_t)(absl::big_endian::Load64(start_index));
     } else {
       *value = 0;
     }

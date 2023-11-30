@@ -1,16 +1,21 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/raw_key_source.h"
+#include <packager/media/base/raw_key_source.h>
 
 #include <algorithm>
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/key_source.h"
-#include "packager/status_macros.h"
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/key_source.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace {
 const char kEmptyDrmLabel[] = "";
@@ -23,6 +28,8 @@ RawKeySource::~RawKeySource() {}
 
 Status RawKeySource::FetchKeys(EmeInitDataType init_data_type,
                                const std::vector<uint8_t>& init_data) {
+  UNUSED(init_data_type);
+  UNUSED(init_data);
   // Do nothing for raw key encryption/decryption.
   return Status::OK;
 }
@@ -54,7 +61,8 @@ Status RawKeySource::GetKey(const std::vector<uint8_t>& key_id,
     }
   }
   return Status(error::INTERNAL_ERROR,
-                "Key for key_id=" + base::HexEncode(&key_id[0], key_id.size()) +
+                "Key for key_id=" +
+                    absl::BytesToHexString(byte_vector_to_string_view(key_id)) +
                     " was not found.");
 }
 
@@ -63,6 +71,8 @@ Status RawKeySource::GetCryptoPeriodKey(
     int32_t crypto_period_duration_in_seconds,
     const std::string& stream_label,
     EncryptionKey* key) {
+  UNUSED(crypto_period_duration_in_seconds);
+
   RETURN_IF_ERROR(GetKey(stream_label, key));
 
   // A naive key rotation algorithm is implemented here by left rotating the

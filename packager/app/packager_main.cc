@@ -1,56 +1,63 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gflags/gflags.h>
 #include <iostream>
-
-#include "packager/app/ad_cue_generator_flags.h"
-#include "packager/app/crypto_flags.h"
-#include "packager/app/hls_flags.h"
-#include "packager/app/manifest_flags.h"
-#include "packager/app/mpd_flags.h"
-#include "packager/app/muxer_flags.h"
-#include "packager/app/packager_util.h"
-#include "packager/app/playready_key_encryption_flags.h"
-#include "packager/app/protection_system_flags.h"
-#include "packager/app/raw_key_encryption_flags.h"
-#include "packager/app/stream_descriptor.h"
-#include "packager/app/vlog_flags.h"
-#include "packager/app/widevine_encryption_flags.h"
-#include "packager/base/command_line.h"
-#include "packager/base/logging.h"
-#include "packager/base/optional.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_split.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/packager.h"
-#include "packager/tools/license_notice.h"
+#include <optional>
 
 #if defined(OS_WIN)
 #include <codecvt>
 #include <functional>
-#include <locale>
 #endif  // defined(OS_WIN)
 
-DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
-DEFINE_bool(licenses, false, "Dump licenses.");
-DEFINE_bool(quiet, false, "When enabled, LOG(INFO) output is suppressed.");
-DEFINE_bool(use_fake_clock_for_muxer,
-            false,
-            "Set to true to use a fake clock for muxer. With this flag set, "
-            "creation time and modification time in outputs are set to 0. "
-            "Should only be used for testing.");
-DEFINE_string(test_packager_version,
-              "",
-              "Packager version for testing. Should be used for testing only.");
-DEFINE_bool(single_threaded,
-            false,
-            "If enabled, only use one thread when generating content.");
+#include <absl/flags/flag.h>
+#include <absl/flags/parse.h>
+#include <absl/flags/usage.h>
+#include <absl/flags/usage_config.h>
+#include <absl/log/globals.h>
+#include <absl/log/initialize.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
+
+#include <packager/app/ad_cue_generator_flags.h>
+#include <packager/app/crypto_flags.h>
+#include <packager/app/hls_flags.h>
+#include <packager/app/manifest_flags.h>
+#include <packager/app/mpd_flags.h>
+#include <packager/app/muxer_flags.h>
+#include <packager/app/playready_key_encryption_flags.h>
+#include <packager/app/protection_system_flags.h>
+#include <packager/app/raw_key_encryption_flags.h>
+#include <packager/app/retired_flags.h>
+#include <packager/app/stream_descriptor.h>
+#include <packager/app/vlog_flags.h>
+#include <packager/app/widevine_encryption_flags.h>
+#include <packager/file.h>
+#include <packager/kv_pairs/kv_pairs.h>
+#include <packager/tools/license_notice.h>
+#include <packager/utils/string_trim_split.h>
+
+ABSL_FLAG(bool, dump_stream_info, false, "Dump demuxed stream info.");
+ABSL_FLAG(bool, licenses, false, "Dump licenses.");
+ABSL_FLAG(bool, quiet, false, "When enabled, LOG(INFO) output is suppressed.");
+ABSL_FLAG(bool,
+          use_fake_clock_for_muxer,
+          false,
+          "Set to true to use a fake clock for muxer. With this flag set, "
+          "creation time and modification time in outputs are set to 0. "
+          "Should only be used for testing.");
+ABSL_FLAG(std::string,
+          test_packager_version,
+          "",
+          "Packager version for testing. Should be used for testing only.");
+ABSL_FLAG(bool,
+          single_threaded,
+          false,
+          "If enabled, only use one thread when generating content.");
 
 namespace shaka {
 namespace {
@@ -131,17 +138,18 @@ enum ExitStatus {
 };
 
 bool GetWidevineSigner(WidevineSigner* signer) {
-  signer->signer_name = FLAGS_signer;
-  if (!FLAGS_aes_signing_key_bytes.empty()) {
+  signer->signer_name = absl::GetFlag(FLAGS_signer);
+  if (!absl::GetFlag(FLAGS_aes_signing_key).bytes.empty()) {
     signer->signing_key_type = WidevineSigner::SigningKeyType::kAes;
-    signer->aes.key = FLAGS_aes_signing_key_bytes;
-    signer->aes.iv = FLAGS_aes_signing_iv_bytes;
-  } else if (!FLAGS_rsa_signing_key_path.empty()) {
+    signer->aes.key = absl::GetFlag(FLAGS_aes_signing_key).bytes;
+    signer->aes.iv = absl::GetFlag(FLAGS_aes_signing_iv).bytes;
+  } else if (!absl::GetFlag(FLAGS_rsa_signing_key_path).empty()) {
     signer->signing_key_type = WidevineSigner::SigningKeyType::kRsa;
-    if (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
-                                &signer->rsa.key)) {
-      LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
-                 << "'.";
+    if (!File::ReadFileToString(
+            absl::GetFlag(FLAGS_rsa_signing_key_path).c_str(),
+            &signer->rsa.key)) {
+      LOG(ERROR) << "Failed to read from '"
+                 << absl::GetFlag(FLAGS_rsa_signing_key_path) << "'.";
       return false;
     }
   }
@@ -150,11 +158,11 @@ bool GetWidevineSigner(WidevineSigner* signer) {
 
 bool GetHlsPlaylistType(const std::string& playlist_type,
                         HlsPlaylistType* playlist_type_enum) {
-  if (base::ToUpperASCII(playlist_type) == "VOD") {
+  if (absl::AsciiStrToUpper(playlist_type) == "VOD") {
     *playlist_type_enum = HlsPlaylistType::kVod;
-  } else if (base::ToUpperASCII(playlist_type) == "LIVE") {
+  } else if (absl::AsciiStrToUpper(playlist_type) == "LIVE") {
     *playlist_type_enum = HlsPlaylistType::kLive;
-  } else if (base::ToUpperASCII(playlist_type) == "EVENT") {
+  } else if (absl::AsciiStrToUpper(playlist_type) == "EVENT") {
     *playlist_type_enum = HlsPlaylistType::kEvent;
   } else {
     LOG(ERROR) << "Unrecognized playlist type " << playlist_type;
@@ -164,31 +172,33 @@ bool GetHlsPlaylistType(const std::string& playlist_type,
 }
 
 bool GetProtectionScheme(uint32_t* protection_scheme) {
-  if (FLAGS_protection_scheme == "cenc") {
+  if (absl::GetFlag(FLAGS_protection_scheme) == "cenc") {
     *protection_scheme = EncryptionParams::kProtectionSchemeCenc;
     return true;
   }
-  if (FLAGS_protection_scheme == "cbc1") {
+  if (absl::GetFlag(FLAGS_protection_scheme) == "cbc1") {
     *protection_scheme = EncryptionParams::kProtectionSchemeCbc1;
     return true;
   }
-  if (FLAGS_protection_scheme == "cbcs") {
+  if (absl::GetFlag(FLAGS_protection_scheme) == "cbcs") {
     *protection_scheme = EncryptionParams::kProtectionSchemeCbcs;
     return true;
   }
-  if (FLAGS_protection_scheme == "cens") {
+  if (absl::GetFlag(FLAGS_protection_scheme) == "cens") {
     *protection_scheme = EncryptionParams::kProtectionSchemeCens;
     return true;
   }
-  LOG(ERROR) << "Unrecognized protection_scheme " << FLAGS_protection_scheme;
+  LOG(ERROR) << "Unrecognized protection_scheme "
+             << absl::GetFlag(FLAGS_protection_scheme);
   return false;
 }
 
 bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
-  for (const std::string& key_data : base::SplitString(
-           keys, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    base::StringPairs string_pairs;
-    base::SplitStringIntoKeyValuePairs(key_data, '=', ':', &string_pairs);
+  std::vector<std::string> keys_data = SplitAndTrimSkipEmpty(keys, ',');
+
+  for (const std::string& key_data : keys_data) {
+    std::vector<KVPair> string_pairs =
+        SplitStringIntoKeyValuePairs(key_data, '=', ':');
 
     std::map<std::string, std::string> value_map;
     for (const auto& string_pair : string_pairs)
@@ -200,13 +210,14 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
     }
     auto& key_info = raw_key->key_map[drm_label];
     if (value_map[kKeyIdLabel].empty() ||
-        !base::HexStringToBytes(value_map[kKeyIdLabel], &key_info.key_id)) {
+        !shaka::ValidHexStringToBytes(value_map[kKeyIdLabel],
+                                      &key_info.key_id)) {
       LOG(ERROR) << "Empty key id or invalid hex string for key id: "
                  << value_map[kKeyIdLabel];
       return false;
     }
     if (value_map[kKeyLabel].empty() ||
-        !base::HexStringToBytes(value_map[kKeyLabel], &key_info.key)) {
+        !shaka::ValidHexStringToBytes(value_map[kKeyLabel], &key_info.key)) {
       LOG(ERROR) << "Empty key or invalid hex string for key: "
                  << value_map[kKeyLabel];
       return false;
@@ -216,7 +227,7 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
         LOG(ERROR) << "IV already specified with --iv";
         return false;
       }
-      if (!base::HexStringToBytes(value_map[kKeyIvLabel], &key_info.iv)) {
+      if (!shaka::ValidHexStringToBytes(value_map[kKeyIvLabel], &key_info.iv)) {
         LOG(ERROR) << "Empty IV or invalid hex string for IV: "
                    << value_map[kKeyIvLabel];
         return false;
@@ -227,18 +238,18 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
 }
 
 bool GetRawKeyParams(RawKeyParams* raw_key) {
-  raw_key->iv = FLAGS_iv_bytes;
-  raw_key->pssh = FLAGS_pssh_bytes;
-  if (!FLAGS_keys.empty()) {
-    if (!ParseKeys(FLAGS_keys, raw_key)) {
-      LOG(ERROR) << "Failed to parse --keys " << FLAGS_keys;
+  raw_key->iv = absl::GetFlag(FLAGS_iv).bytes;
+  raw_key->pssh = absl::GetFlag(FLAGS_pssh).bytes;
+  if (!absl::GetFlag(FLAGS_keys).empty()) {
+    if (!ParseKeys(absl::GetFlag(FLAGS_keys), raw_key)) {
+      LOG(ERROR) << "Failed to parse --keys " << absl::GetFlag(FLAGS_keys);
       return false;
     }
   } else {
     // An empty StreamLabel specifies the default key info.
     RawKeyParams::KeyInfo& key_info = raw_key->key_map[""];
-    key_info.key_id = FLAGS_key_id_bytes;
-    key_info.key = FLAGS_key_bytes;
+    key_info.key_id = absl::GetFlag(FLAGS_key_id).bytes;
+    key_info.key = absl::GetFlag(FLAGS_key).bytes;
   }
   return true;
 }
@@ -246,26 +257,25 @@ bool GetRawKeyParams(RawKeyParams* raw_key) {
 bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
   // Track if optional field is supplied consistently across all cue points.
   size_t duration_count = 0;
+  std::vector<std::string> ad_cues_vec = SplitAndTrimSkipEmpty(ad_cues, ';');
 
-  for (const std::string& ad_cue : base::SplitString(
-           ad_cues, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+  for (const std::string& ad_cue : ad_cues_vec) {
     Cuepoint cuepoint;
-    auto split_ad_cue = base::SplitString(ad_cue, ",", base::TRIM_WHITESPACE,
-                                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> split_ad_cue = SplitAndTrimSkipEmpty(ad_cue, ',');
+
     if (split_ad_cue.size() > 2) {
       LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
                  << " Each ad cue must contain no more than 2 components.";
     }
-    if (!base::StringToDouble(split_ad_cue.front(),
-                              &cuepoint.start_time_in_seconds)) {
+    if (!absl::SimpleAtod(split_ad_cue.front(),
+                          &cuepoint.start_time_in_seconds)) {
       LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
                  << " Start time component must be of type double.";
       return false;
     }
     if (split_ad_cue.size() > 1) {
       duration_count++;
-      if (!base::StringToDouble(split_ad_cue[1],
-                                &cuepoint.duration_in_seconds)) {
+      if (!absl::SimpleAtod(split_ad_cue[1], &cuepoint.duration_in_seconds)) {
         LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
                    << " Duration component must be of type double.";
         return false;
@@ -296,9 +306,10 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
       {"widevine", ProtectionSystem::kWidevine},
   };
 
-  for (const std::string& protection_system :
-       base::SplitString(base::ToLowerASCII(protection_systems_str), ",",
-                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+  std::vector<std::string> protection_systems_vec =
+      SplitAndTrimSkipEmpty(absl::AsciiStrToLower(protection_systems_str), ',');
+
+  for (const std::string& protection_system : protection_systems_vec) {
     auto iter = mapping.find(protection_system);
     if (iter == mapping.end()) {
       LOG(ERROR) << "Seeing unrecognized protection system: "
@@ -310,36 +321,42 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
   return true;
 }
 
-base::Optional<PackagingParams> GetPackagingParams() {
+std::optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
-  packaging_params.temp_dir = FLAGS_temp_dir;
-  packaging_params.single_threaded = FLAGS_single_threaded;
+  packaging_params.temp_dir = absl::GetFlag(FLAGS_temp_dir);
+  packaging_params.single_threaded = absl::GetFlag(FLAGS_single_threaded);
 
   AdCueGeneratorParams& ad_cue_generator_params =
       packaging_params.ad_cue_generator_params;
-  if (!ParseAdCues(FLAGS_ad_cues, &ad_cue_generator_params.cue_points)) {
-    return base::nullopt;
+  if (!ParseAdCues(absl::GetFlag(FLAGS_ad_cues),
+                   &ad_cue_generator_params.cue_points)) {
+    return std::nullopt;
   }
 
   ChunkingParams& chunking_params = packaging_params.chunking_params;
-  chunking_params.segment_duration_in_seconds = FLAGS_segment_duration;
-  chunking_params.subsegment_duration_in_seconds = FLAGS_fragment_duration;
-  chunking_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
-  chunking_params.segment_sap_aligned = FLAGS_segment_sap_aligned;
-  chunking_params.subsegment_sap_aligned = FLAGS_fragment_sap_aligned;
+  chunking_params.segment_duration_in_seconds =
+      absl::GetFlag(FLAGS_segment_duration);
+  chunking_params.subsegment_duration_in_seconds =
+      absl::GetFlag(FLAGS_fragment_duration);
+  chunking_params.low_latency_dash_mode =
+      absl::GetFlag(FLAGS_low_latency_dash_mode);
+  chunking_params.segment_sap_aligned =
+      absl::GetFlag(FLAGS_segment_sap_aligned);
+  chunking_params.subsegment_sap_aligned =
+      absl::GetFlag(FLAGS_fragment_sap_aligned);
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
-  if (FLAGS_enable_widevine_encryption) {
+  if (absl::GetFlag(FLAGS_enable_widevine_encryption)) {
     encryption_params.key_provider = KeyProvider::kWidevine;
     ++num_key_providers;
   }
-  if (FLAGS_enable_playready_encryption) {
+  if (absl::GetFlag(FLAGS_enable_playready_encryption)) {
     encryption_params.key_provider = KeyProvider::kPlayReady;
     ++num_key_providers;
   }
-  if (FLAGS_enable_raw_key_encryption) {
+  if (absl::GetFlag(FLAGS_enable_raw_key_encryption)) {
     encryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
@@ -347,52 +364,55 @@ base::Optional<PackagingParams> GetPackagingParams() {
     LOG(ERROR) << "Only one of --enable_widevine_encryption, "
                   "--enable_playready_encryption, "
                   "--enable_raw_key_encryption can be enabled.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
-  if (!ParseProtectionSystems(FLAGS_protection_systems,
+  if (!ParseProtectionSystems(absl::GetFlag(FLAGS_protection_systems),
                               &encryption_params.protection_systems)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (encryption_params.key_provider != KeyProvider::kNone) {
-    encryption_params.clear_lead_in_seconds = FLAGS_clear_lead;
+    encryption_params.clear_lead_in_seconds = absl::GetFlag(FLAGS_clear_lead);
     if (!GetProtectionScheme(&encryption_params.protection_scheme))
-      return base::nullopt;
-    encryption_params.crypt_byte_block = FLAGS_crypt_byte_block;
-    encryption_params.skip_byte_block = FLAGS_skip_byte_block;
+      return std::nullopt;
+    encryption_params.crypt_byte_block = absl::GetFlag(FLAGS_crypt_byte_block);
+    encryption_params.skip_byte_block = absl::GetFlag(FLAGS_skip_byte_block);
 
     encryption_params.crypto_period_duration_in_seconds =
-        FLAGS_crypto_period_duration;
-    encryption_params.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;
+        absl::GetFlag(FLAGS_crypto_period_duration);
+    encryption_params.vp9_subsample_encryption =
+        absl::GetFlag(FLAGS_vp9_subsample_encryption);
     encryption_params.stream_label_func = std::bind(
-        &Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
-        FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);
+        &Packager::DefaultStreamLabelFunction,
+        absl::GetFlag(FLAGS_max_sd_pixels), absl::GetFlag(FLAGS_max_hd_pixels),
+        absl::GetFlag(FLAGS_max_uhd1_pixels), std::placeholders::_1);
     encryption_params.playready_extra_header_data =
-        FLAGS_playready_extra_header_data;
+        absl::GetFlag(FLAGS_playready_extra_header_data);
   }
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
       WidevineEncryptionParams& widevine = encryption_params.widevine;
-      widevine.key_server_url = FLAGS_key_server_url;
+      widevine.key_server_url = absl::GetFlag(FLAGS_key_server_url);
 
-      widevine.content_id = FLAGS_content_id_bytes;
-      widevine.policy = FLAGS_policy;
-      widevine.group_id = FLAGS_group_id_bytes;
-      widevine.enable_entitlement_license = FLAGS_enable_entitlement_license;
+      widevine.content_id = absl::GetFlag(FLAGS_content_id).bytes;
+      widevine.policy = absl::GetFlag(FLAGS_policy);
+      widevine.group_id = absl::GetFlag(FLAGS_group_id).bytes;
+      widevine.enable_entitlement_license =
+          absl::GetFlag(FLAGS_enable_entitlement_license);
       if (!GetWidevineSigner(&widevine.signer))
-        return base::nullopt;
+        return std::nullopt;
       break;
     }
     case KeyProvider::kPlayReady: {
       PlayReadyEncryptionParams& playready = encryption_params.playready;
-      playready.key_server_url = FLAGS_playready_server_url;
-      playready.program_identifier = FLAGS_program_identifier;
+      playready.key_server_url = absl::GetFlag(FLAGS_playready_server_url);
+      playready.program_identifier = absl::GetFlag(FLAGS_program_identifier);
       break;
     }
     case KeyProvider::kRawKey: {
       if (!GetRawKeyParams(&encryption_params.raw_key))
-        return base::nullopt;
+        return std::nullopt;
       break;
     }
     case KeyProvider::kNone:
@@ -401,30 +421,30 @@ base::Optional<PackagingParams> GetPackagingParams() {
 
   num_key_providers = 0;
   DecryptionParams& decryption_params = packaging_params.decryption_params;
-  if (FLAGS_enable_widevine_decryption) {
+  if (absl::GetFlag(FLAGS_enable_widevine_decryption)) {
     decryption_params.key_provider = KeyProvider::kWidevine;
     ++num_key_providers;
   }
-  if (FLAGS_enable_raw_key_decryption) {
+  if (absl::GetFlag(FLAGS_enable_raw_key_decryption)) {
     decryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
   if (num_key_providers > 1) {
     LOG(ERROR) << "Only one of --enable_widevine_decryption, "
                   "--enable_raw_key_decryption can be enabled.";
-    return base::nullopt;
+    return std::nullopt;
   }
   switch (decryption_params.key_provider) {
     case KeyProvider::kWidevine: {
       WidevineDecryptionParams& widevine = decryption_params.widevine;
-      widevine.key_server_url = FLAGS_key_server_url;
+      widevine.key_server_url = absl::GetFlag(FLAGS_key_server_url);
       if (!GetWidevineSigner(&widevine.signer))
-        return base::nullopt;
+        return std::nullopt;
       break;
     }
     case KeyProvider::kRawKey: {
       if (!GetRawKeyParams(&decryption_params.raw_key))
-        return base::nullopt;
+        return std::nullopt;
       break;
     }
     case KeyProvider::kPlayReady:
@@ -434,110 +454,132 @@ base::Optional<PackagingParams> GetPackagingParams() {
 
   Mp4OutputParams& mp4_params = packaging_params.mp4_output_params;
   mp4_params.generate_sidx_in_media_segments =
-      FLAGS_generate_sidx_in_media_segments;
-  mp4_params.include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
-  mp4_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
+      absl::GetFlag(FLAGS_generate_sidx_in_media_segments);
+  mp4_params.include_pssh_in_stream =
+      absl::GetFlag(FLAGS_mp4_include_pssh_in_stream);
+  mp4_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
 
   packaging_params.transport_stream_timestamp_offset_ms =
-      FLAGS_transport_stream_timestamp_offset_ms;
+      absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
 
-  packaging_params.output_media_info = FLAGS_output_media_info;
+  packaging_params.output_media_info = absl::GetFlag(FLAGS_output_media_info);
 
   MpdParams& mpd_params = packaging_params.mpd_params;
-  mpd_params.mpd_output = FLAGS_mpd_output;
-  mpd_params.base_urls = base::SplitString(
-      FLAGS_base_urls, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  mpd_params.min_buffer_time = FLAGS_min_buffer_time;
-  mpd_params.minimum_update_period = FLAGS_minimum_update_period;
-  mpd_params.suggested_presentation_delay = FLAGS_suggested_presentation_delay;
-  mpd_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
-  mpd_params.preserved_segments_outside_live_window =
-      FLAGS_preserved_segments_outside_live_window;
-  mpd_params.use_segment_list = FLAGS_dash_force_segment_list;
+  mpd_params.mpd_output = absl::GetFlag(FLAGS_mpd_output);
 
-  if (!FLAGS_utc_timings.empty()) {
-    base::StringPairs pairs;
-    if (!base::SplitStringIntoKeyValuePairs(FLAGS_utc_timings, '=', ',',
-                                            &pairs)) {
+  std::vector<std::string> base_urls =
+      SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_base_urls), ',');
+
+  mpd_params.base_urls = base_urls;
+  mpd_params.min_buffer_time = absl::GetFlag(FLAGS_min_buffer_time);
+  mpd_params.minimum_update_period = absl::GetFlag(FLAGS_minimum_update_period);
+  mpd_params.suggested_presentation_delay =
+      absl::GetFlag(FLAGS_suggested_presentation_delay);
+  mpd_params.time_shift_buffer_depth =
+      absl::GetFlag(FLAGS_time_shift_buffer_depth);
+  mpd_params.preserved_segments_outside_live_window =
+      absl::GetFlag(FLAGS_preserved_segments_outside_live_window);
+  mpd_params.use_segment_list = absl::GetFlag(FLAGS_dash_force_segment_list);
+
+  if (!absl::GetFlag(FLAGS_utc_timings).empty()) {
+    std::vector<KVPair> pairs = SplitStringIntoKeyValuePairs(
+        absl::GetFlag(FLAGS_utc_timings), '=', ',');
+    if (pairs.empty()) {
       LOG(ERROR) << "Invalid --utc_timings scheme_id_uri/value pairs.";
-      return base::nullopt;
+      return std::nullopt;
     }
     for (const auto& string_pair : pairs) {
       mpd_params.utc_timings.push_back({string_pair.first, string_pair.second});
     }
   }
 
-  mpd_params.default_language = FLAGS_default_language;
-  mpd_params.default_text_language = FLAGS_default_text_language;
-  mpd_params.generate_static_live_mpd = FLAGS_generate_static_live_mpd;
+  mpd_params.default_language = absl::GetFlag(FLAGS_default_language);
+  mpd_params.default_text_language = absl::GetFlag(FLAGS_default_text_language);
+  mpd_params.generate_static_live_mpd =
+      absl::GetFlag(FLAGS_generate_static_live_mpd);
   mpd_params.generate_dash_if_iop_compliant_mpd =
-      FLAGS_generate_dash_if_iop_compliant_mpd;
+      absl::GetFlag(FLAGS_generate_dash_if_iop_compliant_mpd);
   mpd_params.allow_approximate_segment_timeline =
-      FLAGS_allow_approximate_segment_timeline;
-  mpd_params.allow_codec_switching = FLAGS_allow_codec_switching;
-  mpd_params.include_mspr_pro = FLAGS_include_mspr_pro_for_playready;
-  mpd_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
+      absl::GetFlag(FLAGS_allow_approximate_segment_timeline);
+  mpd_params.allow_codec_switching = absl::GetFlag(FLAGS_allow_codec_switching);
+  mpd_params.include_mspr_pro =
+      absl::GetFlag(FLAGS_include_mspr_pro_for_playready);
+  mpd_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
 
   HlsParams& hls_params = packaging_params.hls_params;
-  if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {
-    return base::nullopt;
+  if (!GetHlsPlaylistType(absl::GetFlag(FLAGS_hls_playlist_type),
+                          &hls_params.playlist_type)) {
+    return std::nullopt;
   }
-  hls_params.master_playlist_output = FLAGS_hls_master_playlist_output;
-  hls_params.base_url = FLAGS_hls_base_url;
-  hls_params.key_uri = FLAGS_hls_key_uri;
-  hls_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+  hls_params.master_playlist_output =
+      absl::GetFlag(FLAGS_hls_master_playlist_output);
+  hls_params.base_url = absl::GetFlag(FLAGS_hls_base_url);
+  hls_params.key_uri = absl::GetFlag(FLAGS_hls_key_uri);
+  hls_params.time_shift_buffer_depth =
+      absl::GetFlag(FLAGS_time_shift_buffer_depth);
   hls_params.preserved_segments_outside_live_window =
-      FLAGS_preserved_segments_outside_live_window;
-  hls_params.default_language = FLAGS_default_language;
-  hls_params.default_text_language = FLAGS_default_text_language;
-  hls_params.media_sequence_number = FLAGS_hls_media_sequence_number;
+      absl::GetFlag(FLAGS_preserved_segments_outside_live_window);
+  hls_params.default_language = absl::GetFlag(FLAGS_default_language);
+  hls_params.default_text_language = absl::GetFlag(FLAGS_default_text_language);
+  hls_params.media_sequence_number =
+      absl::GetFlag(FLAGS_hls_media_sequence_number);
 
   TestParams& test_params = packaging_params.test_params;
-  test_params.dump_stream_info = FLAGS_dump_stream_info;
-  test_params.inject_fake_clock = FLAGS_use_fake_clock_for_muxer;
-  if (!FLAGS_test_packager_version.empty())
-    test_params.injected_library_version = FLAGS_test_packager_version;
+  test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);
+  test_params.inject_fake_clock = absl::GetFlag(FLAGS_use_fake_clock_for_muxer);
+  if (!absl::GetFlag(FLAGS_test_packager_version).empty())
+    test_params.injected_library_version =
+        absl::GetFlag(FLAGS_test_packager_version);
 
   return packaging_params;
 }
 
 int PackagerMain(int argc, char** argv) {
-  // Needed to enable VLOG/DVLOG through --vmodule or --v.
-  base::CommandLine::Init(argc, argv);
+  absl::FlagsUsageConfig flag_config;
+  flag_config.version_string = []() -> std::string {
+    return "packager version " + shaka::Packager::GetLibraryVersion() + "\n";
+  };
+  flag_config.contains_help_flags =
+      [](absl::string_view flag_file_name) -> bool { return true; };
+  absl::SetFlagsUsageConfig(flag_config);
 
-  // Set up logging.
-  logging::LoggingSettings log_settings;
-  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
-  CHECK(logging::InitLogging(log_settings));
+  auto usage = absl::StrFormat(kUsage, argv[0]);
+  absl::SetProgramUsageMessage(usage);
 
-  google::SetVersionString(shaka::Packager::GetLibraryVersion());
-  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
-  google::ParseCommandLineFlags(&argc, &argv, true);
-  if (FLAGS_licenses) {
+  auto remaining_args = absl::ParseCommandLine(argc, argv);
+  if (absl::GetFlag(FLAGS_licenses)) {
     for (const char* line : kLicenseNotice)
       std::cout << line << std::endl;
     return kSuccess;
   }
-  if (argc < 2) {
-    google::ShowUsageWithFlags("Usage");
+
+  if (remaining_args.size() < 2) {
+    std::cerr << "Usage: " << absl::ProgramUsageMessage();
     return kSuccess;
   }
-  if (FLAGS_quiet)
-    logging::SetMinLogLevel(logging::LOG_WARNING);
+
+  if (absl::GetFlag(FLAGS_quiet)) {
+    absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
+  }
+
+  handle_vlog_flags();
+
+  absl::InitializeLog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
-      !ValidatePRCryptoFlags()) {
+      !ValidatePRCryptoFlags() || !ValidateCryptoFlags() ||
+      !ValidateRetiredFlags()) {
     return kArgumentValidationFailed;
   }
 
-  base::Optional<PackagingParams> packaging_params = GetPackagingParams();
+  std::optional<PackagingParams> packaging_params = GetPackagingParams();
   if (!packaging_params)
     return kArgumentValidationFailed;
 
   std::vector<StreamDescriptor> stream_descriptors;
-  for (int i = 1; i < argc; ++i) {
-    base::Optional<StreamDescriptor> stream_descriptor =
-        ParseStreamDescriptor(argv[i]);
+  for (size_t i = 1; i < remaining_args.size(); ++i) {
+    std::optional<StreamDescriptor> stream_descriptor =
+        ParseStreamDescriptor(remaining_args[i]);
     if (!stream_descriptor)
       return kArgumentValidationFailed;
     stream_descriptors.push_back(stream_descriptor.value());
@@ -554,7 +596,7 @@ int PackagerMain(int argc, char** argv) {
     LOG(ERROR) << "Packaging Error: " << status.ToString();
     return kPackagingFailed;
   }
-  if (!FLAGS_quiet)
+  if (!absl::GetFlag(FLAGS_quiet))
     printf("Packaging completed successfully.\n");
   return kSuccess;
 }
@@ -575,12 +617,20 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
         delete[] utf8_args;
       });
   std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
   for (int idx = 0; idx < argc; ++idx) {
     std::string utf8_arg(converter.to_bytes(argv[idx]));
     utf8_arg += '\0';
     utf8_argv[idx] = new char[utf8_arg.size()];
     memcpy(utf8_argv[idx], &utf8_arg[0], utf8_arg.size());
   }
+
+  // Because we just converted wide character args into UTF8, and because
+  // std::filesystem::u8path is used to interpret all std::string paths as
+  // UTF8, we should set the locale to UTF8 as well, for the transition point
+  // to C library functions like fopen to work correctly with non-ASCII paths.
+  std::setlocale(LC_ALL, ".UTF8");
+
   return shaka::PackagerMain(argc, utf8_argv.get());
 }
 #else

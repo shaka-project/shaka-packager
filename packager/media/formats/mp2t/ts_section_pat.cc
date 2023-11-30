@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/ts_section_pat.h"
+#include <packager/media/formats/mp2t/ts_section_pat.h>
 
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {
@@ -66,7 +68,6 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   std::vector<int> program_number_array(pmt_pid_count);
   std::vector<int> pmt_pid_array(pmt_pid_count);
   for (int k = 0; k < pmt_pid_count; k++) {
-    int reserved;
     RCHECK(bit_reader->ReadBits(16, &program_number_array[k]));
     RCHECK(bit_reader->ReadBits(3, &reserved));
     RCHECK(bit_reader->ReadBits(13, &pmt_pid_array[k]));
@@ -96,14 +97,15 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   int expected_version_number = version_number;
   if (version_number_ >= 0)
     expected_version_number = (version_number_ + 1) % 32;
-  DVLOG_IF(1, version_number != expected_version_number)
-      << "Unexpected version number: "
-      << version_number << " vs " << version_number_;
+  if (version_number != expected_version_number) {
+    VLOG(1) << "Unexpected version number: " << version_number << " vs "
+            << version_number_;
+  }
 #endif
   for (int k = 0; k < pmt_pid_count; k++) {
     if (program_number_array[k] != 0) {
       // Program numbers different from 0 correspond to PMT.
-      register_pmt_cb_.Run(program_number_array[k], pmt_pid_array[k]);
+      register_pmt_cb_(program_number_array[k], pmt_pid_array[k]);
       // Even if there are multiple programs, only one can be supported now.
       // HLS: "Transport Stream segments MUST contain a single MPEG-2 Program."
       break;

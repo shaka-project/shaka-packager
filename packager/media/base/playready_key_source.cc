@@ -1,22 +1,26 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/playready_key_source.h"
+#include <packager/media/base/playready_key_source.h>
 
 #include <algorithm>
+#include <iterator>
 
-#include "packager/base/base64.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/http_key_fetcher.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/http_key_fetcher.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/utils/hex_parser.h>
 
 namespace shaka {
 namespace media {
@@ -55,7 +59,7 @@ bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8_t>* bytes) {
   DCHECK(bytes);
   std::string str;
-  if (!base::Base64Decode(base64_string, &str))
+  if (!absl::Base64Unescape(base64_string, &str))
     return false;
   bytes->assign(str.begin(), str.end());
   return true;
@@ -111,10 +115,13 @@ Status SetKeyInformationFromServerResponse(
   RETURN_IF_ERROR(RetrieveTextInXMLElement("KeyId", response, &key_id_hex));
   key_id_hex.erase(
       std::remove(key_id_hex.begin(), key_id_hex.end(), '-'), key_id_hex.end());
-  if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
+
+  std::string key_id_raw;
+  if (!ValidHexStringToBytes(key_id_hex, &key_id_raw)) {
     LOG(ERROR) << "Cannot parse key_id_hex, " << key_id_hex;
     return Status(error::SERVER_ERROR, "Cannot parse key_id_hex.");
   }
+  encryption_key->key_id.assign(key_id_raw.begin(), key_id_raw.end());
 
   std::string key_data_b64;
   RETURN_IF_ERROR(RetrieveTextInXMLElement("KeyData", response, &key_data_b64));
@@ -136,7 +143,7 @@ Status SetKeyInformationFromServerResponse(
     PsshBoxBuilder pssh_builder;
     pssh_builder.add_key_id(encryption_key->key_id);
     pssh_builder.set_system_id(kPlayReadySystemId,
-                               arraysize(kPlayReadySystemId));
+                               std::size(kPlayReadySystemId));
     pssh_builder.set_pssh_data(pssh_data);
     encryption_key->key_system_info.push_back(
         {pssh_builder.system_id(), pssh_builder.CreateBox()});
@@ -150,8 +157,14 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
   HttpKeyFetcher key_fetcher(kHttpFetchTimeout);
 
   std::string acquire_license_request = kAcquireLicenseRequest;
-  base::ReplaceFirstSubstringAfterOffset(
-      &acquire_license_request, 0, "$0", program_identifier);
+
+  // Replace "$0" with |program_identifier|
+  size_t dollar_zero_location = acquire_license_request.find("$0");
+  if (dollar_zero_location != std::string::npos) {
+    acquire_license_request.replace(dollar_zero_location, /* len= */ 2,
+                                    program_identifier);
+  }
+
   std::string acquire_license_response;
   Status status = key_fetcher.FetchKeys(server_url_, acquire_license_request,
                                         &acquire_license_response);
@@ -169,12 +182,15 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
 
 Status PlayReadyKeySource::FetchKeys(EmeInitDataType init_data_type,
                                      const std::vector<uint8_t>& init_data) {
+  UNUSED(init_data_type);
+  UNUSED(init_data);
   // Do nothing for PlayReady encryption/decryption.
   return Status::OK;
 }
 
 Status PlayReadyKeySource::GetKey(const std::string& stream_label,
                                   EncryptionKey* key) {
+  UNUSED(stream_label);
   // TODO(robinconnell): Currently all tracks are encrypted using the same
   // key_id and key.  Add the ability to encrypt each stream_label using a
   // different key_id and key.
@@ -186,6 +202,7 @@ Status PlayReadyKeySource::GetKey(const std::string& stream_label,
 
 Status PlayReadyKeySource::GetKey(const std::vector<uint8_t>& key_id,
                                   EncryptionKey* key) {
+  UNUSED(key_id);
   // TODO(robinconnell): Currently all tracks are encrypted using the same
   // key_id and key.  Add the ability to encrypt using multiple key_id/keys.
   DCHECK(key);
@@ -199,6 +216,9 @@ Status PlayReadyKeySource::GetCryptoPeriodKey(
     int32_t crypto_period_duration_in_seconds,
     const std::string& stream_label,
     EncryptionKey* key) {
+  UNUSED(crypto_period_index);
+  UNUSED(crypto_period_duration_in_seconds);
+  UNUSED(stream_label);
   // TODO(robinconnell): Implement key rotation.
   *key = *encryption_key_;
   return Status::OK;

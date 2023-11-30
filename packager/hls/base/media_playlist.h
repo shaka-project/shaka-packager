@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,15 +7,16 @@
 #ifndef PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
+#include <filesystem>
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/hls/public/hls_params.h"
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/hls_params.h>
+#include <packager/macros/classes.h>
+#include <packager/mpd/base/bandwidth_estimator.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 
@@ -160,7 +161,7 @@ class MediaPlaylist {
   /// @param file_path is the output file path accepted by the File
   ///        implementation.
   /// @return true on success, false otherwise.
-  virtual bool WriteToFile(const std::string& file_path);
+  virtual bool WriteToFile(const std::filesystem::path& file_path);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.

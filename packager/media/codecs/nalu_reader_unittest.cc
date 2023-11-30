@@ -1,12 +1,12 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/codecs/nalu_reader.h>
 
-#include "packager/media/codecs/nalu_reader.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {
@@ -21,7 +21,7 @@ TEST(NaluReaderTest, StartCodeSearch) {
   };
 
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
-                    arraysize(kNaluData));
+                    std::size(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -55,7 +55,7 @@ TEST(NaluReaderTest, StartCodeSearchWithStartCodeInsideNalUnit) {
   };
 
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
-                    arraysize(kNaluData));
+                    std::size(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -83,7 +83,7 @@ TEST(NaluReaderTest, OneByteNaluLength) {
       0x06, 0x67, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
   };
 
-  NaluReader reader(Nalu::kH264, 1, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -111,7 +111,7 @@ TEST(NaluReaderTest, FourByteNaluLength) {
       0x00, 0x00, 0x00, 0x03, 0x67, 0x0a, 0x0b,
   };
 
-  NaluReader reader(Nalu::kH264, 4, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 4, kNaluData, std::size(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -137,7 +137,7 @@ TEST(NaluReaderTest, ErrorForNotEnoughForNaluLength) {
       0x00,
   };
 
-  NaluReader reader(Nalu::kH264, 3, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 3, kNaluData, std::size(kNaluData));
 
   Nalu nalu;
   EXPECT_EQ(NaluReader::kInvalidStream, reader.Advance(&nalu));
@@ -149,7 +149,7 @@ TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
       0xFF, 0x08, 0x00,
   };
 
-  NaluReader reader(Nalu::kH264, 1, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData));
 
   Nalu nalu;
   EXPECT_EQ(NaluReader::kInvalidStream, reader.Advance(&nalu));
@@ -160,7 +160,7 @@ TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
       0x04, 0x08, 0x00, 0x00,
   };
 
-  NaluReader reader2(Nalu::kH264, 1, kNaluData2, arraysize(kNaluData2));
+  NaluReader reader2(Nalu::kH264, 1, kNaluData2, std::size(kNaluData2));
   EXPECT_EQ(NaluReader::kInvalidStream, reader2.Advance(&nalu));
 }
 
@@ -170,7 +170,7 @@ TEST(NaluReaderTest, ErrorForForbiddenBitSet) {
       0x03, 0x80, 0x00, 0x00,
   };
 
-  NaluReader reader(Nalu::kH264, 1, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData));
 
   Nalu nalu;
   EXPECT_EQ(NaluReader::kInvalidStream, reader.Advance(&nalu));
@@ -199,7 +199,7 @@ TEST(NaluReaderTest, SubsamplesAnnexB) {
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(4, 9));
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
-                    arraysize(kNaluData), subsamples);
+                    std::size(kNaluData), subsamples);
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -225,7 +225,7 @@ TEST(NaluReaderTest, MultiSubsamplesAnnexB) {
   subsamples.emplace_back(SubsampleEntry(1, 3));
   subsamples.emplace_back(SubsampleEntry(4, 5));
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
-                    arraysize(kNaluData), subsamples);
+                    std::size(kNaluData), subsamples);
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -251,7 +251,7 @@ TEST(NaluReaderTest, BufferBiggerThanSubsamplesAnnexB) {
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(4, 9));
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
-                    arraysize(kNaluData), subsamples);
+                    std::size(kNaluData), subsamples);
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -299,7 +299,7 @@ TEST(NaluReaderTest, SubsamplesWithInvalidNalu) {
   subsamples.emplace_back(SubsampleEntry(4, 4));
 
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
-                    arraysize(kNaluData), subsamples);
+                    std::size(kNaluData), subsamples);
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -324,7 +324,7 @@ TEST(NaluReaderTest, FindStartCodeInClearRangeNoNalu) {
   uint64_t offset = 0;
   uint8_t start_code_size = 0;
   EXPECT_FALSE(NaluReader::FindStartCodeInClearRange(
-      kNaluData, arraysize(kNaluData), &offset, &start_code_size, subsamples));
+      kNaluData, std::size(kNaluData), &offset, &start_code_size, subsamples));
   EXPECT_GT(offset, 4u)
       << "Expect at least the subsample region should be consumed.";
 }
@@ -343,8 +343,8 @@ TEST(NaluReaderTest, FindStartCodeInClearRangeSubsamplesBiggerThanBuffer) {
   uint64_t offset;
   uint8_t start_code_size;
   EXPECT_FALSE(NaluReader::FindStartCodeInClearRange(
-      kNaluData, arraysize(kNaluData), &offset, &start_code_size, subsamples));
-  EXPECT_LE(offset, arraysize(kNaluData));
+      kNaluData, std::size(kNaluData), &offset, &start_code_size, subsamples));
+  EXPECT_LE(offset, std::size(kNaluData));
 }
 
 // Verify that it doesn't affect the Nalu stream mode too much.
@@ -358,8 +358,8 @@ TEST(NaluReaderTest, SubsamplesNaluStream) {
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(2, 9));
-  NaluReader reader(Nalu::kH264, 1, kNaluData,
-                    arraysize(kNaluData), subsamples);
+  NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData),
+                    subsamples);
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -386,8 +386,8 @@ TEST(NaluReaderTest, EncryptedNaluLengthNaluStream) {
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(3, 9));
   subsamples.emplace_back(SubsampleEntry(1, 2));
-  NaluReader reader(Nalu::kH264, 2, kNaluData,
-                    arraysize(kNaluData), subsamples);
+  NaluReader reader(Nalu::kH264, 2, kNaluData, std::size(kNaluData),
+                    subsamples);
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));

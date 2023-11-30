@@ -1,12 +1,12 @@
-// Copyright 2020 Google Inc. All rights reserved.
+// Copyright 2020 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/codecs/ac4_audio_util.h>
 
-#include "packager/media/codecs/ac4_audio_util.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {

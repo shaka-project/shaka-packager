@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/ttml/ttml_generator.h"
+#include <packager/media/formats/ttml/ttml_generator.h>
 
-#include "packager/base/base64.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/strings/escaping.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {
@@ -29,14 +30,14 @@ std::string ToTtmlTime(int64_t time, int32_t timescale) {
   remaining /= 60;
   const int hr = remaining;
 
-  return base::StringPrintf("%02d:%02d:%02d.%03d", hr, min, sec, ms);
+  return absl::StrFormat("%02d:%02d:%02d.%03d", hr, min, sec, ms);
 }
 
 std::string ToTtmlSize(const TextNumber& x, const TextNumber& y) {
   const char* kSuffixMap[] = {"px", "em", "%"};
-  return base::StringPrintf("%.0f%s %.0f%s", x.value,
-                            kSuffixMap[static_cast<int>(x.type)], y.value,
-                            kSuffixMap[static_cast<int>(y.type)]);
+  return absl::StrFormat("%.0f%s %.0f%s", x.value,
+                         kSuffixMap[static_cast<int>(x.type)], y.value,
+                         kSuffixMap[static_cast<int>(y.type)]);
 }
 
 }  // namespace
@@ -212,7 +213,7 @@ bool TtmlGenerator::ConvertFragmentToXml(const TextFragment& body,
   } else if (!body.image.empty()) {
     std::string image_data(body.image.begin(), body.image.end());
     std::string base64_data;
-    base::Base64Encode(image_data, &base64_data);
+    absl::Base64Escape(image_data, &base64_data);
     std::string id = "img_" + std::to_string(++*image_count);
 
     xml::XmlNode image_xml("smpte:image");

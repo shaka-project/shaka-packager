@@ -5,13 +5,12 @@
 #ifndef PACKAGER_MEDIA_BASE_DECRYPT_CONFIG_H_
 #define PACKAGER_MEDIA_BASE_DECRYPT_CONFIG_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/fourccs.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
 
 namespace shaka {
 namespace media {

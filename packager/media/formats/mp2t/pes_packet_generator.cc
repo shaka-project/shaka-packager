@@ -1,23 +1,26 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/pes_packet_generator.h"
+#include <packager/media/formats/mp2t/pes_packet_generator.h>
 
 #include <algorithm>
 #include <cstring>
 #include <memory>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
-#include "packager/media/codecs/nalu_reader.h"
-#include "packager/media/formats/mp2t/pes_packet.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
+#include <packager/media/codecs/nalu_reader.h>
+#include <packager/media/formats/mp2t/pes_packet.h>
 
 namespace shaka {
 namespace media {

@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -8,11 +8,13 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
 #include <memory>
-#include "packager/file/file.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/formats/mp2t/pes_packet_generator.h"
-#include "packager/media/formats/mp2t/ts_writer.h"
-#include "packager/status.h"
+
+#include <packager/file.h>
+#include <packager/macros/classes.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/formats/mp2t/pes_packet_generator.h>
+#include <packager/media/formats/mp2t/ts_writer.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

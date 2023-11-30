@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,9 +7,9 @@
 #include <map>
 #include <memory>
 
-#include "packager/base/synchronization/condition_variable.h"
-#include "packager/base/synchronization/lock.h"
-#include "packager/media/public/ad_cue_generator_params.h"
+#include <absl/synchronization/mutex.h>
+
+#include <packager/ad_cue_generator_params.h>
 
 namespace shaka {
 namespace media {
@@ -60,8 +60,8 @@ class SyncPointQueue {
   // functions that have locks.
   std::shared_ptr<const CueEvent> PromoteAtNoLocking(double time_in_seconds);
 
-  base::Lock lock_;
-  base::ConditionVariable sync_condition_;
+  absl::Mutex mutex_;
+  absl::CondVar sync_condition_ ABSL_GUARDED_BY(mutex_);
   size_t thread_count_ = 0;
   size_t waiting_thread_count_ = 0;
   bool cancelled_ = false;

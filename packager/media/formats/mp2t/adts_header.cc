@@ -1,14 +1,17 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/adts_header.h"
+#include <packager/media/formats/mp2t/adts_header.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/bit_writer.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/bit_writer.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace {
 const size_t kAdtsHeaderMinSize = 7;
@@ -18,12 +21,12 @@ const size_t kAdtsHeaderMinSize = 7;
 const int kAdtsFrequencyTable[] = {96000, 88200, 64000, 48000, 44100,
                                    32000, 24000, 22050, 16000, 12000,
                                    11025, 8000,  7350};
-const size_t kAdtsFrequencyTableSize = arraysize(kAdtsFrequencyTable);
+const size_t kAdtsFrequencyTableSize = std::size(kAdtsFrequencyTable);
 
 // The following conversion table is extracted from ISO 14496 Part 3 -
 // Table 1.17 - Channel Configuration.
 const int kAdtsNumChannelsTable[] = {0, 1, 2, 3, 4, 5, 6, 8};
-const size_t kAdtsNumChannelsTableSize = arraysize(kAdtsNumChannelsTable);
+const size_t kAdtsNumChannelsTableSize = std::size(kAdtsNumChannelsTable);
 }  // namespace
 
 namespace shaka {

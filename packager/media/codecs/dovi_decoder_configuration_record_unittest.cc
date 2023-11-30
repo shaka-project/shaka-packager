@@ -4,11 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/dovi_decoder_configuration_record.h"
+#include <packager/media/codecs/dovi_decoder_configuration_record.h>
 
 #include <gtest/gtest.h>
-
-#include "packager/base/macros.h"
 
 namespace shaka {
 namespace media {

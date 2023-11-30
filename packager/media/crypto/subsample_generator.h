@@ -10,9 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/status.h"
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

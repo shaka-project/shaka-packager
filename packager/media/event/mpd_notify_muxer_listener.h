@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,12 +10,12 @@
 #define PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/event_info.h"
-#include "packager/media/event/muxer_listener.h"
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/event_info.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 
@@ -55,7 +55,9 @@ class MpdNotifyMuxerListener : public MuxerListener {
                     uint64_t segment_file_size) override;
   void OnCompletedSegment(int64_t duration,
                           uint64_t segment_file_size) override;
-  void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
+  void OnKeyFrame(int64_t timestamp,
+                  uint64_t start_byte_offset,
+                  uint64_t size) override;
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 
@@ -72,7 +74,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
   bool NotifyNewContainer();
 
   MpdNotifier* const mpd_notifier_ = nullptr;
-  base::Optional<uint32_t> notification_id_;
+  std::optional<uint32_t> notification_id_;
   std::unique_ptr<MediaInfo> media_info_;
 
   std::vector<std::string> accessibilities_;

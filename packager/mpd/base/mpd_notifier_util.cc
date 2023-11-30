@@ -1,15 +1,17 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/mpd_notifier_util.h"
+#include <packager/mpd/base/mpd_notifier_util.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/file/file.h"
-#include "packager/mpd/base/mpd_utils.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/file.h>
+#include <packager/macros/logging.h>
+#include <packager/mpd/base/mpd_utils.h>
 
 namespace shaka {
 
@@ -49,7 +51,7 @@ ContentType GetContentType(const MediaInfo& media_info) {
 std::string Uint8VectorToBase64(const std::vector<uint8_t>& input) {
   std::string output;
   std::string input_in_string(input.begin(), input.end());
-  base::Base64Encode(input_in_string, &output);
+  absl::Base64Escape(input_in_string, &output);
   return output;
 }
 

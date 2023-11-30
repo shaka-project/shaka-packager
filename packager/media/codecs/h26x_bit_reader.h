@@ -7,10 +7,11 @@
 #ifndef PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_
 #define PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_
 
-#include <stdint.h>
 #include <sys/types.h>
 
-#include "packager/base/macros.h"
+#include <cstdint>
+
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {

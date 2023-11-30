@@ -1,8 +1,16 @@
-#include "packager/media/formats/mp2t/mpeg1_header.h"
+// Copyright 2023 Google LLC. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/bit_writer.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <packager/media/formats/mp2t/mpeg1_header.h>
+
+#include <absl/log/check.h>
+
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/bit_writer.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 // Parsing is done according to
 // https://www.datavoyage.com/mpgscript/mpeghdr.htm
@@ -27,7 +35,7 @@ const uint32_t kMpeg1SampleRateTable[][3] = {
     {48000, 24000, 12000},
     {32000, 16000, 8000}};
     // clang-format on
-const size_t kMpeg1SampleRateTableSize = arraysize(kMpeg1SampleRateTable);
+const size_t kMpeg1SampleRateTableSize = std::size(kMpeg1SampleRateTable);
 
 static inline uint32_t Mpeg1SampleRate(uint8_t sr_idx, uint8_t version) {
   static int sr_version_indexes[] = {2, -1, 1, 0};  // {V2.5, RESERVED, V2, V1}
@@ -55,7 +63,7 @@ const uint32_t kMpeg1BitrateTable[][5] = {
     {     416,  320,   256,   224,   144},
     {     448,  384,   320,   256,   160}};
     // clang-format on
-const size_t kMpeg1BitrateTableSize = arraysize(kMpeg1BitrateTable);
+const size_t kMpeg1BitrateTableSize = std::size(kMpeg1BitrateTable);
 
 static inline uint32_t Mpeg1BitRate(uint8_t btr_idx,
                                     uint8_t version,
@@ -186,7 +194,7 @@ void Mpeg1Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
       96000, 88200, 64000, 48000, 44100, 32000, 24000,
       22050, 16000, 12000, 11025, 8000,  7350};
   static const size_t kConfigFrequencyTableSize =
-      arraysize(kConfigFrequencyTable);
+      std::size(kConfigFrequencyTable);
   uint8_t cft_idx;
 
   for (cft_idx = 0; cft_idx < kConfigFrequencyTableSize; cft_idx++)

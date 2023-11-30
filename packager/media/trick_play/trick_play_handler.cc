@@ -1,13 +1,16 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/trick_play/trick_play_handler.h"
+#include <packager/media/trick_play/trick_play_handler.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/video_stream_info.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/media/base/video_stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

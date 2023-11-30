@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,10 @@
 #ifndef PACKAGER_MEDIA_BASE_BIT_WRITER_H_
 #define PACKAGER_MEDIA_BASE_BIT_WRITER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
-#include "packager/base/logging.h"
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

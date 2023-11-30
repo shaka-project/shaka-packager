@@ -1,25 +1,27 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/hls/base/media_playlist.h"
-
-#include <inttypes.h>
+#include <packager/hls/base/media_playlist.h>
 
 #include <algorithm>
+#include <cinttypes>
 #include <cmath>
 #include <memory>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/hls/base/tag.h"
-#include "packager/media/base/language_utils.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/file.h>
+#include <packager/hls/base/tag.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/language_utils.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {
@@ -112,12 +114,12 @@ std::string CreatePlaylistHeader(
   std::string version_line;
   if (!version.empty()) {
     version_line =
-        base::StringPrintf("## Generated with %s version %s\n",
-                           GetPackagerProjectUrl().c_str(), version.c_str());
+        absl::StrFormat("## Generated with %s version %s\n",
+                        GetPackagerProjectUrl().c_str(), version.c_str());
   }
 
   // 6 is required for EXT-X-MAP without EXT-X-I-FRAMES-ONLY.
-  std::string header = base::StringPrintf(
+  std::string header = absl::StrFormat(
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
       "%s"
@@ -133,20 +135,21 @@ std::string CreatePlaylistHeader(
       break;
     case HlsPlaylistType::kLive:
       if (media_sequence_number > 0) {
-        base::StringAppendF(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
-                            media_sequence_number);
+        absl::StrAppendFormat(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
+                              media_sequence_number);
       }
       if (discontinuity_sequence_number > 0) {
-        base::StringAppendF(&header, "#EXT-X-DISCONTINUITY-SEQUENCE:%d\n",
-                            discontinuity_sequence_number);
+        absl::StrAppendFormat(&header, "#EXT-X-DISCONTINUITY-SEQUENCE:%d\n",
+                              discontinuity_sequence_number);
       }
       break;
     default:
-      NOTREACHED() << "Unexpected MediaPlaylistType " << static_cast<int>(type);
+      NOTIMPLEMENTED() << "Unexpected MediaPlaylistType "
+                       << static_cast<int>(type);
   }
   if (stream_type ==
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
-    base::StringAppendF(&header, "#EXT-X-I-FRAMES-ONLY\n");
+    absl::StrAppendFormat(&header, "#EXT-X-I-FRAMES-ONLY\n");
   }
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
@@ -209,17 +212,17 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       previous_segment_end_offset_(previous_segment_end_offset) {}
 
 std::string SegmentInfoEntry::ToString() {
-  std::string result = base::StringPrintf("#EXTINF:%.3f,", duration_seconds_);
+  std::string result = absl::StrFormat("#EXTINF:%.3f,", duration_seconds_);
 
   if (use_byte_range_) {
-    base::StringAppendF(&result, "\n#EXT-X-BYTERANGE:%" PRIu64,
-                        segment_file_size_);
+    absl::StrAppendFormat(&result, "\n#EXT-X-BYTERANGE:%" PRIu64,
+                          segment_file_size_);
     if (previous_segment_end_offset_ + 1 != start_byte_offset_) {
-      base::StringAppendF(&result, "@%" PRIu64, start_byte_offset_);
+      absl::StrAppendFormat(&result, "@%" PRIu64, start_byte_offset_);
     }
   }
 
-  base::StringAppendF(&result, "\n%s", file_name_.c_str());
+  absl::StrAppendFormat(&result, "\n%s", file_name_.c_str());
 
   return result;
 }
@@ -445,7 +448,7 @@ void MediaPlaylist::AddKeyFrame(int64_t timestamp,
     stream_type_ = MediaPlaylistStreamType::kVideoIFramesOnly;
     use_byte_range_ = true;
   }
-  key_frames_.push_back({timestamp, start_byte_offset, size});
+  key_frames_.push_back({timestamp, start_byte_offset, size, std::string("")});
 }
 
 void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
@@ -469,7 +472,7 @@ void MediaPlaylist::AddPlacementOpportunity() {
   entries_.emplace_back(new PlacementOpportunityEntry());
 }
 
-bool MediaPlaylist::WriteToFile(const std::string& file_path) {
+bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
@@ -479,14 +482,14 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
       media_sequence_number_, discontinuity_sequence_number_);
 
   for (const auto& entry : entries_)
-    base::StringAppendF(&content, "%s\n", entry->ToString().c_str());
+    absl::StrAppendFormat(&content, "%s\n", entry->ToString().c_str());
 
   if (hls_params_.playlist_type == HlsPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";
   }
 
-  if (!File::WriteFileAtomically(file_path.c_str(), content)) {
-    LOG(ERROR) << "Failed to write playlist to: " << file_path;
+  if (!File::WriteFileAtomically(file_path.string().c_str(), content)) {
+    LOG(ERROR) << "Failed to write playlist to: " << file_path.string();
     return false;
   }
   return true;
@@ -691,7 +694,8 @@ void MediaPlaylist::SlideWindow() {
     } else if (entry_type == HlsEntry::EntryType::kExtDiscontinuity) {
       ++discontinuity_sequence_number_;
     } else {
-      DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
+      DCHECK_EQ(static_cast<int>(entry_type),
+                static_cast<int>(HlsEntry::EntryType::kExtInf));
 
       const SegmentInfoEntry& segment_info =
           *reinterpret_cast<SegmentInfoEntry*>(last->get());

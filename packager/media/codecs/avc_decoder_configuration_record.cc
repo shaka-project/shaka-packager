@@ -1,16 +1,19 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/codecs/h264_parser.h"
+#include <absl/strings/ascii.h>
+#include <absl/strings/escaping.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace shaka {
 namespace media {
@@ -123,7 +126,8 @@ std::string AVCDecoderConfigurationRecord::GetCodecString(
   const uint8_t bytes[] = {profile_indication, profile_compatibility,
                            avc_level};
   return FourCCToString(codec_fourcc) + "." +
-         base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+         absl::AsciiStrToLower(absl::BytesToHexString(
+             byte_array_to_string_view(bytes, std::size(bytes))));
 }
 
 }  // namespace media

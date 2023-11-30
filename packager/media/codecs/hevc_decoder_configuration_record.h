@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,14 +7,14 @@
 #ifndef PACKAGER_MEDIA_CODECS_HEVC_DECODER_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_HEVC_DECODER_CONFIGURATION_RECORD_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/decoder_configuration_record.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {

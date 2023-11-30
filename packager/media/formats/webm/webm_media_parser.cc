@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_media_parser.h"
+#include <packager/media/formats/webm/webm_media_parser.h>
 
 #include <string>
 
-#include "packager/base/callback.h"
-#include "packager/base/callback_helpers.h"
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/formats/webm/webm_cluster_parser.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/media/formats/webm/webm_content_encodings.h"
-#include "packager/media/formats/webm/webm_info_parser.h"
-#include "packager/media/formats/webm/webm_tracks_parser.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/formats/webm/webm_cluster_parser.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_content_encodings.h>
+#include <packager/media/formats/webm/webm_info_parser.h>
+#include <packager/media/formats/webm/webm_tracks_parser.h>
 
 namespace shaka {
 namespace media {
@@ -27,12 +28,12 @@ WebMMediaParser::~WebMMediaParser() {}
 
 void WebMMediaParser::Init(const InitCB& init_cb,
                            const NewMediaSampleCB& new_media_sample_cb,
-                           const NewTextSampleCB& new_text_sample_cb,
+                           const NewTextSampleCB&,
                            KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
-  DCHECK(init_cb_.is_null());
-  DCHECK(!init_cb.is_null());
-  DCHECK(!new_media_sample_cb.is_null());
+  DCHECK(!init_cb_);
+  DCHECK(init_cb);
+  DCHECK(new_media_sample_cb);
 
   ChangeState(kParsingHeaders);
   init_cb_ = init_cb;

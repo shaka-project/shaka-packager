@@ -1,22 +1,24 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/base/raw_key_source.h>
+
+#include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/status_test_util.h"
+#include <packager/status/status_test_util.h>
 
-#define EXPECT_HEX_EQ(expected, actual)                         \
-  do {                                                          \
-    std::vector<uint8_t> decoded_;                              \
-    ASSERT_TRUE(base::HexStringToBytes((expected), &decoded_)); \
-    EXPECT_EQ(decoded_, (actual));                              \
-  } while (false)
+#define EXPECT_HEX_EQ(expected_hex, actual)                          \
+  {                                                                  \
+    std::string expected_str = absl::HexStringToBytes(expected_hex); \
+    std::vector<uint8_t> expected_vector(expected_str.begin(),       \
+                                         expected_str.end());        \
+    EXPECT_EQ(expected_vector, (actual));                            \
+  }
 
 namespace shaka {
 namespace media {
@@ -45,10 +47,9 @@ const char kDrmLabel[] = "SomeDrmLabel";
 const char kAnotherDrmLabel[] = "AnotherDrmLabel";
 const char kEmptyDrmLabel[] = "";
 
-std::vector<uint8_t> HexStringToVector(const std::string& str) {
-  std::vector<uint8_t> vec;
-  CHECK(base::HexStringToBytes(str, &vec));
-  return vec;
+std::vector<uint8_t> HexStringToVector(const std::string& hex_str) {
+  std::string raw_str = absl::HexStringToBytes(hex_str);
+  return std::vector<uint8_t>(raw_str.begin(), raw_str.end());
 }
 }  // namespace
 

@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -6,39 +6,32 @@
 //
 // Unit test for rsa_key RSA encryption and signing.
 
-#include <gtest/gtest.h>
-#include <memory>
-#include "packager/media/base/rsa_key.h"
-#include "packager/media/base/test/fake_prng.h"
-#include "packager/media/base/test/rsa_test_data.h"
+#include <packager/media/base/rsa_key.h>
 
-namespace {
-// BoringSSL does not support RAND_set_rand_method yet, so we cannot use fake
-// prng with boringssl.
-const bool kIsFakePrngSupported = false;
-}  // namespace
+#include <filesystem>
+#include <memory>
+
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/media/base/test/rsa_test_data.h>
+#include <packager/media/test/test_data_util.h>
 
 namespace shaka {
 namespace media {
+
+namespace {
 
 class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
  public:
   RsaKeyTest() : test_set_(GetParam()) {}
 
   void SetUp() override {
-    if (kIsFakePrngSupported) {
-      // Make OpenSSL RSA deterministic.
-      ASSERT_TRUE(fake_prng::StartFakePrng());
-    }
-
     private_key_.reset(RsaPrivateKey::Create(test_set_.private_key));
     ASSERT_TRUE(private_key_ != NULL);
+
     public_key_.reset(RsaPublicKey::Create(test_set_.public_key));
     ASSERT_TRUE(public_key_ != NULL);
-  }
-  void TearDown() override {
-    if (kIsFakePrngSupported)
-      fake_prng::StopFakePrng();
   }
 
  protected:
@@ -85,13 +78,20 @@ TEST_P(RsaKeyTest, LoadPrivateKeyInPublicKey) {
 
 TEST_P(RsaKeyTest, EncryptAndDecrypt) {
   std::string encrypted_message;
-  EXPECT_TRUE(public_key_->Encrypt(test_set_.test_message, &encrypted_message));
-  if (kIsFakePrngSupported) {
-    EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
-  }
+  ASSERT_TRUE(public_key_->Encrypt(test_set_.test_message, &encrypted_message));
 
   std::string decrypted_message;
   EXPECT_TRUE(private_key_->Decrypt(encrypted_message, &decrypted_message));
+  EXPECT_EQ(test_set_.test_message, decrypted_message);
+}
+
+TEST_P(RsaKeyTest, DecryptGoldenMessage) {
+  // This message is from an older version that predates our use of mbedtls,
+  // but proves that the new system is compatible with the messages produced by
+  // the old one.
+  std::string decrypted_message;
+  EXPECT_TRUE(
+      private_key_->Decrypt(test_set_.encrypted_message, &decrypted_message));
   EXPECT_EQ(test_set_.test_message, decrypted_message);
 }
 
@@ -123,12 +123,17 @@ TEST_P(RsaKeyTest, BadEncMessage3) {
 
 TEST_P(RsaKeyTest, SignAndVerify) {
   std::string signature;
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       private_key_->GenerateSignature(test_set_.test_message, &signature));
-  if (kIsFakePrngSupported) {
-    EXPECT_EQ(test_set_.signature, signature);
-  }
   EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message, signature));
+}
+
+TEST_P(RsaKeyTest, VerifyGoldenSignature) {
+  // This signature is from an older version that predates our use of mbedtls,
+  // but proves that the new system is compatible with the signatures produced
+  // by the old one.
+  EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message,
+                                           test_set_.signature));
 }
 
 TEST_P(RsaKeyTest, BadSignature1) {
@@ -161,5 +166,6 @@ INSTANTIATE_TEST_CASE_P(RsaTestKeys,
                         ::testing::Values(RsaTestData().test_set_3072_bits(),
                                           RsaTestData().test_set_2048_bits()));
 
+}  // namespace
 }  // namespace media
 }  // namespace shaka

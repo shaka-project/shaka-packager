@@ -1,32 +1,35 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/mp4_muxer.h"
+#include <packager/media/formats/mp4/mp4_muxer.h>
 
 #include <algorithm>
+#include <chrono>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/time/clock.h"
-#include "packager/base/time/time.h"
-#include "packager/file/file.h"
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/es_descriptor.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/low_latency_segment_segmenter.h"
-#include "packager/media/formats/mp4/multi_segment_segmenter.h"
-#include "packager/media/formats/mp4/single_segment_segmenter.h"
-#include "packager/media/formats/ttml/ttml_generator.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
+
+#include <packager/file.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/low_latency_segment_segmenter.h>
+#include <packager/media/formats/mp4/multi_segment_segmenter.h>
+#include <packager/media/formats/mp4/single_segment_segmenter.h>
+#include <packager/media/formats/ttml/ttml_generator.h>
 
 namespace shaka {
 namespace media {
@@ -135,8 +138,8 @@ void GenerateSinf(FourCC old_type,
       track_encryption.version = 1;
       break;
     default:
-      NOTREACHED() << "Unexpected protection scheme "
-                   << encryption_config.protection_scheme;
+      NOTIMPLEMENTED() << "Unexpected protection scheme "
+                       << encryption_config.protection_scheme;
   }
 
   track_encryption.default_per_sample_iv_size =
@@ -435,8 +438,10 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   video.codec_configuration.data = video_info->codec_config();
   if (!video.ParseExtraCodecConfigsVector(video_info->extra_config())) {
     LOG(ERROR) << "Malformed extra codec configs: "
-               << base::HexEncode(video_info->extra_config().data(),
-                                  video_info->extra_config().size());
+               << absl::BytesToHexString(
+                      absl::string_view(reinterpret_cast<const char*>(
+                                            video_info->extra_config().data()),
+                                        video_info->extra_config().size()));
     return false;
   }
   if (pixel_width != 1 || pixel_height != 1) {
@@ -628,26 +633,26 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
   return false;
 }
 
-base::Optional<Range> MP4Muxer::GetInitRangeStartAndEnd() {
+std::optional<Range> MP4Muxer::GetInitRangeStartAndEnd() {
   size_t range_offset = 0;
   size_t range_size = 0;
   const bool has_range = segmenter_->GetInitRange(&range_offset, &range_size);
 
   if (!has_range)
-    return base::nullopt;
+    return std::nullopt;
 
   Range range;
   SetStartAndEndFromOffsetAndSize(range_offset, range_size, &range);
   return range;
 }
 
-base::Optional<Range> MP4Muxer::GetIndexRangeStartAndEnd() {
+std::optional<Range> MP4Muxer::GetIndexRangeStartAndEnd() {
   size_t range_offset = 0;
   size_t range_size = 0;
   const bool has_range = segmenter_->GetIndexRange(&range_offset, &range_size);
 
   if (!has_range)
-    return base::nullopt;
+    return std::nullopt;
 
   Range range;
   SetStartAndEndFromOffsetAndSize(range_offset, range_size, &range);
@@ -685,8 +690,15 @@ void MP4Muxer::FireOnMediaEndEvent() {
 uint64_t MP4Muxer::IsoTimeNow() {
   // Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.
   const uint64_t kIsomTimeOffset = 2082844800l;
-  return kIsomTimeOffset +
-         (clock() ? clock()->Now() : base::Time::Now()).ToDoubleT();
+
+  // Get the current system time since January 1, 1970, in seconds.
+  std::chrono::system_clock::duration duration =
+      std::chrono::system_clock::now().time_since_epoch();
+  std::int64_t secondsSince1970 =
+      std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+
+  // Add the offset of seconds between January 1, 1970, and January 1, 1904.
+  return secondsSince1970 + kIsomTimeOffset;
 }
 
 }  // namespace mp4

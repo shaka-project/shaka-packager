@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_cluster_parser.h"
+#include <packager/media/formats/webm/webm_cluster_parser.h>
 
 #include <algorithm>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/base/sys_byteorder.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/codecs/vp8_parser.h"
-#include "packager/media/codecs/vp9_parser.h"
-#include "packager/media/codecs/webvtt_util.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/media/formats/webm/webm_crypto_helpers.h"
-#include "packager/media/formats/webm/webm_webvtt_parser.h"
+#include <absl/base/internal/endian.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/codecs/vp8_parser.h>
+#include <packager/media/codecs/vp9_parser.h>
+#include <packager/media/codecs/webvtt_util.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_crypto_helpers.h>
+#include <packager/media/formats/webm/webm_webvtt_parser.h>
 
 namespace shaka {
 namespace media {
@@ -259,7 +261,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data, int size) {
       return true;
 
     case kWebMIdBlockAdditional: {
-      uint64_t block_add_id = base::HostToNet64(block_add_id_);
+      uint64_t block_add_id = absl::big_endian::FromHost64(block_add_id_);
       if (block_additional_data_) {
         // TODO: Technically, more than 1 BlockAdditional is allowed as per
         // matroska spec. But for now we don't have a use case to support
@@ -310,7 +312,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
                                 int size,
                                 const uint8_t* additional,
                                 int additional_size,
-                                int64_t discard_padding,
+                                int64_t /*discard_padding*/,
                                 bool is_key_frame) {
   DCHECK_GE(size, 0);
   if (cluster_timecode_ == -1) {
@@ -427,7 +429,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
                            ? (block_duration * timecode_multiplier_)
                            : kNoTimestamp);
 
-  if (!init_cb_.is_null() && !initialized_) {
+  if (init_cb_ && !initialized_) {
     std::vector<std::shared_ptr<StreamInfo>> streams;
     if (audio_stream_info_)
       streams.push_back(audio_stream_info_);
@@ -470,11 +472,11 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
         }
 
         streams.push_back(video_stream_info_);
-        init_cb_.Run(streams);
+        init_cb_(streams);
         initialized_ = true;
       }
     } else {
-      init_cb_.Run(streams);
+      init_cb_(streams);
       initialized_ = true;
     }
   }
@@ -553,7 +555,7 @@ bool WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
 
   // Don't use the applied duration as a future estimation (don't use
   // EmitBufferHelp() here.)
-  if (!new_sample_cb_.Run(track_num_, last_added_buffer_missing_duration_))
+  if (!new_sample_cb_(track_num_, last_added_buffer_missing_duration_))
     return false;
   last_added_buffer_missing_duration_ = NULL;
   return true;
@@ -594,7 +596,7 @@ bool WebMClusterParser::Track::EmitBufferHelp(
     }
   }
 
-  return new_sample_cb_.Run(track_num_, buffer);
+  return new_sample_cb_(track_num_, buffer);
 }
 
 int64_t WebMClusterParser::Track::GetDurationEstimate() {

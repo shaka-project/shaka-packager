@@ -1,21 +1,26 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/base/producer_consumer_queue.h>
+
+#include <thread>
+
+#include <absl/log/log.h>
+#include <absl/synchronization/notification.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/bind.h"
-#include "packager/base/synchronization/waitable_event.h"
-#include "packager/media/base/closure_thread.h"
-#include "packager/media/base/producer_consumer_queue.h"
-#include "packager/status_test_util.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace {
 const size_t kCapacity = 10u;
 const int64_t kTimeout = 100;  // 0.1s.
+const std::chrono::milliseconds kTimeoutDuration(kTimeout);
 }  // namespace
 
 namespace media {
@@ -80,23 +85,25 @@ TEST(ProducerConsumerQueueTest, PeekOnPoppedElement) {
 }
 
 TEST(ProducerConsumerQueueTest, PushWithTimeout) {
-  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<size_t> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i) {
-    timer.reset(new base::ElapsedTimer());
+    auto start = std::chrono::steady_clock::now();
     ASSERT_OK(queue.Push(i, kTimeout));
     // Expect Push to return without waiting for timeout.
-    EXPECT_LT(timer->Elapsed().InMilliseconds(), kTimeout);
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_LT(elapsed, kTimeoutDuration);
   }
 
-  timer.reset(new base::ElapsedTimer());
-  ASSERT_EQ(error::TIME_OUT, queue.Push(0, kTimeout).error_code());
-  EXPECT_GE(timer->Elapsed().InMilliseconds(), kTimeout);
+  {
+    auto start = std::chrono::steady_clock::now();
+    ASSERT_EQ(error::TIME_OUT, queue.Push(0, kTimeout).error_code());
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_GE(elapsed, kTimeoutDuration);
+  }
 }
 
 TEST(ProducerConsumerQueueTest, PopWithTimeout) {
-  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<size_t> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i)
@@ -104,42 +111,49 @@ TEST(ProducerConsumerQueueTest, PopWithTimeout) {
 
   size_t val;
   for (size_t i = 0; i < kCapacity; ++i) {
-    timer.reset(new base::ElapsedTimer());
+    auto start = std::chrono::steady_clock::now();
     ASSERT_OK(queue.Pop(&val, kTimeout));
     // Expect Pop to return without waiting for timeout.
-    EXPECT_LT(timer->Elapsed().InMilliseconds(), kTimeout);
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_LT(elapsed, kTimeoutDuration);
     EXPECT_EQ(i, val);
   }
 
-  timer.reset(new base::ElapsedTimer());
-  ASSERT_EQ(error::TIME_OUT, queue.Pop(&val, kTimeout).error_code());
-  EXPECT_GE(timer->Elapsed().InMilliseconds(), kTimeout);
+  {
+    auto start = std::chrono::steady_clock::now();
+    ASSERT_EQ(error::TIME_OUT, queue.Pop(&val, kTimeout).error_code());
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_GE(elapsed, kTimeoutDuration);
+  }
 }
 
 TEST(ProducerConsumerQueueTest, PeekWithTimeout) {
-  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<size_t> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i)
     ASSERT_OK(queue.Push(i, kInfiniteTimeout));
 
-  size_t val;
-  timer.reset(new base::ElapsedTimer());
-  ASSERT_EQ(error::TIME_OUT,
-            queue.Peek(kCapacity, &val, kTimeout).error_code());
-  EXPECT_GE(timer->Elapsed().InMilliseconds(), kTimeout);
+  {
+    size_t val;
+    auto start = std::chrono::steady_clock::now();
+    ASSERT_EQ(error::TIME_OUT,
+              queue.Peek(kCapacity, &val, kTimeout).error_code());
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_GE(elapsed, kTimeoutDuration);
+  }
 
   for (size_t i = kCapacity / 2; i < kCapacity; ++i) {
-    timer.reset(new base::ElapsedTimer());
+    size_t val;
+    auto start = std::chrono::steady_clock::now();
     ASSERT_OK(queue.Peek(i, &val, kTimeout));
     // Expect Peek to return without waiting for timeout.
-    EXPECT_LT(timer->Elapsed().InMilliseconds(), kTimeout);
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_LT(elapsed, kTimeoutDuration);
     EXPECT_EQ(i, val);
   }
 }
 
 TEST(ProducerConsumerQueueTest, CheckStop) {
-  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<int> queue(kUnlimitedCapacity);
 
   ASSERT_FALSE(queue.Stopped());
@@ -148,37 +162,51 @@ TEST(ProducerConsumerQueueTest, CheckStop) {
 
   EXPECT_EQ(error::STOPPED, queue.Push(0, kInfiniteTimeout).error_code());
 
-  timer.reset(new base::ElapsedTimer());
-  EXPECT_EQ(error::STOPPED, queue.Push(0, kTimeout).error_code());
-  // Expect Push to return without waiting for timeout.
-  EXPECT_LT(timer->Elapsed().InMilliseconds(), kTimeout);
+  {
+    auto start = std::chrono::steady_clock::now();
+    EXPECT_EQ(error::STOPPED, queue.Push(0, kTimeout).error_code());
+    // Expect Push to return without waiting for timeout.
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_LT(elapsed, kTimeoutDuration);
+  }
 
-  int val;
-  EXPECT_EQ(error::STOPPED, queue.Pop(&val, kInfiniteTimeout).error_code());
-  timer.reset(new base::ElapsedTimer());
-  EXPECT_EQ(error::STOPPED, queue.Pop(&val, kTimeout).error_code());
-  // Expect Pop to return without waiting for timeout.
-  EXPECT_LT(timer->Elapsed().InMilliseconds(), kTimeout);
+  {
+    int val;
+    EXPECT_EQ(error::STOPPED, queue.Pop(&val, kInfiniteTimeout).error_code());
+    auto start = std::chrono::steady_clock::now();
+    EXPECT_EQ(error::STOPPED, queue.Pop(&val, kTimeout).error_code());
+    // Expect Pop to return without waiting for timeout.
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_LT(elapsed, kTimeoutDuration);
+  }
 
-  EXPECT_EQ(error::STOPPED, queue.Peek(0, &val, kInfiniteTimeout).error_code());
-  timer.reset(new base::ElapsedTimer());
-  EXPECT_EQ(error::STOPPED, queue.Peek(0, &val, kTimeout).error_code());
-  // Expect Peek to return without waiting for timeout.
-  EXPECT_LT(timer->Elapsed().InMilliseconds(), kTimeout);
+  {
+    int val;
+    EXPECT_EQ(error::STOPPED,
+              queue.Peek(0, &val, kInfiniteTimeout).error_code());
+    auto start = std::chrono::steady_clock::now();
+    EXPECT_EQ(error::STOPPED, queue.Peek(0, &val, kTimeout).error_code());
+    // Expect Peek to return without waiting for timeout.
+    auto elapsed = std::chrono::steady_clock::now() - start;
+    EXPECT_LT(elapsed, kTimeoutDuration);
+  }
 }
 
 class MultiThreadProducerConsumerQueueTest : public ::testing::Test {
  public:
-  MultiThreadProducerConsumerQueueTest()
-      : thread_("My Push Thread",
-                base::Bind(&MultiThreadProducerConsumerQueueTest::PushTask,
-                           base::Unretained(this))),
-        queue_(kCapacity) {}
+  MultiThreadProducerConsumerQueueTest() : queue_(kCapacity) {}
   ~MultiThreadProducerConsumerQueueTest() override {}
 
  protected:
-  void SetUp() override { thread_.Start(); }
-  void TearDown() override { thread_.Join(); }
+  void SetUp() override {
+    thread_.reset(new std::thread(
+        std::bind(&MultiThreadProducerConsumerQueueTest::PushTask, this)));
+  }
+
+  void TearDown() override {
+    thread_->join();
+    thread_.reset();
+  }
 
   void PushTask() {
     int val = 0;
@@ -194,12 +222,12 @@ class MultiThreadProducerConsumerQueueTest : public ::testing::Test {
     for (size_t i = 0; i < kMaxNumLoopsWaiting; i++) {
       if (queue_.Size() >= kCapacity)
         break;
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(
-          kSleepDurationInMillisecondsPerLoop));
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(kSleepDurationInMillisecondsPerLoop));
     }
   }
 
-  ClosureThread thread_;
+  std::unique_ptr<std::thread> thread_;
   ProducerConsumerQueue<size_t> queue_;
 
  private:
@@ -270,10 +298,11 @@ TEST_F(MultiThreadProducerConsumerQueueTest, PeekOnLargePosition) {
   ASSERT_EQ(error::TIME_OUT,
             queue_.Peek(kVeryLargePosition, &val, 0).error_code());
 
-  base::ElapsedTimer timer;
+  auto start = std::chrono::steady_clock::now();
   ASSERT_EQ(error::TIME_OUT,
             queue_.Peek(kVeryLargePosition, &val, kTimeout).error_code());
-  EXPECT_GE(timer.Elapsed().InMilliseconds(), kTimeout);
+  auto elapsed = std::chrono::steady_clock::now() - start;
+  EXPECT_GE(elapsed, kTimeoutDuration);
 
   queue_.Stop();
 }
@@ -287,11 +316,7 @@ enum Operation {
 class MultiThreadProducerConsumerQueueStopTest
     : public ::testing::TestWithParam<Operation> {
  public:
-  MultiThreadProducerConsumerQueueStopTest()
-      : queue_(1),
-        event_(base::WaitableEvent::ResetPolicy::MANUAL,
-               base::WaitableEvent::InitialState::NOT_SIGNALED) {}
-  ~MultiThreadProducerConsumerQueueStopTest() override {}
+  MultiThreadProducerConsumerQueueStopTest() : queue_(1) {}
 
  public:
   void ClosureTask(Operation op) {
@@ -313,14 +338,15 @@ class MultiThreadProducerConsumerQueueStopTest
         status_ = queue_.Peek(0, &val, kInfiniteTimeout);
         break;
       default:
-        NOTREACHED();
+        NOTIMPLEMENTED() << "Unknown test op: " << op;
+        break;
     }
-    event_.Signal();
+    event_.Notify();
   }
 
  protected:
   ProducerConsumerQueue<int> queue_;
-  base::WaitableEvent event_;
+  absl::Notification event_;
 
  private:
   Status status_;
@@ -331,18 +357,14 @@ class MultiThreadProducerConsumerQueueStopTest
 // Verify that Stop stops Push/Pop/Peek operations and return immediately.
 TEST_P(MultiThreadProducerConsumerQueueStopTest, StopTests) {
   Operation op = GetParam();
-  ClosureThread thread(
-      "My Thread",
-      base::Bind(&MultiThreadProducerConsumerQueueStopTest::ClosureTask,
-                 base::Unretained(this),
-                 op));
-  thread.Start();
+  std::thread thread(std::bind(
+      &MultiThreadProducerConsumerQueueStopTest::ClosureTask, this, op));
 
-  ASSERT_TRUE(!event_.IsSignaled());
+  ASSERT_TRUE(!event_.HasBeenNotified());
   queue_.Stop();
-  event_.Wait();
+  event_.WaitForNotification();
 
-  thread.Join();
+  thread.join();
 }
 
 INSTANTIATE_TEST_CASE_P(Operations,

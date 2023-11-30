@@ -4,17 +4,20 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/subsample_generator.h"
+#include <packager/media/crypto/subsample_generator.h>
 
 #include <algorithm>
 #include <limits>
 
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/av1_parser.h"
-#include "packager/media/codecs/video_slice_header_parser.h"
-#include "packager/media/codecs/vp8_parser.h"
-#include "packager/media/codecs/vp9_parser.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/av1_parser.h>
+#include <packager/media/codecs/video_slice_header_parser.h>
+#include <packager/media/codecs/vp8_parser.h>
+#include <packager/media/codecs/vp9_parser.h>
 
 namespace shaka {
 namespace media {
@@ -270,11 +273,11 @@ Status SubsampleGenerator::GenerateSubsamplesFromVPxFrame(
   SubsampleOrganizer subsample_organizer(align_protected_data_, subsamples);
 
   size_t total_size = 0;
-  for (const VPxFrameInfo& frame : vpx_frames) {
+  for (const VPxFrameInfo& vpx_frame : vpx_frames) {
     subsample_organizer.AddSubsample(
-        frame.uncompressed_header_size,
-        frame.frame_size - frame.uncompressed_header_size);
-    total_size += frame.frame_size;
+        vpx_frame.uncompressed_header_size,
+        vpx_frame.frame_size - vpx_frame.uncompressed_header_size);
+    total_size += vpx_frame.frame_size;
   }
   // Add subsample for the superframe index if exists.
   const bool is_superframe = vpx_frames.size() > 1;

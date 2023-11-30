@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,8 +9,9 @@
 #ifndef PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_
 #define PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_string(protection_systems);
+ABSL_DECLARE_FLAG(std::string, protection_systems);
 
 #endif  // PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_

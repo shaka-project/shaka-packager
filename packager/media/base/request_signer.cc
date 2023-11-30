@@ -1,15 +1,17 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/request_signer.h"
+#include <packager/media/base/request_signer.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/sha1.h"
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/rsa_key.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <mbedtls/md.h>
+
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/rsa_key.h>
 
 namespace shaka {
 namespace media {
@@ -38,8 +40,15 @@ AesRequestSigner* AesRequestSigner::CreateSigner(
 
 bool AesRequestSigner::GenerateSignature(const std::string& message,
                                          std::string* signature) {
-  aes_cbc_encryptor_->Crypt(base::SHA1HashString(message), signature);
-  return true;
+  const mbedtls_md_info_t* md_info = mbedtls_md_info_from_type(MBEDTLS_MD_SHA1);
+  DCHECK(md_info);
+
+  std::string hash(mbedtls_md_get_size(md_info), 0);
+  CHECK_EQ(0,
+           mbedtls_md(md_info, reinterpret_cast<const uint8_t*>(message.data()),
+                      message.size(), reinterpret_cast<uint8_t*>(hash.data())));
+
+  return aes_cbc_encryptor_->Crypt(hash, signature);
 }
 
 RsaRequestSigner::RsaRequestSigner(

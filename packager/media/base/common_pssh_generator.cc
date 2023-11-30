@@ -1,12 +1,15 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/common_pssh_generator.h"
+#include <packager/media/base/common_pssh_generator.h>
 
-#include "packager/media/base/protection_system_ids.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/protection_system_ids.h>
 
 namespace shaka {
 namespace media {
@@ -25,17 +28,20 @@ bool CommonPsshGenerator::SupportMultipleKeys() {
   return true;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CommonPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
+  UNUSED(key_id);
+  UNUSED(key);
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return std::nullopt;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CommonPsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
+  UNUSED(key_ids);
   // Intentionally empty PSSH data for RawKey.
   return std::vector<uint8_t>();
 }

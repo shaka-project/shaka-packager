@@ -1,20 +1,25 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/adaptation_set.h"
+#include <packager/mpd/base/adaptation_set.h>
 
 #include <cmath>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {
@@ -30,8 +35,8 @@ AdaptationSet::Role MediaInfoTextTypeToRole(
     case MediaInfo::TextInfo::SUBTITLE:
       return AdaptationSet::kRoleSubtitle;
     default:
-      NOTREACHED() << "Unknown MediaInfo TextType: " << type
-                   << " assuming subtitle.";
+      NOTIMPLEMENTED() << "Unknown MediaInfo TextType: " << type
+                       << " assuming subtitle.";
       return AdaptationSet::kRoleSubtitle;
   }
 }
@@ -98,7 +103,7 @@ std::string GetPictureAspectRatio(uint32_t width,
           << scaled_height << ") reduced to " << par_num << ":" << par_den
           << " with error " << min_error << ".";
 
-  return base::IntToString(par_num) + ":" + base::IntToString(par_den);
+  return absl::StrFormat("%d:%d", par_num, par_den);
 }
 
 // Adds an entry to picture_aspect_ratio if the size of picture_aspect_ratio is
@@ -239,7 +244,7 @@ void AdaptationSet::AddRole(Role role) {
 // can be passed to Representation to avoid setting redundant attributes. For
 // example, if AdaptationSet@width is set, then Representation@width is
 // redundant and should not be set.
-base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
+std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   xml::AdaptationSetXmlNode adaptation_set;
 
   bool suppress_representation_width = false;
@@ -247,33 +252,33 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
   bool suppress_representation_frame_rate = false;
 
   if (id_ && !adaptation_set.SetId(id_.value()))
-    return base::nullopt;
+    return std::nullopt;
   if (!adaptation_set.SetStringAttribute("contentType", content_type_))
-    return base::nullopt;
+    return std::nullopt;
   if (!language_.empty() && language_ != "und" &&
       !adaptation_set.SetStringAttribute("lang", language_)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   // Note that std::{set,map} are ordered, so the last element is the max value.
   if (video_widths_.size() == 1) {
     suppress_representation_width = true;
     if (!adaptation_set.SetIntegerAttribute("width", *video_widths_.begin()))
-      return base::nullopt;
+      return std::nullopt;
   } else if (video_widths_.size() > 1) {
     if (!adaptation_set.SetIntegerAttribute("maxWidth",
                                             *video_widths_.rbegin())) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
   if (video_heights_.size() == 1) {
     suppress_representation_height = true;
     if (!adaptation_set.SetIntegerAttribute("height", *video_heights_.begin()))
-      return base::nullopt;
+      return std::nullopt;
   } else if (video_heights_.size() > 1) {
     if (!adaptation_set.SetIntegerAttribute("maxHeight",
                                             *video_heights_.rbegin())) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -281,12 +286,12 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
     suppress_representation_frame_rate = true;
     if (!adaptation_set.SetStringAttribute(
             "frameRate", video_frame_rates_.begin()->second)) {
-      return base::nullopt;
+      return std::nullopt;
     }
   } else if (video_frame_rates_.size() > 1) {
     if (!adaptation_set.SetStringAttribute(
             "maxFrameRate", video_frame_rates_.rbegin()->second)) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -295,7 +300,7 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
       !adaptation_set.AddSupplementalProperty(
           "urn:mpeg:mpegB:cicp:TransferCharacteristics",
           std::to_string(transfer_characteristics_))) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   // Note: must be checked before checking segments_aligned_ (below). So that
@@ -310,60 +315,60 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
                 ? "subsegmentAlignment"
                 : "segmentAlignment",
             "true")) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
 
   if (picture_aspect_ratio_.size() == 1 &&
       !adaptation_set.SetStringAttribute("par",
                                          *picture_aspect_ratio_.begin())) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (!adaptation_set.AddContentProtectionElements(
           content_protection_elements_)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   std::string trick_play_reference_ids;
-  for (const AdaptationSet* adaptation_set : trick_play_references_) {
+  for (const AdaptationSet* tp_adaptation_set : trick_play_references_) {
     // Should be a whitespace-separated list, see DASH-IOP 3.2.9.
     if (!trick_play_reference_ids.empty())
       trick_play_reference_ids += ' ';
-    CHECK(adaptation_set->has_id());
-    trick_play_reference_ids += std::to_string(adaptation_set->id());
+    CHECK(tp_adaptation_set->has_id());
+    trick_play_reference_ids += std::to_string(tp_adaptation_set->id());
   }
   if (!trick_play_reference_ids.empty() &&
       !adaptation_set.AddEssentialProperty(
           "http://dashif.org/guidelines/trickmode", trick_play_reference_ids)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   std::string switching_ids;
-  for (const AdaptationSet* adaptation_set : switchable_adaptation_sets_) {
+  for (const AdaptationSet* s_adaptation_set : switchable_adaptation_sets_) {
     // Should be a comma-separated list, see DASH-IOP 3.8.
     if (!switching_ids.empty())
       switching_ids += ',';
-    CHECK(adaptation_set->has_id());
-    switching_ids += std::to_string(adaptation_set->id());
+    CHECK(s_adaptation_set->has_id());
+    switching_ids += std::to_string(s_adaptation_set->id());
   }
   if (!switching_ids.empty() &&
       !adaptation_set.AddSupplementalProperty(
           "urn:mpeg:dash:adaptation-set-switching:2016", switching_ids)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   for (const AdaptationSet::Accessibility& accessibility : accessibilities_) {
     if (!adaptation_set.AddAccessibilityElement(accessibility.scheme,
                                                 accessibility.value)) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
 
   for (AdaptationSet::Role role : roles_) {
     if (!adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011",
                                        RoleToText(role))) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -377,10 +382,10 @@ base::Optional<xml::XmlNode> AdaptationSet::GetXml() {
       representation->SuppressOnce(Representation::kSuppressFrameRate);
     auto child = representation->GetXml();
     if (!child || !adaptation_set.AddChild(std::move(*child)))
-      return base::nullopt;
+      return std::nullopt;
   }
 
-  return std::move(adaptation_set);
+  return adaptation_set;
 }
 
 void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
@@ -601,7 +606,7 @@ void AdaptationSet::RecordFrameRate(int32_t frame_duration, int32_t timescale) {
     return;
   }
   video_frame_rates_[static_cast<double>(timescale) / frame_duration] =
-      base::IntToString(timescale) + "/" + base::IntToString(frame_duration);
+      absl::StrFormat("%d/%d", timescale, frame_duration);
 }
 
 }  // namespace shaka

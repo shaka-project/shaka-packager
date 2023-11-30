@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -6,9 +6,10 @@
 //
 // Defines command line flags for protection systems.
 
-#include "packager/app/protection_system_flags.h"
+#include <packager/app/protection_system_flags.h>
 
-DEFINE_string(
+ABSL_FLAG(
+    std::string,
     protection_systems,
     "",
     "Protection systems to be generated. Supported protection systems include "

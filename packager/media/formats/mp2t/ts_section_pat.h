@@ -5,9 +5,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PAT_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PAT_H_
 
-#include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
-#include "packager/media/formats/mp2t/ts_section_psi.h"
+#include <functional>
+
+#include <packager/macros/classes.h>
+#include <packager/media/formats/mp2t/ts_section_psi.h>
 
 namespace shaka {
 namespace media {
@@ -16,7 +17,7 @@ namespace mp2t {
 class TsSectionPat : public TsSectionPsi {
  public:
   // RegisterPmtCb::Run(int program_number, int pmt_pid);
-  typedef base::Callback<void(int, int)> RegisterPmtCb;
+  typedef std::function<void(int, int)> RegisterPmtCb;
 
   explicit TsSectionPat(const RegisterPmtCb& register_pmt_cb);
   ~TsSectionPat() override;

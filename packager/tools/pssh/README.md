@@ -3,7 +3,7 @@ pssh-box - Utility to parse and generate PSSH boxes
 
 ## Prerequisite
 
-- Python 2.6 or newer.
+- Python 3.
 
 ## Build the utility using Shaka Packager build setup
 
@@ -16,11 +16,10 @@ https://github.com/shaka-project/shaka-packager/blob/master/docs/source/build_in
 With the build environment set up, use `ninja` to build the utility:
 
 ```bash
-$ ninja -C out/Release pssh_box_py
+$ ninja -C build/ pssh-box.py
 ```
 
-Then you can use the built utility in `out/Release/pssh_box.py`. You can add
-`out/Release` to your `PATH` so you can run it from anywhere.
+Then you can use the built utility in `build/pssh-box.py`.
 
 ## Usage
 

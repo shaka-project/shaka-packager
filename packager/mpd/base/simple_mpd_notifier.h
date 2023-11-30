@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -12,9 +12,10 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/synchronization/lock.h"
-#include "packager/mpd/base/mpd_notifier.h"
-#include "packager/mpd/base/mpd_notifier_util.h"
+#include <absl/synchronization/mutex.h>
+
+#include <packager/mpd/base/mpd_notifier.h>
+#include <packager/mpd/base/mpd_notifier_util.h>
 
 namespace shaka {
 
@@ -75,7 +76,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   std::string output_path_;
   std::unique_ptr<MpdBuilder> mpd_builder_;
   bool content_protection_in_adaptation_set_ = true;
-  base::Lock lock_;
+  absl::Mutex lock_;
 
   uint32_t next_adaptation_set_id_ = 0;
   // Maps Representation ID to Representation.

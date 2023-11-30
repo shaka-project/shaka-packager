@@ -1,5 +1,0 @@
-This is a placeholder.  Shaka Packager depends on an old version of the
-Chromium build system, which unconditionally adds this folder to the library
-search path.  We no longer fetch a copy of libc++-static, but chromium's
-common.gypi file can't be configured to exclude this from the linker path.
-Therefore we just add a placeholder here to silence linker warnings.

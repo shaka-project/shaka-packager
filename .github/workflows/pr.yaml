@@ -1,0 +1,74 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+name: Build and Test PR
+
+# Builds and tests on all combinations of OS, build type, and library type.
+# Also builds the docs.
+#
+# Runs when a pull request is opened or updated.
+#
+# Can also be run manually for debugging purposes.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref to build and test."
+        required: false
+        type: string
+
+# If another instance of this workflow is started for the same PR, cancel the
+# old one.  If a PR is updated and a new test run is started, the old test run
+# will be cancelled automatically to conserve resources.
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  settings:
+    name: Settings
+    uses: ./.github/workflows/settings.yaml
+
+  lint:
+    name: Lint
+    uses: ./.github/workflows/lint.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+
+  build_and_test:
+    needs: [lint, settings]
+    name: Build and test
+    uses: ./.github/workflows/build.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+      self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
+
+  build_docs:
+    needs: [lint, settings]
+    name: Build docs
+    uses: ./.github/workflows/build-docs.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
+
+  official_docker_image:
+    needs: lint
+    name: Official Docker image
+    uses: ./.github/workflows/build-docker.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+
+  test_supported_linux_distros:
+    # Doesn't really "need" it, but let's not waste time on a series of docker
+    # builds just to cancel it because of a linter error.
+    needs: lint
+    name: Test Linux distros
+    uses: ./.github/workflows/test-linux-distros.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}

@@ -1,14 +1,16 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/ac3_audio_util.h"
+#include <packager/media/codecs/ac3_audio_util.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/strings/escaping.h>
+
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace shaka {
 namespace media {
@@ -42,7 +44,8 @@ size_t GetAc3NumChannels(const std::vector<uint8_t>& ac3_data) {
   bool lfe_channel_on;
   if (!ExtractAc3Data(ac3_data, &audio_coding_mode, &lfe_channel_on)) {
     LOG(WARNING) << "Seeing invalid AC3 data: "
-                 << base::HexEncode(ac3_data.data(), ac3_data.size());
+                 << absl::BytesToHexString(
+                        byte_vector_to_string_view(ac3_data));
     return 0;
   }
   return kAc3NumChannelsTable[audio_coding_mode] + (lfe_channel_on ? 1 : 0);

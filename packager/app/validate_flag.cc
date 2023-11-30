@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -6,9 +6,9 @@
 //
 // Flag validation help functions.
 
-#include "packager/app/validate_flag.h"
+#include <packager/app/validate_flag.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace shaka {
 

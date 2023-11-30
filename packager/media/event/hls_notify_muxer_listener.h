@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -8,13 +8,13 @@
 #define PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/media/event/event_info.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/media/event/event_info.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 
@@ -68,7 +68,9 @@ class HlsNotifyMuxerListener : public MuxerListener {
                     int64_t start_time,
                     int64_t duration,
                     uint64_t segment_file_size) override;
-  void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
+  void OnKeyFrame(int64_t timestamp,
+                  uint64_t start_byte_offset,
+                  uint64_t size) override;
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 
@@ -84,7 +86,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_group_id_;
   const std::vector<std::string> characteristics_;
   hls::HlsNotifier* const hls_notifier_;
-  base::Optional<uint32_t> stream_id_;
+  std::optional<uint32_t> stream_id_;
 
   bool must_notify_encryption_start_ = false;
   // Cached encryption info before OnMediaStart() is called.

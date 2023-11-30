@@ -1,19 +1,20 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/ts_writer.h"
+#include <packager/media/formats/mp2t/ts_writer.h>
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/formats/mp2t/pes_packet.h"
-#include "packager/media/formats/mp2t/program_map_table_writer.h"
-#include "packager/media/formats/mp2t/ts_packet_writer_util.h"
+#include <absl/log/log.h>
+
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/formats/mp2t/pes_packet.h>
+#include <packager/media/formats/mp2t/program_map_table_writer.h>
+#include <packager/media/formats/mp2t/ts_packet_writer_util.h>
 
 namespace shaka {
 namespace media {
@@ -167,7 +168,7 @@ TsWriter::~TsWriter() {}
 
 bool TsWriter::NewSegment(BufferWriter* buffer) {
   BufferWriter psi;
-  WritePatToBuffer(kPat, arraysize(kPat), &pat_continuity_counter_, &psi);
+  WritePatToBuffer(kPat, std::size(kPat), &pat_continuity_counter_, &psi);
   if (encrypted_) {
     if (!pmt_writer_->EncryptedSegmentPmt(&psi)) {
       return false;

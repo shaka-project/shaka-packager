@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/wvm/wvm_media_parser.h"
+#include <packager/media/formats/wvm/wvm_media_parser.h>
 
 #include <map>
 #include <sstream>
 #include <vector>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/aes_decryptor.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
-#include "packager/media/codecs/es_descriptor.h"
-#include "packager/media/formats/mp2t/adts_header.h"
-#include "packager/status.h"
+#include <absl/base/internal/endian.h>
+#include <absl/log/check.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/formats/mp2t/adts_header.h>
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
@@ -116,8 +117,8 @@ void WvmMediaParser::Init(const InitCB& init_cb,
                           const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
-  DCHECK(!init_cb.is_null());
-  DCHECK(!new_media_sample_cb.is_null());
+  DCHECK(init_cb != nullptr);
+  DCHECK(new_media_sample_cb != nullptr);
   decryption_key_source_ = decryption_key_source;
   init_cb_ = init_cb;
   new_sample_cb_ = new_media_sample_cb;
@@ -490,9 +491,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
 bool WvmMediaParser::EmitLastSample(
     uint32_t stream_id,
     const std::shared_ptr<MediaSample>& new_sample) {
-  std::string key = base::UintToString(current_program_id_)
-                        .append(":")
-                        .append(base::UintToString(stream_id));
+  std::string key = absl::StrFormat("%u:%u", current_program_id_, stream_id);
   std::map<std::string, uint32_t>::iterator it =
       program_demux_stream_map_.find(key);
   if (it == program_demux_stream_map_.end())
@@ -550,16 +549,16 @@ bool WvmMediaParser::ParseIndexEntry() {
   }
 
   const uint8_t* read_ptr = index_data_.data();
-  if (ntohlFromBuffer(read_ptr) != kIndexMagic) {
+  if (absl::big_endian::Load32(read_ptr) != kIndexMagic) {
     index_data_.clear();
     return false;
   }
   read_ptr += 4;
 
-  uint32_t version = ntohlFromBuffer(read_ptr);
+  uint32_t version = absl::big_endian::Load32(read_ptr);
   read_ptr += 4;
   if (version == kVersion4) {
-    index_size = kIndexVersion4HeaderSize + ntohlFromBuffer(read_ptr);
+    index_size = kIndexVersion4HeaderSize + absl::big_endian::Load32(read_ptr);
     if (index_data_.size() < index_size) {
       // We do not yet have the full index. Keep accumulating index data.
       return true;
@@ -601,7 +600,7 @@ bool WvmMediaParser::ParseIndexEntry() {
       ++read_ptr;
       uint8_t type = *read_ptr;
       ++read_ptr;
-      uint32_t length = ntohlFromBuffer(read_ptr);
+      uint32_t length = absl::big_endian::Load32(read_ptr);
       read_ptr += sizeof(uint32_t);
       index_metadata_max_size -= (2 * sizeof(uint8_t)) + sizeof(uint32_t);
       if (index_metadata_max_size < length) {
@@ -748,11 +747,9 @@ bool WvmMediaParser::ParseIndexEntry() {
           video_height, pixel_width, pixel_height,
           0 /* transfer_characteristics */, trick_play_factor, nalu_length_size,
           std::string(), decryption_key_source_ ? false : true));
-      program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                                base::UintToString(
-                                    video_pes_stream_id
-                                        ? video_pes_stream_id
-                                        : kDefaultVideoStreamId)] =
+      program_demux_stream_map_[absl::StrFormat(
+          "%u:%u", index_program_id_,
+          video_pes_stream_id ? video_pes_stream_id : kDefaultVideoStreamId)] =
           stream_id_count_++;
     }
     if (has_audio) {
@@ -765,11 +762,9 @@ bool WvmMediaParser::ParseIndexEntry() {
           0 /* seek preroll */, 0 /* codec delay */, 0 /* max bitrate */,
           0 /* avg bitrate */, std::string(),
           decryption_key_source_ ? false : true));
-      program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                                base::UintToString(
-                                    audio_pes_stream_id
-                                        ? audio_pes_stream_id
-                                        : kDefaultAudioStreamId)] =
+      program_demux_stream_map_[absl::StrFormat(
+          "%u:%u", index_program_id_,
+          audio_pes_stream_id ? audio_pes_stream_id : kDefaultAudioStreamId)] =
           stream_id_count_++;
     }
   }
@@ -786,9 +781,12 @@ bool WvmMediaParser::DemuxNextPes(bool is_program_end) {
     if (!content_decryptor_) {
       output_encrypted_sample = true;
     } else {
+      size_t output_size = content_decryptor_->RequiredOutputSize(
+          sample_data_.size() - crypto_unit_start_pos_);
       content_decryptor_->Crypt(&sample_data_[crypto_unit_start_pos_],
                                 sample_data_.size() - crypto_unit_start_pos_,
-                                &sample_data_[crypto_unit_start_pos_]);
+                                &sample_data_[crypto_unit_start_pos_],
+                                &output_size);
     }
   }
   // Demux media sample if we are at program end or if we are not at a
@@ -962,14 +960,14 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
       }
     }
     if (all_streams_have_config) {
-      init_cb_.Run(stream_infos_);
+      init_cb_(stream_infos_);
       is_initialized_ = true;
     }
   }
 
   DCHECK_GT(media_sample_->data_size(), 0UL);
-  std::string key =  base::UintToString(current_program_id_).append(":")
-      .append(base::UintToString(prev_pes_stream_id_));
+  std::string key =
+      absl::StrFormat("%u:%u", current_program_id_, prev_pes_stream_id_);
   std::map<std::string, uint32_t>::iterator it =
       program_demux_stream_map_.find(key);
   if (it == program_demux_stream_map_.end()) {
@@ -1011,7 +1009,7 @@ bool WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
                kPesStreamIdAudio) {
       new_sample->set_duration(prev_media_sample_data_.audio_sample_duration);
     }
-    if (!new_sample_cb_.Run(stream_id, new_sample)) {
+    if (!new_sample_cb_(stream_id, new_sample)) {
       LOG(ERROR) << "Failed to process the last sample.";
       return false;
     }
@@ -1031,8 +1029,8 @@ bool WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
         new_sample->dts() - prev_media_sample_data_.video_sample->dts());
     prev_media_sample_data_.video_sample_duration =
         prev_media_sample_data_.video_sample->duration();
-    if (!new_sample_cb_.Run(prev_media_sample_data_.video_stream_id,
-                            prev_media_sample_data_.video_sample)) {
+    if (!new_sample_cb_(prev_media_sample_data_.video_stream_id,
+                        prev_media_sample_data_.video_sample)) {
       LOG(ERROR) << "Failed to process the video sample.";
       return false;
     }
@@ -1049,8 +1047,8 @@ bool WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
         new_sample->dts() - prev_media_sample_data_.audio_sample->dts());
     prev_media_sample_data_.audio_sample_duration =
         prev_media_sample_data_.audio_sample->duration();
-    if (!new_sample_cb_.Run(prev_media_sample_data_.audio_stream_id,
-                            prev_media_sample_data_.audio_sample)) {
+    if (!new_sample_cb_(prev_media_sample_data_.audio_stream_id,
+                        prev_media_sample_data_.audio_sample)) {
       LOG(ERROR) << "Failed to process the audio sample.";
       return false;
     }
@@ -1068,7 +1066,7 @@ bool WvmMediaParser::GetAssetKey(const uint8_t* asset_id,
       std::vector<uint8_t>(asset_id, asset_id + sizeof(uint32_t)));
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
-               << ntohlFromBuffer(asset_id) << ", error = " << status;
+               << absl::big_endian::Load32(asset_id) << ", error = " << status;
     return false;
   }
 
@@ -1076,7 +1074,7 @@ bool WvmMediaParser::GetAssetKey(const uint8_t* asset_id,
   status = decryption_key_source_->GetKey(kHdStreamLabel, encryption_key);
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
-               << ntohlFromBuffer(asset_id) << ", error = " << status;
+               << absl::big_endian::Load32(asset_id) << ", error = " << status;
     return false;
   }
 
@@ -1107,7 +1105,7 @@ bool WvmMediaParser::ProcessEcm() {
   }
   if (encryption_key.key.size() < kAssetKeySizeBytes) {
     LOG(ERROR) << "Asset Key size of " << encryption_key.key.size()
-               << " for AssetID = " << ntohlFromBuffer(ecm_data)
+               << " for AssetID = " << absl::big_endian::Load32(ecm_data)
                << " is less than minimum asset key size.";
     return false;
   }
@@ -1129,9 +1127,12 @@ bool WvmMediaParser::ProcessEcm() {
   const size_t content_key_buffer_size =
       kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +
       kEcmPaddingSizeBytes;  // flags + contentKey + padding.
-  std::vector<uint8_t> content_key_buffer(content_key_buffer_size);
+
+  size_t output_size =
+      asset_decryptor.RequiredOutputSize(content_key_buffer_size);
+  std::vector<uint8_t> content_key_buffer(output_size);
   CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,
-                              content_key_buffer.data()));
+                              content_key_buffer.data(), &output_size));
 
   std::vector<uint8_t> decrypted_content_key_vec(
       content_key_buffer.begin() + 4,

@@ -1,24 +1,27 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/low_latency_segment_segmenter.h"
+#include <packager/media/formats/mp4/low_latency_segment_segmenter.h>
 
 #include <algorithm>
 
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/fragmenter.h"
-#include "packager/media/formats/mp4/key_frame_info.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/fragmenter.h>
+#include <packager/media/formats/mp4/key_frame_info.h>
 
 namespace shaka {
 namespace media {

@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "packager/mpd/public/mpd_params.h"
+#include <packager/mpd_params.h>
 
 namespace shaka {
 
