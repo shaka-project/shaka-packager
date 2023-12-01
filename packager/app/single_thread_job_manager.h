@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLLC All rights reserved.
+// Copyright 2020 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "packager/app/job_manager.h"
+#include <packager/app/job_manager.h>
 
 namespace shaka {
 namespace media {
@@ -22,7 +22,7 @@ class SingleThreadJobManager : public JobManager {
   //        fails or is cancelled. It can be NULL.
   explicit SingleThreadJobManager(std::unique_ptr<SyncPointQueue> sync_points);
 
-  Status InitializeJobs() override;
+  // Run all registered jobs serially in this thread.
   Status RunJobs() override;
 };
 

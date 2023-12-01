@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,16 +9,15 @@
 #ifndef PACKAGER_MPD_BASE_ADAPTATION_SET_H_
 #define PACKAGER_MPD_BASE_ADAPTATION_SET_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 
@@ -109,7 +108,7 @@ class AdaptationSet {
   /// and ContentProtection elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  base::Optional<xml::XmlNode> GetXml();
+  std::optional<xml::XmlNode> GetXml();
 
   /// Forces the (sub)segmentAlignment field to be set to @a segment_alignment.
   /// Use this if you are certain that the (sub)segments are alinged/unaligned
@@ -181,7 +180,7 @@ class AdaptationSet {
   void set_codec(const std::string& codec) { codec_ = codec; };
 
   /// @return transfer_characteristics.
-  const uint32_t transfer_characteristics() const {
+  uint32_t transfer_characteristics() const {
     return transfer_characteristics_;
   }
 
@@ -259,7 +258,7 @@ class AdaptationSet {
 
   uint32_t* const representation_counter_;
 
-  base::Optional<uint32_t> id_;
+  std::optional<uint32_t> id_;
   const std::string language_;
   const MpdOptions& mpd_options_;
 

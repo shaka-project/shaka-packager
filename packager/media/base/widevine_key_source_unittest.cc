@@ -1,23 +1,26 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/base/widevine_key_source.h>
+
+#include <algorithm>
+#include <cinttypes>
+#include <iterator>
+
+#include <absl/strings/escaping.h>
+#include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <algorithm>
-
-#include "packager/base/base64.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/key_fetcher.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/widevine_key_source.h"
-#include "packager/media/base/widevine_pssh_generator.h"
-#include "packager/status_test_util.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/key_fetcher.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/widevine_pssh_generator.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 using ::testing::Bool;
@@ -102,7 +105,7 @@ const uint8_t kClassicAssetIdBytes[] = {0x80, 0x03, 0x8c, 0xd9};
 
 std::string Base64Encode(const std::string& input) {
   std::string output;
-  base::Base64Encode(input, &output);
+  absl::Base64Escape(input, &output);
   return output;
 }
 
@@ -142,13 +145,13 @@ std::string GenerateMockLicenseResponseWithBoxes(const std::string& boxes) {
   for (const std::string& track_type : kTrackTypes) {
     if (!tracks.empty())
       tracks += ",";
-    tracks += base::StringPrintf(kTrackFormatWithBoxes, track_type.c_str(),
-                                 Base64Encode(GetMockKeyId(track_type)).c_str(),
-                                 Base64Encode(GetMockKey(track_type)).c_str(),
-                                 Base64Encode(GetMockPsshData()).c_str(),
-                                 boxes.c_str());
+    tracks +=
+        absl::StrFormat(kTrackFormatWithBoxes, track_type.c_str(),
+                        Base64Encode(GetMockKeyId(track_type)).c_str(),
+                        Base64Encode(GetMockKey(track_type)).c_str(),
+                        Base64Encode(GetMockPsshData()).c_str(), boxes.c_str());
   }
-  return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
+  return absl::StrFormat(kLicenseResponseFormat, "OK", tracks.c_str());
 }
 
 std::string GenerateMockLicenseResponse() {
@@ -157,12 +160,12 @@ std::string GenerateMockLicenseResponse() {
   for (const std::string& track_type : kTrackTypes) {
     if (!tracks.empty())
       tracks += ",";
-    tracks += base::StringPrintf(kTrackFormat, track_type.c_str(),
-                                 Base64Encode(GetMockKeyId(track_type)).c_str(),
-                                 Base64Encode(GetMockKey(track_type)).c_str(),
-                                 Base64Encode(GetMockPsshData()).c_str());
+    tracks += absl::StrFormat(kTrackFormat, track_type.c_str(),
+                              Base64Encode(GetMockKeyId(track_type)).c_str(),
+                              Base64Encode(GetMockKey(track_type)).c_str(),
+                              Base64Encode(GetMockPsshData()).c_str());
   }
-  return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
+  return absl::StrFormat(kLicenseResponseFormat, "OK", tracks.c_str());
 }
 
 std::string GenerateMockLicenseResponseWithIv() {
@@ -171,13 +174,13 @@ std::string GenerateMockLicenseResponseWithIv() {
   for (const std::string& track_type : kTrackTypes) {
     if (!tracks.empty())
       tracks += ",";
-    tracks += base::StringPrintf(kTrackFormatWithIv, track_type.c_str(),
-                                 Base64Encode(GetMockKeyId(track_type)).c_str(),
-                                 Base64Encode(GetMockKey(track_type)).c_str(),
-                                 Base64Encode(GetMockIv(track_type)).c_str(),
-                                 Base64Encode(GetMockPsshData()).c_str());
+    tracks += absl::StrFormat(kTrackFormatWithIv, track_type.c_str(),
+                              Base64Encode(GetMockKeyId(track_type)).c_str(),
+                              Base64Encode(GetMockKey(track_type)).c_str(),
+                              Base64Encode(GetMockIv(track_type)).c_str(),
+                              Base64Encode(GetMockPsshData()).c_str());
   }
-  return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
+  return absl::StrFormat(kLicenseResponseFormat, "OK", tracks.c_str());
 }
 
 std::string GenerateMockClassicLicenseResponse() {
@@ -186,10 +189,10 @@ std::string GenerateMockClassicLicenseResponse() {
   for (const std::string& track_type : kTrackTypes) {
     if (!tracks.empty())
       tracks += ",";
-    tracks += base::StringPrintf(kClassicTrackFormat, track_type.c_str(),
-                                 Base64Encode(GetMockKey(track_type)).c_str());
+    tracks += absl::StrFormat(kClassicTrackFormat, track_type.c_str(),
+                              Base64Encode(GetMockKey(track_type)).c_str());
   }
-  return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
+  return absl::StrFormat(kLicenseResponseFormat, "OK", tracks.c_str());
 }
 
 }  // namespace
@@ -320,7 +323,7 @@ TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
 }
 
 TEST_F(WidevineKeySourceTest, RetryOnHttpTimeout) {
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
   // Retry is expected on HTTP timeout.
@@ -334,12 +337,12 @@ TEST_F(WidevineKeySourceTest, RetryOnHttpTimeout) {
 }
 
 TEST_F(WidevineKeySourceTest, RetryOnTransientError) {
-  std::string mock_license_status = base::StringPrintf(
-      kLicenseResponseFormat, kLicenseStatusTransientError, "");
-  std::string mock_response = base::StringPrintf(
+  std::string mock_license_status =
+      absl::StrFormat(kLicenseResponseFormat, kLicenseStatusTransientError, "");
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
 
-  std::string expected_retried_response = base::StringPrintf(
+  std::string expected_retried_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
   // Retry is expected on transient error.
@@ -354,9 +357,9 @@ TEST_F(WidevineKeySourceTest, RetryOnTransientError) {
 }
 
 TEST_F(WidevineKeySourceTest, NoRetryOnUnknownError) {
-  std::string mock_license_status = base::StringPrintf(
-      kLicenseResponseFormat, kLicenseStatusUnknownError, "");
-  std::string mock_response = base::StringPrintf(
+  std::string mock_license_status =
+      absl::StrFormat(kLicenseResponseFormat, kLicenseStatusUnknownError, "");
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
 
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
@@ -368,7 +371,7 @@ TEST_F(WidevineKeySourceTest, NoRetryOnUnknownError) {
 }
 
 TEST_F(WidevineKeySourceTest, CheckIv) {
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat,
       Base64Encode(GenerateMockLicenseResponseWithIv()).c_str());
 
@@ -382,7 +385,7 @@ TEST_F(WidevineKeySourceTest, CheckIv) {
 
 TEST_F(WidevineKeySourceTest, BoxesInResponse) {
   const char kMockBoxes[] = "mock_pssh_boxes";
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponseWithBoxes(
                                             Base64Encode(kMockBoxes)))
                                .c_str());
@@ -402,30 +405,28 @@ TEST_F(WidevineKeySourceTest, BoxesInResponse) {
 
 class WidevineKeySourceParameterizedTest
     : public WidevineKeySourceTest,
-      public WithParamInterface<std::tr1::tuple<bool, bool, FourCC>> {
+      public WithParamInterface<std::tuple<bool, bool, FourCC>> {
  public:
   WidevineKeySourceParameterizedTest() {
-    add_widevine_pssh_ = std::tr1::get<0>(GetParam());
-    add_common_pssh_ = std::tr1::get<1>(GetParam());
-    protection_scheme_ = std::tr1::get<2>(GetParam());
+    add_widevine_pssh_ = std::get<0>(GetParam());
+    add_common_pssh_ = std::get<1>(GetParam());
+    protection_scheme_ = std::get<2>(GetParam());
   }
 };
 
 // Check whether expected request message and post data was generated and
 // verify the correct behavior on http failure.
 TEST_P(WidevineKeySourceParameterizedTest, HttpFetchFailure) {
-  std::string expected_message = base::StringPrintf(
+  std::string expected_message = absl::StrFormat(
       kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy,
       GetExpectedProtectionScheme().c_str());
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
-  std::string expected_post_data =
-      base::StringPrintf(kExpectedSignedMessageFormat,
-                         Base64Encode(expected_message).c_str(),
-                         Base64Encode(kMockSignature).c_str(),
-                         kSignerName);
+  std::string expected_post_data = absl::StrFormat(
+      kExpectedSignedMessageFormat, Base64Encode(expected_message).c_str(),
+      Base64Encode(kMockSignature).c_str(), kSignerName);
   const Status kMockStatus = Status::UNKNOWN;
   EXPECT_CALL(*mock_key_fetcher_,
               FetchKeys(StrEq(kServerUrl), expected_post_data, _))
@@ -438,7 +439,7 @@ TEST_P(WidevineKeySourceParameterizedTest, HttpFetchFailure) {
 }
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencOK) {
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
@@ -450,7 +451,7 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencOK) {
 }
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencMalformedResponse) {
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode("malformed response").c_str());
 
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
@@ -464,13 +465,13 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencMalformedResponse) {
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithPsshBoxOK) {
   std::string expected_message =
-      base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
-                         Base64Encode(kRequestPsshData).c_str());
+      absl::StrFormat(kExpectedRequestMessageWithPsshFormat,
+                      Base64Encode(kRequestPsshData).c_str());
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
@@ -487,13 +488,13 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithKeyIdsOK) {
   std::string expected_pssh_data(std::begin(kRequestPsshDataFromKeyIds),
                                  std::end(kRequestPsshDataFromKeyIds));
   std::string expected_message =
-      base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
-                         Base64Encode(expected_pssh_data).c_str());
+      absl::StrFormat(kExpectedRequestMessageWithPsshFormat,
+                      Base64Encode(expected_pssh_data).c_str());
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
-  std::string mock_response = base::StringPrintf(
+  std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
@@ -507,15 +508,15 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithKeyIdsOK) {
 }
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusClassicOK) {
-  std::string expected_message = base::StringPrintf(
+  std::string expected_message = absl::StrFormat(
       kExpectedRequestMessageWithAssetIdFormat, kClassicAssetId);
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
-  std::string mock_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(
-          GenerateMockClassicLicenseResponse()).c_str());
+  std::string mock_response = absl::StrFormat(
+      kHttpResponseFormat,
+      Base64Encode(GenerateMockClassicLicenseResponse()).c_str());
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
@@ -530,9 +531,9 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusClassicOK) {
 
 TEST_P(WidevineKeySourceParameterizedTest, VerifyEntitlementLicenseRequest) {
   const std::string expected_message =
-      base::StringPrintf(kExpectedRequestMessageFormatWithEntitlement,
-                         Base64Encode(kContentId).c_str(), kPolicy,
-                         GetExpectedProtectionScheme().c_str());
+      absl::StrFormat(kExpectedRequestMessageFormatWithEntitlement,
+                      Base64Encode(kContentId).c_str(), kPolicy,
+                      GetExpectedProtectionScheme().c_str());
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(Return(false));
@@ -562,7 +563,8 @@ const char kCryptoPeriodTrackFormat[] =
 std::string GetMockKey(const std::string& track_type, uint32_t index) {
   // The key must be 16 characters, in case the key is needed to generate a
   // PlayReady pssh.
-  std::string key = "MockKey" + track_type + "@" + base::UintToString(index);
+  std::string key =
+      "MockKey" + track_type + "@" + absl::StrFormat("%" PRIu32, index);
   key.resize(16, '~');
   return key;
 }
@@ -578,13 +580,13 @@ std::string GenerateMockKeyRotationLicenseResponse(
     for (const std::string& track_type : kTrackTypes) {
       if (!tracks.empty())
         tracks += ",";
-      tracks += base::StringPrintf(
+      tracks += absl::StrFormat(
           kCryptoPeriodTrackFormat, track_type.c_str(),
           Base64Encode(GetMockKeyId(track_type)).c_str(),
           Base64Encode(GetMockKey(track_type, index)).c_str(), index);
     }
   }
-  return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
+  return absl::StrFormat(kLicenseResponseFormat, "OK", tracks.c_str());
 }
 
 }  // namespace
@@ -603,24 +605,27 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   InSequence dummy;
 
   // Expecting a non-key rotation enabled request on FetchKeys().
-  EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
-      .WillOnce(Return(true));
-  std::string mock_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
-  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+  {
+    EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
+        .WillOnce(Return(true));
+    std::string mock_response =
+        absl::StrFormat(kHttpResponseFormat,
+                        Base64Encode(GenerateMockLicenseResponse()).c_str());
+    EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+        .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+  }
 
   for (uint32_t i = 0; i < kCryptoIterations; ++i) {
     uint32_t first_crypto_period_index =
         kFirstCryptoPeriodIndex - 1 + i * kCryptoPeriodCount;
-    std::string expected_message = base::StringPrintf(
+    std::string expected_message = absl::StrFormat(
         kCryptoPeriodRequestMessageFormat, Base64Encode(kContentId).c_str(),
         kPolicy, first_crypto_period_index, kCryptoPeriodCount,
         kCryptoPeriodSeconds, GetExpectedProtectionScheme().c_str());
     EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
         .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
-    std::string mock_response = base::StringPrintf(
+    std::string mock_response = absl::StrFormat(
         kHttpResponseFormat,
         Base64Encode(GenerateMockKeyRotationLicenseResponse(
                          first_crypto_period_index, kCryptoPeriodCount))
@@ -638,7 +643,7 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
 
   EncryptionKey encryption_key;
   const std::string kStreamLabels[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
-  for (size_t i = 0; i < arraysize(kCryptoPeriodIndexes); ++i) {
+  for (size_t i = 0; i < std::size(kCryptoPeriodIndexes); ++i) {
     for (const std::string& stream_label : kStreamLabels) {
       ASSERT_OK(widevine_key_source_->GetCryptoPeriodKey(
           kCryptoPeriodIndexes[i], kCryptoPeriodSeconds, stream_label,

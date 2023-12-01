@@ -1,27 +1,32 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/demuxer/demuxer.h"
+#include <packager/media/demuxer/demuxer.h>
 
 #include <algorithm>
+#include <functional>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/file/file.h"
-#include "packager/media/base/decryptor_source.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/formats/mp2t/mp2t_media_parser.h"
-#include "packager/media/formats/mp4/mp4_media_parser.h"
-#include "packager/media/formats/webm/webm_media_parser.h"
-#include "packager/media/formats/webvtt/webvtt_parser.h"
-#include "packager/media/formats/wvm/wvm_media_parser.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/file.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/mp2t_media_parser.h>
+#include <packager/media/formats/mp4/mp4_media_parser.h>
+#include <packager/media/formats/webm/webm_media_parser.h>
+#include <packager/media/formats/webvtt/webvtt_parser.h>
+#include <packager/media/formats/wvm/wvm_media_parser.h>
 
 namespace {
 // 65KB, sufficient to determine the container and likely all init data.
@@ -45,7 +50,7 @@ std::string GetStreamLabel(size_t stream_index) {
     case kBaseTextOutputStreamIndex:
       return "text";
     default:
-      return base::SizeTToString(stream_index);
+      return absl::StrFormat("%u", stream_index);
   }
 }
 
@@ -59,7 +64,7 @@ bool GetStreamIndex(const std::string& stream_label, size_t* stream_index) {
     *stream_index = kBaseTextOutputStreamIndex;
   } else {
     // Expect stream_label to be a zero based stream id.
-    if (!base::StringToSizeT(stream_label, stream_index)) {
+    if (!absl::SimpleAtoi(stream_label, stream_index)) {
       LOG(ERROR) << "Invalid argument --stream=" << stream_label << "; "
                  << "should be 'audio', 'video', 'text', or a number";
       return false;
@@ -203,8 +208,9 @@ Status Demuxer::InitializeParser() {
     case CONTAINER_UNKNOWN: {
       const int64_t kDumpSizeLimit = 512;
       LOG(ERROR) << "Failed to detect the container type from the buffer: "
-                 << base::HexEncode(buffer_.get(),
-                                    std::min(bytes_read, kDumpSizeLimit));
+                 << absl::BytesToHexString(absl::string_view(
+                        reinterpret_cast<const char*>(buffer_.get()),
+                        std::min(bytes_read, kDumpSizeLimit)));
       return Status(error::INVALID_ARGUMENT,
                     "Failed to detect the container type.");
     }
@@ -215,9 +221,11 @@ Status Demuxer::InitializeParser() {
   }
 
   parser_->Init(
-      base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
-      base::Bind(&Demuxer::NewMediaSampleEvent, base::Unretained(this)),
-      base::Bind(&Demuxer::NewTextSampleEvent, base::Unretained(this)),
+      std::bind(&Demuxer::ParserInitEvent, this, std::placeholders::_1),
+      std::bind(&Demuxer::NewMediaSampleEvent, this, std::placeholders::_1,
+                std::placeholders::_2),
+      std::bind(&Demuxer::NewTextSampleEvent, this, std::placeholders::_1,
+                std::placeholders::_2),
       key_source_.get());
 
   // Handle trailing 'moov'.

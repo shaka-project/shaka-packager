@@ -1,0 +1,9 @@
+FROM archlinux:latest
+
+# Install utilities, libraries, and dev tools.
+RUN pacman -Suy --needed --noconfirm \
+        core/which \
+        cmake gcc git ninja python3
+
+# Build and run this docker by mapping shaka-packager with
+# -v "shaka-packager:/shaka-packager".

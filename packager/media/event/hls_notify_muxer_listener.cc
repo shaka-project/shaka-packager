@@ -1,17 +1,21 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/hls_notify_muxer_listener.h"
+#include <packager/media/event/hls_notify_muxer_listener.h>
 
 #include <memory>
-#include "packager/base/logging.h"
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/event/muxer_listener_internal.h"
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/macros/compiler.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/event/muxer_listener_internal.h>
 
 namespace shaka {
 namespace media {
@@ -46,6 +50,7 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_infos) {
+  UNUSED(is_initial_encryption_info);
   if (!stream_id_) {
     next_key_id_ = key_id;
     next_iv_ = iv;
@@ -147,6 +152,7 @@ void HlsNotifyMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
 
 void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
+  UNUSED(duration_seconds);
   DCHECK(media_info_);
   // TODO(kqyang): Should we just Flush here to avoid calling Flush explicitly?
   // Don't flush the notifier here. Flushing here would write all the playlists
@@ -263,7 +269,7 @@ void HlsNotifyMuxerListener::OnKeyFrame(int64_t timestamp,
 
 void HlsNotifyMuxerListener::OnCueEvent(int64_t timestamp,
                                         const std::string& cue_data) {
-  // Not using |cue_data| at this moment.
+  UNUSED(cue_data);
   if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kCue;

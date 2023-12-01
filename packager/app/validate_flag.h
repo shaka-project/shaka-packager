@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -6,12 +6,12 @@
 //
 // Flag validation help functions.
 
-#ifndef APP_VALIDATE_FLAG_H_
-#define APP_VALIDATE_FLAG_H_
+#ifndef PACKAGER_APP_VALIDATE_FLAG_H_
+#define PACKAGER_APP_VALIDATE_FLAG_H_
 
 #include <string>
 
-#include "packager/base/strings/stringprintf.h"
+#include <absl/strings/str_format.h>
 
 namespace shaka {
 
@@ -41,13 +41,12 @@ bool ValidateFlag(const char* flag_name,
                   const char* label) {
   if (flag_value.empty()) {
     if (!optional && condition) {
-      PrintError(
-          base::StringPrintf("--%s is required if %s.", flag_name, label));
+      PrintError(absl::StrFormat("--%s is required if %s.", flag_name, label));
       return false;
     }
   } else if (!condition) {
-    PrintError(base::StringPrintf(
-        "--%s should be specified only if %s.", flag_name, label));
+    PrintError(absl::StrFormat("--%s should be specified only if %s.",
+                               flag_name, label));
     return false;
   }
   return true;
@@ -55,4 +54,4 @@ bool ValidateFlag(const char* flag_name,
 
 }  // namespace shaka
 
-#endif  // APP_VALIDATE_FLAG_H_
+#endif  // PACKAGER_APP_VALIDATE_FLAG_H_

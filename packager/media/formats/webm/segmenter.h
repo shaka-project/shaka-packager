@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,12 +9,13 @@
 
 #include <memory>
 
-#include "packager/base/optional.h"
-#include "packager/media/base/range.h"
-#include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/media/formats/webm/seek_head.h"
-#include "packager/status.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include <mkvmuxer/mkvmuxer.h>
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/range.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/seek_head.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

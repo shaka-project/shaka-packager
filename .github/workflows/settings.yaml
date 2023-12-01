@@ -1,0 +1,46 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+# A reusable workflow to extract settings from a repository.
+# To enable a setting, create a "GitHub Environment" with the same name.
+# This is a hack to enable per-repo settings that aren't copied to a fork.
+# Without this, test workflows for a fork would time out waiting for
+# self-hosted runners that the fork doesn't have.
+name: Settings
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    outputs:
+      self_hosted:
+        description: "Enable jobs requiring a self-hosted runner."
+        value: ${{ jobs.settings.outputs.self_hosted }}
+      debug:
+        description: "Enable SSH debugging when a workflow fails."
+        value: ${{ jobs.settings.outputs.debug }}
+
+jobs:
+  settings:
+    runs-on: ubuntu-latest
+    outputs:
+      self_hosted: ${{ steps.settings.outputs.self_hosted }}
+      debug: ${{ steps.settings.outputs.debug }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - id: settings
+        run: |
+          environments=$(gh api /repos/${{ github.repository }}/environments)
+          for name in self_hosted debug; do
+            exists=$(echo $environments | jq ".environments[] | select(.name == \"$name\")")
+            if [[ "$exists" != "" ]]; then
+              echo "$name=true" >> $GITHUB_OUTPUT
+              echo "\"$name\" enabled."
+            else
+              echo "$name=" >> $GITHUB_OUTPUT
+              echo "\"$name\" disabled."
+            fi
+          done

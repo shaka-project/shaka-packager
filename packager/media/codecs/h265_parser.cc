@@ -1,17 +1,20 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/h265_parser.h"
+#include <packager/media/codecs/h265_parser.h>
 
-#include <math.h>
 #include <algorithm>
+#include <cmath>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 #define TRUE_OR_RETURN(a)                            \
   do {                                               \
@@ -884,7 +887,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
 
 H265Parser::Result H265Parser::SkipReferencePictureListModification(
     const H265SliceHeader& slice_header,
-    const H265Pps& pps,
+    const H265Pps&,
     int num_pic_total_curr,
     H26xBitReader* br) {
   // Reads whole element but ignores it all.

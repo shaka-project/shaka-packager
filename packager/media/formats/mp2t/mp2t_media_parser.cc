@@ -2,26 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/mp2t_media_parser.h"
+#include <packager/media/formats/mp2t/mp2t_media_parser.h>
 
+#include <functional>
 #include <memory>
 
-#include "packager/base/bind.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/formats/mp2t/es_parser.h"
-#include "packager/media/formats/mp2t/es_parser_audio.h"
-#include "packager/media/formats/mp2t/es_parser_dvb.h"
-#include "packager/media/formats/mp2t/es_parser_h264.h"
-#include "packager/media/formats/mp2t/es_parser_h265.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
-#include "packager/media/formats/mp2t/ts_packet.h"
-#include "packager/media/formats/mp2t/ts_section.h"
-#include "packager/media/formats/mp2t/ts_section_pat.h"
-#include "packager/media/formats/mp2t/ts_section_pes.h"
-#include "packager/media/formats/mp2t/ts_section_pmt.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/mp2t/es_parser.h>
+#include <packager/media/formats/mp2t/es_parser_audio.h>
+#include <packager/media/formats/mp2t/es_parser_dvb.h>
+#include <packager/media/formats/mp2t/es_parser_h264.h>
+#include <packager/media/formats/mp2t/es_parser_h265.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
+#include <packager/media/formats/mp2t/ts_packet.h>
+#include <packager/media/formats/mp2t/ts_section.h>
+#include <packager/media/formats/mp2t/ts_section_pat.h>
+#include <packager/media/formats/mp2t/ts_section_pes.h>
+#include <packager/media/formats/mp2t/ts_section_pmt.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 
 namespace shaka {
 namespace media {
@@ -160,10 +163,10 @@ void Mp2tMediaParser::Init(const InitCB& init_cb,
                            const NewTextSampleCB& new_text_sample_cb,
                            KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
-  DCHECK(init_cb_.is_null());
-  DCHECK(!init_cb.is_null());
-  DCHECK(!new_media_sample_cb.is_null());
-  DCHECK(!new_text_sample_cb.is_null());
+  DCHECK(init_cb_ == nullptr);
+  DCHECK(init_cb != nullptr);
+  DCHECK(new_media_sample_cb != nullptr);
+  DCHECK(new_text_sample_cb != nullptr);
 
   init_cb_ = init_cb;
   new_media_sample_cb_ = new_media_sample_cb;
@@ -229,7 +232,8 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
         ts_packet->pid() == TsSection::kPidPat) {
       // Create the PAT state here if needed.
       std::unique_ptr<TsSection> pat_section_parser(new TsSectionPat(
-          base::Bind(&Mp2tMediaParser::RegisterPmt, base::Unretained(this))));
+          std::bind(&Mp2tMediaParser::RegisterPmt, this, std::placeholders::_1,
+                    std::placeholders::_2)));
       std::unique_ptr<PidState> pat_pid_state(new PidState(
           ts_packet->pid(), PidState::kPidPat, std::move(pat_section_parser)));
       pat_pid_state->Enable();
@@ -259,15 +263,18 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   // if there is already one registered.
   for (const auto& pair : pids_) {
     if (pair.second->pid_type() == PidState::kPidPmt) {
-      DVLOG_IF(1, pmt_pid != pair.first) << "More than one program is defined";
+      if (pmt_pid != pair.first) {
+        DVLOG(1) << "More than one program is defined";
+      }
       return;
     }
   }
 
   // Create the PMT state here if needed.
   DVLOG(1) << "Create a new PMT parser";
-  std::unique_ptr<TsSection> pmt_section_parser(new TsSectionPmt(base::Bind(
-      &Mp2tMediaParser::RegisterPes, base::Unretained(this), pmt_pid)));
+  std::unique_ptr<TsSection> pmt_section_parser(new TsSectionPmt(std::bind(
+      &Mp2tMediaParser::RegisterPes, this, pmt_pid, std::placeholders::_1,
+      std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
   std::unique_ptr<PidState> pmt_pid_state(
       new PidState(pmt_pid, PidState::kPidPmt, std::move(pmt_section_parser)));
   pmt_pid_state->Enable();
@@ -288,12 +295,12 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   // Create a stream parser corresponding to the stream type.
   PidState::PidType pid_type = PidState::kPidVideoPes;
   std::unique_ptr<EsParser> es_parser;
-  auto on_new_stream = base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-  auto on_emit_media = base::Bind(&Mp2tMediaParser::OnEmitMediaSample,
-                                  base::Unretained(this), pes_pid);
-  auto on_emit_text = base::Bind(&Mp2tMediaParser::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+  auto on_new_stream = std::bind(&Mp2tMediaParser::OnNewStreamInfo, this,
+                                 pes_pid, std::placeholders::_1);
+  auto on_emit_media = std::bind(&Mp2tMediaParser::OnEmitMediaSample, this,
+                                 pes_pid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&Mp2tMediaParser::OnEmitTextSample, this,
+                                pes_pid, std::placeholders::_1);
   switch (stream_type) {
     case TsStreamType::kAvc:
       es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit_media));
@@ -385,7 +392,7 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   if (num_es && (all_stream_info.size() == num_es)) {
     // All stream configurations have been received. Initialization can
     // be completed.
-    init_cb_.Run(all_stream_info);
+    init_cb_(all_stream_info);
     DVLOG(1) << "Mpeg2TS stream parser initialization done";
     is_initialized_ = true;
   }
@@ -439,12 +446,12 @@ bool Mp2tMediaParser::EmitRemainingSamples() {
   // Buffer emission.
   for (const auto& pid_pair : pids_) {
     for (auto sample : pid_pair.second->media_sample_queue_) {
-      RCHECK(new_media_sample_cb_.Run(pid_pair.first, sample));
+      RCHECK(new_media_sample_cb_(pid_pair.first, sample));
     }
     pid_pair.second->media_sample_queue_.clear();
 
     for (auto sample : pid_pair.second->text_sample_queue_) {
-      RCHECK(new_text_sample_cb_.Run(pid_pair.first, sample));
+      RCHECK(new_text_sample_cb_(pid_pair.first, sample));
     }
     pid_pair.second->text_sample_queue_.clear();
   }

@@ -1,36 +1,28 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/mpd/base/mpd_builder.h>
+
+#include <memory>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_builder.h"
-#include "packager/mpd/base/period.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/version/version.h"
+#include <packager/macros/classes.h>
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/utils/clock.h>
+#include <packager/utils/test_clock.h>
+#include <packager/version/version.h>
 
 using ::testing::HasSubstr;
 
 namespace shaka {
-
-namespace {
-
-class TestClock : public base::Clock {
- public:
-  explicit TestClock(const base::Time& t) : time_(t) {}
-  ~TestClock() override {}
-  base::Time Now() override { return time_; }
-
- private:
-  base::Time time_;
-};
-
-}  // namespace
 
 template <DashProfile profile>
 class MpdBuilderTest : public ::testing::Test {
@@ -117,17 +109,8 @@ class LiveMpdBuilderTest : public MpdBuilderTest<DashProfile::kLive> {
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
-    base::Time::Exploded test_time = { 2016,  // year.
-                                       1,  // month
-                                       1,  // day_of_week = Monday.
-                                       11,  // day_of_month
-                                       15,  // hour.
-                                       10,  // minute.
-                                       24,  // second.
-                                       0 };  // millisecond.
-    ASSERT_TRUE(test_time.HasValidValues());
-    mpd_.InjectClockForTesting(std::unique_ptr<base::Clock>(
-        new TestClock(base::Time::FromUTCExploded(test_time))));
+    mpd_.InjectClockForTesting(
+        std::make_unique<TestClock>("2016-01-11T15:10:24"));
   }
 };
 

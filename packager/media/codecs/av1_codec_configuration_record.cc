@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/av1_codec_configuration_record.h"
+#include <packager/media/codecs/av1_codec_configuration_record.h>
 
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/strings/str_format.h>
+
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {
@@ -85,8 +86,8 @@ bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, size_t data_size) {
 // When color info is NOT available, generate the basic codec string without the
 // optional fields
 std::string AV1CodecConfigurationRecord::GetCodecString() const {
-  return base::StringPrintf("av01.%d.%02d%c.%02d", profile_, level_,
-                            tier_ ? 'H' : 'M', bit_depth_);
+  return absl::StrFormat("av01.%d.%02d%c.%02d", profile_, level_,
+                         tier_ ? 'H' : 'M', bit_depth_);
 }
 
 // When color info IS available, generate the full codec string with optional
@@ -96,7 +97,7 @@ std::string AV1CodecConfigurationRecord::GetCodecString(
     uint16_t transfer_characteristics,
     uint16_t matrix_coefficients,
     uint8_t video_full_range_flag) const {
-  return base::StringPrintf(
+  return absl::StrFormat(
       "av01.%d.%02d%c.%02d.%d.%d%d%d.%02d.%02d.%02d.%d", profile_, level_,
       tier_ ? 'H' : 'M', bit_depth_, mono_chrome_, chroma_subsampling_x_,
       chroma_subsampling_y_, chroma_sample_position_, color_primaries,

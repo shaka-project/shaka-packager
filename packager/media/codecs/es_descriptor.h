@@ -5,9 +5,8 @@
 #ifndef PACKAGER_MEDIA_CODECS_ES_DESCRIPTOR_H_
 #define PACKAGER_MEDIA_CODECS_ES_DESCRIPTOR_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

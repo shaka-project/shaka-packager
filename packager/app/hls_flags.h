@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,13 @@
 #ifndef PACKAGER_APP_HLS_FLAGS_H_
 #define PACKAGER_APP_HLS_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_string(hls_master_playlist_output);
-DECLARE_string(hls_base_url);
-DECLARE_string(hls_key_uri);
-DECLARE_string(hls_playlist_type);
-DECLARE_int32(hls_media_sequence_number);
+ABSL_DECLARE_FLAG(std::string, hls_master_playlist_output);
+ABSL_DECLARE_FLAG(std::string, hls_base_url);
+ABSL_DECLARE_FLAG(std::string, hls_key_uri);
+ABSL_DECLARE_FLAG(std::string, hls_playlist_type);
+ABSL_DECLARE_FLAG(int32_t, hls_media_sequence_number);
 
 #endif  // PACKAGER_APP_HLS_FLAGS_H_

@@ -1,28 +1,16 @@
-FROM centos:8
+FROM tgagor/centos:stream9
 
-# Fix up CentOS repo info, which is outdated and not maintained in DockerHub.
-# See https://stackoverflow.com/a/71309215
-RUN cd /etc/yum.repos.d/
-RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+# For CentOS, Ninja is only available from the "CRB" ("Code Ready Builder")
+# repo.  Enable that first.
+RUN dnf update -y
+RUN dnf install -y yum-utils
+RUN dnf config-manager --set-enabled crb
 
 # Install utilities, libraries, and dev tools.
 RUN yum install -y \
         which \
-        c-ares-devel libatomic \
-        gcc-c++ git python2 python3
-
-# Default to python2 because our build system is ancient.
-RUN ln -sf python2 /usr/bin/python
-
-# Install depot_tools.
-WORKDIR /
-RUN git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-RUN touch depot_tools/.disable_auto_update
-ENV PATH /depot_tools:$PATH
-
-# Bypass VPYTHON included by depot_tools.  Prefer the system installation.
-ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+        libatomic \
+        cmake gcc-c++ git ninja-build python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

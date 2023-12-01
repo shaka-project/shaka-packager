@@ -1,15 +1,16 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/base/aes_pattern_cryptor.h>
+
+#include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/aes_pattern_cryptor.h"
-#include "packager/media/base/mock_aes_cryptor.h"
+#include <packager/media/base/mock_aes_cryptor.h>
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -59,13 +60,16 @@ TEST_P(AesPatternCryptorVerificationTest, PatternTest) {
   std::vector<uint8_t> text;
   std::string text_hex(GetParam().text_hex);
   if (!text_hex.empty()) {
-    ASSERT_TRUE(base::HexStringToBytes(text_hex, &text));
+    std::string text_string = absl::HexStringToBytes(text_hex);
+    text.assign(text_string.begin(), text_string.end());
   }
   std::vector<uint8_t> expected_crypt_text;
   std::string expected_crypt_text_hex(GetParam().expected_crypt_text_hex);
   if (!expected_crypt_text_hex.empty()) {
-    ASSERT_TRUE(
-        base::HexStringToBytes(expected_crypt_text_hex, &expected_crypt_text));
+    std::string expected_crypt_text_string =
+        absl::HexStringToBytes(expected_crypt_text_hex);
+    expected_crypt_text.assign(expected_crypt_text_string.begin(),
+                               expected_crypt_text_string.end());
   }
 
   ON_CALL(*mock_cryptor_, CryptInternal(_, _, _, _))

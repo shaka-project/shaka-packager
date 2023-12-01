@@ -1,26 +1,27 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gflags/gflags.h>
+#include <packager/mpd/base/xml/xml_node.h>
+
+#include <list>
+
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
 
-#include <list>
+#include <packager/flag_saver.h>
+#include <packager/mpd/base/segment_info.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/xml_node.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
-
-DECLARE_bool(segment_template_constant_duration);
-DECLARE_bool(dash_add_last_segment_number_when_needed);
-
+ABSL_DECLARE_FLAG(bool, segment_template_constant_duration);
+ABSL_DECLARE_FLAG(bool, dash_add_last_segment_number_when_needed);
 
 using ::testing::ElementsAre;
 
@@ -352,15 +353,20 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
 }
 
 class LiveSegmentTimelineTest : public ::testing::Test {
+ public:
+  LiveSegmentTimelineTest()
+      : saver(&FLAGS_segment_template_constant_duration) {}
+
  protected:
   void SetUp() override {
-    FLAGS_segment_template_constant_duration = true;
+    absl::SetFlag(&FLAGS_segment_template_constant_duration, true);
     media_info_.set_segment_template_url("$Number$.m4s");
   }
 
-  void TearDown() override { FLAGS_segment_template_constant_duration = false; }
-
   MediaInfo media_info_;
+
+ private:
+  FlagSaver<bool> saver;
 };
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
@@ -536,7 +542,9 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
       {kStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  FLAGS_dash_add_last_segment_number_when_needed = true;
+  FlagSaver<bool> segment_number_saver(
+      &FLAGS_dash_add_last_segment_number_when_needed);
+  absl::SetFlag(&FLAGS_dash_add_last_segment_number_when_needed, true);
 
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
                                              kStartNumber, kIsLowLatency));
@@ -549,7 +557,6 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
                    "  <SegmentTemplate media=\"$Number$.m4s\" "
                    "                   startNumber=\"1\" duration=\"100\"/>"
                    "</Representation>"));
-  FLAGS_dash_add_last_segment_number_when_needed = false;
 }
 
 // Creating a separate Test Suite for RepresentationXmlNode::AddVODOnlyInfo
@@ -751,7 +758,7 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
       representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
-                   "                   availabilityTimeOffset=\"4.9750987314\" "
+                   "                   availabilityTimeOffset=\"4.9751\" "
                    "                   availabilityTimeComplete=\"false\" "
                    "                   initialization=\"init.m4s\" "
                    "                   media=\"$Number$.m4s\" "

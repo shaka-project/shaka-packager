@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,25 +9,26 @@
 #ifndef APP_WIDEVINE_ENCRYPTION_FLAGS_H_
 #define APP_WIDEVINE_ENCRYPTION_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-#include "packager/app/gflags_hex_bytes.h"
+#include <packager/utils/absl_flag_hexbytes.h>
 
-DECLARE_bool(enable_widevine_encryption);
-DECLARE_bool(enable_widevine_decryption);
-DECLARE_string(key_server_url);
-DECLARE_hex_bytes(content_id);
-DECLARE_string(policy);
-DECLARE_int32(max_sd_pixels);
-DECLARE_int32(max_hd_pixels);
-DECLARE_int32(max_uhd1_pixels);
-DECLARE_string(signer);
-DECLARE_hex_bytes(aes_signing_key);
-DECLARE_hex_bytes(aes_signing_iv);
-DECLARE_string(rsa_signing_key_path);
-DECLARE_int32(crypto_period_duration);
-DECLARE_hex_bytes(group_id);
-DECLARE_bool(enable_entitlement_license);
+ABSL_DECLARE_FLAG(bool, enable_widevine_encryption);
+ABSL_DECLARE_FLAG(bool, enable_widevine_decryption);
+ABSL_DECLARE_FLAG(std::string, key_server_url);
+ABSL_DECLARE_FLAG(shaka::HexBytes, content_id);
+ABSL_DECLARE_FLAG(std::string, policy);
+ABSL_DECLARE_FLAG(int32_t, max_sd_pixels);
+ABSL_DECLARE_FLAG(int32_t, max_hd_pixels);
+ABSL_DECLARE_FLAG(int32_t, max_uhd1_pixels);
+ABSL_DECLARE_FLAG(std::string, signer);
+ABSL_DECLARE_FLAG(shaka::HexBytes, aes_signing_key);
+ABSL_DECLARE_FLAG(shaka::HexBytes, aes_signing_iv);
+ABSL_DECLARE_FLAG(std::string, rsa_signing_key_path);
+ABSL_DECLARE_FLAG(int32_t, crypto_period_duration);
+ABSL_DECLARE_FLAG(shaka::HexBytes, group_id);
+ABSL_DECLARE_FLAG(bool, enable_entitlement_license);
 
 namespace shaka {
 

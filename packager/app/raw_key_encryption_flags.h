@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,17 +9,18 @@
 #ifndef PACKAGER_APP_RAW_KEY_ENCRYPTION_FLAGS_H_
 #define PACKAGER_APP_RAW_KEY_ENCRYPTION_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-#include "packager/app/gflags_hex_bytes.h"
+#include <packager/utils/absl_flag_hexbytes.h>
 
-DECLARE_bool(enable_raw_key_encryption);
-DECLARE_bool(enable_raw_key_decryption);
-DECLARE_hex_bytes(key_id);
-DECLARE_hex_bytes(key);
-DECLARE_string(keys);
-DECLARE_hex_bytes(iv);
-DECLARE_hex_bytes(pssh);
+ABSL_DECLARE_FLAG(bool, enable_raw_key_encryption);
+ABSL_DECLARE_FLAG(bool, enable_raw_key_decryption);
+ABSL_DECLARE_FLAG(shaka::HexBytes, key_id);
+ABSL_DECLARE_FLAG(shaka::HexBytes, key);
+ABSL_DECLARE_FLAG(std::string, keys);
+ABSL_DECLARE_FLAG(shaka::HexBytes, iv);
+ABSL_DECLARE_FLAG(shaka::HexBytes, pssh);
 
 namespace shaka {
 

@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,9 +7,11 @@
 #ifndef APP_VLOG_FLAGS_H_
 #define APP_VLOG_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_int32(v);
-DECLARE_string(vmodule);
+namespace shaka {
+void handle_vlog_flags();
+}
 
 #endif  // APP_VLOG_FLAGS_H_

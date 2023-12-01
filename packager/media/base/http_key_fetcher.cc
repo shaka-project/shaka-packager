@@ -1,12 +1,12 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/http_key_fetcher.h"
+#include <packager/media/base/http_key_fetcher.h>
 
-#include "packager/file/file_closer.h"
+#include <packager/file/file_closer.h>
 
 namespace shaka {
 namespace media {
@@ -66,6 +66,7 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
   }
   file->Write(data.data(), data.size());
   file->Flush();
+  file->CloseForWriting();
 
   while (true) {
     char temp[kBufferSize];

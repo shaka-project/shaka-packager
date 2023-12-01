@@ -11,9 +11,9 @@
 #include <map>
 #include <string>
 
-#include "packager/media/base/text_sample.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace media {

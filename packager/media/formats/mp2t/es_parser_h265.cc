@@ -1,22 +1,24 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/es_parser_h265.h"
+#include <packager/media/formats/mp2t/es_parser_h265.h>
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/offset_byte_queue.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h265_byte_to_unit_stream_converter.h"
-#include "packager/media/codecs/h265_parser.h"
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/offset_byte_queue.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/h265_byte_to_unit_stream_converter.h>
+#include <packager/media/codecs/h265_parser.h>
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {
@@ -60,7 +62,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
         decoder_config_check_pending_ = true;
       else if (status == H265Parser::kUnsupportedStream)
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       else
         return false;
       break;
@@ -73,7 +75,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
         decoder_config_check_pending_ = true;
       } else if (status == H265Parser::kUnsupportedStream) {
         // Indicate the stream can't be parsed.
-        new_stream_info_cb_.Run(nullptr);
+        new_stream_info_cb_(nullptr);
       } else {
         // Allow PPS parsing to fail if waiting for SPS.
         if (last_video_decoder_config_)
@@ -95,7 +97,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
           video_slice_info->pps_id = shdr.pic_parameter_set_id;
         } else if (status == H265Parser::kUnsupportedStream) {
           // Indicate the stream can't be parsed.
-          new_stream_info_cb_.Run(nullptr);
+          new_stream_info_cb_(nullptr);
         } else {
           // Only accept an invalid SPS/PPS at the beginning when the stream
           // does not necessarily start with an SPS/PPS/IDR.
@@ -179,7 +181,7 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
       nalu_length_size, std::string(), false);
 
   // Video config notification.
-  new_stream_info_cb_.Run(last_video_decoder_config_);
+  new_stream_info_cb_(last_video_decoder_config_);
 
   return true;
 }

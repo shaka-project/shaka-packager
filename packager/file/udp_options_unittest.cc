@@ -1,21 +1,29 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/udp_options.h"
+#include <packager/file/udp_options.h>
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 #include <gtest/gtest.h>
 
-DECLARE_string(udp_interface_address);
+#include <packager/flag_saver.h>
+
+ABSL_DECLARE_FLAG(std::string, udp_interface_address);
 
 namespace shaka {
 
 class UdpOptionsTest : public testing::Test {
  public:
-  void SetUp() override { FLAGS_udp_interface_address = ""; }
+  UdpOptionsTest() : saver(&FLAGS_udp_interface_address) {}
+
+  void SetUp() override { absl::SetFlag(&FLAGS_udp_interface_address, ""); }
+
+ private:
+  FlagSaver<std::string> saver;
 };
 
 TEST_F(UdpOptionsTest, AddressAndPort) {
@@ -47,7 +55,7 @@ TEST_F(UdpOptionsTest, MissingAddress) {
 }
 
 TEST_F(UdpOptionsTest, UdpInterfaceAddressFlag) {
-  FLAGS_udp_interface_address = "10.11.12.13";
+  absl::SetFlag(&FLAGS_udp_interface_address, "10.11.12.13");
 
   auto options = UdpOptions::ParseFromString("224.1.2.30:88");
   ASSERT_TRUE(options);

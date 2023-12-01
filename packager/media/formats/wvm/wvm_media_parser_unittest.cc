@@ -2,24 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <packager/media/formats/wvm/wvm_media_parser.h>
+
+#include <algorithm>
+#include <functional>
+#include <string>
+
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <string>
-
-#include "packager/base/bind.h"
-#include "packager/base/bind_helpers.h"
-#include "packager/base/logging.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/wvm/wvm_media_parser.h"
-#include "packager/media/test/test_data_util.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/test/test_data_util.h>
 
 namespace {
 const char kWvmFile[] = "bear-640x360.wvm";
@@ -143,10 +145,11 @@ class WvmMediaParserTest : public testing::Test {
 
   void InitializeParser() {
     parser_->Init(
-        base::Bind(&WvmMediaParserTest::OnInit, base::Unretained(this)),
-        base::Bind(&WvmMediaParserTest::OnNewSample, base::Unretained(this)),
-        base::Bind(&WvmMediaParserTest::OnNewTextSample,
-                   base::Unretained(this)),
+        std::bind(&WvmMediaParserTest::OnInit, this, std::placeholders::_1),
+        std::bind(&WvmMediaParserTest::OnNewSample, this, std::placeholders::_1,
+                  std::placeholders::_2),
+        std::bind(&WvmMediaParserTest::OnNewTextSample, this,
+                  std::placeholders::_1, std::placeholders::_2),
         key_source_.get());
   }
 
@@ -154,6 +157,8 @@ class WvmMediaParserTest : public testing::Test {
     InitializeParser();
 
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
+    ASSERT_FALSE(buffer.empty());
+
     EXPECT_TRUE(parser_->Parse(buffer.data(), static_cast<int>(buffer.size())));
   }
 };
@@ -161,7 +166,10 @@ class WvmMediaParserTest : public testing::Test {
 TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
   key_source_.reset();
   InitializeParser();
+
   std::vector<uint8_t> buffer = ReadTestDataFile(kWvmFile);
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(parser_->Parse(buffer.data(), static_cast<int>(buffer.size())));
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
@@ -184,7 +192,10 @@ TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
 TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {
   key_source_.reset();
   InitializeParser();
+
   std::vector<uint8_t> buffer = ReadTestDataFile(kWvmFile);
+  ASSERT_FALSE(buffer.empty());
+
   EXPECT_TRUE(parser_->Parse(buffer.data(), kInitDataSize));
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
 }

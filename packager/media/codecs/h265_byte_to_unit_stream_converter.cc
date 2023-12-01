@@ -1,17 +1,19 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/h265_byte_to_unit_stream_converter.h"
+#include <packager/media/codecs/h265_byte_to_unit_stream_converter.h>
 
 #include <limits>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/codecs/h265_parser.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/h265_parser.h>
 
 namespace shaka {
 namespace media {

@@ -1,29 +1,30 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/encryption_handler.h"
-
-#include <stddef.h>
-#include <stdint.h>
+#include <packager/media/crypto/encryption_handler.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/common_pssh_generator.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/playready_pssh_generator.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/widevine_pssh_generator.h"
-#include "packager/media/crypto/aes_encryptor_factory.h"
-#include "packager/media/crypto/subsample_generator.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/common_pssh_generator.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/playready_pssh_generator.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/widevine_pssh_generator.h>
+#include <packager/media/crypto/aes_encryptor_factory.h>
+#include <packager/media/crypto/subsample_generator.h>
 
 namespace shaka {
 namespace media {
@@ -299,8 +300,11 @@ Status EncryptionHandler::ProcessMediaSample(
     return DispatchMediaSample(kStreamIndex, std::move(clear_sample));
   }
 
-  std::shared_ptr<uint8_t> cipher_sample_data(
-      new uint8_t[clear_sample->data_size()], std::default_delete<uint8_t[]>());
+  size_t ciphertext_size =
+      encryptor_->RequiredOutputSize(clear_sample->data_size());
+
+  std::shared_ptr<uint8_t> cipher_sample_data(new uint8_t[ciphertext_size],
+                                              std::default_delete<uint8_t[]>());
 
   const uint8_t* source = clear_sample->data();
   uint8_t* dest = cipher_sample_data.get();
@@ -308,13 +312,15 @@ Status EncryptionHandler::ProcessMediaSample(
     size_t total_size = 0;
     for (const SubsampleEntry& subsample : subsamples) {
       if (subsample.clear_bytes > 0) {
+        // clear_bytes is the number of bytes to leave in the clear
         memcpy(dest, source, subsample.clear_bytes);
         source += subsample.clear_bytes;
         dest += subsample.clear_bytes;
         total_size += subsample.clear_bytes;
       }
       if (subsample.cipher_bytes > 0) {
-        EncryptBytes(source, subsample.cipher_bytes, dest);
+        // cipher_bytes is the number of bytes we want to encrypt
+        EncryptBytes(source, subsample.cipher_bytes, dest, ciphertext_size);
         source += subsample.cipher_bytes;
         dest += subsample.cipher_bytes;
         total_size += subsample.cipher_bytes;
@@ -322,7 +328,7 @@ Status EncryptionHandler::ProcessMediaSample(
     }
     DCHECK_EQ(total_size, clear_sample->data_size());
   } else {
-    EncryptBytes(source, clear_sample->data_size(), dest);
+    EncryptBytes(source, clear_sample->data_size(), dest, ciphertext_size);
   }
 
   std::shared_ptr<MediaSample> cipher_sample(clear_sample->Clone());
@@ -386,11 +392,12 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
 
 void EncryptionHandler::EncryptBytes(const uint8_t* source,
                                      size_t source_size,
-                                     uint8_t* dest) {
+                                     uint8_t* dest,
+                                     size_t dest_size) {
   DCHECK(source);
   DCHECK(dest);
   DCHECK(encryptor_);
-  CHECK(encryptor_->Crypt(source, source_size, dest));
+  CHECK(encryptor_->Crypt(source, source_size, dest, &dest_size));
 }
 
 void EncryptionHandler::InjectSubsampleGeneratorForTesting(

@@ -1,17 +1,18 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/event/hls_notify_muxer_listener.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/event/hls_notify_muxer_listener.h"
-#include "packager/media/event/muxer_listener_test_helper.h"
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/event/muxer_listener_test_helper.h>
 
 namespace shaka {
 namespace media {
@@ -177,8 +178,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
 // OnEncryptionInfoReady() and OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -211,8 +212,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
 // OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -278,8 +279,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
                          MuxerListener::kContainerMpeg2ts);
 
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 

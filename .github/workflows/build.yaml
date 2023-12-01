@@ -1,0 +1,217 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+# A reusable workflow to build and test Packager on every supported OS and
+# architecture.
+name: Build
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      # If true, start a debug SSH server on failures.
+      debug:
+        required: false
+        type: boolean
+        default: false
+      # If true, enable self-hosted runners in the build matrix.
+      self_hosted:
+        required: false
+        type: boolean
+        default: false
+
+# By default, run all commands in a bash shell.  On Windows, the default would
+# otherwise be powershell.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Configure the build matrix based on inputs.  The list of objects in the
+  # build matrix contents can't be changed by conditionals, but it can be
+  # computed by another job and deserialized.  This uses inputs.self_hosted to
+  # determine the build matrix, based on the metadata in build-matrix.json.
+  build_matrix_config:
+    name: Matrix configuration
+    runs-on: ubuntu-latest
+    outputs:
+      INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
+      OS: ${{ steps.configure.outputs.OS }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Configure Build Matrix
+        id: configure
+        shell: node {0}
+        run: |
+          const enableSelfHosted = ${{ inputs.self_hosted }};
+
+          // Use enableSelfHosted to decide what the build matrix below should
+          // include.
+          const {hosted, selfHosted} = require("${{ github.workspace }}/.github/workflows/build-matrix.json");
+          const include = enableSelfHosted ? hosted.concat(selfHosted) : hosted;
+          const os = include.map((config) => config.os);
+
+          // Output JSON objects consumed by the build matrix below.
+          const fs = require('fs');
+          fs.writeFileSync(process.env.GITHUB_OUTPUT,
+              [
+                `INCLUDE=${ JSON.stringify(include) }`,
+                `OS=${ JSON.stringify(os) }`,
+              ].join('\n'),
+              {flag: 'a'});
+
+          // Log the outputs, for the sake of debugging this script.
+          console.log({enableSelfHosted, include, os});
+
+  build:
+    needs: build_matrix_config
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.build_matrix_config.outputs.INCLUDE) }}
+        os: ${{ fromJSON(needs.build_matrix_config.outputs.OS) }}
+        build_type: ["Debug", "Release"]
+        lib_type: ["static", "shared"]
+
+    name: ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Configure git to preserve line endings
+        # Otherwise, tests fail on Windows because "golden" test outputs will not
+        # have the correct line endings.
+        run: git config --global core.autocrlf false
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+          submodules: recursive
+
+      - name: Install Linux deps
+        if: runner.os == 'Linux'
+        # NOTE: CMake is already installed in GitHub Actions VMs, but not
+        # necessarily in a self-hosted runner.
+        run: |
+          sudo apt update && sudo apt install -y \
+              cmake \
+              ninja-build
+
+      - name: Install Mac deps
+        if: runner.os == 'macOS'
+        # NOTE: GitHub Actions VMs on Mac do not install ninja by default.
+        run: |
+          brew install ninja
+
+      - name: Generate build files
+        run: |
+          mkdir -p build/
+
+          if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
+            BUILD_SHARED_LIBS="ON"
+          else
+            BUILD_SHARED_LIBS="OFF"
+          fi
+
+          # If set, override the default generator for the platform.
+          # Not every entry in the build matrix config defines this.
+          # If this is blank, CMake will choose the default generator.
+          export CMAKE_GENERATOR="${{ matrix.generator }}"
+
+          # If set, configure the build to restrict parallel operations.
+          # This helps us avoid the compiler failing due to a lack of RAM
+          # on our arm64 build devices (4GB RAM shared among 6 CPUs).
+          if [[ "${{ matrix.low_mem }}" != "" ]]; then
+            export PACKAGER_LOW_MEMORY_BUILD=yes
+          fi
+
+          cmake \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
+            -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
+            -S . \
+            -B build/
+
+      - name: Build
+        # This is a universal build command, which will call make on Linux and
+        # Visual Studio on Windows.  Note that the VS generator is what cmake
+        # calls a "multi-configuration" generator, and so the desired build
+        # type must be specified for Windows.
+        run: cmake --build build/ --config "${{ matrix.build_type }}" --parallel
+
+      - name: Test
+        run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@150e2f992e4fad1379da2056d1d1c279f520e058
+        if: ${{ always() }}
+        with:
+          report_paths: 'junit-reports/TEST-*.xml'
+
+      - name: Prepare artifacts (static release only)
+        run: |
+          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
+          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
+            echo "Skipping artifacts for $BUILD_CONFIG."
+            exit 0
+          fi
+
+          # TODO: Check static executables?
+
+          echo "::group::Prepare artifacts folder"
+          mkdir artifacts
+          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cd build/packager/Release
+          else
+            cd build/packager
+          fi
+          echo "::endgroup::"
+
+          echo "::group::Strip executables"
+          strip packager${{ matrix.exe_ext }}
+          strip mpd_generator${{ matrix.exe_ext }}
+          echo "::endgroup::"
+
+          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
+          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
+
+          echo "::group::Copy packager"
+          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
+          echo "::endgroup::"
+
+          echo "::group::Copy mpd_generator"
+          cp mpd_generator${{ matrix.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
+          echo "::endgroup::"
+
+          # The pssh-box bundle is OS and architecture independent.  So only do
+          # it on this one OS and architecture, and give it a more generic
+          # filename.
+          if [[ '${{ matrix.os_name }}' == 'linux' && '${{ matrix.target_arch }}' == 'x64' ]]; then
+            echo "::group::Tar pssh-box"
+            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pssh-box.py pssh-box-protos
+            echo "::endgroup::"
+          fi
+
+      - name: Upload static release build artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
+        with:
+          name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 5
+
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3.6
+        with:
+          limit-access-to-actor: true
+        if: failure() && inputs.debug

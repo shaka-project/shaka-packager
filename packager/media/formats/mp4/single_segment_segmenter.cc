@@ -1,20 +1,20 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/single_segment_segmenter.h"
+#include <packager/media/formats/mp4/single_segment_segmenter.h>
 
 #include <algorithm>
 
-#include "packager/file/file.h"
-#include "packager/file/file_util.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/progress_listener.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/key_frame_info.h"
+#include <absl/log/check.h>
+
+#include <packager/file/file_util.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/progress_listener.h>
+#include <packager/media/formats/mp4/key_frame_info.h>
 
 namespace shaka {
 namespace media {

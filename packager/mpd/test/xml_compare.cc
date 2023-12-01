@@ -1,15 +1,23 @@
-#include "packager/mpd/test/xml_compare.h"
+// Copyright 2023 Google LLC. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include <packager/mpd/test/xml_compare.h>
 
 #include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_util.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/strip.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 
@@ -80,10 +88,17 @@ bool CompareContents(xmlNodePtr node1, xmlNodePtr node2) {
       reinterpret_cast<const char*>(node1_content_ptr.get());
   std::string node2_content =
       reinterpret_cast<const char*>(node2_content_ptr.get());
-  base::ReplaceChars(node1_content, "\n", "", &node1_content);
-  base::TrimString(node1_content, " ", &node1_content);
-  base::ReplaceChars(node2_content, "\n", "", &node2_content);
-  base::TrimString(node2_content, " ", &node2_content);
+
+  node1_content.erase(
+      std::remove(node1_content.begin(), node1_content.end(), '\n'),
+      node1_content.end());
+  node2_content.erase(
+      std::remove(node2_content.begin(), node2_content.end(), '\n'),
+      node2_content.end());
+
+  node1_content = absl::StripAsciiWhitespace(node1_content);
+  node2_content = absl::StripAsciiWhitespace(node2_content);
+
   DVLOG(2) << "Comparing contents of "
            << reinterpret_cast<const char*>(node1->name) << "\n"
            << "First node's content:\n" << node1_content << "\n"
@@ -157,7 +172,7 @@ bool XmlEqual(const std::string& xml1, const std::string& xml2) {
 }
 
 bool XmlEqual(const std::string& xml1,
-              const base::Optional<xml::XmlNode>& xml2) {
+              const std::optional<xml::XmlNode>& xml2) {
   return xml2 && XmlEqual(xml1, *xml2);
 }
 
@@ -173,7 +188,7 @@ bool XmlEqual(const std::string& xml1, const xml::XmlNode& xml2) {
   return CompareNodes(xml1_root_element, xml2.GetRawPtr());
 }
 
-std::string XmlNodeToString(const base::Optional<xml::XmlNode>& xml_node) {
+std::string XmlNodeToString(const std::optional<xml::XmlNode>& xml_node) {
   return xml_node ? XmlNodeToString(*xml_node) : "$ERROR$";
 }
 

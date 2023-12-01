@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
 
-#include "packager/media/codecs/aac_audio_specific_config.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {

@@ -1,19 +1,21 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
+#include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
 
 #include <list>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {
@@ -38,7 +40,7 @@ bool IsNaluEqual(const Nalu& left, const Nalu& right) {
 }
 
 void AppendNalu(const Nalu& nalu,
-                int nalu_length_size,
+                int /*nalu_length_size*/,
                 bool escape_data,
                 BufferWriter* buffer_writer) {
   if (escape_data) {
@@ -235,15 +237,15 @@ bool NalUnitToByteStreamConverter::Initialize(
   for (uint32_t i = 0; i < decoder_config_.nalu_count(); ++i) {
     const Nalu& nalu = decoder_config_.nalu(i);
     if (nalu.type() == Nalu::H264NaluType::H264_SPS) {
-      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+      buffer_writer.AppendArray(kNaluStartCode, std::size(kNaluStartCode));
       AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
       found_sps = true;
     } else if (nalu.type() == Nalu::H264NaluType::H264_PPS) {
-      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+      buffer_writer.AppendArray(kNaluStartCode, std::size(kNaluStartCode));
       AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
       found_pps = true;
     } else if (nalu.type() == Nalu::H264NaluType::H264_SPSExtension) {
-      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+      buffer_writer.AppendArray(kNaluStartCode, std::size(kNaluStartCode));
       AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
     }
   }
@@ -284,7 +286,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
   std::vector<SubsampleEntry> temp_subsamples;
 
   BufferWriter buffer_writer(sample_size);
-  buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+  buffer_writer.AppendArray(kNaluStartCode, std::size(kNaluStartCode));
   AddAccessUnitDelimiter(&buffer_writer);
   if (is_key_frame)
     buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);
@@ -351,12 +353,12 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
             }
           }
         }
-        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+        buffer_writer.AppendArray(kNaluStartCode, std::size(kNaluStartCode));
         AppendNalu(nalu, nalu_length_size_, escape_data, &buffer_writer);
 
         if (subsamples && !subsamples->empty()) {
           temp_subsamples.emplace_back(
-              static_cast<uint16_t>(arraysize(kNaluStartCode)), 0u);
+              static_cast<uint16_t>(std::size(kNaluStartCode)), 0u);
           // Update the first subsample of each NAL unit, which replaces NAL
           // unit length field with start code. Note that if the escape_data is
           // true, the total data size and the cipher_bytes may be changed.

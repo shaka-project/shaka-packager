@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,16 +9,17 @@
 #ifndef APP_MUXER_FLAGS_H_
 #define APP_MUXER_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_double(clear_lead);
-DECLARE_double(segment_duration);
-DECLARE_bool(segment_sap_aligned);
-DECLARE_double(fragment_duration);
-DECLARE_bool(fragment_sap_aligned);
-DECLARE_bool(generate_sidx_in_media_segments);
-DECLARE_string(temp_dir);
-DECLARE_bool(mp4_include_pssh_in_stream);
-DECLARE_int32(transport_stream_timestamp_offset_ms);
+ABSL_DECLARE_FLAG(double, clear_lead);
+ABSL_DECLARE_FLAG(double, segment_duration);
+ABSL_DECLARE_FLAG(bool, segment_sap_aligned);
+ABSL_DECLARE_FLAG(double, fragment_duration);
+ABSL_DECLARE_FLAG(bool, fragment_sap_aligned);
+ABSL_DECLARE_FLAG(bool, generate_sidx_in_media_segments);
+ABSL_DECLARE_FLAG(std::string, temp_dir);
+ABSL_DECLARE_FLAG(bool, mp4_include_pssh_in_stream);
+ABSL_DECLARE_FLAG(int32_t, transport_stream_timestamp_offset_ms);
 
 #endif  // APP_MUXER_FLAGS_H_

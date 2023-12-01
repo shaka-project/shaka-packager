@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/ts_section_psi.h"
-
-#include <stdint.h>
+#include <packager/media/formats/mp2t/ts_section_psi.h>
 
 #include <algorithm>
+#include <cstdint>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 static bool IsCrcValid(const uint8_t* buf, int size) {
   uint32_t crc = 0xffffffffu;
@@ -102,9 +104,10 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
   // There should not be any trailing bytes after a PMT.
   // Instead, the pointer field should be used to stuff bytes.
-  DVLOG_IF(1, raw_psi_size > psi_length)
-      << "Trailing bytes after a PSI section: "
-      << psi_length << " vs " << raw_psi_size;
+  if (raw_psi_size > psi_length) {
+    DVLOG(1) << "Trailing bytes after a PSI section: " << psi_length << " vs "
+             << raw_psi_size;
+  }
 
   // Verify the CRC.
   RCHECK(IsCrcValid(raw_psi, psi_length));

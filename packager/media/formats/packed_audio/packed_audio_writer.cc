@@ -4,11 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/packed_audio/packed_audio_writer.h"
+#include <packager/media/formats/packed_audio/packed_audio_writer.h>
 
-#include "packager/media/base/muxer_util.h"
-#include "packager/media/formats/packed_audio/packed_audio_segmenter.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/status.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
 
 namespace shaka {
 namespace media {

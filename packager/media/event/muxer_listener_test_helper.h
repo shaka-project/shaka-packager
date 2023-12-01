@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,15 +7,15 @@
 #ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 

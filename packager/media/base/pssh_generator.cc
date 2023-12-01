@@ -1,10 +1,10 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/pssh_generator.h"
+#include <packager/media/base/pssh_generator.h>
 
 namespace shaka {
 namespace media {
@@ -37,7 +37,7 @@ PsshGenerator::~PsshGenerator() = default;
 Status PsshGenerator::GeneratePsshFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids,
     ProtectionSystemSpecificInfo* info) const {
-  base::Optional<std::vector<uint8_t>> pssh_data =
+  std::optional<std::vector<uint8_t>> pssh_data =
       GeneratePsshDataFromKeyIds(key_ids);
   if (!pssh_data) {
     return Status(error::ENCRYPTION_FAILURE,
@@ -53,7 +53,7 @@ Status PsshGenerator::GeneratePsshFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key,
     ProtectionSystemSpecificInfo* info) const {
-  base::Optional<std::vector<uint8_t>> pssh_data =
+  std::optional<std::vector<uint8_t>> pssh_data =
       GeneratePsshDataFromKeyIdAndKey(key_id, key);
   if (!pssh_data) {
     return Status(error::ENCRYPTION_FAILURE,

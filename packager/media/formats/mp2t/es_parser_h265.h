@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,15 +7,15 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H265_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H265_H_
 
-#include <stdint.h>
-
+#include <cstdint>
+#include <functional>
 #include <list>
 #include <memory>
 #include <utility>
 
-#include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
+#include <packager/macros/classes.h>
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
+#include <functional>
 
 namespace shaka {
 namespace media {

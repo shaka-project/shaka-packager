@@ -4,15 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/packed_audio/packed_audio_segmenter.h"
+#include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
 
 #include <memory>
 
-#include "packager/media/base/id3_tag.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/codecs/hls_audio_util.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/status.h>
+#include <packager/media/base/id3_tag.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/media/codecs/hls_audio_util.h>
 
 namespace shaka {
 namespace media {

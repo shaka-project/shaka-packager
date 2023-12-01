@@ -9,11 +9,14 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {
@@ -49,45 +52,45 @@ class BoxReader : public BufferReader {
   ///             reading the box.
   /// @return true if there is enough data to read the header and the header is
   ///         sane, which does not imply that the entire box is in the buffer.
-  static bool StartBox(const uint8_t* buf,
-                       const size_t buf_size,
-                       FourCC* type,
-                       uint64_t* box_size,
-                       bool* err) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool StartBox(const uint8_t* buf,
+                                     const size_t buf_size,
+                                     FourCC* type,
+                                     uint64_t* box_size,
+                                     bool* err);
 
   /// Scan through all boxes within the current box, starting at the current
   /// buffer position. Must be called before any of the @b *Child functions
   /// work.
   /// @return true on success, false otherwise.
-  bool ScanChildren() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ScanChildren();
 
   /// @return true if child with type @a child.BoxType() exists.
-  bool ChildExist(Box* child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ChildExist(Box* child);
 
   /// Read exactly one child box from the set of children. The type of the
   /// child will be determined by the BoxType() of @a child.
   /// @return true on success, false otherwise.
-  bool ReadChild(Box* child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadChild(Box* child);
 
   /// Read one child if available.
   /// @return false on error, true on successful read or on child absent.
-  bool TryReadChild(Box* child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TryReadChild(Box* child);
 
   /// Read at least one child.
   /// @return false on error or no child of type <T> present.
   template <typename T>
-  bool ReadChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadChildren(std::vector<T>* children);
 
   /// Read any number of children.
   /// @return false on error.
   template <typename T>
-  bool TryReadChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool TryReadChildren(std::vector<T>* children);
 
   /// Read all children. It expects all children to be of type T.
   /// Note that this method is mutually exclusive with ScanChildren().
   /// @return true on success, false otherwise.
   template <typename T>
-  bool ReadAllChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadAllChildren(std::vector<T>* children);
 
   bool ReadFourCC(FourCC* fourcc) {
     uint32_t val;

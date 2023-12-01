@@ -1,22 +1,14 @@
-FROM opensuse/leap:15
+FROM opensuse/leap:15.5
 
 # Install utilities, libraries, and dev tools.
 RUN zypper in -y \
         curl which \
-        c-ares-devel \
-        gcc-c++ git python python3
+        cmake gcc9-c++ git ninja python3
 
-# Default to python2 because our build system is ancient.
-RUN ln -sf python2 /usr/bin/python
-
-# Install depot_tools.
-WORKDIR /
-RUN git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-RUN touch depot_tools/.disable_auto_update
-ENV PATH /depot_tools:$PATH
-
-# Bypass VPYTHON included by depot_tools.  Prefer the system installation.
-ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+# OpenSuse 15 doesn't have the required gcc 9+ by default, but we can install
+# it as gcc9 and symlink it.
+RUN ln -s g++-9 /usr/bin/g++
+RUN ln -s gcc-9 /usr/bin/gcc
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

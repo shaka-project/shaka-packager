@@ -1,31 +1,34 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/mpd_builder.h"
+#include <packager/mpd/base/mpd_builder.h>
 
 #include <algorithm>
+#include <chrono>
+#include <filesystem>
+#include <optional>
 
-#include "packager/base/files/file_path.h"
-#include "packager/base/logging.h"
-#include "packager/base/optional.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/base/synchronization/lock.h"
-#include "packager/base/time/default_clock.h"
-#include "packager/base/time/time.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/period.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/synchronization/mutex.h>
+
+#include <packager/file/file_util.h>
+#include <packager/macros/classes.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 
-using base::FilePath;
 using xml::XmlNode;
 
 namespace {
@@ -63,7 +66,7 @@ bool AddMpdNameSpaceInfo(XmlNode* mpd) {
     CHECK(iter != uris.end()) << " unexpected namespace " << namespace_name;
 
     RCHECK(mpd->SetStringAttribute(
-        base::StringPrintf("xmlns:%s", namespace_name.c_str()).c_str(),
+        absl::StrFormat("xmlns:%s", namespace_name.c_str()).c_str(),
         iter->second));
   }
   return true;
@@ -75,18 +78,14 @@ bool Positive(double d) {
 
 // Return current time in XML DateTime format. The value is in UTC, so the
 // string ends with a 'Z'.
-std::string XmlDateTimeNowWithOffset(
-    int32_t offset_seconds,
-    base::Clock* clock) {
-  base::Time time = clock->Now();
-  time += base::TimeDelta::FromSeconds(offset_seconds);
-  base::Time::Exploded time_exploded;
-  time.UTCExplode(&time_exploded);
+std::string XmlDateTimeNowWithOffset(int32_t offset_seconds, Clock* clock) {
+  auto time_t = std::chrono::system_clock::to_time_t(
+      clock->now() + std::chrono::seconds(offset_seconds));
+  std::tm* tm = std::gmtime(&time_t);
 
-  return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02dZ", time_exploded.year,
-                            time_exploded.month, time_exploded.day_of_month,
-                            time_exploded.hour, time_exploded.minute,
-                            time_exploded.second);
+  std::stringstream ss;
+  ss << std::put_time(tm, "%Y-%m-%dT%H:%M:%SZ");
+  return ss.str();
 }
 
 bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
@@ -94,22 +93,11 @@ bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
          mpd->SetStringAttribute(attr_name, SecondsToXmlDuration(value));
 }
 
-std::string MakePathRelative(const std::string& media_path,
-                             const FilePath& parent_path) {
-  FilePath relative_path;
-  const FilePath child_path = FilePath::FromUTF8Unsafe(media_path);
-  const bool is_child =
-      parent_path.AppendRelativePath(child_path, &relative_path);
-  if (!is_child)
-    relative_path = child_path;
-  return relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe();
-}
-
 // Spooky static initialization/cleanup of libxml.
 class LibXmlInitializer {
  public:
   LibXmlInitializer() : initialized_(false) {
-    base::AutoLock lock(lock_);
+    absl::MutexLock lock(&lock_);
     if (!initialized_) {
       xmlInitParser();
       initialized_ = true;
@@ -117,7 +105,7 @@ class LibXmlInitializer {
   }
 
   ~LibXmlInitializer() {
-    base::AutoLock lock(lock_);
+    absl::MutexLock lock(&lock_);
     if (initialized_) {
       xmlCleanupParser();
       initialized_ = false;
@@ -125,7 +113,7 @@ class LibXmlInitializer {
   }
 
  private:
-  base::Lock lock_;
+  absl::Mutex lock_;
   bool initialized_;
 
   DISALLOW_COPY_AND_ASSIGN(LibXmlInitializer);
@@ -134,7 +122,7 @@ class LibXmlInitializer {
 }  // namespace
 
 MpdBuilder::MpdBuilder(const MpdOptions& mpd_options)
-    : mpd_options_(mpd_options), clock_(new base::DefaultClock()) {}
+    : mpd_options_(mpd_options), clock_(new Clock{}) {}
 
 MpdBuilder::~MpdBuilder() {}
 
@@ -166,15 +154,14 @@ bool MpdBuilder::ToString(std::string* output) {
 
   std::string version = GetPackagerVersion();
   if (!version.empty()) {
-    version =
-        base::StringPrintf("Generated with %s version %s",
-                           GetPackagerProjectUrl().c_str(), version.c_str());
+    version = absl::StrFormat("Generated with %s version %s",
+                              GetPackagerProjectUrl().c_str(), version.c_str());
   }
   *output = mpd->ToString(version);
   return true;
 }
 
-base::Optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
+std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   XmlNode mpd("MPD");
 
   // Add baseurls to MPD.
@@ -183,7 +170,7 @@ base::Optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
     xml_base_url.SetContent(base_url);
 
     if (!mpd.AddChild(std::move(xml_base_url)))
-      return base::nullopt;
+      return std::nullopt;
   }
 
   bool output_period_duration = false;
@@ -198,11 +185,11 @@ base::Optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   for (const auto& period : periods_) {
     auto period_node = period->GetXml(output_period_duration);
     if (!period_node || !mpd.AddChild(std::move(*period_node)))
-      return base::nullopt;
+      return std::nullopt;
   }
 
   if (!AddMpdNameSpaceInfo(&mpd))
-    return base::nullopt;
+    return std::nullopt;
 
   static const char kOnDemandProfile[] =
       "urn:mpeg:dash:profile:isoff-on-demand:2011";
@@ -211,35 +198,35 @@ base::Optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   switch (mpd_options_.dash_profile) {
     case DashProfile::kOnDemand:
       if (!mpd.SetStringAttribute("profiles", kOnDemandProfile))
-        return base::nullopt;
+        return std::nullopt;
       break;
     case DashProfile::kLive:
       if (!mpd.SetStringAttribute("profiles", kLiveProfile))
-        return base::nullopt;
+        return std::nullopt;
       break;
     default:
-      NOTREACHED() << "Unknown DASH profile: "
-                   << static_cast<int>(mpd_options_.dash_profile);
+      NOTIMPLEMENTED() << "Unknown DASH profile: "
+                       << static_cast<int>(mpd_options_.dash_profile);
       break;
   }
 
   if (!AddCommonMpdInfo(&mpd))
-    return base::nullopt;
+    return std::nullopt;
   switch (mpd_options_.mpd_type) {
     case MpdType::kStatic:
       if (!AddStaticMpdInfo(&mpd))
-        return base::nullopt;
+        return std::nullopt;
       break;
     case MpdType::kDynamic:
       if (!AddDynamicMpdInfo(&mpd))
-        return base::nullopt;
+        return std::nullopt;
       // Must be after Period element.
       if (!AddUtcTiming(&mpd))
-        return base::nullopt;
+        return std::nullopt;
       break;
     default:
-      NOTREACHED() << "Unknown MPD type: "
-                   << static_cast<int>(mpd_options_.mpd_type);
+      NOTIMPLEMENTED() << "Unknown MPD type: "
+                       << static_cast<int>(mpd_options_.mpd_type);
       break;
   }
   return mpd;
@@ -259,7 +246,8 @@ bool MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
 
 bool MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
   DCHECK(mpd_node);
-  DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
+  DCHECK_EQ(static_cast<int>(MpdType::kStatic),
+            static_cast<int>(mpd_options_.mpd_type));
 
   static const char kStaticMpdType[] = "static";
   return mpd_node->SetStringAttribute("type", kStaticMpdType) &&
@@ -270,7 +258,8 @@ bool MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
 
 bool MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   DCHECK(mpd_node);
-  DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
+  DCHECK_EQ(static_cast<int>(MpdType::kDynamic),
+            static_cast<int>(mpd_options_.mpd_type));
 
   static const char kDynamicMpdType[] = "dynamic";
   RCHECK(mpd_node->SetStringAttribute("type", kDynamicMpdType));
@@ -316,7 +305,8 @@ bool MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
 
 bool MpdBuilder::AddUtcTiming(XmlNode* mpd_node) {
   DCHECK(mpd_node);
-  DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
+  DCHECK_EQ(static_cast<int>(MpdType::kDynamic),
+            static_cast<int>(mpd_options_.mpd_type));
 
   for (const MpdParams::UtcTiming& utc_timing :
        mpd_options_.mpd_params.utc_timings) {
@@ -330,7 +320,8 @@ bool MpdBuilder::AddUtcTiming(XmlNode* mpd_node) {
 }
 
 float MpdBuilder::GetStaticMpdDuration() {
-  DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
+  DCHECK_EQ(static_cast<int>(MpdType::kStatic),
+            static_cast<int>(mpd_options_.mpd_type));
 
   float total_duration = 0.0f;
   for (const auto& period : periods_) {
@@ -365,7 +356,8 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
 }
 
 void MpdBuilder::UpdatePeriodDurationAndPresentationTimestamp() {
-  DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
+  DCHECK_EQ(static_cast<int>(MpdType::kStatic),
+            static_cast<int>(mpd_options_.mpd_type));
 
   for (const auto& period : periods_) {
     std::list<Representation*> video_representations;
@@ -383,8 +375,8 @@ void MpdBuilder::UpdatePeriodDurationAndPresentationTimestamp() {
       }
     }
 
-    base::Optional<double> earliest_start_time;
-    base::Optional<double> latest_end_time;
+    std::optional<double> earliest_start_time;
+    std::optional<double> latest_end_time;
     // The timestamps are based on Video Representations if exist.
     const auto& representations = video_representations.size() > 0
                                       ? video_representations
@@ -418,14 +410,13 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
                                         MediaInfo* media_info) {
   DCHECK(media_info);
   const std::string kFileProtocol("file://");
-  std::string mpd_file_path = (mpd_path.find(kFileProtocol) == 0)
-                                  ? mpd_path.substr(kFileProtocol.size())
-                                  : mpd_path;
+  std::filesystem::path mpd_file_path =
+      (mpd_path.find(kFileProtocol) == 0)
+          ? mpd_path.substr(kFileProtocol.size())
+          : mpd_path;
 
   if (!mpd_file_path.empty()) {
-    const FilePath mpd_dir(FilePath::FromUTF8Unsafe(mpd_file_path)
-                               .DirName()
-                               .AsEndingWithSeparator());
+    const std::filesystem::path mpd_dir(mpd_file_path.parent_path());
     if (!mpd_dir.empty()) {
       if (media_info->has_media_file_name()) {
         media_info->set_media_file_url(

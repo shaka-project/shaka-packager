@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -13,9 +13,10 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/base64.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_builder.h"
+#include <absl/strings/escaping.h>
+
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_builder.h>
 
 namespace shaka{
 

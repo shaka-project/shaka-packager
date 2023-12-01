@@ -1,27 +1,32 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
-#include <gflags/gflags.h>
 #include <limits>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/buffer_writer.h"
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 // TODO(kqyang): Move byte to unit stream convertion to muxer and make it a
 // muxer option.
-DEFINE_bool(strip_parameter_set_nalus,
-            true,
-            "When converting from NAL byte stream (AnnexB stream) to NAL unit "
-            "stream, this flag determines whether to strip parameter sets NAL "
-            "units, i.e. SPS/PPS for H264 and SPS/PPS/VPS for H265, from the "
-            "frames. Note that avc1/hvc1 is generated if this flag is enabled; "
-            "otherwise avc3/hev1 is generated.");
+ABSL_FLAG(bool,
+          strip_parameter_set_nalus,
+          true,
+          "When converting from NAL byte stream (AnnexB stream) to NAL unit "
+          "stream, this flag determines whether to strip parameter sets NAL "
+          "units, i.e. SPS/PPS for H264 and SPS/PPS/VPS for H265, from the "
+          "frames. Note that avc1/hvc1 is generated if this flag is enabled; "
+          "otherwise avc3/hev1 is generated.");
 
 namespace shaka {
 namespace media {
@@ -30,13 +35,13 @@ namespace {
 // Additional space to reserve for output frame. This value ought to be enough
 // to acommodate frames consisting of 100 NAL units with 3-byte start codes.
 const size_t kStreamConversionOverhead = 100;
-}
+}  // namespace
 
 H26xByteToUnitStreamConverter::H26xByteToUnitStreamConverter(
     Nalu::CodecType type)
     : type_(type),
       stream_format_(
-          FLAGS_strip_parameter_set_nalus
+          absl::GetFlag(FLAGS_strip_parameter_set_nalus)
               ? H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus
               : H26xStreamFormat::kNalUnitStreamWithParameterSetNalus) {}
 
@@ -91,8 +96,11 @@ void H26xByteToUnitStreamConverter::WarnIfNotMatch(
     LOG(WARNING) << "Seeing varying NAL unit of type " << nalu_type
                  << ". You may need to set --strip_parameter_set_nalus=false "
                     "during packaging to generate a playable stream.";
-    VLOG(1) << "Old: " << base::HexEncode(vector.data(), vector.size());
-    VLOG(1) << "New: " << base::HexEncode(nalu_ptr, nalu_size);
+    VLOG(1) << "Old: "
+            << absl::BytesToHexString(byte_vector_to_string_view(vector));
+    VLOG(1) << "New: "
+            << absl::BytesToHexString(
+                   byte_array_to_string_view(nalu_ptr, nalu_size));
   }
 }
 

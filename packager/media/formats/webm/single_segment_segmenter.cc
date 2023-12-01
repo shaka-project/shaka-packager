@@ -1,14 +1,16 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/single_segment_segmenter.h"
+#include <packager/media/formats/webm/single_segment_segmenter.h>
 
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxer.h>
+
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 namespace media {

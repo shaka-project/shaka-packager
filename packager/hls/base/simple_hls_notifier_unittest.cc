@@ -1,29 +1,33 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/hls/base/simple_hls_notifier.h>
+
+#include <filesystem>
+#include <memory>
+
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
+#include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <gflags/gflags.h>
-#include <memory>
+#include <packager/flag_saver.h>
+#include <packager/hls/base/mock_media_playlist.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/widevine_pssh_data.pb.h>
 
-#include "packager/base/base64.h"
-#include "packager/base/files/file_path.h"
-#include "packager/hls/base/mock_media_playlist.h"
-#include "packager/hls/base/simple_hls_notifier.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/widevine_pssh_data.pb.h"
-
-DECLARE_bool(enable_legacy_widevine_hls_signaling);
+ABSL_DECLARE_FLAG(bool, enable_legacy_widevine_hls_signaling);
 
 namespace shaka {
 namespace hls {
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -245,10 +249,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kTargetDuration))
       .Times(1);
   EXPECT_CALL(*mock_media_playlist,
-              WriteToFile(StrEq(
-                  base::FilePath::FromUTF8Unsafe(kAnyOutputDir)
-                      .Append(base::FilePath::FromUTF8Unsafe("playlist.m3u8"))
-                      .AsUTF8Unsafe())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_TRUE(notifier.Flush());
 }
@@ -289,7 +291,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateIdentityKey) {
   const std::vector<uint8_t> dummy_pssh_data(10, 'p');
 
   std::string expected_key_uri_base64;
-  base::Base64Encode(std::string(key_id.begin(), key_id.end()),
+  absl::Base64Escape(std::string(key_id.begin(), key_id.end()),
                      &expected_key_uri_base64);
 
   EXPECT_CALL(*mock_media_playlist,
@@ -557,10 +559,8 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kTargetDuration))
       .Times(1);
   EXPECT_CALL(*mock_media_playlist,
-              WriteToFile(StrEq(
-                  base::FilePath::FromUTF8Unsafe(kAnyOutputDir)
-                      .Append(base::FilePath::FromUTF8Unsafe("playlist.m3u8"))
-                      .AsUTF8Unsafe())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8"))))
       .WillOnce(Return(true));
 
   hls_params_.playlist_type = GetParam();
@@ -627,18 +627,14 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*mock_media_playlist1, SetTargetDuration(kTargetDuration))
       .Times(1);
   EXPECT_CALL(*mock_media_playlist1,
-              WriteToFile(StrEq(
-                  base::FilePath::FromUTF8Unsafe(kAnyOutputDir)
-                      .Append(base::FilePath::FromUTF8Unsafe("playlist1.m3u8"))
-                      .AsUTF8Unsafe())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist1.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist2, SetTargetDuration(kTargetDuration))
       .Times(1);
   EXPECT_CALL(*mock_media_playlist2,
-              WriteToFile(StrEq(
-                  base::FilePath::FromUTF8Unsafe(kAnyOutputDir)
-                      .Append(base::FilePath::FromUTF8Unsafe("playlist2.m3u8"))
-                      .AsUTF8Unsafe())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_CALL(
       *mock_master_playlist_ptr,
@@ -653,10 +649,8 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
       .WillOnce(Return(kLongestSegmentDuration));
   // Not updating other playlists as target duration does not change.
   EXPECT_CALL(*mock_media_playlist2,
-              WriteToFile(StrEq(
-                  base::FilePath::FromUTF8Unsafe(kAnyOutputDir)
-                      .Append(base::FilePath::FromUTF8Unsafe("playlist2.m3u8"))
-                      .AsUTF8Unsafe())))
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8"))))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _, _))
       .WillOnce(Return(true));
@@ -673,12 +667,16 @@ class WidevineSimpleHlsNotifierTest : public SimpleHlsNotifierTest,
                                       public WithParamInterface<bool> {
  protected:
   WidevineSimpleHlsNotifierTest()
-      : enable_legacy_widevine_hls_signaling_(GetParam()) {
-    FLAGS_enable_legacy_widevine_hls_signaling =
-        enable_legacy_widevine_hls_signaling_;
+      : enable_legacy_widevine_hls_signaling_(GetParam()),
+        saver(&FLAGS_enable_legacy_widevine_hls_signaling) {
+    absl::SetFlag(&FLAGS_enable_legacy_widevine_hls_signaling,
+                  enable_legacy_widevine_hls_signaling_);
   }
 
   bool enable_legacy_widevine_hls_signaling_ = false;
+
+ private:
+  FlagSaver<bool> saver;
 };
 
 TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdate) {
@@ -698,9 +696,9 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdate) {
       0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33, 0x44,
       0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33, 0x44,
   };
-  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId));
+  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + std::size(kAnyKeyId));
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
-                                          kAnyKeyId + arraysize(kAnyKeyId));
+                                          kAnyKeyId + std::size(kAnyKeyId));
   std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
 
   EXPECT_TRUE(!widevine_pssh_data_str.empty());
@@ -717,11 +715,11 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdate) {
       R"({"key_ids":["11223344112233441122334411223344"],)"
       R"("provider":"someprovider","content_id":"Y29udGVudGlk"})";
   std::string expected_json_base64;
-  base::Base64Encode(kExpectedJson, &expected_json_base64);
+  absl::Base64Escape(kExpectedJson, &expected_json_base64);
 
   std::string expected_pssh_base64;
   const std::vector<uint8_t> pssh_box = pssh_builder.CreateBox();
-  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+  absl::Base64Escape(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
   EXPECT_CALL(*mock_media_playlist,
@@ -763,7 +761,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateNoKeyidsInPssh) {
       R"({"key_ids":["11223344112233441122334411223344"],)"
       R"("provider":"someprovider","content_id":"Y29udGVudGlk"})";
   std::string expected_json_base64;
-  base::Base64Encode(kExpectedJson, &expected_json_base64);
+  absl::Base64Escape(kExpectedJson, &expected_json_base64);
 
   media::PsshBoxBuilder pssh_builder;
   pssh_builder.set_pssh_data(pssh_data);
@@ -772,7 +770,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateNoKeyidsInPssh) {
 
   std::string expected_pssh_base64;
   const std::vector<uint8_t> pssh_box = pssh_builder.CreateBox();
-  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+  absl::Base64Escape(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
   EXPECT_CALL(*mock_media_playlist,
@@ -793,7 +791,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateNoKeyidsInPssh) {
   };
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id,
-      std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId)),
+      std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + std::size(kAnyKeyId)),
       widevine_system_id_, iv, pssh_box));
 }
 
@@ -821,14 +819,14 @@ TEST_P(WidevineSimpleHlsNotifierTest, MultipleKeyIdsNoContentIdInPssh) {
       0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
   };
   std::vector<uint8_t> first_keyid(kFirstKeyId,
-                                   kFirstKeyId + arraysize(kFirstKeyId));
+                                   kFirstKeyId + std::size(kFirstKeyId));
   std::vector<uint8_t> second_keyid(kSecondKeyId,
-                                    kSecondKeyId + arraysize(kSecondKeyId));
+                                    kSecondKeyId + std::size(kSecondKeyId));
 
   widevine_pssh_data.add_key_id()->assign(kFirstKeyId,
-                                          kFirstKeyId + arraysize(kFirstKeyId));
+                                          kFirstKeyId + std::size(kFirstKeyId));
   widevine_pssh_data.add_key_id()->assign(
-      kSecondKeyId, kSecondKeyId + arraysize(kSecondKeyId));
+      kSecondKeyId, kSecondKeyId + std::size(kSecondKeyId));
   std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
   EXPECT_TRUE(!widevine_pssh_data_str.empty());
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
@@ -847,11 +845,11 @@ TEST_P(WidevineSimpleHlsNotifierTest, MultipleKeyIdsNoContentIdInPssh) {
       R"("11111111111111111111111111111111"],)"
       R"("provider":"someprovider"})";
   std::string expected_json_base64;
-  base::Base64Encode(kExpectedJson, &expected_json_base64);
+  absl::Base64Escape(kExpectedJson, &expected_json_base64);
 
   std::string expected_pssh_base64;
   const std::vector<uint8_t> pssh_box = pssh_builder.CreateBox();
-  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+  absl::Base64Escape(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
   EXPECT_CALL(*mock_media_playlist,
@@ -893,9 +891,9 @@ TEST_P(WidevineSimpleHlsNotifierTest, CencEncryptionScheme) {
       0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33, 0x44,
       0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33, 0x44,
   };
-  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId));
+  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + std::size(kAnyKeyId));
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
-                                          kAnyKeyId + arraysize(kAnyKeyId));
+                                          kAnyKeyId + std::size(kAnyKeyId));
   std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
 
   EXPECT_TRUE(!widevine_pssh_data_str.empty());
@@ -904,7 +902,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, CencEncryptionScheme) {
 
   std::string expected_pssh_base64;
   const std::vector<uint8_t> pssh_box = {'p', 's', 's', 'h'};
-  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+  absl::Base64Escape(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
   EXPECT_CALL(*mock_media_playlist,
@@ -932,9 +930,9 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
       0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33, 0x44,
       0x11, 0x22, 0x33, 0x44, 0x11, 0x22, 0x33, 0x44,
   };
-  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId));
+  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + std::size(kAnyKeyId));
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
-                                          kAnyKeyId + arraysize(kAnyKeyId));
+                                          kAnyKeyId + std::size(kAnyKeyId));
   std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
   EXPECT_TRUE(!widevine_pssh_data_str.empty());
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
@@ -944,7 +942,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
       R"({"key_ids":["11223344112233441122334411223344"],)"
       R"("provider":"someprovider","content_id":"Y29udGVudGlk"})";
   std::string expected_json_base64;
-  base::Base64Encode(kExpectedJson, &expected_json_base64);
+  absl::Base64Escape(kExpectedJson, &expected_json_base64);
 
   media::PsshBoxBuilder pssh_builder;
   pssh_builder.set_pssh_data(pssh_data);
@@ -971,13 +969,13 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
   std::vector<uint8_t> pssh_as_vec = pssh_builder.CreateBox();
   std::string pssh_in_string(pssh_as_vec.begin(), pssh_as_vec.end());
   std::string base_64_encoded_pssh;
-  base::Base64Encode(pssh_in_string, &base_64_encoded_pssh);
+  absl::Base64Escape(pssh_in_string, &base_64_encoded_pssh);
   LOG(INFO) << base_64_encoded_pssh;
 
   std::vector<uint8_t> empty_iv;
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id,
-      std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId)),
+      std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + std::size(kAnyKeyId)),
       widevine_system_id_, empty_iv, pssh_builder.CreateBox()));
 }
 

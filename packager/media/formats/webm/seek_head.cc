@@ -1,17 +1,20 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/seek_head.h"
+#include <packager/media/formats/webm/seek_head.h>
 
 #include <algorithm>
 #include <limits>
 
-#include "packager/base/logging.h"
-#include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
-#include "packager/third_party/libwebm/src/webmids.hpp"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <common/webmids.h>
+#include <mkvmuxer/mkvmuxerutil.h>
+
+using namespace mkvmuxer;
 
 namespace shaka {
 namespace media {
@@ -20,18 +23,19 @@ namespace {
 // Cluster, Cues, Info, Tracks.
 const size_t kElementIdCount = 4u;
 
-uint64_t EbmlMasterElementWithPayloadSize(mkvmuxer::MkvId id, uint64_t payload_size) {
+uint64_t EbmlMasterElementWithPayloadSize(libwebm::MkvId id,
+                                          uint64_t payload_size) {
   return EbmlMasterElementSize(id, payload_size) + payload_size;
 }
 
 uint64_t MaxSeekEntrySize() {
   const uint64_t max_entry_payload_size =
       EbmlElementSize(
-          mkvmuxer::kMkvSeekID,
+          libwebm::kMkvSeekID,
           static_cast<mkvmuxer::uint64>(std::numeric_limits<uint32_t>::max())) +
-      EbmlElementSize(mkvmuxer::kMkvSeekPosition,
+      EbmlElementSize(libwebm::kMkvSeekPosition,
                       std::numeric_limits<mkvmuxer::uint64>::max());
-  return EbmlMasterElementWithPayloadSize(mkvmuxer::kMkvSeek,
+  return EbmlMasterElementWithPayloadSize(libwebm::kMkvSeek,
                                           max_entry_payload_size);
 }
 
@@ -39,7 +43,7 @@ uint64_t MaxSeekEntrySize() {
 
 SeekHead::SeekHead()
     : total_void_size_(EbmlMasterElementWithPayloadSize(
-          mkvmuxer::kMkvSeekHead,
+          libwebm::kMkvSeekHead,
           kElementIdCount * MaxSeekEntrySize())) {}
 
 SeekHead::~SeekHead() {}
@@ -52,17 +56,17 @@ bool SeekHead::Write(mkvmuxer::IMkvWriter* writer) {
   uint64_t payload_size = 0;
   for (const SeekHead::SeekElement& seek_element : seek_elements) {
     payload_size +=
-        EbmlMasterElementWithPayloadSize(mkvmuxer::kMkvSeek, seek_element.size);
+        EbmlMasterElementWithPayloadSize(libwebm::kMkvSeek, seek_element.size);
   }
 
   const int64_t start_pos = writer->Position();
-  if (!WriteEbmlMasterElement(writer, mkvmuxer::kMkvSeekHead, payload_size))
+  if (!WriteEbmlMasterElement(writer, libwebm::kMkvSeekHead, payload_size))
     return false;
 
   for (const SeekHead::SeekElement& element : seek_elements) {
-    if (!WriteEbmlMasterElement(writer, mkvmuxer::kMkvSeek, element.size) ||
-        !WriteEbmlElement(writer, mkvmuxer::kMkvSeekID, element.id) ||
-        !WriteEbmlElement(writer, mkvmuxer::kMkvSeekPosition, element.position))
+    if (!WriteEbmlMasterElement(writer, libwebm::kMkvSeek, element.size) ||
+        !WriteEbmlElement(writer, libwebm::kMkvSeekID, element.id) ||
+        !WriteEbmlElement(writer, libwebm::kMkvSeekPosition, element.position))
       return false;
   }
 
@@ -88,13 +92,13 @@ bool SeekHead::WriteVoid(mkvmuxer::IMkvWriter* writer) {
 std::vector<SeekHead::SeekElement> SeekHead::CreateSeekElements() {
   std::vector<SeekHead::SeekElement> seek_elements;
   if (info_pos_ != 0)
-    seek_elements.emplace_back(mkvmuxer::kMkvInfo, info_pos_);
+    seek_elements.emplace_back(libwebm::kMkvInfo, info_pos_);
   if (tracks_pos_ != 0)
-    seek_elements.emplace_back(mkvmuxer::kMkvTracks, tracks_pos_);
+    seek_elements.emplace_back(libwebm::kMkvTracks, tracks_pos_);
   if (cues_pos_ != 0)
-    seek_elements.emplace_back(mkvmuxer::kMkvCues, cues_pos_);
+    seek_elements.emplace_back(libwebm::kMkvCues, cues_pos_);
   if (cluster_pos_ != 0)
-    seek_elements.emplace_back(mkvmuxer::kMkvCluster, cluster_pos_);
+    seek_elements.emplace_back(libwebm::kMkvCluster, cluster_pos_);
   DCHECK_LE(seek_elements.size(), kElementIdCount);
 
   std::sort(seek_elements.begin(), seek_elements.end(),
@@ -103,9 +107,8 @@ std::vector<SeekHead::SeekElement> SeekHead::CreateSeekElements() {
               return left.position < right.position;
             });
   for (SeekHead::SeekElement& element : seek_elements) {
-    element.size =
-        EbmlElementSize(mkvmuxer::kMkvSeekID, element.id) +
-        EbmlElementSize(mkvmuxer::kMkvSeekPosition, element.position);
+    element.size = EbmlElementSize(libwebm::kMkvSeekID, element.id) +
+                   EbmlElementSize(libwebm::kMkvSeekPosition, element.position);
   }
   return seek_elements;
 }

@@ -1,18 +1,20 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/mpd/util/mpd_writer.h>
+
+#include <filesystem>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_util.h"
-#include "packager/base/path_service.h"
-#include "packager/mpd/base/mock_mpd_notifier.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/util/mpd_writer.h"
+#include <packager/file/file_test_util.h>
+#include <packager/mpd/base/mock_mpd_notifier.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
 
 namespace shaka {
 
@@ -43,7 +45,7 @@ class TestMpdNotifierFactory : public MpdNotifierFactory {
         .Times(2)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_notifier, Flush()).WillOnce(Return(true));
-    return std::move(mock_notifier);
+    return mock_notifier;
   }
 
   void SetExpectedBaseUrls(const std::vector<std::string>& base_urls) {
@@ -77,25 +79,24 @@ TEST_F(MpdWriterTest, WriteMpdToFile) {
   const char kBaseUrl1[] = "http://cdn1.mydomain.com/";
   const char kBaseUrl2[] = "http://cdn2.mydomain.com/";
   std::vector<std::string> base_urls_;
-  base_urls_.push_back(kBaseUrl1);
-  base_urls_.push_back(kBaseUrl2);
+  base_urls_.emplace_back(kBaseUrl1);
+  base_urls_.emplace_back(kBaseUrl2);
 
   notifier_factory_->SetExpectedBaseUrls(base_urls_);
 
-  base::FilePath media_info_file1 =
+  std::filesystem::path media_info_file1 =
       GetTestDataFilePath(kFileNameVideoMediaInfo1);
-  base::FilePath media_info_file2 =
+  std::filesystem::path media_info_file2 =
       GetTestDataFilePath(kFileNameVideoMediaInfo2);
 
   SetMpdNotifierFactoryForTest();
-  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file1.AsUTF8Unsafe()));
-  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file2.AsUTF8Unsafe()));
+  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file1.string()));
+  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file2.string()));
   mpd_writer_.AddBaseUrl(kBaseUrl1);
   mpd_writer_.AddBaseUrl(kBaseUrl2);
 
-  base::FilePath mpd_file_path;
-  ASSERT_TRUE(base::CreateTemporaryFile(&mpd_file_path));
-  EXPECT_TRUE(mpd_writer_.WriteMpdToFile(mpd_file_path.AsUTF8Unsafe().c_str()));
+  auto temp = new TempFile();
+  EXPECT_TRUE(mpd_writer_.WriteMpdToFile(temp->path().c_str()));
 }
 
 }  // namespace shaka

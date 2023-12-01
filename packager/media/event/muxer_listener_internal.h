@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,11 @@
 #ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/media/event/muxer_listener.h"
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 

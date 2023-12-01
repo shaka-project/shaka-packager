@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_HLS_AUDIO_UTIL_H_
 #define PACKAGER_MEDIA_CODECS_HLS_AUDIO_UTIL_H_
 
-#include "packager/media/base/stream_info.h"
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

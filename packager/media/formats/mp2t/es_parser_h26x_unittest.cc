@@ -1,20 +1,22 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 
+#include <functional>
 #include <vector>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
 namespace shaka {
 namespace media {
@@ -113,7 +115,7 @@ class TestableEsParser : public EsParserH26x {
   bool UpdateVideoDecoderConfig(int pps_id) override {
     if (decoder_config_check_pending_) {
       EXPECT_EQ(kTestPpsId, pps_id);
-      new_stream_info_cb_.Run(nullptr);
+      new_stream_info_cb_(nullptr);
       decoder_config_check_pending_ = false;
     }
     return true;
@@ -241,7 +243,7 @@ std::vector<std::vector<uint8_t>> EsParserH26xTest::BuildSamplesData(
                                   es_data.end());
 
       es_data.insert(es_data.begin(), kStartCode,
-                     kStartCode + arraysize(kStartCode));
+                     kStartCode + std::size(kStartCode));
       annex_b_sample_data.insert(annex_b_sample_data.end(), es_data.begin(),
                                  es_data.end());
     }
@@ -262,8 +264,8 @@ void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
 
   TestableEsParser es_parser(
       codec_type,
-      base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
+      std::bind(&EsParserH26xTest::NewVideoConfig, this, std::placeholders::_1),
+      std::bind(&EsParserH26xTest::EmitSample, this, std::placeholders::_1));
 
   int64_t timestamp = 0;
   for (const auto& sample_data :
@@ -292,7 +294,7 @@ TEST_F(EsParserH26xTest, H265BasicSupport) {
     kSeparator, kH265Aud, kH265Vcl,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -305,7 +307,7 @@ TEST_F(EsParserH26xTest, H265DeterminesAccessUnitsWithoutAUD) {
     kSeparator, kH265Sei, kH265Vcl,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(4u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -317,7 +319,7 @@ TEST_F(EsParserH26xTest, H265DoesNotStartOnRsv) {
     kSeparator, kH265Sei, kH265Vcl,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -331,7 +333,7 @@ TEST_F(EsParserH26xTest, H265SupportsNonZeroNuhLayerId) {
     kSeparator, kH265Vcl,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(5u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -345,7 +347,7 @@ TEST_F(EsParserH26xTest, H265WaitsForKeyFrame) {
     kSeparator, kH265Vcl,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -357,7 +359,7 @@ TEST_F(EsParserH26xTest, H265EmitsFramesWithNoStreamInfo) {
     kSeparator, kH265Sei, kH265Vcl,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_FALSE(has_stream_info_);
 }
@@ -369,7 +371,7 @@ TEST_F(EsParserH26xTest, H265EmitsLastFrameWithNuhLayerId) {
     kSeparator, kH265Vcl, kH265Sei, kH265VclWithNuhLayer, kH265Rsv,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_FALSE(has_stream_info_);
 }
@@ -381,7 +383,7 @@ TEST_F(EsParserH26xTest, H264BasicSupport) {
     kSeparator, kH264Aud, kH264Vcl,
   };
 
-  RunTest(Nalu::kH264, kData, arraysize(kData));
+  RunTest(Nalu::kH264, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
   EXPECT_EQ(3u, media_samples_.size());
@@ -412,12 +414,12 @@ TEST_F(EsParserH26xTest, H264AudInAccessUnit) {
 
   TestableEsParser es_parser(
       Nalu::kH264,
-      base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
+      std::bind(&EsParserH26xTest::NewVideoConfig, this, std::placeholders::_1),
+      std::bind(&EsParserH26xTest::EmitSample, this, std::placeholders::_1));
 
   size_t sample_index = 0;
   for (const auto& sample_data :
-       BuildSamplesData(Nalu::kH264, kData, arraysize(kData))) {
+       BuildSamplesData(Nalu::kH264, kData, std::size(kData))) {
     // Duration of one 25fps video frame in 90KHz clock units.
     const uint32_t kMpegTicksPerFrame = 3600;
     const int64_t timestamp = kMpegTicksPerFrame * sample_index;
@@ -447,7 +449,7 @@ TEST_F(EsParserH26xTest, H264DeterminesAccessUnitsWithoutAUD) {
     kSeparator, kH264Sei, kH264VclFrame3,
   };
 
-  RunTest(Nalu::kH264, kData, arraysize(kData));
+  RunTest(Nalu::kH264, kData, std::size(kData));
   EXPECT_EQ(4u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -459,7 +461,7 @@ TEST_F(EsParserH26xTest, H264DoesNotStartOnRsv) {
     kSeparator, kH264Sei, kH264VclFrame2,
   };
 
-  RunTest(Nalu::kH264, kData, arraysize(kData));
+  RunTest(Nalu::kH264, kData, std::size(kData));
   EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
@@ -472,7 +474,7 @@ TEST_F(EsParserH26xTest, H264ContainsOnlyOneFrame) {
       kH264VclKeyFrame,
   };
 
-  RunTest(Nalu::kH264, kData, arraysize(kData));
+  RunTest(Nalu::kH264, kData, std::size(kData));
   EXPECT_TRUE(has_stream_info_);
   EXPECT_EQ(1u, sample_count_);
   EXPECT_EQ(1u, media_samples_.size());
@@ -484,7 +486,7 @@ TEST_F(EsParserH26xTest, H265ContainsOnlyOneFrame) {
       kSeparator, kH265Aud, kH265Sps, kH265VclKeyFrame,
   };
 
-  RunTest(Nalu::kH265, kData, arraysize(kData));
+  RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_TRUE(has_stream_info_);
   EXPECT_EQ(1u, sample_count_);
   EXPECT_EQ(1u, media_samples_.size());

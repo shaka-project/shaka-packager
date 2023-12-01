@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/av1_parser.h"
+#include <packager/media/codecs/av1_parser.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/test/test_data_util.h"
+#include <packager/media/test/test_data_util.h>
 
 using ::testing::ElementsAre;
 
@@ -23,6 +23,7 @@ inline bool operator==(const AV1Parser::Tile& lhs, const AV1Parser::Tile& rhs) {
 
 TEST(AV1ParserTest, ParseIFrameSuccess) {
   const std::vector<uint8_t> buffer = ReadTestDataFile("av1-I-frame-320x240");
+  ASSERT_FALSE(buffer.empty());
 
   AV1Parser parser;
   std::vector<AV1Parser::Tile> tiles;

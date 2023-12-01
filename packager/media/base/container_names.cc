@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/base/container_names.h"
+#include <packager/media/base/container_names.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <stdint.h>
-
+#include <algorithm>
 #include <cctype>
+#include <cstdint>
+#include <iterator>
 #include <limits>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
+#include <packager/media/base/bit_reader.h>
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
 
 namespace shaka {
 namespace media {
@@ -375,7 +377,7 @@ static bool CheckDV(const uint8_t* buffer, int buffer_size) {
       reader.SkipBits(3);
       RCHECK(ReadBits(&reader, 24) == 0xffffff);
       current_sequence_number = sequence_number;
-      for (size_t i = 0; i < arraysize(last_block_number); ++i)
+      for (size_t i = 0; i < std::size(last_block_number); ++i)
         last_block_number[i] = -1;
     } else {
       // Sequence number must match (this will also fail if no header seen).
@@ -1640,7 +1642,7 @@ bool CheckWebVtt(const uint8_t* buffer, int buffer_size) {
 
   return StartsWith(buffer + offset, buffer_size - offset,
                     reinterpret_cast<const uint8_t*>(kWebVtt),
-                    arraysize(kWebVtt) - 1);
+                    std::size(kWebVtt) - 1);
 }
 
 bool CheckTtml(const uint8_t* buffer, int buffer_size) {
@@ -1726,41 +1728,44 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
 
 MediaContainerName DetermineContainerFromFormatName(
     const std::string& format_name) {
-  if (base::EqualsCaseInsensitiveASCII(format_name, "aac") ||
-      base::EqualsCaseInsensitiveASCII(format_name, "adts")) {
+  std::string normalized_format_name = format_name;
+  std::transform(format_name.begin(), format_name.end(),
+                 normalized_format_name.begin(), ::tolower);
+
+  if (normalized_format_name == "aac" || normalized_format_name == "adts") {
     return CONTAINER_AAC;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ac3")) {
+  } else if (normalized_format_name == "ac3") {
     return CONTAINER_AC3;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ec3") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "eac3")) {
+  } else if (normalized_format_name == "ec3" ||
+             normalized_format_name == "eac3") {
     return CONTAINER_EAC3;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "mp3")) {
+  } else if (normalized_format_name == "mp3") {
     return CONTAINER_MP3;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "webm")) {
+  } else if (normalized_format_name == "webm") {
     return CONTAINER_WEBM;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "cmfa") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "cmft") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "cmfv") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "m4a") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "m4s") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "mov") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "mp4") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "ttml+mp4") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "webvtt+mp4") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "vtt+mp4")) {
+  } else if (normalized_format_name == "cmfa" ||
+             normalized_format_name == "cmft" ||
+             normalized_format_name == "cmfv" ||
+             normalized_format_name == "m4a" ||
+             normalized_format_name == "m4s" ||
+             normalized_format_name == "m4v" ||
+             normalized_format_name == "mov" ||
+             normalized_format_name == "mp4" ||
+             normalized_format_name == "ttml+mp4" ||
+             normalized_format_name == "webvtt+mp4" ||
+             normalized_format_name == "vtt+mp4") {
     return CONTAINER_MOV;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ts") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "mpeg2ts")) {
+  } else if (normalized_format_name == "ts" ||
+             normalized_format_name == "mpeg2ts") {
     return CONTAINER_MPEG2TS;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "wvm")) {
+  } else if (normalized_format_name == "wvm") {
     return CONTAINER_WVM;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "vtt") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "webvtt")) {
+  } else if (normalized_format_name == "vtt" ||
+             normalized_format_name == "webvtt") {
     return CONTAINER_WEBVTT;
-  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ttml") ||
+  } else if (normalized_format_name == "ttml" ||
              // Treat xml as ttml.
-             base::EqualsCaseInsensitiveASCII(format_name, "xml")) {
+             normalized_format_name == "xml") {
     return CONTAINER_TTML;
   }
   return CONTAINER_UNKNOWN;

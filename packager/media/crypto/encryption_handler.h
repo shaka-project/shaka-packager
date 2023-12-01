@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,9 +7,9 @@
 #ifndef PACKAGER_MEDIA_CRYPTO_ENCRYPTION_HANDLER_H_
 #define PACKAGER_MEDIA_CRYPTO_ENCRYPTION_HANDLER_H_
 
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/public/crypto_params.h"
+#include <packager/crypto_params.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {
@@ -53,7 +53,10 @@ class EncryptionHandler : public MediaHandler {
                                  uint8_t* dest);
   // Encrypt an array with size |source_size|. |dest| should have at
   // least |source_size| bytes.
-  void EncryptBytes(const uint8_t* source, size_t source_size, uint8_t* dest);
+  void EncryptBytes(const uint8_t* source,
+                    size_t source_size,
+                    uint8_t* dest,
+                    size_t dest_size);
 
   // An E-AC3 frame comprises of one or more syncframes. This function extracts
   // the syncframe sizes from the source bytes.

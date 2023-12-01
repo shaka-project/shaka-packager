@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,12 @@
 #ifndef PACKAGER_MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 #define PACKAGER_MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {

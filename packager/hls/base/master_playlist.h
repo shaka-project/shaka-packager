@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_MASTER_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MASTER_PLAYLIST_H_
 
+#include <filesystem>
 #include <list>
 #include <string>
 
@@ -24,9 +25,9 @@ class MasterPlaylist {
   ///        be tagged with 'DEFAULT'.
   /// @param default_text_language determines the text rendition that should be
   ///        tagged with 'DEFAULT'.
-  MasterPlaylist(const std::string& file_name,
+  MasterPlaylist(const std::filesystem::path& file_name,
                  const std::string& default_audio_language,
-                 const std::string& default_text_language, 
+                 const std::string& default_text_language,
                  const bool is_independent_segments);
   virtual ~MasterPlaylist();
 
@@ -48,7 +49,7 @@ class MasterPlaylist {
   MasterPlaylist& operator=(const MasterPlaylist&) = delete;
 
   std::string written_playlist_;
-  const std::string file_name_;
+  const std::filesystem::path file_name_;
   const std::string default_audio_language_;
   const std::string default_text_language_;
   bool is_independent_segments_;

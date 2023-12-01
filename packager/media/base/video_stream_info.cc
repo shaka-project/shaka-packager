@@ -1,16 +1,16 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/video_stream_info.h"
+#include <packager/media/base/video_stream_info.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/limits.h"
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/limits.h>
 
 namespace shaka {
 namespace media {
@@ -46,8 +46,8 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  const std::string& codec_string,
                                  const uint8_t* codec_config,
                                  size_t codec_config_size,
-                                 uint16_t width,
-                                 uint16_t height,
+                                 uint32_t width,
+                                 uint32_t height,
                                  uint32_t pixel_width,
                                  uint32_t pixel_height,
                                  uint8_t transfer_characteristics,
@@ -84,7 +84,7 @@ bool VideoStreamInfo::IsValidConfig() const {
 }
 
 std::string VideoStreamInfo::ToString() const {
-  return base::StringPrintf(
+  return absl::StrFormat(
       "%s codec: %s\n width: %d\n height: %d\n pixel_aspect_ratio: %d:%d\n "
       "trick_play_factor: %d\n nalu_length_size: %d\n",
       StreamInfo::ToString().c_str(), VideoCodecToString(codec()).c_str(),

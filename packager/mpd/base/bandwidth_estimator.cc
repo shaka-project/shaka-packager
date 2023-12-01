@@ -1,16 +1,19 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/bandwidth_estimator.h"
+#include <packager/mpd/base/bandwidth_estimator.h>
 
 #include <algorithm>
 #include <cmath>
 #include <numeric>
 
-#include "packager/base/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 
@@ -106,7 +109,7 @@ uint64_t BandwidthEstimator::GetBitrate(const Block& block,
     VLOG(1) << "Exclude short segment (duration " << block.duration
             << ", target_duration " << target_block_duration
             << ") in peak bandwidth computation.";
-    return 0.0;
+    return 0;
   }
   return static_cast<uint64_t>(ceil(block.size_in_bits / block.duration));
 }

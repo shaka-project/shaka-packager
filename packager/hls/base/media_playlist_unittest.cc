@@ -1,18 +1,19 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/hls/base/media_playlist.h>
+
+#include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/file/file_test_util.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/version/version.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/file/file_test_util.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {
@@ -1032,8 +1033,8 @@ class MediaPlaylistDeleteSegmentsTest
 
   std::string GetSegmentName(int index) {
     if (segment_template_.find("$Time$") != std::string::npos)
-      return base::StringPrintf(kStringPrintTemplate, GetTime(index));
-    return base::StringPrintf(kStringPrintTemplate, index + 1);
+      return absl::StrFormat(kStringPrintTemplate, GetTime(index));
+    return absl::StrFormat(kStringPrintTemplate, index + 1);
   }
 
   bool SegmentDeleted(const std::string& segment_name) {

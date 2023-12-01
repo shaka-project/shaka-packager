@@ -5,11 +5,12 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PES_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PES_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
-#include "packager/base/compiler_specific.h"
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/formats/mp2t/ts_section.h"
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/formats/mp2t/ts_section.h>
 
 namespace shaka {
 namespace media {

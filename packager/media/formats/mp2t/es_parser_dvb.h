@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc. All rights reserved.
+// Copyright 2020 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_DVB_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_DVB_H_
 
+#include <functional>
 #include <unordered_map>
 
-#include "packager/base/callback.h"
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/formats/dvb/dvb_sub_parser.h"
-#include "packager/media/formats/mp2t/es_parser.h"
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/formats/dvb/dvb_sub_parser.h>
+#include <packager/media/formats/mp2t/es_parser.h>
+#include <functional>
 
 namespace shaka {
 namespace media {

@@ -1,28 +1,23 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/io_cache.h"
-
-#include <string.h>
+#include <packager/file/io_cache.h>
 
 #include <algorithm>
+#include <cstring>
 
-#include "packager/base/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 
-using base::AutoLock;
-using base::AutoUnlock;
-
 IoCache::IoCache(uint64_t cache_size)
     : cache_size_(cache_size),
-      read_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                  base::WaitableEvent::InitialState::NOT_SIGNALED),
-      write_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED),
       // Make the buffer one byte larger than the cache so that when the
       // condition r_ptr == w_ptr is unambiguous (buffer empty).
       circular_buffer_(cache_size + 1),
@@ -38,10 +33,9 @@ IoCache::~IoCache() {
 uint64_t IoCache::Read(void* buffer, uint64_t size) {
   DCHECK(buffer);
 
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   while (!closed_ && (BytesCachedInternal() == 0)) {
-    AutoUnlock unlock(lock_);
-    write_event_.Wait();
+    write_event_.Wait(&mutex_);
   }
 
   size = std::min(size, BytesCachedInternal());
@@ -69,13 +63,12 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
   const uint8_t* r_ptr(static_cast<const uint8_t*>(buffer));
   uint64_t bytes_left(size);
   while (bytes_left) {
-    AutoLock lock(lock_);
+    absl::MutexLock lock(&mutex_);
     while (!closed_ && (BytesFreeInternal() == 0)) {
-      AutoUnlock unlock(lock_);
       VLOG(1) << "Circular buffer is full, which can happen if data arrives "
                  "faster than being consumed by packager. Ignore if it is not "
                  "live packaging. Otherwise, try increasing --io_cache_size.";
-      read_event_.Wait();
+      read_event_.Wait(&mutex_);
     }
     if (closed_)
       return 0;
@@ -103,35 +96,33 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
 }
 
 void IoCache::Clear() {
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   r_ptr_ = w_ptr_ = circular_buffer_.data();
   // Let any writers know that there is room in the cache.
   read_event_.Signal();
 }
 
 void IoCache::Close() {
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   closed_ = true;
   read_event_.Signal();
   write_event_.Signal();
 }
 
 void IoCache::Reopen() {
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   CHECK(closed_);
   r_ptr_ = w_ptr_ = circular_buffer_.data();
   closed_ = false;
-  read_event_.Reset();
-  write_event_.Reset();
 }
 
 uint64_t IoCache::BytesCached() {
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   return BytesCachedInternal();
 }
 
 uint64_t IoCache::BytesFree() {
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   return BytesFreeInternal();
 }
 
@@ -146,10 +137,9 @@ uint64_t IoCache::BytesFreeInternal() {
 }
 
 void IoCache::WaitUntilEmptyOrClosed() {
-  AutoLock lock(lock_);
+  absl::MutexLock lock(&mutex_);
   while (!closed_ && BytesCachedInternal()) {
-    AutoUnlock unlock(lock_);
-    read_event_.Wait();
+    read_event_.Wait(&mutex_);
   }
 }
 

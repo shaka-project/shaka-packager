@@ -1,20 +1,21 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/mp2t/pes_packet_generator.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
-#include "packager/media/formats/mp2t/pes_packet.h"
-#include "packager/media/formats/mp2t/pes_packet_generator.h"
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
+#include <packager/media/formats/mp2t/pes_packet.h>
 
 namespace shaka {
 namespace media {
@@ -123,7 +124,7 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
-      arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      std::size(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
       kIsEncrypted));
   return stream_info;
@@ -132,7 +133,7 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
 std::shared_ptr<AudioStreamInfo> CreateAudioStreamInfo(Codec codec) {
   std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, codec, kCodecString, kAudioExtraData,
-      arraysize(kAudioExtraData), kSampleBits, kNumChannels, kSamplingFrequency,
+      std::size(kAudioExtraData), kSampleBits, kNumChannels, kSamplingFrequency,
       kSeekPreroll, kCodecDelay, kMaxBitrate, kAverageBitrate, kLanguage,
       kIsEncrypted));
   return stream_info;
@@ -197,18 +198,18 @@ TEST_F(PesPacketGeneratorTest, AddVideoSample) {
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
   std::shared_ptr<MediaSample> sample =
-      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+      MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
   const int32_t kPts = 12345;
   const uint32_t kDts = 12300;
   sample->set_pts(kPts);
   sample->set_dts(kDts);
 
-  std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
+  std::vector<uint8_t> expected_data(kAnyData, kAnyData + std::size(kAnyData));
 
   std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock, ConvertUnitToByteStreamWithSubsamples(
-                         _, arraysize(kAnyData), kIsKeyFrame,
+                         _, std::size(kAnyData), kIsKeyFrame,
                          kEscapeEncryptedNalu, _, Pointee(IsEmpty())))
       .WillOnce(DoAll(SetArgPointee<4>(expected_data), Return(true)));
 
@@ -235,7 +236,7 @@ TEST_F(PesPacketGeneratorTest, AddEncryptedVideoSample) {
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
   std::shared_ptr<MediaSample> sample =
-      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+      MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
   const int32_t kPts = 12345;
   const uint32_t kDts = 12300;
   sample->set_pts(kPts);
@@ -250,12 +251,12 @@ TEST_F(PesPacketGeneratorTest, AddEncryptedVideoSample) {
   sample->set_is_encrypted(true);
   sample->set_decrypt_config(std::move(decrypt_config));
 
-  std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
+  std::vector<uint8_t> expected_data(kAnyData, kAnyData + std::size(kAnyData));
 
   std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock, ConvertUnitToByteStreamWithSubsamples(
-                         _, arraysize(kAnyData), kIsKeyFrame,
+                         _, std::size(kAnyData), kIsKeyFrame,
                          kEscapeEncryptedNalu, _, Pointee(Eq(subsamples))))
       .WillOnce(DoAll(SetArgPointee<4>(expected_data), Return(true)));
 
@@ -282,13 +283,13 @@ TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
   std::shared_ptr<MediaSample> sample =
-      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+      MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
 
-  std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
+  std::vector<uint8_t> expected_data(kAnyData, kAnyData + std::size(kAnyData));
   std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock, ConvertUnitToByteStreamWithSubsamples(
-                         _, arraysize(kAnyData), kIsKeyFrame,
+                         _, std::size(kAnyData), kIsKeyFrame,
                          kEscapeEncryptedNalu, _, Pointee(IsEmpty())))
       .WillOnce(Return(false));
 
@@ -306,9 +307,9 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
   std::shared_ptr<MediaSample> sample =
-      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+      MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
 
-  std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
+  std::vector<uint8_t> expected_data(kAnyData, kAnyData + std::size(kAnyData));
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
       new MockAACAudioSpecificConfig());
@@ -336,7 +337,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
   std::shared_ptr<MediaSample> sample =
-      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+      MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
       new MockAACAudioSpecificConfig());
@@ -356,7 +357,7 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTestTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
-      arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      std::size(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
       kIsEncrypted));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
@@ -364,7 +365,7 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
   std::shared_ptr<MediaSample> sample =
-      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+      MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
   const int32_t kPts = 5000;
   const uint32_t kDts = 4000;
   sample->set_pts(kPts);
@@ -373,7 +374,7 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock, ConvertUnitToByteStreamWithSubsamples(
-                         _, arraysize(kAnyData), kIsKeyFrame,
+                         _, std::size(kAnyData), kIsKeyFrame,
                          kEscapeEncryptedNalu, _, Pointee(IsEmpty())))
       .WillOnce(Return(true));
 

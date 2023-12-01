@@ -4,13 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/dvb/dvb_image.h"
+#include <packager/media/formats/dvb/dvb_image.h>
 
 #include <algorithm>
 #include <cstring>
 #include <tuple>
 
-#include "packager/base/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {
@@ -134,7 +135,7 @@ RgbaColor DvbImageColorSpace::GetColor(BitDepth bit_depth,
       break;
     default:
       // Windows can't detect that all enums are handled and doesn't like
-      // NOTREACHED.
+      // NOTIMPLEMENTED.
       return kNoColor;
   }
 
@@ -186,7 +187,7 @@ RgbaColor DvbImageColorSpace::GetColorRaw(BitDepth bit_depth,
     case BitDepth::k8Bit:
       return color_map_8_[entry_id];
   }
-  // Not reached, but Windows doesn't like NOTREACHED.
+  // Not reached, but Windows doesn't like NOTIMPLEMENTED.
   return kNoColor;
 }
 

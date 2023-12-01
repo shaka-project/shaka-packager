@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,17 +10,15 @@
 #ifndef MPD_BASE_XML_XML_NODE_H_
 #define MPD_BASE_XML_XML_NODE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/macros.h"
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/macros/classes.h>
+#include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 typedef struct _xmlNode xmlNode;
 
@@ -54,32 +52,33 @@ class XmlNode {
   /// Add a child element to this element.
   /// @param child is an XmlNode to add as a child for this element.
   /// @return true on success, false otherwise.
-  bool AddChild(XmlNode child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddChild(XmlNode child);
 
   /// Adds Elements to this node using the Element struct.
-  bool AddElements(const std::vector<Element>& elements) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddElements(const std::vector<Element>& elements);
 
   /// Set a string attribute.
   /// @param attribute_name The name (lhs) of the attribute.
   /// @param attribute The value (rhs) of the attribute.
-  bool SetStringAttribute(const std::string& attribute_name,
-                          const std::string& attribute) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetStringAttribute(const std::string& attribute_name,
+                                        const std::string& attribute);
 
   /// Sets an integer attribute.
   /// @param attribute_name The name (lhs) of the attribute.
   /// @param number The value (rhs) of the attribute.
-  bool SetIntegerAttribute(const std::string& attribute_name,
-                           uint64_t number) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetIntegerAttribute(const std::string& attribute_name,
+                                         uint64_t number);
 
   /// Set a floating point number attribute.
   /// @param attribute_name is the name of the attribute to set.
   /// @param number is the value (rhs) of the attribute.
-  bool SetFloatingPointAttribute(const std::string& attribute_name,
-                                 double number) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetFloatingPointAttribute(
+      const std::string& attribute_name,
+      double number);
 
   /// Sets 'id=@a id' attribute.
   /// @param id is the ID for this element.
-  bool SetId(uint32_t id) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetId(uint32_t id);
 
   /// Similar to SetContent, but appends to the end of existing content.
   void AddContent(const std::string& content);
@@ -125,19 +124,18 @@ class XmlNode {
 class RepresentationBaseXmlNode : public XmlNode {
  public:
   ~RepresentationBaseXmlNode() override;
-  bool AddContentProtectionElements(
-      const std::list<ContentProtectionElement>& content_protection_elements)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddContentProtectionElements(
+      const std::list<ContentProtectionElement>& content_protection_elements);
 
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
-  bool AddSupplementalProperty(const std::string& scheme_id_uri,
-                               const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddSupplementalProperty(const std::string& scheme_id_uri,
+                                             const std::string& value);
 
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
-  bool AddEssentialProperty(const std::string& scheme_id_uri,
-                            const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddEssentialProperty(const std::string& scheme_id_uri,
+                                          const std::string& value);
 
  protected:
   explicit RepresentationBaseXmlNode(const std::string& name);
@@ -146,14 +144,13 @@ class RepresentationBaseXmlNode : public XmlNode {
   /// @param descriptor_name is the name of the descriptor.
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
-  bool AddDescriptor(const std::string& descriptor_name,
-                     const std::string& scheme_id_uri,
-                     const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddDescriptor(const std::string& descriptor_name,
+                                   const std::string& scheme_id_uri,
+                                   const std::string& value);
 
  private:
-  bool AddContentProtectionElement(
-      const ContentProtectionElement& content_protection_element)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddContentProtectionElement(
+      const ContentProtectionElement& content_protection_element);
 
   DISALLOW_COPY_AND_ASSIGN(RepresentationBaseXmlNode);
 };
@@ -166,13 +163,13 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
 
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
-  bool AddAccessibilityElement(const std::string& scheme_id_uri,
-                               const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddAccessibilityElement(const std::string& scheme_id_uri,
+                                             const std::string& value);
 
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
-  bool AddRoleElement(const std::string& scheme_id_uri,
-                      const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddRoleElement(const std::string& scheme_id_uri,
+                                    const std::string& value);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AdaptationSetXmlNode);
@@ -191,16 +188,16 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   /// @param set_frame_rate is a flag for setting the frameRate attribute.
   /// @return true if successfully set attributes and children elements (if
   ///         applicable), false otherwise.
-  bool AddVideoInfo(const MediaInfo::VideoInfo& video_info,
-                    bool set_width,
-                    bool set_height,
-                    bool set_frame_rate) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddVideoInfo(const MediaInfo::VideoInfo& video_info,
+                                  bool set_width,
+                                  bool set_height,
+                                  bool set_frame_rate);
 
   /// Adds audio metadata to the MPD.
   /// @param audio_info constains the AudioInfos for a Representation.
   /// @return true if successfully set attributes and children elements (if
   ///         applicable), false otherwise.
-  bool AddAudioInfo(const MediaInfo::AudioInfo& audio_info) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddAudioInfo(const MediaInfo::AudioInfo& audio_info);
 
   /// Adds fields that are specific to VOD. This ignores @a media_info fields
   /// for Live.
@@ -211,26 +208,27 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   //         duration of media segments. This is only used when use_segment_list
   //         is true.
   /// @return true on success, false otherwise.
-  bool AddVODOnlyInfo(const MediaInfo& media_info,
-                      bool use_segment_list,
-                      double target_segment_duration) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddVODOnlyInfo(const MediaInfo& media_info,
+                                    bool use_segment_list,
+                                    double target_segment_duration);
 
   /// @param segment_infos is a set of SegmentInfos. This method assumes that
   ///        SegmentInfos are sorted by its start time.
-  bool AddLiveOnlyInfo(const MediaInfo& media_info,
-                       const std::list<SegmentInfo>& segment_infos,
-                       uint32_t start_number,
-                       bool low_latency_dash_mode) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddLiveOnlyInfo(
+      const MediaInfo& media_info,
+      const std::list<SegmentInfo>& segment_infos,
+      uint32_t start_number,
+      bool low_latency_dash_mode);
 
  private:
   // Add AudioChannelConfiguration element. Note that it is a required element
   // for audio Representations.
-  bool AddAudioChannelInfo(const MediaInfo::AudioInfo& audio_info)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddAudioChannelInfo(
+      const MediaInfo::AudioInfo& audio_info);
 
   // Add audioSamplingRate attribute to this element, if present.
-  bool AddAudioSamplingRateInfo(const MediaInfo::AudioInfo& audio_info)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddAudioSamplingRateInfo(
+      const MediaInfo::AudioInfo& audio_info);
 
   DISALLOW_COPY_AND_ASSIGN(RepresentationXmlNode);
 };
