@@ -283,7 +283,7 @@ Status MP4Muxer::DelayInitializeMuxer() {
 
     // Generate EditList if needed. See UpdateEditListOffsetFromSample() for
     // more information.
-    if (edit_list_offset_.value() > 0) {
+    if (edit_list_offset_.value_or(0) > 0) {
       EditListEntry entry;
       entry.media_time = edit_list_offset_.value();
       entry.media_rate_integer = 1;

@@ -72,6 +72,9 @@ struct PackagingParams {
 
   // Parameters for testing. Do not use in production.
   TestParams test_params;
+
+  /// Only use to package init segment separately.
+  bool init_segment_only = false;
 };
 
 /// Defines a single input/output stream.

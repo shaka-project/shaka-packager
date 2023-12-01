@@ -36,6 +36,9 @@ class MP4Muxer : public Muxer {
   explicit MP4Muxer(const MuxerOptions& options);
   ~MP4Muxer() override;
 
+ protected:
+  Status DelayInitializeMuxer();
+
  private:
   // Muxer implementation overrides.
   Status InitializeMuxer() override;
@@ -44,7 +47,6 @@ class MP4Muxer : public Muxer {
   Status FinalizeSegment(size_t stream_id,
                          const SegmentInfo& segment_info) override;
 
-  Status DelayInitializeMuxer();
   Status UpdateEditListOffsetFromSample(const MediaSample& sample);
 
   // Generate Audio/Video Track box.

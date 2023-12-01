@@ -8,6 +8,7 @@
 
 #include <packager/media/base/muxer.h>
 #include <packager/media/formats/mp2t/ts_muxer.h>
+#include <packager/media/formats/mp4/mp4_init_muxer.h>
 #include <packager/media/formats/mp4/mp4_muxer.h>
 #include <packager/media/formats/packed_audio/packed_audio_writer.h>
 #include <packager/media/formats/ttml/ttml_muxer.h>
@@ -22,7 +23,8 @@ MuxerFactory::MuxerFactory(const PackagingParams& packaging_params)
     : mp4_params_(packaging_params.mp4_output_params),
       temp_dir_(packaging_params.temp_dir),
       transport_stream_timestamp_offset_ms_(
-          packaging_params.transport_stream_timestamp_offset_ms) {}
+          packaging_params.transport_stream_timestamp_offset_ms),
+      init_segment_only_(packaging_params.init_segment_only) {}
 
 std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
     MediaContainerName output_format,
@@ -58,6 +60,10 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
       muxer = std::make_shared<mp2t::TsMuxer>(options);
       break;
     case CONTAINER_MOV:
+      if (init_segment_only_) {
+        muxer = std::make_shared<mp4::MP4InitMuxer>(options);
+        break;
+      }
       muxer = std::make_shared<mp4::MP4Muxer>(options);
       break;
     default:

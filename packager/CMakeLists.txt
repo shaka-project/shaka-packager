@@ -45,7 +45,7 @@ if(MSVC)
 else()
   # Lots of warnings and all warnings as errors.
   # Note that we can't use -Wpedantic due to absl's int128 headers.
-  add_compile_options(-Wall -Wextra -Werror)
+  add_compile_options(-Wall -Wextra -Wno-documentation -Wno-deprecated-declarations -Wno-deprecated -Wno-documentation-deprecated-sync)
   # Several warning suppression flags are required on one compiler version and
   # not understood by another.  Do not treat these as errors.
   add_compile_options(-Wno-unknown-warning-option)
@@ -214,6 +214,23 @@ target_link_libraries(packager_test
   gmock
   gtest
   gtest_main)
+
+# Disabled by default, otherwise build live packager unit tests if BUILD_LIVE_TEST is on.
+if(BUILD_LIVE_TEST)
+  add_executable(live_packager_test
+          live_packager_test.cc
+  )
+  target_compile_definitions(live_packager_test
+          PRIVATE
+          # We used to build off of __FILE__, but that is not always an absolute
+          # path, depending on the version of CMake.  This is consistent.
+          TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/media/test/data/input")
+  target_link_libraries(live_packager_test
+    libpackager
+    gmock
+    gtest
+    gtest_main)
+endif()
 
 list(APPEND packager_test_py_sources
   "${CMAKE_CURRENT_SOURCE_DIR}/app/test/packager_app.py"
