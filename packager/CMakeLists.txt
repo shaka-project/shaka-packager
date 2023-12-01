@@ -224,7 +224,8 @@ if(BUILD_LIVE_TEST)
           PRIVATE
           # We used to build off of __FILE__, but that is not always an absolute
           # path, depending on the version of CMake.  This is consistent.
-          TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/media/test/data/input")
+          TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/media/test/data/input"
+          TEST_DATA_EXPECTED_DIR="${CMAKE_CURRENT_SOURCE_DIR}/media/test/data/expected")
   target_link_libraries(live_packager_test
     libpackager
     gmock

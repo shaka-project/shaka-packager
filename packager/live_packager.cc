@@ -12,10 +12,12 @@
 
 #include <absl/log/globals.h>
 #include <absl/log/log.h>
+#include <absl/strings/escaping.h>
 #include <packager/chunking_params.h>
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/live_packager.h>
+#include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
 
 namespace shaka {
@@ -126,8 +128,24 @@ const uint8_t* FullSegmentBuffer::Data() const {
   return buffer_.data();
 }
 
+struct LivePackager::LivePackagerInternal {
+  std::unique_ptr<SegmentManager> segment_manager;
+};
+
 LivePackager::LivePackager(const LiveConfig& config) : config_(config) {
-  absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
+  absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
+  std::unique_ptr<LivePackagerInternal> internal(new LivePackagerInternal);
+
+  //  PackagingParams packaging_params;
+  //  EncryptionParams& encryption_params = packaging_params.encryption_params;
+  if (config.protection_scheme_ == "aes128" &&
+      config.format == LiveConfig::OutputFormat::TS) {
+    internal->segment_manager.reset(
+        new AesEncryptedSegmentManager(config.key_, config.iv_));
+  } else {
+    internal->segment_manager.reset(new SegmentManager());
+  }
+  internal_ = std::move(internal);
 }
 
 LivePackager::~LivePackager() {}
@@ -135,6 +153,7 @@ LivePackager::~LivePackager() {}
 Status LivePackager::PackageInit(const Segment& init_segment,
                                  FullSegmentBuffer& output) {
   SegmentDataReader reader(init_segment);
+
   shaka::BufferCallbackParams callback_params;
   callback_params.read_func = [&reader](const std::string& name, void* buffer,
                                         uint64_t size) {
@@ -178,6 +197,9 @@ Status LivePackager::PackageInit(const Segment& init_segment,
 }
 
 Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
+  if (!internal_)
+    return Status(error::INVALID_ARGUMENT, "Failed to initialize");
+
   SegmentDataReader reader(in);
   shaka::BufferCallbackParams callback_params;
   callback_params.read_func = [&reader](const std::string& name, void* buffer,
@@ -185,10 +207,9 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
     return reader.Read(buffer, size);
   };
 
-  callback_params.write_func = [&out](const std::string& name, const void* data,
-                                      uint64_t size) {
-    out.AppendData(reinterpret_cast<const uint8_t*>(data), size);
-    return size;
+  callback_params.write_func = [&out, this](const std::string& name,
+                                            const void* data, uint64_t size) {
+    return internal_->segment_manager->OnSegmentWrite(out, name, data, size);
   };
 
   shaka::BufferCallbackParams init_callback_params;
@@ -210,6 +231,11 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
   params.chunking_params.segment_duration_in_seconds =
       config_.segment_duration_sec;
 
+  //  EncryptionParams& encryption_params = params.encryption_params;
+  //  encryption_params.protection_scheme =
+  //  EncryptionParams::kProtectionSchemeCbc1; encryption_params.key_provider =
+  //  KeyProvider::kRawKey; GetRawKeyParams(&encryption_params.raw_key);
+
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
 
@@ -223,4 +249,50 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
   return packager.Run();
 }
 
+SegmentManager::SegmentManager() = default;
+
+uint64_t SegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
+                                        const std::string& name,
+                                        const void* buffer,
+                                        uint64_t size) {
+  out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
+  return size;
+}
+
+AesEncryptedSegmentManager::AesEncryptedSegmentManager(
+    const std::vector<uint8_t>& key,
+    const std::vector<uint8_t>& iv)
+    : SegmentManager(),
+      encryptor_(new media::AesCbcEncryptor(media::kPkcs5Padding,
+                                            media::AesCryptor::kUseConstantIv)),
+      key_(key.begin(), key.end()),
+      iv_(iv.begin(), iv.end()) {}
+
+AesEncryptedSegmentManager::~AesEncryptedSegmentManager() = default;
+
+uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
+                                                    const std::string& name,
+                                                    const void* buffer,
+                                                    uint64_t size) {
+  if (!encryptor_->InitializeWithIv(key_, iv_)) {
+    LOG(WARNING) << "failed to initialize encryptor";
+    out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
+    return size;
+  }
+
+  const auto* source = reinterpret_cast<const uint8_t*>(buffer);
+
+  std::vector<uint8_t> encrypted;
+  std::vector<uint8_t> buffer_data(source, source + size);
+
+  if (!encryptor_->Crypt(buffer_data, &encrypted)) {
+    LOG(WARNING) << "failed to encrypt data";
+    out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
+    return size;
+  }
+
+  out.AppendData(encrypted.data(), encrypted.size());
+  encrypted.clear();
+  return size;
+}
 }  // namespace shaka

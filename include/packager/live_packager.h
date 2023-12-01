@@ -7,6 +7,7 @@
 #ifndef PACKAGER_LIVE_PACKAGER_H_
 #define PACKAGER_LIVE_PACKAGER_H_
 
+#include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
 #include <memory>
 #include <string>
@@ -74,6 +75,45 @@ struct LiveConfig {
   TrackType track_type;
   // TOOD: do we need non-integer durations?
   double segment_duration_sec;
+
+  // TODO: AES-128
+  std::vector<uint8_t> iv_;
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> key_id_;
+  std::string protection_scheme_;
+};
+
+class SegmentManager {
+ public:
+  explicit SegmentManager();
+  virtual ~SegmentManager() = default;
+
+ public:
+  virtual uint64_t OnSegmentWrite(FullSegmentBuffer& out,
+                                  const std::string& name,
+                                  const void* buffer,
+                                  uint64_t size);
+
+  SegmentManager(const SegmentManager&) = delete;
+  SegmentManager& operator=(const SegmentManager&) = delete;
+};
+
+class AesEncryptedSegmentManager : public SegmentManager {
+ public:
+  AesEncryptedSegmentManager(const std::vector<uint8_t>& key,
+                             const std::vector<uint8_t>& iv);
+
+  ~AesEncryptedSegmentManager() override;
+
+  uint64_t OnSegmentWrite(FullSegmentBuffer& out,
+                          const std::string& name,
+                          const void* buffer,
+                          uint64_t size) override;
+
+ private:
+  std::unique_ptr<media::AesCbcEncryptor> encryptor_;
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> iv_;
 };
 
 class LivePackager {
@@ -97,6 +137,9 @@ class LivePackager {
   LivePackager& operator=(const LivePackager&) = delete;
 
  private:
+  struct LivePackagerInternal;
+  std::unique_ptr<LivePackagerInternal> internal_;
+
   LiveConfig config_;
 };
 
