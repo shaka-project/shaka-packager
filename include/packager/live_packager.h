@@ -70,6 +70,14 @@ struct LiveConfig {
     AUDIO,
     VIDEO,
   };
+  enum class EncryptionScheme {
+    NONE,
+    CENC,
+    CBC1,
+    CBCS,
+    CENS,
+    AES128,
+  };
 
   OutputFormat format;
   TrackType track_type;
@@ -80,7 +88,7 @@ struct LiveConfig {
   std::vector<uint8_t> iv_;
   std::vector<uint8_t> key_;
   std::vector<uint8_t> key_id_;
-  std::string protection_scheme_;
+  EncryptionScheme protection_scheme_;
 };
 
 class SegmentManager {
@@ -93,6 +101,9 @@ class SegmentManager {
                                   const std::string& name,
                                   const void* buffer,
                                   uint64_t size);
+
+  virtual void InitializeEncryption(const LiveConfig& config,
+                                    EncryptionParams* encryption_params);
 
   SegmentManager(const SegmentManager&) = delete;
   SegmentManager& operator=(const SegmentManager&) = delete;
@@ -109,6 +120,9 @@ class AesEncryptedSegmentManager : public SegmentManager {
                           const std::string& name,
                           const void* buffer,
                           uint64_t size) override;
+
+  void InitializeEncryption(const LiveConfig& config,
+                            EncryptionParams* encryption_params) override;
 
  private:
   std::unique_ptr<media::AesCbcEncryptor> encryptor_;

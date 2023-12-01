@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstring>
 #include <fstream>
+#include <memory>
 #include <sstream>
 
 #include <absl/log/globals.h>
@@ -136,14 +137,12 @@ LivePackager::LivePackager(const LiveConfig& config) : config_(config) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
   std::unique_ptr<LivePackagerInternal> internal(new LivePackagerInternal);
 
-  //  PackagingParams packaging_params;
-  //  EncryptionParams& encryption_params = packaging_params.encryption_params;
-  if (config.protection_scheme_ == "aes128" &&
+  if (config.protection_scheme_ == LiveConfig::EncryptionScheme::AES128 &&
       config.format == LiveConfig::OutputFormat::TS) {
-    internal->segment_manager.reset(
-        new AesEncryptedSegmentManager(config.key_, config.iv_));
+    internal->segment_manager =
+        std::make_unique<AesEncryptedSegmentManager>(config.key_, config.iv_);
   } else {
-    internal->segment_manager.reset(new SegmentManager());
+    internal->segment_manager = std::make_unique<SegmentManager>();
   }
   internal_ = std::move(internal);
 }
@@ -176,18 +175,21 @@ Status LivePackager::PackageInit(const Segment& init_segment,
     return size;
   };
 
-  shaka::PackagingParams params;
-  params.chunking_params.segment_duration_in_seconds =
+  shaka::PackagingParams packaging_params;
+  packaging_params.chunking_params.segment_duration_in_seconds =
       config_.segment_duration_sec;
 
   // in order to enable init packaging as a separate execution.
-  params.init_segment_only = true;
+  packaging_params.init_segment_only = true;
+
+  EncryptionParams& encryption_params = packaging_params.encryption_params;
+  internal_->segment_manager->InitializeEncryption(config_, &encryption_params);
 
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
 
   shaka::Packager packager;
-  shaka::Status status = packager.Initialize(params, descriptors);
+  shaka::Status status = packager.Initialize(packaging_params, descriptors);
 
   if (status != Status::OK) {
     return status;
@@ -227,20 +229,18 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
     return size;
   };
 
-  shaka::PackagingParams params;
-  params.chunking_params.segment_duration_in_seconds =
+  shaka::PackagingParams packaging_params;
+  packaging_params.chunking_params.segment_duration_in_seconds =
       config_.segment_duration_sec;
 
-  //  EncryptionParams& encryption_params = params.encryption_params;
-  //  encryption_params.protection_scheme =
-  //  EncryptionParams::kProtectionSchemeCbc1; encryption_params.key_provider =
-  //  KeyProvider::kRawKey; GetRawKeyParams(&encryption_params.raw_key);
+  EncryptionParams& encryption_params = packaging_params.encryption_params;
+  internal_->segment_manager->InitializeEncryption(config_, &encryption_params);
 
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
 
   shaka::Packager packager;
-  shaka::Status status = packager.Initialize(params, descriptors);
+  shaka::Status status = packager.Initialize(packaging_params, descriptors);
 
   if (status != Status::OK) {
     return status;
@@ -257,6 +257,41 @@ uint64_t SegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
                                         uint64_t size) {
   out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
   return size;
+}
+
+void SegmentManager::InitializeEncryption(const LiveConfig& config,
+                                          EncryptionParams* encryption_params) {
+  if (config.protection_scheme_ != LiveConfig::EncryptionScheme::NONE) {
+    switch (config.protection_scheme_) {
+      case LiveConfig::EncryptionScheme::CENC:
+        encryption_params->protection_scheme =
+            EncryptionParams::kProtectionSchemeCenc;
+        break;
+      case LiveConfig::EncryptionScheme::CBC1:
+        encryption_params->protection_scheme =
+            EncryptionParams::kProtectionSchemeCbc1;
+        break;
+      case LiveConfig::EncryptionScheme::CBCS:
+        encryption_params->protection_scheme =
+            EncryptionParams::kProtectionSchemeCbcs;
+        break;
+      case LiveConfig::EncryptionScheme::CENS:
+        encryption_params->protection_scheme =
+            EncryptionParams::kProtectionSchemeCens;
+        break;
+      case LiveConfig::EncryptionScheme::AES128:
+        LOG(ERROR) << "AES-128 not is unsupported for this configuration";
+        break;
+      default:
+        LOG(WARNING) << "unrecognized encryption schema";
+        break;
+    }
+    encryption_params->key_provider = KeyProvider::kRawKey;
+    RawKeyParams::KeyInfo& key_info = encryption_params->raw_key.key_map[""];
+    key_info.key = config.key_;
+    key_info.key_id = config.key_id_;
+    key_info.iv = config.iv_;
+  }
 }
 
 AesEncryptedSegmentManager::AesEncryptedSegmentManager(
@@ -294,5 +329,11 @@ uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
   out.AppendData(encrypted.data(), encrypted.size());
   encrypted.clear();
   return size;
+}
+
+void AesEncryptedSegmentManager::InitializeEncryption(
+    const LiveConfig& config,
+    EncryptionParams* encryption_params) {
+  LOG(INFO) << "NOOP: AES Encryption already enabled";
 }
 }  // namespace shaka

@@ -22,9 +22,10 @@ namespace {
 
 const char kKeyHex[] = "06313e0d02666fc455f15a56c363e392";
 const char kIvHex[] = "c80be14086853cd52d9acd002392dc09";
+const char kKeyId[] = "f3c5e0361e6654b28f8049c778b23946";
 
 const double kSegmentDurationInSeconds = 5.0;
-const int kNumSegments = 10;
+const int kNumSegments = 1;
 
 std::vector<uint8_t> HexStringToVector(const std::string& hex_str) {
   std::string raw_str = absl::HexStringToBytes(hex_str);
@@ -74,7 +75,8 @@ class LivePackagerTest : public ::testing::Test {
   }
 
   // Reads a test file from media/test/data directory and returns its content.
-  static std::vector<uint8_t> ReadExpectedTestDataFile(const std::string& name) {
+  static std::vector<uint8_t> ReadExpectedTestDataFile(
+      const std::string& name) {
     auto path = GetExpectedDataFilePath(name);
 
     FILE* f = fopen(path.string().c_str(), "rb");
@@ -97,7 +99,7 @@ class LivePackagerTest : public ::testing::Test {
   std::unique_ptr<media::AesCbcDecryptor> decryptor_;
 };
 
-TEST_F(LivePackagerTest, SuccessVideoFMP4) {
+TEST_F(LivePackagerTest, SuccessVideoFMP4NoEncryption) {
   std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
@@ -147,7 +149,54 @@ TEST_F(LivePackagerTest, SuccessAes128MpegTs) {
     live_config.track_type = LiveConfig::TrackType::VIDEO;
     live_config.key_ = HexStringToVector(kKeyHex);
     live_config.iv_ = HexStringToVector(kIvHex);
-    live_config.protection_scheme_ = "aes128";
+    live_config.protection_scheme_ = LiveConfig::EncryptionScheme::AES128;
+
+    LivePackager livePackager(live_config);
+    ASSERT_EQ(kSegmentDurationInSeconds,
+              empty_live_config_.segment_duration_sec);
+    ASSERT_EQ(Status::OK, livePackager.Package(in, out));
+    ASSERT_GT(out.SegmentSize(), 0);
+
+    std::string exp_segment_num = absl::StrFormat("ts/%04d.ts", i + 1);
+    std::vector<uint8_t> exp_segment_buffer =
+        ReadExpectedTestDataFile(exp_segment_num);
+    ASSERT_FALSE(exp_segment_buffer.empty());
+
+    std::vector<uint8_t> decrypted;
+    std::vector<uint8_t> buffer(out.SegmentData(),
+                                out.SegmentData() + out.SegmentSize());
+
+    ASSERT_TRUE(decryptor_->Crypt(buffer, &decrypted));
+    ASSERT_EQ(decrypted, exp_segment_buffer);
+    buffer.clear();
+  }
+}
+
+TEST_F(LivePackagerTest, SuccessSampleAesMpegTs) {
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
+  ASSERT_FALSE(init_segment_buffer.empty());
+
+  ASSERT_TRUE(decryptor_->InitializeWithIv(HexStringToVector(kKeyHex),
+                                           HexStringToVector(kIvHex)));
+
+  for (unsigned int i = 0; i < kNumSegments; i++) {
+    std::string segment_num = absl::StrFormat("%04d.m4s", i);
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    FullSegmentBuffer in;
+    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
+    in.AppendData(segment_buffer.data(), segment_buffer.size());
+
+    FullSegmentBuffer out;
+
+    LiveConfig live_config = empty_live_config_;
+    live_config.format = LiveConfig::OutputFormat::TS;
+    live_config.track_type = LiveConfig::TrackType::VIDEO;
+    live_config.key_ = HexStringToVector(kKeyHex);
+    live_config.iv_ = HexStringToVector(kIvHex);
+    live_config.key_id_ = HexStringToVector(kKeyId);
+    live_config.protection_scheme_ = LiveConfig::EncryptionScheme::CBCS;
 
     LivePackager livePackager(live_config);
     ASSERT_EQ(kSegmentDurationInSeconds,
