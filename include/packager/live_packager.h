@@ -70,12 +70,10 @@ struct LiveConfig {
     AUDIO,
     VIDEO,
   };
+
   enum class EncryptionScheme {
     NONE,
-    CENC,
-    CBC1,
-    CBCS,
-    CENS,
+    SAMPLE_AES,
     AES128,
   };
 

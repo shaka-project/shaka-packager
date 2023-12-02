@@ -261,31 +261,18 @@ uint64_t SegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
 
 void SegmentManager::InitializeEncryption(const LiveConfig& config,
                                           EncryptionParams* encryption_params) {
-  if (config.protection_scheme_ != LiveConfig::EncryptionScheme::NONE) {
-    switch (config.protection_scheme_) {
-      case LiveConfig::EncryptionScheme::CENC:
-        encryption_params->protection_scheme =
-            EncryptionParams::kProtectionSchemeCenc;
-        break;
-      case LiveConfig::EncryptionScheme::CBC1:
-        encryption_params->protection_scheme =
-            EncryptionParams::kProtectionSchemeCbc1;
-        break;
-      case LiveConfig::EncryptionScheme::CBCS:
-        encryption_params->protection_scheme =
-            EncryptionParams::kProtectionSchemeCbcs;
-        break;
-      case LiveConfig::EncryptionScheme::CENS:
-        encryption_params->protection_scheme =
-            EncryptionParams::kProtectionSchemeCens;
-        break;
-      case LiveConfig::EncryptionScheme::AES128:
-        LOG(ERROR) << "AES-128 not is unsupported for this configuration";
-        break;
-      default:
-        LOG(WARNING) << "unrecognized encryption schema";
-        break;
-    }
+  if (config.protection_scheme_ == LiveConfig::EncryptionScheme::SAMPLE_AES) {
+    // Internally shaka maps this to an internal code for sample aes
+    //
+    // This is a fake protection scheme fourcc code to indicate Apple Sample
+    // AES. FOURCC_cbca = 0x63626361,
+    //
+    // Additionally this seems to be the recommended protection schema to when
+    // using the shaka CLI:
+    // https://shaka-project.github.io/shaka-packager/html/tutorials/raw_key.html
+    encryption_params->protection_scheme =
+        EncryptionParams::kProtectionSchemeCbcs;
+
     encryption_params->key_provider = KeyProvider::kRawKey;
     RawKeyParams::KeyInfo& key_info = encryption_params->raw_key.key_map[""];
     key_info.key = config.key_;
@@ -310,7 +297,7 @@ uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
                                                     const void* buffer,
                                                     uint64_t size) {
   if (!encryptor_->InitializeWithIv(key_, iv_)) {
-    LOG(WARNING) << "failed to initialize encryptor";
+    LOG(WARNING) << "failed to initialize encryptor with key and iv";
     out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
     return size;
   }
@@ -334,6 +321,6 @@ uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
 void AesEncryptedSegmentManager::InitializeEncryption(
     const LiveConfig& config,
     EncryptionParams* encryption_params) {
-  LOG(INFO) << "NOOP: AES Encryption already enabled";
+  LOG(INFO) << "NOOP: AES-128 Encryption already enabled";
 }
 }  // namespace shaka

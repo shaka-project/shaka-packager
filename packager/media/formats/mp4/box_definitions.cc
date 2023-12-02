@@ -76,8 +76,9 @@ bool IsIvSizeValid(uint8_t per_sample_iv_size) {
 // bit(5) Reserved // 0
 const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
 
-const std::vector<uint8_t> kTfxdBoxUUID = {0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5, 0x44, 0xe6,
-                                           0x80, 0xe2, 0x14, 0x1d, 0xaf, 0xf7, 0x57, 0xb2};
+const std::vector<uint8_t> kTfxdBoxUUID = {0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5,
+                                           0x44, 0xe6, 0x80, 0xe2, 0x14, 0x1d,
+                                           0xaf, 0xf7, 0x57, 0xb2};
 
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
@@ -2537,7 +2538,7 @@ FourCC SmoothUUID::BoxType() const {
 bool SmoothUUID::ReadWriteInternal(BoxBuffer* buffer) {
   // Read and compare 16-bytes of uuid to check for existence a 'tfxd' box
   std::vector<uint8_t> uuid(kTfxdBoxUUID.size());
-  if(!buffer->ReadWriteVector(&uuid, uuid.size()) && (kTfxdBoxUUID != uuid)) {
+  if (!buffer->ReadWriteVector(&uuid, uuid.size()) && (kTfxdBoxUUID != uuid)) {
     return true;
   }
 
@@ -2766,9 +2767,10 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
   if (buffer->Reading()) {
     DCHECK(buffer->reader());
     uuid_exists = buffer->reader()->ChildExist(&smooth_uuid);
-    decode_time_absent = !buffer->reader()->ChildExist(&decode_time) && !uuid_exists;
+    decode_time_absent =
+        !buffer->reader()->ChildExist(&decode_time) && !uuid_exists;
     if (!decode_time_absent) {
-      if(uuid_exists) {
+      if (uuid_exists) {
         RCHECK(buffer->ReadWriteChild(&smooth_uuid));
       } else {
         RCHECK(buffer->ReadWriteChild(&decode_time));
@@ -2779,7 +2781,7 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
            buffer->reader()->TryReadChildren(&sample_to_groups));
   } else {
     if (!decode_time_absent) {
-      if(uuid_exists) {
+      if (uuid_exists) {
         RCHECK(buffer->ReadWriteChild(&smooth_uuid));
       } else {
         RCHECK(buffer->ReadWriteChild(&decode_time));

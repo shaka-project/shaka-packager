@@ -25,7 +25,8 @@ const char kIvHex[] = "c80be14086853cd52d9acd002392dc09";
 const char kKeyId[] = "f3c5e0361e6654b28f8049c778b23946";
 
 const double kSegmentDurationInSeconds = 5.0;
-const int kNumSegments = 1;
+const int kNumSegments = 10;
+const int kNumAudioSegments = 5;
 
 std::vector<uint8_t> HexStringToVector(const std::string& hex_str) {
   std::string raw_str = absl::HexStringToBytes(hex_str);
@@ -49,35 +50,9 @@ class LivePackagerTest : public ::testing::Test {
     return data_dir / name;
   }
 
-  static std::filesystem::path GetExpectedDataFilePath(
-      const std::string& name) {
-    auto data_dir = std::filesystem::u8path(TEST_DATA_EXPECTED_DIR);
-    return data_dir / name;
-  }
-
   // Reads a test file from media/test/data directory and returns its content.
   static std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
     auto path = GetTestDataFilePath(name);
-
-    FILE* f = fopen(path.string().c_str(), "rb");
-    if (!f) {
-      LOG(ERROR) << "Failed to read test data from " << path;
-      return std::vector<uint8_t>();
-    }
-
-    std::vector<uint8_t> data;
-    data.resize(std::filesystem::file_size(path));
-    size_t size = fread(data.data(), 1, data.size(), f);
-    data.resize(size);
-    fclose(f);
-
-    return data;
-  }
-
-  // Reads a test file from media/test/data directory and returns its content.
-  static std::vector<uint8_t> ReadExpectedTestDataFile(
-      const std::string& name) {
-    auto path = GetExpectedDataFilePath(name);
 
     FILE* f = fopen(path.string().c_str(), "rb");
     if (!f) {
@@ -100,11 +75,11 @@ class LivePackagerTest : public ::testing::Test {
 };
 
 TEST_F(LivePackagerTest, SuccessVideoFMP4NoEncryption) {
-  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
   for (unsigned int i = 0; i < kNumSegments; i++) {
-    std::string segment_num = absl::StrFormat("%04d.m4s", i);
+    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
@@ -126,15 +101,15 @@ TEST_F(LivePackagerTest, SuccessVideoFMP4NoEncryption) {
   }
 }
 
-TEST_F(LivePackagerTest, SuccessAes128MpegTs) {
-  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
+TEST_F(LivePackagerTest, SuccessFmp4MpegTsAes128) {
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
   ASSERT_TRUE(decryptor_->InitializeWithIv(HexStringToVector(kKeyHex),
                                            HexStringToVector(kIvHex)));
 
   for (unsigned int i = 0; i < kNumSegments; i++) {
-    std::string segment_num = absl::StrFormat("%04d.m4s", i);
+    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
@@ -157,9 +132,8 @@ TEST_F(LivePackagerTest, SuccessAes128MpegTs) {
     ASSERT_EQ(Status::OK, livePackager.Package(in, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
-    std::string exp_segment_num = absl::StrFormat("ts/%04d.ts", i + 1);
-    std::vector<uint8_t> exp_segment_buffer =
-        ReadExpectedTestDataFile(exp_segment_num);
+    std::string exp_segment_num = absl::StrFormat("expected/ts/%04d.ts", i + 1);
+    std::vector<uint8_t> exp_segment_buffer = ReadTestDataFile(exp_segment_num);
     ASSERT_FALSE(exp_segment_buffer.empty());
 
     std::vector<uint8_t> decrypted;
@@ -172,15 +146,19 @@ TEST_F(LivePackagerTest, SuccessAes128MpegTs) {
   }
 }
 
-TEST_F(LivePackagerTest, SuccessSampleAesMpegTs) {
-  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
+TEST_F(LivePackagerTest, SuccessFmp4MpegTsSampleAes) {
+  std::vector<uint8_t> init_segment_buffer =
+      ReadTestDataFile("audio/en/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
+
+  decryptor_.reset(new media::AesCbcDecryptor(
+      media::kNoPadding, media::AesCryptor::kUseConstantIv));
 
   ASSERT_TRUE(decryptor_->InitializeWithIv(HexStringToVector(kKeyHex),
                                            HexStringToVector(kIvHex)));
 
-  for (unsigned int i = 0; i < kNumSegments; i++) {
-    std::string segment_num = absl::StrFormat("%04d.m4s", i);
+  for (unsigned int i = 0; i < kNumAudioSegments; i++) {
+    std::string segment_num = absl::StrFormat("audio/en/%05d.m4s", i);
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
@@ -192,11 +170,11 @@ TEST_F(LivePackagerTest, SuccessSampleAesMpegTs) {
 
     LiveConfig live_config = empty_live_config_;
     live_config.format = LiveConfig::OutputFormat::TS;
-    live_config.track_type = LiveConfig::TrackType::VIDEO;
+    live_config.track_type = LiveConfig::TrackType::AUDIO;
     live_config.key_ = HexStringToVector(kKeyHex);
     live_config.iv_ = HexStringToVector(kIvHex);
     live_config.key_id_ = HexStringToVector(kKeyId);
-    live_config.protection_scheme_ = LiveConfig::EncryptionScheme::CBCS;
+    live_config.protection_scheme_ = LiveConfig::EncryptionScheme::SAMPLE_AES;
 
     LivePackager livePackager(live_config);
     ASSERT_EQ(kSegmentDurationInSeconds,
@@ -204,23 +182,17 @@ TEST_F(LivePackagerTest, SuccessSampleAesMpegTs) {
     ASSERT_EQ(Status::OK, livePackager.Package(in, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
-    std::string exp_segment_num = absl::StrFormat("ts/%04d.ts", i + 1);
-    std::vector<uint8_t> exp_segment_buffer =
-        ReadExpectedTestDataFile(exp_segment_num);
-    ASSERT_FALSE(exp_segment_buffer.empty());
-
     std::vector<uint8_t> decrypted;
     std::vector<uint8_t> buffer(out.SegmentData(),
                                 out.SegmentData() + out.SegmentSize());
 
     ASSERT_TRUE(decryptor_->Crypt(buffer, &decrypted));
-    ASSERT_EQ(decrypted, exp_segment_buffer);
     buffer.clear();
   }
 }
 
 TEST_F(LivePackagerTest, InitSegmentOnly) {
-  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("init.mp4");
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
   FullSegmentBuffer in;

@@ -143,17 +143,12 @@ class ProducerConsumerQueue {
 // Implementations of non-inline functions.
 template <class T>
 ProducerConsumerQueue<T>::ProducerConsumerQueue(size_t capacity)
-    : capacity_(capacity),
-      head_pos_(0),
-      stop_requested_(false) {}
+    : capacity_(capacity), head_pos_(0), stop_requested_(false) {}
 
 template <class T>
 ProducerConsumerQueue<T>::ProducerConsumerQueue(size_t capacity,
                                                 size_t starting_pos)
-    : capacity_(capacity),
-      head_pos_(starting_pos),
-      stop_requested_(false) {
-}
+    : capacity_(capacity), head_pos_(starting_pos), stop_requested_(false) {}
 
 template <class T>
 ProducerConsumerQueue<T>::~ProducerConsumerQueue() {}
