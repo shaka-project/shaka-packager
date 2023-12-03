@@ -115,8 +115,6 @@ struct StreamDescriptor {
   /// formats, there are multiple "channels" in a single stream. This allows
   /// selecting only one channel.
   int32_t cc_index = -1;
-  /// Optional value
-  int32_t order_number = 0;
 
   /// Required for audio when outputting HLS. It defines the name of the output
   /// stream, which is not necessarily the same as output. This is used as the
