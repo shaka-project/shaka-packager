@@ -20,7 +20,8 @@ class MockMediaPlaylist : public MediaPlaylist {
   // matter because the return value can be mocked.
   MockMediaPlaylist(const std::string& file_name,
                     const std::string& name,
-                    const std::string& group_id);
+                    const std::string& group_id,
+                    const int32_t order_number);
   ~MockMediaPlaylist() override;
 
   MOCK_METHOD1(SetMediaInfo, bool(const MediaInfo& media_info));

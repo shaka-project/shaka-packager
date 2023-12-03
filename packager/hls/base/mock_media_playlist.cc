@@ -13,8 +13,9 @@ namespace hls {
 
 MockMediaPlaylist::MockMediaPlaylist(const std::string& file_name,
                                      const std::string& name,
-                                     const std::string& group_id)
-    : MediaPlaylist(HlsParams(), file_name, name, group_id) {}
+                                     const std::string& group_id,
+                                     const int32_t order_number)
+    : MediaPlaylist(HlsParams(), file_name, name, group_id, order_number) {}
 MockMediaPlaylist::~MockMediaPlaylist() {}
 
 }  // namespace hls
