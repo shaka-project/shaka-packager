@@ -583,6 +583,7 @@ int PackagerMain(int argc, char** argv) {
         ParseStreamDescriptor(remaining_args[i]);
     if (!stream_descriptor)
       return kArgumentValidationFailed;
+    stream_descriptor->order_number = order_number;
     stream_descriptors.push_back(stream_descriptor.value());
     order_number++;
   }
