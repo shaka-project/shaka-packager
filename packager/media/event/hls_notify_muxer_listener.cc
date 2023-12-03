@@ -26,12 +26,14 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
     const std::vector<std::string>& characteristics,
+    const int32_t& order_number,
     hls::HlsNotifier* hls_notifier)
     : playlist_name_(playlist_name),
       iframes_only_(iframes_only),
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
       characteristics_(characteristics),
+      order_number_(order_number),
       hls_notifier_(hls_notifier) {
   DCHECK(hls_notifier);
 }
@@ -286,7 +288,7 @@ bool HlsNotifyMuxerListener::NotifyNewStream() {
   uint32_t stream_id;
   const bool result = hls_notifier_->NotifyNewStream(
       *media_info_, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
-      &stream_id);
+      order_number_, &stream_id);
   if (!result) {
     LOG(WARNING) << "Failed to notify new stream for VOD.";
     return false;

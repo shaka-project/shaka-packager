@@ -37,6 +37,10 @@ void AppendVersionString(std::string* content) {
                         GetPackagerProjectUrl().c_str(), version.c_str());
 }
 
+bool SortByOrderNumber(const MediaPlaylist* a, const MediaPlaylist* b) {
+  return a->order_number() < b->order_number();
+}
+
 // This structure roughly maps to the Variant stream in HLS specification.
 // Each variant specifies zero or one audio group and zero or one text group.
 struct Variant {
@@ -366,7 +370,10 @@ void BuildMediaTags(
     std::string* out) {
   for (const auto& group : groups) {
     const std::string& group_id = group.first;
-    const auto& playlists = group.second;
+    std::list<const MediaPlaylist*> playlists = group.second;
+
+    playlists.sort(SortByOrderNumber);
+
 
     // Tracks the language of the playlist in this group.
     // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
@@ -454,6 +461,7 @@ void AppendPlaylists(const std::string& default_audio_language,
   for (const auto& variant : variants) {
     if (video_playlists.empty())
       break;
+    video_playlists.sort(SortByOrderNumber);
     content->append("\n");
     for (const auto& playlist : video_playlists) {
       BuildStreamInfTag(*playlist, variant, base_url, content);
@@ -461,6 +469,7 @@ void AppendPlaylists(const std::string& default_audio_language,
   }
 
   if (!iframe_playlists.empty()) {
+    iframe_playlists.sort(SortByOrderNumber);
     content->append("\n");
     for (const auto& playlist : iframe_playlists) {
       // I-Frame playlists do not have variant. Just use the default.

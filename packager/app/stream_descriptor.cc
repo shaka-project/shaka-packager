@@ -26,6 +26,7 @@ enum FieldType {
   kBandwidthField,
   kLanguageField,
   kCcIndexField,
+  kOrderNumberField,
   kOutputFormatField,
   kHlsNameField,
   kHlsGroupIdField,
@@ -62,6 +63,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"language", kLanguageField},
     {"lang", kLanguageField},
     {"cc_index", kCcIndexField},
+    {"order_number", kOrderNumberField},
     {"output_format", kOutputFormatField},
     {"format", kOutputFormatField},
     {"hls_name", kHlsNameField},
@@ -146,6 +148,15 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
           return std::nullopt;
         }
         descriptor.cc_index = index;
+        break;
+      }
+      case kOrderNumberField: {
+        unsigned order_number;
+        if (!absl::SimpleAtoi(pair.second, &order_number)) {
+          LOG(ERROR) << "Non-numeric order_number specified.";
+          return std::nullopt;
+        }
+        descriptor.order_number = order_number;
         break;
       }
       case kOutputFormatField: {

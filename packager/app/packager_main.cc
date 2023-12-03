@@ -577,12 +577,15 @@ int PackagerMain(int argc, char** argv) {
     return kArgumentValidationFailed;
 
   std::vector<StreamDescriptor> stream_descriptors;
+  int32_t order_number = 0;
   for (size_t i = 1; i < remaining_args.size(); ++i) {
     std::optional<StreamDescriptor> stream_descriptor =
         ParseStreamDescriptor(remaining_args[i]);
     if (!stream_descriptor)
       return kArgumentValidationFailed;
+    stream_descriptor->order_number = order_number;
     stream_descriptors.push_back(stream_descriptor.value());
+    order_number++;
   }
   Packager packager;
   Status status =
