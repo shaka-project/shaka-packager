@@ -82,7 +82,7 @@ struct LiveConfig {
   // TOOD: do we need non-integer durations?
   double segment_duration_sec;
 
-  // TODO: AES-128
+  // TODO: should we allow for keys to be hex string?
   std::vector<uint8_t> iv_;
   std::vector<uint8_t> key_;
   std::vector<uint8_t> key_id_;

@@ -13,10 +13,8 @@
 
 #include <absl/log/globals.h>
 #include <absl/log/log.h>
-#include <absl/strings/escaping.h>
 #include <packager/chunking_params.h>
 #include <packager/file.h>
-#include <packager/file/file_closer.h>
 #include <packager/live_packager.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
@@ -134,7 +132,7 @@ struct LivePackager::LivePackagerInternal {
 };
 
 LivePackager::LivePackager(const LiveConfig& config) : config_(config) {
-  absl::SetMinLogLevel(absl::LogSeverityAtLeast::kInfo);
+  absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
   std::unique_ptr<LivePackagerInternal> internal(new LivePackagerInternal);
 
   if (config.protection_scheme_ == LiveConfig::EncryptionScheme::AES128 &&
@@ -151,6 +149,9 @@ LivePackager::~LivePackager() {}
 
 Status LivePackager::PackageInit(const Segment& init_segment,
                                  FullSegmentBuffer& output) {
+  if (!internal_)
+    return Status(error::INVALID_ARGUMENT, "Failed to initialize");
+
   SegmentDataReader reader(init_segment);
 
   shaka::BufferCallbackParams callback_params;
