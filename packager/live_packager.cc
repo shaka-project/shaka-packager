@@ -172,27 +172,23 @@ struct LivePackager::LivePackagerInternal {
   std::unique_ptr<SegmentManager> segment_manager;
 };
 
-LivePackager::LivePackager(const LiveConfig& config) : config_(config) {
+LivePackager::LivePackager(const LiveConfig& config)
+    : internal_(new LivePackagerInternal), config_(config) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
-  std::unique_ptr<LivePackagerInternal> internal(new LivePackagerInternal);
 
   if (config.protection_scheme == LiveConfig::EncryptionScheme::AES_128 &&
       config.format == LiveConfig::OutputFormat::TS) {
-    internal->segment_manager =
+    internal_->segment_manager =
         std::make_unique<Aes128EncryptedSegmentManager>(config.key, config.iv);
   } else {
-    internal->segment_manager = std::make_unique<SegmentManager>();
+    internal_->segment_manager = std::make_unique<SegmentManager>();
   }
-  internal_ = std::move(internal);
 }
 
-LivePackager::~LivePackager() {}
+LivePackager::~LivePackager() = default;
 
 Status LivePackager::PackageInit(const Segment& init_segment,
                                  FullSegmentBuffer& output) {
-  if (!internal_)
-    return Status(error::INVALID_ARGUMENT, "Failed to initialize");
-
   SegmentDataReader reader(init_segment);
 
   shaka::BufferCallbackParams callback_params;
@@ -241,9 +237,6 @@ Status LivePackager::PackageInit(const Segment& init_segment,
 }
 
 Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
-  if (!internal_)
-    return Status(error::INVALID_ARGUMENT, "Failed to initialize");
-
   SegmentDataReader reader(in);
   shaka::BufferCallbackParams callback_params;
   callback_params.read_func = [&reader](const std::string& name, void* buffer,
@@ -303,6 +296,7 @@ uint64_t SegmentManager::OnSegmentWrite(const std::string& name,
 
 void SegmentManager::InitializeEncryption(const LiveConfig& config,
                                           EncryptionParams& encryption_params) {
+  // TODO: encryption for fmp4 will be added later
   if (config.protection_scheme == LiveConfig::EncryptionScheme::SAMPLE_AES) {
     // Internally shaka maps this to an internal code for sample aes
     //
