@@ -80,6 +80,47 @@ class SegmentDataReader {
   uint64_t position_ = 0;
 };
 
+class SegmentManager {
+ public:
+  explicit SegmentManager();
+  virtual ~SegmentManager() = default;
+
+ public:
+  virtual uint64_t OnSegmentWrite(const std::string& name,
+                                  const void* buffer,
+                                  uint64_t size,
+                                  FullSegmentBuffer& out);
+
+  virtual void InitializeEncryption(const LiveConfig& config,
+                                    EncryptionParams& encryption_params);
+
+  SegmentManager(const SegmentManager&) = delete;
+  SegmentManager& operator=(const SegmentManager&) = delete;
+};
+
+/// Class which implements AES-128 encryption for MPEG-TS only.
+/// Shaka does not currently support this natively.
+class Aes128EncryptedSegmentManager : public SegmentManager {
+ public:
+  Aes128EncryptedSegmentManager(const std::vector<uint8_t>& key,
+                                const std::vector<uint8_t>& iv);
+
+  ~Aes128EncryptedSegmentManager() override;
+
+  uint64_t OnSegmentWrite(const std::string& name,
+                          const void* buffer,
+                          uint64_t size,
+                          FullSegmentBuffer& out) override;
+
+  void InitializeEncryption(const LiveConfig& config,
+                            EncryptionParams& encryption_params) override;
+
+ private:
+  std::unique_ptr<media::AesCbcEncryptor> encryptor_;
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> iv_;
+};
+
 }  // namespace
 
 SegmentData::SegmentData(const uint8_t* data, size_t size)
@@ -135,10 +176,10 @@ LivePackager::LivePackager(const LiveConfig& config) : config_(config) {
   absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
   std::unique_ptr<LivePackagerInternal> internal(new LivePackagerInternal);
 
-  if (config.protection_scheme_ == LiveConfig::EncryptionScheme::AES128 &&
+  if (config.protection_scheme == LiveConfig::EncryptionScheme::AES_128 &&
       config.format == LiveConfig::OutputFormat::TS) {
     internal->segment_manager =
-        std::make_unique<AesEncryptedSegmentManager>(config.key_, config.iv_);
+        std::make_unique<Aes128EncryptedSegmentManager>(config.key, config.iv);
   } else {
     internal->segment_manager = std::make_unique<SegmentManager>();
   }
@@ -184,7 +225,7 @@ Status LivePackager::PackageInit(const Segment& init_segment,
   packaging_params.init_segment_only = true;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
-  internal_->segment_manager->InitializeEncryption(config_, &encryption_params);
+  internal_->segment_manager->InitializeEncryption(config_, encryption_params);
 
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
@@ -212,7 +253,7 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
 
   callback_params.write_func = [&out, this](const std::string& name,
                                             const void* data, uint64_t size) {
-    return internal_->segment_manager->OnSegmentWrite(out, name, data, size);
+    return internal_->segment_manager->OnSegmentWrite(name, data, size, out);
   };
 
   shaka::BufferCallbackParams init_callback_params;
@@ -235,7 +276,7 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
       config_.segment_duration_sec;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
-  internal_->segment_manager->InitializeEncryption(config_, &encryption_params);
+  internal_->segment_manager->InitializeEncryption(config_, encryption_params);
 
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
@@ -252,17 +293,17 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
 
 SegmentManager::SegmentManager() = default;
 
-uint64_t SegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
-                                        const std::string& name,
+uint64_t SegmentManager::OnSegmentWrite(const std::string& name,
                                         const void* buffer,
-                                        uint64_t size) {
+                                        uint64_t size,
+                                        FullSegmentBuffer& out) {
   out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
   return size;
 }
 
 void SegmentManager::InitializeEncryption(const LiveConfig& config,
-                                          EncryptionParams* encryption_params) {
-  if (config.protection_scheme_ == LiveConfig::EncryptionScheme::SAMPLE_AES) {
+                                          EncryptionParams& encryption_params) {
+  if (config.protection_scheme == LiveConfig::EncryptionScheme::SAMPLE_AES) {
     // Internally shaka maps this to an internal code for sample aes
     //
     // This is a fake protection scheme fourcc code to indicate Apple Sample
@@ -271,32 +312,32 @@ void SegmentManager::InitializeEncryption(const LiveConfig& config,
     // Additionally this seems to be the recommended protection schema to when
     // using the shaka CLI:
     // https://shaka-project.github.io/shaka-packager/html/tutorials/raw_key.html
-    encryption_params->protection_scheme =
+    encryption_params.protection_scheme =
         EncryptionParams::kProtectionSchemeCbcs;
 
-    encryption_params->key_provider = KeyProvider::kRawKey;
-    RawKeyParams::KeyInfo& key_info = encryption_params->raw_key.key_map[""];
-    key_info.key = config.key_;
-    key_info.key_id = config.key_id_;
-    key_info.iv = config.iv_;
+    encryption_params.key_provider = KeyProvider::kRawKey;
+    RawKeyParams::KeyInfo& key_info = encryption_params.raw_key.key_map[""];
+    key_info.key = config.key;
+    key_info.key_id = config.key_id;
+    key_info.iv = config.iv;
   }
 }
 
-AesEncryptedSegmentManager::AesEncryptedSegmentManager(
+Aes128EncryptedSegmentManager::Aes128EncryptedSegmentManager(
     const std::vector<uint8_t>& key,
     const std::vector<uint8_t>& iv)
     : SegmentManager(),
       encryptor_(new media::AesCbcEncryptor(media::kPkcs5Padding,
                                             media::AesCryptor::kUseConstantIv)),
-      key_(key.begin(), key.end()),
-      iv_(iv.begin(), iv.end()) {}
+      key_(key),
+      iv_(iv) {}
 
-AesEncryptedSegmentManager::~AesEncryptedSegmentManager() = default;
+Aes128EncryptedSegmentManager::~Aes128EncryptedSegmentManager() = default;
 
-uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
-                                                    const std::string& name,
-                                                    const void* buffer,
-                                                    uint64_t size) {
+uint64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
+                                                       const void* buffer,
+                                                       uint64_t size,
+                                                       FullSegmentBuffer& out) {
   if (!encryptor_->InitializeWithIv(key_, iv_)) {
     LOG(WARNING) << "failed to initialize encryptor with key and iv";
     out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
@@ -308,6 +349,11 @@ uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
   std::vector<uint8_t> encrypted;
   std::vector<uint8_t> buffer_data(source, source + size);
 
+  // TODO: as a further optimization, consider adapting the implementation
+  // within
+  // https://github.com/Pluto-tv/shaka-packager-live/blob/pluto-cmake/packager/media/base/aes_cryptor.cc#L41
+  // to calculate the appropriate size rather than copying the input data to
+  // a vector.
   if (!encryptor_->Crypt(buffer_data, &encrypted)) {
     LOG(WARNING) << "failed to encrypt data";
     out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
@@ -315,13 +361,12 @@ uint64_t AesEncryptedSegmentManager::OnSegmentWrite(FullSegmentBuffer& out,
   }
 
   out.AppendData(encrypted.data(), encrypted.size());
-  encrypted.clear();
   return size;
 }
 
-void AesEncryptedSegmentManager::InitializeEncryption(
+void Aes128EncryptedSegmentManager::InitializeEncryption(
     const LiveConfig& config,
-    EncryptionParams* encryption_params) {
+    EncryptionParams& encryption_params) {
   LOG(INFO) << "NOOP: AES-128 Encryption already enabled";
 }
 }  // namespace shaka

@@ -74,7 +74,7 @@ struct LiveConfig {
   enum class EncryptionScheme {
     NONE,
     SAMPLE_AES,
-    AES128,
+    AES_128,
   };
 
   OutputFormat format;
@@ -83,49 +83,10 @@ struct LiveConfig {
   double segment_duration_sec;
 
   // TODO: should we allow for keys to be hex string?
-  std::vector<uint8_t> iv_;
-  std::vector<uint8_t> key_;
-  std::vector<uint8_t> key_id_;
-  EncryptionScheme protection_scheme_;
-};
-
-class SegmentManager {
- public:
-  explicit SegmentManager();
-  virtual ~SegmentManager() = default;
-
- public:
-  virtual uint64_t OnSegmentWrite(FullSegmentBuffer& out,
-                                  const std::string& name,
-                                  const void* buffer,
-                                  uint64_t size);
-
-  virtual void InitializeEncryption(const LiveConfig& config,
-                                    EncryptionParams* encryption_params);
-
-  SegmentManager(const SegmentManager&) = delete;
-  SegmentManager& operator=(const SegmentManager&) = delete;
-};
-
-class AesEncryptedSegmentManager : public SegmentManager {
- public:
-  AesEncryptedSegmentManager(const std::vector<uint8_t>& key,
-                             const std::vector<uint8_t>& iv);
-
-  ~AesEncryptedSegmentManager() override;
-
-  uint64_t OnSegmentWrite(FullSegmentBuffer& out,
-                          const std::string& name,
-                          const void* buffer,
-                          uint64_t size) override;
-
-  void InitializeEncryption(const LiveConfig& config,
-                            EncryptionParams* encryption_params) override;
-
- private:
-  std::unique_ptr<media::AesCbcEncryptor> encryptor_;
-  std::vector<uint8_t> key_;
-  std::vector<uint8_t> iv_;
+  std::vector<uint8_t> iv;
+  std::vector<uint8_t> key;
+  std::vector<uint8_t> key_id;
+  EncryptionScheme protection_scheme;
 };
 
 class LivePackager {

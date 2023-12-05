@@ -122,9 +122,9 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsAes128) {
     LiveConfig live_config = empty_live_config_;
     live_config.format = LiveConfig::OutputFormat::TS;
     live_config.track_type = LiveConfig::TrackType::VIDEO;
-    live_config.key_ = HexStringToVector(kKeyHex);
-    live_config.iv_ = HexStringToVector(kIvHex);
-    live_config.protection_scheme_ = LiveConfig::EncryptionScheme::AES128;
+    live_config.key = HexStringToVector(kKeyHex);
+    live_config.iv = HexStringToVector(kIvHex);
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
 
     LivePackager livePackager(live_config);
     ASSERT_EQ(kSegmentDurationInSeconds,
@@ -142,7 +142,6 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsAes128) {
 
     ASSERT_TRUE(decryptor_->Crypt(buffer, &decrypted));
     ASSERT_EQ(decrypted, exp_segment_buffer);
-    buffer.clear();
   }
 }
 
@@ -171,10 +170,10 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsSampleAes) {
     LiveConfig live_config = empty_live_config_;
     live_config.format = LiveConfig::OutputFormat::TS;
     live_config.track_type = LiveConfig::TrackType::AUDIO;
-    live_config.key_ = HexStringToVector(kKeyHex);
-    live_config.iv_ = HexStringToVector(kIvHex);
-    live_config.key_id_ = HexStringToVector(kKeyId);
-    live_config.protection_scheme_ = LiveConfig::EncryptionScheme::SAMPLE_AES;
+    live_config.key = HexStringToVector(kKeyHex);
+    live_config.iv = HexStringToVector(kIvHex);
+    live_config.key_id = HexStringToVector(kKeyId);
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::SAMPLE_AES;
 
     LivePackager livePackager(live_config);
     ASSERT_EQ(kSegmentDurationInSeconds,
@@ -187,7 +186,6 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsSampleAes) {
                                 out.SegmentData() + out.SegmentSize());
 
     ASSERT_TRUE(decryptor_->Crypt(buffer, &decrypted));
-    buffer.clear();
   }
 }
 
