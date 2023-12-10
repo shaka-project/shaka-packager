@@ -130,7 +130,9 @@ bool AesCbcEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
 
 size_t AesCbcEncryptor::RequiredOutputSize(size_t plaintext_size) {
   // mbedtls requires a buffer large enough for one extra block.
-  return plaintext_size + NumPaddingBytes(plaintext_size) + AES_BLOCK_SIZE;
+  // TODO: the extra addition of AES_BLOCK_SIZE seems to be causing issues for
+  // video only Sample-AES encryption and a recent regression in functionality.
+  return plaintext_size + NumPaddingBytes(plaintext_size);
 }
 
 bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
@@ -146,7 +148,9 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
                << required_ciphertext_size << " bytes.";
     return false;
   }
-  *ciphertext_size = required_ciphertext_size - AES_BLOCK_SIZE;
+  // TODO: note the change in RequiredOutputSize where we no longer include the
+  // addition of AES_BLOCK_SIZE
+  *ciphertext_size = required_ciphertext_size;
 
   // Encrypt everything but the residual block using CBC.
   const size_t cbc_size = plaintext_size - residual_block_size;

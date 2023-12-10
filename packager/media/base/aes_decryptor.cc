@@ -61,13 +61,17 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
   // Will update later if using pkcs5 padding. For pkcs5 padding, we still
   // need at least |ciphertext_size| bytes for intermediate operation.
   // mbedtls requires a buffer large enough for one extra block.
-  const size_t required_plaintext_size = ciphertext_size + AES_BLOCK_SIZE;
+  // TODO: extra addition of AES_BLOCK_SIZE causes failure for Video segments
+  // encrypted with SAMPLE AES
+  const size_t required_plaintext_size = ciphertext_size;
   if (*plaintext_size < required_plaintext_size) {
     LOG(ERROR) << "Expecting output size of at least "
                << required_plaintext_size << " bytes.";
     return false;
   }
-  *plaintext_size = required_plaintext_size - AES_BLOCK_SIZE;
+  // TODO: extra addition of AES_BLOCK_SIZE causes failure for Video segments
+  // encrypted with SAMPLE AES
+  *plaintext_size = required_plaintext_size;
 
   // If the ciphertext size is 0, this can be a no-op decrypt, so long as the
   // padding mode isn't PKCS5.

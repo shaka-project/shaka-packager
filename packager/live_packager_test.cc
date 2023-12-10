@@ -7,11 +7,11 @@
 #include <gtest/gtest.h>
 #include <cstdio>
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <absl/log/log.h>
-#include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <packager/file.h>
 #include <packager/live_packager.h>
@@ -20,93 +20,104 @@
 namespace shaka {
 namespace {
 
-const char kKeyHex[] = "06313e0d02666fc455f15a56c363e392";
-const char kIvHex[] = "c80be14086853cd52d9acd002392dc09";
-const char kKeyId[] = "f3c5e0361e6654b28f8049c778b23946";
+const uint8_t kKeyId[]{
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
+};
+const uint8_t kKey[]{
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
+};
+const uint8_t kIv[]{
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
+};
 
 const double kSegmentDurationInSeconds = 5.0;
 const int kNumSegments = 10;
-const int kNumAudioSegments = 5;
 
-std::vector<uint8_t> HexStringToVector(const std::string& hex_str) {
-  std::string raw_str = absl::HexStringToBytes(hex_str);
-  return std::vector<uint8_t>(raw_str.begin(), raw_str.end());
+std::filesystem::path GetTestDataFilePath(const std::string& name) {
+  auto data_dir = std::filesystem::u8path(TEST_DATA_DIR);
+  return data_dir / name;
 }
 
+// Reads a test file from media/test/data directory and returns its content.
+std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
+  auto path = GetTestDataFilePath(name);
+
+  FILE* f = fopen(path.string().c_str(), "rb");
+  if (!f) {
+    LOG(ERROR) << "Failed to read test data from " << path;
+    return std::vector<uint8_t>();
+  }
+
+  std::vector<uint8_t> data;
+  data.resize(std::filesystem::file_size(path));
+  size_t size = fread(data.data(), 1, data.size(), f);
+  data.resize(size);
+  fclose(f);
+
+  return data;
+}
 }  // namespace
 
-class LivePackagerTest : public ::testing::Test {
+class LivePackagerBaseTest : public ::testing::Test {
  public:
-  LivePackagerTest()
-      : decryptor_(
-            new media::AesCbcDecryptor(media::kPkcs5Padding,
-                                       media::AesCryptor::kUseConstantIv)) {}
-  void SetUp() override {
-    empty_live_config_.segment_duration_sec = kSegmentDurationInSeconds;
-  }
+  void SetUp() override { SetupLivePackagerConfig(LiveConfig()); }
 
-  static std::filesystem::path GetTestDataFilePath(const std::string& name) {
-    auto data_dir = std::filesystem::u8path(TEST_DATA_DIR);
-    return data_dir / name;
-  }
-
-  // Reads a test file from media/test/data directory and returns its content.
-  static std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
-    auto path = GetTestDataFilePath(name);
-
-    FILE* f = fopen(path.string().c_str(), "rb");
-    if (!f) {
-      LOG(ERROR) << "Failed to read test data from " << path;
-      return std::vector<uint8_t>();
+  void SetupLivePackagerConfig(const LiveConfig& config) {
+    LiveConfig new_live_config = config;
+    new_live_config.segment_duration_sec = kSegmentDurationInSeconds;
+    switch (new_live_config.protection_scheme) {
+      case LiveConfig::EncryptionScheme::NONE:
+        break;
+      case LiveConfig::EncryptionScheme::SAMPLE_AES:
+      case LiveConfig::EncryptionScheme::AES_128:
+        new_live_config.key.assign(kKey, kKey + std::size(kKey));
+        new_live_config.iv.assign(kIv, kIv + std::size(kIv));
+        new_live_config.key_id.assign(kKeyId, kKeyId + std::size(kKeyId));
+        break;
     }
-
-    std::vector<uint8_t> data;
-    data.resize(std::filesystem::file_size(path));
-    size_t size = fread(data.data(), 1, data.size(), f);
-    data.resize(size);
-    fclose(f);
-
-    return data;
+    live_packager_ = std::make_unique<LivePackager>(new_live_config);
   }
 
  protected:
-  LiveConfig empty_live_config_{};
-  std::unique_ptr<media::AesCbcDecryptor> decryptor_;
+  std::unique_ptr<LivePackager> live_packager_;
+
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> iv_;
 };
 
-TEST_F(LivePackagerTest, SuccessVideoFMP4NoEncryption) {
+TEST_F(LivePackagerBaseTest, InitSegmentOnlyAlt) {
   std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
-  for (unsigned int i = 0; i < kNumSegments; i++) {
-    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
-    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
-    ASSERT_FALSE(segment_buffer.empty());
+  FullSegmentBuffer in;
+  in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+  FullSegmentBuffer out;
 
-    FullSegmentBuffer out;
+  LiveConfig live_config;
+  live_config.format = LiveConfig::OutputFormat::FMP4;
+  live_config.track_type = LiveConfig::TrackType::VIDEO;
+  SetupLivePackagerConfig(live_config);
 
-    LiveConfig live_config = empty_live_config_;
-    live_config.format = LiveConfig::OutputFormat::FMP4;
-    live_config.track_type = LiveConfig::TrackType::VIDEO;
-    LivePackager livePackager(live_config);
-    ASSERT_EQ(kSegmentDurationInSeconds,
-              empty_live_config_.segment_duration_sec);
-    ASSERT_EQ(Status::OK, livePackager.Package(in, out));
-    ASSERT_GT(out.InitSegmentSize(), 0);
-    ASSERT_GT(out.SegmentSize(), 0);
-  }
+  ASSERT_EQ(Status::OK, live_packager_->PackageInit(in, out));
+  ASSERT_GT(out.InitSegmentSize(), 0);
+  ASSERT_EQ(out.SegmentSize(), 0);
 }
 
-TEST_F(LivePackagerTest, SuccessFmp4MpegTsAes128) {
+TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
   std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
-  ASSERT_TRUE(decryptor_->InitializeWithIv(HexStringToVector(kKeyHex),
-                                           HexStringToVector(kIvHex)));
+  media::AesCbcDecryptor decryptor(media::kPkcs5Padding,
+                                   media::AesCryptor::kUseConstantIv);
+
+  key_.assign(kKey, kKey + std::size(kKey));
+  iv_.assign(kIv, kIv + std::size(kIv));
+
+  ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
   for (unsigned int i = 0; i < kNumSegments; i++) {
     std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
@@ -119,17 +130,13 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsAes128) {
 
     FullSegmentBuffer out;
 
-    LiveConfig live_config = empty_live_config_;
+    LiveConfig live_config;
     live_config.format = LiveConfig::OutputFormat::TS;
     live_config.track_type = LiveConfig::TrackType::VIDEO;
-    live_config.key = HexStringToVector(kKeyHex);
-    live_config.iv = HexStringToVector(kIvHex);
     live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
 
-    LivePackager livePackager(live_config);
-    ASSERT_EQ(kSegmentDurationInSeconds,
-              empty_live_config_.segment_duration_sec);
-    ASSERT_EQ(Status::OK, livePackager.Package(in, out));
+    SetupLivePackagerConfig(live_config);
+    ASSERT_EQ(Status::OK, live_packager_->Package(in, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
     std::string exp_segment_num = absl::StrFormat("expected/ts/%04d.ts", i + 1);
@@ -140,25 +147,47 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsAes128) {
     std::vector<uint8_t> buffer(out.SegmentData(),
                                 out.SegmentData() + out.SegmentSize());
 
-    ASSERT_TRUE(decryptor_->Crypt(buffer, &decrypted));
+    ASSERT_TRUE(decryptor.Crypt(buffer, &decrypted));
     ASSERT_EQ(decrypted, exp_segment_buffer);
   }
 }
 
-TEST_F(LivePackagerTest, SuccessFmp4MpegTsSampleAes) {
+struct LivePackagerTestCase {
+  unsigned int num_segments;
+  std::string init_segment_name;
+  LiveConfig::EncryptionScheme encryption_scheme;
+  LiveConfig::OutputFormat output_format;
+  LiveConfig::TrackType track_type;
+  const char* media_segment_format;
+};
+
+class LivePackagerEncryptionTest
+    : public LivePackagerBaseTest,
+      public ::testing::WithParamInterface<LivePackagerTestCase> {
+ public:
+  void SetUp() override {
+    LiveConfig live_config;
+    live_config.format = GetParam().output_format;
+    live_config.track_type = GetParam().track_type;
+    live_config.protection_scheme = GetParam().encryption_scheme;
+    SetupLivePackagerConfig(live_config);
+  }
+};
+
+TEST_P(LivePackagerEncryptionTest, VerifyWithEncryption) {
   std::vector<uint8_t> init_segment_buffer =
-      ReadTestDataFile("audio/en/init.mp4");
+      ReadTestDataFile(GetParam().init_segment_name);
   ASSERT_FALSE(init_segment_buffer.empty());
 
-  decryptor_.reset(new media::AesCbcDecryptor(
-      media::kNoPadding, media::AesCryptor::kUseConstantIv));
+  for (unsigned int i = 0; i < GetParam().num_segments; i++) {
+    std::string format_output;
 
-  ASSERT_TRUE(decryptor_->InitializeWithIv(HexStringToVector(kKeyHex),
-                                           HexStringToVector(kIvHex)));
+    std::vector<absl::FormatArg> format_args;
+    format_args.emplace_back(i);
+    absl::UntypedFormatSpec format(GetParam().media_segment_format);
 
-  for (unsigned int i = 0; i < kNumAudioSegments; i++) {
-    std::string segment_num = absl::StrFormat("audio/en/%05d.m4s", i);
-    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_TRUE(absl::FormatUntyped(&format_output, format, format_args));
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(format_output);
     ASSERT_FALSE(segment_buffer.empty());
 
     FullSegmentBuffer in;
@@ -167,43 +196,33 @@ TEST_F(LivePackagerTest, SuccessFmp4MpegTsSampleAes) {
 
     FullSegmentBuffer out;
 
-    LiveConfig live_config = empty_live_config_;
-    live_config.format = LiveConfig::OutputFormat::TS;
-    live_config.track_type = LiveConfig::TrackType::AUDIO;
-    live_config.key = HexStringToVector(kKeyHex);
-    live_config.iv = HexStringToVector(kIvHex);
-    live_config.key_id = HexStringToVector(kKeyId);
-    live_config.protection_scheme = LiveConfig::EncryptionScheme::SAMPLE_AES;
-
-    LivePackager livePackager(live_config);
-    ASSERT_EQ(kSegmentDurationInSeconds,
-              empty_live_config_.segment_duration_sec);
-    ASSERT_EQ(Status::OK, livePackager.Package(in, out));
+    ASSERT_EQ(Status::OK, live_packager_->Package(in, out));
     ASSERT_GT(out.SegmentSize(), 0);
-
-    std::vector<uint8_t> decrypted;
-    std::vector<uint8_t> buffer(out.SegmentData(),
-                                out.SegmentData() + out.SegmentSize());
-
-    ASSERT_TRUE(decryptor_->Crypt(buffer, &decrypted));
   }
 }
 
-TEST_F(LivePackagerTest, InitSegmentOnly) {
-  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
-  ASSERT_FALSE(init_segment_buffer.empty());
-
-  FullSegmentBuffer in;
-  in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-
-  FullSegmentBuffer out;
-
-  LiveConfig live_config = empty_live_config_;
-  live_config.format = LiveConfig::OutputFormat::FMP4;
-  live_config.track_type = LiveConfig::TrackType::VIDEO;
-  LivePackager livePackager(live_config);
-  ASSERT_EQ(Status::OK, livePackager.PackageInit(in, out));
-  ASSERT_GT(out.InitSegmentSize(), 0);
-  ASSERT_EQ(out.SegmentSize(), 0);
-}
+INSTANTIATE_TEST_CASE_P(
+    LivePackagerEncryptionTypes,
+    LivePackagerEncryptionTest,
+    ::testing::Values(
+        // Verify FMP4 to TS with Sample Aes encryption.
+        LivePackagerTestCase{10, "input/init.mp4",
+                             LiveConfig::EncryptionScheme::SAMPLE_AES,
+                             LiveConfig::OutputFormat::TS,
+                             LiveConfig::TrackType::VIDEO, "input/%04d.m4s"},
+        // Verify FMP4 to FMP4 with Sample AES encryption.
+        LivePackagerTestCase{10, "input/init.mp4",
+                             LiveConfig::EncryptionScheme::SAMPLE_AES,
+                             LiveConfig::OutputFormat::FMP4,
+                             LiveConfig::TrackType::VIDEO, "input/%04d.m4s"},
+        // Verify FMP4 to TS with AES-128 encryption.
+        LivePackagerTestCase{10, "input/init.mp4",
+                             LiveConfig::EncryptionScheme::AES_128,
+                             LiveConfig::OutputFormat::TS,
+                             LiveConfig::TrackType::VIDEO, "input/%04d.m4s"},
+        // Verify AUDIO segments only to TS with Sample AES encryption.
+        LivePackagerTestCase{
+            5, "audio/en/init.mp4", LiveConfig::EncryptionScheme::SAMPLE_AES,
+            LiveConfig::OutputFormat::TS, LiveConfig::TrackType::AUDIO,
+            "audio/en/%05d.m4s"}));
 }  // namespace shaka

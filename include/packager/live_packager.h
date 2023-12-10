@@ -7,7 +7,6 @@
 #ifndef PACKAGER_LIVE_PACKAGER_H_
 #define PACKAGER_LIVE_PACKAGER_H_
 
-#include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
 #include <memory>
 #include <string>
