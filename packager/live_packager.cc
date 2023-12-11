@@ -86,10 +86,10 @@ class SegmentManager {
   virtual ~SegmentManager() = default;
 
  public:
-  virtual uint64_t OnSegmentWrite(const std::string& name,
-                                  const void* buffer,
-                                  uint64_t size,
-                                  FullSegmentBuffer& out);
+  virtual int64_t OnSegmentWrite(const std::string& name,
+                                 const void* buffer,
+                                 uint64_t size,
+                                 FullSegmentBuffer& out);
 
   virtual void InitializeEncryption(const LiveConfig& config,
                                     EncryptionParams& encryption_params);
@@ -107,10 +107,10 @@ class Aes128EncryptedSegmentManager : public SegmentManager {
 
   ~Aes128EncryptedSegmentManager() override;
 
-  uint64_t OnSegmentWrite(const std::string& name,
-                          const void* buffer,
-                          uint64_t size,
-                          FullSegmentBuffer& out) override;
+  int64_t OnSegmentWrite(const std::string& name,
+                         const void* buffer,
+                         uint64_t size,
+                         FullSegmentBuffer& out) override;
 
   void InitializeEncryption(const LiveConfig& config,
                             EncryptionParams& encryption_params) override;
@@ -286,10 +286,10 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
 
 SegmentManager::SegmentManager() = default;
 
-uint64_t SegmentManager::OnSegmentWrite(const std::string& name,
-                                        const void* buffer,
-                                        uint64_t size,
-                                        FullSegmentBuffer& out) {
+int64_t SegmentManager::OnSegmentWrite(const std::string& name,
+                                       const void* buffer,
+                                       uint64_t size,
+                                       FullSegmentBuffer& out) {
   out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
   return size;
 }
@@ -328,10 +328,10 @@ Aes128EncryptedSegmentManager::Aes128EncryptedSegmentManager(
 
 Aes128EncryptedSegmentManager::~Aes128EncryptedSegmentManager() = default;
 
-uint64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
-                                                       const void* buffer,
-                                                       uint64_t size,
-                                                       FullSegmentBuffer& out) {
+int64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
+                                                      const void* buffer,
+                                                      uint64_t size,
+                                                      FullSegmentBuffer& out) {
   if (!encryptor_->InitializeWithIv(key_, iv_)) {
     LOG(WARNING) << "failed to initialize encryptor with key and iv";
     // Negative size will trigger a status error within the packager execution
