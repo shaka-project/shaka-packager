@@ -63,7 +63,12 @@ std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
 
 class LivePackagerBaseTest : public ::testing::Test {
  public:
-  void SetUp() override { SetupLivePackagerConfig(LiveConfig()); }
+  void SetUp() override {
+    key_.assign(kKey, kKey + std::size(kKey));
+    iv_.assign(kIv, kIv + std::size(kIv));
+    key_id_.assign(kKeyId, kKeyId + std::size(kKeyId));
+    SetupLivePackagerConfig(LiveConfig());
+  }
 
   void SetupLivePackagerConfig(const LiveConfig& config) {
     LiveConfig new_live_config = config;
@@ -73,9 +78,9 @@ class LivePackagerBaseTest : public ::testing::Test {
         break;
       case LiveConfig::EncryptionScheme::SAMPLE_AES:
       case LiveConfig::EncryptionScheme::AES_128:
-        new_live_config.key.assign(kKey, kKey + std::size(kKey));
-        new_live_config.iv.assign(kIv, kIv + std::size(kIv));
-        new_live_config.key_id.assign(kKeyId, kKeyId + std::size(kKeyId));
+        new_live_config.key = key_;
+        new_live_config.iv = iv_;
+        new_live_config.key_id = key_id_;
         break;
     }
     live_packager_ = std::make_unique<LivePackager>(new_live_config);
@@ -86,9 +91,10 @@ class LivePackagerBaseTest : public ::testing::Test {
 
   std::vector<uint8_t> key_;
   std::vector<uint8_t> iv_;
+  std::vector<uint8_t> key_id_;
 };
 
-TEST_F(LivePackagerBaseTest, InitSegmentOnlyAlt) {
+TEST_F(LivePackagerBaseTest, InitSegmentOnly) {
   std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
 
@@ -113,9 +119,6 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
 
   media::AesCbcDecryptor decryptor(media::kPkcs5Padding,
                                    media::AesCryptor::kUseConstantIv);
-
-  key_.assign(kKey, kKey + std::size(kKey));
-  iv_.assign(kIv, kIv + std::size(kIv));
 
   ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
@@ -152,6 +155,37 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
   }
 }
 
+TEST_F(LivePackagerBaseTest, EncryptionFailure) {
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
+  ASSERT_FALSE(init_segment_buffer.empty());
+
+  // Invalid key and iv sizes to trigger an encryption error
+  key_ = std::vector<uint8_t>(15, 0);
+  iv_ = std::vector<uint8_t>(14, 0);
+
+  for (unsigned int i = 0; i < 1; i++) {
+    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    FullSegmentBuffer in;
+    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
+    in.AppendData(segment_buffer.data(), segment_buffer.size());
+
+    FullSegmentBuffer out;
+
+    LiveConfig live_config;
+    live_config.format = LiveConfig::OutputFormat::TS;
+    live_config.track_type = LiveConfig::TrackType::VIDEO;
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
+
+    SetupLivePackagerConfig(live_config);
+    ASSERT_EQ(
+        Status(error::FILE_FAILURE, "Fail to write to file in BufferWriter"),
+        live_packager_->Package(in, out));
+  }
+}
+
 struct LivePackagerTestCase {
   unsigned int num_segments;
   std::string init_segment_name;
@@ -166,6 +200,8 @@ class LivePackagerEncryptionTest
       public ::testing::WithParamInterface<LivePackagerTestCase> {
  public:
   void SetUp() override {
+    LivePackagerBaseTest::SetUp();
+
     LiveConfig live_config;
     live_config.format = GetParam().output_format;
     live_config.track_type = GetParam().track_type;

@@ -334,8 +334,8 @@ uint64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
                                                        FullSegmentBuffer& out) {
   if (!encryptor_->InitializeWithIv(key_, iv_)) {
     LOG(WARNING) << "failed to initialize encryptor with key and iv";
-    out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
-    return size;
+    // Negative size will trigger a status error within the packager execution
+    return -1;
   }
 
   const auto* source = reinterpret_cast<const uint8_t*>(buffer);
@@ -350,8 +350,8 @@ uint64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
   // a vector.
   if (!encryptor_->Crypt(buffer_data, &encrypted)) {
     LOG(WARNING) << "failed to encrypt data";
-    out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
-    return size;
+    // Negative size will trigger a status error within the packager execution
+    return -1;
   }
 
   out.AppendData(encrypted.data(), encrypted.size());
