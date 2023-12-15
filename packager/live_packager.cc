@@ -91,8 +91,8 @@ class SegmentManager {
                                  uint64_t size,
                                  FullSegmentBuffer& out);
 
-  virtual void InitializeEncryption(const LiveConfig& config,
-                                    EncryptionParams& encryption_params);
+  virtual Status InitializeEncryption(const LiveConfig& config,
+                                      EncryptionParams& encryption_params);
 
   SegmentManager(const SegmentManager&) = delete;
   SegmentManager& operator=(const SegmentManager&) = delete;
@@ -112,8 +112,8 @@ class Aes128EncryptedSegmentManager : public SegmentManager {
                          uint64_t size,
                          FullSegmentBuffer& out) override;
 
-  void InitializeEncryption(const LiveConfig& config,
-                            EncryptionParams& encryption_params) override;
+  Status InitializeEncryption(const LiveConfig& config,
+                              EncryptionParams& encryption_params) override;
 
  private:
   std::unique_ptr<media::AesCbcEncryptor> encryptor_;
@@ -221,7 +221,13 @@ Status LivePackager::PackageInit(const Segment& init_segment,
   packaging_params.init_segment_only = true;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
-  internal_->segment_manager->InitializeEncryption(config_, encryption_params);
+  // As a side effect of InitializeEncryption, encryption_params will be
+  // modified.
+  auto init_status = internal_->segment_manager->InitializeEncryption(
+      config_, encryption_params);
+  if (init_status != Status::OK) {
+    return init_status;
+  }
 
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
@@ -269,7 +275,13 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
       config_.segment_duration_sec;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
-  internal_->segment_manager->InitializeEncryption(config_, encryption_params);
+  // As a side effect of InitializeEncryption, encryption_params will be
+  // modified.
+  shaka::Status init_status = internal_->segment_manager->InitializeEncryption(
+      config_, encryption_params);
+  if (init_status != Status::OK) {
+    return init_status;
+  }
 
   StreamDescriptors descriptors =
       setupStreamDescriptors(config_, callback_params, init_callback_params);
@@ -294,8 +306,9 @@ int64_t SegmentManager::OnSegmentWrite(const std::string& name,
   return size;
 }
 
-void SegmentManager::InitializeEncryption(const LiveConfig& config,
-                                          EncryptionParams& encryption_params) {
+Status SegmentManager::InitializeEncryption(
+    const LiveConfig& config,
+    EncryptionParams& encryption_params) {
   // TODO: encryption for fmp4 will be added later
   if (config.protection_scheme == LiveConfig::EncryptionScheme::SAMPLE_AES) {
     // Internally shaka maps this to an internal code for sample aes
@@ -315,6 +328,7 @@ void SegmentManager::InitializeEncryption(const LiveConfig& config,
     key_info.key_id = config.key_id;
     key_info.iv = config.iv;
   }
+  return Status::OK;
 }
 
 Aes128EncryptedSegmentManager::Aes128EncryptedSegmentManager(
@@ -332,11 +346,11 @@ int64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
                                                       const void* buffer,
                                                       uint64_t size,
                                                       FullSegmentBuffer& out) {
-  if (!encryptor_->InitializeWithIv(key_, iv_)) {
-    LOG(WARNING) << "failed to initialize encryptor with key and iv";
-    // Negative size will trigger a status error within the packager execution
-    return -1;
-  }
+  //  if (!encryptor_->InitializeWithIv(key_, iv_)) {
+  //    LOG(WARNING) << "failed to initialize encryptor with key and iv";
+  //    // Negative size will trigger a status error within the packager
+  //    execution return -1;
+  //  }
 
   const auto* source = reinterpret_cast<const uint8_t*>(buffer);
 
@@ -358,9 +372,14 @@ int64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
   return size;
 }
 
-void Aes128EncryptedSegmentManager::InitializeEncryption(
+Status Aes128EncryptedSegmentManager::InitializeEncryption(
     const LiveConfig& config,
     EncryptionParams& encryption_params) {
-  LOG(INFO) << "NOOP: AES-128 Encryption already enabled";
+  if (!encryptor_->InitializeWithIv(key_, iv_)) {
+    LOG(WARNING) << "failed to initialize encryptor with key and iv";
+    return Status(error::INVALID_ARGUMENT,
+                  "invalid key and IV supplied to encryptor");
+  }
+  return Status::OK;
 }
 }  // namespace shaka

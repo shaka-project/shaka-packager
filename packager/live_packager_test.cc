@@ -180,9 +180,9 @@ TEST_F(LivePackagerBaseTest, EncryptionFailure) {
     live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
 
     SetupLivePackagerConfig(live_config);
-    ASSERT_EQ(
-        Status(error::FILE_FAILURE, "Fail to write to file in BufferWriter"),
-        live_packager_->Package(in, out));
+    ASSERT_EQ(Status(error::INVALID_ARGUMENT,
+                     "invalid key and IV supplied to encryptor"),
+              live_packager_->Package(in, out));
   }
 }
 
