@@ -70,10 +70,22 @@ struct LiveConfig {
     VIDEO,
   };
 
+  enum class EncryptionScheme {
+    NONE,
+    SAMPLE_AES,
+    AES_128,
+  };
+
   OutputFormat format;
   TrackType track_type;
   // TOOD: do we need non-integer durations?
   double segment_duration_sec;
+
+  // TODO: should we allow for keys to be hex string?
+  std::vector<uint8_t> iv;
+  std::vector<uint8_t> key;
+  std::vector<uint8_t> key_id;
+  EncryptionScheme protection_scheme;
 };
 
 class LivePackager {
@@ -97,6 +109,9 @@ class LivePackager {
   LivePackager& operator=(const LivePackager&) = delete;
 
  private:
+  struct LivePackagerInternal;
+  std::unique_ptr<LivePackagerInternal> internal_;
+
   LiveConfig config_;
 };
 
