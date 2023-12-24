@@ -692,10 +692,7 @@ uint64_t MP4Muxer::IsoTimeNow() {
   const uint64_t kIsomTimeOffset = 2082844800l;
 
   // Get the current system time since January 1, 1970, in seconds.
-  std::chrono::system_clock::duration duration =
-      std::chrono::system_clock::now().time_since_epoch();
-  std::int64_t secondsSince1970 =
-      std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+  std::int64_t secondsSince1970 = Now();
 
   // Add the offset of seconds between January 1, 1970, and January 1, 1904.
   return secondsSince1970 + kIsomTimeOffset;
