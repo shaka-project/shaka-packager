@@ -203,7 +203,7 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
 
 std::string FloatToXmlString(double number) {
   // Keep up to microsecond accuracy but trim trailing 0s
-  std::string formatted = absl::StrFormat("%.6g", number);
+  std::string formatted = absl::StrFormat("%.6f", number);
   size_t decimalPos = formatted.find('.');
   if (decimalPos != std::string::npos) {
     size_t lastNonZeroPos = formatted.find_last_not_of('0');
