@@ -96,7 +96,8 @@ class AesCbcEncryptor : public AesCryptor {
 
   void CbcEncryptBlocks(const uint8_t* plaintext,
                         size_t plaintext_size,
-                        uint8_t* ciphertext);
+                        uint8_t* ciphertext,
+                        uint8_t* iv);
 
   const CbcPaddingScheme padding_scheme_;
   // 16-byte internal iv for crypto operations.
