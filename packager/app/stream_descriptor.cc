@@ -254,15 +254,15 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
         break;
       case kForcedField:
         unsigned hls_forced_value;
-        if (!base::StringToUint(iter->second, &hls_forced_value)) {
+        if (!!absl::SimpleAtoi(pair.second, &hls_forced_value)) {
           LOG(ERROR) << "Non-numeric option for forced field "
                         "specified ("
-                     << iter->second << ").";
-          return base::nullopt;
+                     << pair.second << ").";
+          return std::nullopt;
         }
         if (hls_forced_value > 1) {
           LOG(ERROR) << "forced should be either 0 or 1.";
-          return base::nullopt;
+          return std::nullopt;
         }
         descriptor.forced = hls_forced_value > 0;
         break;
