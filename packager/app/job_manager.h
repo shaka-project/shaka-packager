@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,15 @@
 #ifndef PACKAGER_APP_JOB_MANAGER_H_
 #define PACKAGER_APP_JOB_MANAGER_H_
 
+#include <functional>
+#include <map>
 #include <memory>
+#include <thread>
 #include <vector>
 
-#include "packager/base/threading/simple_thread.h"
-#include "packager/status.h"
+#include <absl/synchronization/mutex.h>
+
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -21,33 +25,53 @@ class SyncPointQueue;
 
 // A job is a single line of work that is expected to run in parallel with
 // other jobs.
-class Job : public base::SimpleThread {
+class Job {
  public:
-  Job(const std::string& name, std::shared_ptr<OriginHandler> work);
+  typedef std::function<void(Job*)> OnCompleteFunction;
 
-  // Request that the job stops executing. This is only a request and
-  // will not block. If you want to wait for the job to complete, use
-  // |wait|.
+  Job(const std::string& name,
+      std::shared_ptr<OriginHandler> work,
+      OnCompleteFunction on_complete);
+
+  // Initialize the work object. Call before Start() or Run(). Updates status()
+  // and returns it for convenience.
+  const Status& Initialize();
+
+  // Begin the job in a new thread. This is only a request and will not block.
+  // If you want to wait for the job to complete, use |complete|.
+  // Use either Start() for threaded operation or Run() for non-threaded
+  // operation.  DO NOT USE BOTH!
+  void Start();
+
+  // Run the job's work synchronously, blocking until complete. Updates status()
+  // and returns it for convenience.
+  // Use either Start() for threaded operation or Run() for non-threaded
+  // operation.  DO NOT USE BOTH!
+  const Status& Run();
+
+  // Request that the job stops executing. This is only a request and will not
+  // block. If you want to wait for the job to complete, use |complete|.
   void Cancel();
 
-  // Get the current status of the job. If the job failed to initialize
-  // or encountered an error during execution this will return the error.
+  // Join the thread, if any was started. Blocks until the thread has stopped.
+  void Join();
+
+  // Get the current status of the job. If the job failed to initialize or
+  // encountered an error during execution this will return the error.
   const Status& status() const { return status_; }
 
-  // If you want to wait for this job to complete, this will return the
-  // WaitableEvent you can wait on.
-  base::WaitableEvent* wait() { return &wait_; }
+  // The name given to this job in the constructor.
+  const std::string& name() const { return name_; }
 
  private:
   Job(const Job&) = delete;
   Job& operator=(const Job&) = delete;
 
-  void Run() override;
-
+  std::string name_;
   std::shared_ptr<OriginHandler> work_;
+  OnCompleteFunction on_complete_;
+  std::unique_ptr<std::thread> thread_;
   Status status_;
-
-  base::WaitableEvent wait_;
 };
 
 // Similar to a thread pool, JobManager manages multiple jobs that are expected
@@ -70,7 +94,7 @@ class JobManager {
   // Initialize all registered jobs. If any job fails to initialize, this will
   // return the error and it will not be safe to call |RunJobs| as not all jobs
   // will be properly initialized.
-  virtual Status InitializeJobs();
+  Status InitializeJobs();
 
   // Run all registered jobs. Before calling this make sure that
   // |InitializedJobs| returned |Status::OK|. This call is blocking and will
@@ -87,16 +111,17 @@ class JobManager {
   JobManager(const JobManager&) = delete;
   JobManager& operator=(const JobManager&) = delete;
 
-  struct JobEntry {
-    std::string name;
-    std::shared_ptr<OriginHandler> worker;
-  };
-  // Stores Job entries for delayed construction of Job object.
-  std::vector<JobEntry> job_entries_;
-  std::vector<std::unique_ptr<Job>> jobs_;
+  void OnJobComplete(Job* job);
+
   // Stored in JobManager so JobManager can cancel |sync_points| when any job
   // fails or is cancelled.
   std::unique_ptr<SyncPointQueue> sync_points_;
+
+  std::vector<std::unique_ptr<Job>> jobs_;
+
+  absl::Mutex mutex_;
+  std::map<Job*, bool> complete_ ABSL_GUARDED_BY(mutex_);
+  absl::CondVar any_job_complete_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace media

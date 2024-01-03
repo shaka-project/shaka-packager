@@ -1,15 +1,16 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_sample.h"
-#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
-#include "packager/media/formats/mp4/box_definitions_comparison.h"
+#include <packager/media/base/media_sample.h>
+#include <packager/media/formats/mp4/box_definitions_comparison.h>
 
 namespace shaka {
 namespace media {
@@ -68,10 +69,10 @@ TEST(NalUnitToByteStreamConverterTest, ParseAVCDecoderConfigurationRecord) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 }
 
 // Empty AVCDecoderConfigurationRecord should return false.
@@ -97,7 +98,7 @@ TEST(NalUnitToByteStreamConverterTest, NoSps) {
       0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
   };
 
-  EXPECT_FALSE(converter.Initialize(kNoSps, arraysize(kNoSps)));
+  EXPECT_FALSE(converter.Initialize(kNoSps, std::size(kNoSps)));
 }
 
 // If there is no PPS, Initialize() should fail.
@@ -119,7 +120,7 @@ TEST(NalUnitToByteStreamConverterTest, NoPps) {
       0x00,  // 0 pps.
   };
 
-  EXPECT_FALSE(converter.Initialize(kNoPps, arraysize(kNoPps)));
+  EXPECT_FALSE(converter.Initialize(kNoPps, std::size(kNoPps)));
 }
 
 // If the length of SPS is 0 then Initialize() should fail.
@@ -138,7 +139,7 @@ TEST(NalUnitToByteStreamConverterTest, ZeroLengthSps) {
       0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
   };
 
-  EXPECT_FALSE(converter.Initialize(kZeroLengthSps, arraysize(kZeroLengthSps)));
+  EXPECT_FALSE(converter.Initialize(kZeroLengthSps, std::size(kZeroLengthSps)));
 }
 
 // If the length of PPS is 0 then Initialize() should fail.
@@ -157,7 +158,7 @@ TEST(NalUnitToByteStreamConverterTest, ZeroLengthPps) {
     0x00, 0x00,  // PPS length == 0
   };
 
-  EXPECT_FALSE(converter.Initialize(kZeroLengthPps, arraysize(kZeroLengthPps)));
+  EXPECT_FALSE(converter.Initialize(kZeroLengthPps, std::size(kZeroLengthPps)));
 }
 
 TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
@@ -171,11 +172,11 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
@@ -197,7 +198,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -257,13 +258,13 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithSPSExtension) 
       0x06,  //  NALU type
       0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, 
   };
-  EXPECT_TRUE(converter.Initialize(kDecoderConfigWithSpsExt, 
-              arraysize(kDecoderConfigWithSpsExt)));
-  
+  EXPECT_TRUE(converter.Initialize(kDecoderConfigWithSpsExt,
+                                   std::size(kDecoderConfigWithSpsExt)));
+
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-              kUnitStreamLikeMediaSample, 
-              arraysize(kUnitStreamLikeMediaSample), kIsKeyFrame, &output));
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
+      kIsKeyFrame, &output));
   EXPECT_EQ(std::vector<uint8_t>(std::begin(kByteStreamWithSpsExtension),
                                  std::end(kByteStreamWithSpsExtension)), 
                                  output);
@@ -280,11 +281,11 @@ TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(kNonKeyFrameStream,
-                                                arraysize(kNonKeyFrameStream),
+                                                std::size(kNonKeyFrameStream),
                                                 !kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
@@ -298,7 +299,7 @@ TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -316,11 +317,11 @@ TEST(NalUnitToByteStreamConverterTest, DispersedZeros) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-      kDispersedZeros, arraysize(kDispersedZeros), !kIsKeyFrame, &output));
+      kDispersedZeros, std::size(kDispersedZeros), !kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
       0x00, 0x00, 0x00, 0x01,  // Start code.
@@ -333,7 +334,7 @@ TEST(NalUnitToByteStreamConverterTest, DispersedZeros) {
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -349,11 +350,11 @@ TEST(NalUnitToByteStreamConverterTest, DoNotEscape) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStream(
-      kNotEscaped, arraysize(kNotEscaped), !kIsKeyFrame, &output));
+      kNotEscaped, std::size(kNotEscaped), !kIsKeyFrame, &output));
 
   const uint8_t kExpectedOutput[] = {
       0x00, 0x00, 0x00, 0x01,  // Start code.
@@ -366,7 +367,7 @@ TEST(NalUnitToByteStreamConverterTest, DoNotEscape) {
   };
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
 }
 
@@ -389,11 +390,11 @@ TEST(NalUnitToByteStreamConverterTest, NoClearNAL) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -422,7 +423,7 @@ TEST(NalUnitToByteStreamConverterTest, NoClearNAL) {
       SubsampleEntry(58, 9), SubsampleEntry(5, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -445,11 +446,11 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNAL) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -478,7 +479,7 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNAL) {
       SubsampleEntry(72, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -501,11 +502,11 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNALAndNaluLengthSize2) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(converter.Initialize(
       kTestAVCDecoderConfigurationRecordNaluLengthSize2,
-      arraysize(kTestAVCDecoderConfigurationRecordNaluLengthSize2)));
+      std::size(kTestAVCDecoderConfigurationRecordNaluLengthSize2)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -532,7 +533,7 @@ TEST(NalUnitToByteStreamConverterTest, WithSomeClearNALAndNaluLengthSize2) {
       SubsampleEntry(72, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -562,11 +563,11 @@ TEST(NalUnitToByteStreamConverterTest, EscapeEncryptedNalu) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   ASSERT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       !kIsKeyFrame, kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -609,11 +610,11 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedNaluEndingWithZero) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   ASSERT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       !kIsKeyFrame, kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -655,11 +656,11 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedPps) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   // clang-format off
@@ -693,7 +694,7 @@ TEST(NalUnitToByteStreamConverterTest, EncryptedPps) {
       SubsampleEntry(72, 10), SubsampleEntry(5, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_THAT(kExpectedOutputSubsamples, subsamples);
 }
@@ -722,11 +723,11 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsSame) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   // clang-format off
@@ -757,7 +758,7 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsSame) {
       SubsampleEntry(73, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -785,11 +786,11 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsDifferent) {
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   // clang-format off
@@ -823,7 +824,7 @@ TEST(NalUnitToByteStreamConverterTest, ClearPpsDifferent) {
       SubsampleEntry(87, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -851,11 +852,11 @@ TEST(NalUnitToByteStreamConverterTest,
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -882,7 +883,7 @@ TEST(NalUnitToByteStreamConverterTest,
       SubsampleEntry(72, 7)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -913,11 +914,11 @@ TEST(NalUnitToByteStreamConverterTest,
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(
-      kUnitStreamLikeMediaSample, arraysize(kUnitStreamLikeMediaSample),
+      kUnitStreamLikeMediaSample, std::size(kUnitStreamLikeMediaSample),
       kIsKeyFrame, !kEscapeEncryptedNalu, &output, &subsamples));
 
   const uint8_t kExpectedOutput[] = {
@@ -947,7 +948,7 @@ TEST(NalUnitToByteStreamConverterTest,
       SubsampleEntry(72, 5), SubsampleEntry(6, 4)};
 
   EXPECT_EQ(std::vector<uint8_t>(kExpectedOutput,
-                                 kExpectedOutput + arraysize(kExpectedOutput)),
+                                 kExpectedOutput + std::size(kExpectedOutput)),
             output);
   EXPECT_EQ(kExpectedOutputSubsamples, subsamples);
 }
@@ -997,7 +998,7 @@ TEST(NalUnitToByteStreamConverterTest,
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
       converter.Initialize(kTestAVCDecoderConfigurationRecord,
-                           arraysize(kTestAVCDecoderConfigurationRecord)));
+                           std::size(kTestAVCDecoderConfigurationRecord)));
 
   std::vector<uint8_t> output;
   EXPECT_TRUE(converter.ConvertUnitToByteStreamWithSubsamples(

@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/dvb/dvb_image.h"
+#include <packager/media/formats/dvb/dvb_image.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/rcheck.h"
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

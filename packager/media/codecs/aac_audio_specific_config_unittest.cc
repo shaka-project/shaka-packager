@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
 
-#include "packager/media/codecs/aac_audio_specific_config.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {
@@ -98,6 +98,23 @@ TEST(AACAudioSpecificConfigTest, SixChannelTest) {
   EXPECT_EQ(48000u, aac_audio_specific_config.GetSamplesPerSecond());
   EXPECT_EQ(6u, aac_audio_specific_config.GetNumChannels());
   EXPECT_EQ(AACAudioSpecificConfig::AOT_AAC_LC,
+            aac_audio_specific_config.GetAudioObjectType());
+}
+
+TEST(AACAudioSpecificConfigTest, UsacTest) {
+  AACAudioSpecificConfig aac_audio_specific_config;
+  uint8_t buffer[] = { 
+    0xF9, 0x5E, 0x01, 0x2C, 0x00, 0x52, 0x42, 0x2C, 0xC0, 0x51,
+    0x17, 0x55, 0x4F, 0x36, 0x00, 0x42, 0x80, 0x01, 0x00, 0x04,
+    0xA8, 0x82, 0x34, 0xE5, 0x80
+  };
+
+  std::vector<uint8_t> data(std::begin(buffer), std::end(buffer));
+
+  EXPECT_TRUE(aac_audio_specific_config.Parse(data));
+  EXPECT_EQ(38400u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_USAC,
             aac_audio_specific_config.GetAudioObjectType());
 }
 

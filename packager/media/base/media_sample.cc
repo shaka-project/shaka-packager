@@ -1,15 +1,16 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/media_sample.h"
+#include <packager/media/base/media_sample.h>
 
-#include <inttypes.h>
+#include <cinttypes>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
 
 namespace shaka {
 namespace media {
@@ -116,7 +117,7 @@ void MediaSample::SetData(const uint8_t* data, size_t data_size) {
 std::string MediaSample::ToString() const {
   if (end_of_stream())
     return "End of stream sample\n";
-  return base::StringPrintf(
+  return absl::StrFormat(
       "dts: %" PRId64 "\n pts: %" PRId64 "\n duration: %" PRId64
       "\n "
       "is_key_frame: %s\n size: %zu\n side_data_size: %zu\n",

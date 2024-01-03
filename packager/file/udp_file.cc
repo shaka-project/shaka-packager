@@ -1,41 +1,41 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/udp_file.h"
+#include <packager/file/udp_file.h>
 
 #if defined(OS_WIN)
-
-#include <windows.h>
 #include <ws2tcpip.h>
 #define close closesocket
 #define EINTR_CODE WSAEINTR
-
 #else
-
 #include <arpa/inet.h>
 #include <errno.h>
-#include <strings.h>
+#include <netinet/in.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
 #define EINTR_CODE EINTR
-
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
 // building on a machine that is older than that.
 #ifndef IP_MULTICAST_ALL
-#define IP_MULTICAST_ALL      49
+#define IP_MULTICAST_ALL 49
 #endif
-
 #endif  // defined(OS_WIN)
 
 #include <limits>
 
-#include "packager/base/logging.h"
-#include "packager/file/udp_options.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/file/udp_options.h>
+#include <packager/macros/classes.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
 
 namespace shaka {
 
@@ -83,16 +83,26 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 
   int64_t result;
   do {
-    result =
-        recvfrom(socket_, reinterpret_cast<char*>(buffer), length, 0, NULL, 0);
+    result = recvfrom(socket_, reinterpret_cast<char*>(buffer),
+                      static_cast<int>(length), 0, NULL, 0);
   } while (result == -1 && GetSocketErrorCode() == EINTR_CODE);
 
   return result;
 }
 
 int64_t UdpFile::Write(const void* buffer, uint64_t length) {
-  NOTIMPLEMENTED();
+  UNUSED(buffer);
+  UNUSED(length);
+  NOTIMPLEMENTED() << "UdpFile is unwritable!";
   return -1;
+}
+
+void UdpFile::CloseForWriting() {
+#if defined(OS_WIN)
+  shutdown(socket_, SD_SEND);
+#else
+  shutdown(socket_, SHUT_WR);
+#endif
 }
 
 int64_t UdpFile::Size() {
@@ -103,17 +113,19 @@ int64_t UdpFile::Size() {
 }
 
 bool UdpFile::Flush() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED() << "UdpFile is unflushable!";
   return false;
 }
 
 bool UdpFile::Seek(uint64_t position) {
-  NOTIMPLEMENTED();
+  UNUSED(position);
+  NOTIMPLEMENTED() << "UdpFile is unseekable!";
   return false;
 }
 
 bool UdpFile::Tell(uint64_t* position) {
-  NOTIMPLEMENTED();
+  UNUSED(position);
+  NOTIMPLEMENTED() << "UdpFile is unseekable!";
   return false;
 }
 
@@ -170,10 +182,12 @@ bool UdpFile::Open() {
     return false;
   }
 
-  struct sockaddr_in local_sock_addr = {0};
   // TODO(kqyang): Support IPv6.
+  struct sockaddr_in local_sock_addr;
+  memset(&local_sock_addr, 0, sizeof(local_sock_addr));
   local_sock_addr.sin_family = AF_INET;
   local_sock_addr.sin_port = htons(options->port());
+
   const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
   if (is_multicast) {
     local_sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);

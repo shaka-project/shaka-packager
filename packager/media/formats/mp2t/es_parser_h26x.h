@@ -5,16 +5,16 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <deque>
+#include <functional>
 #include <list>
 #include <memory>
 
-#include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
-#include "packager/media/codecs/nalu_reader.h"
-#include "packager/media/formats/mp2t/es_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/codecs/nalu_reader.h>
+#include <packager/media/formats/mp2t/es_parser.h>
+#include <functional>
 
 namespace shaka {
 namespace media {
@@ -96,6 +96,8 @@ class EsParserH26x : public EsParser {
                  int access_unit_size,
                  bool is_key_frame,
                  int pps_id);
+  // Calculates frame duration based on SPS frame data
+  virtual int64_t CalculateSampleDuration(int pps_id) = 0;
 
   // Callback to pass the frames.
   EmitSampleCB emit_sample_cb_;
@@ -127,6 +129,7 @@ class EsParserH26x : public EsParser {
 
   // Frame for which we do not yet have a duration.
   std::shared_ptr<MediaSample> pending_sample_;
+  int pending_sample_pps_id_ = -1;
   int64_t pending_sample_duration_ = 0;
 
   // Indicates whether waiting for first key frame.

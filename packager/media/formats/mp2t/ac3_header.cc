@@ -1,14 +1,16 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/ac3_header.h"
+#include <packager/media/formats/mp2t/ac3_header.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/bit_writer.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <absl/log/check.h>
+
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/bit_writer.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {
@@ -44,9 +46,9 @@ const size_t kFrameSizeCodeTable[][3] = {
 // frame size code.
 // @return the size of the frame (header + payload).
 size_t CalcFrameSize(uint8_t fscod, uint8_t frmsizecod) {
-  const size_t kNumFscode = arraysize(kAc3SampleRateTable);
+  const size_t kNumFscode = std::size(kAc3SampleRateTable);
   DCHECK_LT(fscod, kNumFscode);
-  DCHECK_LT(frmsizecod, arraysize(kFrameSizeCodeTable));
+  DCHECK_LT(frmsizecod, std::size(kFrameSizeCodeTable));
   // The order of frequencies are reversed in |kFrameSizeCodeTable| compared to
   // |kAc3SampleRateTable|.
   const int index = kNumFscode - 1 - fscod;
@@ -85,16 +87,16 @@ bool Ac3Header::Parse(const uint8_t* audio_frame, size_t audio_frame_size) {
   uint16_t crc1;
   RCHECK(frame.ReadBits(16, &crc1));
   RCHECK(frame.ReadBits(2, &fscod_));
-  RCHECK(fscod_ < arraysize(kAc3SampleRateTable));
+  RCHECK(fscod_ < std::size(kAc3SampleRateTable));
   RCHECK(frame.ReadBits(6, &frmsizecod_));
-  RCHECK(frmsizecod_ < arraysize(kFrameSizeCodeTable));
+  RCHECK(frmsizecod_ < std::size(kFrameSizeCodeTable));
 
   // bsi: bit stream information section.
   RCHECK(frame.ReadBits(5, &bsid_));
   RCHECK(frame.ReadBits(3, &bsmod_));
 
   RCHECK(frame.ReadBits(3, &acmod_));
-  RCHECK(acmod_ < arraysize(kAc3NumChannelsTable));
+  RCHECK(acmod_ < std::size(kAc3NumChannelsTable));
   // If 3 front channels.
   if ((acmod_ & 0x01) && (acmod_ != 0x01))
     RCHECK(frame.SkipBits(2));  // cmixlev.
@@ -149,12 +151,12 @@ uint8_t Ac3Header::GetObjectType() const {
 }
 
 uint32_t Ac3Header::GetSamplingFrequency() const {
-  DCHECK_LT(fscod_, arraysize(kAc3SampleRateTable));
+  DCHECK_LT(fscod_, std::size(kAc3SampleRateTable));
   return kAc3SampleRateTable[fscod_];
 }
 
 uint8_t Ac3Header::GetNumChannels() const {
-  DCHECK_LT(acmod_, arraysize(kAc3NumChannelsTable));
+  DCHECK_LT(acmod_, std::size(kAc3NumChannelsTable));
   return kAc3NumChannelsTable[acmod_] + (lfeon_ ? 1 : 0);
 }
 

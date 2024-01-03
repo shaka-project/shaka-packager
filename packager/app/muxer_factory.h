@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,12 +10,9 @@
 #include <memory>
 #include <string>
 
-#include "packager/media/base/container_names.h"
-#include "packager/media/public/mp4_output_params.h"
-
-namespace base {
-class Clock;
-}  // namespace base
+#include <packager/media/base/container_names.h>
+#include <packager/mp4_output_params.h>
+#include <packager/mpd/base/mpd_builder.h>
 
 namespace shaka {
 struct PackagingParams;
@@ -40,7 +37,7 @@ class MuxerFactory {
 
   /// For testing, if you need to replace the clock that muxers work with
   /// this will replace the clock for all muxers created after this call.
-  void OverrideClock(base::Clock* clock);
+  void OverrideClock(std::shared_ptr<Clock> clock);
 
   void SetTsStreamOffset(int32_t offset_ms) {
     transport_stream_timestamp_offset_ms_ = offset_ms;
@@ -53,7 +50,7 @@ class MuxerFactory {
   const Mp4OutputParams mp4_params_;
   const std::string temp_dir_;
   int32_t transport_stream_timestamp_offset_ms_ = 0;
-  base::Clock* clock_ = nullptr;
+  std::shared_ptr<Clock> clock_ = nullptr;
 };
 
 }  // namespace media

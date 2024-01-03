@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,9 +11,10 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/aes_decryptor.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/key_source.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 namespace media {

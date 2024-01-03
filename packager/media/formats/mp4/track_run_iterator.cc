@@ -2,25 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/track_run_iterator.h"
-
-#include <gflags/gflags.h>
-
-DEFINE_bool(mp4_reset_initial_composition_offset_to_zero,
-            true,
-            "MP4 only. If it is true, reset the initial composition offset to "
-            "zero, i.e. by assuming that there is a missing EditList.");
+#include <packager/media/formats/mp4/track_run_iterator.h>
 
 #include <algorithm>
 #include <limits>
 
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/formats/mp4/chunk_info_iterator.h"
-#include "packager/media/formats/mp4/composition_offset_iterator.h"
-#include "packager/media/formats/mp4/decoding_time_iterator.h"
-#include "packager/media/formats/mp4/sync_sample_iterator.h"
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/formats/mp4/chunk_info_iterator.h>
+#include <packager/media/formats/mp4/composition_offset_iterator.h>
+#include <packager/media/formats/mp4/decoding_time_iterator.h>
+#include <packager/media/formats/mp4/sync_sample_iterator.h>
+
+ABSL_FLAG(bool,
+          mp4_reset_initial_composition_offset_to_zero,
+          true,
+          "MP4 only. If it is true, reset the initial composition offset to "
+          "zero, i.e. by assuming that there is a missing EditList.");
 
 namespace {
 const int64_t kInvalidOffset = std::numeric_limits<int64_t>::max();
@@ -284,10 +287,11 @@ bool TrackRunIterator::Init() {
 bool TrackRunIterator::Init(const MovieFragment& moof) {
   runs_.clear();
 
-  next_fragment_start_dts_.resize(moof.tracks.size(), 0);
+  const auto track_count = std::max(moof.tracks.size(), moov_->tracks.size());
+  next_fragment_start_dts_.resize(track_count, 0);
   for (size_t i = 0; i < moof.tracks.size(); i++) {
     const TrackFragment& traf = moof.tracks[i];
-
+    const auto track_index = traf.header.track_id - 1;
     const Track* trak = NULL;
     for (size_t t = 0; t < moov_->tracks.size(); t++) {
       if (moov_->tracks[t].header.track_id == traf.header.track_id)
@@ -330,7 +334,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
         video_sample_entry = &stsd.video_entries[desc_idx];
         break;
       default:
-        NOTREACHED();
+        NOTIMPLEMENTED();
         break;
     }
 
@@ -351,7 +355,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     }
 
     int64_t run_start_dts = traf.decode_time_absent
-                                ? next_fragment_start_dts_[i]
+                                ? next_fragment_start_dts_[track_index]
                                 : traf.decode_time.decode_time;
 
     // dts is directly adjusted, which then propagates to pts as pts is encoded
@@ -426,7 +430,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       runs_.push_back(tri);
       sample_count_sum += trun.sample_count;
     }
-    next_fragment_start_dts_[i] = run_start_dts;
+    next_fragment_start_dts_[track_index] = run_start_dts;
   }
 
   std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());
@@ -699,7 +703,7 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
       LOG(WARNING) << "Seeing non-zero composition offset "
                    << composition_offset
                    << ". An EditList is probably missing.";
-      if (FLAGS_mp4_reset_initial_composition_offset_to_zero) {
+      if (absl::GetFlag(FLAGS_mp4_reset_initial_composition_offset_to_zero)) {
         LOG(WARNING)
             << "Adjusting timestamps by " << -composition_offset
             << ". Please file a bug to "

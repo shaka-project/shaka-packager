@@ -10,19 +10,21 @@ on:
 
 permissions:
   issues: write
+  pull-requests: write
 
 jobs:
   update-issues:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: shaka-project/shaka-github-tools
 
       - name: Update Issues
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use SHAKA_BOT_TOKEN if found, otherwise the default GITHUB_TOKEN.
+          GITHUB_TOKEN: ${{ secrets.SHAKA_BOT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           cd update-issues
           npm ci

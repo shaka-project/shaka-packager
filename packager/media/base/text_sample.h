@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,10 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_SAMPLE_H_
 #define PACKAGER_MEDIA_BASE_TEXT_SAMPLE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
-
-#include "packager/base/optional.h"
 
 namespace shaka {
 namespace media {
@@ -55,18 +53,18 @@ struct TextNumber {
 struct TextSettings {
   /// The line offset of the cue.  For horizontal cues, this is the vertical
   /// offset.  Percent units are relative to the window.
-  base::Optional<TextNumber> line;
+  std::optional<TextNumber> line;
   /// The position offset of the cue.  For horizontal cues, this is the
   /// horizontal offset.  Percent units are relative to the window.
-  base::Optional<TextNumber> position;
+  std::optional<TextNumber> position;
   /// For horizontal cues, this is the width of the area to draw cues.  For
   /// vertical cues, this is the height.  Percent units are relative to the
   /// window.
-  base::Optional<TextNumber> width;
+  std::optional<TextNumber> width;
   /// For horizontal cues, this is the height of the area to draw cues.  For
   /// vertical cues, this is the width.  Percent units are relative to the
   /// window.
-  base::Optional<TextNumber> height;
+  std::optional<TextNumber> height;
 
   /// The region to draw the cue in.
   std::string region;
@@ -79,9 +77,9 @@ struct TextSettings {
 };
 
 struct TextFragmentStyle {
-  base::Optional<bool> underline;
-  base::Optional<bool> bold;
-  base::Optional<bool> italic;
+  std::optional<bool> underline;
+  std::optional<bool> bold;
+  std::optional<bool> italic;
 };
 
 /// Represents a recursive structure of styled blocks of text.  Only one of

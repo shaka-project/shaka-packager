@@ -6,10 +6,12 @@
 
 #include "packager/media/base/id3_tag.h"
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/buffer_writer.h"
+#include <packager/media/base/buffer_writer.h>
 
 using ::testing::ElementsAreArray;
 

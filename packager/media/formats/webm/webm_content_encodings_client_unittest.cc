@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_content_encodings_client.h"
-
-#include <gtest/gtest.h>
+#include <packager/media/formats/webm/webm_content_encodings_client.h>
 
 #include <string>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/media/formats/webm/webm_parser.h"
+#include <absl/strings/numbers.h>
+#include <gtest/gtest.h>
+
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

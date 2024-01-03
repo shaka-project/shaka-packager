@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,14 +9,15 @@
 #ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/range.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/compiler.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/range.h>
 
 namespace shaka {
 namespace media {
@@ -45,9 +46,9 @@ class MuxerListener {
   /// writing out manifests.
   struct MediaRanges {
     /// Range of the initialization section of a segment.
-    base::Optional<Range> init_range;
+    std::optional<Range> init_range;
     /// Range of the index section of a segment.
-    base::Optional<Range> index_range;
+    std::optional<Range> index_range;
     /// Ranges of the subsegments (e.g. fragments).
     /// The vector is empty if ranges are not specified. For example it
     /// may not be a single file.
@@ -144,7 +145,10 @@ class MuxerListener {
   /// This will update the segment's duration and size after the segment is
   /// fully written and these values are known.
   virtual void OnCompletedSegment(int64_t duration,
-                                  uint64_t segment_file_size) {}
+                                  uint64_t segment_file_size) {
+    UNUSED(duration);
+    UNUSED(segment_file_size);
+  }
 
   /// Called when there is a new key frame. For Video only. Note that it should
   /// be called before OnNewSegment is called on the containing segment.

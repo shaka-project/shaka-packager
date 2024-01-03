@@ -1,16 +1,20 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/codecs/h265_parser.h"
+#include <absl/log/check.h>
+#include <absl/strings/escaping.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_join.h>
+
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/h265_parser.h>
+#include <packager/utils/bytes_to_string_view.h>
 
 namespace shaka {
 namespace media {
@@ -57,7 +61,8 @@ std::string ReverseBitsAndHexEncode(uint32_t x) {
                            static_cast<uint8_t>((x >> 8) & 0xFF),
                            static_cast<uint8_t>((x >> 16) & 0xFF),
                            static_cast<uint8_t>((x >> 24) & 0xFF)};
-  return TrimLeadingZeros(base::HexEncode(bytes, arraysize(bytes)));
+  return TrimLeadingZeros(absl::BytesToHexString(
+      byte_array_to_string_view(bytes, std::size(bytes))));
 }
 
 }  // namespace
@@ -129,11 +134,11 @@ std::string HEVCDecoderConfigurationRecord::GetCodecString(
   std::vector<std::string> fields;
   fields.push_back(FourCCToString(codec_fourcc));
   fields.push_back(GeneralProfileSpaceAsString(general_profile_space_) +
-                   base::IntToString(general_profile_idc_));
+                   absl::StrFormat("%d", general_profile_idc_));
   fields.push_back(
       ReverseBitsAndHexEncode(general_profile_compatibility_flags_));
   fields.push_back((general_tier_flag_ ? "H" : "L") +
-                   base::IntToString(general_level_idc_));
+                   absl::StrFormat("%d", general_level_idc_));
 
   // Remove trailing bytes that are zero.
   std::vector<uint8_t> constraints = general_constraint_indicator_flags_;
@@ -143,9 +148,10 @@ std::string HEVCDecoderConfigurationRecord::GetCodecString(
   }
   constraints.resize(size);
   for (uint8_t constraint : constraints)
-    fields.push_back(TrimLeadingZeros(base::HexEncode(&constraint, 1)));
+    fields.push_back(TrimLeadingZeros(
+        absl::BytesToHexString(byte_array_to_string_view(&constraint, 1))));
 
-  return base::JoinString(fields, ".");
+  return absl::StrJoin(fields, ".");
 }
 
 }  // namespace media

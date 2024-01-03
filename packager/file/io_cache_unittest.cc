@@ -1,16 +1,17 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/io_cache.h"
-#include <gtest/gtest.h>
-#include <string.h>
+#include <packager/file/io_cache.h>
+
 #include <algorithm>
-#include "packager/base/bind.h"
-#include "packager/base/bind_helpers.h"
-#include "packager/base/threading/simple_thread.h"
+#include <chrono>
+#include <cstring>
+#include <thread>
+
+#include <gtest/gtest.h>
 
 namespace {
 const uint64_t kBlockSize = 256;
@@ -19,27 +20,11 @@ const uint64_t kCacheSize = 16 * kBlockSize;
 
 namespace shaka {
 
-class ClosureThread : public base::SimpleThread {
- public:
-  ClosureThread(const std::string& name_prefix, const base::Closure& task)
-      : base::SimpleThread(name_prefix), task_(task) {}
-
-  ~ClosureThread() {
-    if (HasBeenStarted() && !HasBeenJoined())
-      Join();
-  }
-
-  void Run() { task_.Run(); }
-
- private:
-  const base::Closure task_;
-};
-
 class IoCacheTest : public testing::Test {
  public:
   void WriteToCache(const std::vector<uint8_t>& test_buffer,
                     uint64_t num_writes,
-                    int sleep_between_writes,
+                    int sleep_between_writes_ms,
                     bool close_when_done) {
     for (uint64_t write_idx = 0; write_idx < num_writes; ++write_idx) {
       uint64_t write_result =
@@ -50,9 +35,9 @@ class IoCacheTest : public testing::Test {
         break;
       }
       EXPECT_EQ(test_buffer.size(), write_result);
-      if (sleep_between_writes) {
-        base::PlatformThread::Sleep(
-            base::TimeDelta::FromMilliseconds(sleep_between_writes));
+      if (sleep_between_writes_ms) {
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(sleep_between_writes_ms));
       }
     }
     if (close_when_done)
@@ -62,7 +47,7 @@ class IoCacheTest : public testing::Test {
  protected:
   void SetUp() override {
     for (unsigned int idx = 0; idx < kBlockSize; ++idx)
-      reference_block_[idx] = idx;
+      reference_block_[idx] = idx & 0xff;
     cache_.reset(new IoCache(kCacheSize));
     cache_closed_ = false;
   }
@@ -82,25 +67,22 @@ class IoCacheTest : public testing::Test {
 
   void WriteToCacheThreaded(const std::vector<uint8_t>& test_buffer,
                             uint64_t num_writes,
-                            int sleep_between_writes,
+                            int sleep_between_writes_ms,
                             bool close_when_done) {
-    writer_thread_.reset(new ClosureThread(
-        "WriterThread",
-        base::Bind(&IoCacheTest::WriteToCache, base::Unretained(this),
-                   test_buffer, num_writes, sleep_between_writes,
-                   close_when_done)));
-    writer_thread_->Start();
+    writer_thread_.reset(new std::thread(
+        std::bind(&IoCacheTest::WriteToCache, this, test_buffer, num_writes,
+                  sleep_between_writes_ms, close_when_done)));
   }
 
   void WaitForWriterThread() {
     if (writer_thread_) {
-      writer_thread_->Join();
+      writer_thread_->join();
       writer_thread_.reset();
     }
   }
 
   std::unique_ptr<IoCache> cache_;
-  std::unique_ptr<ClosureThread> writer_thread_;
+  std::unique_ptr<std::thread> writer_thread_;
   uint8_t reference_block_[kBlockSize];
   bool cache_closed_;
 };
@@ -186,8 +168,7 @@ TEST_F(IoCacheTest, SlowRead) {
     std::vector<uint8_t> read_buffer(kBlockSize);
     EXPECT_EQ(kBlockSize, cache_->Read(read_buffer.data(), kBlockSize));
     EXPECT_EQ(write_buffer, read_buffer);
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(kReadDelayMs));
+    std::this_thread::sleep_for(std::chrono::milliseconds(kReadDelayMs));
   }
 }
 
@@ -198,7 +179,7 @@ TEST_F(IoCacheTest, CloseByReader) {
   GenerateTestBuffer(kBlockSize, &write_buffer);
   WriteToCacheThreaded(write_buffer, kNumWrites, 0, false);
   while (cache_->BytesCached() < kCacheSize) {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   cache_->Close();
   WaitForWriterThread();
@@ -264,7 +245,7 @@ TEST_F(IoCacheTest, LargeRead) {
                          write_buffer.end());
   }
   while (cache_->BytesCached() < kCacheSize) {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   std::vector<uint8_t> read_buffer(kCacheSize);
   EXPECT_EQ(kCacheSize, cache_->Read(read_buffer.data(), kCacheSize));

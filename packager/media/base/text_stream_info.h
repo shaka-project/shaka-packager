@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_
 
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
-
 #include <map>
 #include <string>
+
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 
 namespace shaka {
 namespace media {

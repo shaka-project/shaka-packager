@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,12 @@
 #ifndef PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_
 #define PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {

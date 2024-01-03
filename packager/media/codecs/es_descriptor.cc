@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/codecs/es_descriptor.h"
+#include <packager/media/codecs/es_descriptor.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/log/check.h>
+
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {
@@ -182,7 +184,7 @@ size_t DecoderConfigDescriptor::ComputeDataSize() {
          decoder_specific_info_descriptor_.ComputeSize();
 }
 
-bool SLConfigDescriptor::ReadData(BitReader* reader) {
+bool SLConfigDescriptor::ReadData(BitReader*) {
   return true;
 }
 

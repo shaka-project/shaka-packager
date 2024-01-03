@@ -10,10 +10,11 @@
 #include <map>
 #include <memory>
 
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/base/media_parser.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 
 namespace shaka {
 namespace media {
@@ -37,8 +38,8 @@ class Mp2tMediaParser : public MediaParser {
             const NewMediaSampleCB& new_media_sample_cb,
             const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
-  bool Flush() override WARN_UNUSED_RESULT;
-  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
+  [[nodiscard]] bool Parse(const uint8_t* buf, int size) override;
   /// @}
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_VIDEO_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_VIDEO_STREAM_INFO_H_
 
-#include "packager/media/base/stream_info.h"
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {
@@ -35,8 +35,8 @@ class VideoStreamInfo : public StreamInfo {
                   const std::string& codec_string,
                   const uint8_t* codec_config,
                   size_t codec_config_size,
-                  uint16_t width,
-                  uint16_t height,
+                  uint32_t width,
+                  uint32_t height,
                   uint32_t pixel_width,
                   uint32_t pixel_height,
                   uint8_t transfer_characteristics,
@@ -56,8 +56,8 @@ class VideoStreamInfo : public StreamInfo {
 
   const std::vector<uint8_t>& extra_config() const { return extra_config_; }
   H26xStreamFormat h26x_stream_format() const { return h26x_stream_format_; }
-  uint16_t width() const { return width_; }
-  uint16_t height() const { return height_; }
+  uint32_t width() const { return width_; }
+  uint32_t height() const { return height_; }
   /// Returns the pixel width.
   /// @return 0 if unknown.
   uint32_t pixel_width() const { return pixel_width_; }
@@ -69,6 +69,7 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t trick_play_factor() const { return trick_play_factor_; }
   uint32_t playback_rate() const { return playback_rate_; }
   const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
+  const std::vector<uint8_t>& colr_data() const { return colr_data_; }
 
   void set_extra_config(const std::vector<uint8_t>& extra_config) {
     extra_config_ = extra_config;
@@ -90,14 +91,17 @@ class VideoStreamInfo : public StreamInfo {
                          size_t eme_init_data_size) {
     eme_init_data_.assign(eme_init_data, eme_init_data + eme_init_data_size);
   }
+  void set_colr_data(const uint8_t* colr_data, size_t colr_data_size) {
+    colr_data_.assign(colr_data, colr_data + colr_data_size);
+  }
 
  private:
   // Extra codec configuration in a stream of mp4 boxes. It is only applicable
   // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.
   std::vector<uint8_t> extra_config_;
   H26xStreamFormat h26x_stream_format_;
-  uint16_t width_;
-  uint16_t height_;
+  uint32_t width_;
+  uint32_t height_;
 
   // pixel_width_:pixel_height_ is the sample aspect ratio.
   // 0 means unknown.
@@ -127,6 +131,9 @@ class VideoStreamInfo : public StreamInfo {
   // Container-specific data used by CDM to generate a license request:
   // https://w3c.github.io/encrypted-media/#initialization-data.
   std::vector<uint8_t> eme_init_data_;
+
+  // Raw colr atom data. It is only applicable to the mp4 container.
+  std::vector<uint8_t> colr_data_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

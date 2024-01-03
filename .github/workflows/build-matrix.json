@@ -1,0 +1,38 @@
+{
+  "comment1": "runners hosted by GitHub, always enabled",
+  "hosted": [
+    {
+      "os": "ubuntu-latest",
+      "os_name": "linux",
+      "target_arch": "x64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
+      "os": "macos-latest",
+      "os_name": "osx",
+      "target_arch": "x64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
+      "os": "windows-latest",
+      "os_name": "win",
+      "target_arch": "x64",
+      "exe_ext": ".exe",
+      "generator": ""
+    }
+  ],
+
+  "comment2": "runners hosted by the owner, enabled by the 'self_hosted' environment being created on the repo",
+  "selfHosted": [
+    {
+      "os": "self-hosted-linux-arm64",
+      "os_name": "linux",
+      "target_arch": "arm64",
+      "exe_ext": "",
+      "generator": "Ninja",
+      "low_mem": "yes"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+# A reusable workflow to build Packager docs.  Leaves docs output in the
+# "gh-pages" folder.  Only runs in Linux due to the dependency on doxygen,
+# which we install with apt.
+name: Build Docs
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+      # If true, start a debug SSH server on failures.
+      debug:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  docs:
+    name: Build docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt install -y doxygen
+          python3 -m pip install \
+              sphinx==7.1.2 \
+              sphinxcontrib.plantuml \
+              recommonmark \
+              cloud_sptheme \
+              breathe
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Generate docs
+        run: |
+          mkdir -p gh-pages
+          mkdir -p build
+
+          # Doxygen must run before Sphinx.  Sphinx will refer to
+          # Doxygen-generated output when it builds its own docs.
+          doxygen docs/Doxyfile
+
+          # Now build the Sphinx-based docs.
+          make -C docs/ html
+
+          # Now move the generated outputs.
+          cp -a build/sphinx/html gh-pages/html
+          cp -a build/doxygen/html gh-pages/docs
+          cp docs/index.html gh-pages/index.html
+
+          # Now set permissions on the generated docs.
+          # https://github.com/actions/upload-pages-artifact#file-permissions
+          chmod -R +rX gh-pages/
+
+      - name: Upload docs artifacts
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: gh-pages
+
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3.6
+        with:
+          limit-access-to-actor: true
+        if: failure() && inputs.debug

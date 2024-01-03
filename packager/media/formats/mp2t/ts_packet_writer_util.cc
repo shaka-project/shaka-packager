@@ -1,14 +1,16 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/ts_packet_writer_util.h"
+#include <packager/media/formats/mp2t/ts_packet_writer_util.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
 
 namespace shaka {
 namespace media {
@@ -53,7 +55,7 @@ const uint8_t kPaddingBytes[] = {
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 };
-static_assert(arraysize(kPaddingBytes) >= kTsPacketMaximumPayloadSize,
+static_assert(std::size(kPaddingBytes) >= kTsPacketMaximumPayloadSize,
               "Padding array is not big enough.");
 
 // |remaining_data_size| is the amount of data that has to be written. This may
@@ -106,7 +108,7 @@ void WriteAdaptationField(bool has_pcr,
   if (remaining_bytes == 0)
     return;
 
-  DCHECK_GE(static_cast<int>(arraysize(kPaddingBytes)), remaining_bytes);
+  DCHECK_GE(static_cast<int>(std::size(kPaddingBytes)), remaining_bytes);
   writer->AppendArray(kPaddingBytes, remaining_bytes);
 }
 

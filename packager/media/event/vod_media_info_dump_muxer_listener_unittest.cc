@@ -1,25 +1,27 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/event/vod_media_info_dump_muxer_listener.h>
+
+#include <vector>
+
+#include <absl/log/check.h>
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 
-#include <vector>
-
-#include "packager/base/files/file_path.h"
-#include "packager/base/files/file_util.h"
-#include "packager/file/file.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/event/muxer_listener_test_helper.h"
-#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/file.h>
+#include <packager/file/file_test_util.h>
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/event/muxer_listener_test_helper.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace {
 const bool kEnableEncryption = true;
@@ -67,21 +69,17 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   ~VodMediaInfoDumpMuxerListenerTest() override {}
 
   void SetUp() override {
-    ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
-    DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
+    temp_file_path_ = generate_unique_temp_path();
+    DLOG(INFO) << "Created temp file: " << temp_file_path_;
 
-    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_
-                  .AsUTF8Unsafe(),false));
-
+    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_, false));
   }
 
   void SetSegmentListFlag() {
     listener_->set_use_segment_list(true);
   }
 
-  void TearDown() override {
-    base::DeleteFile(temp_file_path_, false);
-  }
+  void TearDown() override { delete_file(temp_file_path_); }
 
   void FireOnMediaStartWithDefaultMuxerOptions(
       const StreamInfo& stream_info,
@@ -92,8 +90,8 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     if (enable_encryption) {
       std::vector<uint8_t> bogus_default_key_id(
           kBogusDefaultKeyId,
-          kBogusDefaultKeyId + arraysize(kBogusDefaultKeyId));
-      std::vector<uint8_t> bogus_iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+          kBogusDefaultKeyId + std::size(kBogusDefaultKeyId));
+      std::vector<uint8_t> bogus_iv(kBogusIv, kBogusIv + std::size(kBogusIv));
 
       listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc,
                                        bogus_default_key_id, bogus_iv,
@@ -114,7 +112,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   }
 
  protected:
-  base::FilePath temp_file_path_;
+  std::string temp_file_path_;
   std::unique_ptr<VodMediaInfoDumpMuxerListener> listener_;
 
  private:
@@ -151,8 +149,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
-  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
-              FileContentEqualsProto(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_, FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
@@ -195,8 +192,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "  protection_scheme: 'cenc'\n"
       "}\n";
 
-  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
-              FileContentEqualsProto(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_, FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 // Verify that VideoStreamInfo with non-0 pixel_{width,height} is set in the
@@ -234,8 +230,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
 
-  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
-              FileContentEqualsProto(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_, FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
@@ -276,8 +271,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
-  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
-              FileContentEqualsProto(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_, FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 // Equivalent tests with segment list flag on which writes subsegment ranges
@@ -318,8 +312,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal_SegmentList) 
       "  begin: 222\n"
       "  end: 9999\n"
       "}\n";
-  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
-              FileContentEqualsProto(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_, FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 }  // namespace media

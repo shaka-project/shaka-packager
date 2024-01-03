@@ -1,10 +1,10 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/vp9_parser.h"
+#include <packager/media/codecs/vp9_parser.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -47,17 +47,17 @@ TEST(VP9ParserTest, Superframe) {
       0xc9, 0x3c, 0x00, 0x48, 0x00, 0xc9,
   };
 
-  EXPECT_FALSE(VP9Parser::IsKeyframe(data, arraysize(data)));
+  EXPECT_FALSE(VP9Parser::IsKeyframe(data, std::size(data)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(data, arraysize(data), &frames));
+  ASSERT_TRUE(parser.Parse(data, std::size(data), &frames));
   EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(60u, 13u, false, 0u, 0u),
                                   EqualVPxFrame(72u, 13u, false, 0u, 0u)));
 
   // Corrupt super frame marker.
-  data[arraysize(data) - 6] = 0xc0;
-  ASSERT_FALSE(parser.Parse(data, arraysize(data), &frames));
+  data[std::size(data) - 6] = 0xc0;
+  ASSERT_FALSE(parser.Parse(data, std::size(data), &frames));
 }
 
 TEST(VP9ParserTest, KeyframeChroma420) {
@@ -71,15 +71,15 @@ TEST(VP9ParserTest, KeyframeChroma420) {
       0x35, 0x7a, 0x88, 0x69, 0xf7, 0x1f, 0x26, 0x8b,
   };
 
-  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_EQ("vp09.00.10.08.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
   EXPECT_THAT(frames,
-              ElementsAre(EqualVPxFrame(arraysize(kData), 18u, true, 32u, 8u)));
+              ElementsAre(EqualVPxFrame(std::size(kData), 18u, true, 32u, 8u)));
 }
 
 TEST(VP9ParserTest, KeyframeProfile1Chroma422) {
@@ -93,14 +93,14 @@ TEST(VP9ParserTest, KeyframeProfile1Chroma422) {
       0xa0, 0x96, 0xa7, 0xb8, 0xf4, 0xb4, 0x65, 0xff,
   };
 
-  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_EQ("vp09.01.10.08.02.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
-  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 18u, true,
+  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(std::size(kData), 18u, true,
                                                 160u, 90u)));
 }
 
@@ -115,14 +115,14 @@ TEST(VP9ParserTest, KeyframeProfile2Chroma420) {
       0xa4, 0xdf, 0x05, 0xaf, 0x6f, 0xff, 0xd1, 0x74,
   };
 
-  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_EQ("vp09.02.10.10.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
-  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 18u, true,
+  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(std::size(kData), 18u, true,
                                                 160u, 90u)));
 }
 
@@ -137,14 +137,15 @@ TEST(VP9ParserTest, KeyframeProfile3Chroma444) {
       0xe1, 0xe6, 0xef, 0xff, 0xfd, 0xf7, 0x4f, 0x0f,
   };
 
-  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_EQ("vp09.03.10.12.03.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
-  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 19u, true, 160u, 90u)));
+  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(std::size(kData), 19u, true,
+                                                160u, 90u)));
 }
 
 TEST(VP9ParserTest, Intra) {
@@ -159,25 +160,25 @@ TEST(VP9ParserTest, Intra) {
 
   };
 
-  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_EQ("vp09.00.10.08.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
-  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 19u, false,
+  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(std::size(kData), 19u, false,
                                                 352u, 288u)));
 }
 
 TEST(VP9ParserTest, ShowExisting) {
   const uint8_t kData[] = {0x88};
-  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, std::size(kData)));
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_THAT(frames,
-              ElementsAre(EqualVPxFrame(arraysize(kData), 1u, false, 0u, 0u)));
+              ElementsAre(EqualVPxFrame(std::size(kData), 1u, false, 0u, 0u)));
 }
 
 TEST(VP9ParserTest, Interframe) {
@@ -191,21 +192,21 @@ TEST(VP9ParserTest, Interframe) {
       0x90, 0xeb, 0x8c, 0xad, 0x5f, 0x69, 0xb7, 0x9b,
   };
 
-  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_THAT(frames,
-              ElementsAre(EqualVPxFrame(arraysize(kData), 10u, false, 0u, 0u)));
+              ElementsAre(EqualVPxFrame(std::size(kData), 10u, false, 0u, 0u)));
 }
 
 TEST(VP9ParserTest, CorruptedFrameMarker) {
   const uint8_t kData[] = {0xc8};
-  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, std::size(kData)));
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_FALSE(parser.Parse(kData, std::size(kData), &frames));
 }
 
 TEST(VP9ParserTest, CorruptedSynccode) {
@@ -219,11 +220,11 @@ TEST(VP9ParserTest, CorruptedSynccode) {
       0x35, 0x7a, 0x88, 0x69, 0xf7, 0x1f, 0x26, 0x8b,
   };
 
-  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_FALSE(parser.Parse(kData, std::size(kData), &frames));
 }
 
 TEST(VP9ParserTest, NotEnoughBytesForHeaderSize) {
@@ -239,11 +240,11 @@ TEST(VP9ParserTest, NotEnoughBytesForHeaderSize) {
 
   // IsKeyframe only parses the bytes that is necessary to determine whether it
   // is a keyframe.
-  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, std::size(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
-  EXPECT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
+  EXPECT_FALSE(parser.Parse(kData, std::size(kData), &frames));
 }
 
 }  // namespace media

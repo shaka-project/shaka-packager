@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -14,9 +14,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/mpd/base/mpd_notifier.h"
-#include "packager/mpd/base/mpd_options.h"
+#include <packager/macros/classes.h>
+#include <packager/mpd/base/mpd_notifier.h>
+#include <packager/mpd/base/mpd_options.h>
 
 namespace shaka {
 

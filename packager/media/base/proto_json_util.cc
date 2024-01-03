@@ -4,11 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/proto_json_util.h"
+#include <packager/media/base/proto_json_util.h>
 
+#include <absl/log/log.h>
 #include <google/protobuf/util/json_util.h>
-
-#include "packager/base/logging.h"
 
 namespace shaka {
 namespace media {
@@ -18,7 +17,7 @@ std::string MessageToJsonString(const google::protobuf::Message& message) {
   json_print_options.preserve_proto_field_names = true;
 
   std::string result;
-  GOOGLE_CHECK_OK(google::protobuf::util::MessageToJsonString(
+  ABSL_CHECK_OK(google::protobuf::util::MessageToJsonString(
       message, &result, json_print_options));
   return result;
 }
@@ -32,7 +31,7 @@ bool JsonStringToMessage(const std::string& input,
                                                             json_parse_options);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to parse from JSON: " << input
-               << " error: " << status.error_message();
+               << " error: " << status.message();
     return false;
   }
   return true;

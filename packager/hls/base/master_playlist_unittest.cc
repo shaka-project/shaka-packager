@@ -1,25 +1,28 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/hls/base/master_playlist.h>
+
+#include <filesystem>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_path.h"
-#include "packager/file/file.h"
-#include "packager/hls/base/master_playlist.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/hls/base/mock_media_playlist.h"
-#include "packager/version/version.h"
+#include <packager/file.h>
+#include <packager/hls/base/media_playlist.h>
+#include <packager/hls/base/mock_media_playlist.h>
+#include <packager/version/version.h>
+#include <filesystem>
 
 namespace shaka {
 namespace hls {
 
-using base::FilePath;
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::DoAll;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -138,20 +141,18 @@ class MasterPlaylistTest : public ::testing::Test {
  protected:
   MasterPlaylistTest()
       : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
-                         kDefaultAudioLanguage,
-                         kDefaultTextLanguage,
-                         !kIsIndependentSegments)),
+                                            kDefaultAudioLanguage,
+                                            kDefaultTextLanguage,
+                                            !kIsIndependentSegments)),
         test_output_dir_("memory://test_dir"),
-        master_playlist_path_(
-            FilePath::FromUTF8Unsafe(test_output_dir_)
-                .Append(FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName))
-                .AsUTF8Unsafe()) {}
+        master_playlist_path_(std::filesystem::u8path(test_output_dir_) /
+                              kDefaultMasterPlaylistName) {}
 
   void SetUp() override { SetPackagerVersionForTesting("test"); }
 
   std::unique_ptr<MasterPlaylist> master_playlist_;
   std::string test_output_dir_;
-  std::string master_playlist_path_;
+  std::filesystem::path master_playlist_path_;
 };
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
@@ -166,7 +167,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
                                                    {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -200,7 +202,8 @@ TEST_F(MasterPlaylistTest,
                                                   {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -229,7 +232,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideoWithFrameRate) {
                                                    {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -257,7 +261,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
                                                    {mock_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -312,7 +317,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
        spanish_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -324,7 +330,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/spa.m3u8\","
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"es\",NAME=\"espanol\","
-      "AUTOSELECT=YES,CHANNELS=\"5\"\n"
+      "DEFAULT=NO,AUTOSELECT=YES,CHANNELS=\"5\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=360000,AVERAGE-BANDWIDTH=240000,"
       "CODECS=\"sdvideocodec,audiocodec\","
@@ -372,7 +378,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -419,7 +426,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -430,7 +438,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\","
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"1\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_hi.m3u8\","
-      "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\",CHANNELS=\"8\"\n"
+      "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=NO,"
+      "CHANNELS=\"8\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=280000,"
       "CODECS=\"videocodec,audiocodec\",RESOLUTION=800x600,AUDIO=\"audio\","
@@ -463,7 +472,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       {video1.get(), video2.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -472,7 +482,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\","
-      "AUTOSELECT=YES\n"
+      "DEFAULT=NO,AUTOSELECT=YES\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\",DEFAULT=YES,"
       "AUTOSELECT=YES\n"
@@ -505,7 +515,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
                                                    {video.get(), text.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -513,8 +524,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
       "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
-      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",AUTOSELECT=YES,"
-      "CHARACTERISTICS=\""
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=NO,"
+      "AUTOSELECT=YES,CHARACTERISTICS=\""
       "public.accessibility.transcribes-spoken-dialog,public.easy-to-read\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
@@ -547,7 +558,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {
       kBaseUrl, test_output_dir_, {video.get(), dvs_audio.get(), audio.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -555,7 +567,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {
       "version test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/dvs_eng.m3u8\","
-      "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"DVS english\","
+      "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"DVS english\",DEFAULT=NO,"
       "AUTOSELECT=YES,CHARACTERISTICS=\"public.accessibility.describes-video\","
       "CHANNELS=\"2\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/eng.m3u8\","
@@ -589,7 +601,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       {video.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -598,7 +611,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"en-text-group\",LANGUAGE=\"en\",NAME=\"english\","
-      "AUTOSELECT=YES\n"
+      "DEFAULT=NO,AUTOSELECT=YES\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
       "GROUP-ID=\"fr-text-group\",LANGUAGE=\"fr\",NAME=\"french\","
       "DEFAULT=YES,AUTOSELECT=YES\n"
@@ -635,7 +648,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       kBaseUrl, test_output_dir_, {video.get(), audio.get(), text.get()}));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -648,7 +662,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\","
-      "AUTOSELECT=YES\n"
+      "DEFAULT=NO,AUTOSELECT=YES\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
       "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
@@ -708,7 +722,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -720,11 +735,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
       "GROUP-ID=\"audio-group-2\",LANGUAGE=\"fr\",NAME=\"audio 2\","
-      "AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "DEFAULT=NO,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/text-1.m3u8\","
       "GROUP-ID=\"text-group-1\",LANGUAGE=\"en\",NAME=\"text 1\","
-      "AUTOSELECT=YES\n"
+      "DEFAULT=NO,AUTOSELECT=YES\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/text-2.m3u8\","
       "GROUP-ID=\"text-group-2\",LANGUAGE=\"fr\",NAME=\"text 2\","
       "DEFAULT=YES,AUTOSELECT=YES\n"
@@ -811,7 +826,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -823,7 +839,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
       "GROUP-ID=\"audio-group-2\",LANGUAGE=\"fr\",NAME=\"audio 2\","
-      "AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "DEFAULT=NO,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
       "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
@@ -863,7 +879,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyJOC) {
     media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -915,7 +932,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4IMS) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -968,7 +986,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4CBI) {
                                                    media_playlist_list));
 
   std::string actual;
-  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"

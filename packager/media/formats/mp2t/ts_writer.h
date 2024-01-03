@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,13 +10,14 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
-#include "packager/media/base/buffer_writer.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
+#include <optional>
 
 namespace shaka {
 namespace media {

@@ -1,20 +1,22 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/mpd/base/simple_mpd_notifier.h>
+
+#include <filesystem>
+
 #include <gmock/gmock.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_path.h"
-#include "packager/base/files/file_util.h"
-#include "packager/mpd/base/mock_mpd_builder.h"
-#include "packager/mpd/base/mpd_builder.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/simple_mpd_notifier.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
+#include <packager/file/file_test_util.h>
+#include <packager/mpd/base/mock_mpd_builder.h>
+#include <packager/mpd/base/mpd_builder.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
 
 namespace shaka {
 
@@ -45,8 +47,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
         default_mock_adaptation_set_(new MockAdaptationSet()) {}
 
   void SetUp() override {
-    ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
-    empty_mpd_option_.mpd_params.mpd_output = temp_file_path_.AsUTF8Unsafe();
+    empty_mpd_option_.mpd_params.mpd_output = temp_file_.path();
 
     // Three valid media info. The actual data does not matter.
     const char kValidMediaInfo[] =
@@ -68,9 +69,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
     valid_media_info3_.mutable_video_info()->set_width(480);
   }
 
-  void TearDown() override {
-    base::DeleteFile(temp_file_path_, false /* non recursive, just 1 file */);
-  }
+  void TearDown() override {}
 
   void SetMpdBuilder(SimpleMpdNotifier* notifier,
                      std::unique_ptr<MpdBuilder> mpd_builder) {
@@ -93,7 +92,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
   MediaInfo valid_media_info3_;
 
  private:
-  base::FilePath temp_file_path_;
+  TempFile temp_file_;
 };
 
 // Verify NotifyNewContainer() works as expected for VOD.
@@ -329,7 +328,7 @@ TEST_F(SimpleMpdNotifierTest,
                                    0x6d, 0x65, 0x74, 0x68, 0x69, 0x6e,
                                    0x67, 0x65, 0x6c, 0x73, 0x65};
   const std::vector<uint8_t> kBogusNewPsshVector(
-      kBogusNewPssh, kBogusNewPssh + arraysize(kBogusNewPssh));
+      kBogusNewPssh, kBogusNewPssh + std::size(kBogusNewPssh));
   const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
 
   EXPECT_CALL(*default_mock_adaptation_set_,
@@ -372,7 +371,7 @@ TEST_F(SimpleMpdNotifierTest,
                                    0x6d, 0x65, 0x74, 0x68, 0x69, 0x6e,
                                    0x67, 0x65, 0x6c, 0x73, 0x65};
   const std::vector<uint8_t> kBogusNewPsshVector(
-      kBogusNewPssh, kBogusNewPssh + arraysize(kBogusNewPssh));
+      kBogusNewPssh, kBogusNewPssh + std::size(kBogusNewPssh));
   const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
 
   EXPECT_CALL(*mock_representation,

@@ -1,14 +1,16 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/segmenter_test_base.h"
+#include <packager/media/formats/webm/segmenter_test_base.h>
 
-#include "packager/file/memory_file.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+
+#include <packager/file/memory_file.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace media {
@@ -182,13 +184,13 @@ bool SegmentTestBase::ClusterParser::OnUInt(int id, int64_t val) {
   return true;
 }
 
-bool SegmentTestBase::ClusterParser::OnFloat(int id, double val) {
+bool SegmentTestBase::ClusterParser::OnFloat(int /*id*/, double /*val*/) {
   return true;
 }
 
 bool SegmentTestBase::ClusterParser::OnBinary(int id,
                                               const uint8_t* data,
-                                              int size) {
+                                              int /*size*/) {
   if (in_cluster_ && (id == kWebMIdSimpleBlock || id == kWebMIdBlock)) {
     if (cluster_timecode_ == -1) {
       LOG(WARNING) << "Cluster timecode not yet available";
@@ -201,7 +203,8 @@ bool SegmentTestBase::ClusterParser::OnBinary(int id,
   return true;
 }
 
-bool SegmentTestBase::ClusterParser::OnString(int id, const std::string& str) {
+bool SegmentTestBase::ClusterParser::OnString(int /*id*/,
+                                              const std::string& /*str*/) {
   return true;
 }
 

@@ -1,13 +1,14 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/codecs/h265_parser.h>
+
 #include <gtest/gtest.h>
 
-#include "packager/media/codecs/h265_parser.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {
@@ -42,13 +43,13 @@ TEST(H265ParserTest, ParseSliceHeader) {
   int id;
   Nalu nalu;
   H265Parser parser;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, std::size(kSpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, arraysize(kPpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, std::size(kPpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
 
   // Parse the slice header.
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSliceData, arraysize(kSliceData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSliceData, std::size(kSliceData)));
   ASSERT_EQ(Nalu::H265_IDR_W_RADL, nalu.type());
 
   H265SliceHeader header;
@@ -69,14 +70,14 @@ TEST(H265ParserTest, ParseSliceHeader_NonIDR) {
   int id;
   Nalu nalu;
   H265Parser parser;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, std::size(kSpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, arraysize(kPpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, std::size(kPpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
 
   // Parse the slice header.
   ASSERT_TRUE(
-      nalu.Initialize(Nalu::kH265, kSliceData2, arraysize(kSliceData2)));
+      nalu.Initialize(Nalu::kH265, kSliceData2, std::size(kSliceData2)));
   ASSERT_EQ(1 /* TRAIL_R */, nalu.type());
 
   H265SliceHeader header;
@@ -92,7 +93,7 @@ TEST(H265ParserTest, ParseSliceHeader_NonIDR) {
 
 TEST(H265ParserTest, ParseSps) {
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, std::size(kSpsData)));
   ASSERT_EQ(Nalu::H265_SPS, nalu.type());
 
   int id = 12;
@@ -117,7 +118,7 @@ TEST(H265ParserTest, ParseSps) {
 TEST(H265ParserTest, ParseSpsWithTransferCharacteristics) {
   Nalu nalu;
   ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsDataWithTransferCharacteristics,
-                              arraysize(kSpsDataWithTransferCharacteristics)));
+                              std::size(kSpsDataWithTransferCharacteristics)));
   ASSERT_EQ(Nalu::H265_SPS, nalu.type());
 
   int id = 12;
@@ -141,7 +142,7 @@ TEST(H265ParserTest, ParseSpsWithTransferCharacteristics) {
 
 TEST(H265ParserTest, ParsePps) {
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, arraysize(kPpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, std::size(kPpsData)));
   ASSERT_EQ(Nalu::H265_PPS, nalu.type());
 
   int id = 12;
@@ -162,7 +163,7 @@ TEST(H265ParserTest, ExtractResolutionFromSpsData) {
   H265Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, std::size(kSpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;
@@ -189,7 +190,7 @@ TEST(H265ParserTest, ExtractResolutionFromSpsDataWithCrop) {
   int sps_id = 0;
   Nalu nalu;
   ASSERT_TRUE(
-      nalu.Initialize(Nalu::kH265, kSpsCropData, arraysize(kSpsCropData)));
+      nalu.Initialize(Nalu::kH265, kSpsCropData, std::size(kSpsCropData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;

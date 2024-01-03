@@ -7,14 +7,14 @@
 #ifndef PACKAGER_MEDIA_CODECS_H264_PARSER_H_
 #define PACKAGER_MEDIA_CODECS_H264_PARSER_H_
 
-#include <stdint.h>
-#include <stdlib.h>
-
+#include <cstdint>
+#include <cstdlib>
 #include <map>
 #include <memory>
 
-#include "packager/media/codecs/h26x_bit_reader.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <packager/macros/classes.h>
+#include <packager/media/codecs/h26x_bit_reader.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {
@@ -81,6 +81,11 @@ struct H264Sps {
   int sar_width;    // Set to 0 when not specified.
   int sar_height;   // Set to 0 when not specified.
   int transfer_characteristics;
+
+  bool timing_info_present_flag;
+  long num_units_in_tick;
+  long time_scale;
+  bool fixed_frame_rate_flag;
 
   bool bitstream_restriction_flag;
   int max_num_reorder_frames;

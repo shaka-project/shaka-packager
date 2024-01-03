@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_FOURCCS_H_
 #define PACKAGER_MEDIA_BASE_FOURCCS_H_
 
+#include <cstdint>
 #include <string>
 
 namespace shaka {
@@ -35,6 +36,7 @@ enum FourCC : uint32_t {
   FOURCC_cbcs = 0x63626373,
   FOURCC_cenc = 0x63656e63,
   FOURCC_cens = 0x63656e73,
+  FOURCC_colr = 0x636f6c72,
   FOURCC_co64 = 0x636f3634,
   FOURCC_cmfc = 0x636d6663,
   FOURCC_cmfs = 0x636d6673,
@@ -44,6 +46,7 @@ enum FourCC : uint32_t {
   FOURCC_dac3 = 0x64616333,
   FOURCC_dac4 = 0x64616334,
   FOURCC_dash = 0x64617368,
+  FOURCC_dby1 = 0x64627931,
   FOURCC_ddts = 0x64647473,
   FOURCC_dec3 = 0x64656333,
   FOURCC_dfLa = 0x64664c61,
@@ -101,6 +104,8 @@ enum FourCC : uint32_t {
   FOURCC_mp4v = 0x6d703476,
   FOURCC_mvex = 0x6d766578,
   FOURCC_mvhd = 0x6d766864,
+  FOURCC_nclc = 0x6e636c63,
+  FOURCC_nclx = 0x6e636c78,
   FOURCC_nmhd = 0x6e6d6864,
   FOURCC_pasp = 0x70617370,
   FOURCC_payl = 0x7061796c,

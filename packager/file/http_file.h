@@ -10,10 +10,10 @@
 #include <memory>
 #include <string>
 
-#include "packager/base/synchronization/waitable_event.h"
-#include "packager/file/file.h"
-#include "packager/file/io_cache.h"
-#include "packager/status.h"
+#include <absl/synchronization/notification.h>
+
+#include <packager/file.h>
+#include <packager/file/io_cache.h>
 
 typedef void CURL;
 struct curl_slist;
@@ -54,6 +54,7 @@ class HttpFile : public File {
   bool Close() override;
   int64_t Read(void* buffer, uint64_t length) override;
   int64_t Write(const void* buffer, uint64_t length) override;
+  void CloseForWriting() override;
   int64_t Size() override;
   bool Flush() override;
   bool Seek(uint64_t position) override;
@@ -84,9 +85,13 @@ class HttpFile : public File {
   std::unique_ptr<curl_slist, CurlDelete> request_headers_;
   Status status_;
   std::string user_agent_;
+  std::string ca_file_;
+  std::string client_cert_file_;
+  std::string client_cert_private_key_file_;
+  std::string client_cert_private_key_password_;
 
   // Signaled when the "curl easy perform" task completes.
-  base::WaitableEvent task_exit_event_;
+  absl::Notification task_exit_event_;
 };
 
 }  // namespace shaka

@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/vp_codec_configuration_record.h"
-#include "packager/media/formats/webm/webm_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

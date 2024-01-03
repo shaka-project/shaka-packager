@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -12,12 +12,12 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/time/clock.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/event/progress_listener.h"
-#include "packager/status.h"
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/event/progress_listener.h>
+#include <packager/mpd/base/mpd_builder.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -51,12 +51,10 @@ class Muxer : public MediaHandler {
   /// Inject clock, mainly used for testing.
   /// The injected clock will be used to generate the creation time-stamp and
   /// modification time-stamp of the muxer output.
-  /// If no clock is injected, the code uses base::Time::Now() to generate the
-  /// time-stamps.
+  /// If no clock is injected, the code uses std::chrone::system_clock::now()
+  /// to generate the time-stamps.
   /// @param clock is the Clock to be injected.
-  void set_clock(base::Clock* clock) {
-    clock_ = clock;
-  }
+  void set_clock(std::shared_ptr<Clock> clock) { clock_ = clock; }
 
  protected:
   /// @name MediaHandler implementation overrides.
@@ -69,7 +67,13 @@ class Muxer : public MediaHandler {
   const MuxerOptions& options() const { return options_; }
   MuxerListener* muxer_listener() { return muxer_listener_.get(); }
   ProgressListener* progress_listener() { return progress_listener_.get(); }
-  base::Clock* clock() { return clock_; }
+
+  uint64_t Now() const {
+    auto duration = clock_->now().time_since_epoch();
+    auto seconds =
+        std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+    return static_cast<uint64_t>(seconds);
+  }
 
  private:
   Muxer(const Muxer&) = delete;
@@ -108,8 +112,7 @@ class Muxer : public MediaHandler {
 
   std::unique_ptr<MuxerListener> muxer_listener_;
   std::unique_ptr<ProgressListener> progress_listener_;
-  // An external injected clock, can be NULL.
-  base::Clock* clock_ = nullptr;
+  std::shared_ptr<Clock> clock_;
 
   // In VOD single segment case with Ad Cues, |output_file_name| is allowed to
   // be a template. In this case, there will be NumAdCues + 1 files generated.

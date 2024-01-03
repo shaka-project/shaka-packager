@@ -1,30 +1,34 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/widevine_key_source.h"
+#include <packager/media/base/widevine_key_source.h>
 
-#include <gflags/gflags.h>
+#include <functional>
+#include <iterator>
 
-#include "packager/base/base64.h"
-#include "packager/base/bind.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/http_key_fetcher.h"
-#include "packager/media/base/network_util.h"
-#include "packager/media/base/producer_consumer_queue.h"
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/proto_json_util.h"
-#include "packager/media/base/pssh_generator_util.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/base/request_signer.h"
-#include "packager/media/base/widevine_common_encryption.pb.h"
+#include <absl/base/internal/endian.h>
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/strings/escaping.h>
 
-DEFINE_string(video_feature,
-              "",
-              "Specify the optional video feature, e.g. HDR.");
+#include <packager/macros/logging.h>
+#include <packager/media/base/http_key_fetcher.h>
+#include <packager/media/base/producer_consumer_queue.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/proto_json_util.h>
+#include <packager/media/base/pssh_generator_util.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/base/request_signer.h>
+#include <packager/media/base/widevine_common_encryption.pb.h>
+
+ABSL_FLAG(std::string,
+          video_feature,
+          "",
+          "Specify the optional video feature, e.g. HDR.");
 
 namespace shaka {
 namespace media {
@@ -66,7 +70,7 @@ CommonEncryptionRequest::ProtectionScheme ToCommonEncryptionProtectionScheme(
 ProtectionSystemSpecificInfo ProtectionSystemInfoFromPsshProto(
     const CommonEncryptionResponse::Track::Pssh& pssh_proto) {
   PsshBoxBuilder pssh_builder;
-  pssh_builder.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+  pssh_builder.set_system_id(kWidevineSystemId, std::size(kWidevineSystemId));
 
   if (pssh_proto.has_boxes()) {
     return {pssh_builder.system_id(),
@@ -92,32 +96,26 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url,
           // protection system specified.
           protection_systems == ProtectionSystem::kNone ||
           has_flag(protection_systems, ProtectionSystem::kWidevine)),
-      key_production_thread_("KeyProductionThread",
-                             base::Bind(&WidevineKeySource::FetchKeysTask,
-                                        base::Unretained(this))),
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       crypto_period_count_(kDefaultCryptoPeriodCount),
       protection_scheme_(protection_scheme),
-      start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  key_production_thread_.Start();
-}
+      key_production_thread_(
+          std::bind(&WidevineKeySource::FetchKeysTask, this)) {}
 
 WidevineKeySource::~WidevineKeySource() {
   if (key_pool_)
     key_pool_->Stop();
-  if (key_production_thread_.HasBeenStarted()) {
-    // Signal the production thread to start key production if it is not
-    // signaled yet so the thread can be joined.
-    start_key_production_.Signal();
-    key_production_thread_.Join();
-  }
+  // Signal the production thread to start key production if it is not
+  // signaled yet so the thread can be joined.
+  if (!start_key_production_.HasBeenNotified())
+    start_key_production_.Notify();
+  key_production_thread_.join();
 }
 
 Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
                                     const std::string& policy) {
-  base::AutoLock scoped_lock(lock_);
+  absl::MutexLock scoped_lock(&mutex_);
   common_encryption_request_.reset(new CommonEncryptionRequest);
   common_encryption_request_->set_content_id(content_id.data(),
                                              content_id.size());
@@ -137,7 +135,7 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
   switch (init_data_type) {
     case EmeInitDataType::CENC: {
       const std::vector<uint8_t> widevine_system_id(
-          kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+          kWidevineSystemId, kWidevineSystemId + std::size(kWidevineSystemId));
       std::vector<ProtectionSystemSpecificInfo> protection_systems_info;
       if (!ProtectionSystemSpecificInfo::ParseBoxes(
               init_data.data(), init_data.size(), &protection_systems_info)) {
@@ -172,7 +170,7 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
     case EmeInitDataType::WIDEVINE_CLASSIC:
       if (init_data.size() < sizeof(asset_id))
         return Status(error::INVALID_ARGUMENT, "Invalid asset id.");
-      asset_id = ntohlFromBuffer(init_data.data());
+      asset_id = absl::big_endian::Load32(init_data.data());
       break;
     default:
       LOG(ERROR) << "Init data type " << static_cast<int>(init_data_type)
@@ -181,7 +179,7 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
   }
   const bool widevine_classic =
       init_data_type == EmeInitDataType::WIDEVINE_CLASSIC;
-  base::AutoLock scoped_lock(lock_);
+  absl::MutexLock scoped_lock(&mutex_);
   common_encryption_request_.reset(new CommonEncryptionRequest);
   if (widevine_classic) {
     common_encryption_request_->set_asset_id(asset_id);
@@ -221,10 +219,9 @@ Status WidevineKeySource::GetCryptoPeriodKey(
     int32_t crypto_period_duration_in_seconds,
     const std::string& stream_label,
     EncryptionKey* key) {
-  DCHECK(key_production_thread_.HasBeenStarted());
   // TODO(kqyang): This is not elegant. Consider refactoring later.
   {
-    base::AutoLock scoped_lock(lock_);
+    absl::MutexLock scoped_lock(&mutex_);
     if (!key_production_started_) {
       crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
       // Another client may have a slightly smaller starting crypto period
@@ -235,7 +232,7 @@ Status WidevineKeySource::GetCryptoPeriodKey(
       const size_t queue_size = crypto_period_count_ * 10;
       key_pool_.reset(
           new EncryptionKeyQueue(queue_size, first_crypto_period_index_));
-      start_key_production_.Signal();
+      start_key_production_.Notify();
       key_production_started_ = true;
     }  else if (crypto_period_duration_in_seconds_ !=
                 crypto_period_duration_in_seconds) {
@@ -282,7 +279,7 @@ Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
 
 void WidevineKeySource::FetchKeysTask() {
   // Wait until key production is signaled.
-  start_key_production_.Wait();
+  start_key_production_.WaitForNotification();
   if (!key_pool_ || key_pool_->Stopped())
     return;
 
@@ -337,8 +334,7 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
 
     // Exponential backoff.
     if (i != kNumTransientErrorRetries - 1) {
-      base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(sleep_duration));
+      std::this_thread::sleep_for(std::chrono::milliseconds(sleep_duration));
       sleep_duration *= 2;
     }
   }
@@ -370,8 +366,9 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
   if (!group_id_.empty())
     request->set_group_id(group_id_.data(), group_id_.size());
 
-  if (!FLAGS_video_feature.empty())
-    request->set_video_feature(FLAGS_video_feature);
+  std::string video_feature = absl::GetFlag(FLAGS_video_feature);
+  if (!video_feature.empty())
+    request->set_video_feature(video_feature);
 }
 
 Status WidevineKeySource::GenerateKeyMessage(

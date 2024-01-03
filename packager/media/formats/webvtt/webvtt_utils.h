@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,15 +7,14 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_UTILS_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_UTILS_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "packager/base/strings/string_piece.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/base/text_stream_info.h"
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 
 namespace shaka {
 namespace media {
@@ -23,7 +22,7 @@ namespace media {
 // Parse a timestamp into milliseconds using the two patterns defined by WebVtt:
 //  LONG  : ##:##:##.### (long can have 2 or more hour digits)
 //  SHORT :    ##:##:###
-bool WebVttTimestampToMs(const base::StringPiece& source, int64_t* out);
+bool WebVttTimestampToMs(const std::string_view& source, int64_t* out);
 
 // Create a long form timestamp encoded as a string.
 std::string MsToWebVttTimestamp(uint64_t ms);

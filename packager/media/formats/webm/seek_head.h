@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,10 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_SEEK_HEAD_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_SEEK_HEAD_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include <mkvmuxer/mkvmuxer.h>
 
 namespace shaka {
 namespace media {

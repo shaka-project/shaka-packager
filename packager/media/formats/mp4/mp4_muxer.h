@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,10 +7,11 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_MP4_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_MP4_MUXER_H_
 
+#include <optional>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/media/base/muxer.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/muxer.h>
 
 namespace shaka {
 namespace media {
@@ -54,11 +55,11 @@ class MP4Muxer : public Muxer {
 
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.
-  base::Optional<Range> GetInitRangeStartAndEnd();
+  std::optional<Range> GetInitRangeStartAndEnd();
 
   // Gets |start| and |end| index range. Returns true if there is an index range
   // and sets start-end byte-range-spec specified in RFC2616.
-  base::Optional<Range> GetIndexRangeStartAndEnd();
+  std::optional<Range> GetIndexRangeStartAndEnd();
 
   // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
   void FireOnMediaStartEvent();
@@ -69,7 +70,7 @@ class MP4Muxer : public Muxer {
 
   // Assumes single stream (multiplexed a/v not supported yet).
   bool to_be_initialized_ = true;
-  base::Optional<int64_t> edit_list_offset_;
+  std::optional<int64_t> edit_list_offset_;
 
   std::unique_ptr<Segmenter> segmenter_;
 

@@ -1,16 +1,16 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/chunking_handler.h"
+#include <packager/media/chunking/chunking_handler.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 using ::testing::ElementsAre;

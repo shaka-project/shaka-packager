@@ -1,14 +1,17 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/cue_alignment_handler.h"
+#include <packager/media/chunking/cue_alignment_handler.h>
 
 #include <algorithm>
 
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
 
 namespace shaka {
 namespace media {
@@ -29,7 +32,7 @@ int64_t GetScaledTime(const StreamInfo& info, const StreamData& data) {
     // This class does not support splitting MediaSample at cue points, which is
     // required for text stream. This class expects MediaSample to be converted
     // to TextSample before passing to this class.
-    NOTREACHED()
+    NOTIMPLEMENTED()
         << "A text streams should use text samples, not media samples.";
   }
 

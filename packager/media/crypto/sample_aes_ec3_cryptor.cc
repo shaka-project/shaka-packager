@@ -1,15 +1,17 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/sample_aes_ec3_cryptor.h"
+#include <packager/media/crypto/sample_aes_ec3_cryptor.h>
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_reader.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/media/base/buffer_reader.h>
 
 namespace shaka {
 namespace media {

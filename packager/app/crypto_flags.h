@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,12 +10,17 @@
 #ifndef PACKAGER_APP_CRYPTO_FLAGS_H_
 #define PACKAGER_APP_CRYPTO_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_string(protection_scheme);
-DECLARE_int32(crypt_byte_block);
-DECLARE_int32(skip_byte_block);
-DECLARE_bool(vp9_subsample_encryption);
-DECLARE_string(playready_extra_header_data);
+ABSL_DECLARE_FLAG(std::string, protection_scheme);
+ABSL_DECLARE_FLAG(int32_t, crypt_byte_block);
+ABSL_DECLARE_FLAG(int32_t, skip_byte_block);
+ABSL_DECLARE_FLAG(bool, vp9_subsample_encryption);
+ABSL_DECLARE_FLAG(std::string, playready_extra_header_data);
+
+namespace shaka {
+bool ValidateCryptoFlags();
+}
 
 #endif  // PACKAGER_APP_CRYPTO_FLAGS_H_

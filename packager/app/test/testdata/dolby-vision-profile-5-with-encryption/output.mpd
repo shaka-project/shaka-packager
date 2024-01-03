@@ -3,14 +3,15 @@
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT6.022683143615723S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="60000/1001" subsegmentAlignment="true" par="16:9">
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:TransferCharacteristics" value="16"/>
       <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
       <Representation id="0" bandwidth="820260" codecs="dvh1.05.01" mimeType="video/mp4" sar="1:1">
         <BaseURL>sparks_dovi_5-video.mp4</BaseURL>
-        <SegmentBase indexRange="1366-1445" timescale="60000">
-          <Initialization range="0-1365"/>
+        <SegmentBase indexRange="1370-1449" timescale="60000">
+          <Initialization range="0-1369"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

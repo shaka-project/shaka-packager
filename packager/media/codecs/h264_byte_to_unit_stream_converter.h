@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,12 @@
 #ifndef PACKAGER_MEDIA_CODECS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 #define PACKAGER_MEDIA_CODECS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
-#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
+#include <packager/macros/classes.h>
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
 namespace shaka {
 namespace media {

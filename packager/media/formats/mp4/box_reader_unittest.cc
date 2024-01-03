@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
-#include <stdint.h>
-#include <string.h>
+#include <packager/media/formats/mp4/box_buffer.h>
 
+#include <cstdint>
+#include <cstring>
 #include <memory>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/formats/mp4/box_buffer.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

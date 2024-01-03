@@ -1,22 +1,24 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/representation.h"
-
-#include <gflags/gflags.h>
+#include <packager/mpd/base/representation.h>
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <absl/flags/declare.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/file.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {
@@ -249,10 +251,10 @@ const MediaInfo& Representation::GetMediaInfo() const {
 // AddVideoInfo() (possibly adds FramePacking elements), AddAudioInfo() (Adds
 // AudioChannelConfig elements), AddContentProtectionElements*(), and
 // AddVODOnlyInfo() (Adds segment info).
-base::Optional<xml::XmlNode> Representation::GetXml() {
+std::optional<xml::XmlNode> Representation::GetXml() {
   if (!HasRequiredMediaInfoFields()) {
     LOG(ERROR) << "MediaInfo missing required fields.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   const uint64_t bandwidth = media_info_.has_bandwidth()
@@ -268,7 +270,7 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
       !(codecs_.empty() ||
         representation.SetStringAttribute("codecs", codecs_)) ||
       !representation.SetStringAttribute("mimeType", mime_type_)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   const bool has_video_info = media_info_.has_video_info();
@@ -281,18 +283,18 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
           !(output_suppression_flags_ & kSuppressHeight),
           !(output_suppression_flags_ & kSuppressFrameRate))) {
     LOG(ERROR) << "Failed to add video info to Representation XML.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (has_audio_info &&
       !representation.AddAudioInfo(media_info_.audio_info())) {
     LOG(ERROR) << "Failed to add audio info to Representation XML.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (!representation.AddContentProtectionElements(
           content_protection_elements_)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (HasVODOnlyFields(media_info_) &&
@@ -300,7 +302,7 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
           media_info_, mpd_options_.mpd_params.use_segment_list,
           mpd_options_.mpd_params.target_segment_duration)) {
     LOG(ERROR) << "Failed to add VOD info.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (HasLiveOnlyFields(media_info_) &&
@@ -308,13 +310,13 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
           media_info_, segment_infos_, start_number_,
           mpd_options_.mpd_params.low_latency_dash_mode)) {
     LOG(ERROR) << "Failed to add Live info.";
-    return base::nullopt;
+    return std::nullopt;
   }
   // TODO(rkuroiwa): It is likely that all representations have the exact same
   // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.
 
   output_suppression_flags_ = 0;
-  return std::move(representation);
+  return representation;
 }
 
 void Representation::SuppressOnce(SuppressFlag flag) {
@@ -567,24 +569,24 @@ std::string Representation::GetTextMimeType() const {
 }
 
 std::string Representation::RepresentationAsString() const {
-  std::string s = base::StringPrintf("Representation (id=%d,", id_);
+  std::string s = absl::StrFormat("Representation (id=%d,", id_);
   if (media_info_.has_video_info()) {
     const MediaInfo_VideoInfo& video_info = media_info_.video_info();
-    base::StringAppendF(&s, "codec='%s',width=%d,height=%d",
-                        video_info.codec().c_str(), video_info.width(),
-                        video_info.height());
+    absl::StrAppendFormat(&s, "codec='%s',width=%d,height=%d",
+                          video_info.codec().c_str(), video_info.width(),
+                          video_info.height());
   } else if (media_info_.has_audio_info()) {
     const MediaInfo_AudioInfo& audio_info = media_info_.audio_info();
-    base::StringAppendF(
+    absl::StrAppendFormat(
         &s, "codec='%s',frequency=%d,language='%s'", audio_info.codec().c_str(),
         audio_info.sampling_frequency(), audio_info.language().c_str());
   } else if (media_info_.has_text_info()) {
     const MediaInfo_TextInfo& text_info = media_info_.text_info();
-    base::StringAppendF(&s, "codec='%s',language='%s'",
-                        text_info.codec().c_str(),
-                        text_info.language().c_str());
+    absl::StrAppendFormat(&s, "codec='%s',language='%s'",
+                          text_info.codec().c_str(),
+                          text_info.language().c_str());
   }
-  base::StringAppendF(&s, ")");
+  absl::StrAppendFormat(&s, ")");
   return s;
 }
 

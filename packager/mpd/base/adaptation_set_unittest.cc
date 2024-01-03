@@ -1,19 +1,19 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/adaptation_set.h"
+#include <packager/mpd/base/adaptation_set.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/representation.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/representation.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 using ::testing::ElementsAre;
 using ::testing::Not;

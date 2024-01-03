@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_parser.h"
-
 // This file contains code to parse WebM file elements. It was created
 // from information in the Matroska spec.
 // http://www.matroska.org/technical/specs/index.html
+//
 // This file contains code for encrypted WebM. Current WebM
 // encrypted request for comments specification is here
 // http://wiki.webmproject.org/encryption/webm-encryption-rfc
 
+#include <packager/media/formats/webm/webm_parser.h>
+
 #include <limits>
 
-#include "packager/base/logging.h"
-#include "packager/base/numerics/safe_conversions.h"
-#include "packager/media/formats/webm/webm_constants.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {
 namespace media {
@@ -385,7 +388,7 @@ static const ElementIdInfo kSimpleTagIds[] = {
 };
 
 #define LIST_ELEMENT_INFO(id, level, id_info) \
-    { (id), (level), (id_info), arraysize(id_info) }
+  { (id), (level), (id_info), std::size(id_info) }
 
 static const ListElementInfo kListElementInfo[] = {
   LIST_ELEMENT_INFO(kWebMIdCluster, 1, kClusterIds),
@@ -557,7 +560,7 @@ static ElementType FindIdType(int id,
 
 // Finds ListElementInfo for a specific ID.
 static const ListElementInfo* FindListInfo(int id) {
-  for (size_t i = 0; i < arraysize(kListElementInfo); ++i) {
+  for (size_t i = 0; i < std::size(kListElementInfo); ++i) {
     if (id == kListElementInfo[i].id_)
       return &kListElementInfo[i];
   }
@@ -588,7 +591,7 @@ static int ParseUInt(const uint8_t* buf,
   // We use int64_t in place of uint64_t everywhere for convenience.  See this
   // bug
   // for more details: http://crbug.com/366750#c3
-  if (!base::IsValueInRangeForNumericType<int64_t>(value))
+  if (value > static_cast<uint64_t>(std::numeric_limits<int64_t>::max()))
     return -1;
 
   if (!client->OnUInt(id, value))
@@ -705,22 +708,22 @@ bool WebMParserClient::OnListEnd(int id) {
   return false;
 }
 
-bool WebMParserClient::OnUInt(int id, int64_t val) {
+bool WebMParserClient::OnUInt(int id, int64_t /*val*/) {
   DVLOG(1) << "Unexpected unsigned integer element with ID " << std::hex << id;
   return false;
 }
 
-bool WebMParserClient::OnFloat(int id, double val) {
+bool WebMParserClient::OnFloat(int id, double /*val*/) {
   DVLOG(1) << "Unexpected float element with ID " << std::hex << id;
   return false;
 }
 
-bool WebMParserClient::OnBinary(int id, const uint8_t* data, int size) {
+bool WebMParserClient::OnBinary(int id, const uint8_t* /*data*/, int /*size*/) {
   DVLOG(1) << "Unexpected binary element with ID " << std::hex << id;
   return false;
 }
 
-bool WebMParserClient::OnString(int id, const std::string& str) {
+bool WebMParserClient::OnString(int id, const std::string& /*str*/) {
   DVLOG(1) << "Unexpected string element with ID " << std::hex << id;
   return false;
 }
@@ -985,7 +988,7 @@ bool WebMListParser::IsSiblingOrAncestor(int id_a, int id_b) const {
 
   if (id_a == kWebMIdCluster) {
     // kWebMIdCluster siblings.
-    for (size_t i = 0; i < arraysize(kSegmentIds); i++) {
+    for (size_t i = 0; i < std::size(kSegmentIds); i++) {
       if (kSegmentIds[i].id_ == id_b)
         return true;
     }

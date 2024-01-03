@@ -1,22 +1,13 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
+
+# Tell apt not to prompt us for anything.
+ENV DEBIAN_FRONTEND noninteractive
 
 # Install utilities, libraries, and dev tools.
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get install -y \
         curl \
-        libc-ares-dev \
-        build-essential git python python3
-
-# Default to python2 because our build system is ancient.
-RUN ln -sf python2 /usr/bin/python
-
-# Install depot_tools.
-RUN git clone -b chrome/4147 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-RUN touch depot_tools/.disable_auto_update
-ENV PATH /depot_tools:$PATH
-
-# Bypass VPYTHON included by depot_tools.  Prefer the system installation.
-ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+        build-essential cmake git ninja-build python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

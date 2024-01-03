@@ -1,17 +1,19 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/audio_stream_info.h"
+#include <packager/media/base/audio_stream_info.h>
 
-#include <inttypes.h>
+#include <cinttypes>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/limits.h"
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/limits.h>
 
 namespace shaka {
 namespace media {
@@ -109,18 +111,18 @@ bool AudioStreamInfo::IsValidConfig() const {
 }
 
 std::string AudioStreamInfo::ToString() const {
-  std::string str = base::StringPrintf(
+  std::string str = absl::StrFormat(
       "%s codec: %s\n sample_bits: %d\n num_channels: %d\n "
       "sampling_frequency: %d\n language: %s\n",
       StreamInfo::ToString().c_str(), AudioCodecToString(codec()).c_str(),
       sample_bits_, num_channels_, sampling_frequency_, language().c_str());
   if (seek_preroll_ns_ != 0) {
-    base::StringAppendF(&str, " seek_preroll_ns: %" PRIu64 "\n",
-                        seek_preroll_ns_);
+    absl::StrAppendFormat(&str, " seek_preroll_ns: %" PRIu64 "\n",
+                          seek_preroll_ns_);
   }
   if (codec_delay_ns_ != 0) {
-    base::StringAppendF(&str, " codec_delay_ns: %" PRIu64 "\n",
-                        codec_delay_ns_);
+    absl::StrAppendFormat(&str, " codec_delay_ns: %" PRIu64 "\n",
+                          codec_delay_ns_);
   }
   return str;
 }
@@ -133,7 +135,7 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
                                             uint8_t audio_object_type) {
   switch (codec) {
     case kCodecAAC:
-      return "mp4a.40." + base::UintToString(audio_object_type);
+      return "mp4a.40." + absl::StrFormat("%hhu", audio_object_type);
     case kCodecAC3:
       return "ac-3";
     case kCodecDTSC:
@@ -155,9 +157,9 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       // Immersive and personalized audio E.13. audio_object_type is composed of
       // bitstream_version (3bits), presentation_version (2bits) and
       // mdcompat (3bits).
-      return base::StringPrintf(
-        "ac-4.%02d.%02d.%02d", (audio_object_type & 0xE0) >> 5,
-        (audio_object_type & 0x18) >> 3, audio_object_type & 0x7);
+      return absl::StrFormat(
+          "ac-4.%02d.%02d.%02d", (audio_object_type & 0xE0) >> 5,
+          (audio_object_type & 0x18) >> 3, audio_object_type & 0x7);
     case kCodecFlac:
       return "flac";
     case kCodecOpus:
@@ -174,9 +176,9 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       //  - the sample entry 4CC code ('mha1', 'mha2', 'mhm1', 'mhm2')
       //  - ‘0x’ followed by the hex value of the profile-levelid, as defined 
       //      in in ISO/IEC 23008-3 [7]
-      return base::StringPrintf("%s.0x%02x", 
-                                FourCCToString(CodecToFourCC(codec)).c_str(), 
-                                audio_object_type);
+      return absl::StrFormat("%s.0x%02x",
+                             FourCCToString(CodecToFourCC(codec)).c_str(),
+                             audio_object_type);
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";

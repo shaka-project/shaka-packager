@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -8,12 +8,13 @@
 #define PACKAGER_MEDIA_CHUNKING_CHUNKING_HANDLER_
 
 #include <atomic>
+#include <optional>
 #include <queue>
 
-#include "packager/base/logging.h"
-#include "packager/base/optional.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/public/chunking_params.h"
+#include <absl/log/log.h>
+
+#include <packager/chunking_params.h>
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {
@@ -78,8 +79,8 @@ class ChunkingHandler : public MediaHandler {
   // Current subsegment index, useful to determine where to do chunking.
   int64_t current_subsegment_index_ = -1;
 
-  base::Optional<int64_t> segment_start_time_;
-  base::Optional<int64_t> subsegment_start_time_;
+  std::optional<int64_t> segment_start_time_;
+  std::optional<int64_t> subsegment_start_time_;
   int64_t max_segment_time_ = 0;
   int32_t time_scale_ = 0;
 

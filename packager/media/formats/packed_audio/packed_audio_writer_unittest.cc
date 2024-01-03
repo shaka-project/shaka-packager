@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/packed_audio/packed_audio_writer.h"
+#include <packager/media/formats/packed_audio/packed_audio_writer.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/file/file_test_util.h"
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/formats/packed_audio/packed_audio_segmenter.h"
-#include "packager/status_test_util.h"
+#include <packager/file/file_test_util.h>
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/event/mock_muxer_listener.h>
+#include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 using ::testing::AllOf;

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Copyright 2016 Google Inc. All rights reserved.
+# Copyright 2016 Google LLC. All rights reserved.
 #
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file or at
@@ -20,12 +20,24 @@ import os
 import struct
 import sys
 
+
+def to_code_point(value):
+  """
+  Return the unicode code point with `int` passthrough
+  """
+  if isinstance(value, int):
+    return value
+
+  return ord(value)
+
+
 _script_dir = os.path.dirname(os.path.realpath(__file__))
-_proto_path = os.path.join(_script_dir, 'pyproto')
+_proto_path = os.path.join(_script_dir, 'pssh-box-protos')
 _widevine_proto_path = os.path.join(_proto_path, 'packager/media/base')
 
 assert os.path.exists(_proto_path), (
-    'Please run from output directory, e.g. out/Debug/pssh-box.py')
+    'Failed to find proto, please run built/installed version. ' +
+    ' e.g. build/packager/pssh-box.py')
 
 sys.path.insert(0, _proto_path)
 sys.path.insert(0, _widevine_proto_path)
@@ -64,9 +76,9 @@ class BinaryReader(object):
     ret = 0
     for i in range(0, size):
       if self.little_endian:
-        ret |= (ord(data[i]) << (8 * i))
+        ret |= (to_code_point(data[i]) << (8 * i))
       else:
-        ret |= (ord(data[i]) << (8 * (size - i - 1)))
+        ret |= (to_code_point(data[i]) << (8 * (size - i - 1)))
     return ret
 
 
@@ -167,7 +179,7 @@ def _generate_widevine_data(key_ids, content_id, provider, protection_scheme):
     wv.content_id = content_id
   # 'cenc' is the default, so omitted to save bytes.
   if protection_scheme and protection_scheme != 'cenc':
-    wv.protection_scheme = struct.unpack('>L', protection_scheme)[0]
+    wv.protection_scheme = struct.unpack('>L', protection_scheme.encode())[0]
   return wv.SerializeToString()
 
 

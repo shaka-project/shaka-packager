@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,13 @@
 #ifndef PACKAGER_MEDIA_BASE_MEDIA_PARSER_H_
 #define PACKAGER_MEDIA_BASE_MEDIA_PARSER_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
-#include "packager/media/base/container_names.h"
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/container_names.h>
 
 namespace shaka {
 namespace media {
@@ -30,7 +31,7 @@ class MediaParser {
   /// Called upon completion of parser initialization.
   /// @param stream_info contains the stream info of all the elementary streams
   ///        within this file.
-  typedef base::Callback<void(
+  typedef std::function<void(
       const std::vector<std::shared_ptr<StreamInfo> >& stream_info)>
       InitCB;
 
@@ -39,8 +40,8 @@ class MediaParser {
   /// @param media_sample is the new media sample.
   /// @return true if the sample is accepted, false if something was wrong
   ///         with the sample and a parsing error should be signaled.
-  typedef base::Callback<bool(uint32_t track_id,
-                              std::shared_ptr<MediaSample> media_sample)>
+  typedef std::function<bool(uint32_t track_id,
+                             std::shared_ptr<MediaSample> media_sample)>
       NewMediaSampleCB;
 
   /// Called when a new text sample has been parsed.
@@ -48,8 +49,8 @@ class MediaParser {
   /// @param text_sample is the new text sample.
   /// @return true if the sample is accepted, false if something was wrong
   ///         with the sample and a parsing error should be signaled.
-  typedef base::Callback<bool(uint32_t track_id,
-                              std::shared_ptr<TextSample> text_sample)>
+  typedef std::function<bool(uint32_t track_id,
+                             std::shared_ptr<TextSample> text_sample)>
       NewTextSampleCB;
 
   /// Initialize the parser with necessary callbacks. Must be called before any
@@ -70,11 +71,11 @@ class MediaParser {
   /// Flush data currently in the parser and put the parser in a state where it
   /// can receive data for a new seek point.
   /// @return true if successful, false otherwise.
-  virtual bool Flush() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Flush() = 0;
 
   /// Should be called when there is new data to parse.
   /// @return true if successful.
-  virtual bool Parse(const uint8_t* buf, int size) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Parse(const uint8_t* buf, int size) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaParser);

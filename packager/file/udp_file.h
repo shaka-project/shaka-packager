@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,18 +7,18 @@
 #ifndef MEDIA_FILE_UDP_FILE_H_
 #define MEDIA_FILE_UDP_FILE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/file/file.h"
-
 #if defined(OS_WIN)
+#include <windows.h>
 #include <winsock2.h>
 #else
 typedef int SOCKET;
 #endif  // defined(OS_WIN)
+
+#include <packager/file.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 
@@ -34,6 +34,7 @@ class UdpFile : public File {
   bool Close() override;
   int64_t Read(void* buffer, uint64_t length) override;
   int64_t Write(const void* buffer, uint64_t length) override;
+  void CloseForWriting() override;
   int64_t Size() override;
   bool Flush() override;
   bool Seek(uint64_t position) override;

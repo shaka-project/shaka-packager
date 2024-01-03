@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,13 +7,11 @@
 #ifndef PACKAGER_MEDIA_BASE_BUFFER_READER_H_
 #define PACKAGER_MEDIA_BASE_BUFFER_READER_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/macros.h"
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {
@@ -35,13 +33,13 @@ class BufferReader {
   /// the stream pointer.
   /// @return false if there are not enough bytes in the buffer.
   /// @{
-  bool Read1(uint8_t* v) WARN_UNUSED_RESULT;
-  bool Read2(uint16_t* v) WARN_UNUSED_RESULT;
-  bool Read2s(int16_t* v) WARN_UNUSED_RESULT;
-  bool Read4(uint32_t* v) WARN_UNUSED_RESULT;
-  bool Read4s(int32_t* v) WARN_UNUSED_RESULT;
-  bool Read8(uint64_t* v) WARN_UNUSED_RESULT;
-  bool Read8s(int64_t* v) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Read1(uint8_t* v);
+  [[nodiscard]] bool Read2(uint16_t* v);
+  [[nodiscard]] bool Read2s(int16_t* v);
+  [[nodiscard]] bool Read4(uint32_t* v);
+  [[nodiscard]] bool Read4s(int32_t* v);
+  [[nodiscard]] bool Read8(uint64_t* v);
+  [[nodiscard]] bool Read8s(int64_t* v);
   /// @}
 
   /// Read N-byte integer of the corresponding signedness and store it in the
@@ -49,19 +47,19 @@ class BufferReader {
   /// @param num_bytes should not be larger than 8 bytes.
   /// @return false if there are not enough bytes in the buffer, true otherwise.
   /// @{
-  bool ReadNBytesInto8(uint64_t* v, size_t num_bytes) WARN_UNUSED_RESULT;
-  bool ReadNBytesInto8s(int64_t* v, size_t num_bytes) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadNBytesInto8(uint64_t* v, size_t num_bytes);
+  [[nodiscard]] bool ReadNBytesInto8s(int64_t* v, size_t num_bytes);
   /// @}
 
-  bool ReadToVector(std::vector<uint8_t>* t, size_t count) WARN_UNUSED_RESULT;
-  bool ReadToString(std::string* str, size_t size) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadToVector(std::vector<uint8_t>* t, size_t count);
+  [[nodiscard]] bool ReadToString(std::string* str, size_t size);
 
   /// Reads a null-terminated string.
-  bool ReadCString(std::string* str) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadCString(std::string* str);
 
   /// Advance the stream by this many bytes.
   /// @return false if there are not enough bytes in the buffer, true otherwise.
-  bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipBytes(size_t num_bytes);
 
   const uint8_t* data() const { return buf_; }
   size_t size() const { return size_; }
@@ -71,9 +69,9 @@ class BufferReader {
  private:
   // Internal implementation of multi-byte reads.
   template <typename T>
-  bool Read(T* t) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Read(T* t);
   template <typename T>
-  bool ReadNBytes(T* t, size_t num_bytes) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadNBytes(T* t, size_t num_bytes);
 
   const uint8_t* buf_;
   size_t size_;

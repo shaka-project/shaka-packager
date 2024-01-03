@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_muxer.h"
+#include <packager/media/formats/webvtt/webvtt_muxer.h>
 
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/formats/webvtt/webvtt_utils.h"
-#include "packager/status_macros.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/macros/status.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
 
 namespace shaka {
 namespace media {

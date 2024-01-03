@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,10 +9,14 @@
 
 #include <map>
 #include <memory>
-#include "packager/base/synchronization/waitable_event.h"
-#include "packager/media/base/closure_thread.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/base/key_source.h"
+#include <thread>
+
+#include <absl/synchronization/mutex.h>
+#include <absl/synchronization/notification.h>
+
+#include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 
@@ -68,9 +72,12 @@ class WidevineKeySource : public KeySource {
   /// @param key_fetcher points to the @b KeyFetcher object to be injected.
   void set_key_fetcher(std::unique_ptr<KeyFetcher> key_fetcher);
 
+  /// Not protected by Mutex.  Must be called before FetchKeys().
   void set_group_id(const std::vector<uint8_t>& group_id) {
     group_id_ = group_id;
   }
+
+  /// Not protected by Mutex.  Must be called before FetchKeys().
   void set_enable_entitlement_license(bool enable_entitlement_license) {
     enable_entitlement_license_ = enable_entitlement_license;
   }
@@ -115,7 +122,6 @@ class WidevineKeySource : public KeySource {
   // Indicates whether Widevine protection system should be generated.
   bool generate_widevine_protection_system_ = true;
 
-  ClosureThread key_production_thread_;
   // The fetcher object used to fetch keys from the license service.
   // It is initialized to a default fetcher on class initialization.
   // Can be overridden using set_key_fetcher for testing or other purposes.
@@ -126,16 +132,20 @@ class WidevineKeySource : public KeySource {
 
   const int crypto_period_count_;
   FourCC protection_scheme_ = FOURCC_NULL;
-  base::Lock lock_;
+  absl::Mutex mutex_;
+
   bool key_production_started_ = false;
-  base::WaitableEvent start_key_production_;
+  absl::Notification start_key_production_;
   uint32_t first_crypto_period_index_ = 0;
   int32_t crypto_period_duration_in_seconds_ = 0;
   std::vector<uint8_t> group_id_;
   bool enable_entitlement_license_ = false;
   std::unique_ptr<EncryptionKeyQueue> key_pool_;
+
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;
+
+  std::thread key_production_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(WidevineKeySource);
 };

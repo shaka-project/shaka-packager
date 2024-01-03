@@ -5,10 +5,11 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 
-#include <stdint.h>
+#include <cstdint>
+#include <functional>
 #include <memory>
-#include "packager/base/callback.h"
-#include "packager/media/formats/mp2t/es_parser_h26x.h"
+
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 
 namespace shaka {
 namespace media {
@@ -39,7 +40,8 @@ class EsParserH264 : public EsParserH26x {
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.
   bool UpdateVideoDecoderConfig(int sps_id) override;
-
+  // Calculate video sample duration based on SPS data
+  int64_t CalculateSampleDuration(int pps_id) override;
   // Callback to pass the stream configuration.
   NewStreamInfoCB new_stream_info_cb_;
 

@@ -1,14 +1,17 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/aes_pattern_cryptor.h"
+#include <packager/media/base/aes_pattern_cryptor.h>
 
-#include <openssl/aes.h>
 #include <algorithm>
-#include "packager/base/logging.h"
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/crypto.h>
 
 namespace shaka {
 namespace media {

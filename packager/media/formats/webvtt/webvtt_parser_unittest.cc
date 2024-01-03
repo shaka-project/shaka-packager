@@ -1,16 +1,17 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_parser.h"
+#include <packager/media/formats/webvtt/webvtt_parser.h>
+
+#include <functional>
 
 #include <gtest/gtest.h>
 
-#include "packager/base/bind.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 
 namespace shaka {
 namespace media {
@@ -49,9 +50,11 @@ class WebVttParserTest : public testing::Test {
   void SetUpAndInitialize() {
     parser_ = std::make_shared<WebVttParser>();
     parser_->Init(
-        base::Bind(&WebVttParserTest::InitCB, base::Unretained(this)),
-        base::Bind(&WebVttParserTest::NewMediaSampleCB, base::Unretained(this)),
-        base::Bind(&WebVttParserTest::NewTextSampleCB, base::Unretained(this)),
+        std::bind(&WebVttParserTest::InitCB, this, std::placeholders::_1),
+        std::bind(&WebVttParserTest::NewMediaSampleCB, this,
+                  std::placeholders::_1, std::placeholders::_2),
+        std::bind(&WebVttParserTest::NewTextSampleCB, this,
+                  std::placeholders::_1, std::placeholders::_2),
         nullptr);
   }
 

@@ -1,17 +1,21 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_parser.h"
+#include <packager/media/formats/webvtt/webvtt_parser.h>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_split.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/formats/webvtt/webvtt_utils.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
+
+#include <packager/kv_pairs/kv_pairs.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
+#include <packager/utils/string_trim_split.h>
 
 namespace shaka {
 namespace media {
@@ -38,9 +42,8 @@ std::string BlockToString(const std::string* block, size_t size) {
 // line.
 // SOURCE: https://www.w3.org/TR/webvtt1
 bool IsLikelyNote(const std::string& line) {
-  return line == "NOTE" ||
-         base::StartsWith(line, "NOTE ", base::CompareCase::SENSITIVE) ||
-         base::StartsWith(line, "NOTE\t", base::CompareCase::SENSITIVE);
+  return line == "NOTE" || absl::StartsWith(line, "NOTE ") ||
+         absl::StartsWith(line, "NOTE\t");
 }
 
 // As cue time is the only part of a WEBVTT file that is allowed to have
@@ -64,7 +67,7 @@ bool MaybeCueId(const std::string& line) {
 // "STYLE".
 // SOURCE: https://w3c.github.io/webvtt/#styling
 bool IsLikelyStyle(const std::string& line) {
-  return base::TrimWhitespaceASCII(line, base::TRIM_TRAILING) == "STYLE";
+  return absl::StripTrailingAsciiWhitespace(line) == "STYLE";
 }
 
 // Check to see if the block is likely a region block. Region blocks are
@@ -72,7 +75,7 @@ bool IsLikelyStyle(const std::string& line) {
 // "REGION".
 // SOURCE: https://w3c.github.io/webvtt/#webvtt-region
 bool IsLikelyRegion(const std::string& line) {
-  return base::TrimWhitespaceASCII(line, base::TRIM_TRAILING) == "REGION";
+  return absl::StripTrailingAsciiWhitespace(line) == "REGION";
 }
 
 bool ParsePercent(const std::string& str, float* value) {
@@ -83,8 +86,7 @@ bool ParsePercent(const std::string& str, float* value) {
   }
 
   double temp;
-  if (!base::StringToDouble(str.substr(0, str.size() - 1), &temp) ||
-      temp > 100) {
+  if (!absl::SimpleAtod(str.substr(0, str.size() - 1), &temp) || temp > 100) {
     return false;
   }
   *value = temp;
@@ -92,8 +94,8 @@ bool ParsePercent(const std::string& str, float* value) {
 }
 
 bool ParseDoublePercent(const std::string& str, float* a, float* b) {
-  auto percents = base::SplitString(str, ",", base::TRIM_WHITESPACE,
-                                    base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> percents = SplitAndTrimSkipEmpty(str, ',');
+
   if (percents.size() != 2) {
     return false;
   }
@@ -139,7 +141,7 @@ void ParseSettings(const std::string& id,
       settings->line.emplace(temp, TextUnitType::kPercent);
     } else {
       double temp;
-      if (!base::StringToDouble(line, &temp)) {
+      if (!absl::SimpleAtod(line, &temp)) {
         LOG(WARNING) << "Invalid WebVTT line: " << value;
         return;
       }
@@ -194,9 +196,9 @@ void WebVttParser::Init(const InitCB& init_cb,
                         const NewMediaSampleCB& new_media_sample_cb,
                         const NewTextSampleCB& new_text_sample_cb,
                         KeySource* decryption_key_source) {
-  DCHECK(init_cb_.is_null());
-  DCHECK(!init_cb.is_null());
-  DCHECK(!new_text_sample_cb.is_null());
+  DCHECK(init_cb_ == nullptr);
+  DCHECK(init_cb != nullptr);
+  DCHECK(new_text_sample_cb != nullptr);
   DCHECK(!decryption_key_source) << "Encrypted WebVTT not supported";
 
   init_cb_ = init_cb;
@@ -320,12 +322,9 @@ bool WebVttParser::ParseRegion(const std::vector<std::string>& block) {
       continue;
     }
 
-    base::StringPairs pairs;
-    if (!base::SplitStringIntoKeyValuePairs(line, ':', ' ', &pairs)) {
-      LOG(ERROR) << "Invalid WebVTT settings: " << line;
-      return false;
-    }
-    for (const auto& pair : pairs) {
+    std::vector<KVPair> kv_pairs = SplitStringIntoKeyValuePairs(line, ':', ' ');
+
+    for (const auto& pair : kv_pairs) {
       const std::string& value = pair.second;
       if (pair.first == "id") {
         if (value.find("-->") != std::string::npos) {
@@ -344,7 +343,7 @@ bool WebVttParser::ParseRegion(const std::vector<std::string>& block) {
         }
       } else if (pair.first == "lines") {
         unsigned int temp;
-        if (!base::StringToUint(value, &temp)) {
+        if (!absl::SimpleAtoi(value, &temp)) {
           LOG(ERROR) << "Invalid WebVTT REGION lines: " << value;
           return false;
         }
@@ -392,8 +391,8 @@ bool WebVttParser::ParseCueWithId(const std::vector<std::string>& block) {
 bool WebVttParser::ParseCue(const std::string& id,
                             const std::string* block,
                             size_t block_size) {
-  const std::vector<std::string> time_and_style = base::SplitString(
-      block[0], " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> time_and_style =
+      SplitAndTrimSkipEmpty(block[0], ' ');
 
   int64_t start_time = 0;
   int64_t end_time = 0;
@@ -456,7 +455,7 @@ bool WebVttParser::ParseCue(const std::string& id,
 
   const auto sample =
       std::make_shared<TextSample>(id, start_time, end_time, settings, body);
-  return new_text_sample_cb_.Run(kStreamIndex, sample);
+  return new_text_sample_cb_(kStreamIndex, sample);
 }
 
 void WebVttParser::DispatchTextStreamInfo() {
@@ -483,7 +482,7 @@ void WebVttParser::DispatchTextStreamInfo() {
     stream->AddRegion(pair.first, pair.second);
 
   std::vector<std::shared_ptr<StreamInfo>> streams{stream};
-  init_cb_.Run(streams);
+  init_cb_(streams);
 }
 
 }  // namespace media

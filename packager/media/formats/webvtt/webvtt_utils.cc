@@ -1,21 +1,22 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_utils.h"
-
-#include <ctype.h>
-#include <inttypes.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
 
 #include <algorithm>
+#include <cctype>
+#include <cinttypes>
 #include <unordered_set>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/base/strings/stringprintf.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace media {
@@ -53,7 +54,7 @@ std::string GetOpenTag(StyleTagKind tag) {
     case StyleTagKind::kItalic:
       return "<i>";
   }
-  return "";  // Not reached, but Windows doesn't like NOTREACHED.
+  return "";  // Not reached, but Windows doesn't like NOTIMPLEMENTED.
 }
 
 std::string GetCloseTag(StyleTagKind tag) {
@@ -65,7 +66,7 @@ std::string GetCloseTag(StyleTagKind tag) {
     case StyleTagKind::kItalic:
       return "</i>";
   }
-  return "";  // Not reached, but Windows doesn't like NOTREACHED.
+  return "";  // Not reached, but Windows doesn't like NOTIMPLEMENTED.
 }
 
 bool IsWhitespace(char c) {
@@ -160,7 +161,7 @@ std::string WriteFragment(const TextFragment& fragment,
 
 }  // namespace
 
-bool WebVttTimestampToMs(const base::StringPiece& source, int64_t* out) {
+bool WebVttTimestampToMs(const std::string_view& source, int64_t* out) {
   DCHECK(out);
 
   if (source.length() < 9) {
@@ -179,13 +180,13 @@ bool WebVttTimestampToMs(const base::StringPiece& source, int64_t* out) {
 
   const bool has_hours =
       minutes_begin >= 3 && source[minutes_begin - 1] == ':' &&
-      base::StringToUint64(source.substr(0, minutes_begin - 1), &hours);
+      absl::SimpleAtoi(source.substr(0, minutes_begin - 1), &hours);
 
   if ((minutes_begin == 0 || has_hours) && source[seconds_begin - 1] == ':' &&
       source[milliseconds_begin - 1] == '.' &&
-      base::StringToUint64(source.substr(minutes_begin, 2), &minutes) &&
-      base::StringToUint64(source.substr(seconds_begin, 2), &seconds) &&
-      base::StringToUint64(source.substr(milliseconds_begin, 3), &ms)) {
+      absl::SimpleAtoi(source.substr(minutes_begin, 2), &minutes) &&
+      absl::SimpleAtoi(source.substr(seconds_begin, 2), &seconds) &&
+      absl::SimpleAtoi(source.substr(milliseconds_begin, 3), &ms)) {
     return GetTotalMilliseconds(hours, minutes, seconds, ms, out);
   }
 
@@ -204,9 +205,25 @@ std::string MsToWebVttTimestamp(uint64_t ms) {
   remaining /= 60;
   uint64_t only_hours = remaining;
 
-  return base::StringPrintf("%02" PRIu64 ":%02" PRIu64 ":%02" PRIu64
-                            ".%03" PRIu64,
-                            only_hours, only_minutes, only_seconds, only_ms);
+  return absl::StrFormat("%02" PRIu64 ":%02" PRIu64 ":%02" PRIu64 ".%03" PRIu64,
+                         only_hours, only_minutes, only_seconds, only_ms);
+}
+
+std::string FloatToString(double number) {
+  // Keep up to microsecond accuracy but trim trailing 0s
+  std::string formatted = absl::StrFormat("%.6g", number);
+  size_t decimalPos = formatted.find('.');
+  if (decimalPos != std::string::npos) {
+    size_t lastNonZeroPos = formatted.find_last_not_of('0');
+    if (lastNonZeroPos >= decimalPos) {
+      formatted.erase(lastNonZeroPos + 1);
+    }
+    if (formatted.back() == '.') {
+      formatted.pop_back();
+    }
+  }
+
+  return formatted;
 }
 
 std::string WebVttSettingsToString(const TextSettings& settings) {
@@ -219,12 +236,12 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
     switch (settings.line->type) {
       case TextUnitType::kPercent:
         ret += " line:";
-        ret += base::DoubleToString(settings.line->value);
+        ret += FloatToString(settings.line->value);
         ret += "%";
         break;
       case TextUnitType::kLines:
         ret += " line:";
-        ret += base::DoubleToString(settings.line->value);
+        ret += FloatToString(settings.line->value);
         break;
       case TextUnitType::kPixels:
         LOG(WARNING) << "WebVTT doesn't support pixel line settings";
@@ -234,7 +251,7 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
   if (settings.position) {
     if (settings.position->type == TextUnitType::kPercent) {
       ret += " position:";
-      ret += base::DoubleToString(settings.position->value);
+      ret += FloatToString(settings.position->value);
       ret += "%";
     } else {
       LOG(WARNING) << "WebVTT only supports percent position settings";
@@ -243,7 +260,7 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
   if (settings.width) {
     if (settings.width->type == TextUnitType::kPercent) {
       ret += " size:";
-      ret += base::DoubleToString(settings.width->value);
+      ret += FloatToString(settings.width->value);
       ret += "%";
     } else {
       LOG(WARNING) << "WebVTT only supports percent width settings";
@@ -307,7 +324,7 @@ std::string WebVttGetPreamble(const TextStreamInfo& stream_info) {
       continue;
     }
 
-    base::StringAppendF(
+    absl::StrAppendFormat(
         &ret,
         "REGION\n"
         "id:%s\n"

@@ -1,27 +1,25 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/segmenter.h"
+#include <packager/media/formats/webm/segmenter.h>
 
-#include "packager/base/time/time.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/media_handler.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/vp_codec_configuration_record.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/event/progress_listener.h"
-#include "packager/media/formats/webm/encryptor.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
-#include "packager/third_party/libwebm/src/webmids.hpp"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxerutil.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/event/progress_listener.h>
+#include <packager/media/formats/webm/encryptor.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/version/version.h>
 
 using mkvmuxer::AudioTrack;
 using mkvmuxer::VideoTrack;
@@ -194,8 +192,8 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
   return Status::OK;
 }
 
-Status Segmenter::FinalizeSegment(int64_t start_timestamp,
-                                  int64_t duration_timestamp,
+Status Segmenter::FinalizeSegment(int64_t /*start_timestamp*/,
+                                  int64_t /*duration_timestamp*/,
                                   bool is_subsegment) {
   if (is_subsegment)
     new_subsegment_ = true;
@@ -228,7 +226,7 @@ Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {
   if (!WriteEbmlHeader(writer))
     return error_status;
 
-  if (WriteID(writer, mkvmuxer::kMkvSegment) != 0)
+  if (WriteID(writer, libwebm::kMkvSegment) != 0)
     return error_status;
 
   const uint64_t segment_size_size = 8;

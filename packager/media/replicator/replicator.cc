@@ -1,10 +1,13 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/replicator/replicator.h"
+#include <packager/media/replicator/replicator.h>
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {
@@ -26,7 +29,7 @@ Status Replicator::Process(std::unique_ptr<StreamData> stream_data) {
   return status;
 }
 
-bool Replicator::ValidateOutputStreamIndex(size_t stream_index) const {
+bool Replicator::ValidateOutputStreamIndex(size_t /* ignored */) const {
   return true;
 }
 

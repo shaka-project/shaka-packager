@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/track_run_iterator.h"
+#include <packager/media/formats/mp4/track_run_iterator.h>
 
-#include <gflags/gflags.h>
-#include <gtest/gtest.h>
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
-#include "packager/base/logging.h"
-#include "packager/media/formats/mp4/box_definitions.h"
 
-DECLARE_bool(mp4_reset_initial_composition_offset_to_zero);
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/flag_saver.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+
+ABSL_DECLARE_FLAG(bool, mp4_reset_initial_composition_offset_to_zero);
 
 namespace {
 
@@ -193,7 +197,7 @@ class TrackRunIteratorTest : public testing::Test {
     if (protection_scheme == FOURCC_cbcs) {
       sinf->info.track_encryption.default_per_sample_iv_size = 0;
       sinf->info.track_encryption.default_constant_iv.assign(
-          kConstantIv, kConstantIv + arraysize(kConstantIv));
+          kConstantIv, kConstantIv + std::size(kConstantIv));
       sinf->info.track_encryption.default_crypt_byte_block =
           kDefaultCryptByteBlock;
       sinf->info.track_encryption.default_skip_byte_block =
@@ -202,7 +206,7 @@ class TrackRunIteratorTest : public testing::Test {
       sinf->info.track_encryption.default_per_sample_iv_size = 8;
     }
     sinf->info.track_encryption.default_kid.assign(kKeyId,
-                                                   kKeyId + arraysize(kKeyId));
+                                                   kKeyId + std::size(kKeyId));
   }
 
   // Add aux info covering the first track run to a TrackFragment, and update
@@ -223,12 +227,12 @@ class TrackRunIteratorTest : public testing::Test {
       frag->sample_encryption.sample_encryption_data.assign(
           kSampleEncryptionDataWithSubsamples,
           kSampleEncryptionDataWithSubsamples +
-              arraysize(kSampleEncryptionDataWithSubsamples));
+              std::size(kSampleEncryptionDataWithSubsamples));
     } else {
       frag->sample_encryption.sample_encryption_data.assign(
           kSampleEncryptionDataWithoutSubsamples,
           kSampleEncryptionDataWithoutSubsamples +
-              arraysize(kSampleEncryptionDataWithoutSubsamples));
+              std::size(kSampleEncryptionDataWithoutSubsamples));
     }
 
     // Update sample sizes and aux info header.
@@ -256,12 +260,12 @@ class TrackRunIteratorTest : public testing::Test {
       frag->sample_encryption.sample_encryption_data.assign(
           kSampleEncryptionDataWithConstantIvAndSubsamples,
           kSampleEncryptionDataWithConstantIvAndSubsamples +
-              arraysize(kSampleEncryptionDataWithConstantIvAndSubsamples));
+              std::size(kSampleEncryptionDataWithConstantIvAndSubsamples));
     } else {
       frag->sample_encryption.sample_encryption_data.assign(
           kSampleEncryptionDataWithConstantIvWithoutSubsamples,
           kSampleEncryptionDataWithConstantIvWithoutSubsamples +
-              arraysize(kSampleEncryptionDataWithConstantIvWithoutSubsamples));
+              std::size(kSampleEncryptionDataWithConstantIvWithoutSubsamples));
     }
 
     // Update sample sizes and aux info header.
@@ -430,7 +434,8 @@ TEST_F(TrackRunIteratorTest, NormalEditTest) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest) {
-  FLAGS_mp4_reset_initial_composition_offset_to_zero = false;
+  FlagSaver<bool> saver(&FLAGS_mp4_reset_initial_composition_offset_to_zero);
+  absl::SetFlag(&FLAGS_mp4_reset_initial_composition_offset_to_zero, false);
 
   // Test frame reordering. The frames have the following
   // decode timestamps:
@@ -472,7 +477,8 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest_WithEditList) {
-  FLAGS_mp4_reset_initial_composition_offset_to_zero = false;
+  FlagSaver<bool> saver(&FLAGS_mp4_reset_initial_composition_offset_to_zero);
+  absl::SetFlag(&FLAGS_mp4_reset_initial_composition_offset_to_zero, false);
 
   // See the test above for background.
   iter_.reset(new TrackRunIterator(&moov_));
@@ -508,7 +514,8 @@ TEST_F(TrackRunIteratorTest, ReorderingTest_WithEditList) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest_ResetInitialCompositionOffset) {
-  FLAGS_mp4_reset_initial_composition_offset_to_zero = true;
+  FlagSaver<bool> saver(&FLAGS_mp4_reset_initial_composition_offset_to_zero);
+  absl::SetFlag(&FLAGS_mp4_reset_initial_composition_offset_to_zero, true);
 
   // See the test above for background.
   iter_.reset(new TrackRunIterator(&moov_));
@@ -570,15 +577,15 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
-  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + std::size(kKeyId)),
             config->key_id());
-  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
+  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + std::size(kIv1)), config->iv());
   EXPECT_EQ(config->subsamples().size(), 1u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
   EXPECT_EQ(config->subsamples()[0].cipher_bytes, 2u);
   iter_->AdvanceSample();
   config = iter_->GetDecryptConfig();
-  EXPECT_EQ(std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)), config->iv());
+  EXPECT_EQ(std::vector<uint8_t>(kIv2, kIv2 + std::size(kIv2)), config->iv());
   EXPECT_EQ(config->subsamples().size(), 2u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
   EXPECT_EQ(config->subsamples()[0].cipher_bytes, 2u);
@@ -607,13 +614,13 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
-  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + std::size(kKeyId)),
             config->key_id());
-  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
+  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + std::size(kIv1)), config->iv());
   EXPECT_EQ(config->subsamples().size(), 0u);
   iter_->AdvanceSample();
   config = iter_->GetDecryptConfig();
-  EXPECT_EQ(std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)), config->iv());
+  EXPECT_EQ(std::vector<uint8_t>(kIv2, kIv2 + std::size(kIv2)), config->iv());
   EXPECT_EQ(config->subsamples().size(), 0u);
 }
 
@@ -639,10 +646,10 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(FOURCC_cbcs, config->protection_scheme());
   EXPECT_EQ(kDefaultCryptByteBlock, config->crypt_byte_block());
   EXPECT_EQ(kDefaultSkipByteBlock, config->skip_byte_block());
-  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + std::size(kKeyId)),
             config->key_id());
   EXPECT_EQ(
-      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      std::vector<uint8_t>(kConstantIv, kConstantIv + std::size(kConstantIv)),
       config->iv());
   EXPECT_EQ(config->subsamples().size(), 1u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
@@ -650,7 +657,7 @@ TEST_F(TrackRunIteratorTest,
   iter_->AdvanceSample();
   config = iter_->GetDecryptConfig();
   EXPECT_EQ(
-      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      std::vector<uint8_t>(kConstantIv, kConstantIv + std::size(kConstantIv)),
       config->iv());
   EXPECT_EQ(config->subsamples().size(), 2u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
@@ -678,16 +685,16 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   EXPECT_EQ(FOURCC_cbcs, config->protection_scheme());
-  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + std::size(kKeyId)),
             config->key_id());
   EXPECT_EQ(
-      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      std::vector<uint8_t>(kConstantIv, kConstantIv + std::size(kConstantIv)),
       config->iv());
   EXPECT_EQ(config->subsamples().size(), 0u);
   iter_->AdvanceSample();
   config = iter_->GetDecryptConfig();
   EXPECT_EQ(
-      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      std::vector<uint8_t>(kConstantIv, kConstantIv + std::size(kConstantIv)),
       config->iv());
   EXPECT_EQ(config->subsamples().size(), 0u);
 }
@@ -706,20 +713,20 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_TRUE(iter_->is_encrypted());
   ASSERT_TRUE(iter_->AuxInfoNeedsToBeCached());
-  EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), arraysize(kAuxInfo));
+  EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), std::size(kAuxInfo));
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   EXPECT_FALSE(iter_->CacheAuxInfo(NULL, 0));
   EXPECT_FALSE(iter_->CacheAuxInfo(kAuxInfo, 3));
   EXPECT_TRUE(iter_->AuxInfoNeedsToBeCached());
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[0].runs[0].data_offset);
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
-  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + std::size(kKeyId)),
             config->key_id());
-  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
+  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + std::size(kIv1)), config->iv());
   EXPECT_TRUE(config->subsamples().empty());
   iter_->AdvanceSample();
   config = iter_->GetDecryptConfig();
@@ -743,18 +750,18 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   ASSERT_TRUE(iter_->Init(moof));
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
-  ASSERT_EQ(arraysize(kIv1), config->iv().size());
+  ASSERT_EQ(std::size(kIv1), config->iv().size());
   EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 200);
-  ASSERT_EQ(arraysize(kIv1), config->iv().size());
+  ASSERT_EQ(std::size(kIv1), config->iv().size());
   EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 201);
@@ -789,13 +796,13 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->sample_offset(), 200);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 100);
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 20000);
   EXPECT_EQ(iter_->sample_offset(), 100);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 100);
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 101);
@@ -804,7 +811,7 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   EXPECT_EQ(iter_->aux_info_offset(), 201);
   EXPECT_EQ(iter_->sample_offset(), 10000);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 201);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 10000);
 }
 

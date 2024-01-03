@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_AV1_CODEC_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_AV1_CODEC_CONFIGURATION_RECORD_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -32,6 +32,11 @@ class AV1CodecConfigurationRecord {
 
   /// @return The codec string.
   std::string GetCodecString() const;
+
+  std::string GetCodecString(uint16_t color_primaries,
+                             uint16_t transfer_characteristics,
+                             uint16_t matrix_coefficients,
+                             uint8_t video_full_range_flag) const;
 
  private:
   int profile_ = 0;

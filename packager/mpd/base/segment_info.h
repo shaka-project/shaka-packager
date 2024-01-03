@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,7 +7,10 @@
 #ifndef MPD_BASE_SEGMENT_INFO_H_
 #define MPD_BASE_SEGMENT_INFO_H_
 
+#include <cstdint>
+
 namespace shaka {
+
 /// Container for keeping track of information about a segment.
 /// Used for keeping track of all the segments used for generating MPD with
 /// dynamic  profile.
@@ -21,6 +24,7 @@ struct SegmentInfo {
   // in the DASH MPD spec.
   int repeat;
 };
+
 }  // namespace shaka
 
 #endif  // MPD_BASE_SEGMENT_INFO_H_

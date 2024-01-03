@@ -1,21 +1,22 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/muxer_util.h"
+#include <packager/media/base/muxer_util.h>
 
-#include <inttypes.h>
-
+#include <cinttypes>
 #include <string>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_split.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/video_stream_info.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_split.h>
+
+#include <packager/media/base/video_stream_info.h>
 
 namespace shaka {
 namespace {
@@ -28,7 +29,7 @@ Status ValidateFormatTag(const std::string& format_tag) {
   if (format_tag.size() > 3 && format_tag[0] == '%' && format_tag[1] == '0' &&
       format_tag[format_tag.size() - 1] == 'd') {
     unsigned out;
-    if (base::StringToUint(format_tag.substr(2, format_tag.size() - 3), &out)) {
+    if (absl::SimpleAtoi(format_tag.substr(2, format_tag.size() - 3), &out)) {
       return Status::OK;
     }
   }
@@ -47,8 +48,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
                   "Segment template should not be empty.");
   }
 
-  std::vector<std::string> splits = base::SplitString(
-      segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> splits = absl::StrSplit(segment_template, "$");
 
   // ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.
   // Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.
@@ -114,8 +114,7 @@ std::string GetSegmentName(const std::string& segment_template,
                            uint32_t bandwidth) {
   DCHECK_EQ(Status::OK, ValidateSegmentTemplate(segment_template));
 
-  std::vector<std::string> splits = base::SplitString(
-      segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> splits = absl::StrSplit(segment_template, "$");
   // "$" always appears in pairs, so there should be odd number of splits.
   DCHECK_EQ(1u, splits.size() % 2);
 
@@ -148,16 +147,23 @@ std::string GetSegmentName(const std::string& segment_template,
       format_tag = "%01" PRIu64;
     }
 
+    // absl::StrFormat requires compile-time constants for format strings.
+    // If you don't have that, you build the formatter using this interface
+    // instead.
+    std::vector<absl::FormatArg> format_args;
+    absl::UntypedFormatSpec format(format_tag);
     if (identifier == "Number") {
       // SegmentNumber starts from 1.
-      segment_name += base::StringPrintf(
-          format_tag.c_str(), static_cast<uint64_t>(segment_index + 1));
+      format_args.emplace_back(static_cast<uint64_t>(segment_index + 1));
     } else if (identifier == "Time") {
-      segment_name +=
-          base::StringPrintf(format_tag.c_str(), segment_start_time);
+      format_args.emplace_back(static_cast<uint64_t>(segment_start_time));
     } else if (identifier == "Bandwidth") {
-      segment_name += base::StringPrintf(format_tag.c_str(),
-                                         static_cast<uint64_t>(bandwidth));
+      format_args.emplace_back(static_cast<uint64_t>(bandwidth));
+    }
+
+    std::string format_output;
+    if (absl::FormatUntyped(&format_output, format, format_args)) {
+      segment_name += format_output;
     }
   }
   return segment_name;

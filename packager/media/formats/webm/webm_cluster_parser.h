@@ -11,12 +11,12 @@
 #include <set>
 #include <string>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/media/base/decryptor_source.h"
-#include "packager/media/base/media_parser.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/formats/webm/webm_parser.h"
-#include "packager/media/formats/webm/webm_tracks_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/formats/webm/webm_parser.h>
+#include <packager/media/formats/webm/webm_tracks_parser.h>
 
 namespace shaka {
 namespace media {
@@ -140,7 +140,7 @@ class WebMClusterParser : public WebMParserClient {
   /// Flush data currently in the parser and reset the parser so it can accept a
   /// new cluster.
   /// @return true on success, false otherwise.
-  bool Flush() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush();
 
   /// Parses a WebM cluster element in |buf|.
   /// @return -1 if the parse fails.

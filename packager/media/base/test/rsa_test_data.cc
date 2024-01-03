@@ -1,12 +1,12 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/test/rsa_test_data.h"
+#include <packager/media/base/test/rsa_test_data.h>
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace {
 const uint8_t kTestRsaPrivateKey_3072[] = {
@@ -360,7 +360,6 @@ const uint8_t kTestEncryptedMessage_3072[] = {
     0x0a, 0xed, 0x2a, 0xa3, 0xec, 0x97, 0x01, 0xfb, 0xee, 0x28, 0xd7, 0xfc,
     0x34, 0xd5, 0x1a, 0x62, 0x9c, 0xb2, 0x9d, 0x8b, 0xe9, 0x49, 0x48, 0x1d};
 
-// Self-generated test vector.  Used to verify algorithm stability.
 const uint8_t kTestEncryptedMessage_2048[] = {
     0x73, 0x37, 0xa5, 0xe3, 0x73, 0xbb, 0xa7, 0xbf, 0xb1, 0xfc, 0x98, 0x6c,
     0xd2, 0x20, 0xe2, 0x79, 0xea, 0x90, 0x41, 0xcf, 0x2b, 0xe0, 0x22, 0x0f,

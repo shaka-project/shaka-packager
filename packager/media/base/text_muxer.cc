@@ -4,10 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/text_muxer.h"
+#include <packager/media/base/text_muxer.h>
 
-#include "packager/media/base/muxer_util.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/muxer_util.h>
 
 namespace shaka {
 namespace media {
@@ -58,6 +61,8 @@ Status TextMuxer::Finalize() {
 }
 
 Status TextMuxer::AddTextSample(size_t stream_id, const TextSample& sample) {
+  UNUSED(stream_id);
+
   // Ignore sync samples.
   if (sample.body().is_empty()) {
     return Status::OK;
@@ -71,6 +76,8 @@ Status TextMuxer::AddTextSample(size_t stream_id, const TextSample& sample) {
 
 Status TextMuxer::FinalizeSegment(size_t stream_id,
                                   const SegmentInfo& segment_info) {
+  UNUSED(stream_id);
+
   total_duration_ms_ += segment_info.duration;
 
   const std::string& segment_template = options().segment_template;

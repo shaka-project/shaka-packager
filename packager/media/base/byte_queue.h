@@ -5,11 +5,10 @@
 #ifndef PACKAGER_MEDIA_BASE_BYTE_QUEUE_H_
 #define PACKAGER_MEDIA_BASE_BYTE_QUEUE_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <memory>
 
-#include "packager/base/macros.h"
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {
