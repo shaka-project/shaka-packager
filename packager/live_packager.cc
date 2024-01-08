@@ -15,9 +15,17 @@
 #include <absl/log/log.h>
 #include <packager/chunking_params.h>
 #include <packager/file.h>
+
+#include <packager/macros/status.h>
 #include <packager/live_packager.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
+
+#include "media/base/common_pssh_generator.h"
+#include "media/base/playready_pssh_generator.h"
+#include "media/base/protection_system_ids.h"
+#include "media/base/pssh_generator.h"
+#include "media/base/widevine_pssh_generator.h"
 
 namespace shaka {
 
@@ -294,6 +302,59 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
   }
 
   return packager.Run();
+}
+
+void AddProtectionSystem(
+    const media::ProtectionSystemSpecificInfo& pssh_info,
+    PSSHData* data) {
+  if (const std::vector<uint8_t> common_system_id(
+          media::kCommonSystemId,
+          media::kCommonSystemId + std::size(media::kCommonSystemId));
+      pssh_info.system_id == common_system_id) {
+    data->cenc_box = pssh_info.psshs;
+    return;
+  }
+
+  if (const std::vector<uint8_t> widevine_system_id(
+          media::kWidevineSystemId,
+          media::kWidevineSystemId + std::size(media::kWidevineSystemId));
+      pssh_info.system_id == widevine_system_id) {
+    data->wv_box = pssh_info.psshs;
+    return;
+  }
+
+  if (const std::vector<uint8_t> playready_system_id(
+          media::kPlayReadySystemId,
+          media::kPlayReadySystemId + std::size(media::kPlayReadySystemId));
+      pssh_info.system_id == playready_system_id) {
+    data->wv_box = pssh_info.psshs;
+  }
+}
+
+Status GeneratePSSHData(
+    PSSHData* data, const KeyData& encryption_key, uint32_t protection_scheme) {
+  std::vector<std::unique_ptr<media::PsshGenerator>> pssh_generators;
+  pssh_generators.emplace_back(new media::CommonPsshGenerator());
+  pssh_generators.emplace_back(new media::PlayReadyPsshGenerator(
+        "", static_cast<media::FourCC>(protection_scheme)));
+  pssh_generators.emplace_back(new media::WidevinePsshGenerator(static_cast<media::FourCC>(protection_scheme)));
+
+  for (const auto& pssh_generator : pssh_generators) {
+    const bool support_multiple_keys = pssh_generator->SupportMultipleKeys();
+    if (support_multiple_keys) {
+      media::ProtectionSystemSpecificInfo info;
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIds(
+          encryption_key.all_key_ids, &info));
+      AddProtectionSystem(info, data);
+    } else {
+      media::ProtectionSystemSpecificInfo info;
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIdAndKey(
+          encryption_key.curr_key_id, encryption_key.curr_key, &info));
+      AddProtectionSystem(info, data);
+    }
+  }
+
+  return Status::OK;
 }
 
 SegmentManager::SegmentManager() = default;

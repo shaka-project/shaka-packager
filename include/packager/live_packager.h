@@ -7,7 +7,9 @@
 #ifndef PACKAGER_LIVE_PACKAGER_H_
 #define PACKAGER_LIVE_PACKAGER_H_
 
+#include <packager/media/base/fourccs.h>
 #include <packager/packager.h>
+
 #include <memory>
 #include <string>
 
@@ -86,7 +88,23 @@ struct LiveConfig {
   std::vector<uint8_t> key;
   std::vector<uint8_t> key_id;
   EncryptionScheme protection_scheme;
+
+  bool include_pssh;
 };
+
+struct PSSHData {
+  std::vector<uint8_t> cenc_box;
+  std::vector<uint8_t> mspr_box;
+  std::vector<uint8_t> wv_box;
+};
+
+struct KeyData {
+  std::vector<uint8_t> curr_key;
+  std::vector<uint8_t> curr_key_id;
+  std::vector<std::vector<uint8_t>> all_key_ids;
+};
+
+Status GeneratePSSHData(PSSHData* data, const std::vector<KeyData>& all_keys, const KeyData& current_key, media::FourCC encryption_scheme);
 
 class LivePackager {
  public:
