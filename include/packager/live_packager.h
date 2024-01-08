@@ -7,11 +7,7 @@
 #ifndef PACKAGER_LIVE_PACKAGER_H_
 #define PACKAGER_LIVE_PACKAGER_H_
 
-#include <packager/media/base/fourccs.h>
 #include <packager/packager.h>
-
-#include <memory>
-#include <string>
 
 namespace shaka {
 
@@ -104,7 +100,7 @@ struct KeyData {
   std::vector<std::vector<uint8_t>> all_key_ids;
 };
 
-Status GeneratePSSHData(PSSHData* data, const std::vector<KeyData>& all_keys, const KeyData& current_key, media::FourCC encryption_scheme);
+Status GeneratePSSHData(PSSHData* data, const std::vector<KeyData>& all_keys, const KeyData& current_key, uint32_t encryption_scheme);
 
 class LivePackager {
  public:
