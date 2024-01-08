@@ -333,10 +333,12 @@ void AddProtectionSystem(
 
 Status GeneratePSSHData(
     PSSHData* data, const KeyData& encryption_key, uint32_t protection_scheme) {
+  const std::string no_extra_headers_playready = "";
+
   std::vector<std::unique_ptr<media::PsshGenerator>> pssh_generators;
   pssh_generators.emplace_back(new media::CommonPsshGenerator());
   pssh_generators.emplace_back(new media::PlayReadyPsshGenerator(
-        "", static_cast<media::FourCC>(protection_scheme)));
+        no_extra_headers_playready, static_cast<media::FourCC>(protection_scheme)));
   pssh_generators.emplace_back(new media::WidevinePsshGenerator(static_cast<media::FourCC>(protection_scheme)));
 
   for (const auto& pssh_generator : pssh_generators) {
