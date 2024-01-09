@@ -100,10 +100,13 @@ class LivePackager {
   Status PackageInit(const Segment& init_segment, FullSegmentBuffer& output);
 
   /// Performs packaging of segment data.
-  /// @param full_segment contains the full segment data (init + media).
+  /// @param init_segment contains the init segment data.
+  /// @param media_segment contains the media segment data.
   /// @param output contains the packaged segment data (init + media).
   /// @return OK on success, an appropriate error code on failure.
-  Status Package(const Segment& full_segment, FullSegmentBuffer& output);
+  Status Package(const Segment& init_segment,
+                 const Segment& media_segment,
+                 FullSegmentBuffer& output);
 
   LivePackager(const LivePackager&) = delete;
   LivePackager& operator=(const LivePackager&) = delete;

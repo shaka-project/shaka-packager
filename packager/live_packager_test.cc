@@ -127,9 +127,9 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
 
     FullSegmentBuffer out;
 
@@ -139,7 +139,7 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
     live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
 
     SetupLivePackagerConfig(live_config);
-    ASSERT_EQ(Status::OK, live_packager_->Package(in, out));
+    ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
     std::string exp_segment_num = absl::StrFormat("expected/ts/%04d.ts", i + 1);
@@ -168,9 +168,9 @@ TEST_F(LivePackagerBaseTest, EncryptionFailure) {
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
 
     FullSegmentBuffer out;
 
@@ -182,7 +182,7 @@ TEST_F(LivePackagerBaseTest, EncryptionFailure) {
     SetupLivePackagerConfig(live_config);
     ASSERT_EQ(Status(error::INVALID_ARGUMENT,
                      "invalid key and IV supplied to encryptor"),
-              live_packager_->Package(in, out));
+              live_packager_->Package(init_seg, media_seg, out));
   }
 }
 
@@ -226,13 +226,13 @@ TEST_P(LivePackagerEncryptionTest, VerifyWithEncryption) {
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(format_output);
     ASSERT_FALSE(segment_buffer.empty());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
 
     FullSegmentBuffer out;
 
-    ASSERT_EQ(Status::OK, live_packager_->Package(in, out));
+    ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
     ASSERT_GT(out.SegmentSize(), 0);
   }
 }
