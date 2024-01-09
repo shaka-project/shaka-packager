@@ -86,6 +86,13 @@ struct LiveConfig {
   std::vector<uint8_t> key;
   std::vector<uint8_t> key_id;
   EncryptionScheme protection_scheme;
+
+  /// User-specified segment number.
+  /// For FMP4 output:
+  ///   It can be used to set the moof header sequence number if > 0.
+  /// For M2TS output:
+  ///   It is be used to set the continuity counter (TODO: UNIMPLEMENTED).
+  uint32_t segment_number = 0;
 };
 
 class LivePackager {
