@@ -281,6 +281,7 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
   shaka::PackagingParams packaging_params;
   packaging_params.chunking_params.segment_duration_in_seconds =
       config_.segment_duration_sec;
+  packaging_params.mp4_output_params.include_pssh_in_stream = config_.mp4_include_pssh;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
   // As a side effect of InitializeEncryption, encryption_params will be
@@ -304,56 +305,39 @@ Status LivePackager::Package(const Segment& in, FullSegmentBuffer& out) {
   return packager.Run();
 }
 
-void AddProtectionSystem(
-    const media::ProtectionSystemSpecificInfo& pssh_info,
-    PSSHData* data) {
-  if (const std::vector<uint8_t> common_system_id(
-          media::kCommonSystemId,
-          media::kCommonSystemId + std::size(media::kCommonSystemId));
-      pssh_info.system_id == common_system_id) {
+void FillPSSHBoxByDRM(const media::ProtectionSystemSpecificInfo& pssh_info, PSSHData* data) {
+  if (std::equal(std::begin(media::kCommonSystemId), std::end(media::kCommonSystemId), pssh_info.system_id.begin())) {
     data->cenc_box = pssh_info.psshs;
     return;
   }
 
-  if (const std::vector<uint8_t> widevine_system_id(
-          media::kWidevineSystemId,
-          media::kWidevineSystemId + std::size(media::kWidevineSystemId));
-      pssh_info.system_id == widevine_system_id) {
+  if (std::equal(std::begin(media::kWidevineSystemId), std::end(media::kWidevineSystemId), pssh_info.system_id.begin())) {
     data->wv_box = pssh_info.psshs;
     return;
   }
 
-  if (const std::vector<uint8_t> playready_system_id(
-          media::kPlayReadySystemId,
-          media::kPlayReadySystemId + std::size(media::kPlayReadySystemId));
-      pssh_info.system_id == playready_system_id) {
-    data->wv_box = pssh_info.psshs;
+  if (std::equal(std::begin(media::kPlayReadySystemId), std::end(media::kPlayReadySystemId), pssh_info.system_id.begin())) {
+    data->mspr_box = pssh_info.psshs;
   }
 }
 
-Status GeneratePSSHData(
-    PSSHData* data, const KeyData& encryption_key, uint32_t protection_scheme) {
-  const std::string no_extra_headers_playready = "";
+Status GeneratePSSHData(const KeyData& encryption_key, uint32_t protection_scheme, PSSHData* data) {
+  const char* kNoExtraHeadersForPlayReady = "";
 
   std::vector<std::unique_ptr<media::PsshGenerator>> pssh_generators;
   pssh_generators.emplace_back(new media::CommonPsshGenerator());
   pssh_generators.emplace_back(new media::PlayReadyPsshGenerator(
-        no_extra_headers_playready, static_cast<media::FourCC>(protection_scheme)));
+        kNoExtraHeadersForPlayReady, static_cast<media::FourCC>(protection_scheme)));
   pssh_generators.emplace_back(new media::WidevinePsshGenerator(static_cast<media::FourCC>(protection_scheme)));
 
   for (const auto& pssh_generator : pssh_generators) {
-    const bool support_multiple_keys = pssh_generator->SupportMultipleKeys();
-    if (support_multiple_keys) {
-      media::ProtectionSystemSpecificInfo info;
-      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIds(
-          encryption_key.all_key_ids, &info));
-      AddProtectionSystem(info, data);
+    media::ProtectionSystemSpecificInfo info;
+    if (pssh_generator->SupportMultipleKeys()) {
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIds(encryption_key.all_key_ids, &info));
     } else {
-      media::ProtectionSystemSpecificInfo info;
-      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIdAndKey(
-          encryption_key.curr_key_id, encryption_key.curr_key, &info));
-      AddProtectionSystem(info, data);
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIdAndKey(encryption_key.curr_key_id, encryption_key.curr_key, &info));
     }
+    FillPSSHBoxByDRM(info, data);
   }
 
   return Status::OK;

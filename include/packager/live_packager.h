@@ -85,7 +85,7 @@ struct LiveConfig {
   std::vector<uint8_t> key_id;
   EncryptionScheme protection_scheme;
 
-  bool include_pssh;
+  bool mp4_include_pssh;
 };
 
 struct PSSHData {
@@ -98,9 +98,12 @@ struct KeyData {
   std::vector<uint8_t> curr_key;
   std::vector<uint8_t> curr_key_id;
   std::vector<std::vector<uint8_t>> all_key_ids;
+
+  // enum for pssh box drm system
+  // enum for fourcc encryption scheme
 };
 
-Status GeneratePSSHData(PSSHData* data, const std::vector<KeyData>& all_keys, const KeyData& current_key, uint32_t encryption_scheme);
+Status GeneratePSSHData(const KeyData& encryption_key, uint32_t protection_scheme, PSSHData* data);
 
 class LivePackager {
  public:
