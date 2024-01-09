@@ -103,7 +103,9 @@ struct KeyData {
   // enum for fourcc encryption scheme
 };
 
-Status GeneratePSSHData(const KeyData& encryption_key, uint32_t protection_scheme, PSSHData* data);
+Status GeneratePSSHData(const KeyData& encryption_key,
+                        uint32_t protection_scheme,
+                        PSSHData* data);
 
 class LivePackager {
  public:
