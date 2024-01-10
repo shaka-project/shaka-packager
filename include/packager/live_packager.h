@@ -86,6 +86,13 @@ struct LiveConfig {
   EncryptionScheme protection_scheme;
 
   bool mp4_include_pssh;
+
+  /// User-specified segment number.
+  /// For FMP4 output:
+  ///   It can be used to set the moof header sequence number if > 0.
+  /// For M2TS output:
+  ///   It is be used to set the continuity counter (TODO: UNIMPLEMENTED).
+  uint32_t segment_number = 0;
 };
 
 class LivePackager {
@@ -100,10 +107,13 @@ class LivePackager {
   Status PackageInit(const Segment& init_segment, FullSegmentBuffer& output);
 
   /// Performs packaging of segment data.
-  /// @param full_segment contains the full segment data (init + media).
+  /// @param init_segment contains the init segment data.
+  /// @param media_segment contains the media segment data.
   /// @param output contains the packaged segment data (init + media).
   /// @return OK on success, an appropriate error code on failure.
-  Status Package(const Segment& full_segment, FullSegmentBuffer& output);
+  Status Package(const Segment& init_segment,
+                 const Segment& media_segment,
+                 FullSegmentBuffer& output);
 
   LivePackager(const LivePackager&) = delete;
   LivePackager& operator=(const LivePackager&) = delete;

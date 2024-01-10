@@ -92,7 +92,9 @@ Status Segmenter::Initialize(
 
   // Use the reference stream's time scale as movie time scale.
   moov_->header.timescale = sidx_->timescale;
-  moof_->header.sequence_number = 1;
+  moof_->header.sequence_number = options_.mp4_params.sequence_number > 0
+                                      ? options_.mp4_params.sequence_number
+                                      : 1;
 
   // Fill in version information.
   const std::string version = GetPackagerVersion();

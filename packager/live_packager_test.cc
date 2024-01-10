@@ -16,6 +16,8 @@
 #include <packager/file.h>
 #include <packager/live_packager.h>
 #include <packager/media/base/aes_decryptor.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_reader.h>
 
 #include "absl/strings/escaping.h"
 
@@ -95,6 +97,177 @@ std::vector<uint8_t> unbase64(const std::string& base64_string) {
 
   bytes.assign(str.begin(), str.end());
   return bytes;
+}
+
+bool ParseAndCheckType(media::mp4::Box& box, media::mp4::BoxReader* reader) {
+  box.Parse(reader);
+  return box.BoxType() == reader->type();
+}
+
+struct SegmentIndexBoxChecker {
+  SegmentIndexBoxChecker(media::mp4::SegmentIndex box)
+      : sidx_(std::move(box)) {}
+
+  void Check(media::mp4::BoxReader* reader) {
+    media::mp4::SegmentIndex box;
+    CHECK(ParseAndCheckType(box, reader));
+    EXPECT_EQ(sidx_.timescale, box.timescale);
+  }
+
+ private:
+  media::mp4::SegmentIndex sidx_;
+};
+
+struct MovieFragmentBoxChecker {
+  MovieFragmentBoxChecker(media::mp4::MovieFragment box)
+      : moof_(std::move(box)) {}
+
+  void Check(media::mp4::BoxReader* reader) {
+    media::mp4::MovieFragment box;
+    CHECK(ParseAndCheckType(box, reader));
+    EXPECT_EQ(moof_.header.sequence_number, box.header.sequence_number);
+  }
+
+ private:
+  media::mp4::MovieFragment moof_;
+};
+
+struct SegmentTypeBoxChecker {
+  void Check(media::mp4::BoxReader* reader) {
+    media::mp4::SegmentType box;
+    CHECK(ParseAndCheckType(box, reader));
+    EXPECT_EQ(media::FourCC::FOURCC_mp41, box.major_brand);
+  }
+};
+
+struct FileTypeBoxChecker {
+  void Check(media::mp4::BoxReader* reader) {
+    media::mp4::FileType box;
+    CHECK(ParseAndCheckType(box, reader));
+    EXPECT_EQ(media::FourCC::FOURCC_mp41, box.major_brand);
+  }
+};
+
+struct MovieBoxChecker {
+  MovieBoxChecker(media::mp4::Movie movie) : moov_(std::move(movie)) {}
+
+  void Check(media::mp4::BoxReader* reader) {
+    media::mp4::Movie moov;
+    CHECK(ParseAndCheckType(moov, reader));
+
+    EXPECT_EQ(moov_.tracks.size(), moov.tracks.size());
+
+    for (unsigned i(0); i < moov_.tracks.size(); ++i) {
+      const auto& exp_track = moov_.tracks[i];
+      const auto& act_track = moov.tracks[i];
+
+      EXPECT_EQ(exp_track.media.handler.handler_type,
+                act_track.media.handler.handler_type);
+
+      const auto& exp_video_entries =
+          exp_track.media.information.sample_table.description.video_entries;
+      const auto& act_video_entries =
+          act_track.media.information.sample_table.description.video_entries;
+
+      EXPECT_EQ(exp_video_entries.size(), act_video_entries.size());
+
+      for (unsigned j(0); j < exp_video_entries.size(); ++j) {
+        const auto& exp_entry = exp_video_entries[j];
+        const auto& act_entry = act_video_entries[j];
+
+        EXPECT_EQ(exp_entry.BoxType(), act_entry.BoxType());
+        EXPECT_EQ(exp_entry.width, act_entry.width);
+        EXPECT_EQ(exp_entry.height, act_entry.height);
+      }
+    }
+  }
+
+ private:
+  media::mp4::Movie moov_;
+};
+
+void CheckVideoInitSegment(const FullSegmentBuffer& buffer) {
+  bool err(true);
+  size_t bytes_to_read(buffer.InitSegmentSize());
+  const uint8_t* data(buffer.InitSegmentData());
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    FileTypeBoxChecker checker;
+    checker.Check(reader.get());
+
+    data += reader->size();
+    bytes_to_read -= reader->size();
+  }
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    media::mp4::VideoSampleEntry entry;
+    entry.format = media::FOURCC_avc1;
+    entry.width = 1024;
+    entry.height = 576;
+
+    media::mp4::Track track;
+    track.media.handler.handler_type = media::FourCC::FOURCC_vide;
+    track.media.information.sample_table.description.video_entries.push_back(
+        entry);
+
+    media::mp4::Movie expected;
+    expected.tracks.push_back(track);
+
+    MovieBoxChecker checker(expected);
+    checker.Check(reader.get());
+  }
+}
+
+void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
+  bool err(true);
+  size_t bytes_to_read(buffer.SegmentSize());
+  const uint8_t* data(buffer.SegmentData());
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    SegmentTypeBoxChecker checker;
+    checker.Check(reader.get());
+
+    data += reader->size();
+    bytes_to_read -= reader->size();
+  }
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    media::mp4::SegmentIndex expected;
+    expected.timescale = 10000000;
+    SegmentIndexBoxChecker checker(expected);
+    checker.Check(reader.get());
+
+    data += reader->size();
+    bytes_to_read -= reader->size();
+  }
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    media::mp4::MovieFragment expected;
+    expected.header.sequence_number = config.segment_number;
+
+    MovieFragmentBoxChecker checker(expected);
+    checker.Check(reader.get());
+  }
 }
 
 }  // namespace
@@ -206,6 +379,8 @@ TEST_F(LivePackagerBaseTest, InitSegmentOnly) {
   ASSERT_EQ(Status::OK, live_packager_->PackageInit(in, out));
   ASSERT_GT(out.InitSegmentSize(), 0);
   ASSERT_EQ(out.SegmentSize(), 0);
+
+  CheckVideoInitSegment(out);
 }
 
 TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
@@ -222,9 +397,9 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
 
     FullSegmentBuffer out;
 
@@ -234,7 +409,7 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
     live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
 
     SetupLivePackagerConfig(live_config);
-    ASSERT_EQ(Status::OK, live_packager_->Package(in, out));
+    ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
     std::string exp_segment_num = absl::StrFormat("expected/ts/%04d.ts", i + 1);
@@ -263,9 +438,9 @@ TEST_F(LivePackagerBaseTest, EncryptionFailure) {
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
     ASSERT_FALSE(segment_buffer.empty());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
 
     FullSegmentBuffer out;
 
@@ -277,7 +452,36 @@ TEST_F(LivePackagerBaseTest, EncryptionFailure) {
     SetupLivePackagerConfig(live_config);
     ASSERT_EQ(Status(error::INVALID_ARGUMENT,
                      "invalid key and IV supplied to encryptor"),
-              live_packager_->Package(in, out));
+              live_packager_->Package(init_seg, media_seg, out));
+  }
+}
+
+TEST_F(LivePackagerBaseTest, CustomMoofSequenceNumber) {
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
+  ASSERT_FALSE(init_segment_buffer.empty());
+  LiveConfig live_config;
+  live_config.format = LiveConfig::OutputFormat::FMP4;
+  live_config.track_type = LiveConfig::TrackType::VIDEO;
+  live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
+  live_config.segment_duration_sec = kSegmentDurationInSeconds;
+
+  for (unsigned int i = 0; i < kNumSegments; i++) {
+    live_config.segment_number = i + 1;
+    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
+
+    FullSegmentBuffer out;
+    LivePackager packager(live_config);
+
+    ASSERT_EQ(Status::OK, packager.Package(init_seg, media_seg, out));
+    ASSERT_GT(out.SegmentSize(), 0);
+
+    CheckSegment(live_config, out);
   }
 }
 
@@ -321,13 +525,13 @@ TEST_P(LivePackagerEncryptionTest, VerifyWithEncryption) {
     std::vector<uint8_t> segment_buffer = ReadTestDataFile(format_output);
     ASSERT_FALSE(segment_buffer.empty());
 
-    FullSegmentBuffer in;
-    in.SetInitSegment(init_segment_buffer.data(), init_segment_buffer.size());
-    in.AppendData(segment_buffer.data(), segment_buffer.size());
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
 
     FullSegmentBuffer out;
 
-    ASSERT_EQ(Status::OK, live_packager_->Package(in, out));
+    ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
     ASSERT_GT(out.SegmentSize(), 0);
   }
 }
