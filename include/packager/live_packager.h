@@ -88,25 +88,6 @@ struct LiveConfig {
   bool mp4_include_pssh;
 };
 
-struct PSSHData {
-  std::vector<uint8_t> cenc_box;
-  std::vector<uint8_t> mspr_box;
-  std::vector<uint8_t> wv_box;
-};
-
-struct KeyData {
-  std::vector<uint8_t> curr_key;
-  std::vector<uint8_t> curr_key_id;
-  std::vector<std::vector<uint8_t>> all_key_ids;
-
-  // enum for pssh box drm system
-  // enum for fourcc encryption scheme
-};
-
-Status GeneratePSSHData(const KeyData& encryption_key,
-                        uint32_t protection_scheme,
-                        PSSHData* data);
-
 class LivePackager {
  public:
   LivePackager(const LiveConfig& config);
@@ -133,6 +114,36 @@ class LivePackager {
 
   LiveConfig config_;
 };
+
+struct PSSHData {
+  std::vector<uint8_t> cenc_box;
+  std::vector<uint8_t> mspr_box;
+  std::vector<uint8_t> mspr_pro;
+  std::vector<uint8_t> wv_box;
+};
+
+enum struct EncryptionSchemeFourCC: uint32_t {
+  CBCS = 0x63626373,
+  CENC = 0x63656e63,
+};
+
+struct PSSHGeneratorInput {
+  EncryptionSchemeFourCC encryption_scheme;
+
+  // key of a single adaption set for DRM systems that don't support
+  // multile keys (i.e PlayReady)
+  std::vector<uint8_t> key;
+  // key id of the key for DRM systems that don't support
+  // multile keys (i.e PlayReady)
+  std::vector<uint8_t> key_id;
+  // key ids of all adaptation sets for DRM systems that support
+  // multiple keys (i.e Widevine, Common Encryption)
+  std::vector<std::vector<uint8_t>> key_ids;
+
+  Status Validate() const;
+};
+
+Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out);
 
 }  // namespace shaka
 
