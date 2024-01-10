@@ -450,13 +450,16 @@ void FillPSSHBoxByDRM(const media::ProtectionSystemSpecificInfo& pssh_info,
                  pssh_info.system_id.begin())) {
     data->mspr_box = pssh_info.psshs;
 
-    std::unique_ptr<media::PsshBoxBuilder> box_builder = media::PsshBoxBuilder::ParseFromBox(pssh_info.psshs.data(), pssh_info.psshs.size());
+    std::unique_ptr<media::PsshBoxBuilder> box_builder =
+        media::PsshBoxBuilder::ParseFromBox(pssh_info.psshs.data(),
+                                            pssh_info.psshs.size());
     data->mspr_pro = box_builder->pssh_data();
   }
 }
 
 Status PSSHGeneratorInput::Validate() const {
-  if (encryption_scheme != EncryptionSchemeFourCC::CBCS && encryption_scheme != EncryptionSchemeFourCC::CENC) {
+  if (encryption_scheme != EncryptionSchemeFourCC::CBCS &&
+      encryption_scheme != EncryptionSchemeFourCC::CENC) {
     LOG(WARNING) << "invalid encryption scheme in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid encryption scheme in PSSH generator input");
@@ -482,9 +485,13 @@ Status PSSHGeneratorInput::Validate() const {
 
   for (size_t i = 0; i < key_ids.size(); ++i) {
     if (key_ids[i].size() != 16) {
-      LOG(WARNING) << "invalid key id lenght in key ids array in PSSH generator input, index " + std::to_string(i);
+      LOG(WARNING) << "invalid key id lenght in key ids array in PSSH "
+                      "generator input, index " +
+                          std::to_string(i);
       return Status(error::INVALID_ARGUMENT,
-                    "invalid key id lenght in key ids array in PSSH generator input, index " + std::to_string(i));
+                    "invalid key id lenght in key ids array in PSSH generator "
+                    "input, index " +
+                        std::to_string(i));
     }
   }
 
@@ -496,8 +503,7 @@ Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out) {
 
   RETURN_IF_ERROR(in.Validate());
   if (!out) {
-    return Status(error::INVALID_ARGUMENT,
-      "output data cannot be null");
+    return Status(error::INVALID_ARGUMENT, "output data cannot be null");
   }
 
   std::vector<std::unique_ptr<media::PsshGenerator>> pssh_generators;

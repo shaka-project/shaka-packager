@@ -132,7 +132,7 @@ struct PSSHData {
   std::vector<uint8_t> wv_box;
 };
 
-enum struct EncryptionSchemeFourCC: uint32_t {
+enum struct EncryptionSchemeFourCC : uint32_t {
   CBCS = 0x63626373,
   CENC = 0x63656e63,
 };

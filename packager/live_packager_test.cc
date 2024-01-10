@@ -81,8 +81,8 @@ uint8_t hex_char_to_int(const char& c) {
 
 std::vector<uint8_t> unhex(const std::string& in) {
   std::vector<uint8_t> out;
-  for (std::size_t i = 1; i < in.size(); i+=2) {
-      out.push_back(16 * hex_char_to_int(in[i-1]) +hex_char_to_int(in[i]));
+  for (std::size_t i = 1; i < in.size(); i += 2) {
+    out.push_back(16 * hex_char_to_int(in[i - 1]) + hex_char_to_int(in[i]));
   }
 
   return out;
@@ -273,23 +273,46 @@ void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
 }  // namespace
 
 TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
-  PSSHGeneratorInput in{
-      .encryption_scheme = EncryptionSchemeFourCC::CENC,
-      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
-      .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
-      .key_ids = {
-        unhex("00000000621f2afe7ab2c868d5fd2e2e"),
-        unhex("00000000621f2afe7ab2c868d5fd2e2f")
-      }
-  };
+  PSSHGeneratorInput in{.encryption_scheme = EncryptionSchemeFourCC::CENC,
+                        .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
+                        .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
+                        .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
+                                    unhex("00000000621f2afe7ab2c868d5fd2e2f")}};
 
   PSSHData expected{
-    .cenc_box = unbase64("AAAARHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAIAAAAAYh8q/nqyyGjV/S4uAAAAAGIfKv56ssho1f0uLwAAAAA="),
-    .mspr_box = unbase64("AAACJnBzc2gAAAAAmgTweZhAQoarkuZb4IhflQAAAgYGAgAAAQABAPwBPABXAFIATQBIAEUAQQBEAEUAUgAgAHgAbQBsAG4AcwA9ACIAaAB0AHQAcAA6AC8ALwBzAGMAaABlAG0AYQBzAC4AbQBpAGMAcgBvAHMAbwBmAHQALgBjAG8AbQAvAEQAUgBNAC8AMgAwADAANwAvADAAMwAvAFAAbABhAHkAUgBlAGEAZAB5AEgAZQBhAGQAZQByACIAIAB2AGUAcgBzAGkAbwBuAD0AIgA0AC4AMAAuADAALgAwACIAPgA8AEQAQQBUAEEAPgA8AFAAUgBPAFQARQBDAFQASQBOAEYATwA+ADwASwBFAFkATABFAE4APgAxADYAPAAvAEsARQBZAEwARQBOAD4APABBAEwARwBJAEQAPgBBAEUAUwBDAFQAUgA8AC8AQQBMAEcASQBEAD4APAAvAFAAUgBPAFQARQBDAFQASQBOAEYATwA+ADwASwBJAEQAPgBBAEEAQQBBAEEAQgA5AGkALwBpAHAANgBzAHMAaABvADEAZgAwAHUATABnAD0APQA8AC8ASwBJAEQAPgA8AEMASABFAEMASwBTAFUATQA+ADQAZgB1AEIAdABEAFUAKwBLAGsARQA9ADwALwBDAEgARQBDAEsAUwBVAE0APgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA=="),
-    .mspr_pro = unbase64("BgIAAAEAAQD8ATwAVwBSAE0ASABFAEEARABFAFIAIAB4AG0AbABuAHMAPQAiAGgAdAB0AHAAOgAvAC8AcwBjAGgAZQBtAGEAcwAuAG0AaQBjAHIAbwBzAG8AZgB0AC4AYwBvAG0ALwBEAFIATQAvADIAMAAwADcALwAwADMALwBQAGwAYQB5AFIAZQBhAGQAeQBIAGUAYQBkAGUAcgAiACAAdgBlAHIAcwBpAG8AbgA9ACIANAAuADAALgAwAC4AMAAiAD4APABEAEEAVABBAD4APABQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsARQBZAEwARQBOAD4AMQA2ADwALwBLAEUAWQBMAEUATgA+ADwAQQBMAEcASQBEAD4AQQBFAFMAQwBUAFIAPAAvAEEATABHAEkARAA+ADwALwBQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsASQBEAD4AQQBBAEEAQQBBAEIAOQBpAC8AaQBwADYAcwBzAGgAbwAxAGYAMAB1AEwAZwA9AD0APAAvAEsASQBEAD4APABDAEgARQBDAEsAUwBVAE0APgA0AGYAdQBCAHQARABVACsASwBrAEUAPQA8AC8AQwBIAEUAQwBLAFMAVQBNAD4APAAvAEQAQQBUAEEAPgA8AC8AVwBSAE0ASABFAEEARABFAFIAPgA="),
-    .wv_box = unbase64("AAAASnBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAACoSEAAAAABiHyr+erLIaNX9Li4SEAAAAABiHyr+erLIaNX9Li9I49yVmwY=")
-  };
-  PSSHData actual {};
+      .cenc_box = unbase64("AAAARHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAIAAAAAYh8"
+                           "q/nqyyGjV/S4uAAAAAGIfKv56ssho1f0uLwAAAAA="),
+      .mspr_box = unbase64(
+          "AAACJnBzc2gAAAAAmgTweZhAQoarkuZb4IhflQAAAgYGAgAAAQABAPwBPABXAFIATQBI"
+          "AEUAQQBEAEUAUgAgAHgAbQBsAG4AcwA9ACIAaAB0AHQAcAA6AC8ALwBzAGMAaABlAG0A"
+          "YQBzAC4AbQBpAGMAcgBvAHMAbwBmAHQALgBjAG8AbQAvAEQAUgBNAC8AMgAwADAANwAv"
+          "ADAAMwAvAFAAbABhAHkAUgBlAGEAZAB5AEgAZQBhAGQAZQByACIAIAB2AGUAcgBzAGkA"
+          "bwBuAD0AIgA0AC4AMAAuADAALgAwACIAPgA8AEQAQQBUAEEAPgA8AFAAUgBPAFQARQBD"
+          "AFQASQBOAEYATwA+"
+          "ADwASwBFAFkATABFAE4APgAxADYAPAAvAEsARQBZAEwARQBOAD4APABBAEwARwBJAEQA"
+          "PgBBAEUAUwBDAFQAUgA8AC8AQQBMAEcASQBEAD4APAAvAFAAUgBPAFQARQBDAFQASQBO"
+          "AEYATwA+"
+          "ADwASwBJAEQAPgBBAEEAQQBBAEEAQgA5AGkALwBpAHAANgBzAHMAaABvADEAZgAwAHUA"
+          "TABnAD0APQA8AC8ASwBJAEQAPgA8AEMASABFAEMASwBTAFUATQA+"
+          "ADQAZgB1AEIAdABEAFUAKwBLAGsARQA9ADwALwBDAEgARQBDAEsAUwBVAE0APgA8AC8A"
+          "RABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA=="),
+      .mspr_pro = unbase64(
+          "BgIAAAEAAQD8ATwAVwBSAE0ASABFAEEARABFAFIAIAB4AG0AbABuAHMAPQAiAGgAdAB0"
+          "AHAAOgAvAC8AcwBjAGgAZQBtAGEAcwAuAG0AaQBjAHIAbwBzAG8AZgB0AC4AYwBvAG0A"
+          "LwBEAFIATQAvADIAMAAwADcALwAwADMALwBQAGwAYQB5AFIAZQBhAGQAeQBIAGUAYQBk"
+          "AGUAcgAiACAAdgBlAHIAcwBpAG8AbgA9ACIANAAuADAALgAwAC4AMAAiAD4APABEAEEA"
+          "VABBAD4APABQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsARQBZAEwARQBOAD4AMQA2"
+          "ADwALwBLAEUAWQBMAEUATgA+"
+          "ADwAQQBMAEcASQBEAD4AQQBFAFMAQwBUAFIAPAAvAEEATABHAEkARAA+"
+          "ADwALwBQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsASQBEAD4AQQBBAEEAQQBBAEIA"
+          "OQBpAC8AaQBwADYAcwBzAGgAbwAxAGYAMAB1AEwAZwA9AD0APAAvAEsASQBEAD4APABD"
+          "AEgARQBDAEsAUwBVAE0APgA0AGYAdQBCAHQARABVACsASwBrAEUAPQA8AC8AQwBIAEUA"
+          "QwBLAFMAVQBNAD4APAAvAEQAQQBUAEEAPgA8AC8AVwBSAE0ASABFAEEARABFAFIAPgA"
+          "="),
+      .wv_box =
+          unbase64("AAAASnBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAACoSEAAAAABiHyr+"
+                   "erLIaNX9Li4SEAAAAABiHyr+erLIaNX9Li9I49yVmwY=")};
+  PSSHData actual{};
 
   ASSERT_EQ(Status::OK, GeneratePSSHData(in, &actual));
   ASSERT_EQ(expected.cenc_box, actual.cenc_box);
@@ -300,33 +323,42 @@ TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
 
 TEST(GeneratePSSHData, FailsOnInvalidInput) {
   const PSSHGeneratorInput valid_input{
-    .encryption_scheme = EncryptionSchemeFourCC::CENC,
-    .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
-    .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
-    .key_ids = {
-      unhex("00000000621f2afe7ab2c868d5fd2e2e"),
-      unhex("00000000621f2afe7ab2c868d5fd2e2f")
-    }
-  };
+      .encryption_scheme = EncryptionSchemeFourCC::CENC,
+      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
+      .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
+      .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
+                  unhex("00000000621f2afe7ab2c868d5fd2e2f")}};
 
   PSSHGeneratorInput in;
-  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "invalid encryption scheme in PSSH generator input"), GeneratePSSHData(in, nullptr));
+  ASSERT_EQ(Status(error::INVALID_ARGUMENT,
+                   "invalid encryption scheme in PSSH generator input"),
+            GeneratePSSHData(in, nullptr));
 
   in.encryption_scheme = valid_input.encryption_scheme;
-  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "invalid key lenght in PSSH generator input"), GeneratePSSHData(in, nullptr));
+  ASSERT_EQ(Status(error::INVALID_ARGUMENT,
+                   "invalid key lenght in PSSH generator input"),
+            GeneratePSSHData(in, nullptr));
 
   in.key = valid_input.key;
-  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "invalid key id lenght in PSSH generator input"), GeneratePSSHData(in, nullptr));
+  ASSERT_EQ(Status(error::INVALID_ARGUMENT,
+                   "invalid key id lenght in PSSH generator input"),
+            GeneratePSSHData(in, nullptr));
 
   in.key_id = valid_input.key_id;
-  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "key ids cannot be empty in PSSH generator input"), GeneratePSSHData(in, nullptr));
+  ASSERT_EQ(Status(error::INVALID_ARGUMENT,
+                   "key ids cannot be empty in PSSH generator input"),
+            GeneratePSSHData(in, nullptr));
 
   in.key_ids = valid_input.key_ids;
   in.key_ids[1] = {};
-  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "invalid key id lenght in key ids array in PSSH generator input, index 1"), GeneratePSSHData(in, nullptr));
+  ASSERT_EQ(Status(error::INVALID_ARGUMENT,
+                   "invalid key id lenght in key ids array in PSSH generator "
+                   "input, index 1"),
+            GeneratePSSHData(in, nullptr));
 
   in.key_ids = valid_input.key_ids;
-  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "output data cannot be null"), GeneratePSSHData(in, nullptr));
+  ASSERT_EQ(Status(error::INVALID_ARGUMENT, "output data cannot be null"),
+            GeneratePSSHData(in, nullptr));
 }
 
 class LivePackagerBaseTest : public ::testing::Test {
