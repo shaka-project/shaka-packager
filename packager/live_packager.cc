@@ -507,11 +507,11 @@ Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out) {
   }
 
   std::vector<std::unique_ptr<media::PsshGenerator>> pssh_generators;
-  pssh_generators.emplace_back(new media::CommonPsshGenerator());
-  pssh_generators.emplace_back(new media::PlayReadyPsshGenerator(
+  pssh_generators.emplace_back(std::make_unique<media::CommonPsshGenerator>());
+  pssh_generators.emplace_back(std::make_unique<media::PlayReadyPsshGenerator>(
       kNoExtraHeadersForPlayReady,
       static_cast<media::FourCC>(in.encryption_scheme)));
-  pssh_generators.emplace_back(new media::WidevinePsshGenerator(
+  pssh_generators.emplace_back(std::make_unique<media::WidevinePsshGenerator>(
       static_cast<media::FourCC>(in.encryption_scheme)));
 
   for (const auto& pssh_generator : pssh_generators) {
