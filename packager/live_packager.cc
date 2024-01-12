@@ -456,6 +456,8 @@ void FillPSSHBoxByDRM(const media::ProtectionSystemSpecificInfo& pssh_info,
 }
 
 Status PSSHGeneratorInput::Validate() const {
+  constexpr int kKeySize = 16;
+
   if (encryption_scheme != EncryptionSchemeFourCC::CBCS &&
       encryption_scheme != EncryptionSchemeFourCC::CENC) {
     LOG(WARNING) << "invalid encryption scheme in PSSH generator input";
@@ -463,13 +465,13 @@ Status PSSHGeneratorInput::Validate() const {
                   "invalid encryption scheme in PSSH generator input");
   }
 
-  if (key.size() != 16) {
+  if (key.size() != kKeySize) {
     LOG(WARNING) << "invalid key length in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid key length in PSSH generator input");
   }
 
-  if (key_id.size() != 16) {
+  if (key_id.size() != kKeySize) {
     LOG(WARNING) << "invalid key id length in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid key id length in PSSH generator input");
@@ -482,7 +484,7 @@ Status PSSHGeneratorInput::Validate() const {
   }
 
   for (size_t i = 0; i < key_ids.size(); ++i) {
-    if (key_ids[i].size() != 16) {
+    if (key_ids[i].size() != kKeySize) {
       LOG(WARNING) << "invalid key id length in key ids array in PSSH "
                       "generator input, index " +
                           std::to_string(i);
