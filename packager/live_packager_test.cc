@@ -64,7 +64,6 @@ std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
   return data;
 }
 
-
 std::vector<uint8_t> unhex(const std::string& in) {
   auto converted = absl::HexStringToBytes(in);
   return {converted.begin(), converted.end()};
