@@ -64,28 +64,10 @@ std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
   return data;
 }
 
-uint8_t hex_char_to_int(const char& c) {
-  unsigned result = 0;
-  if (c >= '0' && c <= '9') {
-    result = c - '0';
-  } else if (c >= 'A' && c <= 'F') {
-    result = c - 'A' + 10;
-  } else if (c >= 'a' && c <= 'f') {
-    result = c - 'a' + 10;
-  } else {
-    throw std::out_of_range("input character is out of hex range");
-  }
-
-  return result;
-}
 
 std::vector<uint8_t> unhex(const std::string& in) {
-  std::vector<uint8_t> out;
-  for (std::size_t i = 1; i < in.size(); i += 2) {
-    out.push_back(16 * hex_char_to_int(in[i - 1]) + hex_char_to_int(in[i]));
-  }
-
-  return out;
+  auto converted = absl::HexStringToBytes(in);
+  return {converted.begin(), converted.end()};
 }
 
 std::vector<uint8_t> unbase64(const std::string& base64_string) {
