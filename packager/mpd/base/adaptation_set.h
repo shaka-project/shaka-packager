@@ -325,7 +325,10 @@ class AdaptationSet {
   // stream.
   std::vector<const AdaptationSet*> trick_play_references_;
 
-  uint32_t cl_index_ = UINT32_MAX;
+  // Transfer characteristics.
+  uint32_t transfer_characteristics_ = 0;
+
+  uint32_t cl_index_ = UINT32_MAX;  
 };
 
 }  // namespace shaka
