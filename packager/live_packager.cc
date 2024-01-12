@@ -466,15 +466,15 @@ Status PSSHGeneratorInput::Validate() const {
   }
 
   if (key.size() != 16) {
-    LOG(WARNING) << "invalid key lenght in PSSH generator input";
+    LOG(WARNING) << "invalid key length in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
-                  "invalid key lenght in PSSH generator input");
+                  "invalid key length in PSSH generator input");
   }
 
   if (key_id.size() != 16) {
-    LOG(WARNING) << "invalid key id lenght in PSSH generator input";
+    LOG(WARNING) << "invalid key id length in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
-                  "invalid key id lenght in PSSH generator input");
+                  "invalid key id length in PSSH generator input");
   }
 
   if (key_ids.empty()) {
@@ -485,11 +485,11 @@ Status PSSHGeneratorInput::Validate() const {
 
   for (size_t i = 0; i < key_ids.size(); ++i) {
     if (key_ids[i].size() != 16) {
-      LOG(WARNING) << "invalid key id lenght in key ids array in PSSH "
+      LOG(WARNING) << "invalid key id length in key ids array in PSSH "
                       "generator input, index " +
                           std::to_string(i);
       return Status(error::INVALID_ARGUMENT,
-                    "invalid key id lenght in key ids array in PSSH generator "
+                    "invalid key id length in key ids array in PSSH generator "
                     "input, index " +
                         std::to_string(i));
     }

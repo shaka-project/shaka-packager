@@ -336,12 +336,12 @@ TEST(GeneratePSSHData, FailsOnInvalidInput) {
 
   in.encryption_scheme = valid_input.encryption_scheme;
   ASSERT_EQ(Status(error::INVALID_ARGUMENT,
-                   "invalid key lenght in PSSH generator input"),
+                   "invalid key length in PSSH generator input"),
             GeneratePSSHData(in, nullptr));
 
   in.key = valid_input.key;
   ASSERT_EQ(Status(error::INVALID_ARGUMENT,
-                   "invalid key id lenght in PSSH generator input"),
+                   "invalid key id length in PSSH generator input"),
             GeneratePSSHData(in, nullptr));
 
   in.key_id = valid_input.key_id;
@@ -352,7 +352,7 @@ TEST(GeneratePSSHData, FailsOnInvalidInput) {
   in.key_ids = valid_input.key_ids;
   in.key_ids[1] = {};
   ASSERT_EQ(Status(error::INVALID_ARGUMENT,
-                   "invalid key id lenght in key ids array in PSSH generator "
+                   "invalid key id length in key ids array in PSSH generator "
                    "input, index 1"),
             GeneratePSSHData(in, nullptr));
 
