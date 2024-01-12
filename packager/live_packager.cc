@@ -315,8 +315,6 @@ Status LivePackager::Package(const Segment& init_segment,
   shaka::PackagingParams packaging_params;
   packaging_params.chunking_params.segment_duration_in_seconds =
       config_.segment_duration_sec;
-  packaging_params.mp4_output_params.include_pssh_in_stream =
-      config_.mp4_include_pssh;
 
   packaging_params.mp4_output_params.sequence_number = config_.segment_number;
 

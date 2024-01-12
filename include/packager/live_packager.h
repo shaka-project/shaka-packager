@@ -85,8 +85,6 @@ struct LiveConfig {
   std::vector<uint8_t> key_id;
   EncryptionScheme protection_scheme;
 
-  bool mp4_include_pssh;
-
   /// User-specified segment number.
   /// For FMP4 output:
   ///   It can be used to set the moof header sequence number if > 0.
