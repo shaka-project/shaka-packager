@@ -254,7 +254,7 @@ void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
 }  // namespace
 
 TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
-  PSSHGeneratorInput in{.encryption_scheme = EncryptionSchemeFourCC::CENC,
+  PSSHGeneratorInput in{.protection_scheme = MP4ProtectionSchemeFourCC::CENC,
                         .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
                         .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
                         .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
@@ -304,7 +304,7 @@ TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
 
 TEST(GeneratePSSHData, FailsOnInvalidInput) {
   const PSSHGeneratorInput valid_input{
-      .encryption_scheme = EncryptionSchemeFourCC::CENC,
+      .protection_scheme = MP4ProtectionSchemeFourCC::CENC,
       .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
       .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
       .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
@@ -315,7 +315,7 @@ TEST(GeneratePSSHData, FailsOnInvalidInput) {
                    "invalid encryption scheme in PSSH generator input"),
             GeneratePSSHData(in, nullptr));
 
-  in.encryption_scheme = valid_input.encryption_scheme;
+  in.protection_scheme = valid_input.protection_scheme;
   ASSERT_EQ(Status(error::INVALID_ARGUMENT,
                    "invalid key length in PSSH generator input"),
             GeneratePSSHData(in, nullptr));

@@ -130,13 +130,13 @@ struct PSSHData {
   std::vector<uint8_t> wv_box;
 };
 
-enum struct EncryptionSchemeFourCC : uint32_t {
+enum struct MP4ProtectionSchemeFourCC : uint32_t {
   CBCS = 0x63626373,
   CENC = 0x63656e63,
 };
 
 struct PSSHGeneratorInput {
-  EncryptionSchemeFourCC encryption_scheme;
+  MP4ProtectionSchemeFourCC protection_scheme;
 
   // key of a single adaption set for DRM systems that don't support
   // multile keys (i.e PlayReady)
@@ -147,8 +147,6 @@ struct PSSHGeneratorInput {
   // key ids of all adaptation sets for DRM systems that support
   // multiple keys (i.e Widevine, Common Encryption)
   std::vector<std::vector<uint8_t>> key_ids;
-
-  Status Validate() const;
 };
 
 Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out);

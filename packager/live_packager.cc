@@ -455,36 +455,36 @@ void FillPSSHBoxByDRM(const media::ProtectionSystemSpecificInfo& pssh_info,
   }
 }
 
-Status PSSHGeneratorInput::Validate() const {
+Status ValidatePSSHGeneratorInput(const PSSHGeneratorInput& input) {
   constexpr int kKeySize = 16;
 
-  if (encryption_scheme != EncryptionSchemeFourCC::CBCS &&
-      encryption_scheme != EncryptionSchemeFourCC::CENC) {
+  if (input.protection_scheme != MP4ProtectionSchemeFourCC::CBCS &&
+      input.protection_scheme != MP4ProtectionSchemeFourCC::CENC) {
     LOG(WARNING) << "invalid encryption scheme in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid encryption scheme in PSSH generator input");
   }
 
-  if (key.size() != kKeySize) {
+  if (input.key.size() != kKeySize) {
     LOG(WARNING) << "invalid key length in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid key length in PSSH generator input");
   }
 
-  if (key_id.size() != kKeySize) {
+  if (input.key_id.size() != kKeySize) {
     LOG(WARNING) << "invalid key id length in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid key id length in PSSH generator input");
   }
 
-  if (key_ids.empty()) {
+  if (input.key_ids.empty()) {
     LOG(WARNING) << "key ids cannot be empty in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "key ids cannot be empty in PSSH generator input");
   }
 
-  for (size_t i = 0; i < key_ids.size(); ++i) {
-    if (key_ids[i].size() != kKeySize) {
+  for (size_t i = 0; i < input.key_ids.size(); ++i) {
+    if (input.key_ids[i].size() != kKeySize) {
       LOG(WARNING) << "invalid key id length in key ids array in PSSH "
                       "generator input, index " +
                           std::to_string(i);
@@ -501,7 +501,7 @@ Status PSSHGeneratorInput::Validate() const {
 Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out) {
   const char* kNoExtraHeadersForPlayReady = "";
 
-  RETURN_IF_ERROR(in.Validate());
+  RETURN_IF_ERROR(ValidatePSSHGeneratorInput(in));
   if (!out) {
     return Status(error::INVALID_ARGUMENT, "output data cannot be null");
   }
@@ -510,9 +510,9 @@ Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out) {
   pssh_generators.emplace_back(std::make_unique<media::CommonPsshGenerator>());
   pssh_generators.emplace_back(std::make_unique<media::PlayReadyPsshGenerator>(
       kNoExtraHeadersForPlayReady,
-      static_cast<media::FourCC>(in.encryption_scheme)));
+      static_cast<media::FourCC>(in.protection_scheme)));
   pssh_generators.emplace_back(std::make_unique<media::WidevinePsshGenerator>(
-      static_cast<media::FourCC>(in.encryption_scheme)));
+      static_cast<media::FourCC>(in.protection_scheme)));
 
   for (const auto& pssh_generator : pssh_generators) {
     media::ProtectionSystemSpecificInfo info;
