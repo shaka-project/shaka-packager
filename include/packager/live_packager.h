@@ -78,7 +78,7 @@ struct LiveConfig {
 
   OutputFormat format;
   TrackType track_type;
-  // TOOD: do we need non-integer durations?
+  // TODO(david): do we need non-integer durations?
   double segment_duration_sec = 5.0;
 
   // TODO: should we allow for keys to be hex string?
