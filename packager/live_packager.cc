@@ -458,8 +458,10 @@ void FillPSSHBoxByDRM(const media::ProtectionSystemSpecificInfo& pssh_info,
 Status ValidatePSSHGeneratorInput(const PSSHGeneratorInput& input) {
   constexpr int kKeySize = 16;
 
-  if (input.protection_scheme != MP4ProtectionSchemeFourCC::CBCS &&
-      input.protection_scheme != MP4ProtectionSchemeFourCC::CENC) {
+  if (input.protection_scheme !=
+          PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CBCS &&
+      input.protection_scheme !=
+          PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CENC) {
     LOG(WARNING) << "invalid encryption scheme in PSSH generator input";
     return Status(error::INVALID_ARGUMENT,
                   "invalid encryption scheme in PSSH generator input");

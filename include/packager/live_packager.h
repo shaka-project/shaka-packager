@@ -130,12 +130,12 @@ struct PSSHData {
   std::vector<uint8_t> wv_box;
 };
 
-enum struct MP4ProtectionSchemeFourCC : uint32_t {
-  CBCS = 0x63626373,
-  CENC = 0x63656e63,
-};
-
 struct PSSHGeneratorInput {
+  enum struct MP4ProtectionSchemeFourCC : uint32_t {
+    CBCS = 0x63626373,
+    CENC = 0x63656e63,
+  };
+
   MP4ProtectionSchemeFourCC protection_scheme;
 
   // key of a single adaption set for DRM systems that don't support
