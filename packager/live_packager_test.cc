@@ -254,11 +254,12 @@ void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
 }  // namespace
 
 TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
-  PSSHGeneratorInput in{.protection_scheme = PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CENC,
-                        .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
-                        .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
-                        .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
-                                    unhex("00000000621f2afe7ab2c868d5fd2e2f")}};
+  PSSHGeneratorInput in{
+      .protection_scheme = PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CENC,
+      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
+      .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
+      .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
+                  unhex("00000000621f2afe7ab2c868d5fd2e2f")}};
 
   PSSHData expected{
       .cenc_box = unbase64("AAAARHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAIAAAAAYh8"
