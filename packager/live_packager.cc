@@ -17,6 +17,7 @@
 #include <packager/file.h>
 
 #include <packager/live_packager.h>
+#include <packager/macros/compiler.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
@@ -257,6 +258,8 @@ Status LivePackager::PackageInit(const Segment& init_segment,
   packaging_params.chunking_params.segment_duration_in_seconds =
       config_.segment_duration_sec;
 
+  packaging_params.mp4_output_params.include_pssh_in_stream = false;
+
   // in order to enable init packaging as a separate execution.
   packaging_params.init_segment_only = true;
 
@@ -317,6 +320,7 @@ Status LivePackager::Package(const Segment& init_segment,
       config_.segment_duration_sec;
 
   packaging_params.mp4_output_params.sequence_number = config_.segment_number;
+  packaging_params.mp4_output_params.include_pssh_in_stream = false;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
   // As a side effect of InitializeEncryption, encryption_params will be
@@ -353,25 +357,34 @@ int64_t SegmentManager::OnSegmentWrite(const std::string& name,
 Status SegmentManager::InitializeEncryption(
     const LiveConfig& config,
     EncryptionParams& encryption_params) {
-  // TODO: encryption for fmp4 will be added later
-  if (config.protection_scheme == LiveConfig::EncryptionScheme::SAMPLE_AES) {
-    // Internally shaka maps this to an internal code for sample aes
-    //
-    // This is a fake protection scheme fourcc code to indicate Apple Sample
-    // AES. FOURCC_cbca = 0x63626361,
-    //
+  switch (config.protection_scheme) {
+    case LiveConfig::EncryptionScheme::NONE:
+      return Status::OK;
+    // Internally shaka maps sample-aes to cbcs.
     // Additionally this seems to be the recommended protection schema to when
     // using the shaka CLI:
     // https://shaka-project.github.io/shaka-packager/html/tutorials/raw_key.html
-    encryption_params.protection_scheme =
-        EncryptionParams::kProtectionSchemeCbcs;
-
-    encryption_params.key_provider = KeyProvider::kRawKey;
-    RawKeyParams::KeyInfo& key_info = encryption_params.raw_key.key_map[""];
-    key_info.key = config.key;
-    key_info.key_id = config.key_id;
-    key_info.iv = config.iv;
+    case LiveConfig::EncryptionScheme::SAMPLE_AES:
+      FALLTHROUGH_INTENDED;
+    case LiveConfig::EncryptionScheme::CBCS:
+      encryption_params.protection_scheme =
+          EncryptionParams::kProtectionSchemeCbcs;
+      break;
+    case LiveConfig::EncryptionScheme::CENC:
+      encryption_params.protection_scheme =
+          EncryptionParams::kProtectionSchemeCenc;
+      break;
+    default:
+      return Status(error::INVALID_ARGUMENT,
+                    "invalid encryption scheme provided to LivePackager.");
   }
+
+  encryption_params.key_provider = KeyProvider::kRawKey;
+  RawKeyParams::KeyInfo& key_info = encryption_params.raw_key.key_map[""];
+  key_info.key = config.key;
+  key_info.key_id = config.key_id;
+  key_info.iv = config.iv;
+
   return Status::OK;
 }
 

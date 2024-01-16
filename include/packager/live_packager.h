@@ -72,6 +72,8 @@ struct LiveConfig {
     NONE,
     SAMPLE_AES,
     AES_128,
+    CBCS,
+    CENC,
   };
 
   OutputFormat format;
@@ -83,7 +85,7 @@ struct LiveConfig {
   std::vector<uint8_t> iv;
   std::vector<uint8_t> key;
   std::vector<uint8_t> key_id;
-  EncryptionScheme protection_scheme;
+  EncryptionScheme protection_scheme = EncryptionScheme::NONE;
 
   /// User-specified segment number.
   /// For FMP4 output:
