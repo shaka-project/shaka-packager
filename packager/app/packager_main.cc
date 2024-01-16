@@ -461,7 +461,7 @@ std::optional<PackagingParams> GetPackagingParams() {
 
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
-  packaging_params.default_text_zero_bias_ms = 
+  packaging_params.default_text_zero_bias_ms =
       absl::GetFlag(FLAGS_default_text_zero_bias_ms);
 
   packaging_params.output_media_info = absl::GetFlag(FLAGS_output_media_info);
