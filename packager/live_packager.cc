@@ -15,9 +15,17 @@
 #include <absl/log/log.h>
 #include <packager/chunking_params.h>
 #include <packager/file.h>
+
 #include <packager/live_packager.h>
+#include <packager/macros/status.h>
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/packager.h>
+
+#include "media/base/common_pssh_generator.h"
+#include "media/base/playready_pssh_generator.h"
+#include "media/base/protection_system_ids.h"
+#include "media/base/pssh_generator.h"
+#include "media/base/widevine_pssh_generator.h"
 
 namespace shaka {
 
@@ -416,6 +424,110 @@ Status Aes128EncryptedSegmentManager::InitializeEncryption(
     return Status(error::INVALID_ARGUMENT,
                   "invalid key and IV supplied to encryptor");
   }
+  return Status::OK;
+}
+
+void FillPSSHBoxByDRM(const media::ProtectionSystemSpecificInfo& pssh_info,
+                      PSSHData* data) {
+  if (std::equal(std::begin(media::kCommonSystemId),
+                 std::end(media::kCommonSystemId),
+                 pssh_info.system_id.begin())) {
+    data->cenc_box = pssh_info.psshs;
+    return;
+  }
+
+  if (std::equal(std::begin(media::kWidevineSystemId),
+                 std::end(media::kWidevineSystemId),
+                 pssh_info.system_id.begin())) {
+    data->wv_box = pssh_info.psshs;
+    return;
+  }
+
+  if (std::equal(std::begin(media::kPlayReadySystemId),
+                 std::end(media::kPlayReadySystemId),
+                 pssh_info.system_id.begin())) {
+    data->mspr_box = pssh_info.psshs;
+
+    std::unique_ptr<media::PsshBoxBuilder> box_builder =
+        media::PsshBoxBuilder::ParseFromBox(pssh_info.psshs.data(),
+                                            pssh_info.psshs.size());
+    data->mspr_pro = box_builder->pssh_data();
+  }
+}
+
+Status ValidatePSSHGeneratorInput(const PSSHGeneratorInput& input) {
+  constexpr int kKeySize = 16;
+
+  if (input.protection_scheme !=
+          PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CBCS &&
+      input.protection_scheme !=
+          PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CENC) {
+    LOG(WARNING) << "invalid encryption scheme in PSSH generator input";
+    return Status(error::INVALID_ARGUMENT,
+                  "invalid encryption scheme in PSSH generator input");
+  }
+
+  if (input.key.size() != kKeySize) {
+    LOG(WARNING) << "invalid key length in PSSH generator input";
+    return Status(error::INVALID_ARGUMENT,
+                  "invalid key length in PSSH generator input");
+  }
+
+  if (input.key_id.size() != kKeySize) {
+    LOG(WARNING) << "invalid key id length in PSSH generator input";
+    return Status(error::INVALID_ARGUMENT,
+                  "invalid key id length in PSSH generator input");
+  }
+
+  if (input.key_ids.empty()) {
+    LOG(WARNING) << "key ids cannot be empty in PSSH generator input";
+    return Status(error::INVALID_ARGUMENT,
+                  "key ids cannot be empty in PSSH generator input");
+  }
+
+  for (size_t i = 0; i < input.key_ids.size(); ++i) {
+    if (input.key_ids[i].size() != kKeySize) {
+      LOG(WARNING) << "invalid key id length in key ids array in PSSH "
+                      "generator input, index " +
+                          std::to_string(i);
+      return Status(error::INVALID_ARGUMENT,
+                    "invalid key id length in key ids array in PSSH generator "
+                    "input, index " +
+                        std::to_string(i));
+    }
+  }
+
+  return Status::OK;
+}
+
+Status GeneratePSSHData(const PSSHGeneratorInput& in, PSSHData* out) {
+  const char* kNoExtraHeadersForPlayReady = "";
+
+  RETURN_IF_ERROR(ValidatePSSHGeneratorInput(in));
+  if (!out) {
+    return Status(error::INVALID_ARGUMENT, "output data cannot be null");
+  }
+
+  std::vector<std::unique_ptr<media::PsshGenerator>> pssh_generators;
+  pssh_generators.emplace_back(std::make_unique<media::CommonPsshGenerator>());
+  pssh_generators.emplace_back(std::make_unique<media::PlayReadyPsshGenerator>(
+      kNoExtraHeadersForPlayReady,
+      static_cast<media::FourCC>(in.protection_scheme)));
+  pssh_generators.emplace_back(std::make_unique<media::WidevinePsshGenerator>(
+      static_cast<media::FourCC>(in.protection_scheme)));
+
+  for (const auto& pssh_generator : pssh_generators) {
+    media::ProtectionSystemSpecificInfo info;
+    if (pssh_generator->SupportMultipleKeys()) {
+      RETURN_IF_ERROR(
+          pssh_generator->GeneratePsshFromKeyIds(in.key_ids, &info));
+    } else {
+      RETURN_IF_ERROR(pssh_generator->GeneratePsshFromKeyIdAndKey(
+          in.key_id, in.key, &info));
+    }
+    FillPSSHBoxByDRM(info, out);
+  }
+
   return Status::OK;
 }
 }  // namespace shaka
