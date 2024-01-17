@@ -673,7 +673,9 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "  default_key_id: \"defaultkeyid\"\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
+      "    pssh: \"" +
+      std::string(kExpectedDefaultPsshBox) +
+      "\"\n"
       "  }\n"
       "  protection_scheme: 'cbcs'\n"
       "  include_mspr_pro: 1\n"
