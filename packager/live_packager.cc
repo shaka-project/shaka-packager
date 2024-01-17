@@ -25,6 +25,8 @@ namespace {
 
 using StreamDescriptors = std::vector<shaka::StreamDescriptor>;
 
+constexpr double SEGMENT_DURATION = 5.0;
+
 const std::string INPUT_FNAME = "memory://input_file";
 const std::string INIT_SEGMENT_FNAME = "init.mp4";
 
@@ -247,7 +249,7 @@ Status LivePackager::PackageInit(const Segment& init_segment,
 
   shaka::PackagingParams packaging_params;
   packaging_params.chunking_params.segment_duration_in_seconds =
-      config_.segment_duration_sec;
+      SEGMENT_DURATION;
 
   // in order to enable init packaging as a separate execution.
   packaging_params.init_segment_only = true;
@@ -306,7 +308,7 @@ Status LivePackager::Package(const Segment& init_segment,
 
   shaka::PackagingParams packaging_params;
   packaging_params.chunking_params.segment_duration_in_seconds =
-      config_.segment_duration_sec;
+      SEGMENT_DURATION;
 
   packaging_params.mp4_output_params.sequence_number = config_.segment_number;
 
