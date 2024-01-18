@@ -43,7 +43,6 @@ const uint8_t kIv[]{
     0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
 };
 
-const double kSegmentDurationInSeconds = 5.0;
 const int kNumSegments = 10;
 
 std::filesystem::path GetTestDataFilePath(const std::string& name) {
@@ -435,7 +434,6 @@ class LivePackagerBaseTest : public ::testing::Test {
 
   void SetupLivePackagerConfig(const LiveConfig& config) {
     LiveConfig new_live_config = config;
-    new_live_config.segment_duration_sec = kSegmentDurationInSeconds;
     switch (new_live_config.protection_scheme) {
       case LiveConfig::EncryptionScheme::NONE:
         break;
@@ -604,7 +602,6 @@ TEST_F(LivePackagerBaseTest, CustomMoofSequenceNumber) {
   live_config.format = LiveConfig::OutputFormat::FMP4;
   live_config.track_type = LiveConfig::TrackType::VIDEO;
   live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
-  live_config.segment_duration_sec = kSegmentDurationInSeconds;
 
   for (unsigned int i = 0; i < kNumSegments; i++) {
     live_config.segment_number = i + 1;
