@@ -24,7 +24,9 @@ MuxerFactory::MuxerFactory(const PackagingParams& packaging_params)
       temp_dir_(packaging_params.temp_dir),
       transport_stream_timestamp_offset_ms_(
           packaging_params.transport_stream_timestamp_offset_ms),
-      init_segment_only_(packaging_params.init_segment_only) {}
+      init_segment_only_(packaging_params.init_segment_only),
+      enable_null_ts_packet_stuffing_(
+          packaging_params.enable_null_ts_packet_stuffing) {}
 
 std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
     MediaContainerName output_format,
@@ -37,6 +39,7 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
   options.output_file_name = stream.output;
   options.segment_template = stream.segment_template;
   options.bandwidth = stream.bandwidth;
+  options.enable_null_ts_packet_stuffing = enable_null_ts_packet_stuffing_;
 
   std::shared_ptr<Muxer> muxer;
 

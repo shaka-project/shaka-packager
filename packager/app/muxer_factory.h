@@ -54,6 +54,9 @@ class MuxerFactory {
 
   // enable init segment packaging separately
   bool init_segment_only_;
+
+  // enable null TS packet stuffing
+  bool enable_null_ts_packet_stuffing_;
 };
 
 }  // namespace media

@@ -15,13 +15,16 @@ namespace mp2t {
 
 class ContinuityCounter {
  public:
-  ContinuityCounter();
+  ContinuityCounter(unsigned int initial_value = 0);
   ~ContinuityCounter();
 
   /// As specified by the spec, this starts from 0 and is incremented by 1 until
   /// it wraps back to 0 when it reaches 16.
   /// @return counter value.
   int GetNext();
+
+  /// @return the current value of the continuity counter.
+  [[nodiscard]] int GetCurrent() const;
 
  private:
   int counter_ = 0;

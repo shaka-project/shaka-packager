@@ -124,8 +124,10 @@ jobs:
 
           if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
             BUILD_SHARED_LIBS="ON"
+            BUILD_LIVE_TEST="ON"
           else
             BUILD_SHARED_LIBS="OFF"
+            BUILD_LIVE_TEST="OFF"
           fi
 
           # If set, override the default generator for the platform.
@@ -143,6 +145,7 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
             -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
+            -DBUILD_LIVE_TEST="$BUILD_LIVE_TEST" \
             -S . \
             -B build/
 

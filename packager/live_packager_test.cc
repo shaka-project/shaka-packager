@@ -17,10 +17,14 @@
 #include <packager/file.h>
 #include <packager/live_packager.h>
 #include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/byte_queue.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/program_map_table_writer.h>
+#include <packager/media/formats/mp2t/ts_packet.h>
+#include <packager/media/formats/mp2t/ts_section.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/mp4_media_parser.h>
@@ -336,8 +340,8 @@ void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
 TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
   PSSHGeneratorInput in{
       .protection_scheme = PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CENC,
-      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
       .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
+      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
       .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
                   unhex("00000000621f2afe7ab2c868d5fd2e2f")}};
 
@@ -386,8 +390,8 @@ TEST(GeneratePSSHData, GeneratesPSSHBoxesAndMSPRObject) {
 TEST(GeneratePSSHData, FailsOnInvalidInput) {
   const PSSHGeneratorInput valid_input{
       .protection_scheme = PSSHGeneratorInput::MP4ProtectionSchemeFourCC::CENC,
-      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
       .key = unhex("1af987fa084ff3c0f4ad35a6bdab98e2"),
+      .key_id = unhex("00000000621f2afe7ab2c868d5fd2e2e"),
       .key_ids = {unhex("00000000621f2afe7ab2c868d5fd2e2e"),
                   unhex("00000000621f2afe7ab2c868d5fd2e2f")}};
 
@@ -546,12 +550,14 @@ TEST_F(LivePackagerBaseTest, VerifyAes128WithDecryption) {
     live_config.format = LiveConfig::OutputFormat::TS;
     live_config.track_type = LiveConfig::TrackType::VIDEO;
     live_config.protection_scheme = LiveConfig::EncryptionScheme::AES_128;
+    live_config.segment_number = i;
 
     SetupLivePackagerConfig(live_config);
     ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
-    std::string exp_segment_num = absl::StrFormat("expected/ts/%04d.ts", i + 1);
+    std::string exp_segment_num =
+        absl::StrFormat("expected/stuffing_ts/%04d.ts", i + 1);
     std::vector<uint8_t> exp_segment_buffer = ReadTestDataFile(exp_segment_num);
     ASSERT_FALSE(exp_segment_buffer.empty());
 
@@ -592,6 +598,75 @@ TEST_F(LivePackagerBaseTest, EncryptionFailure) {
     ASSERT_EQ(Status(error::INVALID_ARGUMENT,
                      "invalid key and IV supplied to encryptor"),
               live_packager_->Package(init_seg, media_seg, out));
+  }
+}
+
+TEST_F(LivePackagerBaseTest, CheckContinutityCounter) {
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
+  ASSERT_FALSE(init_segment_buffer.empty());
+
+  media::ByteQueue ts_byte_queue;
+  int continuity_counter_tracker = 0;
+
+  for (unsigned int i = 0; i < kNumSegments; i++) {
+    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
+
+    FullSegmentBuffer out;
+
+    LiveConfig live_config;
+    live_config.format = LiveConfig::OutputFormat::TS;
+    live_config.track_type = LiveConfig::TrackType::VIDEO;
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
+    live_config.segment_number = i;
+
+    SetupLivePackagerConfig(live_config);
+    ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
+    ASSERT_GT(out.SegmentSize(), 0);
+
+    ts_byte_queue.Push(out.SegmentData(), static_cast<int>(out.SegmentSize()));
+    while (true) {
+      const uint8_t* ts_buffer;
+      int ts_buffer_size;
+      ts_byte_queue.Peek(&ts_buffer, &ts_buffer_size);
+
+      if (ts_buffer_size < media::mp2t::TsPacket::kPacketSize)
+        break;
+
+      // Synchronization.
+      int skipped_bytes =
+          media::mp2t::TsPacket::Sync(ts_buffer, ts_buffer_size);
+      ASSERT_EQ(skipped_bytes, 0);
+
+      // Parse the TS header, skipping 1 byte if the header is invalid.
+      std::unique_ptr<media::mp2t::TsPacket> ts_packet(
+          media::mp2t::TsPacket::Parse(ts_buffer, ts_buffer_size));
+      ASSERT_NE(nullptr, ts_packet);
+
+      if (ts_packet->payload_unit_start_indicator() &&
+          (ts_packet->pid() == media::mp2t::TsSection::kPidPat ||
+           ts_packet->pid() == media::mp2t::ProgramMapTableWriter::kPmtPid)) {
+        LOG(INFO) << "Processing PID=" << ts_packet->pid()
+                  << " start_unit=" << ts_packet->payload_unit_start_indicator()
+                  << " continuity_counter=" << ts_packet->continuity_counter();
+        // check the PAT (PID = 0x0) or PMT (PID = 0x20) continuity counter is
+        // in sync with the segment number.
+        EXPECT_EQ(ts_packet->continuity_counter(), live_config.segment_number);
+      } else if (ts_packet->pid() == 0x80) {
+        // check PES TS Packets CC correctly increments.
+        int expected_continuity_counter = (continuity_counter_tracker++) % 16;
+        EXPECT_EQ(ts_packet->continuity_counter(), expected_continuity_counter);
+      }
+      // Go to the next packet.
+      ts_byte_queue.Pop(media::mp2t::TsPacket::kPacketSize);
+    }
+    continuity_counter_tracker = 0;
+    ts_byte_queue.Reset();
   }
 }
 
@@ -648,7 +723,7 @@ class LivePackagerEncryptionTest
   }
 
  protected:
-  std::vector<uint8_t> ReadExpectedData() {
+  static std::vector<uint8_t> ReadExpectedData() {
     // TODO: make this more generic to handle mp2t as well
     std::vector<uint8_t> buf = ReadTestDataFile("expected/fmp4/init.mp4");
     for (unsigned int i = 0; i < GetParam().num_segments; i++) {
@@ -660,7 +735,7 @@ class LivePackagerEncryptionTest
     return buf;
   }
 
-  std::unique_ptr<media::KeySource> MakeKeySource() {
+  static std::unique_ptr<media::KeySource> MakeKeySource() {
     RawKeyParams raw_key;
     RawKeyParams::KeyInfo& key_info = raw_key.key_map[""];
     key_info.key = {std::begin(kKey), std::end(kKey)};

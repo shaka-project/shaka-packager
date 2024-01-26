@@ -44,6 +44,9 @@ struct MuxerOptions {
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
   uint32_t bandwidth = 0;
+
+  /// Specify weather or not to enable null packet stuffing for TS segments.
+  bool enable_null_ts_packet_stuffing = false;
 };
 
 }  // namespace media

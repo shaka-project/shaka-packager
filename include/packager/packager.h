@@ -75,6 +75,9 @@ struct PackagingParams {
 
   /// Only use to package init segment separately.
   bool init_segment_only = false;
+
+  /// Specify weather or not to enable null packet stuffing for TS segments.
+  bool enable_null_ts_packet_stuffing = false;
 };
 
 /// Defines a single input/output stream.

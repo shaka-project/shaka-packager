@@ -30,7 +30,12 @@ class ProgramMapTableWriter;
 /// the data to file. This also creates PSI from StreamInfo.
 class TsWriter {
  public:
-  explicit TsWriter(std::unique_ptr<ProgramMapTableWriter> pmt_writer);
+  /// Create TsWriter with segment_number
+  /// @param pmt_writer the writes PMT into ts packets
+  //// @param segment_number is used to set the continuity counter for PAT
+  /// packets.
+  explicit TsWriter(std::unique_ptr<ProgramMapTableWriter> pmt_writer,
+                    unsigned int segment_number = 0);
   virtual ~TsWriter();
 
   /// This will fail if the current segment is not finalized.
@@ -46,7 +51,12 @@ class TsWriter {
   /// @param pes_packet gets added to the writer.
   /// @param buffer to write pes packet.
   /// @return true on success, false otherwise.
-  virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet, BufferWriter* buffer);
+  virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet,
+                            BufferWriter* buffer);
+
+  ContinuityCounter& es_continuity_counter() {
+    return elementary_stream_continuity_counter_;
+  }
 
  private:
   TsWriter(const TsWriter&) = delete;

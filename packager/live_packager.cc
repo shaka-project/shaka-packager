@@ -34,8 +34,9 @@ namespace {
 
 using StreamDescriptors = std::vector<shaka::StreamDescriptor>;
 
-// Shaka requires a non-zero value for segment duration otherwise it throws an error.
-// For our use-case of packaging segments individually, this value has no effect.
+// Shaka requires a non-zero value for segment duration otherwise it throws an
+// error. For our use-case of packaging segments individually, this value has no
+// effect.
 constexpr double DEFAULT_SEGMENT_DURATION = 5.0;
 
 const std::string INPUT_FNAME = "memory://input_file";
@@ -329,6 +330,7 @@ Status LivePackager::Package(const Segment& init_segment,
   packaging_params.mp4_output_params.include_pssh_in_stream = false;
   packaging_params.transport_stream_timestamp_offset_ms =
       config_.m2ts_offset_ms;
+  packaging_params.enable_null_ts_packet_stuffing = true;
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
   // As a side effect of InitializeEncryption, encryption_params will be
