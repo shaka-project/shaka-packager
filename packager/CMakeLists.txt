@@ -51,6 +51,10 @@ else()
   add_compile_options(-Wno-unknown-warning-option)
 endif()
 
+if(USE_WORKAROUND_FOR_TRUN_VERSION_0)
+  add_definitions(-DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1)
+endif()
+
 # Global include paths.
 # Project root, to reference internal headers as packager/foo/bar/...
 include_directories(..)

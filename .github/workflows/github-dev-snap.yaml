@@ -41,6 +41,7 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE="Release" \
             -DBUILD_SHARED_LIBS=1 \
+            -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
             -S . \
             -B build/
 

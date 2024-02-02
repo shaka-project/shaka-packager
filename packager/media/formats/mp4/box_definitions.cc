@@ -2716,6 +2716,13 @@ bool TrackFragmentRun::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteUInt32(&sample_flags[i]));
 
     if (sample_composition_time_offsets_present) {
+// TODO: MediaLive produces negative composition time offsets in box version 0.
+// This is a workaround for that.
+#ifdef USE_WORKAROUND_FOR_TRUN_VERSION_0
+      int32_t sample_offset = sample_composition_time_offsets[i];
+      RCHECK(buffer->ReadWriteInt32(&sample_offset));
+      sample_composition_time_offsets[i] = sample_offset;
+#else
       if (version == 0) {
         uint32_t sample_offset = sample_composition_time_offsets[i];
         RCHECK(buffer->ReadWriteUInt32(&sample_offset));
@@ -2725,6 +2732,7 @@ bool TrackFragmentRun::ReadWriteInternal(BoxBuffer* buffer) {
         RCHECK(buffer->ReadWriteInt32(&sample_offset));
         sample_composition_time_offsets[i] = sample_offset;
       }
+#endif
     }
   }
 
