@@ -419,12 +419,12 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(UDTSSpecific* udts) {
     const uint8_t kUdtsData[] = {0x01, 0x20, 0x00, 0x00, 0x0, 0x3F, 0x80, 0x00};
-    udts->data.assign(kUdtsData, kUdtsData + arraysize(kUdtsData));
+    udts->data.assign(kUdtsData, kUdtsData + std::size(kUdtsData));
   }
 
   void Modify(UDTSSpecific* udts) {
     const uint8_t kUdtsData[] = {0x01, 0x20, 0x01, 0x80, 0xA, 0x3F, 0x80, 0x00};
-    udts->data.assign(kUdtsData, kUdtsData + arraysize(kUdtsData));
+    udts->data.assign(kUdtsData, kUdtsData + std::size(kUdtsData));
   }
 
   void Fill(AC3Specific* dac3) {

@@ -20,7 +20,7 @@
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/ac4_audio_util.h>
-#include "packager/media/codecs/dts_audio_specific_config.h"
+#include <packager/media/codecs/dts_audio_specific_config.h>
 #include <packager/media/codecs/ec3_audio_util.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/utils/bytes_to_string_view.h>

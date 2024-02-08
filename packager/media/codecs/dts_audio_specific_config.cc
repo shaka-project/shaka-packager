@@ -3,11 +3,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/codecs/dts_audio_specific_config.h"
+#include <packager/media/codecs/dts_audio_specific_config.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {

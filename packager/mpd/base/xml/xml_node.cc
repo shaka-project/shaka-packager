@@ -617,15 +617,14 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     return ret;
   } else if (audio_info.codec() == kDTSCCodec ||
              audio_info.codec() == kDTSECodec) {
-    audio_channel_config_value = base::UintToString(audio_info.num_channels());
+    audio_channel_config_value =
+        absl::StrFormat("%u", audio_info.num_channels());
     audio_channel_config_scheme =
         "tag:dts.com,2014:dash:audio_channel_configuration:2012";
   } else if (audio_info.codec() == kDTSXCodec) {
     const auto& codec_data = audio_info.codec_specific_data();
-    const uint32_t channel_config =
-        base::HostToNet32(codec_data.channel_mask());
     audio_channel_config_value =
-        base::HexEncode(&channel_config, sizeof(channel_config));
+        absl::StrFormat("%08X", codec_data.channel_mask());
     audio_channel_config_scheme =
         "tag:dts.com,2018:uhd:audio_channel_configuration";
   } else {
