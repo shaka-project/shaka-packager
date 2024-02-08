@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 
 #include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/timestamp.h>
@@ -188,6 +189,19 @@ TEST_F(Mp2tMediaParserTest, PtsZeroDtsWrapAround) {
   // to DTS
   EXPECT_GT(video_min_pts_, static_cast<int64_t>(1) << 33);
   EXPECT_GT(video_max_pts_, static_cast<int64_t>(1) << 33);
+}
+
+TEST_F(Mp2tMediaParserTest, PmtEsDescriptors) {
+  //"bear-eng-visualy-impaired-audio.ts" consist of audio stream marked as
+  // english audio with commentary for visualy impaired viewer and max
+  // bitrate set to ~128kbps
+
+  ParseMpeg2TsFile("bear-visualy-impaired-eng-audio.ts", 188);
+  EXPECT_TRUE(parser_->Flush());
+  EXPECT_STREQ("eng", stream_map_[257]->language().c_str());
+
+  auto* audio_info = static_cast<AudioStreamInfo*>(stream_map_[257].get());
+  EXPECT_EQ(131600, audio_info->max_bitrate());
 }
 
 }  // namespace mp2t

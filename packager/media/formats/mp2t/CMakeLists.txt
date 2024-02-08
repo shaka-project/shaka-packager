@@ -33,6 +33,7 @@ add_library(mp2t STATIC
   pes_packet_generator.h
   program_map_table_writer.cc
   program_map_table_writer.h
+  ts_audio_type.h
   ts_muxer.cc
   ts_muxer.h
   ts_packet.cc
