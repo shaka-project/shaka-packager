@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "packager/media/base/audio_stream_info.h"
+#include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/stream_info.h>
