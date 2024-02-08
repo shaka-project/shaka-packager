@@ -153,7 +153,7 @@ struct EncryptionParams {
   RawKeyParams raw_key;
 
   /// The protection systems to generate, multiple can be OR'd together.
-  ProtectionSystem protection_systems;
+  ProtectionSystem protection_systems = ProtectionSystem::kNone;
   /// Extra XML data to add to PlayReady data.
   std::string playready_extra_header_data;
 
