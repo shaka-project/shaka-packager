@@ -942,6 +942,7 @@ Status Packager::Initialize(
 
   media::MuxerFactory muxer_factory(packaging_params);
   if (packaging_params.test_params.inject_fake_clock) {
+    internal->fake_clock.reset(new media::FakeClock());
     muxer_factory.OverrideClock(internal->fake_clock);
   }
 
