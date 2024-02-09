@@ -34,7 +34,6 @@
 #include <packager/app/raw_key_encryption_flags.h>
 #include <packager/app/retired_flags.h>
 #include <packager/app/stream_descriptor.h>
-#include <packager/app/vlog_flags.h>
 #include <packager/app/widevine_encryption_flags.h>
 #include <packager/file.h>
 #include <packager/kv_pairs/kv_pairs.h>
@@ -563,8 +562,6 @@ int PackagerMain(int argc, char** argv) {
   if (absl::GetFlag(FLAGS_quiet)) {
     absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
   }
-
-  handle_vlog_flags();
 
   absl::InitializeLog();
 
