@@ -460,13 +460,13 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (force_cl_index) {
     audio_groups_list.sort(GroupOrderFn);
     for (const auto& group : audio_groups_list) {
-      std::list<const MediaPlaylist*> playlists = group.second;
-      playlists.sort(ListOrderFn);
+      std::list<const MediaPlaylist*> group_playlists = group.second;
+      group_playlists.sort(ListOrderFn);
     }
     subtitle_groups_list.sort(GroupOrderFn);
     for (const auto& group : subtitle_groups_list) {
-      std::list<const MediaPlaylist*> playlists = group.second;
-      playlists.sort(ListOrderFn);
+      std::list<const MediaPlaylist*> group_playlists = group.second;
+      group_playlists.sort(ListOrderFn);
     }
     video_playlists.sort(ListOrderFn);
     iframe_playlists.sort(ListOrderFn);
