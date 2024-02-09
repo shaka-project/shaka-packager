@@ -80,3 +80,8 @@ HLS options
 
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
     stream is HLS only.
+
+--force_cl_index
+
+    True forces the muxer to order streams in the order given 
+    on the command-line. False uses the previous unordered behavior.

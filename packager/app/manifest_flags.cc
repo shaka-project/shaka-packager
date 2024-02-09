@@ -40,5 +40,5 @@ ABSL_FLAG(std::string,
 ABSL_FLAG(bool,
           force_cl_index,
           true,
-          "Force the muxer to order streams in the order given "
-          "on the command-line");
+          "True forces the muxer to order streams in the order given "
+          "on the command-line. False uses the previous unordered behavior.");

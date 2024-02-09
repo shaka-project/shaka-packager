@@ -65,7 +65,7 @@ struct HlsParams {
   uint32_t media_sequence_number = 0;
   /// Force the muxer to order streams in the order given
   /// on the command-line
-  bool force_cl_index = false;
+  bool force_cl_index = true;
 };
 
 }  // namespace shaka

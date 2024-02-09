@@ -63,7 +63,7 @@ struct PackagingParams {
   /// avoid non-deterministic outputs.
   bool single_threaded = false;
   /// Force the command-line order in the output manifest(s)
-  bool force_cl_index = false;
+  bool force_cl_index = true;
 
   /// DASH MPD related parameters.
   MpdParams mpd_params;
