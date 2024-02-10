@@ -9,9 +9,6 @@
 # Minimum CMake version.  This must be in the root level CMakeLists.txt.
 cmake_minimum_required(VERSION 3.16)
 
-# Musl define off_t and it's already 64bit
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Doff64_t=off_t")
-
 # These policy settings should be included before the project definition.
 include("packager/policies.cmake")
 
