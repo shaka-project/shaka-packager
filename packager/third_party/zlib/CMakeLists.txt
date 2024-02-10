@@ -17,13 +17,5 @@ set(SKIP_INSTALL_ALL ON)
 # work, as the assembly files aren't in the repo for some reason.  So don't set
 # the AMD64 flag.
 
-# Silence these warnings:
-if(MSVC)
-  add_compile_options(/wd4244)
-else()
-  add_compile_options(-Wno-implicit-function-declaration)
-  add_compile_options(-Wno-deprecated-non-prototype)
-endif()
-
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)

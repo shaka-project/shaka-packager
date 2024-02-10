@@ -758,7 +758,7 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
       representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
-                   "                   availabilityTimeOffset=\"4.9751\" "
+                   "                   availabilityTimeOffset=\"4.975099\" "
                    "                   availabilityTimeComplete=\"false\" "
                    "                   initialization=\"init.m4s\" "
                    "                   media=\"$Number$.m4s\" "

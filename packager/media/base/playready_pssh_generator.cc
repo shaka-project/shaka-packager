@@ -75,8 +75,7 @@ void AesEcbEncrypt(const std::vector<uint8_t>& key,
                    const std::vector<uint8_t>& plaintext,
                    std::vector<uint8_t>* ciphertext) {
   CHECK_EQ(plaintext.size() % AES_BLOCK_SIZE, 0u);
-  // mbedtls requires an extra block worth of output buffer.
-  ciphertext->resize(plaintext.size() + AES_BLOCK_SIZE);
+  ciphertext->resize(plaintext.size());
 
   mbedtls_cipher_context_t ctx;
   mbedtls_cipher_init(&ctx);
@@ -98,8 +97,6 @@ void AesEcbEncrypt(const std::vector<uint8_t>& key,
                                 plaintext.data(), plaintext.size(),
                                 ciphertext->data(), &output_size),
            0);
-  // Truncate the output to the correct size.
-  ciphertext->resize(plaintext.size());
 
   mbedtls_cipher_free(&ctx);
 }

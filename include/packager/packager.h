@@ -46,6 +46,10 @@ struct PackagingParams {
   /// audio) timestamps to compensate for possible negative timestamps in the
   /// input.
   int32_t transport_stream_timestamp_offset_ms = 0;
+  // the threshold used to determine if we should assume that the text stream
+  // actually starts at time zero
+  int32_t default_text_zero_bias_ms = 0;
+
   /// Chunking (segmentation) related parameters.
   ChunkingParams chunking_params;
 
