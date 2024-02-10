@@ -23,6 +23,14 @@ if(MSVC)
   # Use warning level 3 in third-party code, as opposed to level 4 used in our
   # own code.
   add_compile_options(/W3)
+
+  # Do not treat warnings as errors in third-party code.
+  add_compile_options(/WX-)
+else()
+  # Do not treat warnings as errors in third-party code.
+  # Surprisingly, both of these are required to satisfy various platforms and
+  # compilers at once.
+  add_compile_options(-Wno-error -Wno-error=all)
 endif()
 
 # These all use EXCLUDE_FROM_ALL so that only the referenced targets get built.
