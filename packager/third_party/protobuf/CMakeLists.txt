@@ -25,8 +25,7 @@ set(ABSL_ROOT_DIR get_filename_component(ABSOLUTE_PATH ../abseil-cpp/source ABSO
 # Make sure protoc links against the same MSVC runtime as internal libs.
 set(protobuf_MSVC_STATIC_RUNTIME OFF)
 
-# Disable internal debugging features, which end up triggering further compiler
-# errors.
+# Disable internal debugging features.
 add_definitions(-DNDEBUG)
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.

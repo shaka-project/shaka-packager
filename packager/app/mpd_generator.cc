@@ -21,7 +21,6 @@
 #include <absl/strings/str_split.h>
 
 #include <packager/app/mpd_generator_flags.h>
-#include <packager/app/vlog_flags.h>
 #include <packager/mpd/util/mpd_writer.h>
 #include <packager/tools/license_notice.h>
 #include <packager/version/version.h>
@@ -123,8 +122,6 @@ int MpdMain(int argc, char** argv) {
     std::cerr << "Usage " << absl::ProgramUsageMessage();
     return status;
   }
-
-  handle_vlog_flags();
 
   absl::InitializeLog();
 
