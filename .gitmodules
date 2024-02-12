@@ -15,7 +15,7 @@
 	url = https://github.com/Mbed-TLS/mbedtls
 [submodule "packager/third_party/zlib/source"]
 	path = packager/third_party/zlib/source
-	url = https://github.com/joeyparrish/zlib
+	url = https://github.com/madler/zlib
 [submodule "packager/third_party/libpng/source"]
 	path = packager/third_party/libpng/source
 	url = https://github.com/glennrp/libpng
