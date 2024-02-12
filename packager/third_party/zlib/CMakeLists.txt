@@ -10,12 +10,11 @@
 # submodule in an unclean state.
 set(RENAME_ZCONF OFF)
 
+# Skip the building of zlib example apps and tests.
+set(ZLIB_BUILD_EXAMPLES OFF)
+
 # Don't install anything.
 set(SKIP_INSTALL_ALL ON)
-
-# The configuration for x64 assembly in zlib's CMakeLists.txt doesn't seem to
-# work, as the assembly files aren't in the repo for some reason.  So don't set
-# the AMD64 flag.
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
