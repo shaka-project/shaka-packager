@@ -271,8 +271,7 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
           : hls_params.default_text_language;
   master_playlist_.reset(new MasterPlaylist(
       master_playlist_path.filename(), default_audio_langauge,
-      default_text_language, hls_params.is_independent_segments,
-      hls_params.force_cl_index));
+      default_text_language, hls_params.is_independent_segments));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}

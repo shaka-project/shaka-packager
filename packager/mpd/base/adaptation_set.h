@@ -329,7 +329,7 @@ class AdaptationSet {
   uint32_t transfer_characteristics_ = 0;
 
   // the command-line index for this AdaptationSet
-  uint32_t cl_index_ = UINT32_MAX;
+  std::optional<uint32_t> index_;
 };
 
 }  // namespace shaka

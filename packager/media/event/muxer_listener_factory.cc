@@ -44,7 +44,7 @@ std::unique_ptr<MuxerListener> CreateMpdListenerInternal(
   auto listener = std::make_unique<MpdNotifyMuxerListener>(notifier);
   listener->set_accessibilities(stream.dash_accessiblities);
   listener->set_roles(stream.dash_roles);
-  listener->set_cl_index(stream.cl_index);
+  listener->set_index(stream.index);
   return listener;
 }
 
@@ -74,11 +74,11 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
   std::list<std::unique_ptr<MuxerListener>> listeners;
   listeners.emplace_back(
       new HlsNotifyMuxerListener(playlist_name, !kIFramesOnly, name, group_id,
-                                 characteristics, notifier, stream.cl_index));
+                                 characteristics, notifier, stream.index));
   if (!iframe_playlist_name.empty()) {
     listeners.emplace_back(new HlsNotifyMuxerListener(
         iframe_playlist_name, kIFramesOnly, name, group_id,
-        std::vector<std::string>(), notifier, stream.cl_index));
+        std::vector<std::string>(), notifier, stream.index));
   }
   return listeners;
 }

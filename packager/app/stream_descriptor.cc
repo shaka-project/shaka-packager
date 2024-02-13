@@ -98,14 +98,9 @@ FieldType GetFieldType(const std::string& field_name) {
 
 }  // anonymous namespace
 
-// the counter used to set the index (cl_index) from the command-line
-uint32_t descriptor_counter = 0;
-
 std::optional<StreamDescriptor> ParseStreamDescriptor(
     const std::string& descriptor_string) {
   StreamDescriptor descriptor;
-
-  descriptor.cl_index = descriptor_counter++;
 
   // Split descriptor string into name/value pairs.
   std::vector<KVPair> kv_pairs =

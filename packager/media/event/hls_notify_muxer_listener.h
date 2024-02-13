@@ -46,7 +46,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
                          const std::string& ext_x_media_group_id,
                          const std::vector<std::string>& characteristics,
                          hls::HlsNotifier* hls_notifier,
-                         uint32_t cl_index);
+                         std::optional<uint32_t> index);
   ~HlsNotifyMuxerListener() override;
 
   /// @name MuxerListener implementation overrides.
@@ -88,7 +88,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::vector<std::string> characteristics_;
   hls::HlsNotifier* const hls_notifier_;
   std::optional<uint32_t> stream_id_;
-  uint32_t cl_index_;
+  std::optional<uint32_t> index_;
 
   bool must_notify_encryption_start_ = false;
   // Cached encryption info before OnMediaStart() is called.

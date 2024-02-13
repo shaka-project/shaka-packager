@@ -184,8 +184,8 @@ AdaptationSet::AdaptationSet(const std::string& language,
 AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
-  const uint32_t representation_id = mpd_options_.mpd_params.force_cl_index
-                                         ? media_info.cl_index()
+  const uint32_t representation_id = media_info.has_index()
+                                         ? media_info.index()
                                          : (*representation_counter_)++;
 
   // Note that AdaptationSet outlive Representation, so this object
@@ -254,8 +254,9 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   bool suppress_representation_height = false;
   bool suppress_representation_frame_rate = false;
 
-  if (mpd_options_.mpd_params.force_cl_index)
-    id_ = cl_index_;
+
+  if (index_.has_value())
+    id_ = index_.value();
   if (id_ && !adaptation_set.SetId(id_.value()))
     return std::nullopt;
   if (!adaptation_set.SetStringAttribute("contentType", content_type_))
@@ -342,7 +343,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       trick_play_reference_ids += ' ';
     CHECK(tp_adaptation_set->has_id());
     trick_play_reference_ids += std::to_string(
-        mpd_options_.mpd_params.force_cl_index ? tp_adaptation_set->cl_index_
+        tp_adaptation_set->index_.has_value() ? tp_adaptation_set->index_.value()
                                                : tp_adaptation_set->id());
   }
   if (!trick_play_reference_ids.empty() &&
@@ -357,8 +358,8 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!switching_ids.empty())
       switching_ids += ',';
     CHECK(s_adaptation_set->has_id());
-    switching_ids += std::to_string(mpd_options_.mpd_params.force_cl_index
-                                        ? s_adaptation_set->cl_index_
+    switching_ids += std::to_string(s_adaptation_set->index_.has_value()
+                                        ? s_adaptation_set->index_.value()
                                         : s_adaptation_set->id());
   }
   if (!switching_ids.empty() &&
@@ -465,7 +466,13 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 
   // the command-line index for this AdaptationSet will be the
   // minimum of the Representations in the set
-  cl_index_ = std::min(cl_index_, media_info.cl_index());
+  if (media_info.has_index()) {
+    if (index_.has_value()) {
+      index_ = std::min(index_.value(), media_info.index());
+    } else {
+      index_ = media_info.index();
+    }
+  }
 
   if (media_info.has_video_info()) {
     content_type_ = "video";

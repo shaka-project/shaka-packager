@@ -102,7 +102,6 @@ struct MpdParams {
   /// and is greatly influnced by the player.
   /// This parameter is required by DASH-IF Low Latency standards.
   double target_latency_seconds = 1;
-  bool force_cl_index = true;
 };
 
 }  // namespace shaka

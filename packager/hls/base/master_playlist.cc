@@ -408,29 +408,33 @@ void BuildMediaTags(
 }
 
 bool ListOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
-  return a->GetMediaInfo().cl_index() < b->GetMediaInfo().cl_index();
+  return a->GetMediaInfo().index() < b->GetMediaInfo().index();
 }
 
 bool GroupOrderFn(std::pair<std::string, std::list<const MediaPlaylist*>>& a,
                   std::pair<std::string, std::list<const MediaPlaylist*>>& b) {
   a.second.sort(ListOrderFn);
   b.second.sort(ListOrderFn);
-  return a.second.front()->GetMediaInfo().cl_index() <
-         b.second.front()->GetMediaInfo().cl_index();
+  return a.second.front()->GetMediaInfo().index() <
+         b.second.front()->GetMediaInfo().index();
 }
 
 void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& default_text_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
-                     const bool force_cl_index,
                      std::string* content) {
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
   std::map<std::string, std::list<const MediaPlaylist*>>
       subtitle_playlist_groups;
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
+
+  bool has_index = true;
+
   for (const MediaPlaylist* playlist : playlists) {
+    has_index = has_index && playlist->GetMediaInfo().has_index();
+
     switch (playlist->stream_type()) {
       case MediaPlaylist::MediaPlaylistStreamType::kAudio:
         audio_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
@@ -450,14 +454,14 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
-  // convert the std::map to std::list and reorder if force_cl_index == true
+  // convert the std::map to std::list and reorder it if indexes were provided
   std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
       audio_groups_list(audio_playlist_groups.begin(),
                         audio_playlist_groups.end());
   std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
       subtitle_groups_list(subtitle_playlist_groups.begin(),
                            subtitle_playlist_groups.end());
-  if (force_cl_index) {
+  if (has_index) {
     audio_groups_list.sort(GroupOrderFn);
     for (const auto& group : audio_groups_list) {
       std::list<const MediaPlaylist*> group_playlists = group.second;
@@ -526,13 +530,11 @@ void AppendPlaylists(const std::string& default_audio_language,
 MasterPlaylist::MasterPlaylist(const std::filesystem::path& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
-                               bool is_independent_segments,
-                               bool force_cl_index)
+                               bool is_independent_segments)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
       default_text_language_(default_text_language),
-      is_independent_segments_(is_independent_segments),
-      force_cl_index_(force_cl_index) {}
+      is_independent_segments_(is_independent_segments) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -547,7 +549,7 @@ bool MasterPlaylist::WriteMasterPlaylist(
     content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
   }
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
-                  playlists, force_cl_index_, &content);
+                  playlists, &content);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)

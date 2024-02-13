@@ -213,5 +213,6 @@ message MediaInfo {
   // Equal to the target segment duration times the reference time scale.
   optional uint64 segment_duration = 25;
 
-  optional uint32 cl_index = 28;
+  // stream index for consistent ordering of streams
+  optional uint32 index = 28;
 }

@@ -74,7 +74,7 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
   data.dash_accessiblities = stream.dash_accessiblities;
   data.dash_roles = stream.dash_roles;
   data.dash_only = stream.dash_only;
-  data.cl_index = stream.cl_index;
+  data.index = stream.index;
   return data;
 };
 
