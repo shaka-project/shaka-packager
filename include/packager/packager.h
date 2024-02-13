@@ -78,6 +78,9 @@ struct PackagingParams {
 
   /// Specify weather or not to enable null packet stuffing for TS segments.
   bool enable_null_ts_packet_stuffing = false;
+
+  /// Flag used to adjust negative CTS offset values to correct PTS < DTS
+  bool cts_offset_adjustment = false;
 };
 
 /// Defines a single input/output stream.

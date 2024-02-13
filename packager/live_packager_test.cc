@@ -22,6 +22,7 @@
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/mp2t_media_parser.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
 #include <packager/media/formats/mp2t/ts_packet.h>
 #include <packager/media/formats/mp2t/ts_section.h>
@@ -450,6 +451,7 @@ class LivePackagerBaseTest : public ::testing::Test {
         new_live_config.key_id = key_id_;
         break;
     }
+    new_live_config.m2ts_offset_ms = 9000;
     live_packager_ = std::make_unique<LivePackager>(new_live_config);
   }
 
@@ -459,6 +461,76 @@ class LivePackagerBaseTest : public ::testing::Test {
   std::vector<uint8_t> key_;
   std::vector<uint8_t> iv_;
   std::vector<uint8_t> key_id_;
+};
+
+class LivePackagerMp2tTest : public LivePackagerBaseTest {
+ public:
+  LivePackagerMp2tTest() : LivePackagerBaseTest() {}
+
+  void SetUp() override {
+    LivePackagerBaseTest::SetUp();
+    parser_.reset(new media::mp2t::Mp2tMediaParser());
+    InitializeParser();
+  }
+
+ protected:
+  typedef std::map<int, std::shared_ptr<media::StreamInfo>> StreamMap;
+
+  std::unique_ptr<media::mp2t::Mp2tMediaParser> parser_;
+  StreamMap stream_map_;
+
+  bool AppendData(const uint8_t* data, size_t length) {
+    return parser_->Parse(data, static_cast<int>(length));
+  }
+
+  bool AppendDataInPieces(const uint8_t* data,
+                          size_t length,
+                          size_t piece_size) {
+    const uint8_t* start = data;
+    const uint8_t* end = data + length;
+    while (start < end) {
+      size_t append_size =
+          std::min(piece_size, static_cast<size_t>(end - start));
+      if (!AppendData(start, append_size))
+        return false;
+      start += append_size;
+    }
+    return true;
+  }
+
+  void OnInit(
+      const std::vector<std::shared_ptr<media::StreamInfo>>& stream_infos) {
+    for (const auto& stream_info : stream_infos) {
+      stream_map_[stream_info->track_id()] = stream_info;
+    }
+  }
+
+  bool OnNewSample(uint32_t track_id,
+                   std::shared_ptr<media::MediaSample> sample) {
+    StreamMap::const_iterator stream = stream_map_.find(track_id);
+    EXPECT_NE(stream_map_.end(), stream);
+    if (stream != stream_map_.end()) {
+      if (stream->second->stream_type() == media::kStreamVideo) {
+        EXPECT_GE(sample->pts(), sample->dts());
+      }
+    }
+    return true;
+  }
+
+  bool OnNewTextSample(uint32_t track_id,
+                       std::shared_ptr<media::TextSample> sample) {
+    return false;
+  }
+
+  void InitializeParser() {
+    parser_->Init(
+        std::bind(&LivePackagerMp2tTest::OnInit, this, std::placeholders::_1),
+        std::bind(&LivePackagerMp2tTest::OnNewSample, this,
+                  std::placeholders::_1, std::placeholders::_2),
+        std::bind(&LivePackagerMp2tTest::OnNewTextSample, this,
+                  std::placeholders::_1, std::placeholders::_2),
+        NULL);
+  }
 };
 
 TEST_F(LivePackagerBaseTest, InitSegmentOnly) {
@@ -668,6 +740,40 @@ TEST_F(LivePackagerBaseTest, CheckContinutityCounter) {
     continuity_counter_tracker = 0;
     ts_byte_queue.Reset();
   }
+}
+
+TEST_F(LivePackagerMp2tTest, Mp2TSNegativeCTS) {
+  std::vector<uint8_t> init_segment_buffer = ReadTestDataFile("input/init.mp4");
+  ASSERT_FALSE(init_segment_buffer.empty());
+
+  FullSegmentBuffer actual_buf;
+
+  for (unsigned int i = 0; i < kNumSegments; i++) {
+    std::string segment_num = absl::StrFormat("input/%04d.m4s", i);
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    SegmentData init_seg(init_segment_buffer.data(),
+                         init_segment_buffer.size());
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
+
+    FullSegmentBuffer out;
+
+    LiveConfig live_config;
+    live_config.format = LiveConfig::OutputFormat::TS;
+    live_config.track_type = LiveConfig::TrackType::VIDEO;
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
+    live_config.segment_number = i;
+
+    SetupLivePackagerConfig(live_config);
+    ASSERT_EQ(Status::OK, live_packager_->Package(init_seg, media_seg, out));
+    ASSERT_GT(out.SegmentSize(), 0);
+    actual_buf.AppendData(out.SegmentData(), out.SegmentSize());
+  }
+
+  ASSERT_TRUE(
+      AppendDataInPieces(actual_buf.Data(), actual_buf.SegmentSize(), 512));
+  EXPECT_TRUE(parser_->Flush());
 }
 
 TEST_F(LivePackagerBaseTest, CustomMoofSequenceNumber) {

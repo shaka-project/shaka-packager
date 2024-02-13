@@ -28,7 +28,7 @@ struct ProtectionSystemSpecificHeader;
 
 class MP4MediaParser : public MediaParser {
  public:
-  MP4MediaParser();
+  MP4MediaParser(bool cts_offset_adjustment = false);
   ~MP4MediaParser() override;
 
   /// @name MediaParser implementation overrides.
@@ -100,6 +100,9 @@ class MP4MediaParser : public MediaParser {
 
   std::unique_ptr<Movie> moov_;
   std::unique_ptr<TrackRunIterator> runs_;
+
+  // flag used to adjust negative CTS offset values to correct PTS < DTS
+  bool cts_offset_adjustment_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);
 };

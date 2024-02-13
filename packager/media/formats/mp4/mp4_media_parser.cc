@@ -177,11 +177,12 @@ const uint64_t kNanosecondsPerSecond = 1000000000ull;
 
 }  // namespace
 
-MP4MediaParser::MP4MediaParser()
+MP4MediaParser::MP4MediaParser(bool cts_offset_adjustment)
     : state_(kWaitingForInit),
       decryption_key_source_(NULL),
       moof_head_(0),
-      mdat_tail_(0) {}
+      mdat_tail_(0),
+      cts_offset_adjustment_(cts_offset_adjustment) {}
 
 MP4MediaParser::~MP4MediaParser() {}
 
@@ -749,7 +750,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
   init_cb_(streams);
   if (!FetchKeysIfNecessary(moov_->pssh))
     return false;
-  runs_.reset(new TrackRunIterator(moov_.get()));
+  runs_.reset(new TrackRunIterator(moov_.get(), cts_offset_adjustment_));
   RCHECK(runs_->Init());
   ChangeState(kEmittingSamples);
   return true;
@@ -761,7 +762,7 @@ bool MP4MediaParser::ParseMoof(BoxReader* reader) {
   MovieFragment moof;
   RCHECK(moof.Parse(reader));
   if (!runs_)
-    runs_.reset(new TrackRunIterator(moov_.get()));
+    runs_.reset(new TrackRunIterator(moov_.get(), cts_offset_adjustment_));
   RCHECK(runs_->Init(moof));
   if (!FetchKeysIfNecessary(moof.pssh))
     return false;

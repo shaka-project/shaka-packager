@@ -26,7 +26,10 @@ class TrackRunIterator {
  public:
   /// Create a new TrackRunIterator from movie box.
   /// @param moov should not be NULL.
-  explicit TrackRunIterator(const Movie* moov);
+  /// @param cts_offset_adjustment flag to indicate weather or not to perform
+  /// CTS offset adjustment.
+  explicit TrackRunIterator(const Movie* moov,
+                            bool cts_offset_adjustment = false);
   ~TrackRunIterator();
 
   /// For non-fragmented mp4, moov contains all the chunk information; This
@@ -124,6 +127,11 @@ class TrackRunIterator {
 
   // TrackId => adjustment map.
   std::map<uint32_t, int64_t> timestamp_adjustment_map_;
+
+  // flag used to adjust negative CTS offset values to correct PTS < DTS
+  bool cts_offset_adjustment_ = false;
+
+  int64_t min_cts_offset_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TrackRunIterator);
 };

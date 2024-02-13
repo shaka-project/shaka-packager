@@ -184,7 +184,7 @@ Status Demuxer::InitializeParser() {
   // Initialize media parser.
   switch (container_name_) {
     case CONTAINER_MOV:
-      parser_.reset(new mp4::MP4MediaParser());
+      parser_.reset(new mp4::MP4MediaParser(cts_offset_adjustment_));
       break;
     case CONTAINER_MPEG2TS:
       parser_.reset(new mp2t::Mp2tMediaParser());

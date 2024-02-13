@@ -75,6 +75,10 @@ class Demuxer : public OriginHandler {
     dump_stream_info_ = dump_stream_info;
   }
 
+  void set_cts_offset_adjustment(bool cts_offset_adjustment) {
+    cts_offset_adjustment_ = cts_offset_adjustment;
+  }
+
  protected:
   /// @name MediaHandler implementation overrides.
   /// @{
@@ -147,6 +151,8 @@ class Demuxer : public OriginHandler {
   bool cancelled_ = false;
   // Whether to dump stream info when it is received.
   bool dump_stream_info_ = false;
+  // flag used to adjust negative CTS offset values to correct PTS < DTS
+  bool cts_offset_adjustment_ = false;
   Status init_event_status_;
 };
 

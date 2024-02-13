@@ -86,8 +86,12 @@ TrackRunInfo::TrackRunInfo()
       aux_info_total_size(0) {}
 TrackRunInfo::~TrackRunInfo() {}
 
-TrackRunIterator::TrackRunIterator(const Movie* moov)
-    : moov_(moov), sample_dts_(0), sample_offset_(0) {
+TrackRunIterator::TrackRunIterator(const Movie* moov,
+                                   bool cts_offset_adjustment)
+    : moov_(moov),
+      sample_dts_(0),
+      sample_offset_(0),
+      cts_offset_adjustment_(cts_offset_adjustment) {
   CHECK(moov);
 }
 
@@ -451,6 +455,16 @@ void TrackRunIterator::ResetRun() {
   sample_dts_ = run_itr_->start_dts;
   sample_offset_ = run_itr_->sample_start_offset;
   sample_itr_ = run_itr_->samples.begin();
+
+  auto min_sample_itr =
+      std::min_element(run_itr_->samples.begin(), run_itr_->samples.end(),
+                       [](SampleInfo const& s1, SampleInfo const& s2) {
+                         return s1.cts_offset < s2.cts_offset;
+                       });
+  if (min_sample_itr != run_itr_->samples.end() &&
+      min_sample_itr->cts_offset < 0) {
+    min_cts_offset_ = abs(min_sample_itr->cts_offset);
+  }
 }
 
 void TrackRunIterator::AdvanceSample() {
@@ -578,7 +592,7 @@ int TrackRunIterator::sample_size() const {
 
 int64_t TrackRunIterator::dts() const {
   DCHECK(IsSampleValid());
-  return sample_dts_;
+  return cts_offset_adjustment_ ? sample_dts_ - min_cts_offset_ : sample_dts_;
 }
 
 int64_t TrackRunIterator::cts() const {
