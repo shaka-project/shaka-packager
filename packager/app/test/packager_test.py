@@ -304,6 +304,7 @@ class PackagerAppTest(unittest.TestCase):
                  dash_accessibilities=None,
                  dash_roles=None,
                  dash_only=None,
+                 dash_label=None,
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
@@ -335,6 +336,7 @@ class PackagerAppTest(unittest.TestCase):
       dash_accessibilities: Accessibility element for the DASH stream.
       dash_roles: Role element for the DASH stream.
       dash_only: If set to true, will indicate that the stream is for DASH only.
+      dash_label: Label element for the DASH stream.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
           same as not specifying a trick play factor.
@@ -404,6 +406,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if forced:
       stream.Append('forced', 1)
+      
+    if dash_label:
+      stream.Append('dash_label', dash_label)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt', 'ttml',
@@ -790,6 +795,14 @@ class PackagerFunctionalTest(PackagerAppTest):
         streams,
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('hls-only-dash-only')
+
+  def testDashLabel(self):
+    streams = [
+        self._GetStream('video', dash_label='Main'),
+        self._GetStream('audio', dash_label='English'),
+    ]
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self._CheckTestResults('dash-label')
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(

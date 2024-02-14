@@ -156,6 +156,9 @@ struct StreamDescriptor {
   ///  String with value set to YES or NO. If set TYPE=SUBTITLES and
   ///  AUTOSELECT=YES
   bool forced = false;
+
+  /// Optional for DASH output. It defines the Label element in Adaptation Set.
+  std::string dash_label;
 };
 
 class SHAKA_EXPORT Packager {

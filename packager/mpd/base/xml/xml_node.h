@@ -171,6 +171,9 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
   [[nodiscard]] bool AddRoleElement(const std::string& scheme_id_uri,
                                     const std::string& value);
 
+  /// @param value is element's content.
+  [[nodiscard]] bool AddLabelElement(const std::string& value);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AdaptationSetXmlNode);
 };

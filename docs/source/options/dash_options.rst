@@ -105,3 +105,9 @@ DASH options
 
     True forces the muxer to order streams in the order given 
     on the command-line. False uses the previous unordered behavior.
+
+--dash_label <label_name>
+
+    Optional. Will add Label tag to adapation set and will be taken into
+    consideration along with codecs, language, media type (audio, video etc)
+    and container type to create different adaptation sets.

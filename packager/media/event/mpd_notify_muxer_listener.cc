@@ -88,6 +88,9 @@ void MpdNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   if (index_.has_value())
     media_info->set_index(index_.value());
 
+  if (!dash_label_.empty())
+    media_info->set_dash_label(dash_label_);
+
   if (is_encrypted_) {
     internal::SetContentProtectionFields(protection_scheme_, default_key_id_,
                                          key_system_info_, media_info.get());

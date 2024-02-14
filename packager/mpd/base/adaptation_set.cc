@@ -384,6 +384,9 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
+  if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
+    return std::nullopt;
+
   for (const auto& representation_pair : representation_map_) {
     const auto& representation = representation_pair.second;
     if (suppress_representation_width)
@@ -475,6 +478,9 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
       index_ = media_info.index();
     }
   }
+
+  if (media_info.has_dash_label())
+    label_ = media_info.dash_label();
 
   if (media_info.has_video_info()) {
     content_type_ = "video";

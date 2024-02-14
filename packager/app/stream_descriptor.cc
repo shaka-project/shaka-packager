@@ -40,6 +40,7 @@ enum FieldType {
   kDashOnlyField,
   kHlsOnlyField,
   kForcedField,
+  kDashLabelField,
 };
 
 struct FieldNameToTypeMapping {
@@ -88,6 +89,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"dash_only", kDashOnlyField},
     {"hls_only", kHlsOnlyField},
     {"forced", kForcedField},
+    {"dash_label", kDashLabelField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -265,6 +267,8 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
           return std::nullopt;
         }
         descriptor.forced = hls_forced_value > 0;
+      case kDashLabelField:
+        descriptor.dash_label = pair.second;
         break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << pair.first

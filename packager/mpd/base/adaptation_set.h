@@ -331,6 +331,9 @@ class AdaptationSet {
 
   // the command-line index for this AdaptationSet
   std::optional<uint32_t> index_;
+
+  // The label of this AdaptationSet.
+  std::string label_;
 };
 
 }  // namespace shaka
