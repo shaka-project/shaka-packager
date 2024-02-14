@@ -85,6 +85,9 @@ void MpdNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
       media_info->add_dash_roles(role);
   }
 
+  if (index_.has_value())
+    media_info->set_index(index_.value());
+
   if (!dash_label_.empty())
     media_info->set_dash_label(dash_label_);
 

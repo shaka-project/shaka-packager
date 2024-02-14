@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,6 +63,7 @@ struct PackagingParams {
   /// Only use a single thread to generate output.  This is useful in tests to
   /// avoid non-deterministic outputs.
   bool single_threaded = false;
+
   /// DASH MPD related parameters.
   MpdParams mpd_params;
   /// HLS related parameters.
@@ -80,6 +82,9 @@ struct PackagingParams {
 
 /// Defines a single input/output stream.
 struct StreamDescriptor {
+  /// index of the stream to enforce ordering
+  std::optional<uint32_t> index;
+
   /// Input/source media file path or network stream URL. Required.
   std::string input;
 

@@ -213,6 +213,9 @@ message MediaInfo {
   // Equal to the target segment duration times the reference time scale.
   optional uint64 segment_duration = 25;
 
+  // stream index for consistent ordering of streams
+  optional uint32 index = 28;
+
   // DASH only. Label element.
-  optional string dash_label = 26;
+  optional string dash_label = 29;
 }

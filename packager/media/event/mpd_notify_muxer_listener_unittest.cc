@@ -313,7 +313,8 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
       "reference_time_scale: 1111\n"
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
-      "media_duration_seconds: 10.5\n";
+      "media_duration_seconds: 10.5\n"
+      "index: 0\n";
 
   const int32_t kReferenceTimeScale = 1111;  // Should match the protobuf.
 
@@ -361,6 +362,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReadySegmentList) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n"
+      "index: 0\n"
       "subsegment_ranges {\n"
       "  begin: 222\n"
       "  end: 9999\n"
@@ -600,6 +602,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LowLatencyDash) {
       "  pixel_height: 1\n"
       "}\n"
       "media_duration_seconds: 20.0\n"
+      "index: 0\n"
       "init_segment_name: \"liveinit.mp4\"\n"
       "segment_template: \"live-$NUMBER$.mp4\"\n"
       "reference_time_scale: 1000\n"
@@ -661,6 +664,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "  pixel_height: 1\n"
       "}\n"
       "media_duration_seconds: 20.0\n"
+      "index: 0\n"
       "init_segment_name: \"liveinit.mp4\"\n"
       "segment_template: \"live-$NUMBER$.mp4\"\n"
       "reference_time_scale: 1000\n"
@@ -669,7 +673,9 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "  default_key_id: \"defaultkeyid\"\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
+      "    pssh: \"" +
+      std::string(kExpectedDefaultPsshBox) +
+      "\"\n"
       "  }\n"
       "  protection_scheme: 'cbcs'\n"
       "  include_mspr_pro: 1\n"
@@ -738,6 +744,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
       "  pixel_height: 1\n"
       "}\n"
       "media_duration_seconds: 20.0\n"
+      "index: 0\n"
       "init_segment_name: \"liveinit.mp4\"\n"
       "segment_template: \"live-$NUMBER$.mp4\"\n"
       "reference_time_scale: 1000\n"

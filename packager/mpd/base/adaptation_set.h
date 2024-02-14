@@ -328,6 +328,9 @@ class AdaptationSet {
   // Transfer characteristics.
   uint32_t transfer_characteristics_ = 0;
 
+  // the command-line index for this AdaptationSet
+  std::optional<uint32_t> index_;
+
   // The label of this AdaptationSet.
   std::string label_;
 };

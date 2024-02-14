@@ -583,6 +583,14 @@ int PackagerMain(int argc, char** argv) {
       return kArgumentValidationFailed;
     stream_descriptors.push_back(stream_descriptor.value());
   }
+
+  if (absl::GetFlag(FLAGS_force_cl_index)) {
+    int index = 0;
+    for (auto& descriptor : stream_descriptors) {
+      descriptor.index = index++;
+    }
+  }
+
   Packager packager;
   Status status =
       packager.Initialize(packaging_params.value(), stream_descriptors);
