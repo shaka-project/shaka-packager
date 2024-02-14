@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
