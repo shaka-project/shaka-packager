@@ -177,7 +177,8 @@ target_link_libraries(packager
   absl::flags
   absl::flags_parse
   absl::log
-  absl::log_flags
+  # See https://github.com/abseil/abseil-cpp/blob/c14dfbf9/absl/log/CMakeLists.txt#L464-L467
+  $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   hex_bytes_flags
   libpackager
@@ -193,7 +194,8 @@ target_link_libraries(mpd_generator
   absl::flags
   absl::flags_parse
   absl::log
-  absl::log_flags
+  # See https://github.com/abseil/abseil-cpp/blob/c14dfbf9/absl/log/CMakeLists.txt#L464-L467
+  $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   license_notice
   mpd_builder
