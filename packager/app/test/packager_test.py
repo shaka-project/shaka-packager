@@ -406,7 +406,7 @@ class PackagerAppTest(unittest.TestCase):
 
     if forced:
       stream.Append('forced', 1)
-      
+
     if dash_label:
       stream.Append('dash_label', dash_label)
 
