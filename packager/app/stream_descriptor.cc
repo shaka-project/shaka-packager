@@ -253,7 +253,7 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
         descriptor.hls_only = hls_only_value > 0;
         break;
       case kDashLabelField:
-        descriptor.dash_label = iter->second;
+        descriptor.dash_label = pair.second;
         break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << pair.first

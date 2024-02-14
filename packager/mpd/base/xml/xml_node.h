@@ -172,7 +172,7 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
                                     const std::string& value);
 
   /// @param value is element's content.
-  bool AddLabelElement(const std::string& value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddLabelElement(const std::string& value);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AdaptationSetXmlNode);

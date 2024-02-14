@@ -373,7 +373,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   }
 
   if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
-    return base::nullopt;
+    return std::nullopt;
 
   for (const auto& representation_pair : representation_map_) {
     const auto& representation = representation_pair.second;
