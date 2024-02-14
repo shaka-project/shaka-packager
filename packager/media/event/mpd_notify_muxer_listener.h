@@ -69,6 +69,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   void set_index(std::optional<uint32_t> idx) { index_ = idx; }
 
+  void set_dash_label(std::string label) { dash_label_ = label; }
+
  private:
   MpdNotifyMuxerListener(const MpdNotifyMuxerListener&) = delete;
   MpdNotifyMuxerListener& operator=(const MpdNotifyMuxerListener&) = delete;
@@ -81,6 +83,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   std::vector<std::string> accessibilities_;
   std::vector<std::string> roles_;
+  std::string dash_label_;
 
   std::optional<uint32_t> index_ = 0;
 

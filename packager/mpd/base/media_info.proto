@@ -215,4 +215,7 @@ message MediaInfo {
 
   // stream index for consistent ordering of streams
   optional uint32 index = 28;
+
+  // DASH only. Label element.
+  optional string dash_label = 29;
 }

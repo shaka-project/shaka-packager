@@ -55,6 +55,7 @@ class MuxerListenerFactory {
     std::vector<std::string> dash_roles;
     bool dash_only = false;
     std::optional<uint32_t> index;
+    std::string dash_label;
   };
 
   /// Create a new muxer listener.
