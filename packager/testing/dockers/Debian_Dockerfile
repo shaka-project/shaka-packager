@@ -1,4 +1,4 @@
-FROM debian:11
+FROM debian:12
 
 # Install utilities, libraries, and dev tools.
 RUN apt-get update && apt-get install -y apt-utils
