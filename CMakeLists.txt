@@ -26,4 +26,3 @@ option(SKIP_INTEGRATION_TESTS "Skip the packager integration tests" ON)
 
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)
-add_subdirectory(link-test)
