@@ -116,11 +116,11 @@ add_library(libpackager_static STATIC ${libpackager_sources})
 target_link_libraries(libpackager_static ${libpackager_deps})
 
 # And always installed as libpackager.a / libpackager.lib:
-if(NOT MSVC)
-  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME packager)
-else()
-  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME libpackager)
-endif()
+#if(NOT MSVC)
+#  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME packager)
+#else()
+#  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME libpackager)
+#endif()
 
 # A shared library target is conditional (default OFF):
 if(BUILD_SHARED_LIBS)
@@ -129,11 +129,11 @@ if(BUILD_SHARED_LIBS)
   target_compile_definitions(libpackager_shared PUBLIC SHAKA_IMPLEMENTATION)
 
   # And always installed as libpackager.so / libpackager.dll:
-  if(NOT MSVC)
-    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME packager)
-  else()
-    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME libpackager)
-  endif()
+  #if(NOT MSVC)
+  #  set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME packager)
+  #else()
+  #  set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME libpackager)
+  #endif()
 
   # If we're building a shared library, this is what the "libpackager" target
   # aliases to.
@@ -181,7 +181,7 @@ target_link_libraries(packager
   $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   hex_bytes_flags
-  libpackager
+  libpackager_static
   license_notice
   string_utils
 )
@@ -206,7 +206,7 @@ add_executable(packager_test
   packager_test.cc
   )
 target_link_libraries(packager_test
-  libpackager
+  libpackager_static
   gmock
   gtest
   gtest_main)
