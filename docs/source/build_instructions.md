@@ -17,6 +17,9 @@ sudo apt-get install -y \
 
 Note that `git` must be v1.7.6 or above to support relative paths in submodules.
 
+Note also that `cmake` must be v3.24 or above to support a linker setting
+needed for `absl::log_flags`.
+
 ## Mac system requirements
 
  * [Xcode](https://developer.apple.com/xcode) 7.3+.
