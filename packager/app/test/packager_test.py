@@ -788,7 +788,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDashLabel(self):
     streams = [
-        self._GetStream('video', dash_label='English'),
+        self._GetStream('video', dash_label='Main'),
         self._GetStream('audio', dash_label='English'),
     ]
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
