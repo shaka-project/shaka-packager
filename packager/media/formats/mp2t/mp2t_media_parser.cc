@@ -19,6 +19,7 @@
 #include <packager/media/formats/mp2t/es_parser_h264.h>
 #include <packager/media/formats/mp2t/es_parser_h265.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
+#include <packager/media/formats/mp2t/ts_audio_type.h>
 #include <packager/media/formats/mp2t/ts_packet.h>
 #include <packager/media/formats/mp2t/ts_section.h>
 #include <packager/media/formats/mp2t/ts_section_pat.h>
@@ -274,7 +275,8 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   DVLOG(1) << "Create a new PMT parser";
   std::unique_ptr<TsSection> pmt_section_parser(new TsSectionPmt(std::bind(
       &Mp2tMediaParser::RegisterPes, this, pmt_pid, std::placeholders::_1,
-      std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+      std::placeholders::_2, std::placeholders::_3, std::placeholders::_4,
+      std::placeholders::_5, std::placeholders::_6, std::placeholders::_7)));
   std::unique_ptr<PidState> pmt_pid_state(
       new PidState(pmt_pid, PidState::kPidPmt, std::move(pmt_section_parser)));
   pmt_pid_state->Enable();
@@ -284,13 +286,19 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                   int pes_pid,
                                   TsStreamType stream_type,
+                                  uint32_t max_bitrate,
+                                  const std::string& lang,
+                                  TsAudioType audio_type,
                                   const uint8_t* descriptor,
                                   size_t descriptor_length) {
   if (pids_.count(pes_pid) != 0)
     return;
   DVLOG(1) << "RegisterPes:"
            << " pes_pid=" << pes_pid << " stream_type=" << std::hex
-           << static_cast<int>(stream_type) << std::dec;
+           << static_cast<int>(stream_type) << std::dec
+           << "max_bitrate=" << max_bitrate << " lang=" << lang
+           << "audio_type=" << std::hex << static_cast<int>(audio_type)
+           << std::dec;
 
   // Create a stream parser corresponding to the stream type.
   PidState::PidType pid_type = PidState::kPidVideoPes;
@@ -340,6 +348,10 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
       new PidState(pes_pid, pid_type, std::move(pes_section_parser)));
   pes_pid_state->Enable();
   pids_.emplace(pes_pid, std::move(pes_pid_state));
+
+  // Store PES metadata.
+  pes_metadata_.insert(
+      std::make_pair(pes_pid, PesMetadata{max_bitrate, lang, audio_type}));
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(
@@ -358,6 +370,17 @@ void Mp2tMediaParser::OnNewStreamInfo(
 
   if (new_stream_info) {
     // Set the stream configuration information for the PID.
+    auto pes_metadata = pes_metadata_.find(pes_pid);
+    DCHECK(pes_metadata != pes_metadata_.end());
+    if (!pes_metadata->second.language.empty())
+      new_stream_info->set_language(pes_metadata->second.language);
+    if (new_stream_info->stream_type() == kStreamAudio) {
+      auto* audio_info = static_cast<AudioStreamInfo*>(new_stream_info.get());
+      audio_info->set_max_bitrate(pes_metadata->second.max_bitrate);
+      // TODO(modernletter) Add some field for audio type to AudioStreamInfo
+      // and set here from audio_type
+    }
+
     pid_state->second->set_config(new_stream_info);
   } else {
     LOG(WARNING) << "Ignoring unsupported stream with pid=" << pes_pid;

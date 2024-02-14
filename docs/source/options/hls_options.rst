@@ -76,11 +76,17 @@ HLS options
     The EXT-X-MEDIA-SEQUENCE documentation can be read here:
     https://tools.ietf.org/html/rfc8216#section-4.3.3.2.
 
---hls_only=0|1
-
+--hls_only <boolean>
+    
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
     stream is HLS only.
 
---forced=0|1
+--forced <boolean>
+    
     Optional. Default to 0 if not specified. If it is set to 1, indicates the
     stream has a Forced selected media track.
+
+--force_cl_index
+
+    True forces the muxer to order streams in the order given 
+    on the command-line. False uses the previous unordered behavior.

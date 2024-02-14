@@ -48,28 +48,6 @@ set(LIBXML2_WITH_SCHEMAS ON)
 set(LIBXML2_WITH_THREADS ON)
 set(LIBXML2_WITH_TREE ON)
 
-if(MSVC)
-  # Disable this warning/error about division by 0, which occurs in xpath.c:
-  add_compile_options(/wd4723)
-  # Disable this warning/error about read(), which occurs in xmlIO.c:
-  add_compile_options(/wd4996)
-  # Disable this warning/error about WIN32_LEAN_AND_MEAN:
-  add_compile_options(/wd4005)
-  # Disable integer truncation warnings in many places
-  add_compile_options(/wd4244 /wd4267)
-else()
-  # Disable this warning/error, which occurs in buf.c:
-  add_compile_options(-Wno-format-extra-args)
-  # Disable this warning/error, which occurs in encoding.c:
-  add_compile_options(-Wno-unused-but-set-variable)
-  # Disable this warning/error, which occurs in xmlIO.c:
-  add_compile_options(-Wno-unused-parameter)
-  # Disable this warning/error, which occurs in xmlschemas.c:
-  add_compile_options(-Wno-format-truncation)
-  # Disable this warning/error, which occurs in tree.c:
-  add_compile_options(-Wno-array-bounds)
-endif()
-
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
 

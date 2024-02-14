@@ -123,7 +123,8 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
                   kDefaultGroupId,
                   std::vector<std::string>{kCharactersticA, kCharactersticB},
                   kForced,
-                  &mock_notifier_) {}
+                  &mock_notifier_,
+                  0) {}
 
   MuxerListener::MediaRanges GetMediaRanges(
       const std::vector<Range>& segment_ranges) {
@@ -461,7 +462,8 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
                   kDefaultGroupId,
                   std::vector<std::string>(),  // no characteristics.
                   kForced,
-                  &mock_notifier_) {}
+                  &mock_notifier_,
+                  0) {}
 
   MockHlsNotifier mock_notifier_;
   HlsNotifyMuxerListener listener_;

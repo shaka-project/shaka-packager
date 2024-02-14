@@ -40,7 +40,9 @@ Status TextPadder::OnTextSample(std::unique_ptr<StreamData> data) {
   // start at time zero.
   if (max_end_time_ms_ < 0) {
     max_end_time_ms_ =
-        sample.start_time() > zero_start_bias_ms_ ? sample.start_time() : 0;
+        zero_start_bias_ms_ && sample.start_time() > zero_start_bias_ms_
+            ? sample.start_time()
+            : 0;
   }
 
   // Check if there will be a gap between samples if we just dispatch this

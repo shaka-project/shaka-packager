@@ -212,6 +212,10 @@ message MediaInfo {
   // with respect to the reference time scale.
   // Equal to the target segment duration times the reference time scale.
   optional uint64 segment_duration = 25;
-  // HLS only . Defines the FORCED attribute of the stream.
+
+  // HLS Only. Defines the FORCED attribute of the stream.
   optional bool forced = 26 [default = false];
+
+  // stream index for consistent ordering of streams
+  optional uint32 index = 28;
 }

@@ -59,8 +59,6 @@ namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
 
-const int64_t kDefaultTextZeroBiasMs = 10 * 60 * 1000;  // 10 minutes
-
 MuxerListenerFactory::StreamData ToMuxerListenerData(
     const StreamDescriptor& stream) {
   MuxerListenerFactory::StreamData data;
@@ -77,6 +75,7 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
   data.dash_accessiblities = stream.dash_accessiblities;
   data.dash_roles = stream.dash_roles;
   data.dash_only = stream.dash_only;
+  data.index = stream.index;
   return data;
 };
 
@@ -663,8 +662,8 @@ Status CreateAudioVideoJobs(
 
       std::vector<std::shared_ptr<MediaHandler>> handlers;
       if (is_text) {
-        handlers.emplace_back(
-            std::make_shared<TextPadder>(kDefaultTextZeroBiasMs));
+        handlers.emplace_back(std::make_shared<TextPadder>(
+            packaging_params.default_text_zero_bias_ms));
       }
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
@@ -943,6 +942,7 @@ Status Packager::Initialize(
 
   media::MuxerFactory muxer_factory(packaging_params);
   if (packaging_params.test_params.inject_fake_clock) {
+    internal->fake_clock.reset(new media::FakeClock());
     muxer_factory.OverrideClock(internal->fake_clock);
   }
 

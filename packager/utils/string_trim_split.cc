@@ -11,8 +11,7 @@
 namespace shaka {
 std::vector<std::string> SplitAndTrimSkipEmpty(const std::string& str,
                                                char delimiter) {
-  auto tokens =
-      absl::StrSplit(absl::AsciiStrToLower(str), delimiter, absl::SkipEmpty());
+  auto tokens = absl::StrSplit(str, delimiter, absl::SkipEmpty());
   std::vector<std::string> results;
   for (const absl::string_view& token : tokens) {
     std::string trimmed = std::string(token);

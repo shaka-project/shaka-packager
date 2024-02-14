@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -46,6 +47,10 @@ struct PackagingParams {
   /// audio) timestamps to compensate for possible negative timestamps in the
   /// input.
   int32_t transport_stream_timestamp_offset_ms = 0;
+  // the threshold used to determine if we should assume that the text stream
+  // actually starts at time zero
+  int32_t default_text_zero_bias_ms = 0;
+
   /// Chunking (segmentation) related parameters.
   ChunkingParams chunking_params;
 
@@ -58,6 +63,7 @@ struct PackagingParams {
   /// Only use a single thread to generate output.  This is useful in tests to
   /// avoid non-deterministic outputs.
   bool single_threaded = false;
+
   /// DASH MPD related parameters.
   MpdParams mpd_params;
   /// HLS related parameters.
@@ -76,6 +82,9 @@ struct PackagingParams {
 
 /// Defines a single input/output stream.
 struct StreamDescriptor {
+  /// index of the stream to enforce ordering
+  std::optional<uint32_t> index;
+
   /// Input/source media file path or network stream URL. Required.
   std::string input;
 

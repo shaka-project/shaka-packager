@@ -34,7 +34,6 @@
 #include <packager/app/raw_key_encryption_flags.h>
 #include <packager/app/retired_flags.h>
 #include <packager/app/stream_descriptor.h>
-#include <packager/app/vlog_flags.h>
 #include <packager/app/widevine_encryption_flags.h>
 #include <packager/file.h>
 #include <packager/kv_pairs/kv_pairs.h>
@@ -468,6 +467,8 @@ std::optional<PackagingParams> GetPackagingParams() {
 
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
+  packaging_params.default_text_zero_bias_ms =
+      absl::GetFlag(FLAGS_default_text_zero_bias_ms);
 
   packaging_params.output_media_info = absl::GetFlag(FLAGS_output_media_info);
 
@@ -569,8 +570,6 @@ int PackagerMain(int argc, char** argv) {
     absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
   }
 
-  handle_vlog_flags();
-
   absl::InitializeLog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
@@ -591,6 +590,14 @@ int PackagerMain(int argc, char** argv) {
       return kArgumentValidationFailed;
     stream_descriptors.push_back(stream_descriptor.value());
   }
+
+  if (absl::GetFlag(FLAGS_force_cl_index)) {
+    int index = 0;
+    for (auto& descriptor : stream_descriptors) {
+      descriptor.index = index++;
+    }
+  }
+
   Packager packager;
   Status status =
       packager.Initialize(packaging_params.value(), stream_descriptors);

@@ -170,8 +170,6 @@ add_executable(packager
   app/stream_descriptor.h
   app/validate_flag.cc
   app/validate_flag.h
-  app/vlog_flags.cc
-  app/vlog_flags.h
   app/widevine_encryption_flags.cc
   app/widevine_encryption_flags.h
 )
@@ -190,8 +188,6 @@ target_link_libraries(packager
 add_executable(mpd_generator
   app/mpd_generator.cc
   app/mpd_generator_flags.h
-  app/vlog_flags.cc
-  app/vlog_flags.h
 )
 target_link_libraries(mpd_generator
   absl::flags

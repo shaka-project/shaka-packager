@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360668182373047S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.736067S">
   <Period id="0" duration="PT2.002S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="974122" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
@@ -23,7 +23,7 @@
       </Representation>
     </AdaptationSet>
   </Period>
-  <Period id="1" duration="PT.7340666666666671S">
+  <Period id="1" duration="PT0.734067S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="869044" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <SegmentTemplate timescale="30000" presentationTimeOffset="60059" initialization="bear-640x360-video-init.mp4" media="bear-640x360-video-$Number$.m4s" startNumber="3">
