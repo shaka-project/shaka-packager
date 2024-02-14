@@ -81,7 +81,8 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
     listeners.emplace_back(new HlsNotifyMuxerListener(
         iframe_playlist_name, kIFramesOnly, name, group_id,
         std::vector<std::string>(), forced, notifier, stream.index));
-    return listeners;
+  }
+  return listeners;
 }
 }  // namespace
 
