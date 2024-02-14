@@ -586,7 +586,7 @@ int PackagerMain(int argc, char** argv) {
 
   if (absl::GetFlag(FLAGS_force_cl_index)) {
     int index = 0;
-    for(auto& descriptor : stream_descriptors) {
+    for (auto& descriptor : stream_descriptors) {
       descriptor.index = index++;
     }
   }
