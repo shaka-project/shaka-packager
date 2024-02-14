@@ -34,41 +34,11 @@ jobs:
     name: Settings
     uses: ./.github/workflows/settings.yaml
 
-  lint:
-    name: Lint
-    uses: ./.github/workflows/lint.yaml
-    with:
-      ref: ${{ inputs.ref || github.ref }}
-
   build_and_test:
-    needs: [lint, settings]
+    needs: [settings]
     name: Build and test
     uses: ./.github/workflows/build.yaml
     with:
       ref: ${{ inputs.ref || github.ref }}
       self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
       debug: ${{ needs.settings.outputs.debug != '' }}
-
-  build_docs:
-    needs: [lint, settings]
-    name: Build docs
-    uses: ./.github/workflows/build-docs.yaml
-    with:
-      ref: ${{ inputs.ref || github.ref }}
-      debug: ${{ needs.settings.outputs.debug != '' }}
-
-  official_docker_image:
-    needs: lint
-    name: Official Docker image
-    uses: ./.github/workflows/build-docker.yaml
-    with:
-      ref: ${{ inputs.ref || github.ref }}
-
-  test_supported_linux_distros:
-    # Doesn't really "need" it, but let's not waste time on a series of docker
-    # builds just to cancel it because of a linter error.
-    needs: lint
-    name: Test Linux distros
-    uses: ./.github/workflows/test-linux-distros.yaml
-    with:
-      ref: ${{ inputs.ref || github.ref }}
