@@ -79,8 +79,8 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.build_matrix_config.outputs.INCLUDE) }}
         os: ${{ fromJSON(needs.build_matrix_config.outputs.OS) }}
-        build_type: ["Debug", "Release"]
-        lib_type: ["static", "shared"]
+        build_type: ["Release"]
+        lib_type: ["shared"]
 
     name: ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
     runs-on: ${{ matrix.os }}
