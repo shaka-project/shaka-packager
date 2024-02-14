@@ -267,6 +267,7 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
           return std::nullopt;
         }
         descriptor.forced = hls_forced_value > 0;
+        break;
       case kDashLabelField:
         descriptor.dash_label = pair.second;
         break;
