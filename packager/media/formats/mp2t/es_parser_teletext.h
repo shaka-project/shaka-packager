@@ -7,7 +7,6 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_TELETEXT_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_TELETEXT_H_
 
-#include <unistd.h>
 #include <cstdint>
 #include <string>
 #include <unordered_map>

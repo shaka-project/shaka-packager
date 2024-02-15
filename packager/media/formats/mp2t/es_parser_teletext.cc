@@ -6,6 +6,12 @@
 
 #include <packager/media/formats/mp2t/es_parser_teletext.h>
 
+#if defined(OS_WIN)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/timestamp.h>
