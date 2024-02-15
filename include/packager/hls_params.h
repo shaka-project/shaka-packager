@@ -8,7 +8,7 @@
 #define PACKAGER_PUBLIC_HLS_PARAMS_H_
 
 #include <cstdint>
-#include <limits>
+#include <optional>
 #include <string>
 
 namespace shaka {
@@ -69,7 +69,7 @@ struct HlsParams {
   /// A positive number indicates a time offset from the beginning of the
   /// playlist. A negative number indicates a negative time offset from the end
   /// of the last media segment in the playlist.
-  double start_time_offset = std::numeric_limits<double>::lowest();
+  std::optional<double> start_time_offset;
 };
 
 }  // namespace shaka

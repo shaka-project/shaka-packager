@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <cinttypes>
 #include <cmath>
-#include <limits>
 #include <memory>
+#include <optional>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
@@ -111,7 +111,7 @@ std::string CreatePlaylistHeader(
     MediaPlaylist::MediaPlaylistStreamType stream_type,
     uint32_t media_sequence_number,
     int discontinuity_sequence_number,
-    double start_time_offset) {
+    std::optional<double> start_time_offset) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
   if (!version.empty()) {
@@ -153,9 +153,9 @@ std::string CreatePlaylistHeader(
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
     absl::StrAppendFormat(&header, "#EXT-X-I-FRAMES-ONLY\n");
   }
-  if (start_time_offset > std::numeric_limits<double>::lowest()) {
+  if (start_time_offset.has_value()) {
     absl::StrAppendFormat(&header, "#EXT-X-START:TIME-OFFSET=%f\n",
-                          start_time_offset);
+                          start_time_offset.value());
   }
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
