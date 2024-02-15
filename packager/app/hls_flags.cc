@@ -6,7 +6,7 @@
 
 #include <packager/app/hls_flags.h>
 
-#include <limits>
+#include <optional>
 
 ABSL_FLAG(std::string,
           hls_master_playlist_output,
@@ -37,9 +37,9 @@ ABSL_FLAG(int32_t,
           "EXT-X-MEDIA-SEQUENCE value, which allows continuous media "
           "sequence across packager restarts. See #691 for more "
           "information about the reasoning of this and its use cases.");
-ABSL_FLAG(double,
+ABSL_FLAG(std::optional<double>,
           hls_start_time_offset,
-          std::numeric_limits<double>::lowest(),
+          std::nullopt,
           "Floating-point number. Sets EXT-X-START on the media playlists "
           "to specify the preferred point at wich the player should start "
           "playing. A positive number indicates a time offset from the "
