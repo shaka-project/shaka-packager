@@ -120,15 +120,16 @@ const char kUsage[] =
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
     "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    main, alternate, supplementary, commentary, description, dub and "
-    "forced-subtitle. "
-    "See DASH\n"
+    "    forced-subtitle, main, alternate, supplementary, commentary, \n"
+    "    description and dub. See DASH\n"
     "    (ISO/IEC 23009-1) specification for details.\n"
-    "  - forced (hls_forced): Optional value 1|0. Defaults to 0.\n"
-    "    The value is an enumerated-string; valid strings are YES and NO.\n"
-    "    Its absence indicates an implicit value of NO.\n"
-    "    The FORCED attribute MUST NOT be present unless the TYPE is "
-    "SUBTITLES.";
+    "  - forced_subtitle: Optional boolean value (0|1). If set to 1 \n"
+    "    indicates that this stream is a Forced Narrative subtitle that \n"
+    "    should be displayed when subtitles are otherwise off, for example \n"
+    "    used to caption short portions of the audio that might be in a \n"
+    "    foreign language. For DASH this will set role to forced_subtitle, \n"
+    "    for HLS it will set FORCED=YES and AUTOSELECT=YES. \n"
+    "    Only valid for subtitles.";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";

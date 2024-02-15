@@ -322,12 +322,9 @@ void BuildMediaTag(const MediaPlaylist& playlist,
     tag.AddString("AUTOSELECT", "YES");
   }
 
-  if (playlist.forced() && !is_autoselect) {
-    tag.AddString("AUTOSELECT", "YES");
-  }
   if (playlist.stream_type() ==
           MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
-      playlist.forced()) {
+      playlist.forced_subtitle()) {
     tag.AddString("FORCED", "YES");
   }
 
@@ -407,6 +404,12 @@ void BuildMediaTags(
 
           languages.insert(language);
         }
+      }
+
+      if (playlist->stream_type() ==
+          MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+              playlist->forced_subtitle()) {
+        is_autoselect = true;
       }
 
       BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,

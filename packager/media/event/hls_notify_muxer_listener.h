@@ -90,7 +90,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
   const std::vector<std::string> characteristics_;
-  const bool forced_;
+  const bool forced_subtitle_;
   hls::HlsNotifier* const hls_notifier_;
   std::optional<uint32_t> stream_id_;
   std::optional<uint32_t> index_;

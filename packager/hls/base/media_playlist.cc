@@ -373,8 +373,8 @@ void MediaPlaylist::SetCharacteristicsForTesting(
   characteristics_ = characteristics;
 }
 
-void MediaPlaylist::SetForcedForTesting(const bool forced) {
-  forced_ = forced;
+void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
+  forced_subittle_ = forced_subtitle;
 }
 
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
@@ -404,7 +404,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
 
-  forced_ = media_info_.forced();
+  forced_subittle_ = media_info_.forced_subtitle();
 
   return true;
 }

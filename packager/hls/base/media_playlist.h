@@ -90,7 +90,8 @@ class MediaPlaylist {
   /// For testing only.
   void SetLanguageForTesting(const std::string& language);
 
-  void SetForcedForTesting(const bool forced);
+  /// For testing only.
+  void SetForcedSubtitleForTesting(const bool forced_subtitle);
 
   /// For testing only.
   void SetCharacteristicsForTesting(
@@ -225,7 +226,7 @@ class MediaPlaylist {
     return characteristics_;
   }
 
-  bool forced() const { return forced_; }
+  bool forced_subtitle() const { return forced_subittle_; }
 
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices
@@ -266,7 +267,7 @@ class MediaPlaylist {
   std::string codec_;
   std::string language_;
   std::vector<std::string> characteristics_;
-  bool forced_ = false;
+  bool forced_subittle_ = false;
   uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;
