@@ -382,7 +382,7 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
     char next_char =
         static_cast<char>(TELETEXT_BITREVERSE_8[data_block[i]] & 0x7f);
 
-    if (next_char < 32 || next_char > 127) {
+    if (next_char < 32) {
       next_char = 0x20;
     }
 
