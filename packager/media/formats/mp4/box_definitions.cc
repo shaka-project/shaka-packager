@@ -1811,6 +1811,27 @@ size_t DTSSpecific::ComputeSizeInternal() {
          sizeof(kDdtsExtraData);
 }
 
+UDTSSpecific::UDTSSpecific() = default;
+UDTSSpecific::~UDTSSpecific() = default;
+
+FourCC UDTSSpecific::BoxType() const {
+  return FOURCC_udts;
+}
+
+bool UDTSSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteVector(
+             &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
+  return true;
+}
+
+size_t UDTSSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 AC3Specific::AC3Specific() = default;
 AC3Specific::~AC3Specific() = default;
 
@@ -1983,6 +2004,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->TryReadWriteChild(&esds));
   RCHECK(buffer->TryReadWriteChild(&ddts));
+  RCHECK(buffer->TryReadWriteChild(&udts));
   RCHECK(buffer->TryReadWriteChild(&dac3));
   RCHECK(buffer->TryReadWriteChild(&dec3));
   RCHECK(buffer->TryReadWriteChild(&dac4));
@@ -2014,7 +2036,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
-         dac4.ComputeSize() + mhac.ComputeSize() +
+         dac4.ComputeSize() + mhac.ComputeSize() + udts.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.

@@ -12,6 +12,7 @@ add_library(media_codecs STATIC
     avc_decoder_configuration_record.cc
     decoder_configuration_record.cc
     dovi_decoder_configuration_record.cc
+    dts_audio_specific_config.cc
     ec3_audio_util.cc
     ac4_audio_util.cc
     es_descriptor.cc

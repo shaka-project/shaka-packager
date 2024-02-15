@@ -150,6 +150,8 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "dts-";
     case kCodecDTSP:
       return "dts+";
+    case kCodecDTSX:
+      return "dtsx";
     case kCodecEAC3:
       return "ec-3";
     case kCodecAC4:
