@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,16 +9,15 @@
 #ifndef PACKAGER_MPD_BASE_REPRESENTATION_H_
 #define PACKAGER_MPD_BASE_REPRESENTATION_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <memory>
+#include <optional>
 
-#include "packager/base/optional.h"
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/bandwidth_estimator.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/segment_info.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 
@@ -41,8 +40,8 @@ class RepresentationStateChangeListener {
   /// Representation.
   /// @param frame_duration is the duration of a frame.
   /// @param timescale is the timescale of the Representation.
-  virtual void OnSetFrameRateForRepresentation(uint32_t frame_duration,
-                                               uint32_t timescale) = 0;
+  virtual void OnSetFrameRateForRepresentation(int32_t frame_duration,
+                                               int32_t timescale) = 0;
 };
 
 /// Representation class contains references to a single media stream, as
@@ -95,24 +94,37 @@ class Representation {
   /// @param start_time is the start time for the (sub)segment, in units of the
   ///        stream's time scale.
   /// @param duration is the duration of the segment, in units of the stream's
-  ///        time scale.
-  /// @param size of the segment in bytes.
+  ///        time scale. In the low latency case, this duration is that of the
+  ///        first chunk because the full duration is not yet known.
+  /// @param size of the segment in bytes. In the low latency case, this size is
+  /// that of the
+  ///        first chunk because the full size is not yet known.
   virtual void AddNewSegment(int64_t start_time,
                              int64_t duration,
                              uint64_t size);
+
+  /// Update a media segment in the Representation.
+  /// In the low latency case, the segment duration will not be ready until the
+  /// entire segment has been processed. This allows setting the full duration
+  /// after the segment has been completed and the true duratio is known.
+  /// @param duration is the duration of the complete segment, in units of the
+  /// stream's
+  ///        time scale.
+  /// @param size of the complete segment in bytes.
+  virtual void UpdateCompletedSegment(int64_t duration, uint64_t size);
 
   /// Set the sample duration of this Representation.
   /// Sample duration is not available right away especially for live. This
   /// allows setting the sample duration after the Representation has been
   /// initialized.
   /// @param sample_duration is the duration of a sample.
-  virtual void SetSampleDuration(uint32_t sample_duration);
+  virtual void SetSampleDuration(int32_t sample_duration);
 
   /// @return MediaInfo for the Representation.
   virtual const MediaInfo& GetMediaInfo() const;
 
   /// @return Copy of <Representation>.
-  base::Optional<xml::XmlNode> GetXml();
+  std::optional<xml::XmlNode> GetXml();
 
   /// By calling this methods, the next time GetXml() is
   /// called, the corresponding attributes will not be set.
@@ -126,6 +138,14 @@ class Representation {
 
   /// Set @presentationTimeOffset in SegmentBase / SegmentTemplate.
   void SetPresentationTimeOffset(double presentation_time_offset);
+
+  /// Set @availabilityTimeOffset in SegmentTemplate.
+  /// This is necessary for Low Latency DASH streaming.
+  void SetAvailabilityTimeOffset();
+
+  /// Set @duration in SegmentTemplate.
+  /// This is necessary for Low Latency DASH streaming.
+  void SetSegmentDuration();
 
   /// Gets the start and end timestamps in seconds.
   /// @param start_timestamp_seconds contains the returned start timestamp in
@@ -179,6 +199,11 @@ class Representation {
   // Add a SegmentInfo. This function may insert an adjusted SegmentInfo if
   // |allow_approximate_segment_timeline_| is set.
   void AddSegmentInfo(int64_t start_time, int64_t duration);
+
+  // Update the current SegmentInfo. This method is used to update the duration
+  // value after a low latency segment is complete, and the full segment
+  // duration is known.
+  void UpdateSegmentInfo(int64_t duration);
 
   // Check if two timestamps are approximately equal if
   // |allow_approximate_segment_timeline_| is set; Otherwise check whether the
@@ -239,7 +264,7 @@ class Representation {
   const bool allow_approximate_segment_timeline_ = false;
   // Segments with duration difference less than one frame duration are
   // considered to have the same duration.
-  uint32_t frame_duration_ = 0;
+  int32_t frame_duration_ = 0;
 };
 
 }  // namespace shaka

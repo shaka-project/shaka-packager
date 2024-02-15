@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,15 +7,16 @@
 #ifndef PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
+#include <filesystem>
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/hls/public/hls_params.h"
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/hls_params.h>
+#include <packager/macros/classes.h>
+#include <packager/mpd/base/bandwidth_estimator.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 
@@ -90,6 +91,9 @@ class MediaPlaylist {
   void SetLanguageForTesting(const std::string& language);
 
   /// For testing only.
+  void SetForcedSubtitleForTesting(const bool forced_subtitle);
+
+  /// For testing only.
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
 
@@ -98,12 +102,13 @@ class MediaPlaylist {
   ///        to this playlist.
   /// @return true on success, false otherwise.
   virtual bool SetMediaInfo(const MediaInfo& media_info);
+  MediaInfo GetMediaInfo() const { return media_info_; }
 
   /// Set the sample duration. Sample duration is used to generate frame rate.
   /// Sample duration is not available right away especially. This allows
   /// setting the sample duration after the Media Playlist has been initialized.
   /// @param sample_duration is the duration of a sample.
-  virtual void SetSampleDuration(uint32_t sample_duration);
+  virtual void SetSampleDuration(int32_t sample_duration);
 
   /// Segments must be added in order.
   /// @param file_name is the file name of the segment.
@@ -160,7 +165,7 @@ class MediaPlaylist {
   /// @param file_path is the output file path accepted by the File
   ///        implementation.
   /// @return true on success, false otherwise.
-  virtual bool WriteToFile(const std::string& file_path);
+  virtual bool WriteToFile(const std::filesystem::path& file_path);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.
@@ -183,7 +188,7 @@ class MediaPlaylist {
   /// The spec does not allow changing EXT-X-TARGETDURATION. However, this class
   /// has no control over the input source.
   /// @param target_duration is the target duration for this playlist.
-  virtual void SetTargetDuration(uint32_t target_duration);
+  virtual void SetTargetDuration(int32_t target_duration);
 
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
@@ -220,6 +225,8 @@ class MediaPlaylist {
   const std::vector<std::string>& characteristics() const {
     return characteristics_;
   }
+
+  bool forced_subtitle() const { return forced_subtitle_; }
 
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices
@@ -260,12 +267,13 @@ class MediaPlaylist {
   std::string codec_;
   std::string language_;
   std::vector<std::string> characteristics_;
+  bool forced_subtitle_ = false;
   uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;
 
   double longest_segment_duration_seconds_ = 0.0;
-  uint32_t time_scale_ = 0;
+  int32_t time_scale_ = 0;
 
   BandwidthEstimator bandwidth_estimator_;
 
@@ -275,7 +283,7 @@ class MediaPlaylist {
 
   // See SetTargetDuration() comments.
   bool target_duration_set_ = false;
-  uint32_t target_duration_ = 0;
+  int32_t target_duration_ = 0;
 
   // TODO(kqyang): This could be managed better by a separate class, than having
   // all them managed in MediaPlaylist.

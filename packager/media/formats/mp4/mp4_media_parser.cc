@@ -2,46 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp4/mp4_media_parser.h"
+#include <packager/media/formats/mp4/mp4_media_parser.h>
 
 #include <algorithm>
+#include <functional>
+#include <limits>
 
-#include "packager/base/callback.h"
-#include "packager/base/callback_helpers.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/video_util.h"
-#include "packager/media/codecs/ac3_audio_util.h"
-#include "packager/media/codecs/av1_codec_configuration_record.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
-#include "packager/media/codecs/dovi_decoder_configuration_record.h"
-#include "packager/media/codecs/ec3_audio_util.h"
-#include "packager/media/codecs/ac4_audio_util.h"
-#include "packager/media/codecs/es_descriptor.h"
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
-#include "packager/media/codecs/vp_codec_configuration_record.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/box_reader.h"
-#include "packager/media/formats/mp4/track_run_iterator.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/video_util.h>
+#include <packager/media/codecs/ac3_audio_util.h>
+#include <packager/media/codecs/ac4_audio_util.h>
+#include <packager/media/codecs/av1_codec_configuration_record.h>
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/dovi_decoder_configuration_record.h>
+#include <packager/media/codecs/ec3_audio_util.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_reader.h>
+#include <packager/media/formats/mp4/track_run_iterator.h>
 
 namespace shaka {
 namespace media {
 namespace mp4 {
 namespace {
 
-uint64_t Rescale(uint64_t time_in_old_scale,
-                 uint32_t old_scale,
-                 uint32_t new_scale) {
+int64_t Rescale(int64_t time_in_old_scale,
+                int32_t old_scale,
+                int32_t new_scale) {
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
@@ -87,6 +90,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecDTSL;
     case FOURCC_dtse:
       return kCodecDTSE;
+    case FOURCC_dtsx:
+      return kCodecDTSX;
     case FOURCC_dtsp:
       return kCodecDTSP;
     case FOURCC_dtsm:
@@ -187,9 +192,9 @@ void MP4MediaParser::Init(const InitCB& init_cb,
                           const NewTextSampleCB& new_text_sample_cb,
                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
-  DCHECK(init_cb_.is_null());
-  DCHECK(!init_cb.is_null());
-  DCHECK(!new_media_sample_cb.is_null());
+  DCHECK(init_cb_ == nullptr);
+  DCHECK(init_cb != nullptr);
+  DCHECK(new_media_sample_cb != nullptr);
 
   ChangeState(kParsingBoxes);
   init_cb_ = init_cb;
@@ -386,10 +391,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
-    const uint32_t timescale = track->media.header.timescale;
+    const int32_t timescale = track->media.header.timescale;
 
     // Calculate duration (based on timescale).
-    uint64_t duration = 0;
+    int64_t duration = 0;
     if (track->media.header.duration > 0) {
       duration = track->media.header.duration;
     } else if (moov_->extends.header.fragment_duration > 0) {
@@ -487,6 +492,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_config = entry.ddts.extra_data;
           max_bitrate = entry.ddts.max_bitrate;
           avg_bitrate = entry.ddts.avg_bitrate;
+          break;
+        case FOURCC_dtsx:
+          codec_config = entry.udts.data;
           break;
         case FOURCC_ac_3:
           codec_config = entry.dac3.data;
@@ -603,7 +611,15 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse av1c.";
             return false;
           }
-          codec_string = av1_config.GetCodecString();
+          // Generate the full codec string if the colr atom is present.
+          if (entry.colr.color_parameter_type != FOURCC_NULL) {
+            codec_string = av1_config.GetCodecString(
+                entry.colr.color_primaries, entry.colr.transfer_characteristics,
+                entry.colr.matrix_coefficients,
+                entry.colr.video_full_range_flag);
+          } else {
+            codec_string = av1_config.GetCodecString();
+          }
           break;
         }
         case FOURCC_avc1:
@@ -717,6 +733,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
       video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());
+      video_stream_info->set_colr_data((entry.colr.raw_box).data(),
+                                       (entry.colr.raw_box).size());
 
       // Set pssh raw data if it has.
       if (moov_->pssh.size() > 0) {
@@ -733,7 +751,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     }
   }
 
-  init_cb_.Run(streams);
+  init_cb_(streams);
   if (!FetchKeysIfNecessary(moov_->pssh))
     return false;
   runs_.reset(new TrackRunIterator(moov_.get()));
@@ -883,7 +901,7 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
            << ", cts=" << runs_->cts()
            << ", size=" << runs_->sample_size();
 
-  if (!new_sample_cb_.Run(runs_->track_id(), stream_sample)) {
+  if (!new_sample_cb_(runs_->track_id(), stream_sample)) {
     *err = true;
     LOG(ERROR) << "Failed to process the sample.";
     return false;

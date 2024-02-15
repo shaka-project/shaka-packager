@@ -1,32 +1,34 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/hls/base/media_playlist.h"
-
-#include <inttypes.h>
+#include <packager/hls/base/media_playlist.h>
 
 #include <algorithm>
+#include <cinttypes>
 #include <cmath>
 #include <limits>
 #include <memory>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/hls/base/tag.h"
-#include "packager/media/base/language_utils.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/file.h>
+#include <packager/hls/base/tag.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/language_utils.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {
 
 namespace {
-uint32_t GetTimeScale(const MediaInfo& media_info) {
+int32_t GetTimeScale(const MediaInfo& media_info) {
   if (media_info.has_reference_time_scale())
     return media_info.reference_time_scale();
 
@@ -35,7 +37,7 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
 
   if (media_info.has_audio_info())
     return media_info.audio_info().time_scale();
-  return 0u;
+  return 0;
 }
 
 std::string AdjustVideoCodec(const std::string& codec) {
@@ -43,7 +45,7 @@ std::string AdjustVideoCodec(const std::string& codec) {
   // samples. It also fails mediastreamvalidator checks and some Apple devices /
   // platforms refused to play.
   // See https://apple.co/30n90DC 1.10 and
-  // https://github.com/google/shaka-packager/issues/587#issuecomment-489182182.
+  // https://github.com/shaka-project/shaka-packager/issues/587#issuecomment-489182182.
   // Replaced with the corresponding formats with the parameter sets stored in
   // the sample descriptions instead.
   std::string adjusted_codec = codec;
@@ -65,7 +67,7 @@ std::string AdjustVideoCodec(const std::string& codec) {
 // 1. MpdUtils header depends on libxml header, which is not in the deps here
 // 2. GetLanguage depends on MediaInfo from packager/mpd/
 // 3. Moving GetLanguage to LanguageUtils would create a a media => mpd dep.
-// TODO(https://github.com/google/shaka-packager/issues/373): Fix this
+// TODO(https://github.com/shaka-project/shaka-packager/issues/373): Fix this
 // dependency situation and factor this out to a common location.
 std::string GetLanguage(const MediaInfo& media_info) {
   std::string lang;
@@ -104,7 +106,7 @@ void AppendExtXMap(const MediaInfo& media_info, std::string* out) {
 
 std::string CreatePlaylistHeader(
     const MediaInfo& media_info,
-    uint32_t target_duration,
+    int32_t target_duration,
     HlsPlaylistType type,
     MediaPlaylist::MediaPlaylistStreamType stream_type,
     uint32_t media_sequence_number,
@@ -114,12 +116,12 @@ std::string CreatePlaylistHeader(
   std::string version_line;
   if (!version.empty()) {
     version_line =
-        base::StringPrintf("## Generated with %s version %s\n",
-                           GetPackagerProjectUrl().c_str(), version.c_str());
+        absl::StrFormat("## Generated with %s version %s\n",
+                        GetPackagerProjectUrl().c_str(), version.c_str());
   }
 
   // 6 is required for EXT-X-MAP without EXT-X-I-FRAMES-ONLY.
-  std::string header = base::StringPrintf(
+  std::string header = absl::StrFormat(
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
       "%s"
@@ -135,20 +137,21 @@ std::string CreatePlaylistHeader(
       break;
     case HlsPlaylistType::kLive:
       if (media_sequence_number > 0) {
-        base::StringAppendF(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
-                            media_sequence_number);
+        absl::StrAppendFormat(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
+                              media_sequence_number);
       }
       if (discontinuity_sequence_number > 0) {
-        base::StringAppendF(&header, "#EXT-X-DISCONTINUITY-SEQUENCE:%d\n",
-                            discontinuity_sequence_number);
+        absl::StrAppendFormat(&header, "#EXT-X-DISCONTINUITY-SEQUENCE:%d\n",
+                              discontinuity_sequence_number);
       }
       break;
     default:
-      NOTREACHED() << "Unexpected MediaPlaylistType " << static_cast<int>(type);
+      NOTIMPLEMENTED() << "Unexpected MediaPlaylistType "
+                       << static_cast<int>(type);
   }
   if (stream_type ==
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
-    base::StringAppendF(&header, "#EXT-X-I-FRAMES-ONLY\n");
+    absl::StrAppendFormat(&header, "#EXT-X-I-FRAMES-ONLY\n");
   }
   if (start_time_offset > std::numeric_limits<double>::lowest()) {
     base::StringAppendF(&header, "#EXT-X-START:TIME-OFFSET=%f\n",
@@ -215,17 +218,17 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       previous_segment_end_offset_(previous_segment_end_offset) {}
 
 std::string SegmentInfoEntry::ToString() {
-  std::string result = base::StringPrintf("#EXTINF:%.3f,", duration_seconds_);
+  std::string result = absl::StrFormat("#EXTINF:%.3f,", duration_seconds_);
 
   if (use_byte_range_) {
-    base::StringAppendF(&result, "\n#EXT-X-BYTERANGE:%" PRIu64,
-                        segment_file_size_);
+    absl::StrAppendFormat(&result, "\n#EXT-X-BYTERANGE:%" PRIu64,
+                          segment_file_size_);
     if (previous_segment_end_offset_ + 1 != start_byte_offset_) {
-      base::StringAppendF(&result, "@%" PRIu64, start_byte_offset_);
+      absl::StrAppendFormat(&result, "@%" PRIu64, start_byte_offset_);
     }
   }
 
-  base::StringAppendF(&result, "\n%s", file_name_.c_str());
+  absl::StrAppendFormat(&result, "\n%s", file_name_.c_str());
 
   return result;
 }
@@ -376,8 +379,12 @@ void MediaPlaylist::SetCharacteristicsForTesting(
   characteristics_ = characteristics;
 }
 
+void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
+  forced_subtitle_ = forced_subtitle;
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
-  const uint32_t time_scale = GetTimeScale(media_info);
+  const int32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
     LOG(ERROR) << "MediaInfo does not contain a valid timescale.";
     return false;
@@ -403,10 +410,12 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
 
+  forced_subtitle_ = media_info_.forced_subtitle();
+
   return true;
 }
 
-void MediaPlaylist::SetSampleDuration(uint32_t sample_duration) {
+void MediaPlaylist::SetSampleDuration(int32_t sample_duration) {
   if (media_info_.has_video_info())
     media_info_.mutable_video_info()->set_frame_duration(sample_duration);
 }
@@ -451,7 +460,7 @@ void MediaPlaylist::AddKeyFrame(int64_t timestamp,
     stream_type_ = MediaPlaylistStreamType::kVideoIFramesOnly;
     use_byte_range_ = true;
   }
-  key_frames_.push_back({timestamp, start_byte_offset, size});
+  key_frames_.push_back({timestamp, start_byte_offset, size, std::string("")});
 }
 
 void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
@@ -475,7 +484,7 @@ void MediaPlaylist::AddPlacementOpportunity() {
   entries_.emplace_back(new PlacementOpportunityEntry());
 }
 
-bool MediaPlaylist::WriteToFile(const std::string& file_path) {
+bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
@@ -486,14 +495,14 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
       hls_params_.start_time_offset);
 
   for (const auto& entry : entries_)
-    base::StringAppendF(&content, "%s\n", entry->ToString().c_str());
+    absl::StrAppendFormat(&content, "%s\n", entry->ToString().c_str());
 
   if (hls_params_.playlist_type == HlsPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";
   }
 
-  if (!File::WriteFileAtomically(file_path.c_str(), content)) {
-    LOG(ERROR) << "Failed to write playlist to: " << file_path;
+  if (!File::WriteFileAtomically(file_path.string().c_str(), content)) {
+    LOG(ERROR) << "Failed to write playlist to: " << file_path.string();
     return false;
   }
   return true;
@@ -513,12 +522,12 @@ double MediaPlaylist::GetLongestSegmentDuration() const {
   return longest_segment_duration_seconds_;
 }
 
-void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
+void MediaPlaylist::SetTargetDuration(int32_t target_duration) {
   if (target_duration_set_) {
     if (target_duration_ == target_duration)
       return;
-    VLOG(1) << "Updating target duration from " << target_duration << " to "
-            << target_duration_;
+    VLOG(1) << "Updating target duration from " << target_duration_ << " to "
+            << target_duration;
   }
   target_duration_ = target_duration;
   target_duration_set_ = true;
@@ -671,7 +680,7 @@ void MediaPlaylist::SlideWindow() {
       hls_params_.playlist_type != HlsPlaylistType::kLive) {
     return;
   }
-  DCHECK_GT(time_scale_, 0u);
+  DCHECK_GT(time_scale_, 0);
 
   if (current_buffer_depth_ <= hls_params_.time_shift_buffer_depth)
     return;
@@ -698,7 +707,8 @@ void MediaPlaylist::SlideWindow() {
     } else if (entry_type == HlsEntry::EntryType::kExtDiscontinuity) {
       ++discontinuity_sequence_number_;
     } else {
-      DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
+      DCHECK_EQ(static_cast<int>(entry_type),
+                static_cast<int>(HlsEntry::EntryType::kExtInf));
 
       const SegmentInfoEntry& segment_info =
           *reinterpret_cast<SegmentInfoEntry*>(last->get());

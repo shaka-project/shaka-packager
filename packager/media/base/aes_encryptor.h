@@ -1,10 +1,10 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-// AES Encryptor implementation using openssl.
+// AES Encryptor implementation using mbedtls.
 
 #ifndef PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_
 #define PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_
@@ -12,39 +12,24 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/aes_cryptor.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/aes_cryptor.h>
 
 namespace shaka {
 namespace media {
 
-class AesEncryptor : public AesCryptor {
- public:
-  /// @param constant_iv_flag indicates whether a constant iv is used,
-  ///        kUseConstantIv means that the same iv is used for all Crypt calls
-  ///        until iv is changed via SetIv; otherwise, iv can be incremented
-  ///        (for counter mode) or chained (for cipher block chaining mode)
-  ///        internally inside Crypt call, i.e. iv will be updated across Crypt
-  ///        calls.
-  explicit AesEncryptor(ConstantIvFlag constant_iv_flag);
-  ~AesEncryptor() override;
-
-  /// Initialize the encryptor with specified key and IV.
-  /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8_t>& key,
-                        const std::vector<uint8_t>& iv) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AesEncryptor);
-};
-
 // Class which implements AES-CTR counter-mode encryption.
-class AesCtrEncryptor : public AesEncryptor {
+class AesCtrEncryptor : public AesCryptor {
  public:
   AesCtrEncryptor();
   ~AesCtrEncryptor() override;
 
   uint32_t block_offset() const { return block_offset_; }
+
+  /// Initialize the encryptor with specified key and IV.
+  /// @return true on successful initialization, false otherwise.
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv) override;
 
  private:
   bool CryptInternal(const uint8_t* plaintext,
@@ -74,7 +59,7 @@ enum CbcPaddingScheme {
 };
 
 // Class which implements AES-CBC (Cipher block chaining) encryption.
-class AesCbcEncryptor : public AesEncryptor {
+class AesCbcEncryptor : public AesCryptor {
  public:
   /// Creates a AesCbcEncryptor with continous cipher block chain across Crypt
   /// calls, i.e. AesCbcEncryptor(padding_scheme, kDontUseConstantIv).
@@ -94,6 +79,13 @@ class AesCbcEncryptor : public AesEncryptor {
 
   ~AesCbcEncryptor() override;
 
+  /// Initialize the encryptor with specified key and IV.
+  /// @return true on successful initialization, false otherwise.
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv) override;
+
+  size_t RequiredOutputSize(size_t plaintext_size) override;
+
  private:
   bool CryptInternal(const uint8_t* plaintext,
                      size_t plaintext_size,
@@ -101,6 +93,11 @@ class AesCbcEncryptor : public AesEncryptor {
                      size_t* ciphertext_size) override;
   void SetIvInternal() override;
   size_t NumPaddingBytes(size_t size) const override;
+
+  void CbcEncryptBlocks(const uint8_t* plaintext,
+                        size_t plaintext_size,
+                        uint8_t* ciphertext,
+                        uint8_t* iv);
 
   const CbcPaddingScheme padding_scheme_;
   // 16-byte internal iv for crypto operations.

@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -8,13 +8,13 @@
 #define PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/media/event/event_info.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/media/event/event_info.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 
@@ -39,13 +39,18 @@ class HlsNotifyMuxerListener : public MuxerListener {
   /// @param characteristics is the characteristics for this playlist. This is
   ///        the value of CHARACTERISTICS attribute for EXT-X-MEDIA. This may be
   ///        empty.
+  /// @param forced is the HLS FORCED SUBTITLE setting for this playlist. This
+  ///        is the value of FORCED attribute for EXT-X-MEDIA. This may be
+  ///        empty.
   /// @param hls_notifier used by this listener. Ownership does not transfer.
   HlsNotifyMuxerListener(const std::string& playlist_name,
                          bool iframes_only,
                          const std::string& ext_x_media_name,
                          const std::string& ext_x_media_group_id,
                          const std::vector<std::string>& characteristics,
-                         hls::HlsNotifier* hls_notifier);
+                         bool forced,
+                         hls::HlsNotifier* hls_notifier,
+                         std::optional<uint32_t> index);
   ~HlsNotifyMuxerListener() override;
 
   /// @name MuxerListener implementation overrides.
@@ -59,16 +64,18 @@ class HlsNotifyMuxerListener : public MuxerListener {
   void OnEncryptionStart() override;
   void OnMediaStart(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
-                    uint32_t time_scale,
+                    int32_t time_scale,
                     ContainerType container_type) override;
-  void OnSampleDurationReady(uint32_t sample_duration) override;
+  void OnSampleDurationReady(int32_t sample_duration) override;
   void OnMediaEnd(const MediaRanges& media_ranges,
                   float duration_seconds) override;
   void OnNewSegment(const std::string& file_name,
                     int64_t start_time,
                     int64_t duration,
                     uint64_t segment_file_size) override;
-  void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
+  void OnKeyFrame(int64_t timestamp,
+                  uint64_t start_byte_offset,
+                  uint64_t size) override;
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 
@@ -83,8 +90,10 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
   const std::vector<std::string> characteristics_;
+  const bool forced_subtitle_;
   hls::HlsNotifier* const hls_notifier_;
-  base::Optional<uint32_t> stream_id_;
+  std::optional<uint32_t> stream_id_;
+  std::optional<uint32_t> index_;
 
   bool must_notify_encryption_start_ = false;
   // Cached encryption info before OnMediaStart() is called.

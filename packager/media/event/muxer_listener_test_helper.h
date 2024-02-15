@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,15 +7,16 @@
 #ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 
@@ -42,7 +43,8 @@ const char kExpectedDefaultMediaInfo[] =
     "reference_time_scale: 1000\n"
     "container_type: 1\n"
     "media_file_name: 'test_output_file_name.mp4'\n"
-    "media_duration_seconds: 10.5\n";
+    "media_duration_seconds: 10.5\n"
+    "index: 0\n";
 
 const char kExpectedDefaultMediaInfoSubsegmentRange[] =
     "video_info {\n"
@@ -65,12 +67,13 @@ const char kExpectedDefaultMediaInfoSubsegmentRange[] =
     "container_type: 1\n"
     "media_file_name: 'test_output_file_name.mp4'\n"
     "media_duration_seconds: 10.5\n"
+    "index: 0\n"
     "subsegment_ranges {\n"
     "  begin: 222\n"
     "  end: 9999\n"
     "}\n";
 
-const uint32_t kDefaultReferenceTimeScale = 1000u;
+const int32_t kDefaultReferenceTimeScale = 1000;
 
 // Struct that gets passed for to CreateVideoStreamInfo() to create a
 // StreamInfo instance. Useful for generating multiple VideoStreamInfo with
@@ -79,8 +82,8 @@ struct VideoStreamInfoParameters {
   VideoStreamInfoParameters();
   ~VideoStreamInfoParameters();
   int track_id;
-  uint32_t time_scale;
-  uint64_t duration;
+  int32_t time_scale;
+  int64_t duration;
   Codec codec;
   std::string codec_string;
   std::string language;
@@ -93,10 +96,33 @@ struct VideoStreamInfoParameters {
   bool is_encrypted;
 };
 
+// Struct that gets passed for to CreateAudioStreamInfo() to create a
+// StreamInfo instance. Useful for generating multiple AudioStreamInfo with
+// slightly different parameters.
+struct AudioStreamInfoParameters {
+  AudioStreamInfoParameters();
+  ~AudioStreamInfoParameters();
+  int track_id;
+  int32_t time_scale;
+  int64_t duration;
+  Codec codec;
+  std::string codec_string;
+  std::vector<uint8_t> codec_config;
+  uint8_t sample_bits;
+  uint8_t num_channels;
+  uint32_t sampling_frequency;
+  uint64_t seek_preroll_ns;
+  uint64_t codec_delay_ns;
+  uint32_t max_bitrate;
+  uint32_t avg_bitrate;
+  std::string language;
+  bool is_encrypted;
+};
+
 struct OnNewSegmentParameters {
   std::string file_name;
-  uint64_t start_time;
-  uint64_t duration;
+  int64_t start_time;
+  int64_t duration;
   uint64_t segment_file_size;
 };
 
@@ -112,6 +138,16 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(
 
 // Returns the "default" VideoStreamInfoParameters for testing.
 VideoStreamInfoParameters GetDefaultVideoStreamInfoParams();
+
+// Creates StreamInfo instance from AudioStreamInfoParameters.
+std::shared_ptr<AudioStreamInfo> CreateAudioStreamInfo(
+    const AudioStreamInfoParameters& param);
+
+// Returns the "default" configuration for testing given codec and parameters.
+AudioStreamInfoParameters GetAudioStreamInfoParams(
+    Codec codec,
+    const char* codec_string,
+    const std::vector<uint8_t>& codec_config);
 
 // Returns the "default" values for OnMediaEnd().
 OnMediaEndParameters GetDefaultOnMediaEndParams();

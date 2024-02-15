@@ -1,13 +1,15 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/widevine_pssh_generator.h"
+#include <packager/media/base/widevine_pssh_generator.h>
 
-#include "packager/media/base/protection_system_ids.h"
-#include "packager/media/base/widevine_pssh_data.pb.h"
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/widevine_pssh_data.pb.h>
 
 namespace shaka {
 namespace media {
@@ -32,7 +34,7 @@ bool WidevinePsshGenerator::SupportMultipleKeys() {
   return true;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 WidevinePsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
   media::WidevinePsshData widevine_pssh_data;
@@ -43,12 +45,14 @@ WidevinePsshGenerator::GeneratePsshDataFromKeyIds(
   return StringToBytes(widevine_pssh_data.SerializeAsString());
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 WidevinePsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
+  UNUSED(key_id);
+  UNUSED(key);
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace media

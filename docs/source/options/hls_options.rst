@@ -71,7 +71,7 @@ HLS options
     number from previous packager run.
 
     For more information about the reasoning of this, please see issue
-    `#691 <https://github.com/google/shaka-packager/issues/691>`_.
+    `#691 <https://github.com/shaka-project/shaka-packager/issues/691>`_.
 
     The EXT-X-MEDIA-SEQUENCE documentation can be read here:
     https://tools.ietf.org/html/rfc8216#section-4.3.3.2.
@@ -88,3 +88,8 @@ HLS options
 
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
     stream is HLS only.
+
+--force_cl_index
+
+    True forces the muxer to order streams in the order given 
+    on the command-line. False uses the previous unordered behavior.

@@ -4,18 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/muxer_listener_internal.h"
+#include <packager/media/event/muxer_listener_internal.h>
 
 #include <gtest/gtest.h>
 
-#include "packager/media/event/muxer_listener_test_helper.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/media/event/muxer_listener_test_helper.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 namespace media {
 namespace internal {
 namespace {
-const uint32_t kReferenceTimeScale = 1000;
+const int32_t kReferenceTimeScale = 1000;
 }  // namespace
 
 class MuxerListenerInternalTest : public ::testing::Test {};
@@ -70,6 +70,24 @@ TEST_F(MuxerListenerInternalVideoStreamTest, TransferCharacteristics) {
                                 kReferenceTimeScale,
                                 MuxerListener::kContainerMp4, &media_info));
   EXPECT_EQ(18u, media_info.video_info().transfer_characteristics());
+}
+
+class MuxerListenerInternalAudioStreamTest : public MuxerListenerInternalTest {
+};
+
+// AddAudioInfo function should parse the channel mask
+TEST_F(MuxerListenerInternalAudioStreamTest, DTSX) {
+  MediaInfo media_info;
+  std::shared_ptr<AudioStreamInfo> audio_info = CreateAudioStreamInfo(
+      GetAudioStreamInfoParams(kCodecDTSX, "dtsx",
+                               {0x01, 0x20, 0x00, 0x00, 0x0, 0x3F, 0x80,
+                                0x00}));  // Channel mask = 3F
+  ASSERT_TRUE(GenerateMediaInfo(MuxerOptions(), *audio_info,
+                                kReferenceTimeScale,
+                                MuxerListener::kContainerMp4, &media_info));
+  MediaInfo_AudioInfo* info = media_info.mutable_audio_info();
+  auto* codec_data = info->mutable_codec_specific_data();
+  EXPECT_EQ(0x3F, codec_data->channel_mask());
 }
 
 }  // namespace internal

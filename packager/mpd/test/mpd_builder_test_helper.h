@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,10 +7,10 @@
 #ifndef MPD_TEST_MPD_BUILDER_TEST_HELPER_H_
 #define MPD_TEST_MPD_BUILDER_TEST_HELPER_H_
 
+#include <filesystem>
 #include <string>
 
-#include "packager/base/files/file_path.h"
-#include "packager/mpd/base/media_info.pb.h"
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 
@@ -39,13 +39,10 @@ const char kFileNameExpectedMpdOutputAudio1AndVideo1[] =
 
 // Returns the path to test data with |file_name|. Use constants above to get
 // path to the test files.
-base::FilePath GetTestDataFilePath(const std::string& file_name);
+std::filesystem::path GetTestDataFilePath(const std::string& file_name);
 
 // Get path to DASH MPD schema.
-base::FilePath GetSchemaPath();
-
-// Get the content of |file_path|. Returns empty string on error.
-std::string GetPathContent(const base::FilePath& file_path);
+std::filesystem::path GetSchemaPath();
 
 // Convert |media_info_string| to MediaInfo.
 MediaInfo ConvertToMediaInfo(const std::string& media_info_string);

@@ -11,14 +11,14 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/time/time.h"
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/text_track_config.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/webm/webm_audio_client.h"
-#include "packager/media/formats/webm/webm_content_encodings_client.h"
-#include "packager/media/formats/webm/webm_parser.h"
-#include "packager/media/formats/webm/webm_video_client.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/text_track_config.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/formats/webm/webm_audio_client.h>
+#include <packager/media/formats/webm/webm_content_encodings_client.h>
+#include <packager/media/formats/webm/webm_parser.h>
+#include <packager/media/formats/webm/webm_video_client.h>
 
 namespace shaka {
 namespace media {

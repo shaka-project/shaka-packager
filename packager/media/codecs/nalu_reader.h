@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,11 @@
 #ifndef PACKAGER_MEDIA_CODECS_NALU_READER_H_
 #define PACKAGER_MEDIA_CODECS_NALU_READER_H_
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/macros.h"
-#include "packager/media/base/decrypt_config.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {
@@ -89,9 +88,9 @@ class Nalu {
 
   Nalu();
 
-  bool Initialize(CodecType type,
-                  const uint8_t* data,
-                  uint64_t size) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize(CodecType type,
+                                const uint8_t* data,
+                                uint64_t size);
 
   /// This is the pointer to the Nalu data, pointing to the header.
   const uint8_t* data() const { return data_; }

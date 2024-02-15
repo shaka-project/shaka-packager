@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,10 @@
 #ifndef PACKAGER_MEDIA_BASE_MUXER_OPTIONS_H_
 #define PACKAGER_MEDIA_BASE_MUXER_OPTIONS_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
-#include "packager/media/public/mp4_output_params.h"
+#include <packager/mp4_output_params.h>
 
 namespace shaka {
 namespace media {
@@ -26,7 +25,7 @@ struct MuxerOptions {
 
   // A positive value, in milliseconds, by which output timestamps are offset to
   // compensate for negative timestamps in the input.
-  uint32_t transport_stream_timestamp_offset_ms = 0;
+  int32_t transport_stream_timestamp_offset_ms = 0;
 
   /// Output file name. If segment_template is not specified, the Muxer
   /// generates this single output file with all segments concatenated;

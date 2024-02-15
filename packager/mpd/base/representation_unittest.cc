@@ -1,29 +1,33 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/representation.h"
+#include <packager/mpd/base/representation.h>
 
-#include <gflags/gflags.h>
+#include <cinttypes>
+
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <inttypes.h>
 
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/flag_saver.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 using ::testing::Bool;
 using ::testing::Not;
 using ::testing::Values;
 using ::testing::WithParamInterface;
 
-DECLARE_bool(use_legacy_vp9_codec_string);
+ABSL_DECLARE_FLAG(bool, use_legacy_vp9_codec_string);
 
 namespace shaka {
 namespace {
@@ -40,7 +44,7 @@ class MockRepresentationStateChangeListener
                void(int64_t start_time, int64_t duration));
 
   MOCK_METHOD2(OnSetFrameRateForRepresentation,
-               void(uint32_t frame_duration, uint32_t timescale));
+               void(int32_t frame_duration, int32_t timescale));
 };
 
 }  // namespace
@@ -234,7 +238,8 @@ TEST_F(RepresentationTest, CheckVideoInfoVp9CodecInWebm) {
 }
 
 TEST_F(RepresentationTest, CheckVideoInfoLegacyVp9CodecInWebm) {
-  FLAGS_use_legacy_vp9_codec_string = true;
+  FlagSaver<bool> saver(&FLAGS_use_legacy_vp9_codec_string);
+  absl::SetFlag(&FLAGS_use_legacy_vp9_codec_string, true);
 
   const char kTestMediaInfoCodecVp9[] =
       "video_info {\n"
@@ -270,8 +275,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const int64_t kStartTime = 199238u;
-  const int64_t kDuration = 98u;
+  const int64_t kStartTime = 199238;
+  const int64_t kDuration = 98;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener, OnNewSegmentForRepresentation(kStartTime, kDuration));
@@ -300,8 +305,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const uint32_t kTimeScale = 1000u;
-  const int64_t kFrameDuration = 33u;
+  const int32_t kTimeScale = 1000;
+  const int64_t kFrameDuration = 33;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
@@ -413,11 +418,11 @@ const char kSElementTemplate[] =
 const char kSElementTemplateWithoutR[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
-const uint32_t kDefaultTimeScale = 1000u;
+const int32_t kDefaultTimeScale = 1000;
 const int64_t kScaledTargetSegmentDuration = 10;
 const double kTargetSegmentDurationInSeconds =
     static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
-const uint32_t kSampleDuration = 2;
+const int32_t kSampleDuration = 2;
 
 std::string GetDefaultMediaInfo() {
   const char kMediaInfo[] =
@@ -435,7 +440,7 @@ std::string GetDefaultMediaInfo() {
       "init_segment_url: 'init.mp4'\n"
       "segment_template_url: '$Time$.mp4'\n";
 
-  return base::StringPrintf(kMediaInfo, kDefaultTimeScale);
+  return absl::StrFormat(kMediaInfo, kDefaultTimeScale);
 }
 
 }  // namespace
@@ -444,6 +449,8 @@ class SegmentTemplateTest : public RepresentationTest {
  public:
   void SetUp() override {
     mpd_options_.mpd_type = MpdType::kDynamic;
+    mpd_options_.mpd_params.low_latency_dash_mode = false;
+
     representation_ =
         CreateRepresentation(ConvertToMediaInfo(GetDefaultMediaInfo()),
                              kAnyRepresentationId, NoListener());
@@ -458,12 +465,22 @@ class SegmentTemplateTest : public RepresentationTest {
 
     SegmentInfo s = {start_time, duration, repeat};
     segment_infos_for_expected_out_.push_back(s);
+
+    if (mpd_options_.mpd_params.low_latency_dash_mode) {
+      // Low latency segments do not repeat, so create 1 new segment and return.
+      // At this point, only the first chunk of the low latency segment has been
+      // written. The bandwidth will be updated once the segment is fully
+      // written and the segment duration and size are known.
+      representation_->AddNewSegment(start_time, duration, size);
+      return;
+    }
+
     if (repeat == 0) {
       expected_s_elements_ +=
-          base::StringPrintf(kSElementTemplateWithoutR, start_time, duration);
+          absl::StrFormat(kSElementTemplateWithoutR, start_time, duration);
     } else {
       expected_s_elements_ +=
-          base::StringPrintf(kSElementTemplate, start_time, duration, repeat);
+          absl::StrFormat(kSElementTemplate, start_time, duration, repeat);
     }
 
     for (int i = 0; i < repeat + 1; ++i) {
@@ -472,6 +489,16 @@ class SegmentTemplateTest : public RepresentationTest {
       bandwidth_estimator_.AddBlock(
           size, static_cast<double>(duration) / kDefaultTimeScale);
     }
+  }
+
+  void UpdateSegment(int64_t duration, uint64_t size) {
+    DCHECK(representation_);
+    DCHECK(!segment_infos_for_expected_out_.empty());
+
+    segment_infos_for_expected_out_.back().duration = duration;
+    representation_->UpdateCompletedSegment(duration, size);
+    bandwidth_estimator_.AddBlock(
+        size, static_cast<double>(duration) / kDefaultTimeScale);
   }
 
  protected:
@@ -489,8 +516,8 @@ class SegmentTemplateTest : public RepresentationTest {
         "    </SegmentTimeline>\n"
         "  </SegmentTemplate>\n"
         "</Representation>\n";
-    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Max(),
-                              expected_s_elements_.c_str());
+    return absl::StrFormat(kOutputTemplate, bandwidth_estimator_.Max(),
+                           expected_s_elements_.c_str());
   }
 
   std::unique_ptr<Representation> representation_;
@@ -508,6 +535,39 @@ TEST_F(SegmentTemplateTest, OneSegmentNormal) {
 
   expected_s_elements_ = "<S t=\"0\" d=\"10\"/>";
   EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(ExpectedXml()));
+}
+
+TEST_F(SegmentTemplateTest, OneSegmentLowLatency) {
+  const int64_t kStartTime = 0;
+  const int64_t kChunkDuration = 5;
+  const uint64_t kChunkSize = 128;
+  const int64_t kSegmentDuration = kChunkDuration * 1000;
+  const uint64_t kSegmentSize = kChunkSize * 1000;
+
+  mpd_options_.mpd_params.low_latency_dash_mode = true;
+  mpd_options_.mpd_params.target_segment_duration =
+      kSegmentDuration / representation_->GetMediaInfo().reference_time_scale();
+
+  // Set values used in LL-DASH MPD attributes
+  representation_->SetSampleDuration(kChunkDuration);
+  representation_->SetAvailabilityTimeOffset();
+  representation_->SetSegmentDuration();
+
+  // Register segment after the first chunk is complete
+  AddSegments(kStartTime, kChunkDuration, kChunkSize, 0);
+  // Update SegmentInfo after the segment is complete
+  UpdateSegment(kSegmentDuration, kSegmentSize);
+
+  const char kOutputTemplate[] =
+      "<Representation id=\"1\" bandwidth=\"204800\" "
+      " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
+      " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
+      "  <SegmentTemplate timescale=\"1000\" "
+      "   duration=\"5000\" availabilityTimeOffset=\"4.995\" "
+      "   availabilityTimeComplete=\"false\" initialization=\"init.mp4\" "
+      "   media=\"$Time$.mp4\" startNumber=\"1\"/>\n"
+      "</Representation>\n";
+  EXPECT_THAT(representation_->GetXml(), XmlNodeEqual(kOutputTemplate));
 }
 
 TEST_F(SegmentTemplateTest, RepresentationClone) {
@@ -713,7 +773,7 @@ class SegmentTimelineTestBase : public SegmentTemplateTest {
         "init_segment_url: 'init.mp4'\n"
         "segment_template_url: '$Number$.mp4'\n";
     const std::string& number_template_media_info =
-        base::StringPrintf(kMediaInfo, kDefaultTimeScale);
+        absl::StrFormat(kMediaInfo, kDefaultTimeScale);
     mpd_options_.mpd_type = MpdType::kDynamic;
     mpd_options_.mpd_params.target_segment_duration =
         kTargetSegmentDurationInSeconds;
@@ -739,9 +799,8 @@ class SegmentTimelineTestBase : public SegmentTemplateTest {
         "  </SegmentTemplate>\n"
         "</Representation>\n";
 
-    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Max(),
-                              expected_start_number,
-                              expected_s_element.c_str());
+    return absl::StrFormat(kOutputTemplate, bandwidth_estimator_.Max(),
+                           expected_start_number, expected_s_element.c_str());
   }
 };
 
@@ -774,11 +833,11 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentDurationAdjusted) {
 
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
-    expected_s_elements = base::StringPrintf(
-        kSElementTemplateWithoutR, kStartTime, kScaledTargetSegmentDuration);
+    expected_s_elements = absl::StrFormat(kSElementTemplateWithoutR, kStartTime,
+                                          kScaledTargetSegmentDuration);
   } else {
-    expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
-                                             kStartTime, kDurationSmaller);
+    expected_s_elements = absl::StrFormat(kSElementTemplateWithoutR, kStartTime,
+                                          kDurationSmaller);
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -795,11 +854,11 @@ TEST_P(ApproximateSegmentTimelineTest,
 
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
-    expected_s_elements = base::StringPrintf(
-        kSElementTemplateWithoutR, kStartTime, kScaledTargetSegmentDuration);
+    expected_s_elements = absl::StrFormat(kSElementTemplateWithoutR, kStartTime,
+                                          kScaledTargetSegmentDuration);
   } else {
-    expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
-                                             kStartTime, kDurationSmaller);
+    expected_s_elements = absl::StrFormat(kSElementTemplateWithoutR, kStartTime,
+                                          kDurationSmaller);
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -821,17 +880,17 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
   if (allow_approximate_segment_timeline_) {
     int kNumSegments = 3;
     expected_s_elements =
-        base::StringPrintf(kSElementTemplate, kStartTime,
-                           kScaledTargetSegmentDuration, kNumSegments - 1);
+        absl::StrFormat(kSElementTemplate, kStartTime,
+                        kScaledTargetSegmentDuration, kNumSegments - 1);
   } else {
     expected_s_elements =
-        base::StringPrintf(kSElementTemplateWithoutR, kStartTime,
-                           kDurationSmaller) +
-        base::StringPrintf(kSElementTemplateWithoutR,
-                           kStartTime + kDurationSmaller, kDurationLarger) +
-        base::StringPrintf(kSElementTemplateWithoutR,
-                           kStartTime + kDurationSmaller + kDurationLarger,
-                           kDurationSmaller);
+        absl::StrFormat(kSElementTemplateWithoutR, kStartTime,
+                        kDurationSmaller) +
+        absl::StrFormat(kSElementTemplateWithoutR,
+                        kStartTime + kDurationSmaller, kDurationLarger) +
+        absl::StrFormat(kSElementTemplateWithoutR,
+                        kStartTime + kDurationSmaller + kDurationLarger,
+                        kDurationSmaller);
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -856,8 +915,8 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations2) {
         "<S t=\"20\" d=\"13\"/>";
   } else {
     int kNumSegments = 3;
-    expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
-                                             kDurationLarger, kNumSegments - 1);
+    expected_s_elements = absl::StrFormat(kSElementTemplate, kStartTime,
+                                          kDurationLarger, kNumSegments - 1);
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -875,13 +934,13 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallGap) {
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
     int kNumSegments = 3;
-    expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
-                                             kDuration, kNumSegments - 1);
+    expected_s_elements = absl::StrFormat(kSElementTemplate, kStartTime,
+                                          kDuration, kNumSegments - 1);
   } else {
     expected_s_elements =
-        base::StringPrintf(kSElementTemplateWithoutR, kStartTime, kDuration) +
-        base::StringPrintf(kSElementTemplate, kStartTime + kDuration + kGap,
-                           kDuration, 1 /* repeat */);
+        absl::StrFormat(kSElementTemplateWithoutR, kStartTime, kDuration) +
+        absl::StrFormat(kSElementTemplate, kStartTime + kDuration + kGap,
+                        kDuration, 1 /* repeat */);
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -899,13 +958,13 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
     int kNumSegments = 3;
-    expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
-                                             kDuration, kNumSegments - 1);
+    expected_s_elements = absl::StrFormat(kSElementTemplate, kStartTime,
+                                          kDuration, kNumSegments - 1);
   } else {
     expected_s_elements =
-        base::StringPrintf(kSElementTemplateWithoutR, kStartTime, kDuration) +
-        base::StringPrintf(kSElementTemplate, kStartTime + kDuration - kOverlap,
-                           kDuration, 1 /* repeat */);
+        absl::StrFormat(kSElementTemplateWithoutR, kStartTime, kDuration) +
+        absl::StrFormat(kSElementTemplate, kStartTime + kDuration - kOverlap,
+                        kDuration, 1 /* repeat */);
   }
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
@@ -913,7 +972,8 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
 
 // Check the segments are grouped correctly when sample duration is not
 // available, which happens for text streams.
-// See https://github.com/google/shaka-packager/issues/417 for the background.
+// See https://github.com/shaka-project/shaka-packager/issues/417 for the
+// background.
 TEST_P(ApproximateSegmentTimelineTest, NoSampleDuration) {
   const char kMediaInfo[] =
       "text_info {\n"
@@ -989,7 +1049,7 @@ TEST_P(TimeShiftBufferDepthTest, Normal) {
   const int kExpectedRepeatsLeft = kTimeShiftBufferDepth;
   const int kExpectedStartNumber = kRepeat - kExpectedRepeatsLeft + 1;
 
-  const std::string expected_s_element = base::StringPrintf(
+  const std::string expected_s_element = absl::StrFormat(
       kSElementTemplate,
       initial_start_time_ + kDuration * (kRepeat - kExpectedRepeatsLeft),
       kDuration, kExpectedRepeatsLeft);
@@ -1015,7 +1075,7 @@ TEST_P(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
 
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
 
-  const std::string expected_s_element = base::StringPrintf(
+  const std::string expected_s_element = absl::StrFormat(
       kSElementTemplate, initial_start_time_, kDuration, kRepeat);
   EXPECT_THAT(
       representation_->GetXml(),
@@ -1046,8 +1106,8 @@ TEST_P(TimeShiftBufferDepthTest, Generic) {
 
   // Expect only the latest S element with 2 segments.
   const std::string expected_s_element =
-      base::StringPrintf(kSElementTemplate, first_s_element_end_time,
-                         kTimeShiftBufferDepthDuration, kMoreSegmentsRepeat);
+      absl::StrFormat(kSElementTemplate, first_s_element_end_time,
+                      kTimeShiftBufferDepthDuration, kMoreSegmentsRepeat);
 
   const int kExpectedRemovedSegments = kRepeat + 1;
   EXPECT_THAT(
@@ -1084,13 +1144,13 @@ TEST_P(TimeShiftBufferDepthTest, MoreThanOneS) {
       (kOneSecondSegmentRepeat + 1 + kTwoSecondSegmentRepeat * 2) -
       kTimeShiftBufferDepth;
 
-  std::string expected_s_element = base::StringPrintf(
+  std::string expected_s_element = absl::StrFormat(
       kSElementTemplate,
       initial_start_time_ + kOneSecondDuration * kExpectedRemovedSegments,
       kOneSecondDuration, kOneSecondSegmentRepeat - kExpectedRemovedSegments);
   expected_s_element +=
-      base::StringPrintf(kSElementTemplate, first_s_element_end_time,
-                         kTwoSecondDuration, kTwoSecondSegmentRepeat);
+      absl::StrFormat(kSElementTemplate, first_s_element_end_time,
+                      kTwoSecondDuration, kTwoSecondSegmentRepeat);
 
   EXPECT_THAT(
       representation_->GetXml(),
@@ -1126,14 +1186,14 @@ TEST_P(TimeShiftBufferDepthTest, UseLastSegmentInS) {
   AddSegments(first_s_element_end_time, kTwoSecondDuration, kSize,
               kTwoSecondSegmentRepeat);
 
-  std::string expected_s_element = base::StringPrintf(
+  std::string expected_s_element = absl::StrFormat(
       kSElementTemplateWithoutR,
       initial_start_time_ + kDuration1,  // Expect one segment removed.
       kDuration1);
 
   expected_s_element +=
-      base::StringPrintf(kSElementTemplate, first_s_element_end_time,
-                         kTwoSecondDuration, kTwoSecondSegmentRepeat);
+      absl::StrFormat(kSElementTemplate, first_s_element_end_time,
+                      kTwoSecondDuration, kTwoSecondSegmentRepeat);
   EXPECT_THAT(representation_->GetXml(),
               XmlNodeEqual(ExpectedXml(expected_s_element, 2)));
 }
@@ -1160,10 +1220,10 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
   const int64_t gap_s_element_start_time = first_s_element_end_time + 1;
   AddSegments(gap_s_element_start_time, kDuration, kSize, /* no repeat */ 0);
 
-  std::string expected_s_element = base::StringPrintf(
+  std::string expected_s_element = absl::StrFormat(
       kSElementTemplate, initial_start_time_, kDuration, kRepeat);
-  expected_s_element += base::StringPrintf(kSElementTemplateWithoutR,
-                                           gap_s_element_start_time, kDuration);
+  expected_s_element += absl::StrFormat(kSElementTemplateWithoutR,
+                                        gap_s_element_start_time, kDuration);
 
   EXPECT_THAT(
       representation_->GetXml(),
@@ -1196,10 +1256,10 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
               kSecondSElementRepeat);
 
   std::string expected_s_element =
-      base::StringPrintf(kSElementTemplateWithoutR,
-                         initial_start_time_ + kRepeat * kDuration, kDuration) +
-      base::StringPrintf(kSElementTemplate, gap_s_element_start_time, kDuration,
-                         kSecondSElementRepeat);
+      absl::StrFormat(kSElementTemplateWithoutR,
+                      initial_start_time_ + kRepeat * kDuration, kDuration) +
+      absl::StrFormat(kSElementTemplate, gap_s_element_start_time, kDuration,
+                      kSecondSElementRepeat);
   const int kExpectedRemovedSegments = kRepeat;
   EXPECT_THAT(
       representation_->GetXml(),
@@ -1226,7 +1286,7 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
   const int kExpectedStartNumber =
       kDefaultStartNumber + kExpectedRemovedSegments;
 
-  std::string expected_s_element = base::StringPrintf(
+  std::string expected_s_element = absl::StrFormat(
       kSElementTemplate,
       initial_start_time_ + kExpectedRemovedSegments * kDuration, kDuration,
       kExpectedSegmentsRepeat);
@@ -1262,8 +1322,8 @@ class RepresentationDeleteSegmentsTest : public SegmentTimelineTestBase {
 
     // Create 100 files with the template.
     for (int i = 1; i <= 100; ++i) {
-      File::WriteStringToFile(
-          base::StringPrintf(kStringPrintTemplate, i).c_str(), "dummy content");
+      File::WriteStringToFile(absl::StrFormat(kStringPrintTemplate, i).c_str(),
+                              "dummy content");
     }
 
     MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
@@ -1292,8 +1352,7 @@ TEST_F(RepresentationDeleteSegmentsTest, NoSegmentsDeletedInitially) {
     AddSegments(kInitialStartTime + i * kDuration, kDuration, kSize, kNoRepeat);
   }
   for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
-    EXPECT_FALSE(
-        SegmentDeleted(base::StringPrintf(kStringPrintTemplate, i + 1)));
+    EXPECT_FALSE(SegmentDeleted(absl::StrFormat(kStringPrintTemplate, i + 1)));
   }
 }
 
@@ -1301,8 +1360,8 @@ TEST_F(RepresentationDeleteSegmentsTest, OneSegmentDeleted) {
   for (int i = 0; i <= kMaxNumSegmentsAvailable; ++i) {
     AddSegments(kInitialStartTime + i * kDuration, kDuration, kSize, kNoRepeat);
   }
-  EXPECT_FALSE(SegmentDeleted(base::StringPrintf(kStringPrintTemplate, 2)));
-  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(kStringPrintTemplate, 1)));
+  EXPECT_FALSE(SegmentDeleted(absl::StrFormat(kStringPrintTemplate, 2)));
+  EXPECT_TRUE(SegmentDeleted(absl::StrFormat(kStringPrintTemplate, 1)));
 }
 
 // Verify that segments are deleted as expected with many non-repeating
@@ -1315,9 +1374,9 @@ TEST_F(RepresentationDeleteSegmentsTest, ManyNonRepeatingSegments) {
   const int last_available_segment_index =
       many_segments - kMaxNumSegmentsAvailable + 1;
   EXPECT_FALSE(SegmentDeleted(
-      base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
-  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
-      kStringPrintTemplate, last_available_segment_index - 1)));
+      absl::StrFormat(kStringPrintTemplate, last_available_segment_index)));
+  EXPECT_TRUE(SegmentDeleted(
+      absl::StrFormat(kStringPrintTemplate, last_available_segment_index - 1)));
 }
 
 // Verify that segments are deleted as expected with many repeating segments.
@@ -1332,9 +1391,9 @@ TEST_F(RepresentationDeleteSegmentsTest, ManyRepeatingSegments) {
   const int last_available_segment_index =
       kNumSegments - kMaxNumSegmentsAvailable + 1;
   EXPECT_FALSE(SegmentDeleted(
-      base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
-  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
-      kStringPrintTemplate, last_available_segment_index - 1)));
+      absl::StrFormat(kStringPrintTemplate, last_available_segment_index)));
+  EXPECT_TRUE(SegmentDeleted(
+      absl::StrFormat(kStringPrintTemplate, last_available_segment_index - 1)));
 }
 
 }  // namespace shaka

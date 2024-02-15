@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/event/muxer_listener.h"
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 namespace media {
@@ -34,16 +34,22 @@ class CombinedMuxerListener : public MuxerListener {
   void OnEncryptionStart() override;
   void OnMediaStart(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
-                    uint32_t time_scale,
+                    int32_t time_scale,
                     ContainerType container_type) override;
-  void OnSampleDurationReady(uint32_t sample_duration) override;
+  void OnAvailabilityOffsetReady() override;
+  void OnSampleDurationReady(int32_t sample_duration) override;
+  void OnSegmentDurationReady() override;
   void OnMediaEnd(const MediaRanges& media_ranges,
                   float duration_seconds) override;
   void OnNewSegment(const std::string& file_name,
                     int64_t start_time,
                     int64_t duration,
                     uint64_t segment_file_size) override;
-  void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
+  void OnCompletedSegment(int64_t duration,
+                          uint64_t segment_file_size) override;
+  void OnKeyFrame(int64_t timestamp,
+                  uint64_t start_byte_offset,
+                  uint64_t size) override;
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 

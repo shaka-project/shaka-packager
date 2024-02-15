@@ -1,14 +1,16 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/segmenter_test_base.h"
+#include <packager/media/formats/webm/segmenter_test_base.h>
 
-#include "packager/file/memory_file.h"
-#include "packager/media/formats/webm/webm_constants.h"
-#include "packager/version/version.h"
+#include <absl/log/check.h>
+
+#include <packager/file/memory_file.h>
+#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace media {
@@ -22,7 +24,7 @@ const uint8_t kTestMediaSampleSideData[] = {
     0x73, 0x69, 0x64, 0x65, 0x00};
 
 const int kTrackId = 1;
-const uint64_t kDurationInSeconds = 8;
+const int64_t kDurationInSeconds = 8;
 const Codec kCodec = kCodecVP8;
 const std::string kCodecString = "vp8";
 const std::string kLanguage = "en";
@@ -51,7 +53,7 @@ void SegmentTestBase::TearDown() {
 
 std::shared_ptr<MediaSample> SegmentTestBase::CreateSample(
     KeyFrameFlag key_frame_flag,
-    uint64_t duration,
+    int64_t duration,
     SideDataFlag side_data_flag) {
   std::shared_ptr<MediaSample> sample;
   const bool is_key_frame = key_frame_flag == kKeyFrame;
@@ -82,7 +84,7 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
 }
 
 VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo(
-    uint32_t time_scale) const {
+    int32_t time_scale) const {
   return new VideoStreamInfo(
       kTrackId, time_scale, kDurationInSeconds * time_scale, kCodec,
       H26xStreamFormat::kUnSpecified, kCodecString, NULL, 0, kWidth, kHeight,
@@ -182,13 +184,13 @@ bool SegmentTestBase::ClusterParser::OnUInt(int id, int64_t val) {
   return true;
 }
 
-bool SegmentTestBase::ClusterParser::OnFloat(int id, double val) {
+bool SegmentTestBase::ClusterParser::OnFloat(int /*id*/, double /*val*/) {
   return true;
 }
 
 bool SegmentTestBase::ClusterParser::OnBinary(int id,
                                               const uint8_t* data,
-                                              int size) {
+                                              int /*size*/) {
   if (in_cluster_ && (id == kWebMIdSimpleBlock || id == kWebMIdBlock)) {
     if (cluster_timecode_ == -1) {
       LOG(WARNING) << "Cluster timecode not yet available";
@@ -201,7 +203,8 @@ bool SegmentTestBase::ClusterParser::OnBinary(int id,
   return true;
 }
 
-bool SegmentTestBase::ClusterParser::OnString(int id, const std::string& str) {
+bool SegmentTestBase::ClusterParser::OnString(int /*id*/,
+                                              const std::string& /*str*/) {
   return true;
 }
 

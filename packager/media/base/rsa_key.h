@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -12,10 +12,11 @@
 
 #include <string>
 
-#include "packager/base/macros.h"
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/pk.h>
 
-struct rsa_st;
-typedef struct rsa_st RSA;
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {
@@ -41,10 +42,13 @@ class RsaPrivateKey {
   bool GenerateSignature(const std::string& message, std::string* signature);
 
  private:
-  // RsaPrivateKey takes owership of |rsa_key|.
-  explicit RsaPrivateKey(RSA* rsa_key);
+  RsaPrivateKey();
 
-  RSA* rsa_key_;  // owned
+  bool Deserialize(const std::string& serialized_key);
+
+  mbedtls_pk_context pk_context_;
+  mbedtls_entropy_context entropy_context_;
+  mbedtls_ctr_drbg_context prng_context_;
 
   DISALLOW_COPY_AND_ASSIGN(RsaPrivateKey);
 };
@@ -70,10 +74,13 @@ class RsaPublicKey {
                        const std::string& signature);
 
  private:
-  // RsaPublicKey takes owership of |rsa_key|.
-  explicit RsaPublicKey(RSA* rsa_key);
+  RsaPublicKey();
 
-  RSA* rsa_key_;  // owned
+  bool Deserialize(const std::string& serialized_key);
+
+  mbedtls_pk_context pk_context_;
+  mbedtls_entropy_context entropy_context_;
+  mbedtls_ctr_drbg_context prng_context_;
 
   DISALLOW_COPY_AND_ASSIGN(RsaPublicKey);
 };

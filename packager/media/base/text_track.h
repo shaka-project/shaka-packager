@@ -8,9 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "packager/base/callback.h"
-#include "packager/base/time/time.h"
-
 namespace shaka {
 namespace media {
 
@@ -33,9 +30,9 @@ class TextTrack {
                             const std::string& settings) = 0;
 };
 
-typedef base::Callback<std::unique_ptr<TextTrack>(TextKind kind,
-                                                  const std::string& label,
-                                                  const std::string& language)>
+typedef std::function<std::unique_ptr<TextTrack>(TextKind kind,
+                                                 const std::string& label,
+                                                 const std::string& language)>
     AddTextTrackCB;
 
 }  // namespace media

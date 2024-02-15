@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,8 +7,9 @@
 #ifndef MEDIA_FILE_FILE_CLOSER_H_
 #define MEDIA_FILE_FILE_CLOSER_H_
 
-#include "packager/base/logging.h"
-#include "packager/file/file.h"
+#include <absl/log/log.h>
+
+#include <packager/file.h>
 
 namespace shaka {
 

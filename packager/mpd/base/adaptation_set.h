@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,16 +9,15 @@
 #ifndef PACKAGER_MPD_BASE_ADAPTATION_SET_H_
 #define PACKAGER_MPD_BASE_ADAPTATION_SET_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 
@@ -43,7 +42,9 @@ class AdaptationSet {
     kRoleAlternate,
     kRoleSupplementary,
     kRoleCommentary,
-    kRoleDub
+    kRoleDub,
+    kRoleForcedSubtitle,
+    kRoleDescription
   };
 
   virtual ~AdaptationSet();
@@ -108,7 +109,7 @@ class AdaptationSet {
   /// and ContentProtection elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  base::Optional<xml::XmlNode> GetXml();
+  std::optional<xml::XmlNode> GetXml();
 
   /// Forces the (sub)segmentAlignment field to be set to @a segment_alignment.
   /// Use this if you are certain that the (sub)segments are alinged/unaligned
@@ -143,8 +144,8 @@ class AdaptationSet {
   /// @param start_time is the start time of the new segment.
   /// @param duration is the duration of the new segment.
   void OnNewSegmentForRepresentation(uint32_t representation_id,
-                                     uint64_t start_time,
-                                     uint64_t duration);
+                                     int64_t start_time,
+                                     int64_t duration);
 
   /// Notifies the AdaptationSet instance that the sample duration for the
   /// Representation was set.
@@ -159,8 +160,8 @@ class AdaptationSet {
   /// @frame_duration is the duration of a frame in the Representation.
   /// @param timescale is the timescale of the Representation.
   void OnSetFrameRateForRepresentation(uint32_t representation_id,
-                                       uint32_t frame_duration,
-                                       uint32_t timescale);
+                                       int32_t frame_duration,
+                                       int32_t timescale);
 
   /// Add the adaptation set this trick play adaptation set belongs to.
   /// @param adaptation_set points to the reference (or main) adapation set.
@@ -178,6 +179,17 @@ class AdaptationSet {
   /// Set AdaptationSet@codec.
   /// @param codec is the new codec to be set.
   void set_codec(const std::string& codec) { codec_ = codec; };
+
+  /// @return transfer_characteristics.
+  uint32_t transfer_characteristics() const {
+    return transfer_characteristics_;
+  }
+
+  /// Set AdaptationSet's video transfer characteristics.
+  /// @param transfer_characteristics is the video transfer characteristics.
+  void set_transfer_characteristics(const uint32_t& transfer_characteristics) {
+    transfer_characteristics_ = transfer_characteristics;
+  };
 
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
@@ -216,7 +228,7 @@ class AdaptationSet {
   // start times 0, 200, 400, then the map contains:
   // 1 -> [0, 100, 200]
   // 2 -> [0, 200, 400]
-  typedef std::map<uint32_t, std::list<uint64_t>> RepresentationTimeline;
+  typedef std::map<uint32_t, std::list<int64_t>> RepresentationTimeline;
 
   // Update AdaptationSet attributes for new MediaInfo.
   void UpdateFromMediaInfo(const MediaInfo& media_info);
@@ -230,15 +242,15 @@ class AdaptationSet {
   /// @param start_time is the start time of the new segment.
   /// @param duration is the duration of the new segment.
   void CheckDynamicSegmentAlignment(uint32_t representation_id,
-                                    uint64_t start_time,
-                                    uint64_t duration);
+                                    int64_t start_time,
+                                    int64_t duration);
 
   // Checks representation_segment_start_times_ and sets segments_aligned_.
   // Use this for static MPD, do not use for dynamic MPD.
   void CheckStaticSegmentAlignment();
 
   // Records the framerate of a Representation.
-  void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
+  void RecordFrameRate(int32_t frame_duration, int32_t timescale);
 
   std::list<ContentProtectionElement> content_protection_elements_;
   // representation_id => Representation map. It also keeps the representations_
@@ -247,7 +259,7 @@ class AdaptationSet {
 
   uint32_t* const representation_counter_;
 
-  base::Optional<uint32_t> id_;
+  std::optional<uint32_t> id_;
   const std::string language_;
   const MpdOptions& mpd_options_;
 
@@ -313,6 +325,15 @@ class AdaptationSet {
   // and HD videos in different AdaptationSets can share the same trick play
   // stream.
   std::vector<const AdaptationSet*> trick_play_references_;
+
+  // Transfer characteristics.
+  uint32_t transfer_characteristics_ = 0;
+
+  // the command-line index for this AdaptationSet
+  std::optional<uint32_t> index_;
+
+  // The label of this AdaptationSet.
+  std::string label_;
 };
 
 }  // namespace shaka

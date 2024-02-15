@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp2t/es_parser_h264.h>
 
 #include <algorithm>
+#include <functional>
 #include <vector>
 
-#include "packager/base/bind.h"
-#include "packager/base/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h264_parser.h"
-#include "packager/media/formats/mp2t/es_parser_h264.h"
-#include "packager/media/test/test_data_util.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/test/test_data_util.h>
 
 namespace shaka {
 namespace media {
@@ -153,6 +156,7 @@ class EsParserH264Test : public testing::Test {
 
 void EsParserH264Test::LoadStream(const char* filename) {
   std::vector<uint8_t> buffer = ReadTestDataFile(filename);
+  ASSERT_FALSE(buffer.empty());
 
   // The input file does not have AUDs.
   std::vector<Packet> access_units_without_aud =
@@ -169,8 +173,8 @@ void EsParserH264Test::ProcessPesPackets(
 
   EsParserH264 es_parser(
       0,
-      base::Bind(&EsParserH264Test::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH264Test::EmitSample, base::Unretained(this)));
+      std::bind(&EsParserH264Test::NewVideoConfig, this, std::placeholders::_1),
+      std::bind(&EsParserH264Test::EmitSample, this, std::placeholders::_1));
 
   size_t au_idx = 0;
   for (size_t k = 0; k < pes_packets.size(); k++) {

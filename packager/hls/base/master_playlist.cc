@@ -1,23 +1,26 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/hls/base/master_playlist.h"
+#include <packager/hls/base/master_playlist.h>
 
 #include <algorithm>  // std::max
+#include <cstdint>
+#include <filesystem>
 
-#include <inttypes.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/str_join.h>
 
-#include "packager/base/files/file_path.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/hls/base/tag.h"
-#include "packager/version/version.h"
+#include <packager/file.h>
+#include <packager/hls/base/media_playlist.h>
+#include <packager/hls/base/tag.h>
+#include <packager/macros/logging.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {
@@ -30,8 +33,8 @@ void AppendVersionString(std::string* content) {
   const std::string version = GetPackagerVersion();
   if (version.empty())
     return;
-  base::StringAppendF(content, "## Generated with %s version %s\n",
-                      GetPackagerProjectUrl().c_str(), version.c_str());
+  absl::StrAppendFormat(content, "## Generated with %s version %s\n",
+                        GetPackagerProjectUrl().c_str(), version.c_str());
 }
 
 // This structure roughly maps to the Variant stream in HLS specification.
@@ -80,7 +83,7 @@ std::set<std::string> GetGroupCodecString(
   // string. As per HLS guidelines, "wvtt" is optional. When it is included, it
   // can cause playback errors on some Apple produces. Excluding it allows
   // playback on all Apple products. See
-  // https://github.com/google/shaka-packager/issues/402 for all details.
+  // https://github.com/shaka-project/shaka-packager/issues/402 for all details.
   auto wvtt = codecs.find("wvtt");
   if (wvtt != codecs.end()) {
     codecs.erase(wvtt);
@@ -207,8 +210,8 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
       tag_name = "#EXT-X-I-FRAME-STREAM-INF";
       break;
     default:
-      NOTREACHED() << "Cannot build STREAM-INFO tag for type "
-                   << static_cast<int>(playlist.stream_type());
+      NOTIMPLEMENTED() << "Cannot build STREAM-INFO tag for type "
+                       << static_cast<int>(playlist.stream_type());
       break;
   }
   Tag tag(tag_name, out);
@@ -223,7 +226,7 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
                     variant.audio_codecs.end());
   all_codecs.insert(all_codecs.end(), variant.text_codecs.begin(),
                     variant.text_codecs.end());
-  tag.AddQuotedString("CODECS", base::JoinString(all_codecs, ","));
+  tag.AddQuotedString("CODECS", absl::StrJoin(all_codecs, ","));
 
   uint32_t width;
   uint32_t height;
@@ -258,7 +261,7 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
   // supported as output, the HLS output should always indicate that there are
   // no captions.  Explicitly signaling a lack of captions in HLS keeps Safari
   // from assuming captions and showing a text track that doesn't exist.
-  // https://github.com/google/shaka-packager/issues/922#issuecomment-804304019
+  // https://github.com/shaka-project/shaka-packager/issues/922#issuecomment-804304019
   tag.AddString("CLOSED-CAPTIONS", "NONE");
 
   if (playlist.stream_type() ==
@@ -266,8 +269,8 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
     tag.AddQuotedString("URI", base_url + playlist.file_name());
     out->append("\n");
   } else {
-    base::StringAppendF(out, "\n%s%s\n", base_url.c_str(),
-                        playlist.file_name().c_str());
+    absl::StrAppendFormat(out, "\n%s%s\n", base_url.c_str(),
+                          playlist.file_name().c_str());
   }
 }
 
@@ -295,8 +298,8 @@ void BuildMediaTag(const MediaPlaylist& playlist,
       break;
 
     default:
-      NOTREACHED() << "Cannot build media tag for type "
-                   << static_cast<int>(playlist.stream_type());
+      NOTIMPLEMENTED() << "Cannot build media tag for type "
+                       << static_cast<int>(playlist.stream_type());
       break;
   }
 
@@ -312,16 +315,22 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 
   if (is_default) {
     tag.AddString("DEFAULT", "YES");
+  } else {
+    tag.AddString("DEFAULT", "NO");
   }
-
   if (is_autoselect) {
     tag.AddString("AUTOSELECT", "YES");
   }
 
+  if (playlist.stream_type() ==
+          MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+      playlist.forced_subtitle()) {
+    tag.AddString("FORCED", "YES");
+  }
+
   const std::vector<std::string>& characteristics = playlist.characteristics();
   if (!characteristics.empty()) {
-    tag.AddQuotedString("CHARACTERISTICS",
-                        base::JoinString(characteristics, ","));
+    tag.AddQuotedString("CHARACTERISTICS", absl::StrJoin(characteristics, ","));
   }
 
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
@@ -356,7 +365,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
 }
 
 void BuildMediaTags(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
+    std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>& groups,
     const std::string& default_language,
     const std::string& base_url,
     std::string* out) {
@@ -397,10 +406,28 @@ void BuildMediaTags(
         }
       }
 
+      if (playlist->stream_type() ==
+              MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+          playlist->forced_subtitle()) {
+        is_autoselect = true;
+      }
+
       BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,
                     out);
     }
   }
+}
+
+bool ListOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
+  return a->GetMediaInfo().index() < b->GetMediaInfo().index();
+}
+
+bool GroupOrderFn(std::pair<std::string, std::list<const MediaPlaylist*>>& a,
+                  std::pair<std::string, std::list<const MediaPlaylist*>>& b) {
+  a.second.sort(ListOrderFn);
+  b.second.sort(ListOrderFn);
+  return a.second.front()->GetMediaInfo().index() <
+         b.second.front()->GetMediaInfo().index();
 }
 
 void AppendPlaylists(const std::string& default_audio_language,
@@ -413,7 +440,12 @@ void AppendPlaylists(const std::string& default_audio_language,
       subtitle_playlist_groups;
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
+
+  bool has_index = true;
+
   for (const MediaPlaylist* playlist : playlists) {
+    has_index = has_index && playlist->GetMediaInfo().has_index();
+
     switch (playlist->stream_type()) {
       case MediaPlaylist::MediaPlaylistStreamType::kAudio:
         audio_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
@@ -433,15 +465,37 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
+  // convert the std::map to std::list and reorder it if indexes were provided
+  std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
+      audio_groups_list(audio_playlist_groups.begin(),
+                        audio_playlist_groups.end());
+  std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
+      subtitle_groups_list(subtitle_playlist_groups.begin(),
+                           subtitle_playlist_groups.end());
+  if (has_index) {
+    audio_groups_list.sort(GroupOrderFn);
+    for (const auto& group : audio_groups_list) {
+      std::list<const MediaPlaylist*> group_playlists = group.second;
+      group_playlists.sort(ListOrderFn);
+    }
+    subtitle_groups_list.sort(GroupOrderFn);
+    for (const auto& group : subtitle_groups_list) {
+      std::list<const MediaPlaylist*> group_playlists = group.second;
+      group_playlists.sort(ListOrderFn);
+    }
+    video_playlists.sort(ListOrderFn);
+    iframe_playlists.sort(ListOrderFn);
+  }
+
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(audio_playlist_groups, default_audio_language, base_url,
+    BuildMediaTags(audio_groups_list, default_audio_language, base_url,
                    content);
   }
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(subtitle_playlist_groups, default_text_language, base_url,
+    BuildMediaTags(subtitle_groups_list, default_text_language, base_url,
                    content);
   }
 
@@ -468,7 +522,7 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (!audio_playlist_groups.empty() && video_playlists.empty() &&
       subtitle_playlist_groups.empty()) {
     content->append("\n");
-    for (const auto& playlist_group : audio_playlist_groups) {
+    for (const auto& playlist_group : audio_groups_list) {
       Variant variant;
       // Populate |audio_group_id|, which will be propagated to "AUDIO" field.
       // Leaving other fields, e.g. xxx_audio_bitrate in |Variant|, as
@@ -484,7 +538,7 @@ void AppendPlaylists(const std::string& default_audio_language,
 
 }  // namespace
 
-MasterPlaylist::MasterPlaylist(const std::string& file_name,
+MasterPlaylist::MasterPlaylist(const std::filesystem::path& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
                                bool is_independent_segments)
@@ -512,12 +566,9 @@ bool MasterPlaylist::WriteMasterPlaylist(
   if (content == written_playlist_)
     return true;
 
-  std::string file_path =
-      base::FilePath::FromUTF8Unsafe(output_dir)
-          .Append(base::FilePath::FromUTF8Unsafe(file_name_))
-          .AsUTF8Unsafe();
-  if (!File::WriteFileAtomically(file_path.c_str(), content)) {
-    LOG(ERROR) << "Failed to write master playlist to: " << file_path;
+  auto file_path = std::filesystem::u8path(output_dir) / file_name_;
+  if (!File::WriteFileAtomically(file_path.string().c_str(), content)) {
+    LOG(ERROR) << "Failed to write master playlist to: " << file_path.string();
     return false;
   }
   written_playlist_ = content;

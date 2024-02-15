@@ -1,16 +1,16 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
-#include <stdio.h>
+#include <packager/media/codecs/h265_byte_to_unit_stream_converter.h>
 
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/codecs/h265_byte_to_unit_stream_converter.h"
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
-#include "packager/media/test/test_data_util.h"
+#include <absl/strings/escaping.h>
+#include <gtest/gtest.h>
+
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/test/test_data_util.h>
 
 namespace {
 const char kExpectedConfigRecord[] =
@@ -40,9 +40,11 @@ TEST(H265ByteToUnitStreamConverter, StripParameterSetsNalu) {
                                                          &output_frame));
   EXPECT_EQ(expected_output_frame, output_frame);
 
-  std::vector<uint8_t> expected_decoder_config;
-  ASSERT_TRUE(base::HexStringToBytes(kExpectedConfigRecord,
-                                     &expected_decoder_config));
+  auto expected_decoder_config_str =
+      absl::HexStringToBytes(kExpectedConfigRecord);
+  ASSERT_FALSE(expected_decoder_config_str.empty());
+  std::vector<uint8_t> expected_decoder_config(
+      expected_decoder_config_str.begin(), expected_decoder_config_str.end());
   std::vector<uint8_t> decoder_config;
   ASSERT_TRUE(converter.GetDecoderConfigurationRecord(&decoder_config));
   EXPECT_EQ(expected_decoder_config, decoder_config);

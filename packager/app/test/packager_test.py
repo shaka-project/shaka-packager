@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file or at
@@ -169,10 +169,10 @@ class DiffFilesPolicy(object):
     dump_b = os.path.join(out_dir, os.path.basename(file_b) + '.dump.actual')
     try:
       cmd = ['mp4dump', '--verbosity', '2', file_a]
-      with open(dump_a, 'w') as f:
+      with open(dump_a, 'w', encoding='utf8') as f:
         subprocess.check_call(cmd, stdout=f)
       cmd = ['mp4dump', '--verbosity', '2', file_b]
-      with open(dump_b, 'w') as f:
+      with open(dump_b, 'w', encoding='utf8') as f:
         subprocess.check_call(cmd, stdout=f)
     except (OSError, subprocess.CalledProcessError):
       # If the program isn't available or returns an error, just ignore it and
@@ -304,12 +304,14 @@ class PackagerAppTest(unittest.TestCase):
                  dash_accessibilities=None,
                  dash_roles=None,
                  dash_only=None,
+                 dash_label=None,
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
                  bandwidth=None,
                  split_content_on_ad_cues=False,
-                 test_file=None):
+                 test_file=None,
+                 forced_subtitle=None):
     """Get a stream descriptor as a string.
 
 
@@ -334,6 +336,7 @@ class PackagerAppTest(unittest.TestCase):
       dash_accessibilities: Accessibility element for the DASH stream.
       dash_roles: Role element for the DASH stream.
       dash_only: If set to true, will indicate that the stream is for DASH only.
+      dash_label: Label element for the DASH stream.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
           same as not specifying a trick play factor.
@@ -345,8 +348,9 @@ class PackagerAppTest(unittest.TestCase):
           into multiple files, with a total of NumAdCues + 1 files.
       test_file: The input file to use. If the input file is not specified, a
           default file will be used.
-
-
+      forced_subtitle: If set to true, it marks this as a Forced Narrative
+          subtitle, marked in DASH using forced-subtitle role and
+          in HLS using FORCED=YES.
     Returns:
       A string that makes up a single stream descriptor for input to the
       packager.
@@ -399,6 +403,12 @@ class PackagerAppTest(unittest.TestCase):
 
     if dash_only:
       stream.Append('dash_only', 1)
+
+    if forced_subtitle:
+      stream.Append('forced_subtitle', 1)
+
+    if dash_label:
+      stream.Append('dash_label', dash_label)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt', 'ttml',
@@ -474,7 +484,9 @@ class PackagerAppTest(unittest.TestCase):
                 segment_duration=1.0,
                 use_fake_clock=True,
                 allow_codec_switching=False,
-                dash_force_segment_list=False):
+                dash_force_segment_list=False,
+                force_cl_index=False):
+
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -557,6 +569,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if allow_codec_switching:
       flags += ['--allow_codec_switching']
+
+    if force_cl_index:
+      flags += ['--force_cl_index']
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -709,7 +724,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream(
             'audio',
             dash_accessibilities='urn:tva:metadata:cs:AudioPurposeCS:2007=1',
-            dash_roles='alternate'),
+            dash_roles='description'),
         self._GetStream('video'),
     ]
 
@@ -780,6 +795,29 @@ class PackagerFunctionalTest(PackagerAppTest):
         streams,
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('hls-only-dash-only')
+
+  def testDashLabel(self):
+    streams = [
+        self._GetStream('video', dash_label='Main'),
+        self._GetStream('audio', dash_label='English'),
+    ]
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self._CheckTestResults('dash-label')
+
+  def testForcedSubtitle(self):
+    streams = [
+      self._GetStream('audio', hls=True),
+      self._GetStream('video', hls=True),
+    ]
+
+    streams += self._GetStreams(
+        ['text'],
+        test_files=['bear-english.vtt'],
+        forced_subtitle=True)
+
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      output_hls=True))
+    self._CheckTestResults('forced-subtitle')
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
@@ -888,6 +926,13 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['audio'], test_files=['bear-640x360-aac_he-silent_right.mp4']),
         self._GetFlags(output_dash=True))
     self._CheckTestResults('acc-he')
+
+  def testDtsx(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio'], test_files=['bear-dtsx.mp4']),
+        self._GetFlags(output_dash=True))
+    self._CheckTestResults('dtsx-dash')
 
   def testVideoAudioWebVTT(self):
     audio_video_streams = self._GetStreams(['audio', 'video'])
@@ -1656,6 +1701,49 @@ class PackagerFunctionalTest(PackagerAppTest):
                                              encryption=True))
     self._CheckTestResults(
         'audio-video-with-codec-switching-encryption-trick-play')
+
+  def testForcedCommandlineOrdering(self):
+    streams = [
+        self._GetStream('text',  test_file='bear-english.vtt'),
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True, output_hls=True,
+                                             force_cl_index=True))
+    self._CheckTestResults('forced-commandline-ordering')
+
+  def testAllowCodecSwitchingWithCommandlineOrdering(self):
+    streams = [
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True,
+                                             allow_codec_switching=True,
+                                             force_cl_index=True))
+    self._CheckTestResults(
+      'audio-video-with-codec-switching-and-forced-commandline_order')
+
+  def testAudioVideoWithTrickPlayAndCommandlineOrdering(self):
+    streams = [
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4',
+                        trick_play_factor=1),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=True))
+    self._CheckTestResults(
+      'audio-video-with-trick-play-and-forced-commandline-order')
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(

@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,12 +7,13 @@
 #ifndef MEDIA_FILE_FILE_TEST_UTIL_H_
 #define MEDIA_FILE_FILE_TEST_UTIL_H_
 
+#include <iterator>
+#include <string>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <string>
-
-#include "packager/file/file.h"
+#include <packager/file.h>
 
 namespace shaka {
 
@@ -21,7 +22,7 @@ namespace shaka {
     std::string temp_data;                                          \
     ASSERT_TRUE(File::ReadFileToString((file_name), &temp_data));   \
     const char* array_ptr = reinterpret_cast<const char*>(array);   \
-    ASSERT_EQ(std::string(array_ptr, arraysize(array)), temp_data); \
+    ASSERT_EQ(std::string(array_ptr, std::size(array)), temp_data); \
   } while (false)
 
 #define ASSERT_FILE_STREQ(file_name, str)                         \
@@ -39,6 +40,24 @@ namespace shaka {
                 ::testing::EndsWith(std::string(                            \
                     reinterpret_cast<const char*>(array), sizeof(array)))); \
   } while (false)
+
+// Generate a unique filename.
+std::string generate_unique_temp_path();
+void delete_file(const std::string& path);
+
+// A temporary file that is removed from the filesystem when the object is
+// destroyed.  Useful in tests that use ASSERT to avoid leaving behind temp
+// files.
+class TempFile {
+ public:
+  TempFile();
+  ~TempFile();
+
+  const std::string& path() const { return path_; }
+
+ private:
+  std::string path_;
+};
 
 }  // namespace shaka
 

@@ -1,38 +1,44 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/xml_node.h>
 
-#include <gflags/gflags.h>
-#include <libxml/tree.h>
-
+#include <cinttypes>
 #include <cmath>
 #include <limits>
 #include <set>
 
-#include "packager/base/logging.h"
-#include "packager/base/macros.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/sys_byteorder.h"
-#include "packager/media/base/rcheck.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include <absl/base/internal/endian.h>
+#include <absl/flags/flag.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>
+#include <libxml/tree.h>
 
-DEFINE_bool(segment_template_constant_duration,
-            false,
-            "Generates SegmentTemplate@duration if all segments except the "
-            "last one has the same duration if this flag is set to true.");
+#include <packager/macros/compiler.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/segment_info.h>
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
 
-DEFINE_bool(dash_add_last_segment_number_when_needed,
-            false,
-            "Adds a Supplemental Descriptor with @schemeIdUri "
-            "set to http://dashif.org/guidelines/last-segment-number with "
-            "the @value set to the last segment number.");
+ABSL_FLAG(bool,
+          segment_template_constant_duration,
+          false,
+          "Generates SegmentTemplate@duration if all segments except the "
+          "last one has the same duration if this flag is set to true.");
+
+ABSL_FLAG(bool,
+          dash_add_last_segment_number_when_needed,
+          false,
+          "Adds a Supplemental Descriptor with @schemeIdUri "
+          "set to http://dashif.org/guidelines/last-segment-number with "
+          "the @value set to the last segment number.");
 
 namespace shaka {
 
@@ -43,17 +49,19 @@ typedef MediaInfo::VideoInfo VideoInfo;
 namespace {
 const char kEC3Codec[] = "ec-3";
 const char kAC4Codec[] = "ac-4";
+const char kDTSCCodec[] = "dtsc";
+const char kDTSECodec[] = "dtse";
+const char kDTSXCodec[] = "dtsx";
 
 std::string RangeToString(const Range& range) {
-  return base::Uint64ToString(range.begin()) + "-" +
-         base::Uint64ToString(range.end());
+  return absl::StrFormat("%u-%u", range.begin(), range.end());
 }
 
 // Check if segments are continuous and all segments except the last one are of
 // the same duration.
 bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
                                 uint32_t start_number) {
-  if (!FLAGS_segment_template_constant_duration)
+  if (!absl::GetFlag(FLAGS_segment_template_constant_duration))
     return false;
 
   DCHECK(!segment_infos.empty());
@@ -145,7 +153,7 @@ bool XmlNode::AddChild(XmlNode child) {
 
   // Reaching here means the ownership of |child| transfered to |node|.
   // Release the pointer so that it doesn't get destructed in this scope.
-  ignore_result(child.impl_->node.release());
+  UNUSED(child.impl_->node.release());
   return true;
 }
 
@@ -192,14 +200,15 @@ bool XmlNode::SetIntegerAttribute(const std::string& attribute_name,
                                   uint64_t number) {
   DCHECK(impl_->node);
   return xmlSetProp(impl_->node.get(), BAD_CAST attribute_name.c_str(),
-                    BAD_CAST(base::Uint64ToString(number).c_str())) != nullptr;
+                    BAD_CAST(absl::StrFormat("%" PRIu64, number).c_str())) !=
+         nullptr;
 }
 
 bool XmlNode::SetFloatingPointAttribute(const std::string& attribute_name,
                                         double number) {
   DCHECK(impl_->node);
   return xmlSetProp(impl_->node.get(), BAD_CAST attribute_name.c_str(),
-                    BAD_CAST(base::DoubleToString(number).c_str())) != nullptr;
+                    BAD_CAST(FloatToXmlString(number).c_str())) != nullptr;
 }
 
 bool XmlNode::SetId(uint32_t id) {
@@ -331,6 +340,12 @@ bool AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
   return AddDescriptor("Role", scheme_id_uri, value);
 }
 
+bool AdaptationSetXmlNode::AddLabelElement(const std::string& value) {
+  XmlNode descriptor("Label");
+  descriptor.SetContent(value);
+  return AddChild(std::move(descriptor));
+}
+
 RepresentationXmlNode::RepresentationXmlNode()
     : RepresentationBaseXmlNode("Representation") {}
 RepresentationXmlNode::~RepresentationXmlNode() {}
@@ -345,9 +360,9 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info,
   }
 
   if (video_info.has_pixel_width() && video_info.has_pixel_height()) {
-    RCHECK(SetStringAttribute(
-        "sar", base::IntToString(video_info.pixel_width()) + ":" +
-                   base::IntToString(video_info.pixel_height())));
+    RCHECK(SetStringAttribute("sar",
+                              absl::StrFormat("%d:%d", video_info.pixel_width(),
+                                              video_info.pixel_height())));
   }
 
   if (set_width)
@@ -355,14 +370,14 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info,
   if (set_height)
     RCHECK(SetIntegerAttribute("height", video_info.height()));
   if (set_frame_rate) {
-    RCHECK(SetStringAttribute(
-        "frameRate", base::IntToString(video_info.time_scale()) + "/" +
-                         base::IntToString(video_info.frame_duration())));
+    RCHECK(SetStringAttribute("frameRate",
+                              absl::StrFormat("%d/%d", video_info.time_scale(),
+                                              video_info.frame_duration())));
   }
 
   if (video_info.has_playback_rate()) {
-    RCHECK(SetStringAttribute("maxPlayoutRate",
-                              base::IntToString(video_info.playback_rate())));
+    RCHECK(SetStringAttribute(
+        "maxPlayoutRate", absl::StrFormat("%d", video_info.playback_rate())));
     // Since the trick play stream contains only key frames, there is no coding
     // dependency on the main stream. Simply set the codingDependency to false.
     // TODO(hmchen): propagate this attribute up to the AdaptationSet, since
@@ -416,7 +431,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
                                      media_info.reference_time_scale()));
 
     if (use_segment_list && !use_single_segment_url_with_media) {
-      const uint64_t duration_seconds = static_cast<uint64_t>(
+      const auto duration_seconds = static_cast<int64_t>(
           floor(target_segment_duration * media_info.reference_time_scale()));
       RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
     }
@@ -460,16 +475,32 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32_t start_number) {
+    uint32_t start_number,
+    bool low_latency_dash_mode) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
         "timescale", media_info.reference_time_scale()));
   }
 
+  if (media_info.has_segment_duration()) {
+    RCHECK(segment_template.SetIntegerAttribute("duration",
+                                                media_info.segment_duration()));
+  }
+
   if (media_info.has_presentation_time_offset()) {
     RCHECK(segment_template.SetIntegerAttribute(
         "presentationTimeOffset", media_info.presentation_time_offset()));
+  }
+
+  if (media_info.has_availability_time_offset()) {
+    RCHECK(segment_template.SetFloatingPointAttribute(
+        "availabilityTimeOffset", media_info.availability_time_offset()));
+  }
+
+  if (low_latency_dash_mode) {
+    RCHECK(segment_template.SetStringAttribute("availabilityTimeComplete",
+                                               "false"));
   }
 
   if (media_info.has_init_segment_url()) {
@@ -489,7 +520,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     if (IsTimelineConstantDuration(segment_infos, start_number)) {
       RCHECK(segment_template.SetIntegerAttribute(
           "duration", segment_infos.front().duration));
-      if (FLAGS_dash_add_last_segment_number_when_needed) {
+      if (absl::GetFlag(FLAGS_dash_add_last_segment_number_when_needed)) {
         uint32_t last_segment_number = start_number - 1;
         for (const auto& segment_info_element : segment_infos)
           last_segment_number += segment_info_element.repeat + 1;
@@ -499,9 +530,11 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
             std::to_string(last_segment_number)));
       }
     } else {
-      XmlNode segment_timeline("SegmentTimeline");
-      RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
-      RCHECK(segment_template.AddChild(std::move(segment_timeline)));
+      if (!low_latency_dash_mode) {
+        XmlNode segment_timeline("SegmentTimeline");
+        RCHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
+        RCHECK(segment_template.AddChild(std::move(segment_timeline)));
+      }
     }
   }
   return AddChild(std::move(segment_template));
@@ -519,19 +552,18 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     const uint32_t ec3_channel_mpeg_value = codec_data.channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ec3_channel_mpeg_value == NO_MAPPING) {
-      // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
-      // Interoperability Points v3.0 9.2.1.2.
-      const uint16_t ec3_channel_map =
-        base::HostToNet16(codec_data.channel_mask());
+      // Convert EC3 channel map into string of hexadecimal digits. Spec:
+      // DASH-IF Interoperability Points v3.0 9.2.1.2.
       audio_channel_config_value =
-        base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
+          absl::StrFormat("%04X", codec_data.channel_mask());
       audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
     } else {
       // Calculate EC3 channel configuration descriptor value with MPEG scheme.
       // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
       // (AC-3, Enhanced AC-3) I.1.2.
-      audio_channel_config_value = base::UintToString(ec3_channel_mpeg_value);
+      audio_channel_config_value =
+          absl::StrFormat("%u", ec3_channel_mpeg_value);
       audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
     }
     bool ret = AddDescriptor("AudioChannelConfiguration",
@@ -542,7 +574,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     // D.2.2.
     if (codec_data.ec3_joc_complexity() != 0) {
       std::string ec3_joc_complexity =
-        base::UintToString(codec_data.ec3_joc_complexity());
+          absl::StrFormat("%u", codec_data.ec3_joc_complexity());
       ret &= AddDescriptor("SupplementalProperty",
                            "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
                            "JOC");
@@ -564,10 +596,10 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       // Calculate AC-4 channel mask. Spec: ETSI TS 103 190-2 V1.2.1 Digital
       // Audio Compression (AC-4) Standard; Part 2: Immersive and personalized
       // audio G.3.1.
-      const uint32_t ac4_channel_mask =
-        base::HostToNet32(codec_data.channel_mask() << 8);
+      //
+      // this needs to print only 3 bytes of the 32-bit value
       audio_channel_config_value =
-        base::HexEncode(&ac4_channel_mask, sizeof(ac4_channel_mask) - 1);
+          absl::StrFormat("%06X", codec_data.channel_mask());
       // Note that the channel config schemes for EC-3 and AC-4 are different.
       // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
       audio_channel_config_scheme =
@@ -576,7 +608,8 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       // Calculate AC-4 channel configuration descriptor value with MPEG scheme.
       // Spec: ETSI TS 103 190-2 V1.2.1 Digital Audio Compression (AC-4) Standard;
       // Part 2: Immersive and personalized audio G.3.2.
-      audio_channel_config_value = base::UintToString(ac4_channel_mpeg_value);
+      audio_channel_config_value =
+          absl::StrFormat("%u", ac4_channel_mpeg_value);
       audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
     }
     bool ret = AddDescriptor("AudioChannelConfiguration",
@@ -588,8 +621,21 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
                            "1");
     }
     return ret;
+  } else if (audio_info.codec() == kDTSCCodec ||
+             audio_info.codec() == kDTSECodec) {
+    audio_channel_config_value =
+        absl::StrFormat("%u", audio_info.num_channels());
+    audio_channel_config_scheme =
+        "tag:dts.com,2014:dash:audio_channel_configuration:2012";
+  } else if (audio_info.codec() == kDTSXCodec) {
+    const auto& codec_data = audio_info.codec_specific_data();
+    audio_channel_config_value =
+        absl::StrFormat("%08X", codec_data.channel_mask());
+    audio_channel_config_scheme =
+        "tag:dts.com,2018:uhd:audio_channel_configuration";
   } else {
-    audio_channel_config_value = base::UintToString(audio_info.num_channels());
+    audio_channel_config_value =
+        absl::StrFormat("%u", audio_info.num_channels());
     audio_channel_config_scheme =
         "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
   }

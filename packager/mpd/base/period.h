@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,11 +11,11 @@
 
 #include <list>
 #include <map>
+#include <optional>
 
-#include "packager/base/optional.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 
@@ -46,7 +46,7 @@ class Period {
   /// Generates <Period> xml element with its child AdaptationSet elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  base::Optional<xml::XmlNode> GetXml(bool output_period_duration);
+  std::optional<xml::XmlNode> GetXml(bool output_period_duration);
 
   /// @return The list of AdaptationSets in this Period.
   const std::list<AdaptationSet*> GetAdaptationSets() const;

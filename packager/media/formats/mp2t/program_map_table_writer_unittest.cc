@@ -1,16 +1,17 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp2t/program_map_table_writer.h>
 
 #include <vector>
 
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
-#include "packager/media/formats/mp2t/program_map_table_writer.h"
+#include <gtest/gtest.h>
+
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp2t/continuity_counter.h>
 
 namespace shaka {
 namespace media {
@@ -64,7 +65,7 @@ TEST_F(ProgramMapTableWriterTest, ClearH264) {
       0xA1,  // Adaptation Field length.
       0x00,  // All adaptation field flags 0.
   };
-  const int kExpectedPmtPrefixSize = arraysize(kExpectedPmtPrefix);
+  const int kExpectedPmtPrefixSize = std::size(kExpectedPmtPrefix);
   const uint8_t kPmtH264[] = {
       0x00,  // pointer field
       0x02,
@@ -87,7 +88,7 @@ TEST_F(ProgramMapTableWriterTest, ClearH264) {
   ASSERT_EQ(kTsPacketSize, buffer.Size());
   EXPECT_NO_FATAL_FAILURE(
       ExpectTsPacketEqual(kExpectedPmtPrefix, kExpectedPmtPrefixSize, 160,
-                          kPmtH264, arraysize(kPmtH264), buffer.Buffer()));
+                          kPmtH264, std::size(kPmtH264), buffer.Buffer()));
 }
 
 // Verify that PSI for encrypted segments after clear lead is generated
@@ -131,8 +132,8 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadH264) {
       0xAF, 0xCC, 0x24, 0x21,
   };
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kPmtEncryptedH264Prefix, arraysize(kPmtEncryptedH264Prefix), 154,
-      kPmtEncryptedH264, arraysize(kPmtEncryptedH264), buffer.Buffer()));
+      kPmtEncryptedH264Prefix, std::size(kPmtEncryptedH264Prefix), 154,
+      kPmtEncryptedH264, std::size(kPmtEncryptedH264), buffer.Buffer()));
 }
 
 // Verify that PMT for encrypted segments can be generated (without clear lead).
@@ -174,8 +175,8 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsH264Pmt) {
       0xA9, 0xC2, 0x95, 0x7C,
   };
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kPmtEncryptedH264Prefix, arraysize(kPmtEncryptedH264Prefix), 154,
-      kPmtEncryptedH264, arraysize(kPmtEncryptedH264), buffer.Buffer()));
+      kPmtEncryptedH264Prefix, std::size(kPmtEncryptedH264Prefix), 154,
+      kPmtEncryptedH264, std::size(kPmtEncryptedH264), buffer.Buffer()));
 }
 
 TEST_F(ProgramMapTableWriterTest, ClearAac) {
@@ -212,8 +213,8 @@ TEST_F(ProgramMapTableWriterTest, ClearAac) {
       0xE0, 0x6F, 0x1A, 0x31,  // CRC32.
   };
   EXPECT_NO_FATAL_FAILURE(
-      ExpectTsPacketEqual(kExpectedPmtPrefix, arraysize(kExpectedPmtPrefix),
-                          160, kPmtAac, arraysize(kPmtAac), buffer.Buffer()));
+      ExpectTsPacketEqual(kExpectedPmtPrefix, std::size(kExpectedPmtPrefix),
+                          160, kPmtAac, std::size(kPmtAac), buffer.Buffer()));
 }
 
 TEST_F(ProgramMapTableWriterTest, ClearAc3) {
@@ -250,8 +251,8 @@ TEST_F(ProgramMapTableWriterTest, ClearAc3) {
   };
 
   EXPECT_NO_FATAL_FAILURE(
-      ExpectTsPacketEqual(kExpectedPmtPrefix, arraysize(kExpectedPmtPrefix),
-                          160, kPmtAc3, arraysize(kPmtAc3), buffer.Buffer()));
+      ExpectTsPacketEqual(kExpectedPmtPrefix, std::size(kExpectedPmtPrefix),
+                          160, kPmtAc3, std::size(kPmtAc3), buffer.Buffer()));
 }
 
 // Verify that PSI for encrypted segments after clear lead is generated
@@ -308,9 +309,8 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadAac) {
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kPmtEncryptedAacPrefix, arraysize(kPmtEncryptedAacPrefix), 138,
-      kPmtEncryptedAac, arraysize(kPmtEncryptedAac),
-      buffer.Buffer()));
+      kPmtEncryptedAacPrefix, std::size(kPmtEncryptedAacPrefix), 138,
+      kPmtEncryptedAac, std::size(kPmtEncryptedAac), buffer.Buffer()));
 }
 
 // Verify that PMT for encrypted segments can be generated (without clear lead).
@@ -365,9 +365,8 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAacPmt) {
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kPmtEncryptedAacPrefix, arraysize(kPmtEncryptedAacPrefix), 138,
-      kPmtEncryptedAac, arraysize(kPmtEncryptedAac),
-      buffer.Buffer()));
+      kPmtEncryptedAacPrefix, std::size(kPmtEncryptedAacPrefix), 138,
+      kPmtEncryptedAac, std::size(kPmtEncryptedAac), buffer.Buffer()));
 }
 
 TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAc3Pmt) {
@@ -420,8 +419,8 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAc3Pmt) {
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
-      kPmtEncryptedAc3Prefix, arraysize(kPmtEncryptedAc3Prefix), 130,
-      kPmtEncryptedAc3, arraysize(kPmtEncryptedAc3), buffer.Buffer()));
+      kPmtEncryptedAc3Prefix, std::size(kPmtEncryptedAc3Prefix), 130,
+      kPmtEncryptedAc3, std::size(kPmtEncryptedAc3), buffer.Buffer()));
 }
 
 }  // namespace mp2t

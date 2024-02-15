@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -15,9 +15,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/muxer_listener.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 
@@ -41,9 +41,9 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   void OnEncryptionStart() override;
   void OnMediaStart(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
-                    uint32_t time_scale,
+                    int32_t time_scale,
                     ContainerType container_type) override;
-  void OnSampleDurationReady(uint32_t sample_duration) override;
+  void OnSampleDurationReady(int32_t sample_duration) override;
   void OnMediaEnd(const MediaRanges& media_ranges,
                   float duration_seconds) override;
   void OnNewSegment(const std::string& file_name,

@@ -9,11 +9,14 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <string>
 
-#include "packager/media/base/byte_queue.h"
-#include "packager/media/base/media_parser.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/formats/mp2t/ts_stream_type.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/byte_queue.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/mp2t/ts_audio_type.h>
+#include <packager/media/formats/mp2t/ts_stream_type.h>
 
 namespace shaka {
 namespace media {
@@ -26,6 +29,12 @@ class PidState;
 class TsPacket;
 class TsSection;
 
+struct PesMetadata {
+  uint32_t max_bitrate;
+  std::string language;
+  TsAudioType audio_type;
+};
+
 class Mp2tMediaParser : public MediaParser {
  public:
   Mp2tMediaParser();
@@ -37,8 +46,8 @@ class Mp2tMediaParser : public MediaParser {
             const NewMediaSampleCB& new_media_sample_cb,
             const NewTextSampleCB& new_text_sample_cb,
             KeySource* decryption_key_source) override;
-  bool Flush() override WARN_UNUSED_RESULT;
-  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
+  [[nodiscard]] bool Parse(const uint8_t* buf, int size) override;
   /// @}
 
  private:
@@ -49,10 +58,15 @@ class Mp2tMediaParser : public MediaParser {
   // Callback invoked to register a PES pid.
   // Possible values for |media_type| are defined in:
   // ISO-13818.1 / ITU H.222 Table 2.34 "Media type assignments".
+  // Possible values for |audio_type| are defined in:
+  // ISO-13818.1 / ITU H.222 Table 2-60 "Audio type values".
   // |pes_pid| is part of the Program Map Table refered by |pmt_pid|.
   void RegisterPes(int pmt_pid,
                    int pes_pid,
                    TsStreamType media_type,
+                   uint32_t max_bitrate,
+                   const std::string& lang,
+                   TsAudioType audio_type,
                    const uint8_t* descriptor,
                    size_t descriptor_length);
 
@@ -92,6 +106,9 @@ class Mp2tMediaParser : public MediaParser {
   // Map of PIDs and their states.  Use an ordered map so manifest generation
   // has a deterministic order.
   std::map<int, std::unique_ptr<PidState>> pids_;
+
+  // Map of PIDs and their metadata.
+  std::map<int, PesMetadata> pes_metadata_;
 
   // Whether |init_cb_| has been invoked.
   bool is_initialized_;

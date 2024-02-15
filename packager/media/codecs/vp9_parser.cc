@@ -1,14 +1,17 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/vp9_parser.h"
+#include <packager/media/codecs/vp9_parser.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {
@@ -122,7 +125,7 @@ bool ParseIfSuperframeIndex(const uint8_t* data,
 
   data += data_size - index_size + 1;
   size_t total_frame_sizes = 0;
-  for (size_t i = 0; i < num_frames; ++i) {
+  for (size_t frame = 0; frame < num_frames; ++frame) {
     vpx_frame.frame_size = 0;
     for (size_t i = 0; i < frame_size_length; ++i) {
       vpx_frame.frame_size |= *data << (i * 8);

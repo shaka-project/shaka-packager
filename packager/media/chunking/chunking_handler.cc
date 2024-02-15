@@ -1,16 +1,19 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/chunking_handler.h"
+#include <packager/media/chunking/chunking_handler.h>
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/media_sample.h>
 
 namespace shaka {
 namespace media {
@@ -59,7 +62,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
   }
 }
 
-Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
+Status ChunkingHandler::OnFlushRequest(size_t /*input_stream_index*/) {
   RETURN_IF_ERROR(EndSegmentIfStarted());
   return FlushDownstream(kStreamIndex);
 }
@@ -79,7 +82,7 @@ Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
   RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
 
   // Force start new segment after cue event.
-  segment_start_time_ = base::nullopt;
+  segment_start_time_ = std::nullopt;
   // |cue_offset_| will be applied to sample timestamp so the segment after cue
   // point have duration ~= |segment_duration_|.
   cue_offset_ = event_time_in_seconds * time_scale_;
@@ -88,7 +91,7 @@ Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 
 Status ChunkingHandler::OnMediaSample(
     std::shared_ptr<const MediaSample> sample) {
-  DCHECK_NE(time_scale_, 0u) << "kStreamInfo should arrive before kMediaSample";
+  DCHECK_GT(time_scale_, 0) << "kStreamInfo should arrive before kMediaSample";
 
   const int64_t timestamp = sample->pts();
 
@@ -112,7 +115,23 @@ Status ChunkingHandler::OnMediaSample(
       started_new_segment = true;
     }
   }
-  if (!started_new_segment && IsSubsegmentEnabled()) {
+
+  // This handles the LL-DASH case.
+  // On each media sample, which is the basis for a chunk,
+  // we must increment the current_subsegment_index_
+  // in order to hit FinalizeSegment() within Segmenter.
+  if (!started_new_segment && chunking_params_.low_latency_dash_mode) {
+    current_subsegment_index_++;
+
+    RETURN_IF_ERROR(EndSubsegmentIfStarted());
+    subsegment_start_time_ = timestamp;
+  }
+
+  // Here, a subsegment refers to a fragment that is within a segment.
+  // This fragment size can be set with the 'fragment_duration' cmd arg.
+  // This is NOT for the LL-DASH case.
+  if (!started_new_segment && IsSubsegmentEnabled() &&
+      !chunking_params_.low_latency_dash_mode) {
     const bool can_start_new_subsegment =
         sample->is_key_frame() || !chunking_params_.subsegment_sap_aligned;
     if (can_start_new_subsegment) {
@@ -151,6 +170,10 @@ Status ChunkingHandler::EndSegmentIfStarted() const {
   auto segment_info = std::make_shared<SegmentInfo>();
   segment_info->start_timestamp = segment_start_time_.value();
   segment_info->duration = max_segment_time_ - segment_start_time_.value();
+  if (chunking_params_.low_latency_dash_mode) {
+    segment_info->is_chunk = true;
+    segment_info->is_final_chunk_in_seg = true;
+  }
   return DispatchSegmentInfo(kStreamIndex, std::move(segment_info));
 }
 
@@ -163,6 +186,8 @@ Status ChunkingHandler::EndSubsegmentIfStarted() const {
   subsegment_info->duration =
       max_segment_time_ - subsegment_start_time_.value();
   subsegment_info->is_subsegment = true;
+  if (chunking_params_.low_latency_dash_mode)
+    subsegment_info->is_chunk = true;
   return DispatchSegmentInfo(kStreamIndex, std::move(subsegment_info));
 }
 

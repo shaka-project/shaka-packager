@@ -1,13 +1,10 @@
-FROM fedora:28
+FROM fedora:35
 
-# Update, and install basic packages.
-RUN yum install -y git python git curl gcc-c++ findutils bzip2 \
-                   ncurses-compat-libs libatomic
-
-# Install depot_tools.
-WORKDIR /
-RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-ENV PATH /depot_tools:$PATH
+# Install utilities, libraries, and dev tools.
+RUN yum install -y \
+        which \
+        libatomic \
+        cmake gcc-c++ git ninja-build python3
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

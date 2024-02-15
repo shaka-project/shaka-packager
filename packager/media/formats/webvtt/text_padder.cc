@@ -1,14 +1,16 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/text_padder.h"
+#include <packager/media/formats/webvtt/text_padder.h>
 
 #include <algorithm>
 
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/status.h>
 
 namespace shaka {
 namespace media {
@@ -38,7 +40,9 @@ Status TextPadder::OnTextSample(std::unique_ptr<StreamData> data) {
   // start at time zero.
   if (max_end_time_ms_ < 0) {
     max_end_time_ms_ =
-        sample.start_time() > zero_start_bias_ms_ ? sample.start_time() : 0;
+        zero_start_bias_ms_ && sample.start_time() > zero_start_bias_ms_
+            ? sample.start_time()
+            : 0;
   }
 
   // Check if there will be a gap between samples if we just dispatch this

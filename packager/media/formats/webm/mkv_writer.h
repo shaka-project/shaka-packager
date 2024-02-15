@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,9 +10,11 @@
 #include <memory>
 #include <string>
 
-#include "packager/file/file_closer.h"
-#include "packager/status.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include <mkvmuxer/mkvmuxer.h>
+
+#include <packager/file/file_closer.h>
+#include <packager/macros/classes.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

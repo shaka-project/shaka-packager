@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,10 +9,10 @@
 
 #include <gmock/gmock.h>
 
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/event/muxer_listener.h"
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 namespace media {
@@ -35,10 +35,10 @@ class MockMuxerListener : public MuxerListener {
   MOCK_METHOD4(OnMediaStart,
                void(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
-                    uint32_t time_scale,
+                    int32_t time_scale,
                     ContainerType container_type));
 
-  MOCK_METHOD1(OnSampleDurationReady, void(uint32_t sample_duration));
+  MOCK_METHOD1(OnSampleDurationReady, void(int32_t sample_duration));
 
   MOCK_METHOD9(OnMediaEndMock,
                void(bool has_init_range,

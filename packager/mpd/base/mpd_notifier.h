@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,12 +10,13 @@
 #ifndef MPD_BASE_MPD_NOTIFIER_H_
 #define MPD_BASE_MPD_NOTIFIER_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/mpd/base/mpd_options.h"
+#include <packager/macros/classes.h>
+#include <packager/macros/compiler.h>
+#include <packager/mpd/base/mpd_options.h>
 
 namespace shaka {
 
@@ -46,6 +47,16 @@ class MpdNotifier {
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* container_id) = 0;
 
+  /// Record the availailityTimeOffset for Low Latency DASH streaming.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifyAvailabilityTimeOffset(uint32_t container_id) {
+    UNUSED(container_id);
+    return true;
+  }
+
   /// Change the sample duration of container with @a container_id.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
@@ -54,10 +65,21 @@ class MpdNotifier {
   /// @return true on success, false otherwise. This may fail if the container
   ///         specified by @a container_id does not exist.
   virtual bool NotifySampleDuration(uint32_t container_id,
-                                    uint32_t sample_duration) = 0;
+                                    int32_t sample_duration) = 0;
+
+  /// Record the duration of a segment for Low Latency DASH streaming.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifySegmentDuration(uint32_t container_id) {
+    UNUSED(container_id);
+    return true;
+  }
 
   /// Notifies MpdBuilder that there is a new segment ready. For live, this
-  /// is usually a new segment, for VOD this is usually a subsegment.
+  /// is usually a new segment, for VOD this is usually a subsegment, for low
+  /// latency this is the first chunk.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
   /// @param start_time is the start time of the new segment, in units of the
@@ -67,16 +89,36 @@ class MpdNotifier {
   /// @param size is the new segment size in bytes.
   /// @return true on success, false otherwise.
   virtual bool NotifyNewSegment(uint32_t container_id,
-                                uint64_t start_time,
-                                uint64_t duration,
+                                int64_t start_time,
+                                int64_t duration,
                                 uint64_t size) = 0;
+
+  /// Notifies MpdBuilder that a segment is fully written and provides the
+  /// segment's complete duration and size. For Low Latency only. Note, size and
+  /// duration are not known when the low latency segment is first registered
+  /// with the MPD, so we must update these values after the segment is
+  /// complete.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @param duration is the duration of the complete segment, in units of the
+  ///        stream's time scale.
+  /// @param size is the complete segment size in bytes.
+  /// @return true on success, false otherwise.
+  virtual bool NotifyCompletedSegment(uint32_t container_id,
+                                      int64_t duration,
+                                      uint64_t size) {
+    UNUSED(container_id);
+    UNUSED(duration);
+    UNUSED(size);
+    return true;
+  }
 
   /// Notifies MpdBuilder that there is a new CueEvent.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
   /// @param timestamp is the timestamp of the CueEvent.
   /// @return true on success, false otherwise.
-  virtual bool NotifyCueEvent(uint32_t container_id, uint64_t timestamp) = 0;
+  virtual bool NotifyCueEvent(uint32_t container_id, int64_t timestamp) = 0;
 
   /// Notifiers MpdBuilder that there is a new PSSH for the container.
   /// This may be called whenever the key has to change, e.g. key rotation.

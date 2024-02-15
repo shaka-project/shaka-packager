@@ -4,13 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/av1_parser.h"
+#include <packager/media/codecs/av1_parser.h>
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/rcheck.h>
 
 namespace shaka {
 namespace media {
@@ -1481,7 +1484,7 @@ bool AV1Parser::SkipGlobalMotionParams(bool frame_is_intra,
 
 // 5.9.25. Global param syntax.
 bool AV1Parser::SkipGlobalParam(int type,
-                                int ref,
+                                int /*ref*/,
                                 int idx,
                                 bool allow_high_precision_mv,
                                 BitReader* reader) {
@@ -1810,7 +1813,7 @@ bool AV1Parser::SetFrameRefs(int last_frame_idx, int gold_frame_idx) {
   static const int kRefFrameList[] = {
       LAST2_FRAME, LAST3_FRAME, BWDREF_FRAME, ALTREF2_FRAME, ALTREF_FRAME,
   };
-  static_assert(arraysize(kRefFrameList) == kRefsPerFrame - 2,
+  static_assert(std::size(kRefFrameList) == kRefsPerFrame - 2,
                 "Unexpected kRefFrameList size.");
   for (const int ref_frame : kRefFrameList) {
     if (frame_header_.ref_frame_idx[ref_frame - LAST_FRAME] < 0) {

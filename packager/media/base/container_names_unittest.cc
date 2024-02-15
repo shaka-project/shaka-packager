@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <packager/media/base/container_names.h>
+
+#include <iterator>
+
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_util.h"
-#include "packager/media/base/container_names.h"
-#include "packager/media/test/test_data_util.h"
+#include <packager/media/test/test_data_util.h>
 
 namespace shaka {
 namespace media {
@@ -22,7 +24,7 @@ namespace media {
 // Test that small buffers are handled correctly.
 TEST(ContainerNamesTest, CheckSmallBuffer) {
   // Empty buffer.
-  char buffer[1];  // ([0] not allowed on win)
+  char buffer[1] = {'\0'};  // ([0] not allowed on win)
   VERIFY(buffer, CONTAINER_UNKNOWN);
 
   // Try a simple SRT file.
@@ -140,22 +142,14 @@ TEST(ContainerNamesTest, CheckFixedStrings) {
 }
 
 // Determine the container type of a specified file.
-void TestFile(MediaContainerName expected, const base::FilePath& filename) {
-  char buffer[8192];
-
-  // Windows implementation of ReadFile fails if file smaller than desired size,
-  // so use file length if file less than 8192 bytes (http://crbug.com/243885).
-  int read_size = sizeof(buffer);
-  int64_t actual_size;
-  if (base::GetFileSize(filename, &actual_size) && actual_size < read_size)
-    read_size = actual_size;
-  int read = base::ReadFile(filename, buffer, read_size);
-  ASSERT_GT(read, 0) << filename.value();
+void TestFile(MediaContainerName expected, const std::string& name) {
+  auto path = GetTestDataFilePath(name);
+  std::vector<uint8_t> data = ReadTestDataFile(name);
+  ASSERT_FALSE(data.empty());
 
   // Now verify the type.
-  EXPECT_EQ(expected,
-            DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), read))
-      << "Failure with file " << filename.value();
+  EXPECT_EQ(expected, DetermineContainer(data.data(), data.size()))
+      << "Failure with file " << path;
 }
 
 TEST(ContainerNamesTest, Ttml) {
@@ -174,7 +168,7 @@ TEST(ContainerNamesTest, Ttml) {
 
   EXPECT_EQ(CONTAINER_TTML,
             DetermineContainer(reinterpret_cast<const uint8_t*>(kTtml),
-                               arraysize(kTtml)));
+                               std::size(kTtml)));
 }
 
 TEST(ContainerNamesTest, WebVtt) {
@@ -185,14 +179,14 @@ TEST(ContainerNamesTest, WebVtt) {
       "Subtitle";
   EXPECT_EQ(CONTAINER_WEBVTT,
             DetermineContainer(reinterpret_cast<const uint8_t*>(kWebVtt),
-                               arraysize(kWebVtt)));
+                               std::size(kWebVtt)));
 
   const uint8_t kUtf8ByteOrderMark[] = {0xef, 0xbb, 0xbf};
   std::vector<uint8_t> webvtt_with_utf8_byte_order_mark(
-      kUtf8ByteOrderMark, kUtf8ByteOrderMark + arraysize(kUtf8ByteOrderMark));
+      kUtf8ByteOrderMark, kUtf8ByteOrderMark + std::size(kUtf8ByteOrderMark));
   webvtt_with_utf8_byte_order_mark.insert(
       webvtt_with_utf8_byte_order_mark.end(), kWebVtt,
-      kWebVtt + arraysize(kWebVtt));
+      kWebVtt + std::size(kWebVtt));
 
   EXPECT_EQ(CONTAINER_WEBVTT,
             DetermineContainer(
@@ -201,91 +195,91 @@ TEST(ContainerNamesTest, WebVtt) {
 }
 
 TEST(ContainerNamesTest, FileCheckOGG) {
-  TestFile(CONTAINER_OGG, GetTestDataFilePath("bear.ogv"));
-  TestFile(CONTAINER_OGG, GetTestDataFilePath("9ch.ogg"));
+  TestFile(CONTAINER_OGG, "bear.ogv");
+  TestFile(CONTAINER_OGG, "9ch.ogg");
 }
 
 TEST(ContainerNamesTest, FileCheckWAV) {
-  TestFile(CONTAINER_WAV, GetTestDataFilePath("4ch.wav"));
+  TestFile(CONTAINER_WAV, "4ch.wav");
 }
 
 TEST(ContainerNamesTest, FileCheckMOV) {
-  TestFile(CONTAINER_MOV, GetTestDataFilePath("bear-640x360.mp4"));
+  TestFile(CONTAINER_MOV, "bear-640x360.mp4");
 }
 
 TEST(ContainerNamesTest, FileCheckWEBM) {
-  TestFile(CONTAINER_WEBM, GetTestDataFilePath("bear-640x360.webm"));
-  TestFile(CONTAINER_WEBM, GetTestDataFilePath("no_streams.webm"));
+  TestFile(CONTAINER_WEBM, "bear-640x360.webm");
+  TestFile(CONTAINER_WEBM, "no_streams.webm");
 }
 
 TEST(ContainerNamesTest, FileCheckMP3) {
-  TestFile(CONTAINER_MP3, GetTestDataFilePath("id3_test.mp3"));
+  TestFile(CONTAINER_MP3, "id3_test.mp3");
 }
 
 TEST(ContainerNamesTest, FileCheckAC3) {
-  TestFile(CONTAINER_AC3, GetTestDataFilePath("bear.ac3"));
+  TestFile(CONTAINER_AC3, "bear.ac3");
 }
 
 TEST(ContainerNamesTest, FileCheckAAC) {
-  TestFile(CONTAINER_AAC, GetTestDataFilePath("bear.adts"));
+  TestFile(CONTAINER_AAC, "bear.adts");
 }
 
 TEST(ContainerNamesTest, FileCheckAIFF) {
-  TestFile(CONTAINER_AIFF, GetTestDataFilePath("bear.aiff"));
+  TestFile(CONTAINER_AIFF, "bear.aiff");
 }
 
 TEST(ContainerNamesTest, FileCheckASF) {
-  TestFile(CONTAINER_ASF, GetTestDataFilePath("bear.asf"));
+  TestFile(CONTAINER_ASF, "bear.asf");
 }
 
 TEST(ContainerNamesTest, FileCheckAVI) {
-  TestFile(CONTAINER_AVI, GetTestDataFilePath("bear.avi"));
+  TestFile(CONTAINER_AVI, "bear.avi");
 }
 
 TEST(ContainerNamesTest, FileCheckEAC3) {
-  TestFile(CONTAINER_EAC3, GetTestDataFilePath("bear.eac3"));
+  TestFile(CONTAINER_EAC3, "bear.eac3");
 }
 
 TEST(ContainerNamesTest, FileCheckFLAC) {
-  TestFile(CONTAINER_FLAC, GetTestDataFilePath("bear.flac"));
+  TestFile(CONTAINER_FLAC, "bear.flac");
 }
 
 TEST(ContainerNamesTest, FileCheckFLV) {
-  TestFile(CONTAINER_FLV, GetTestDataFilePath("bear.flv"));
+  TestFile(CONTAINER_FLV, "bear.flv");
 }
 
 TEST(ContainerNamesTest, FileCheckH261) {
-  TestFile(CONTAINER_H261, GetTestDataFilePath("bear.h261"));
+  TestFile(CONTAINER_H261, "bear.h261");
 }
 
 TEST(ContainerNamesTest, FileCheckH263) {
-  TestFile(CONTAINER_H263, GetTestDataFilePath("bear.h263"));
+  TestFile(CONTAINER_H263, "bear.h263");
 }
 
 TEST(ContainerNamesTest, FileCheckMJPEG) {
-  TestFile(CONTAINER_MJPEG, GetTestDataFilePath("bear.mjpeg"));
+  TestFile(CONTAINER_MJPEG, "bear.mjpeg");
 }
 
 TEST(ContainerNamesTest, FileCheckMPEG2PS) {
-  TestFile(CONTAINER_MPEG2PS, GetTestDataFilePath("bear.mpeg"));
+  TestFile(CONTAINER_MPEG2PS, "bear.mpeg");
 }
 
 TEST(ContainerNamesTest, FileCheckMPEG2TS) {
-  TestFile(CONTAINER_MPEG2TS, GetTestDataFilePath("bear.m2ts"));
+  TestFile(CONTAINER_MPEG2TS, "bear.m2ts");
 }
 
 TEST(ContainerNamesTest, FileCheckRM) {
-  TestFile(CONTAINER_RM, GetTestDataFilePath("bear.rm"));
+  TestFile(CONTAINER_RM, "bear.rm");
 }
 
 TEST(ContainerNamesTest, FileCheckSWF) {
-  TestFile(CONTAINER_SWF, GetTestDataFilePath("bear.swf"));
+  TestFile(CONTAINER_SWF, "bear.swf");
 }
 
 // Try a few non containers.
 TEST(ContainerNamesTest, FileCheckUNKNOWN) {
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("ten_byte_file"));
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("README"));
+  TestFile(CONTAINER_UNKNOWN, "ten_byte_file");
+  TestFile(CONTAINER_UNKNOWN, "README");
 }
 
 }  // namespace media

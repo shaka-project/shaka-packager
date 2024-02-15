@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,13 +7,13 @@
 #ifndef PACKAGER_MEDIA_CODECS_VP_CODEC_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_VP_CODEC_CONFIGURATION_RECORD_H_
 
-#include <stdint.h>
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/base/optional.h"
-#include "packager/media/base/video_stream_info.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/video_stream_info.h>
 
 namespace shaka {
 namespace media {
@@ -268,25 +268,25 @@ class VPCodecConfigurationRecord {
     return matrix_coefficients_.value_or(AVCOL_SPC_UNSPECIFIED);
   }
   uint8_t chroma_location() const {
-    return chroma_location_ ? *chroma_location_ : AVCHROMA_LOC_UNSPECIFIED;
+    return chroma_location_.value_or(AVCHROMA_LOC_UNSPECIFIED);
   }
 
  private:
   void UpdateChromaSubsamplingIfNeeded();
 
-  base::Optional<uint8_t> profile_;
-  base::Optional<uint8_t> level_;
-  base::Optional<uint8_t> bit_depth_;
-  base::Optional<uint8_t> chroma_subsampling_;
-  base::Optional<bool> video_full_range_flag_;
-  base::Optional<uint8_t> color_primaries_;
-  base::Optional<uint8_t> transfer_characteristics_;
-  base::Optional<uint8_t> matrix_coefficients_;
+  std::optional<uint8_t> profile_;
+  std::optional<uint8_t> level_;
+  std::optional<uint8_t> bit_depth_;
+  std::optional<uint8_t> chroma_subsampling_;
+  std::optional<bool> video_full_range_flag_;
+  std::optional<uint8_t> color_primaries_;
+  std::optional<uint8_t> transfer_characteristics_;
+  std::optional<uint8_t> matrix_coefficients_;
   std::vector<uint8_t> codec_initialization_data_;
 
   // Not in the decoder config. It is there to help determine chroma subsampling
   // format.
-  base::Optional<uint8_t> chroma_location_;
+  std::optional<uint8_t> chroma_location_;
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the internal data
   // is small, the performance impact is minimal.

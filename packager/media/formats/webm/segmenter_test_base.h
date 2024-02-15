@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,18 +9,18 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/file/file_closer.h"
-#include "packager/file/file_test_util.h"
-#include "packager/file/memory_file.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/media/formats/webm/segmenter.h"
-#include "packager/media/formats/webm/webm_parser.h"
-#include "packager/status.h"
-#include "packager/status_test_util.h"
+#include <packager/file/file_closer.h>
+#include <packager/file/file_test_util.h>
+#include <packager/file/memory_file.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/segmenter.h>
+#include <packager/media/formats/webm/webm_parser.h>
+#include <packager/status.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {
@@ -57,12 +57,12 @@ class SegmentTestBase : public ::testing::Test {
 
   /// Creates a new media sample.
   std::shared_ptr<MediaSample> CreateSample(KeyFrameFlag key_frame_flag,
-                                            uint64_t duration,
+                                            int64_t duration,
                                             SideDataFlag side_data_flag);
   /// Creates a Muxer options object for testing.
   MuxerOptions CreateMuxerOptions() const;
   /// Creates a video stream info object for testing.
-  VideoStreamInfo* CreateVideoStreamInfo(uint32_t time_scale) const;
+  VideoStreamInfo* CreateVideoStreamInfo(int32_t time_scale) const;
 
   /// Gets the file name of the current output file.
   std::string OutputFileName() const;
@@ -103,11 +103,11 @@ class SegmentTestBase : public ::testing::Test {
   };
 
  protected:
-  void set_cur_timestamp(uint64_t timestamp) { cur_timestamp_ = timestamp; }
+  void set_cur_timestamp(int64_t timestamp) { cur_timestamp_ = timestamp; }
 
   std::string output_file_name_;
   std::string segment_template_;
-  uint64_t cur_timestamp_;
+  int64_t cur_timestamp_;
   bool single_segment_;
 };
 

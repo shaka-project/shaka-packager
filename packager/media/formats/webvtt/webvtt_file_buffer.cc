@@ -4,11 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_file_buffer.h"
+#include <packager/media/formats/webvtt/webvtt_file_buffer.h>
 
-#include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/formats/webvtt/webvtt_utils.h"
+#include <absl/log/check.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/webvtt/webvtt_utils.h>
 
 namespace shaka {
 namespace media {
@@ -17,9 +19,8 @@ const char* kHeader = "WEBVTT\n";
 const int kTsTimescale = 90000;
 }  // namespace
 
-WebVttFileBuffer::WebVttFileBuffer(
-    uint32_t transport_stream_timestamp_offset_ms,
-    const std::string& style_region_config)
+WebVttFileBuffer::WebVttFileBuffer(int32_t transport_stream_timestamp_offset_ms,
+                                   const std::string& style_region_config)
     : transport_stream_timestamp_offset_(transport_stream_timestamp_offset_ms *
                                          kTsTimescale / 1000),
       style_region_config_(style_region_config) {
@@ -35,9 +36,9 @@ void WebVttFileBuffer::Reset() {
   buffer_.append(kHeader);
   if (transport_stream_timestamp_offset_ > 0) {
     // https://tools.ietf.org/html/rfc8216#section-3.5 WebVTT.
-    base::StringAppendF(&buffer_,
-                        "X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:%d\n",
-                        transport_stream_timestamp_offset_);
+    absl::StrAppendFormat(&buffer_,
+                          "X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:%d\n",
+                          transport_stream_timestamp_offset_);
   }
   buffer_.append("\n");  // end of header.
   if (!style_region_config_.empty()) {

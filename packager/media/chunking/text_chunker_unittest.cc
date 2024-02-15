@@ -1,15 +1,16 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/chunking/text_chunker.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/chunking/text_chunker.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 
@@ -18,7 +19,7 @@ namespace media {
 
 namespace {
 const uint64_t kStreamIndex = 0;
-const uint64_t kMsTimeScale = 1000u;
+const int64_t kTimescaleMs = 1000;
 
 const size_t kInputs = 1;
 const size_t kOutputs = 1;
@@ -28,8 +29,6 @@ const size_t kOutput = 0;
 
 const bool kEncrypted = true;
 const bool kSubSegment = true;
-
-const uint64_t kTimescaleMs = 1000;
 
 const char* kNoId = "";
 const char* kNoPayload = "";
@@ -83,7 +82,7 @@ TEST_F(TextChunkerTest, SegmentsStartAtFirstSample) {
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
@@ -128,7 +127,7 @@ TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
@@ -188,7 +187,7 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
@@ -258,7 +257,7 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
@@ -409,7 +408,7 @@ TEST_F(TextChunkerTest, PreservesOrder) {
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kSampleAId, kSampleAStart, kSampleAEnd, kNoPayload))));
@@ -508,7 +507,7 @@ TEST_F(TextChunkerTest, NestedSamples) {
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));

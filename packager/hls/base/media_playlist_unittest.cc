@@ -1,18 +1,19 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/hls/base/media_playlist.h>
+
+#include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/file/file_test_util.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/version/version.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/file/file_test_util.h>
+#include <packager/version/version.h>
 
 namespace shaka {
 namespace hls {
@@ -27,7 +28,7 @@ namespace {
 
 const char kDefaultPlaylistFileName[] = "default_playlist.m3u8";
 const double kTimeShiftBufferDepth = 20;
-const uint64_t kTimeScale = 90000;
+const int64_t kTimeScale = 90000;
 const uint64_t kMBytes = 1000000;
 const uint64_t kZeroByteOffset = 0;
 
@@ -153,8 +154,8 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRange) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
@@ -173,8 +174,8 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRangeWithOffset) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"485@16\"\n"
@@ -196,8 +197,8 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:10\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
@@ -236,8 +237,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFile) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-ENDLIST\n";
@@ -288,8 +289,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, SetTargetDuration) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-ENDLIST\n";
@@ -310,8 +311,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithSegments) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:10.000,\n"
@@ -338,8 +339,8 @@ TEST_F(MediaPlaylistMultiSegmentTest,
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:10.000,\n"
@@ -368,8 +369,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithEncryptionInfo) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -400,8 +401,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithEncryptionInfoEmptyIv) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -433,8 +434,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithClearLead) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:10.000,\n"
@@ -567,8 +568,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, InitSegment) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"init_segment.mp4\"\n"
@@ -599,8 +600,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, SampleAesCenc) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,"
@@ -635,8 +636,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, MultipleEncryptionInfo) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -673,8 +674,8 @@ TEST_F(LiveMediaPlaylistTest, Basic) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXTINF:10.000,\n"
       "file1.ts\n"
@@ -698,8 +699,8 @@ TEST_F(LiveMediaPlaylistTest, TimeShifted) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-MEDIA-SEQUENCE:1\n"
       "#EXTINF:20.000,\n"
@@ -731,8 +732,8 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfo) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-MEDIA-SEQUENCE:1\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -790,8 +791,8 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-MEDIA-SEQUENCE:2\n"
       "#EXT-X-DISCONTINUITY-SEQUENCE:1\n"
@@ -835,8 +836,8 @@ TEST_F(EventMediaPlaylistTest, Basic) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-PLAYLIST-TYPE:EVENT\n"
       "#EXTINF:10.000,\n"
@@ -880,8 +881,8 @@ TEST_F(IFrameMediaPlaylistTest, SingleSegment) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:9\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-I-FRAMES-ONLY\n"
@@ -922,8 +923,8 @@ TEST_F(IFrameMediaPlaylistTest, MultiSegment) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:25\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-I-FRAMES-ONLY\n"
@@ -964,8 +965,8 @@ TEST_F(IFrameMediaPlaylistTest, MultiSegmentWithPlacementOpportunity) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
       "#EXT-X-TARGETDURATION:25\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-I-FRAMES-ONLY\n"
@@ -1002,8 +1003,8 @@ const char kIgnoredSegmentName[] = "ignored_segment_name";
 const char kSegmentTemplateTime[] = "memory://$Time$.mp4";
 const char kSegmentTemplateTimeUrl[] = "video/$Time$.mp4";
 
-const uint64_t kInitialStartTime = 0;
-const uint64_t kDuration = kTimeScale;
+const int64_t kInitialStartTime = 0;
+const int64_t kDuration = kTimeScale;
 }  // namespace
 
 class MediaPlaylistDeleteSegmentsTest
@@ -1032,8 +1033,8 @@ class MediaPlaylistDeleteSegmentsTest
 
   std::string GetSegmentName(int index) {
     if (segment_template_.find("$Time$") != std::string::npos)
-      return base::StringPrintf(kStringPrintTemplate, GetTime(index));
-    return base::StringPrintf(kStringPrintTemplate, index + 1);
+      return absl::StrFormat(kStringPrintTemplate, GetTime(index));
+    return absl::StrFormat(kStringPrintTemplate, index + 1);
   }
 
   bool SegmentDeleted(const std::string& segment_name) {

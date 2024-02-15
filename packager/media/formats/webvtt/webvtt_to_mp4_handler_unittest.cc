@@ -1,15 +1,17 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/webvtt/webvtt_to_mp4_handler.h>
+
+#include <absl/log/check.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/status/status_test_util.h>
 
 using testing::_;
 using testing::AllOf;
@@ -71,7 +73,7 @@ class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
   }
 
   Status DispatchStream() {
-    const uint64_t kMsTimeScale = 1000u;
+    const int64_t kMsTimeScale = 1000;
 
     auto info = GetTextStreamInfo(kMsTimeScale);
     return In()->Dispatch(

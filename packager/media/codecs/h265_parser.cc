@@ -1,17 +1,20 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/h265_parser.h"
+#include <packager/media/codecs/h265_parser.h>
 
-#include <math.h>
 #include <algorithm>
+#include <cmath>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/macros.h"
-#include "packager/media/codecs/nalu_reader.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 #define TRUE_OR_RETURN(a)                            \
   do {                                               \
@@ -26,6 +29,22 @@
     Result status = (a); \
     if (status != kOk)   \
       return status;     \
+  } while (false)
+
+#define READ_LONG_OR_RETURN(out)                                           \
+  do {                                                                     \
+    int _top_half, _bottom_half;                                           \
+    if (!br->ReadBits(16, &_top_half)) {                                   \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+    if (!br->ReadBits(16, &_bottom_half)) {                                \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+    *(out) = ((long)_top_half) << 16 | _bottom_half;                       \
   } while (false)
 
 namespace shaka {
@@ -688,11 +707,10 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
     TRUE_OR_RETURN(br->ReadUE(&ignored));  // def_disp_win_bottom_offset
   }
 
-  bool vui_timing_info_present_flag;
-  TRUE_OR_RETURN(br->ReadBool(&vui_timing_info_present_flag));
-  if (vui_timing_info_present_flag) {
-    // vui_num_units_in_tick, vui_time_scale
-    TRUE_OR_RETURN(br->SkipBits(32 + 32));
+  TRUE_OR_RETURN(br->ReadBool(&vui->vui_timing_info_present_flag));
+  if (vui->vui_timing_info_present_flag) {
+    READ_LONG_OR_RETURN(&vui->vui_num_units_in_tick);
+    READ_LONG_OR_RETURN(&vui->vui_time_scale);
 
     bool vui_poc_proportional_to_timing_flag;
     TRUE_OR_RETURN(br->ReadBool(&vui_poc_proportional_to_timing_flag));
@@ -869,7 +887,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
 
 H265Parser::Result H265Parser::SkipReferencePictureListModification(
     const H265SliceHeader& slice_header,
-    const H265Pps& pps,
+    const H265Pps&,
     int num_pic_total_curr,
     H26xBitReader* br) {
   // Reads whole element but ignores it all.

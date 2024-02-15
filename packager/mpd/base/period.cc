@@ -1,16 +1,18 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/period.h"
+#include <packager/mpd/base/period.h>
 
-#include "packager/base/stl_util.h"
-#include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {
@@ -57,6 +59,10 @@ AdaptationSet::Role RoleFromString(const std::string& role_str) {
     return AdaptationSet::Role::kRoleCommentary;
   if (role_str == "dub")
     return AdaptationSet::Role::kRoleDub;
+  if (role_str == "forced-subtitle")
+    return AdaptationSet::Role::kRoleForcedSubtitle;
+  if (role_str == "description")
+    return AdaptationSet::Role::kRoleDescription;
   return AdaptationSet::Role::kRoleUnknown;
 }
 
@@ -120,7 +126,7 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   return adaptation_set_ptr;
 }
 
-base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
+std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   adaptation_sets_.sort(
       [](const std::unique_ptr<AdaptationSet>& adaptation_set_a,
          const std::unique_ptr<AdaptationSet>& adaptation_set_b) {
@@ -135,23 +141,48 @@ base::Optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
 
   // Required for 'dynamic' MPDs.
   if (!period.SetId(id_))
-    return base::nullopt;
+    return std::nullopt;
+
+  // Required for LL-DASH MPDs.
+  if (mpd_options_.mpd_params.low_latency_dash_mode) {
+    // Create ServiceDescription element.
+    xml::XmlNode service_description_node("ServiceDescription");
+    if (!service_description_node.SetIntegerAttribute("id", id_))
+      return std::nullopt;
+
+    // Insert Latency into ServiceDescription element.
+    xml::XmlNode latency_node("Latency");
+    uint64_t target_latency_ms =
+        mpd_options_.mpd_params.target_latency_seconds * 1000;
+    if (!latency_node.SetIntegerAttribute("target", target_latency_ms))
+      return std::nullopt;
+    if (!service_description_node.AddChild(std::move(latency_node)))
+      return std::nullopt;
+
+    // Insert ServiceDescription into Period element.
+    if (!period.AddChild(std::move(service_description_node)))
+      return std::nullopt;
+  }
+
   // Iterate thru AdaptationSets and add them to one big Period element.
+  // Also force AdaptationSets Id to incremental order, which might not
+  // be the case if force_cl_index is used.
+  int idx = 0;
   for (const auto& adaptation_set : adaptation_sets_) {
     auto child = adaptation_set->GetXml();
-    if (!child || !period.AddChild(std::move(*child)))
-      return base::nullopt;
+    if (!child || !child->SetId(idx++) || !period.AddChild(std::move(*child)))
+      return std::nullopt;
   }
 
   if (output_period_duration) {
     if (!period.SetStringAttribute("duration",
                                    SecondsToXmlDuration(duration_seconds_))) {
-      return base::nullopt;
+      return std::nullopt;
     }
   } else if (mpd_options_.mpd_type == MpdType::kDynamic) {
     if (!period.SetStringAttribute(
             "start", SecondsToXmlDuration(start_time_in_seconds_))) {
-      return base::nullopt;
+      return std::nullopt;
     }
   }
   return period;
@@ -245,6 +276,22 @@ bool Period::SetNewAdaptationSetAttributes(
       }
     }
 
+    // Set transfer characteristics.
+    // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+    // ISO/IEC 23001-8 MPEG systems technologies — Part 8: Coding-independent
+    // code points. https://en.wikipedia.org/wiki/Coding-independent_code_points
+    // - Common CCIP values.
+    // Dolby vision:
+    // https://professionalsupport.dolby.com/s/article/How-to-signal-Dolby-Vision-in-MPEG-DASH
+    // Transfer characteristics for Dolby Vision (dvh1 or dvhe) must be PQ
+    // irrespective of value present in SPS VUI.
+    if (new_adaptation_set->codec().find("dvh") == 0) {
+      new_adaptation_set->set_transfer_characteristics(kTransferFunctionPQ);
+    } else if (media_info.video_info().has_transfer_characteristics()) {
+      new_adaptation_set->set_transfer_characteristics(
+          media_info.video_info().transfer_characteristics());
+    }
+
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
     // true, so carelessly set it to true.
@@ -296,7 +343,8 @@ std::string Period::GetAdaptationSetKeyForTrickPlay(
 void Period::ProtectedAdaptationSetMap::Register(
     const AdaptationSet& adaptation_set,
     const MediaInfo& media_info) {
-  DCHECK(!ContainsKey(protected_content_map_, &adaptation_set));
+  CHECK(protected_content_map_.find(&adaptation_set) ==
+        protected_content_map_.end());
   protected_content_map_[&adaptation_set] = media_info.protected_content();
 }
 

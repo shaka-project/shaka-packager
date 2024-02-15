@@ -7,9 +7,9 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_MUXER_H_
 #define PACKAGER_MEDIA_BASE_TEXT_MUXER_H_
 
-#include "packager/media/base/muxer.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/media/base/text_stream_info.h"
+#include <packager/media/base/muxer.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 
 namespace shaka {
 namespace media {
@@ -36,8 +36,8 @@ class TextMuxer : public Muxer {
   /// also clear any buffered samples.
   virtual Status WriteToFile(const std::string& filename, uint64_t* size) = 0;
 
-  uint64_t total_duration_ms_ = 0;
-  uint64_t last_cue_ms_ = 0;
+  int64_t total_duration_ms_ = 0;
+  int64_t last_cue_ms_ = 0;
   uint32_t segment_index_ = 0;
 };
 

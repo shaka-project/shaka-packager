@@ -1,18 +1,18 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/period.h"
+#include <packager/mpd/base/period.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/mpd/base/mock_mpd_builder.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/test/mpd_builder_test_helper.h"
-#include "packager/mpd/test/xml_compare.h"
+#include <packager/mpd/base/mock_mpd_builder.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/test/mpd_builder_test_helper.h>
+#include <packager/mpd/test/xml_compare.h>
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -135,7 +135,7 @@ TEST_F(PeriodTest, GetXml) {
       "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -167,7 +167,47 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
       "<Period id=\"9\" start=\"PT5.6S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
+      "</Period>";
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
+              XmlNodeEqual(kExpectedXml));
+}
+
+TEST_F(PeriodTest, LowLatencyDashMpdGetXml) {
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+  mpd_options_.mpd_type = MpdType::kDynamic;
+  mpd_options_.mpd_params.low_latency_dash_mode = true;
+  mpd_options_.mpd_params.target_latency_seconds = 1;
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVideoMediaInfo),
+                content_protection_in_adaptation_set_));
+
+  const char kExpectedXml[] =
+      "<Period id=\"9\" start=\"PT5.6S\">"
+      // LL-DASH standards require ServiceDescription and Latency elements
+      "  <ServiceDescription id=\"9\" >"
+      // In LL-DASH MPD, the target latency is in ms, so the expected value is
+      // 1000.
+      "    <Latency target=\"1000\"/>"
+      "  </ServiceDescription>"
+      // ContentType and Representation elements are populated after
+      // Representation::Init() is called.
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -200,7 +240,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       "<Period id=\"9\" duration=\"PT100.234S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -208,7 +248,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXmlSuppressDuration));
@@ -542,14 +582,14 @@ TEST_F(PeriodTest, OrderedByAdaptationSetId) {
                                       ConvertToMediaInfo(kContent2),
                                       content_protection_in_adaptation_set_));
 
-  adaptation_set_1_ptr->set_id(2);
-  adaptation_set_2_ptr->set_id(1);
+  adaptation_set_1_ptr->set_id(1);
+  adaptation_set_2_ptr->set_id(0);
   const char kExpectedXml[] =
       R"(<Period id="9">)"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
+      R"(  <AdaptationSet id="0" contentType=""/>)"
       R"(  <AdaptationSet id="1" contentType=""/>)"
-      R"(  <AdaptationSet id="2" contentType=""/>)"
       R"(</Period>)";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));

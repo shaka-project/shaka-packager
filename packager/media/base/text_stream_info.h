@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_
 
-#include "packager/media/base/stream_info.h"
-#include "packager/media/base/text_sample.h"
-
 #include <map>
 #include <string>
+
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 
 namespace shaka {
 namespace media {
@@ -60,11 +60,15 @@ class TextStreamInfo : public StreamInfo {
   /// @param width of the text. This may be 0.
   /// @param height of the text. This may be 0.
   /// @param language is the language of this stream. This may be empty.
-  TextStreamInfo(int track_id, uint32_t time_scale, uint64_t duration,
+  TextStreamInfo(int track_id,
+                 int32_t time_scale,
+                 int64_t duration,
                  Codec codec,
                  const std::string& codec_string,
-                 const std::string& codec_config, uint16_t width,
-                 uint16_t height, const std::string& language);
+                 const std::string& codec_config,
+                 uint16_t width,
+                 uint16_t height,
+                 const std::string& language);
 
   ~TextStreamInfo() override;
 

@@ -1,18 +1,19 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/callback_file.h"
+#include <packager/file/callback_file.h>
+
+#include <memory>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <memory>
-
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/macros/compiler.h>
 
 using testing::_;
 using testing::Eq;
@@ -94,8 +95,11 @@ TEST(CallbackFileTest, ReadFailed) {
       File::MakeCallbackFileName(callback_params, kBufferLabel);
 
   EXPECT_CALL(mock_read_func, Call(StrEq(kBufferLabel), _, _))
-      .WillOnce(WithArgs<1, 2>(
-          Invoke([](void* buffer, uint64_t size) { return kFileError; })));
+      .WillOnce(WithArgs<1, 2>(Invoke([](void* buffer, uint64_t size) {
+        UNUSED(buffer);
+        UNUSED(size);
+        return kFileError;
+      })));
 
   std::unique_ptr<File, FileCloser> reader(File::Open(file_name.c_str(), "r"));
   ASSERT_TRUE(reader);

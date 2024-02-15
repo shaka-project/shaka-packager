@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,9 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 
-#include "packager/file/file_closer.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/media/formats/mp4/segmenter.h"
+#include <packager/file/file_closer.h>
+#include <packager/macros/classes.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp4/segmenter.h>
 
 namespace shaka {
 namespace media {

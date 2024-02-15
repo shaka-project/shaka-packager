@@ -1,10 +1,10 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/hevc_decoder_configuration_record.h"
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
 
 #include <gtest/gtest.h>
 
@@ -44,7 +44,7 @@ TEST(HEVCDecoderConfigurationRecordTest, Success) {
   // clang-format on
   HEVCDecoderConfigurationRecord hevc_config;
   ASSERT_TRUE(hevc_config.Parse(kHevcDecoderConfigurationData,
-                                arraysize(kHevcDecoderConfigurationData)));
+                                std::size(kHevcDecoderConfigurationData)));
   EXPECT_EQ(4u, hevc_config.nalu_length_size());
   EXPECT_EQ("hev1.2.4.L63.90", hevc_config.GetCodecString(FOURCC_hev1));
   EXPECT_EQ("hvc1.2.4.L63.90", hevc_config.GetCodecString(FOURCC_hvc1));
@@ -92,7 +92,7 @@ TEST(HEVCDecoderConfigurationRecordTest, SuccessWithTransferCharacteristics) {
 
   HEVCDecoderConfigurationRecord hevc_config;
   ASSERT_TRUE(hevc_config.Parse(kHevcDecoderConfigurationData,
-                                arraysize(kHevcDecoderConfigurationData)));
+                                std::size(kHevcDecoderConfigurationData)));
 
   EXPECT_EQ(4u, hevc_config.nalu_length_size());
 
@@ -111,7 +111,7 @@ TEST(HEVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
 
   HEVCDecoderConfigurationRecord hevc_config;
   ASSERT_FALSE(hevc_config.Parse(kHevcDecoderConfigurationData,
-                                 arraysize(kHevcDecoderConfigurationData)));
+                                 std::size(kHevcDecoderConfigurationData)));
 }
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,10 +9,10 @@
 
 #include <string>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/file/http_file.h"
-#include "packager/media/base/key_fetcher.h"
-#include "packager/status.h"
+#include <packager/file/http_file.h>
+#include <packager/macros/classes.h>
+#include <packager/media/base/key_fetcher.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -28,7 +28,7 @@ class HttpKeyFetcher : public KeyFetcher {
   HttpKeyFetcher();
   /// Create a fetcher with timeout.
   /// @param timeout_in_seconds specifies the timeout in seconds.
-  HttpKeyFetcher(uint32_t timeout_in_seconds);
+  HttpKeyFetcher(int32_t timeout_in_seconds);
   ~HttpKeyFetcher() override;
 
   /// @name KeyFetcher implementation overrides.
@@ -56,7 +56,7 @@ class HttpKeyFetcher : public KeyFetcher {
   Status FetchInternal(HttpMethod method, const std::string& url,
                        const std::string& data, std::string* response);
 
-  const uint32_t timeout_in_seconds_;
+  const int32_t timeout_in_seconds_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpKeyFetcher);
 };

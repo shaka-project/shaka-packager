@@ -1,10 +1,10 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/vp8_parser.h"
+#include <packager/media/codecs/vp8_parser.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -38,14 +38,14 @@ TEST(VP8ParserTest, Keyframe) {
       0x63, 0x3f, 0xbb, 0xe5, 0xcf, 0x9b, 0x7d, 0x53, 0xec, 0x67, 0xa2, 0xcf,
   };
 
-  EXPECT_TRUE(VP8Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP8Parser::IsKeyframe(kData, std::size(kData)));
 
   VP8Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_EQ("vp08.02.10.08.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP8));
-  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 22u, true,
+  EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(std::size(kData), 22u, true,
                                                 320u, 240u)));
 }
 
@@ -56,21 +56,21 @@ TEST(VP8ParserTest, NonKeyframe) {
       0x34, 0x7b, 0x47, 0xfc, 0x2d, 0xaa, 0x0b, 0xbb, 0xc6, 0xc3, 0xc1, 0x12,
   };
 
-  EXPECT_FALSE(VP8Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP8Parser::IsKeyframe(kData, std::size(kData)));
 
   VP8Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_TRUE(parser.Parse(kData, std::size(kData), &frames));
   EXPECT_THAT(frames,
-              ElementsAre(EqualVPxFrame(arraysize(kData), 8u, false, 0u, 0u)));
+              ElementsAre(EqualVPxFrame(std::size(kData), 8u, false, 0u, 0u)));
 }
 
 TEST(VP8ParserTest, InsufficientData) {
   const uint8_t kData[] = {0x00, 0x0a};
-  EXPECT_FALSE(VP8Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP8Parser::IsKeyframe(kData, std::size(kData)));
   VP8Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_FALSE(parser.Parse(kData, std::size(kData), &frames));
 }
 
 TEST(VP8ParserTest, CorruptedSynccode) {
@@ -79,10 +79,10 @@ TEST(VP8ParserTest, CorruptedSynccode) {
       0x08, 0x85, 0x85, 0x88, 0x85, 0x84, 0x88, 0x01, 0x24, 0x10, 0x17, 0x67,
       0x63, 0x3f, 0xbb, 0xe5, 0xcf, 0x9b, 0x7d, 0x53, 0xec, 0x67, 0xa2, 0xcf,
   };
-  EXPECT_FALSE(VP8Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_FALSE(VP8Parser::IsKeyframe(kData, std::size(kData)));
   VP8Parser parser;
   std::vector<VPxFrameInfo> frames;
-  ASSERT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
+  ASSERT_FALSE(parser.Parse(kData, std::size(kData), &frames));
 }
 
 TEST(VP8ParserTest, NotEnoughBytesForHeaderSize) {
@@ -94,11 +94,11 @@ TEST(VP8ParserTest, NotEnoughBytesForHeaderSize) {
 
   // IsKeyframe only parses the bytes that is necessary to determine whether it
   // is a keyframe.
-  EXPECT_TRUE(VP8Parser::IsKeyframe(kData, arraysize(kData)));
+  EXPECT_TRUE(VP8Parser::IsKeyframe(kData, std::size(kData)));
 
   VP8Parser parser;
   std::vector<VPxFrameInfo> frames;
-  EXPECT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
+  EXPECT_FALSE(parser.Parse(kData, std::size(kData), &frames));
 }
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,7 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/codecs/h26x_bit_reader.h"
+#include <packager/macros/classes.h>
+#include <packager/media/codecs/h26x_bit_reader.h>
 
 namespace shaka {
 namespace media {
@@ -51,6 +52,10 @@ struct H265VuiParameters {
   int sar_width = 0;
   int sar_height = 0;
   int transfer_characteristics = 0;
+
+  bool vui_timing_info_present_flag = false;
+  long vui_num_units_in_tick = 0;
+  long vui_time_scale = 0;
 
   bool bitstream_restriction_flag = false;
   int min_spatial_segmentation_idc = 0;
@@ -241,7 +246,7 @@ struct H265SliceHeader {
   int slice_pic_order_cnt_lsb = 0;
 
   bool short_term_ref_pic_set_sps_flag = false;
-  H265ReferencePictureSet st_ref_pic_set;
+  H265ReferencePictureSet st_ref_pic_set{};
   int short_term_ref_pic_set_idx = 0;
 
   int num_long_term_sps = 0;

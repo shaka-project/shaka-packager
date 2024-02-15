@@ -1,20 +1,20 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/aes_cryptor.h"
-
-#include <openssl/aes.h>
-#include <openssl/crypto.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
+#include <packager/media/base/aes_cryptor.h>
 
 #include <string>
 #include <vector>
 
-#include "packager/base/logging.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <mbedtls/entropy.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/crypto.h>
 
 namespace {
 
@@ -30,13 +30,13 @@ namespace shaka {
 namespace media {
 
 AesCryptor::AesCryptor(ConstantIvFlag constant_iv_flag)
-    : aes_key_(new AES_KEY),
-      constant_iv_flag_(constant_iv_flag),
-      num_crypt_bytes_(0) {
-  CRYPTO_library_init();
+    : constant_iv_flag_(constant_iv_flag), num_crypt_bytes_(0) {
+  mbedtls_cipher_init(&cipher_ctx_);
 }
 
-AesCryptor::~AesCryptor() {}
+AesCryptor::~AesCryptor() {
+  mbedtls_cipher_free(&cipher_ctx_);
+}
 
 bool AesCryptor::Crypt(const std::vector<uint8_t>& text,
                        std::vector<uint8_t>* crypt_text) {
@@ -98,7 +98,7 @@ void AesCryptor::UpdateIv() {
     increment = (num_crypt_bytes_ + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE;
   }
 
-  for (int i = iv_.size() - 1; increment > 0 && i >= 0; --i) {
+  for (int64_t i = iv_.size() - 1; increment > 0 && i >= 0; --i) {
     increment += iv_[i];
     iv_[i] = increment & 0xFF;
     increment >>= 8;
@@ -118,9 +118,14 @@ bool AesCryptor::GenerateRandomIv(FourCC protection_scheme,
           ? 8
           : 16;
   iv->resize(iv_size);
-  if (RAND_bytes(iv->data(), iv_size) != 1) {
-    LOG(ERROR) << "RAND_bytes failed with error: "
-               << ERR_error_string(ERR_get_error(), NULL);
+
+  mbedtls_entropy_context entropy_ctx;
+  mbedtls_entropy_init(&entropy_ctx);
+  int rv = mbedtls_entropy_func(&entropy_ctx, iv->data(), iv_size);
+  mbedtls_entropy_free(&entropy_ctx);
+
+  if (rv != 0) {
+    LOG(ERROR) << "mbedtls_entropy_func failed with: " << rv;
     return false;
   }
   return true;
@@ -128,7 +133,55 @@ bool AesCryptor::GenerateRandomIv(FourCC protection_scheme,
 
 size_t AesCryptor::NumPaddingBytes(size_t size) const {
   // No padding by default.
+  UNUSED(size);
   return 0;
+}
+
+bool AesCryptor::SetupCipher(size_t key_size, CipherMode mode) {
+  mbedtls_cipher_type_t type;
+
+  // AES defines three key sizes: 128, 192 and 256 bits.
+  // NOTE: Because we use ECB mode in the CTR cryptors, this returns ECB
+  // instead of CTR.  Counters and block offsets are managed internally.
+  switch (key_size) {
+    case 16:
+      type = mode == kCtrMode ? MBEDTLS_CIPHER_AES_128_ECB
+                              : MBEDTLS_CIPHER_AES_128_CBC;
+      break;
+    case 24:
+      type = mode == kCtrMode ? MBEDTLS_CIPHER_AES_192_ECB
+                              : MBEDTLS_CIPHER_AES_192_CBC;
+      break;
+    case 32:
+      type = mode == kCtrMode ? MBEDTLS_CIPHER_AES_256_ECB
+                              : MBEDTLS_CIPHER_AES_256_CBC;
+      break;
+    default:
+      LOG(ERROR) << "Invalid AES key size: " << key_size;
+      return false;
+  }
+
+  const mbedtls_cipher_info_t* cipher_info =
+      mbedtls_cipher_info_from_type(type);
+  CHECK(cipher_info);
+
+  if (mbedtls_cipher_setup(&cipher_ctx_, cipher_info) != 0) {
+    LOG(ERROR) << "Cipher setup failed";
+    return false;
+  }
+
+  // Padding mode only applies to CBC.
+  if (mode == kCbcMode) {
+    // We handle padding ourselves.  Don't let mbedtls mess with it.
+    mbedtls_cipher_padding_t cipher_padding = MBEDTLS_PADDING_NONE;
+
+    if (mbedtls_cipher_set_padding_mode(&cipher_ctx_, cipher_padding) != 0) {
+      LOG(ERROR) << "Failed to set CBC padding mode";
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace media

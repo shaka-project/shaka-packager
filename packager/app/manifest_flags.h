@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,11 +9,13 @@
 #ifndef PACKAGER_APP_MANIFEST_FLAGS_H_
 #define PACKAGER_APP_MANIFEST_FLAGS_H_
 
-#include <gflags/gflags.h>
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 
-DECLARE_double(time_shift_buffer_depth);
-DECLARE_uint64(preserved_segments_outside_live_window);
-DECLARE_string(default_language);
-DECLARE_string(default_text_language);
+ABSL_DECLARE_FLAG(double, time_shift_buffer_depth);
+ABSL_DECLARE_FLAG(uint64_t, preserved_segments_outside_live_window);
+ABSL_DECLARE_FLAG(std::string, default_language);
+ABSL_DECLARE_FLAG(std::string, default_text_language);
+ABSL_DECLARE_FLAG(bool, force_cl_index);
 
 #endif  // PACKAGER_APP_MANIFEST_FLAGS_H_

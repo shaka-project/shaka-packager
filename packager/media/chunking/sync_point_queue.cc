@@ -1,20 +1,22 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/sync_point_queue.h"
-#include "packager/media/base/media_handler.h"
+#include <packager/media/chunking/sync_point_queue.h>
 
 #include <algorithm>
 #include <limits>
 
+#include <absl/log/check.h>
+
+#include <packager/media/base/media_handler.h>
+
 namespace shaka {
 namespace media {
 
-SyncPointQueue::SyncPointQueue(const AdCueGeneratorParams& params)
-    : sync_condition_(&lock_) {
+SyncPointQueue::SyncPointQueue(const AdCueGeneratorParams& params) {
   for (const Cuepoint& point : params.cue_points) {
     std::shared_ptr<CueEvent> event = std::make_shared<CueEvent>();
     event->time_in_seconds = point.start_time_in_seconds;
@@ -23,20 +25,20 @@ SyncPointQueue::SyncPointQueue(const AdCueGeneratorParams& params)
 }
 
 void SyncPointQueue::AddThread() {
-  base::AutoLock auto_lock(lock_);
+  absl::MutexLock lock(&mutex_);
   thread_count_++;
 }
 
 void SyncPointQueue::Cancel() {
   {
-    base::AutoLock auto_lock(lock_);
+    absl::MutexLock lock(&mutex_);
     cancelled_ = true;
   }
-  sync_condition_.Broadcast();
+  sync_condition_.SignalAll();
 }
 
 double SyncPointQueue::GetHint(double time_in_seconds) {
-  base::AutoLock auto_lock(lock_);
+  absl::MutexLock lock(&mutex_);
 
   auto iter = promoted_.upper_bound(time_in_seconds);
   if (iter != promoted_.end())
@@ -53,7 +55,7 @@ double SyncPointQueue::GetHint(double time_in_seconds) {
 
 std::shared_ptr<const CueEvent> SyncPointQueue::GetNext(
     double hint_in_seconds) {
-  base::AutoLock auto_lock(lock_);
+  absl::MutexLock lock(&mutex_);
   while (!cancelled_) {
     // Find the promoted cue that would line up with our hint, which is the
     // first cue that is not less than |hint_in_seconds|.
@@ -75,7 +77,7 @@ std::shared_ptr<const CueEvent> SyncPointQueue::GetNext(
     // and returned - see section above). Spurious signal events are possible
     // with most condition variable implementations, so if it returns, we go
     // back and check if a cue is actually promoted or not.
-    sync_condition_.Wait();
+    sync_condition_.Wait(&mutex_);
     waiting_thread_count_--;
   }
   return nullptr;
@@ -83,7 +85,7 @@ std::shared_ptr<const CueEvent> SyncPointQueue::GetNext(
 
 std::shared_ptr<const CueEvent> SyncPointQueue::PromoteAt(
     double time_in_seconds) {
-  base::AutoLock auto_lock(lock_);
+  absl::MutexLock lock(&mutex_);
   return PromoteAtNoLocking(time_in_seconds);
 }
 
@@ -93,7 +95,7 @@ bool SyncPointQueue::HasMore(double hint_in_seconds) const {
 
 std::shared_ptr<const CueEvent> SyncPointQueue::PromoteAtNoLocking(
     double time_in_seconds) {
-  lock_.AssertAcquired();
+  mutex_.AssertHeld();
 
   // It is possible that |time_in_seconds| has been promoted.
   auto iter = promoted_.find(time_in_seconds);
@@ -123,8 +125,8 @@ std::shared_ptr<const CueEvent> SyncPointQueue::PromoteAtNoLocking(
   unpromoted_.erase(unpromoted_.begin(), iter);
 
   // Wake up other threads that may be waiting.
-  sync_condition_.Broadcast();
-  return std::move(cue);
+  sync_condition_.SignalAll();
+  return cue;
 }
 
 }  // namespace media

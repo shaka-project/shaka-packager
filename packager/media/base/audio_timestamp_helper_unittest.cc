@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <packager/media/base/audio_timestamp_helper.h>
+
+#include <iterator>
+
 #include <gtest/gtest.h>
 
-#include "packager/media/base/audio_timestamp_helper.h"
-#include "packager/media/base/timestamp.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/timestamp.h>
 
 namespace shaka {
 namespace media {
 
 static const uint32_t kDefaultSampleRate = 44100;
-static const uint32_t kTimescale = 1000000;
+static const int32_t kTimescale = 1000000;
 
 class AudioTimestampHelperTest : public ::testing::Test {
  public:
@@ -76,7 +80,7 @@ TEST_F(AudioTimestampHelperTest, GetDuration) {
 
   int frame_count = 5;
   int64_t expected_durations[] = {113, 113, 114, 113, 113, 114};
-  for (size_t i = 0; i < arraysize(expected_durations); ++i) {
+  for (size_t i = 0; i < std::size(expected_durations); ++i) {
     int64_t duration = helper_.GetFrameDuration(frame_count);
     EXPECT_EQ(expected_durations[i], duration);
 

@@ -1,17 +1,21 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/hls_notify_muxer_listener.h"
+#include <packager/media/event/hls_notify_muxer_listener.h>
 
 #include <memory>
-#include "packager/base/logging.h"
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/event/muxer_listener_internal.h"
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/macros/compiler.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/event/muxer_listener_internal.h>
 
 namespace shaka {
 namespace media {
@@ -22,13 +26,17 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
     const std::vector<std::string>& characteristics,
-    hls::HlsNotifier* hls_notifier)
+    bool forced_subtitle,
+    hls::HlsNotifier* hls_notifier,
+    std::optional<uint32_t> index)
     : playlist_name_(playlist_name),
       iframes_only_(iframes_only),
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
       characteristics_(characteristics),
-      hls_notifier_(hls_notifier) {
+      forced_subtitle_(forced_subtitle),
+      hls_notifier_(hls_notifier),
+      index_(index) {
   DCHECK(hls_notifier);
 }
 
@@ -46,6 +54,7 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_infos) {
+  UNUSED(is_initial_encryption_info);
   if (!stream_id_) {
     next_key_id_ = key_id;
     next_iv_ = iv;
@@ -84,7 +93,7 @@ void HlsNotifyMuxerListener::OnEncryptionStart() {
 
 void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                           const StreamInfo& stream_info,
-                                          uint32_t time_scale,
+                                          int32_t time_scale,
                                           ContainerType container_type) {
   std::unique_ptr<MediaInfo> media_info(new MediaInfo);
   if (!internal::GenerateMediaInfo(muxer_options, stream_info, time_scale,
@@ -96,6 +105,12 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
     for (const std::string& characteristic : characteristics_)
       media_info->add_hls_characteristics(characteristic);
   }
+  if (forced_subtitle_) {
+    media_info->set_forced_subtitle(forced_subtitle_);
+  }
+  if (index_.has_value())
+    media_info->set_index(index_.value());
+
   if (protection_scheme_ != FOURCC_NULL) {
     internal::SetContentProtectionFields(protection_scheme_, next_key_id_,
                                          next_key_system_infos_,
@@ -125,7 +140,7 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+void HlsNotifyMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   if (stream_id_) {
     // This happens in live mode.
     hls_notifier_->NotifySampleDuration(stream_id_.value(), sample_duration);
@@ -147,6 +162,7 @@ void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
 
 void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
+  UNUSED(duration_seconds);
   DCHECK(media_info_);
   // TODO(kqyang): Should we just Flush here to avoid calling Flush explicitly?
   // Don't flush the notifier here. Flushing here would write all the playlists
@@ -263,7 +279,7 @@ void HlsNotifyMuxerListener::OnKeyFrame(int64_t timestamp,
 
 void HlsNotifyMuxerListener::OnCueEvent(int64_t timestamp,
                                         const std::string& cue_data) {
-  // Not using |cue_data| at this moment.
+  UNUSED(cue_data);
   if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kCue;

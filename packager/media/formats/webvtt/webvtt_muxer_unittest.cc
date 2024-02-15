@@ -1,19 +1,20 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/formats/webvtt/webvtt_muxer.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/file/file_test_util.h"
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/event/combined_muxer_listener.h"
-#include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/formats/webvtt/webvtt_muxer.h"
-#include "packager/status_test_util.h"
+#include <packager/file/file_test_util.h>
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/event/combined_muxer_listener.h>
+#include <packager/media/event/mock_muxer_listener.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {
@@ -31,13 +32,13 @@ const size_t kStreamIndex = 0;
 const bool kEncrypted = true;
 const char* kNoId = "";
 
-const uint64_t kMsTimeScale = 1000u;
+const int64_t kMsTimeScale = 1000;
 
 const char* kSegmentedFileTemplate = "memory://output/template-$Number$.vtt";
 const char* kSegmentedFileOutput1 = "memory://output/template-1.vtt";
 const char* kSegmentedFileOutput2 = "memory://output/template-2.vtt";
 
-const uint64_t kSegmentDuration = 10000;
+const int64_t kSegmentDuration = 10000;
 const float kMillisecondsPerSecond = 1000.0f;
 }  // namespace
 

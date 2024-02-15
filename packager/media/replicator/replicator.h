@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_REPLICATOR_HANDLER_H_
 #define PACKAGER_MEDIA_REPLICATOR_HANDLER_H_
 
-#include "packager/media/base/media_handler.h"
+#include <packager/media/base/media_handler.h>
 
 namespace shaka {
 namespace media {

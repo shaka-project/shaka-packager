@@ -29,6 +29,12 @@ bear-640x360.ts - AVC + AAC encode, multiplexed into an MPEG2-TS container.
 bear-640x360_ptswraparound.ts - Same as bear-640x360.ts, with a timestamp wrap-around in the middle, created with the below command:
                                 ffmpeg -itsoffset 95442 -i bear-640x360.ts -c:v copy -c:a copy -muxdelay 0 bear-640x360_ptswraparound.ts
 bear-640x360-hevc.ts - HEVC + AAC encode, multiplexed into an MPEG2-TS container.
+bear-eng-visualy-impaired-audio.ts - Audio stream from bear-640x360.ts marked as english with commentary for visually impaired viewer using the below commands:
+  tsp -I file bear-640x360.ts \
+    -P filter --video --negate
+    -P inject --replace --pid 4096 --xml bear-visualy-impaired-eng-audio-pmt.xml \
+    -O file bear-visualy-impaired-eng-audio.ts
+  (xml template can be obtained by command "tsp -I file bear-640x360.ts -P tables --pid 4096 --tid 2 --max 1 --xml pmt.xml -O drop")
 
 // ISO-BMFF streams.
 bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.
@@ -112,3 +118,11 @@ sintel-1024x436.mp4 - First 6 seconds of Sintel stream.
 // http://download.opencontent.netflix.com/?prefix=TechblogAssets/Sparks/Sparks_DolbyVision_P3D65_PQ_5994fps_4096x2160_LtRt_IMF_20170214/
 sparks_dovi_5.mp4  - Dolby Vision profile 5
 sparks_dovi_8.mp4  - Dolby Vision profile 8
+
+// DTS:X Profile 2 5.1 channel audio
+bear-dtsx.mp4:
+  Generated using ffmpeg and proprietary encoder:
+    ffmpeg -i bear.aiff -i bear.aiff -i bear.aiff \
+        -filter_complex "[0:a][1:a][2:a]concat=n=3:v=0:a=1[out]" \
+        -ar 48000 -map "[out]" -y bear.wav
+    dtsx-ott-enc -w -o bear-dtsx.mp4 -c 5.1 bear.wav bear.wav bear.wav

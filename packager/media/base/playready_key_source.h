@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,7 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/key_source.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/key_source.h>
 
 namespace shaka {
 namespace media {
@@ -35,7 +36,7 @@ class PlayReadyKeySource : public KeySource {
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                            uint32_t crypto_period_duration_in_seconds,
+                            int32_t crypto_period_duration_in_seconds,
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}

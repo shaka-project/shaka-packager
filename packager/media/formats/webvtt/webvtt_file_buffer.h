@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "packager/file/file.h"
+#include <packager/file.h>
 
 namespace shaka {
 namespace media {
@@ -20,7 +20,7 @@ class TextSample;
 // all the formatting requirements for a webvtt file.
 class WebVttFileBuffer {
  public:
-  WebVttFileBuffer(uint32_t transport_stream_timestamp_offset_ms,
+  WebVttFileBuffer(int32_t transport_stream_timestamp_offset_ms,
                    const std::string& style_region_config);
   virtual ~WebVttFileBuffer() = default;
 
@@ -36,7 +36,7 @@ class WebVttFileBuffer {
   WebVttFileBuffer(const WebVttFileBuffer&) = delete;
   WebVttFileBuffer& operator=(const WebVttFileBuffer&) = delete;
 
-  const uint32_t transport_stream_timestamp_offset_ = 0;
+  const int32_t transport_stream_timestamp_offset_ = 0;
   const std::string style_region_config_;
   std::string buffer_;
   size_t sample_count_ = 0;

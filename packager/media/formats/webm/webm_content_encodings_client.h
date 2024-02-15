@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/callback.h"
-#include "packager/media/formats/webm/webm_content_encodings.h"
-#include "packager/media/formats/webm/webm_parser.h"
+#include <packager/macros/classes.h>
+#include <packager/media/formats/webm/webm_content_encodings.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

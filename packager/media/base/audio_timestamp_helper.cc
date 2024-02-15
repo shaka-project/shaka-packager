@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/base/audio_timestamp_helper.h"
+#include <packager/media/base/audio_timestamp_helper.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/base/timestamp.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/media/base/timestamp.h>
 
 namespace shaka {
 namespace media {
 
-AudioTimestampHelper::AudioTimestampHelper(uint32_t timescale,
+AudioTimestampHelper::AudioTimestampHelper(int32_t timescale,
                                            uint32_t samples_per_second)
     : base_timestamp_(kNoTimestamp), frame_count_(0) {
   DCHECK_GT(samples_per_second, 0u);

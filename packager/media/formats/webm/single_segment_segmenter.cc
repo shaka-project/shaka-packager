@@ -1,14 +1,16 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/single_segment_segmenter.h"
+#include <packager/media/formats/webm/single_segment_segmenter.h>
 
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxer.h>
+
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 namespace media {
@@ -19,8 +21,8 @@ SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options)
 
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
 
-Status SingleSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
-                                               uint64_t duration_timestamp,
+Status SingleSegmentSegmenter::FinalizeSegment(int64_t start_timestamp,
+                                               int64_t duration_timestamp,
                                                bool is_subsegment) {
   Status status = Segmenter::FinalizeSegment(start_timestamp,
                                              duration_timestamp, is_subsegment);
@@ -109,14 +111,14 @@ Status SingleSegmentSegmenter::DoFinalize() {
   return status;
 }
 
-Status SingleSegmentSegmenter::NewSegment(uint64_t start_timestamp,
+Status SingleSegmentSegmenter::NewSegment(int64_t start_timestamp,
                                           bool is_subsegment) {
   // No-op for subsegment in single segment mode.
   if (is_subsegment)
     return Status::OK;
   // Create a new Cue point.
   uint64_t position = writer_->Position();
-  uint64_t start_timecode = FromBmffTimestamp(start_timestamp);
+  int64_t start_timecode = FromBmffTimestamp(start_timestamp);
 
   mkvmuxer::CuePoint* cue_point = new mkvmuxer::CuePoint;
   cue_point->set_time(start_timecode);

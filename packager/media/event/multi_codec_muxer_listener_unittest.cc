@@ -4,14 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/multi_codec_muxer_listener.h"
+#include <packager/media/event/multi_codec_muxer_listener.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/event/muxer_listener_test_helper.h"
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/mock_muxer_listener.h>
+#include <packager/media/event/muxer_listener_test_helper.h>
 
 namespace shaka {
 namespace media {
@@ -23,10 +23,10 @@ using ::testing::StrictMock;
 
 namespace {
 
-const uint64_t kSegmentStartTime = 19283;
-const uint64_t kSegmentDuration = 98028;
+const int64_t kSegmentStartTime = 19283;
+const int64_t kSegmentDuration = 98028;
 const uint64_t kSegmentSize = 756739;
-const uint32_t kTimescale = 90000;
+const int32_t kTimescale = 90000;
 MuxerListener::ContainerType kContainer = MuxerListener::kContainerMpeg2ts;
 
 }  // namespace

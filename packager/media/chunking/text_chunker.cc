@@ -1,12 +1,14 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/text_chunker.h"
+#include <packager/media/chunking/text_chunker.h>
 
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/status.h>
 
 namespace shaka {
 namespace media {
@@ -31,7 +33,7 @@ Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   }
 }
 
-Status TextChunker::OnFlushRequest(size_t input_stream_index) {
+Status TextChunker::OnFlushRequest(size_t /*input_stream_index*/) {
   // Keep outputting segments until all the samples leave the system. Calling
   // |DispatchSegment| will remove samples over time.
   while (samples_in_current_segment_.size()) {

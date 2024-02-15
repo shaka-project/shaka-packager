@@ -9,9 +9,9 @@
 
 #include <string>
 
-#include "packager/media/base/media_handler.h"
-#include "packager/media/base/text_sample.h"
-#include "packager/status.h"
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,12 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_
 
-#include "packager/media/formats/webm/segmenter.h"
-
 #include <memory>
-#include "packager/media/formats/webm/mkv_writer.h"
-#include "packager/status.h"
+
+#include <packager/macros/classes.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -30,8 +31,8 @@ class SingleSegmentSegmenter : public Segmenter {
 
   /// @name Segmenter implementation overrides.
   /// @{
-  Status FinalizeSegment(uint64_t start_timestamp,
-                         uint64_t duration_timestamp,
+  Status FinalizeSegment(int64_t start_timestamp,
+                         int64_t duration_timestamp,
                          bool is_subsegment) override;
   bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
@@ -54,7 +55,7 @@ class SingleSegmentSegmenter : public Segmenter {
 
  private:
   // Segmenter implementation overrides.
-  Status NewSegment(uint64_t start_timestamp, bool is_subsegment) override;
+  Status NewSegment(int64_t start_timestamp, bool is_subsegment) override;
 
   std::unique_ptr<MkvWriter> writer_;
   uint64_t init_end_;

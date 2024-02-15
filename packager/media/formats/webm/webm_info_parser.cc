@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_info_parser.h"
+#include <packager/media/formats/webm/webm_info_parser.h>
 
-#include "packager/base/logging.h"
-#include "packager/media/formats/webm/webm_constants.h"
+#include <ctime>
+
+#include <absl/log/log.h>
+
+#include <packager/macros/logging.h>
+#include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {
 namespace media {
@@ -35,7 +39,9 @@ int WebMInfoParser::Parse(const uint8_t* buf, int size) {
   return parser.IsParsingComplete() ? result : 0;
 }
 
-WebMParserClient* WebMInfoParser::OnListStart(int id) { return this; }
+WebMParserClient* WebMInfoParser::OnListStart(int /*id*/) {
+  return this;
+}
 
 bool WebMInfoParser::OnListEnd(int id) {
   if (id == kWebMIdInfo && timecode_scale_ == -1) {
@@ -83,21 +89,22 @@ bool WebMInfoParser::OnBinary(int id, const uint8_t* data, int size) {
     for (int i = 0; i < size; ++i)
       date_in_nanoseconds = (date_in_nanoseconds << 8) | data[i];
 
-    base::Time::Exploded exploded_epoch;
-    exploded_epoch.year = 2001;
-    exploded_epoch.month = 1;
-    exploded_epoch.day_of_month = 1;
-    exploded_epoch.hour = 0;
-    exploded_epoch.minute = 0;
-    exploded_epoch.second = 0;
-    exploded_epoch.millisecond = 0;
-    date_utc_ = base::Time::FromUTCExploded(exploded_epoch) +
-        base::TimeDelta::FromMicroseconds(date_in_nanoseconds / 1000);
+    std::tm exploded_epoch;
+    exploded_epoch.tm_year = 2001;
+    exploded_epoch.tm_mon = 1;
+    exploded_epoch.tm_mday = 1;
+    exploded_epoch.tm_hour = 0;
+    exploded_epoch.tm_min = 0;
+    exploded_epoch.tm_sec = 0;
+
+    date_utc_ =
+        std::chrono::system_clock::from_time_t(std::mktime(&exploded_epoch)) +
+        std::chrono::microseconds(date_in_nanoseconds / 1000);
   }
   return true;
 }
 
-bool WebMInfoParser::OnString(int id, const std::string& str) {
+bool WebMInfoParser::OnString(int /*id*/, const std::string& /*str*/) {
   return true;
 }
 

@@ -1,20 +1,22 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/file/memory_file.h"
-
-#include <string.h>  // for memcpy
+#include <packager/file/memory_file.h>
 
 #include <algorithm>
+#include <cstring>  // for memcpy
 #include <map>
 #include <memory>
 #include <set>
 
-#include "packager/base/logging.h"
-#include "packager/base/synchronization/lock.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/synchronization/mutex.h>
+
+#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace {
@@ -30,7 +32,7 @@ class FileSystem {
   }
 
   void Delete(const std::string& file_name) {
-    base::AutoLock auto_lock(lock_);
+    absl::MutexLock auto_lock(&mutex_);
 
     if (open_files_.find(file_name) != open_files_.end()) {
       LOG(ERROR) << "File '" << file_name
@@ -43,7 +45,7 @@ class FileSystem {
   }
 
   void DeleteAll() {
-    base::AutoLock auto_lock(lock_);
+    absl::MutexLock auto_lock(&mutex_);
     if (!open_files_.empty()) {
       LOG(ERROR) << "There are still files open. Deleting an open MemoryFile "
                     "is not allowed. Exit without deleting the file.";
@@ -54,12 +56,12 @@ class FileSystem {
 
   std::vector<uint8_t>* Open(const std::string& file_name,
                              const std::string& mode) {
-    base::AutoLock auto_lock(lock_);
+    absl::MutexLock auto_lock(&mutex_);
 
     if (open_files_.find(file_name) != open_files_.end()) {
       NOTIMPLEMENTED() << "File '" << file_name
                        << "' is already open. MemoryFile does not support "
-                          "open the same file before it is closed.";
+                          "opening the same file before it is closed.";
       return nullptr;
     }
 
@@ -81,7 +83,7 @@ class FileSystem {
   }
 
   bool Close(const std::string& file_name) {
-    base::AutoLock auto_lock(lock_);
+    absl::MutexLock auto_lock(&mutex_);
 
     auto iter = open_files_.find(file_name);
     if (iter == open_files_.end()) {
@@ -101,11 +103,11 @@ class FileSystem {
   FileSystem() = default;
 
   // Filename to file data map.
-  std::map<std::string, std::vector<uint8_t>> files_;
+  std::map<std::string, std::vector<uint8_t>> files_ ABSL_GUARDED_BY(mutex_);
   // Filename to file open modes map.
-  std::map<std::string, std::string> open_files_;
+  std::map<std::string, std::string> open_files_ ABSL_GUARDED_BY(mutex_);
 
-  base::Lock lock_;
+  absl::Mutex mutex_;
 };
 
 }  // namespace
@@ -151,6 +153,8 @@ int64_t MemoryFile::Write(const void* buffer, uint64_t length) {
   position_ += length;
   return length;
 }
+
+void MemoryFile::CloseForWriting() {}
 
 int64_t MemoryFile::Size() {
   DCHECK(file_);

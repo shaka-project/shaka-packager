@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_BASE_PSSH_GENERATOR_H_
 #define PACKAGER_MEDIA_BASE_PSSH_GENERATOR_H_
 
+#include <optional>
 #include <vector>
 
-#include "packager/base/optional.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/status.h"
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/status.h>
 
 // TODO(hmchen): move pssh related files into a sperate folder.
 namespace shaka {
@@ -49,14 +49,14 @@ class PsshGenerator {
   /// Return the PSSH data generated from multiple |key_ids| on success. If
   /// error happens, it returns no value.
   /// @param key_ids is a set of key IDs for all tracks.
-  virtual base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIds(
+  virtual std::optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIds(
       const std::vector<std::vector<uint8_t>>& key_ids) const = 0;
 
   /// Return the PSSH data generated from a pair of |key_id| and |key| on
   /// success. If error happens, it returns no value.
   /// @param key_id is a the unique identifier for the key.
   /// @param key is the key for generating the PSSH box.
-  virtual base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIdAndKey(
+  virtual std::optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIdAndKey(
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key) const = 0;
 

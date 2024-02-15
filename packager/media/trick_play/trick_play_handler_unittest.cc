@@ -1,18 +1,18 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/trick_play/trick_play_handler.h"
+#include <packager/media/trick_play/trick_play_handler.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 
@@ -27,7 +27,7 @@ const size_t kStreamIndex = 0;
 
 // This value does not matter as trick play does not use it, but it is needed
 // to create the audio and video info.
-const uint32_t kTimescale = 1000u;
+const int32_t kTimescale = 1000;
 
 const bool kKeyFrame = true;
 }  // namespace

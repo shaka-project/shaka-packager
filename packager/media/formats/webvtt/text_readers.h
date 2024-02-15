@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/base/byte_queue.h"
-#include "packager/status.h"
+#include <packager/media/base/byte_queue.h>
+#include <packager/status.h>
 
 namespace shaka {
 class File;

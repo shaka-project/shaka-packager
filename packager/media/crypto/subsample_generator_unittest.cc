@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/crypto/subsample_generator.h"
+#include <packager/media/crypto/subsample_generator.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/av1_parser.h"
-#include "packager/media/codecs/video_slice_header_parser.h"
-#include "packager/media/codecs/vpx_parser.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/av1_parser.h>
+#include <packager/media/codecs/video_slice_header_parser.h>
+#include <packager/media/codecs/vpx_parser.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {
@@ -52,8 +52,8 @@ const uint8_t kH264CodecConfig[] = {
 };
 const uint8_t kAV1CodecConfig[] = {0x00, 0x01, 0x02, 0x03};
 const int kTrackId = 1;
-const uint32_t kTimeScale = 1000;
-const uint64_t kDuration = 10000;
+const int32_t kTimeScale = 1000;
+const int64_t kDuration = 10000;
 const char kCodecString[] = "codec string";
 const char kLanguage[] = "eng";
 const bool kEncrypted = true;

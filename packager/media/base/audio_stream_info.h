@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "packager/media/base/stream_info.h"
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {
@@ -18,13 +18,21 @@ namespace media {
 class AudioStreamInfo : public StreamInfo {
  public:
   /// Construct an initialized audio stream info object.
-  AudioStreamInfo(int track_id, uint32_t time_scale, uint64_t duration,
-                  Codec codec, const std::string& codec_string,
-                  const uint8_t* codec_config, size_t codec_config_size,
-                  uint8_t sample_bits, uint8_t num_channels,
-                  uint32_t sampling_frequency, uint64_t seek_preroll_ns,
-                  uint64_t codec_delay_ns, uint32_t max_bitrate,
-                  uint32_t avg_bitrate, const std::string& language,
+  AudioStreamInfo(int track_id,
+                  int32_t time_scale,
+                  int64_t duration,
+                  Codec codec,
+                  const std::string& codec_string,
+                  const uint8_t* codec_config,
+                  size_t codec_config_size,
+                  uint8_t sample_bits,
+                  uint8_t num_channels,
+                  uint32_t sampling_frequency,
+                  uint64_t seek_preroll_ns,
+                  uint64_t codec_delay_ns,
+                  uint32_t max_bitrate,
+                  uint32_t avg_bitrate,
+                  const std::string& language,
                   bool is_encrypted);
 
   ~AudioStreamInfo() override;
@@ -50,6 +58,10 @@ class AudioStreamInfo : public StreamInfo {
 
   void set_sampling_frequency(const uint32_t sampling_frequency) {
     sampling_frequency_ = sampling_frequency;
+  }
+
+  void set_max_bitrate(const uint32_t max_bitrate) {
+    max_bitrate_ = max_bitrate;
   }
 
   /// @param audio_object_type is only used by AAC Codec, ignored otherwise.

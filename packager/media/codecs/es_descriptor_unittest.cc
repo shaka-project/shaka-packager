@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/codecs/es_descriptor.h"
+#include <packager/media/codecs/es_descriptor.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/buffer_writer.h"
+#include <packager/media/base/buffer_writer.h>
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -148,7 +148,7 @@ TEST(ESDescriptorTest, NonAACWithoutDecoderSpecificInfoTagTest) {
       ElementsAre());
 }
 
-// https://github.com/google/shaka-packager/issues/536.
+// https://github.com/shaka-project/shaka-packager/issues/536.
 TEST(ESDescriptorTest, Issue536) {
   // clang-format off
   const uint8_t kInput[] = {

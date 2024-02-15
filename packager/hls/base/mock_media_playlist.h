@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 
 #include <gmock/gmock.h>
 
-#include "packager/hls/base/media_playlist.h"
+#include <packager/hls/base/media_playlist.h>
 
 namespace shaka {
 namespace hls {
@@ -42,11 +42,11 @@ class MockMediaPlaylist : public MediaPlaylist {
                     const std::string& key_format,
                     const std::string& key_format_versions));
   MOCK_METHOD0(AddPlacementOpportunity, void());
-  MOCK_METHOD1(WriteToFile, bool(const std::string& file_path));
+  MOCK_METHOD1(WriteToFile, bool(const std::filesystem::path& file_path));
   MOCK_CONST_METHOD0(MaxBitrate, uint64_t());
   MOCK_CONST_METHOD0(AvgBitrate, uint64_t());
   MOCK_CONST_METHOD0(GetLongestSegmentDuration, double());
-  MOCK_METHOD1(SetTargetDuration, void(uint32_t target_duration));
+  MOCK_METHOD1(SetTargetDuration, void(int32_t target_duration));
   MOCK_CONST_METHOD0(GetNumChannels, int());
   MOCK_CONST_METHOD0(GetEC3JocComplexity, int());
   MOCK_CONST_METHOD0(GetAC4ImsFlag, bool());

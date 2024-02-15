@@ -1,12 +1,16 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/formats/mp4/decoding_time_iterator.h>
+
 #include <memory>
-#include "packager/media/formats/mp4/decoding_time_iterator.h"
+
+#include <gtest/gtest.h>
+
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {
@@ -19,7 +23,7 @@ class DecodingTimeIteratorTest : public testing::Test {
  public:
   DecodingTimeIteratorTest() {
     // Build decoding time table from kDecodingTimes.
-    uint32_t decoding_time = 0;
+    int32_t decoding_time = 0;
     uint32_t length = sizeof(kDecodingTimes) / sizeof(DecodingTime);
     for (uint32_t i = 0; i < length; ++i) {
       for (uint32_t j = 0; j < kDecodingTimes[i].sample_count; ++j) {

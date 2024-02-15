@@ -1,23 +1,26 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/playready_pssh_generator.h"
+#include <packager/media/base/playready_pssh_generator.h>
 
-#include <openssl/aes.h>
 #include <algorithm>
 #include <memory>
 #include <set>
 #include <vector>
 
-#include "packager/base/base64.h"
-#include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/protection_system_ids.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+#include <mbedtls/cipher.h>
+
+#include <packager/macros/compiler.h>
+#include <packager/macros/crypto.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/protection_system_ids.h>
 
 namespace shaka {
 namespace media {
@@ -59,6 +62,45 @@ std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
   return output;
 }
 
+void ReplaceString(std::string* str,
+                   const std::string& from,
+                   const std::string& to) {
+  size_t location = str->find(from);
+  if (location != std::string::npos) {
+    str->replace(location, from.size(), to);
+  }
+}
+
+void AesEcbEncrypt(const std::vector<uint8_t>& key,
+                   const std::vector<uint8_t>& plaintext,
+                   std::vector<uint8_t>* ciphertext) {
+  CHECK_EQ(plaintext.size() % AES_BLOCK_SIZE, 0u);
+  ciphertext->resize(plaintext.size());
+
+  mbedtls_cipher_context_t ctx;
+  mbedtls_cipher_init(&ctx);
+
+  const mbedtls_cipher_info_t* cipher_info =
+      mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_128_ECB);
+  CHECK(cipher_info);
+
+  CHECK_EQ(mbedtls_cipher_setup(&ctx, cipher_info), 0) << "Cipher setup failed";
+
+  CHECK_EQ(key.size(), 16u);
+  CHECK_EQ(
+      mbedtls_cipher_setkey(&ctx, key.data(), 8 * key.size(), MBEDTLS_ENCRYPT),
+      0)
+      << "Failed to set encryption key";
+
+  size_t output_size = 0;
+  CHECK_EQ(mbedtls_cipher_crypt(&ctx, /* iv= */ NULL, /* iv_len= */ 0,
+                                plaintext.data(), plaintext.size(),
+                                ciphertext->data(), &output_size),
+           0);
+
+  mbedtls_cipher_free(&ctx);
+}
+
 // Generates the data section of a PlayReady PSSH.
 // PlayReady PSSH Data is a PlayReady Header Object, which is described at
 // https://docs.microsoft.com/en-us/playready/specifications/playready-header-specification
@@ -69,18 +111,17 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
                                  std::vector<uint8_t>* output) {
   CHECK(output);
   std::vector<uint8_t> key_id_converted = ConvertGuidEndianness(key_id);
-  std::vector<uint8_t> encrypted_key_id(key_id_converted.size());
-  std::unique_ptr<AES_KEY> aes_key(new AES_KEY);
-  CHECK_EQ(AES_set_encrypt_key(key.data(), key.size() * 8, aes_key.get()), 0);
-  AES_ecb_encrypt(key_id_converted.data(), encrypted_key_id.data(),
-                  aes_key.get(), AES_ENCRYPT);
+
+  std::vector<uint8_t> encrypted_key_id;
+  AesEcbEncrypt(key, key_id_converted, &encrypted_key_id);
+
   std::string checksum =
       std::string(encrypted_key_id.begin(), encrypted_key_id.end())
           .substr(0, 8);
   std::string base64_checksum;
-  base::Base64Encode(checksum, &base64_checksum);
+  absl::Base64Escape(checksum, &base64_checksum);
   std::string base64_key_id;
-  base::Base64Encode(
+  absl::Base64Escape(
       std::string(key_id_converted.begin(), key_id_converted.end()),
       &base64_key_id);
 
@@ -91,21 +132,16 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
     case FOURCC_cbc1:
     case FOURCC_cbcs:
       playready_header = kPlayHeaderObject_4_3;
-      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$0",
-                                             base64_key_id);
-      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
-                                             extra_header_data);
+      ReplaceString(&playready_header, "$0", base64_key_id);
+      ReplaceString(&playready_header, "$1", extra_header_data);
       break;
 
     case FOURCC_cenc:
     case FOURCC_cens:
       playready_header = kPlayHeaderObject_4_0;
-      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$0",
-                                             base64_key_id);
-      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
-                                             base64_checksum);
-      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$2",
-                                             extra_header_data);
+      ReplaceString(&playready_header, "$0", base64_key_id);
+      ReplaceString(&playready_header, "$1", base64_checksum);
+      ReplaceString(&playready_header, "$2", extra_header_data);
       break;
 
     default:
@@ -171,7 +207,7 @@ bool PlayReadyPsshGenerator::SupportMultipleKeys() {
   return false;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 PlayReadyPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
@@ -180,17 +216,18 @@ PlayReadyPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
                                             protection_scheme_, &pssh_data);
   if (!status.ok()) {
     LOG(ERROR) << status.ToString();
-    return base::nullopt;
+    return std::nullopt;
   }
 
   return pssh_data;
 }
 
-base::Optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 PlayReadyPsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
+  UNUSED(key_ids);
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace media

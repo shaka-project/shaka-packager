@@ -1,22 +1,24 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/representation.h"
-
-#include <gflags/gflags.h>
+#include <packager/mpd/base/representation.h>
 
 #include <algorithm>
 
-#include "packager/base/logging.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/file/file.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <absl/flags/declare.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/str_format.h>
+
+#include <packager/file.h>
+#include <packager/macros/logging.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/mpd_utils.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace {
@@ -63,7 +65,7 @@ bool HasRequiredVideoFields(const MediaInfo_VideoInfo& video_info) {
   return true;
 }
 
-uint32_t GetTimeScale(const MediaInfo& media_info) {
+int32_t GetTimeScale(const MediaInfo& media_info) {
   if (media_info.has_reference_time_scale()) {
     return media_info.reference_time_scale();
   }
@@ -187,13 +189,36 @@ void Representation::AddNewSegment(int64_t start_time,
     state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
 
   AddSegmentInfo(start_time, duration);
+
+  // Only update the buffer depth and bandwidth estimator when the full segment
+  // is completed. In the low latency case, only the first chunk in the segment
+  // has been written at this point. Therefore, we must wait until the entire
+  // segment has been written before updating buffer depth and bandwidth
+  // estimator.
+  if (!mpd_options_.mpd_params.low_latency_dash_mode) {
+    current_buffer_depth_ += segment_infos_.back().duration;
+
+    bandwidth_estimator_.AddBlock(size, static_cast<double>(duration) /
+                                            media_info_.reference_time_scale());
+  }
+}
+
+void Representation::UpdateCompletedSegment(int64_t duration, uint64_t size) {
+  if (!mpd_options_.mpd_params.low_latency_dash_mode) {
+    LOG(WARNING)
+        << "UpdateCompletedSegment is only applicable to low latency mode.";
+    return;
+  }
+
+  UpdateSegmentInfo(duration);
+
   current_buffer_depth_ += segment_infos_.back().duration;
 
   bandwidth_estimator_.AddBlock(
       size, static_cast<double>(duration) / media_info_.reference_time_scale());
 }
 
-void Representation::SetSampleDuration(uint32_t frame_duration) {
+void Representation::SetSampleDuration(int32_t frame_duration) {
   // Sample duration is used to generate approximate SegmentTimeline.
   // Text is required to have exactly the same segment duration.
   if (media_info_.has_audio_info() || media_info_.has_video_info())
@@ -208,6 +233,14 @@ void Representation::SetSampleDuration(uint32_t frame_duration) {
   }
 }
 
+void Representation::SetSegmentDuration() {
+  int64_t sd = mpd_options_.mpd_params.target_segment_duration *
+               media_info_.reference_time_scale();
+  if (sd <= 0)
+    return;
+  media_info_.set_segment_duration(sd);
+}
+
 const MediaInfo& Representation::GetMediaInfo() const {
   return media_info_;
 }
@@ -218,10 +251,10 @@ const MediaInfo& Representation::GetMediaInfo() const {
 // AddVideoInfo() (possibly adds FramePacking elements), AddAudioInfo() (Adds
 // AudioChannelConfig elements), AddContentProtectionElements*(), and
 // AddVODOnlyInfo() (Adds segment info).
-base::Optional<xml::XmlNode> Representation::GetXml() {
+std::optional<xml::XmlNode> Representation::GetXml() {
   if (!HasRequiredMediaInfoFields()) {
     LOG(ERROR) << "MediaInfo missing required fields.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   const uint64_t bandwidth = media_info_.has_bandwidth()
@@ -237,7 +270,7 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
       !(codecs_.empty() ||
         representation.SetStringAttribute("codecs", codecs_)) ||
       !representation.SetStringAttribute("mimeType", mime_type_)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   const bool has_video_info = media_info_.has_video_info();
@@ -250,18 +283,18 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
           !(output_suppression_flags_ & kSuppressHeight),
           !(output_suppression_flags_ & kSuppressFrameRate))) {
     LOG(ERROR) << "Failed to add video info to Representation XML.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (has_audio_info &&
       !representation.AddAudioInfo(media_info_.audio_info())) {
     LOG(ERROR) << "Failed to add audio info to Representation XML.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (!representation.AddContentProtectionElements(
           content_protection_elements_)) {
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (HasVODOnlyFields(media_info_) &&
@@ -269,20 +302,21 @@ base::Optional<xml::XmlNode> Representation::GetXml() {
           media_info_, mpd_options_.mpd_params.use_segment_list,
           mpd_options_.mpd_params.target_segment_duration)) {
     LOG(ERROR) << "Failed to add VOD info.";
-    return base::nullopt;
+    return std::nullopt;
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
-                                      start_number_)) {
+      !representation.AddLiveOnlyInfo(
+          media_info_, segment_infos_, start_number_,
+          mpd_options_.mpd_params.low_latency_dash_mode)) {
     LOG(ERROR) << "Failed to add Live info.";
-    return base::nullopt;
+    return std::nullopt;
   }
   // TODO(rkuroiwa): It is likely that all representations have the exact same
   // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.
 
   output_suppression_flags_ = 0;
-  return std::move(representation);
+  return representation;
 }
 
 void Representation::SuppressOnce(SuppressFlag flag) {
@@ -295,6 +329,23 @@ void Representation::SetPresentationTimeOffset(
   if (pto <= 0)
     return;
   media_info_.set_presentation_time_offset(pto);
+}
+
+void Representation::SetAvailabilityTimeOffset() {
+  // Adjust the frame duration to units of seconds to match target segment
+  // duration.
+  const double frame_duration_sec =
+      (double)frame_duration_ / (double)media_info_.reference_time_scale();
+  // availabilityTimeOffset = segment duration - chunk duration.
+  // Here, the frame duration is equivalent to the sample duration,
+  // see Representation::SetSampleDuration(uint32_t frame_duration).
+  // By definition, each chunk will contain only one sample;
+  // thus, chunk_duration = sample_duration = frame_duration.
+  const double ato =
+      mpd_options_.mpd_params.target_segment_duration - frame_duration_sec;
+  if (ato <= 0)
+    return;
+  media_info_.set_availability_time_offset(ato);
 }
 
 bool Representation::GetStartAndEndTimestamps(
@@ -384,6 +435,13 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
   segment_infos_.push_back({start_time, adjusted_duration, kNoRepeat});
 }
 
+void Representation::UpdateSegmentInfo(int64_t duration) {
+  if (!segment_infos_.empty()) {
+    // Update the duration in the current segment.
+    segment_infos_.back().duration = duration;
+  }
+}
+
 bool Representation::ApproximiatelyEqual(int64_t time1, int64_t time2) const {
   if (!allow_approximate_segment_timeline_)
     return time1 == time2;
@@ -399,10 +457,10 @@ bool Representation::ApproximiatelyEqual(int64_t time1, int64_t time2) const {
   const double kErrorThresholdSeconds = 0.05;
 
   // So we consider two times equal if they differ by less than one sample.
-  const uint32_t error_threshold =
+  const int32_t error_threshold =
       std::min(frame_duration_,
-               static_cast<uint32_t>(kErrorThresholdSeconds *
-                                     media_info_.reference_time_scale()));
+               static_cast<int32_t>(kErrorThresholdSeconds *
+                                    media_info_.reference_time_scale()));
   return std::abs(time1 - time2) <= error_threshold;
 }
 
@@ -422,8 +480,8 @@ void Representation::SlideWindow() {
       mpd_options_.mpd_type == MpdType::kStatic)
     return;
 
-  const uint32_t time_scale = GetTimeScale(media_info_);
-  DCHECK_GT(time_scale, 0u);
+  const int32_t time_scale = GetTimeScale(media_info_);
+  DCHECK_GT(time_scale, 0);
 
   const int64_t time_shift_buffer_depth = static_cast<int64_t>(
       mpd_options_.mpd_params.time_shift_buffer_depth * time_scale);
@@ -511,24 +569,24 @@ std::string Representation::GetTextMimeType() const {
 }
 
 std::string Representation::RepresentationAsString() const {
-  std::string s = base::StringPrintf("Representation (id=%d,", id_);
+  std::string s = absl::StrFormat("Representation (id=%d,", id_);
   if (media_info_.has_video_info()) {
     const MediaInfo_VideoInfo& video_info = media_info_.video_info();
-    base::StringAppendF(&s, "codec='%s',width=%d,height=%d",
-                        video_info.codec().c_str(), video_info.width(),
-                        video_info.height());
+    absl::StrAppendFormat(&s, "codec='%s',width=%d,height=%d",
+                          video_info.codec().c_str(), video_info.width(),
+                          video_info.height());
   } else if (media_info_.has_audio_info()) {
     const MediaInfo_AudioInfo& audio_info = media_info_.audio_info();
-    base::StringAppendF(
+    absl::StrAppendFormat(
         &s, "codec='%s',frequency=%d,language='%s'", audio_info.codec().c_str(),
         audio_info.sampling_frequency(), audio_info.language().c_str());
   } else if (media_info_.has_text_info()) {
     const MediaInfo_TextInfo& text_info = media_info_.text_info();
-    base::StringAppendF(&s, "codec='%s',language='%s'",
-                        text_info.codec().c_str(),
-                        text_info.language().c_str());
+    absl::StrAppendFormat(&s, "codec='%s',language='%s'",
+                          text_info.codec().c_str(),
+                          text_info.language().c_str());
   }
-  base::StringAppendF(&s, ")");
+  absl::StrAppendFormat(&s, ")");
   return s;
 }
 

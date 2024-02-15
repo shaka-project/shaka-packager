@@ -1,18 +1,22 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/buffer_writer.h"
+#include <packager/media/base/buffer_writer.h>
 
+#include <filesystem>
 #include <limits>
 #include <memory>
 
-#include "packager/base/files/file_util.h"
-#include "packager/file/file.h"
-#include "packager/media/base/buffer_reader.h"
-#include "packager/status_test_util.h"
+#include <absl/log/log.h>
+
+#include <packager/file.h>
+#include <packager/file/file_test_util.h>
+#include <packager/macros/classes.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/status/status_test_util.h>
 
 namespace {
 const int kReservedBufferCapacity = 1000;
@@ -171,12 +175,11 @@ TEST_F(BufferWriterTest, Clear) {
 }
 
 TEST_F(BufferWriterTest, WriteToFile) {
-  base::FilePath path;
-  ASSERT_TRUE(base::CreateTemporaryFile(&path));
-  LOG(INFO) << "Created temporary file: " << path.value();
+  TempFile temp_file;
+  LOG(INFO) << "Created temporary file: " << temp_file.path();
 
   // Append an array to buffer and then write to the temporary file.
-  File* const output_file = File::Open(path.AsUTF8Unsafe().c_str(), "w");
+  File* const output_file = File::Open(temp_file.path().c_str(), "w");
   writer_->AppendArray(kuint8Array, sizeof(kuint8Array));
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
   ASSERT_OK(writer_->WriteToFile(output_file));
@@ -184,7 +187,7 @@ TEST_F(BufferWriterTest, WriteToFile) {
   ASSERT_TRUE(output_file->Close());
 
   // Read the file and verify.
-  File* const input_file = File::Open(path.AsUTF8Unsafe().c_str(), "r");
+  File* const input_file = File::Open(temp_file.path().c_str(), "r");
   ASSERT_TRUE(input_file != NULL);
   std::vector<uint8_t> data_read(sizeof(kuint8Array), 0);
   EXPECT_EQ(sizeof(kuint8Array), static_cast<size_t>(input_file->Read(

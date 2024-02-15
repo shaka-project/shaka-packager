@@ -1,19 +1,19 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-// AES Decryptor implementation using openssl.
+// AES Decryptor implementation using mbedtls.
 
 #ifndef PACKAGER_MEDIA_BASE_AES_DECRYPTOR_H_
 #define PACKAGER_MEDIA_BASE_AES_DECRYPTOR_H_
 
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/media/base/aes_cryptor.h"
-#include "packager/media/base/aes_encryptor.h"
+#include <packager/macros/classes.h>
+#include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/aes_encryptor.h>
 
 namespace shaka {
 namespace media {
@@ -46,6 +46,8 @@ class AesCbcDecryptor : public AesCryptor {
   /// @{
   bool InitializeWithIv(const std::vector<uint8_t>& key,
                         const std::vector<uint8_t>& iv) override;
+
+  size_t RequiredOutputSize(size_t plaintext_size) override;
   /// @}
 
  private:
@@ -54,6 +56,10 @@ class AesCbcDecryptor : public AesCryptor {
                      uint8_t* plaintext,
                      size_t* plaintext_size) override;
   void SetIvInternal() override;
+  void CbcDecryptBlocks(const uint8_t* plaintext,
+                        size_t plaintext_size,
+                        uint8_t* ciphertext,
+                        uint8_t* iv);
 
   const CbcPaddingScheme padding_scheme_;
   // 16-byte internal iv for crypto operations.

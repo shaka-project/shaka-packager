@@ -1,17 +1,18 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <packager/media/event/hls_notify_muxer_listener.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/event/hls_notify_muxer_listener.h"
-#include "packager/media/event/muxer_listener_test_helper.h"
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/event/muxer_listener_test_helper.h>
 
 namespace shaka {
 namespace media {
@@ -39,20 +40,20 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     const std::string& group_id,
                     uint32_t* stream_id));
   MOCK_METHOD2(NotifySampleDuration,
-               bool(uint32_t stream_id, uint32_t sample_duration));
+               bool(uint32_t stream_id, int32_t sample_duration));
   MOCK_METHOD6(NotifyNewSegment,
                bool(uint32_t stream_id,
                     const std::string& segment_name,
-                    uint64_t start_time,
-                    uint64_t duration,
+                    int64_t start_time,
+                    int64_t duration,
                     uint64_t start_byte_offset,
                     uint64_t size));
   MOCK_METHOD4(NotifyKeyFrame,
                bool(uint32_t stream_id,
-                    uint64_t timestamp,
+                    int64_t timestamp,
                     uint64_t start_byte_offset,
                     uint64_t size));
-  MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, uint64_t timestamp));
+  MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, int64_t timestamp));
   MOCK_METHOD5(
       NotifyEncryptionUpdate,
       bool(uint32_t stream_id,
@@ -75,13 +76,13 @@ const uint8_t kAnyData[] = {
 };
 
 const uint64_t kSegmentStartOffset = 10000;
-const uint64_t kSegmentStartTime = 19283;
-const uint64_t kSegmentDuration = 98028;
+const int64_t kSegmentStartTime = 19283;
+const int64_t kSegmentDuration = 98028;
 const uint64_t kSegmentSize = 756739;
 
-const uint64_t kCueStartTime = kSegmentStartTime;
+const int64_t kCueStartTime = kSegmentStartTime;
 
-const uint64_t kKeyFrameTimestamp = 20123;
+const int64_t kKeyFrameTimestamp = 20123;
 const uint64_t kKeyFrameStartByteOffset = 3456;
 const uint64_t kKeyFrameSize = 543234;
 
@@ -98,6 +99,7 @@ const char kDefaultName[] = "DEFAULTNAME";
 const char kDefaultGroupId[] = "DEFAULTGROUPID";
 const char kCharactersticA[] = "public.accessibility.transcribes-spoken-dialog";
 const char kCharactersticB[] = "public.easy-to-read";
+const bool kForced = false;
 
 MATCHER_P(HasEncryptionScheme, expected_scheme, "") {
   *result_listener << "it has_protected_content: "
@@ -120,7 +122,9 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
                   kDefaultName,
                   kDefaultGroupId,
                   std::vector<std::string>{kCharactersticA, kCharactersticB},
-                  &mock_notifier_) {}
+                  kForced,
+                  &mock_notifier_,
+                  0) {}
 
   MuxerListener::MediaRanges GetMediaRanges(
       const std::vector<Range>& segment_ranges) {
@@ -177,8 +181,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
 // OnEncryptionInfoReady() and OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -211,8 +215,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
 // OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -278,8 +282,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
                          MuxerListener::kContainerMpeg2ts);
 
   std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
+                                 kAnySystemId + std::size(kAnySystemId));
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + std::size(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
   std::vector<uint8_t> iv(16, 0x54);
 
@@ -457,7 +461,9 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
                   kDefaultName,
                   kDefaultGroupId,
                   std::vector<std::string>(),  // no characteristics.
-                  &mock_notifier_) {}
+                  kForced,
+                  &mock_notifier_,
+                  0) {}
 
   MockHlsNotifier mock_notifier_;
   HlsNotifyMuxerListener listener_;

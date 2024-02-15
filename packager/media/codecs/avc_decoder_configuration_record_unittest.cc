@@ -1,10 +1,10 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include <packager/media/codecs/avc_decoder_configuration_record.h>
 
 #include <gtest/gtest.h>
 
@@ -33,7 +33,7 @@ TEST(AVCDecoderConfigurationRecordTest, Success) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -81,7 +81,7 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithSPSExtension) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -121,7 +121,7 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithTransferCharacteristics) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -153,7 +153,7 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithNoParameterSets) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
-                               arraysize(kAvcDecoderConfigurationData)));
+                               std::size(kAvcDecoderConfigurationData)));
 
   EXPECT_EQ(1u, avc_config.version());
   EXPECT_EQ(0x64, avc_config.profile_indication());
@@ -191,7 +191,7 @@ TEST(AVCDecoderConfigurationRecordTest, FailsOnInvalidNaluLengthSize) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_FALSE(avc_config.Parse(kAvcDecoderConfigurationData,
-                                arraysize(kAvcDecoderConfigurationData)));
+                                std::size(kAvcDecoderConfigurationData)));
 }
 
 TEST(AVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
@@ -199,7 +199,7 @@ TEST(AVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
 
   AVCDecoderConfigurationRecord avc_config;
   ASSERT_FALSE(avc_config.Parse(kAvcDecoderConfigurationData,
-                                arraysize(kAvcDecoderConfigurationData)));
+                                std::size(kAvcDecoderConfigurationData)));
 }
 
 TEST(AVCDecoderConfigurationRecordTest, GetCodecString) {

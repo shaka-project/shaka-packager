@@ -1,17 +1,20 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/multi_segment_segmenter.h"
+#include <packager/media/formats/webm/multi_segment_segmenter.h>
 
-#include "packager/media/base/muxer_options.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/event/muxer_listener.h"
-#include "packager/status_macros.h"
-#include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxer.h>
+
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/muxer_util.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 namespace media {
@@ -22,8 +25,8 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options)
 
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
-Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
-                                              uint64_t duration_timestamp,
+Status MultiSegmentSegmenter::FinalizeSegment(int64_t start_timestamp,
+                                              int64_t duration_timestamp,
                                               bool is_subsegment) {
   CHECK(cluster());
   RETURN_IF_ERROR(Segmenter::FinalizeSegment(
@@ -58,13 +61,13 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
   return Status::OK;
 }
 
-bool MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
-                                                    uint64_t* end) {
+bool MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* /*start*/,
+                                                    uint64_t* /*end*/) {
   return false;
 }
 
-bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
-                                                     uint64_t* end) {
+bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* /*start*/,
+                                                     uint64_t* /*end*/) {
   return false;
 }
 
@@ -85,7 +88,7 @@ Status MultiSegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
+Status MultiSegmentSegmenter::NewSegment(int64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
     temp_file_name_ =
@@ -100,7 +103,7 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
       return status;
   }
 
-  const uint64_t start_timecode = FromBmffTimestamp(start_timestamp);
+  const int64_t start_timecode = FromBmffTimestamp(start_timestamp);
   return SetCluster(start_timecode, 0, writer_.get());
 }
 

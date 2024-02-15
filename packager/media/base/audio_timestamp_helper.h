@@ -5,9 +5,9 @@
 #ifndef PACKAGER_MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 #define PACKAGER_MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "packager/base/macros.h"
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace media {
@@ -29,8 +29,7 @@ namespace media {
 // accumulated frames to reach a target timestamp.
 class AudioTimestampHelper {
  public:
-  explicit AudioTimestampHelper(uint32_t timescale,
-                                uint32_t samples_per_second);
+  explicit AudioTimestampHelper(int32_t timescale, uint32_t samples_per_second);
 
   // Sets the base timestamp to |base_timestamp| and the sets count to 0.
   void SetBaseTimestamp(int64_t base_timestamp);

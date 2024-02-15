@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_FOURCCS_H_
 #define PACKAGER_MEDIA_BASE_FOURCCS_H_
 
+#include <cstdint>
 #include <string>
 
 namespace shaka {
@@ -35,6 +36,7 @@ enum FourCC : uint32_t {
   FOURCC_cbcs = 0x63626373,
   FOURCC_cenc = 0x63656e63,
   FOURCC_cens = 0x63656e73,
+  FOURCC_colr = 0x636f6c72,
   FOURCC_co64 = 0x636f3634,
   FOURCC_cmfc = 0x636d6663,
   FOURCC_cmfs = 0x636d6673,
@@ -44,6 +46,7 @@ enum FourCC : uint32_t {
   FOURCC_dac3 = 0x64616333,
   FOURCC_dac4 = 0x64616334,
   FOURCC_dash = 0x64617368,
+  FOURCC_dby1 = 0x64627931,
   FOURCC_ddts = 0x64647473,
   FOURCC_dec3 = 0x64656333,
   FOURCC_dfLa = 0x64664c61,
@@ -55,6 +58,7 @@ enum FourCC : uint32_t {
   FOURCC_dtsl = 0x6474736c,
   FOURCC_dtsm = 0x6474732d,  // "dts-"
   FOURCC_dtsp = 0x6474732b,  // "dts+"
+  FOURCC_dtsx = 0x64747378,  // "dtsx"
   FOURCC_dvcC = 0x64766343,
   FOURCC_dvh1 = 0x64766831,
   FOURCC_dvhe = 0x64766865,
@@ -101,6 +105,8 @@ enum FourCC : uint32_t {
   FOURCC_mp4v = 0x6d703476,
   FOURCC_mvex = 0x6d766578,
   FOURCC_mvhd = 0x6d766864,
+  FOURCC_nclc = 0x6e636c63,
+  FOURCC_nclx = 0x6e636c78,
   FOURCC_nmhd = 0x6e6d6864,
   FOURCC_pasp = 0x70617370,
   FOURCC_payl = 0x7061796c,
@@ -146,8 +152,9 @@ enum FourCC : uint32_t {
   FOURCC_trex = 0x74726578,
   FOURCC_trun = 0x7472756e,
   FOURCC_udta = 0x75647461,
-  FOURCC_url = 0x75726c20,  // "url "
-  FOURCC_urn = 0x75726e20,  // "urn "
+  FOURCC_udts = 0x75647473,  // "udts"
+  FOURCC_url = 0x75726c20,   // "url "
+  FOURCC_urn = 0x75726e20,   // "urn "
   FOURCC_uuid = 0x75756964,
   FOURCC_vide = 0x76696465,
   FOURCC_vlab = 0x766c6162,

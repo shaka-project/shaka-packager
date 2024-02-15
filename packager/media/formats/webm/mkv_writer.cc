@@ -1,10 +1,12 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webm/mkv_writer.h"
+#include <packager/media/formats/webm/mkv_writer.h>
+
+#include <absl/log/check.h>
 
 namespace shaka {
 namespace media {
@@ -63,7 +65,7 @@ int64_t MkvWriter::WriteFromFile(File* source) {
 int64_t MkvWriter::WriteFromFile(File* source, int64_t max_copy) {
   DCHECK(file_);
 
-  const int64_t size = File::CopyFile(source, file_.get(), max_copy);
+  const int64_t size = File::Copy(source, file_.get(), max_copy);
   if (size < 0)
     return size;
 
@@ -90,8 +92,8 @@ bool MkvWriter::Seekable() const {
   return seekable_;
 }
 
-void MkvWriter::ElementStartNotify(mkvmuxer::uint64 element_id,
-                                   mkvmuxer::int64 position) {}
+void MkvWriter::ElementStartNotify(mkvmuxer::uint64 /*element_id*/,
+                                   mkvmuxer::int64 /*position*/) {}
 
 }  // namespace media
 }  // namespace shaka

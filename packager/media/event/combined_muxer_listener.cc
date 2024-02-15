@@ -1,10 +1,10 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/combined_muxer_listener.h"
+#include <packager/media/event/combined_muxer_listener.h>
 
 namespace shaka {
 namespace media {
@@ -35,7 +35,7 @@ void CombinedMuxerListener::OnEncryptionStart() {
 
 void CombinedMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                          const StreamInfo& stream_info,
-                                         uint32_t time_scale,
+                                         int32_t time_scale,
                                          ContainerType container_type) {
   for (auto& listener : muxer_listeners_) {
     listener->OnMediaStart(muxer_options, stream_info, time_scale,
@@ -43,9 +43,21 @@ void CombinedMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-void CombinedMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+void CombinedMuxerListener::OnAvailabilityOffsetReady() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnAvailabilityOffsetReady();
+  }
+}
+
+void CombinedMuxerListener::OnSampleDurationReady(int32_t sample_duration) {
   for (auto& listener : muxer_listeners_) {
     listener->OnSampleDurationReady(sample_duration);
+  }
+}
+
+void CombinedMuxerListener::OnSegmentDurationReady() {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnSegmentDurationReady();
   }
 }
 
@@ -62,6 +74,13 @@ void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
                                          uint64_t segment_file_size) {
   for (auto& listener : muxer_listeners_) {
     listener->OnNewSegment(file_name, start_time, duration, segment_file_size);
+  }
+}
+
+void CombinedMuxerListener::OnCompletedSegment(int64_t duration,
+                                               uint64_t segment_file_size) {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnCompletedSegment(duration, segment_file_size);
   }
 }
 

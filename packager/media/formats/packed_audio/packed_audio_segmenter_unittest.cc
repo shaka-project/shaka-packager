@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/packed_audio/packed_audio_segmenter.h"
+#include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/id3_tag.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/id3_tag.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/status/status_test_util.h>
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -28,13 +28,13 @@ namespace shaka {
 namespace media {
 namespace {
 
-constexpr uint32_t kZeroTransportStreamTimestampOffset = 0;
-constexpr uint32_t kTimescale = 5625;
+constexpr int32_t kZeroTransportStreamTimestampOffset = 0;
+constexpr int32_t kTimescale = 5625;
 constexpr double kExpectedTimescaleScale = kPackedAudioTimescale / kTimescale;
 static_assert(kExpectedTimescaleScale == 16.0, "");
 
 const int kTrackId = 0;
-const uint64_t kDuration = 180000;
+const int64_t kDuration = 180000;
 const char kCodecString[] = "codec-string";
 const char kLanguage[] = "eng";
 const bool kIsEncrypted = true;

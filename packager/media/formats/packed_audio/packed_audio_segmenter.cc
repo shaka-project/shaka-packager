@@ -4,20 +4,22 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/packed_audio/packed_audio_segmenter.h"
+#include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
 
 #include <memory>
 
-#include "packager/media/base/id3_tag.h"
-#include "packager/media/base/media_sample.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/codecs/hls_audio_util.h"
-#include "packager/status_macros.h"
+#include <absl/log/check.h>
+
+#include <packager/macros/status.h>
+#include <packager/media/base/id3_tag.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/media/codecs/hls_audio_util.h>
 
 namespace shaka {
 namespace media {
 namespace {
-std::string TimestampToString(uint64_t timestamp) {
+std::string TimestampToString(int64_t timestamp) {
   // https://tools.ietf.org/html/rfc8216 The ID3 payload MUST be a 33-bit MPEG-2
   // Program Elementary Stream timestamp expressed as a big-endian eight-octet
   // number, with the upper 31 bits set to zero.
@@ -30,7 +32,7 @@ std::string TimestampToString(uint64_t timestamp) {
 }  // namespace
 
 PackedAudioSegmenter::PackedAudioSegmenter(
-    uint32_t transport_stream_timestamp_offset)
+    int32_t transport_stream_timestamp_offset)
     : transport_stream_timestamp_offset_(transport_stream_timestamp_offset) {}
 
 PackedAudioSegmenter::~PackedAudioSegmenter() = default;

@@ -1,14 +1,20 @@
+// Copyright 2023 Google LLC. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+
 #ifndef MPD_TEST_XML_COMPARE_H_
 #define MPD_TEST_XML_COMPARE_H_
+
+#include <optional>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <libxml/tree.h>
 
-#include <string>
-
-#include "packager/base/optional.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
-#include "packager/mpd/base/xml/xml_node.h"
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 
@@ -22,12 +28,11 @@ namespace shaka {
 /// @return true if @a xml1 and @a xml2 are equivalent, false otherwise.
 bool XmlEqual(const std::string& xml1, const std::string& xml2);
 bool XmlEqual(const std::string& xml1, const xml::XmlNode& xml2);
-bool XmlEqual(const std::string& xml1,
-              const base::Optional<xml::XmlNode>& xml2);
+bool XmlEqual(const std::string& xml1, const std::optional<xml::XmlNode>& xml2);
 
 /// Get string representation of the xml node.
 std::string XmlNodeToString(const xml::XmlNode& xml_node);
-std::string XmlNodeToString(const base::Optional<xml::XmlNode>& xml_node);
+std::string XmlNodeToString(const std::optional<xml::XmlNode>& xml_node);
 
 /// Match an xmlNodePtr with an xml in string representation.
 MATCHER_P(XmlNodeEqual,

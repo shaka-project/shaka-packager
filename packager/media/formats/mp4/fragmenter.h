@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -10,8 +10,11 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/logging.h"
-#include "packager/status.h"
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/macros/classes.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -59,9 +62,9 @@ class Fragmenter {
 
   void ClearFragmentFinalized() { fragment_finalized_ = false; }
 
-  uint64_t fragment_duration() const { return fragment_duration_; }
-  uint64_t first_sap_time() const { return first_sap_time_; }
-  uint64_t earliest_presentation_time() const {
+  int64_t fragment_duration() const { return fragment_duration_; }
+  int64_t first_sap_time() const { return first_sap_time_; }
+  int64_t earliest_presentation_time() const {
     return earliest_presentation_time_;
   }
   bool fragment_initialized() const { return fragment_initialized_; }

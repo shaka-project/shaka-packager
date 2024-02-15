@@ -1,24 +1,25 @@
-// Copyright 2017 Google Inc. All rights reserved.
+// Copyright 2017 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/demuxer/demuxer.h"
+#include <packager/media/demuxer/demuxer.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/raw_key_source.h"
-#include "packager/media/test/test_data_util.h"
-#include "packager/status_test_util.h"
+#include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/raw_key_source.h>
+#include <packager/media/test/test_data_util.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {
 namespace {
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
@@ -53,8 +54,8 @@ TEST_F(DemuxerTest, FileNotFound) {
 }
 
 TEST_F(DemuxerTest, EncryptedContentWithoutKeySource) {
-  Demuxer demuxer(GetAppTestDataFilePath("encryption/bear-640x360-video.mp4")
-                      .AsUTF8Unsafe());
+  Demuxer demuxer(
+      GetAppTestDataFilePath("encryption/bear-640x360-video.mp4").string());
   ASSERT_OK(demuxer.SetHandler("video", some_handler()));
   EXPECT_EQ(error::INVALID_ARGUMENT, demuxer.Run().error_code());
 }
@@ -65,8 +66,8 @@ TEST_F(DemuxerTest, EncryptedContentWithKeySource) {
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
 
-  Demuxer demuxer(GetAppTestDataFilePath("encryption/bear-640x360-video.mp4")
-                      .AsUTF8Unsafe());
+  Demuxer demuxer(
+      GetAppTestDataFilePath("encryption/bear-640x360-video.mp4").string());
   demuxer.SetKeySource(std::move(mock_key_source));
   ASSERT_OK(demuxer.SetHandler("video", some_handler()));
   EXPECT_OK(demuxer.Run());

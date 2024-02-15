@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -9,9 +9,9 @@
 #ifndef PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
 #define PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "packager/status.h"
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -33,7 +33,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template);
 /// @param bandwidth represents the bit rate, in bits/sec, of the stream.
 /// @return The segment name with identifier substituted.
 std::string GetSegmentName(const std::string& segment_template,
-                           uint64_t segment_start_time,
+                           int64_t segment_start_time,
                            uint32_t segment_index,
                            uint32_t bandwidth);
 

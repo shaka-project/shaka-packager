@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2016 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -13,12 +13,13 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/macros.h"
-#include "packager/base/synchronization/lock.h"
-#include "packager/hls/base/hls_notifier.h"
-#include "packager/hls/base/master_playlist.h"
-#include "packager/hls/base/media_playlist.h"
-#include "packager/hls/public/hls_params.h"
+#include <absl/synchronization/mutex.h>
+
+#include <packager/hls/base/hls_notifier.h>
+#include <packager/hls/base/master_playlist.h>
+#include <packager/hls/base/media_playlist.h>
+#include <packager/hls_params.h>
+#include <packager/macros/classes.h>
 
 namespace shaka {
 namespace hls {
@@ -50,18 +51,18 @@ class SimpleHlsNotifier : public HlsNotifier {
                        const std::string& group_id,
                        uint32_t* stream_id) override;
   bool NotifySampleDuration(uint32_t stream_id,
-                            uint32_t sample_duration) override;
+                            int32_t sample_duration) override;
   bool NotifyNewSegment(uint32_t stream_id,
                         const std::string& segment_name,
-                        uint64_t start_time,
-                        uint64_t duration,
+                        int64_t start_time,
+                        int64_t duration,
                         uint64_t start_byte_offset,
                         uint64_t size) override;
   bool NotifyKeyFrame(uint32_t stream_id,
-                      uint64_t timestamp,
+                      int64_t timestamp,
                       uint64_t start_byte_offset,
                       uint64_t size) override;
-  bool NotifyCueEvent(uint32_t container_id, uint64_t timestamp) override;
+  bool NotifyCueEvent(uint32_t container_id, int64_t timestamp) override;
   bool NotifyEncryptionUpdate(
       uint32_t stream_id,
       const std::vector<uint8_t>& key_id,
@@ -80,7 +81,7 @@ class SimpleHlsNotifier : public HlsNotifier {
   };
 
   std::string master_playlist_dir_;
-  uint32_t target_duration_ = 0;
+  int32_t target_duration_ = 0;
 
   std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;
   std::unique_ptr<MasterPlaylist> master_playlist_;
@@ -91,7 +92,7 @@ class SimpleHlsNotifier : public HlsNotifier {
 
   uint32_t sequence_number_ = 0;
 
-  base::Lock lock_;
+  absl::Mutex lock_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleHlsNotifier);
 };

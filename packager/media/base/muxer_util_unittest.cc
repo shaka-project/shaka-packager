@@ -1,12 +1,12 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gtest/gtest.h>
+#include <packager/media/base/muxer_util.h>
 
-#include "packager/media/base/muxer_util.h"
+#include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {
@@ -61,7 +61,7 @@ TEST(MuxerUtilTest, ValidateSegmentTemplateWithFormatTag) {
 }
 
 TEST(MuxerUtilTest, GetSegmentName) {
-  const uint64_t kSegmentStartTime = 180180;
+  const int64_t kSegmentStartTime = 180180;
   const uint32_t kSegmentIndex = 11;
   const uint32_t kBandwidth = 1234;
   EXPECT_EQ("12", GetSegmentName("$Number$",
@@ -118,7 +118,7 @@ TEST(MuxerUtilTest, GetSegmentName) {
 }
 
 TEST(MuxerUtilTest, GetSegmentNameWithIndexZero) {
-  const uint64_t kSegmentStartTime = 0;
+  const int64_t kSegmentStartTime = 0;
   const uint32_t kSegmentIndex = 0;
   const uint32_t kBandwidth = 0;
   EXPECT_EQ("1", GetSegmentName("$Number$",
@@ -143,7 +143,7 @@ TEST(MuxerUtilTest, GetSegmentNameWithIndexZero) {
 }
 
 TEST(MuxerUtilTest, GetSegmentNameLargeTime) {
-  const uint64_t kSegmentStartTime = 1601599839840ULL;
+  const int64_t kSegmentStartTime = 1601599839840ULL;
   const uint32_t kSegmentIndex = 8888888;
   const uint32_t kBandwidth = 444444;
   EXPECT_EQ("1601599839840",

@@ -1,4 +1,4 @@
-// Copyright 2018 Google Inc. All rights reserved.
+// Copyright 2018 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -15,7 +15,7 @@ namespace mp4 {
 
 /// Tracks key frame information.
 struct KeyFrameInfo {
-  uint64_t timestamp;
+  int64_t timestamp;
   uint64_t start_byte_offset;
   uint64_t size;
 };

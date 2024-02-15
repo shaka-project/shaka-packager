@@ -1,16 +1,19 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2014 Google LLC. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/muxer.h"
+#include <packager/media/base/muxer.h>
 
 #include <algorithm>
+#include <chrono>
 
-#include "packager/media/base/media_sample.h"
-#include "packager/media/base/muxer_util.h"
-#include "packager/status_macros.h"
+#include <packager/macros/compiler.h>
+#include <packager/macros/logging.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_util.h>
 
 namespace shaka {
 namespace media {
@@ -19,7 +22,8 @@ const bool kInitialEncryptionInfo = true;
 const int64_t kStartTime = 0;
 }  // namespace
 
-Muxer::Muxer(const MuxerOptions& options) : options_(options) {
+Muxer::Muxer(const MuxerOptions& options)
+    : options_(options), clock_(new Clock) {
   // "$" is only allowed if the output file name is a template, which is used to
   // support one file per Representation per Period when there are Ad Cues.
   if (options_.output_file_name.find("$") != std::string::npos)
@@ -100,14 +104,19 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status Muxer::OnFlushRequest(size_t input_stream_index) {
+  UNUSED(input_stream_index);
   return Finalize();
 }
 
 Status Muxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
+  UNUSED(stream_id);
+  UNUSED(sample);
   return Status::OK;
 }
 
 Status Muxer::AddTextSample(size_t stream_id, const TextSample& sample) {
+  UNUSED(stream_id);
+  UNUSED(sample);
   return Status::OK;
 }
 
