@@ -51,6 +51,10 @@ class MediaPlaylistTest : public ::testing::Test {
         default_group_id_("default_group_id") {
     hls_params_.playlist_type = type;
     hls_params_.time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+    // NOTE: hls_params_ is passed by and stored by reference in MediaPlaylist,
+    // so changed made to it through mutable_hls_params() after this point
+    // still affect what the playlist see in its own hls_params_ later.
     media_playlist_.reset(new MediaPlaylist(hls_params_, default_file_name_,
                                             default_name_, default_group_id_));
   }
@@ -655,6 +659,90 @@ TEST_F(MediaPlaylistMultiSegmentTest, MultipleEncryptionInfo) {
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
   EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(MediaPlaylistSingleSegmentTest, StartTimeEmpty) {
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "#EXT-X-TARGETDURATION:0\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-ENDLIST\n";
+
+  // Because this is std::nullopt, the tag isn't in the playlist at all.
+  mutable_hls_params()->start_time_offset = std::nullopt;
+
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(MediaPlaylistSingleSegmentTest, StartTimeZero) {
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "#EXT-X-TARGETDURATION:0\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-START:TIME-OFFSET=0.000000\n"
+      "#EXT-X-ENDLIST\n";
+
+  mutable_hls_params()->start_time_offset = 0;
+
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(MediaPlaylistSingleSegmentTest, StartTimePositive) {
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "#EXT-X-TARGETDURATION:0\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-START:TIME-OFFSET=20.000000\n"
+      "#EXT-X-ENDLIST\n";
+
+  mutable_hls_params()->start_time_offset = 20;
+
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(MediaPlaylistSingleSegmentTest, StartTimeNegative) {
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "#EXT-X-TARGETDURATION:0\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-START:TIME-OFFSET=-3.141590\n"
+      "#EXT-X-ENDLIST\n";
+
+  mutable_hls_params()->start_time_offset = -3.14159;
+
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 

@@ -10,6 +10,7 @@
 #include <cinttypes>
 #include <cmath>
 #include <memory>
+#include <optional>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
@@ -109,7 +110,8 @@ std::string CreatePlaylistHeader(
     HlsPlaylistType type,
     MediaPlaylist::MediaPlaylistStreamType stream_type,
     uint32_t media_sequence_number,
-    int discontinuity_sequence_number) {
+    int discontinuity_sequence_number,
+    std::optional<double> start_time_offset) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
   if (!version.empty()) {
@@ -150,6 +152,10 @@ std::string CreatePlaylistHeader(
   if (stream_type ==
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
     absl::StrAppendFormat(&header, "#EXT-X-I-FRAMES-ONLY\n");
+  }
+  if (start_time_offset.has_value()) {
+    absl::StrAppendFormat(&header, "#EXT-X-START:TIME-OFFSET=%f\n",
+                          start_time_offset.value());
   }
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
@@ -485,7 +491,8 @@ bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path) {
 
   std::string content = CreatePlaylistHeader(
       media_info_, target_duration_, hls_params_.playlist_type, stream_type_,
-      media_sequence_number_, discontinuity_sequence_number_);
+      media_sequence_number_, discontinuity_sequence_number_,
+      hls_params_.start_time_offset);
 
   for (const auto& entry : entries_)
     absl::StrAppendFormat(&content, "%s\n", entry->ToString().c_str());
