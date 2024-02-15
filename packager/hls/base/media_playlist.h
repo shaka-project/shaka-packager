@@ -226,7 +226,7 @@ class MediaPlaylist {
     return characteristics_;
   }
 
-  bool forced_subtitle() const { return forced_subittle_; }
+  bool forced_subtitle() const { return forced_subtitle_; }
 
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices
@@ -267,7 +267,7 @@ class MediaPlaylist {
   std::string codec_;
   std::string language_;
   std::vector<std::string> characteristics_;
-  bool forced_subittle_ = false;
+  bool forced_subtitle_ = false;
   uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;
