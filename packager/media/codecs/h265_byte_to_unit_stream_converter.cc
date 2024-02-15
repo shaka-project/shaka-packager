@@ -74,8 +74,7 @@ bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   buffer.AppendInt(static_cast<uint8_t>(kUnitStreamNaluLengthSize - 1));
   buffer.AppendInt(static_cast<uint8_t>(3) /* numOfArrays */);
 
-  // More parameter set NALUs may follow when strip_parameter_set_nalus is
-  // disabled.
+  // More parameter set NALUs may follow when strip_parameter_set_nalus is disabled.
   const uint8_t array_completeness = strip_parameter_set_nalus() ? 0x80 : 0;
 
   // VPS
