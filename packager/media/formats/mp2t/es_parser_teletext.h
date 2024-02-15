@@ -13,8 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "packager/base/callback.h"
-#include "packager/media/formats/mp2t/es_parser.h"
+#include <packager/media/formats/mp2t/es_parser.h>
 
 namespace shaka {
 namespace media {

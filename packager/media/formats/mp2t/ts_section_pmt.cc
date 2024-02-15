@@ -21,6 +21,7 @@ namespace {
 
 const int kISO639LanguageDescriptor = 0x0A;
 const int kMaximumBitrateDescriptor = 0x0E;
+const int kTeletextDescriptor = 0x56;
 const int kSubtitlingDescriptor = 0x59;
 
 }  // namespace
@@ -127,10 +128,10 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
       // See ETSI EN 300 468 Section 6.1
       if (stream_type == TsStreamType::kPesPrivateData) {
         switch (descriptor_tag) {
-          case 0x56: // teletext_descriptor
+          case kTeletextDescriptor:
             pid_info.back().stream_type = TsStreamType::kTeletextSubtitles;
             break;
-          case 0x59: // subtitling_descriptor
+          case kSubtitlingDescriptor:
             pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
             break;
           default:

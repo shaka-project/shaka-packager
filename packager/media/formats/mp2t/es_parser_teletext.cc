@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/es_parser_teletext.h"
+#include <packager/media/formats/mp2t/es_parser_teletext.h>
 
-#include "packager/media/base/bit_reader.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/base/timestamp.h"
-#include "packager/media/formats/mp2t/es_parser_teletext_tables.h"
-#include "packager/media/formats/mp2t/mp2t_common.h"
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/timestamp.h>
+#include <packager/media/formats/mp2t/es_parser_teletext_tables.h>
+#include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {
 namespace media {
@@ -134,7 +134,7 @@ bool EsParserTeletext::Parse(const uint8_t* buf,
       info->AddSubStream(pair.first, {pair.second});
     }
 
-    new_stream_info_cb_.Run(info);
+    new_stream_info_cb_(info);
   }
 
   return ParseInternal(buf, size, pts);
@@ -344,7 +344,7 @@ void EsParserTeletext::SendPending(const uint16_t index, const int64_t pts) {
   }
 
   text_sample->set_sub_stream_index(index);
-  emit_sample_cb_.Run(text_sample);
+  emit_sample_cb_(text_sample);
 
   page_state_.erase(index);
 }

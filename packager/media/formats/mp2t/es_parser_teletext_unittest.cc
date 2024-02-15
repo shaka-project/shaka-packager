@@ -4,9 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <absl/log/log.h>
 #include <gtest/gtest.h>
+#include <functional>
 
-#include "packager/base/bind.h"
 #include "packager/media/base/text_sample.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/mp2t/es_parser_teletext.h"
@@ -186,11 +187,10 @@ class EsParserTeletextTest : public ::testing::Test {
 };
 
 TEST_F(EsParserTeletextTest, descriptor_substreams_has_index_888_language_cat) {
-  auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-
-  auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 pes_pid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                pes_pid, std::placeholders::_1);
 
   std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
       pes_pid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
@@ -210,11 +210,10 @@ TEST_F(EsParserTeletextTest, descriptor_substreams_has_index_888_language_cat) {
 }
 
 TEST_F(EsParserTeletextTest, pes_283413_line_emitted_on_next_pes) {
-  auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-
-  auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 pes_pid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                pes_pid, std::placeholders::_1);
 
   std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
       pes_pid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
@@ -234,11 +233,10 @@ TEST_F(EsParserTeletextTest, pes_283413_line_emitted_on_next_pes) {
 }
 
 TEST_F(EsParserTeletextTest, multiple_lines_with_same_pts) {
-  auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-
-  auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 pes_pid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                pes_pid, std::placeholders::_1);
 
   std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
       pes_pid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
