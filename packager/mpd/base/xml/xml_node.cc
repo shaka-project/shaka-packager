@@ -291,28 +291,28 @@ bool RepresentationBaseXmlNode::AddSBDInfo(
     const std::string& value) {
   for (const auto& sbd : sbd_adaptation_set) {
     XmlNode descriptor(descriptor_name.c_str());
-    descriptor.SetStringAttribute("schemeIdUri", scheme_id_uri);
+    RCHECK(descriptor.SetStringAttribute("schemeIdUri", scheme_id_uri));
 
     if (!sbd.url_.empty())
-      descriptor.SetStringAttribute("value", sbd.url_);
+      RCHECK(descriptor.SetStringAttribute("value", sbd.url_));
 
     if (!sbd.template_.empty())
-      descriptor.SetStringAttribute("sbd:template", sbd.template_);
+      RCHECK(descriptor.SetStringAttribute("sbd:template", sbd.template_));
 
     if (!sbd.sbd_keys_.empty()) {
       for (auto key : sbd.sbd_keys_) {
         XmlNode st("sbd:Key");
-        st.SetStringAttribute("name", key.first);
+        RCHECK(st.SetStringAttribute("name", key.first));
         if (key.second.empty()) {
-          st.SetStringAttribute("defaultValue", "nil");
+          RCHECK(st.SetStringAttribute("defaultValue", "nil"));
         } else {
-          st.SetStringAttribute("defaultValue", key.second);
+          RCHECK(st.SetStringAttribute("defaultValue", key.second));
         }
-        descriptor.AddChild(st.PassScopedPtr());
+        RCHECK(descriptor.AddChild(std::move(st)));
       }
     }
 
-    if (!AddChild(descriptor.PassScopedPtr()))
+    if (!AddChild(std::move(descriptor)))
       return false;
   }
   return true;

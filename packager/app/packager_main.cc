@@ -320,22 +320,21 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
   return true;
 }
 
-void addSBDParams(std::string& sbd_url,
-                  std::string& sbd_template,
-                  std::string& sbd_key,
-                  std::string content_type,
+void addSBDParams(const std::string& sbd_url,
+                  const std::string& sbd_template,
+                  const std::string& sbd_key,
+                  const std::string content_type,
                   MpdParams& mpd_params) {
   // Get comma separted urls
-  auto sbd_urls = absl::StrSplit(sbd_url, ",");
-  auto sbd_templates = absl::StrSplit(sbd_template, ",");
+  std::vector<std::string> sbd_urls = absl::StrSplit(sbd_url, ",");
+  std::vector<std::string> sbd_templates = absl::StrSplit(sbd_template, ",");
 
   std::vector<std::vector<std::pair<std::string, std::string>>> sbd_keys_all;
 
   if (!sbd_key.empty()) {
-    auto sbd_keys = absl::StrSplit(sbd_key, ":");
-    for (auto sbd_key : sbd_keys) {
-      std::vector<KVPair> pairs =
-          SplitStringIntoKeyValuePairs(sbd_key, '=', ',');
+    std::vector<std::string> sbd_keys = absl::StrSplit(sbd_key, ":");
+    for (std::string key : sbd_keys) {
+      std::vector<KVPair> pairs = SplitStringIntoKeyValuePairs(key, '=', ',');
       if (pairs.empty()) {
         LOG(ERROR) << "Invalid --sbd_key keyname/defaultvalue pairs.";
       }
@@ -552,19 +551,24 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_include_mspr_pro_for_playready);
   mpd_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
 
-  if (!FLAGS_sbd_url_all.empty())
-    addSBDParams(FLAGS_sbd_url_all, FLAGS_sbd_template_all, FLAGS_sbd_key_all,
-                 "all", mpd_params);
+  if (!absl::GetFlag(FLAGS_sbd_url_all).empty())
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_all),
+                 absl::GetFlag(FLAGS_sbd_template_all),
+                 absl::GetFlag(FLAGS_sbd_key_all), "all", mpd_params);
 
-  if (!FLAGS_sbd_url_video.empty())
-    addSBDParams(FLAGS_sbd_url_video, FLAGS_sbd_template_video,
-                 FLAGS_sbd_key_video, "video", mpd_params);
-  if (!FLAGS_sbd_url_audio.empty())
-    addSBDParams(FLAGS_sbd_url_audio, FLAGS_sbd_template_audio,
-                 FLAGS_sbd_key_audio, "audio", mpd_params);
-  if (!FLAGS_sbd_url_text.empty())
-    addSBDParams(FLAGS_sbd_url_text, FLAGS_sbd_template_text,
-                 FLAGS_sbd_key_text, "text", mpd_params);
+  if (!absl::GetFlag(FLAGS_sbd_url_video).empty()) {
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_video),
+                 absl::GetFlag(FLAGS_sbd_template_video),
+                 absl::GetFlag(FLAGS_sbd_key_video), "video", mpd_params);
+  }
+  if (!absl::GetFlag(FLAGS_sbd_url_audio).empty())
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_audio),
+                 absl::GetFlag(FLAGS_sbd_template_audio),
+                 absl::GetFlag(FLAGS_sbd_key_audio), "audio", mpd_params);
+  if (!absl::GetFlag(FLAGS_sbd_url_text).empty())
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_text),
+                 absl::GetFlag(FLAGS_sbd_template_text),
+                 absl::GetFlag(FLAGS_sbd_key_text), "text", mpd_params);
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(absl::GetFlag(FLAGS_hls_playlist_type),

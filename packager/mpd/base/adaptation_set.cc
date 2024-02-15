@@ -358,25 +358,33 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   //  video
   if (!mpd_options_.mpd_params.sbd_adaptation_set_video.empty() &&
       content_type_ == "video") {
-    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "video",
-                                        mpd_options_);
+    if (!adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "video",
+                                             mpd_options_)) {
+      return std::nullopt;
+    }
   }
   // audio
   if (!mpd_options_.mpd_params.sbd_adaptation_set_audio.empty() &&
       content_type_ == "audio") {
-    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "audio",
-                                        mpd_options_);
+    if (!adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "audio",
+                                             mpd_options_)) {
+      return std::nullopt;
+    }
   }
   // text
   if (!mpd_options_.mpd_params.sbd_adaptation_set_text.empty() &&
       content_type_ == "text") {
-    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "text",
-                                        mpd_options_);
+    if (!adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "text",
+                                             mpd_options_)) {
+      return std::nullopt;
+    }
   }
   // all
   if (!mpd_options_.mpd_params.sbd_adaptation_set_all.empty()) {
-    adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "all",
-                                        mpd_options_);
+    if (!adaptation_set.AddEssentialProperty("urn:mpeg:dash:sbd:2020", "all",
+                                             mpd_options_)) {
+      return std::nullopt;
+    }
   }
 
   std::string switching_ids;
