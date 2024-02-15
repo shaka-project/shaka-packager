@@ -519,8 +519,8 @@ void MediaPlaylist::SetTargetDuration(int32_t target_duration) {
   if (target_duration_set_) {
     if (target_duration_ == target_duration)
       return;
-    VLOG(1) << "Updating target duration from " << target_duration << " to "
-            << target_duration_;
+    VLOG(1) << "Updating target duration from " << target_duration_ << " to "
+            << target_duration;
   }
   target_duration_ = target_duration;
   target_duration_set_ = true;
