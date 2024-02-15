@@ -154,8 +154,8 @@ std::string CreatePlaylistHeader(
     absl::StrAppendFormat(&header, "#EXT-X-I-FRAMES-ONLY\n");
   }
   if (start_time_offset > std::numeric_limits<double>::lowest()) {
-    base::StringAppendF(&header, "#EXT-X-START:TIME-OFFSET=%f\n",
-                        start_time_offset);
+    absl::StrAppendFormat(&header, "#EXT-X-START:TIME-OFFSET=%f\n",
+                          start_time_offset);
   }
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
