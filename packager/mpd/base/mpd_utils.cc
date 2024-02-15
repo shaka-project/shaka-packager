@@ -161,6 +161,9 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
     key.append("unknown:");
   }
 
+  if (media_info.has_dash_label())
+    key.append(media_info.dash_label() + ":");
+
   key.append(MediaInfo_ContainerType_Name(media_info.container_type()));
   if (!ignore_codec) {
     key.append(":");

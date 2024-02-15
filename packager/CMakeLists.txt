@@ -112,36 +112,23 @@ set(libpackager_deps
 )
 
 # A static library target is always built.
-add_library(libpackager_static STATIC ${libpackager_sources})
-target_link_libraries(libpackager_static ${libpackager_deps})
 
-# And always installed as libpackager.a / libpackager.lib:
-if(NOT MSVC)
-  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME packager)
+if(BUILD_SHARED_LIBS)
+  add_library(libpackager SHARED ${libpackager_sources})
+  target_link_libraries(libpackager ${libpackager_deps})
+  target_compile_definitions(libpackager PUBLIC SHAKA_IMPLEMENTATION)
 else()
-  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME libpackager)
+  add_library(libpackager STATIC ${libpackager_sources})
+  target_link_libraries(libpackager ${libpackager_deps})
 endif()
 
-# A shared library target is conditional (default OFF):
-if(BUILD_SHARED_LIBS)
-  add_library(libpackager_shared SHARED ${libpackager_sources})
-  target_link_libraries(libpackager_shared ${libpackager_deps})
-  target_compile_definitions(libpackager_shared PUBLIC SHAKA_IMPLEMENTATION)
-
-  # And always installed as libpackager.so / libpackager.dll:
-  if(NOT MSVC)
-    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME packager)
-  else()
-    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME libpackager)
-  endif()
-
-  # If we're building a shared library, this is what the "libpackager" target
-  # aliases to.
-  add_library(libpackager ALIAS libpackager_shared)
+# The library is always installed as
+# libpackager.so / libpackager.dll / libpackager.a / libpackager.lib:
+if(NOT MSVC)
+  # The "lib" prefix is implied outside of MSVC.
+  set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
 else()
-  # If we're not building a shared library, the "libpackager" target aliases to
-  # the static library.
-  add_library(libpackager ALIAS libpackager_static)
+  set_property(TARGET libpackager PROPERTY OUTPUT_NAME libpackager)
 endif()
 
 add_executable(packager
@@ -170,8 +157,6 @@ add_executable(packager
   app/stream_descriptor.h
   app/validate_flag.cc
   app/validate_flag.h
-  app/vlog_flags.cc
-  app/vlog_flags.h
   app/widevine_encryption_flags.cc
   app/widevine_encryption_flags.h
 )
@@ -179,7 +164,8 @@ target_link_libraries(packager
   absl::flags
   absl::flags_parse
   absl::log
-  absl::log_flags
+  # See https://github.com/abseil/abseil-cpp/blob/c14dfbf9/absl/log/CMakeLists.txt#L464-L467
+  $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   hex_bytes_flags
   libpackager
@@ -190,14 +176,13 @@ target_link_libraries(packager
 add_executable(mpd_generator
   app/mpd_generator.cc
   app/mpd_generator_flags.h
-  app/vlog_flags.cc
-  app/vlog_flags.h
 )
 target_link_libraries(mpd_generator
   absl::flags
   absl::flags_parse
   absl::log
-  absl::log_flags
+  # See https://github.com/abseil/abseil-cpp/blob/c14dfbf9/absl/log/CMakeLists.txt#L464-L467
+  $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   license_notice
   mpd_builder
@@ -258,7 +243,7 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pssh-box-protos
 # The static library isn't usable as a standalone because it doesn't include
 # its static dependencies (zlib, absl, etc).
 if(BUILD_SHARED_LIBS)
-  install(TARGETS libpackager_shared)
+  install(TARGETS libpackager)
   install(DIRECTORY ../include/packager
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/packager.pc

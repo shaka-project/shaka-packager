@@ -59,6 +59,8 @@ std::string RoleToText(AdaptationSet::Role role) {
       return "commentary";
     case AdaptationSet::kRoleDub:
       return "dub";
+    case AdaptationSet::kRoleForcedSubtitle:
+      return "forced-subtitle";
     case AdaptationSet::kRoleDescription:
       return "description";
     default:
@@ -184,7 +186,10 @@ AdaptationSet::AdaptationSet(const std::string& language,
 AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
-  const uint32_t representation_id = (*representation_counter_)++;
+  const uint32_t representation_id = media_info.has_index()
+                                         ? media_info.index()
+                                         : (*representation_counter_)++;
+
   // Note that AdaptationSet outlive Representation, so this object
   // will die before AdaptationSet.
   std::unique_ptr<RepresentationStateChangeListener> listener(
@@ -251,6 +256,8 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   bool suppress_representation_height = false;
   bool suppress_representation_frame_rate = false;
 
+  if (index_.has_value())
+    id_ = index_.value();
   if (id_ && !adaptation_set.SetId(id_.value()))
     return std::nullopt;
   if (!adaptation_set.SetStringAttribute("contentType", content_type_))
@@ -336,7 +343,10 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!trick_play_reference_ids.empty())
       trick_play_reference_ids += ' ';
     CHECK(tp_adaptation_set->has_id());
-    trick_play_reference_ids += std::to_string(tp_adaptation_set->id());
+    trick_play_reference_ids +=
+        std::to_string(tp_adaptation_set->index_.has_value()
+                           ? tp_adaptation_set->index_.value()
+                           : tp_adaptation_set->id());
   }
   if (!trick_play_reference_ids.empty() &&
       !adaptation_set.AddEssentialProperty(
@@ -350,7 +360,9 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!switching_ids.empty())
       switching_ids += ',';
     CHECK(s_adaptation_set->has_id());
-    switching_ids += std::to_string(s_adaptation_set->id());
+    switching_ids += std::to_string(s_adaptation_set->index_.has_value()
+                                        ? s_adaptation_set->index_.value()
+                                        : s_adaptation_set->id());
   }
   if (!switching_ids.empty() &&
       !adaptation_set.AddSupplementalProperty(
@@ -371,6 +383,9 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
     }
   }
+
+  if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
+    return std::nullopt;
 
   for (const auto& representation_pair : representation_map_) {
     const auto& representation = representation_pair.second;
@@ -453,6 +468,19 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 
     AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
   }
+
+  // the command-line index for this AdaptationSet will be the
+  // minimum of the Representations in the set
+  if (media_info.has_index()) {
+    if (index_.has_value()) {
+      index_ = std::min(index_.value(), media_info.index());
+    } else {
+      index_ = media_info.index();
+    }
+  }
+
+  if (media_info.has_dash_label())
+    label_ = media_info.dash_label();
 
   if (media_info.has_video_info()) {
     content_type_ = "video";

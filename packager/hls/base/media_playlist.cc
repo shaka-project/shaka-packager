@@ -373,6 +373,10 @@ void MediaPlaylist::SetCharacteristicsForTesting(
   characteristics_ = characteristics;
 }
 
+void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
+  forced_subtitle_ = forced_subtitle;
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   const int32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
@@ -399,6 +403,8 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   characteristics_ =
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
+
+  forced_subtitle_ = media_info_.forced_subtitle();
 
   return true;
 }

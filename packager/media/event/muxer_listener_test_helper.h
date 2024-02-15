@@ -43,7 +43,8 @@ const char kExpectedDefaultMediaInfo[] =
     "reference_time_scale: 1000\n"
     "container_type: 1\n"
     "media_file_name: 'test_output_file_name.mp4'\n"
-    "media_duration_seconds: 10.5\n";
+    "media_duration_seconds: 10.5\n"
+    "index: 0\n";
 
 const char kExpectedDefaultMediaInfoSubsegmentRange[] =
     "video_info {\n"
@@ -66,6 +67,7 @@ const char kExpectedDefaultMediaInfoSubsegmentRange[] =
     "container_type: 1\n"
     "media_file_name: 'test_output_file_name.mp4'\n"
     "media_duration_seconds: 10.5\n"
+    "index: 0\n"
     "subsegment_ranges {\n"
     "  begin: 222\n"
     "  end: 9999\n"

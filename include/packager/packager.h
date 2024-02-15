@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,6 +63,7 @@ struct PackagingParams {
   /// Only use a single thread to generate output.  This is useful in tests to
   /// avoid non-deterministic outputs.
   bool single_threaded = false;
+
   /// DASH MPD related parameters.
   MpdParams mpd_params;
   /// HLS related parameters.
@@ -80,6 +82,9 @@ struct PackagingParams {
 
 /// Defines a single input/output stream.
 struct StreamDescriptor {
+  /// index of the stream to enforce ordering
+  std::optional<uint32_t> index;
+
   /// Input/source media file path or network stream URL. Required.
   std::string input;
 
@@ -146,6 +151,12 @@ struct StreamDescriptor {
   bool dash_only = false;
   /// Set to true to indicate that the stream is for hls only.
   bool hls_only = false;
+
+  /// Optional, indicates if this is a Forced Narrative subtitle stream.
+  bool forced_subtitle = false;
+
+  /// Optional for DASH output. It defines the Label element in Adaptation Set.
+  std::string dash_label;
 };
 
 class SHAKA_EXPORT Packager {

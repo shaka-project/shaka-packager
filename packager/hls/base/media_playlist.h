@@ -91,6 +91,9 @@ class MediaPlaylist {
   void SetLanguageForTesting(const std::string& language);
 
   /// For testing only.
+  void SetForcedSubtitleForTesting(const bool forced_subtitle);
+
+  /// For testing only.
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
 
@@ -99,6 +102,7 @@ class MediaPlaylist {
   ///        to this playlist.
   /// @return true on success, false otherwise.
   virtual bool SetMediaInfo(const MediaInfo& media_info);
+  MediaInfo GetMediaInfo() const { return media_info_; }
 
   /// Set the sample duration. Sample duration is used to generate frame rate.
   /// Sample duration is not available right away especially. This allows
@@ -222,6 +226,8 @@ class MediaPlaylist {
     return characteristics_;
   }
 
+  bool forced_subtitle() const { return forced_subtitle_; }
+
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices
     // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
@@ -261,6 +267,7 @@ class MediaPlaylist {
   std::string codec_;
   std::string language_;
   std::vector<std::string> characteristics_;
+  bool forced_subtitle_ = false;
   uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;

@@ -37,3 +37,8 @@ ABSL_FLAG(std::string,
           "",
           "Same as above, but this applies to text tracks only, and "
           "overrides the default language for text tracks.");
+ABSL_FLAG(bool,
+          force_cl_index,
+          true,
+          "True forces the muxer to order streams in the order given "
+          "on the command-line. False uses the previous unordered behavior.");

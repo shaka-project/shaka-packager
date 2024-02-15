@@ -1,4 +1,4 @@
-FROM alpine:3.12 as builder
+FROM alpine:3.19 as builder
 
 # Install utilities, libraries, and dev tools.
 RUN apk add --no-cache \
@@ -15,7 +15,7 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
 RUN cmake --build build/ --config Debug --parallel
 
 # Copy only result binaries to our final image.
-FROM alpine:3.12
+FROM alpine:3.19
 RUN apk add --no-cache libstdc++ python3
 COPY --from=builder /shaka-packager/build/packager/packager \
                     /shaka-packager/build/packager/mpd_generator \

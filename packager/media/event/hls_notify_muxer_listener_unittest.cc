@@ -99,6 +99,7 @@ const char kDefaultName[] = "DEFAULTNAME";
 const char kDefaultGroupId[] = "DEFAULTGROUPID";
 const char kCharactersticA[] = "public.accessibility.transcribes-spoken-dialog";
 const char kCharactersticB[] = "public.easy-to-read";
+const bool kForced = false;
 
 MATCHER_P(HasEncryptionScheme, expected_scheme, "") {
   *result_listener << "it has_protected_content: "
@@ -121,7 +122,9 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
                   kDefaultName,
                   kDefaultGroupId,
                   std::vector<std::string>{kCharactersticA, kCharactersticB},
-                  &mock_notifier_) {}
+                  kForced,
+                  &mock_notifier_,
+                  0) {}
 
   MuxerListener::MediaRanges GetMediaRanges(
       const std::vector<Range>& segment_ranges) {
@@ -458,7 +461,9 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
                   kDefaultName,
                   kDefaultGroupId,
                   std::vector<std::string>(),  // no characteristics.
-                  &mock_notifier_) {}
+                  kForced,
+                  &mock_notifier_,
+                  0) {}
 
   MockHlsNotifier mock_notifier_;
   HlsNotifyMuxerListener listener_;

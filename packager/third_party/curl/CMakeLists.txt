@@ -36,10 +36,6 @@ else()
   set(MBEDTLS_LIBRARY mbedtls)
   set(MBEDX509_LIBRARY mbedx509)
   set(MBEDCRYPTO_LIBRARY mbedcrypto)
-
-  # Disable a warning about sprintf on macOS.
-  add_compile_options(-Wno-deprecated-declarations)
-  add_compile_options(-Wno-unused-but-set-variable)
 endif()
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.

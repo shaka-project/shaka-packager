@@ -7,7 +7,7 @@
 # Root-level CMake build file.
 
 # Minimum CMake version.  This must be in the root level CMakeLists.txt.
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.24)
 
 # These policy settings should be included before the project definition.
 include("packager/policies.cmake")

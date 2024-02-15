@@ -34,7 +34,6 @@
 #include <packager/app/raw_key_encryption_flags.h>
 #include <packager/app/retired_flags.h>
 #include <packager/app/stream_descriptor.h>
-#include <packager/app/vlog_flags.h>
 #include <packager/app/widevine_encryption_flags.h>
 #include <packager/file.h>
 #include <packager/kv_pairs/kv_pairs.h>
@@ -121,8 +120,16 @@ const char kUsage[] =
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
     "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    main, alternate, supplementary, commentary, description and dub. See\n"
-    "    DASH (ISO/IEC 23009-1) specification for details.\n";
+    "    forced-subtitle, main, alternate, supplementary, commentary, \n"
+    "    description and dub. See DASH\n"
+    "    (ISO/IEC 23009-1) specification for details.\n"
+    "  - forced_subtitle: Optional boolean value (0|1). If set to 1 \n"
+    "    indicates that this stream is a Forced Narrative subtitle that \n"
+    "    should be displayed when subtitles are otherwise off, for example \n"
+    "    used to caption short portions of the audio that might be in a \n"
+    "    foreign language. For DASH this will set role to forced_subtitle, \n"
+    "    for HLS it will set FORCED=YES and AUTOSELECT=YES. \n"
+    "    Only valid for subtitles.";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";
@@ -564,8 +571,6 @@ int PackagerMain(int argc, char** argv) {
     absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
   }
 
-  handle_vlog_flags();
-
   absl::InitializeLog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
@@ -586,6 +591,14 @@ int PackagerMain(int argc, char** argv) {
       return kArgumentValidationFailed;
     stream_descriptors.push_back(stream_descriptor.value());
   }
+
+  if (absl::GetFlag(FLAGS_force_cl_index)) {
+    int index = 0;
+    for (auto& descriptor : stream_descriptors) {
+      descriptor.index = index++;
+    }
+  }
+
   Packager packager;
   Status status =
       packager.Initialize(packaging_params.value(), stream_descriptors);
