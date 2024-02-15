@@ -815,7 +815,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         test_files=['bear-english.vtt'],
         forced_subtitle=True)
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True, output_hls=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      output_hls=True))
     self._CheckTestResults('forced-subtitle')
 
   def testAudioVideoWithLanguageOverride(self):
