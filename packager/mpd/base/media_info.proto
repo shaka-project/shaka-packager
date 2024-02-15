@@ -216,7 +216,7 @@ message MediaInfo {
   // Marks stream as a Forced Narrative subtitle stream, indicated using
   // forced-subtitle role in DASH
   // and FORCED=YES in HLS
-  optional bool forced_subtitle  = 26 [default = false];
+  optional bool forced_subtitle = 26 [default = false];
 
   // stream index for consistent ordering of streams
   optional uint32 index = 28;

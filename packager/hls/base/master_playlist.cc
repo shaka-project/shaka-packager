@@ -407,8 +407,8 @@ void BuildMediaTags(
       }
 
       if (playlist->stream_type() ==
-          MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
-              playlist->forced_subtitle()) {
+              MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+          playlist->forced_subtitle()) {
         is_autoselect = true;
       }
 

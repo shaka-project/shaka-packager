@@ -279,7 +279,8 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
   }
 
   if (descriptor.forced_subtitle) {
-    auto itr = std::find(descriptor.dash_roles.begin(), descriptor.dash_roles.end(), "forced-subtitle");
+    auto itr = std::find(descriptor.dash_roles.begin(),
+                         descriptor.dash_roles.end(), "forced-subtitle");
     if (itr == descriptor.dash_roles.end()) {
       descriptor.dash_roles.push_back("forced-subtitle");
     }
