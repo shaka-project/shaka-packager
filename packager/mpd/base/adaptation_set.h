@@ -43,6 +43,7 @@ class AdaptationSet {
     kRoleSupplementary,
     kRoleCommentary,
     kRoleDub,
+    kRoleForcedSubtitle,
     kRoleDescription
   };
 

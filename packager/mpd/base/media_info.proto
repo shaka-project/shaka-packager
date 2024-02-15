@@ -213,6 +213,11 @@ message MediaInfo {
   // Equal to the target segment duration times the reference time scale.
   optional uint64 segment_duration = 25;
 
+  // Marks stream as a Forced Narrative subtitle stream, indicated using
+  // forced-subtitle role in DASH
+  // and FORCED=YES in HLS
+  optional bool forced_subtitle = 26 [default = false];
+
   // stream index for consistent ordering of streams
   optional uint32 index = 28;
 

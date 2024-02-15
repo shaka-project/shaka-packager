@@ -318,9 +318,14 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   } else {
     tag.AddString("DEFAULT", "NO");
   }
-
   if (is_autoselect) {
     tag.AddString("AUTOSELECT", "YES");
+  }
+
+  if (playlist.stream_type() ==
+          MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+      playlist.forced_subtitle()) {
+    tag.AddString("FORCED", "YES");
   }
 
   const std::vector<std::string>& characteristics = playlist.characteristics();
@@ -399,6 +404,12 @@ void BuildMediaTags(
 
           languages.insert(language);
         }
+      }
+
+      if (playlist->stream_type() ==
+              MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
+          playlist->forced_subtitle()) {
+        is_autoselect = true;
       }
 
       BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,

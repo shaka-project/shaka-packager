@@ -40,6 +40,7 @@ enum FieldType {
   kDashOnlyField,
   kHlsOnlyField,
   kDashLabelField,
+  kForcedSubtitleField,
 };
 
 struct FieldNameToTypeMapping {
@@ -88,6 +89,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"dash_only", kDashOnlyField},
     {"hls_only", kHlsOnlyField},
     {"dash_label", kDashLabelField},
+    {"forced_subtitle", kForcedSubtitleField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -255,12 +257,35 @@ std::optional<StreamDescriptor> ParseStreamDescriptor(
       case kDashLabelField:
         descriptor.dash_label = pair.second;
         break;
+      case kForcedSubtitleField:
+        unsigned forced_subtitle_value;
+        if (!absl::SimpleAtoi(pair.second, &forced_subtitle_value)) {
+          LOG(ERROR) << "Non-numeric option for forced field "
+                        "specified ("
+                     << pair.second << ").";
+          return std::nullopt;
+        }
+        if (forced_subtitle_value > 1) {
+          LOG(ERROR) << "forced should be either 0 or 1.";
+          return std::nullopt;
+        }
+        descriptor.forced_subtitle = forced_subtitle_value > 0;
+        break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << pair.first
                    << "\").";
         return std::nullopt;
     }
   }
+
+  if (descriptor.forced_subtitle) {
+    auto itr = std::find(descriptor.dash_roles.begin(),
+                         descriptor.dash_roles.end(), "forced-subtitle");
+    if (itr == descriptor.dash_roles.end()) {
+      descriptor.dash_roles.push_back("forced-subtitle");
+    }
+  }
+
   return descriptor;
 }
 

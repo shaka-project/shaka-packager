@@ -39,12 +39,16 @@ class HlsNotifyMuxerListener : public MuxerListener {
   /// @param characteristics is the characteristics for this playlist. This is
   ///        the value of CHARACTERISTICS attribute for EXT-X-MEDIA. This may be
   ///        empty.
+  /// @param forced is the HLS FORCED SUBTITLE setting for this playlist. This
+  ///        is the value of FORCED attribute for EXT-X-MEDIA. This may be
+  ///        empty.
   /// @param hls_notifier used by this listener. Ownership does not transfer.
   HlsNotifyMuxerListener(const std::string& playlist_name,
                          bool iframes_only,
                          const std::string& ext_x_media_name,
                          const std::string& ext_x_media_group_id,
                          const std::vector<std::string>& characteristics,
+                         bool forced,
                          hls::HlsNotifier* hls_notifier,
                          std::optional<uint32_t> index);
   ~HlsNotifyMuxerListener() override;
@@ -86,6 +90,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
   const std::vector<std::string> characteristics_;
+  const bool forced_subtitle_;
   hls::HlsNotifier* const hls_notifier_;
   std::optional<uint32_t> stream_id_;
   std::optional<uint32_t> index_;
