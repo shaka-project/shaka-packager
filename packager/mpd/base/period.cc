@@ -309,8 +309,7 @@ bool Period::SetNewAdaptationSetAttributes(
         GetBaseCodec(media_info) == "ac-4") {
       new_adaptation_set->ForceStartwithSAP(1);
     }
-  }
-  else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
+  } else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
     if (GetBaseCodec(media_info) == "mp4a" ||
         GetBaseCodec(media_info) == "ac-3" ||
         GetBaseCodec(media_info) == "ec-3" ||

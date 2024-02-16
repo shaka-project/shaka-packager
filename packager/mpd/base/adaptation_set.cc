@@ -291,8 +291,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   if (subsegment_start_with_sap_ == 1) {
     if (!adaptation_set.SetIntegerAttribute("subsegmentStartsWithSAP", 1))
       return std::nullopt;
-  }
-  else if (start_with_sap_ == 1) {
+  } else if (start_with_sap_ == 1) {
     if (!adaptation_set.SetIntegerAttribute("startWithSAP", 1))
       return std::nullopt;
   }
