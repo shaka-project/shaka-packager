@@ -9,7 +9,7 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet contentType="audio" id="1">
+    <AdaptationSet contentType="audio" subsegmentStartsWithSAP="1" id="1">
       <Representation id="1" bandwidth="400" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>test_output_file_name_audio1.mp4</BaseURL>
