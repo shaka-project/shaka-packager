@@ -6,12 +6,6 @@
 
 #include <packager/media/formats/mp2t/es_parser_teletext.h>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/timestamp.h>
@@ -25,6 +19,8 @@ namespace mp2t {
 namespace {
 
 const uint8_t EBU_TELETEXT_WITH_SUBTITLING = 0x03;
+const int kPayloadSize = 40;
+const int kNumTriplets = 13;
 
 template <typename T>
 constexpr T bit(T value, const size_t bit_pos) {
@@ -72,19 +68,19 @@ bool ParseSubtitlingDescriptor(
   for (size_t i = 0; i < data_size; i += 8) {
     uint32_t lang_code;
     RCHECK(reader.ReadBits(24, &lang_code));
-    uint8_t teletext_type;
-    RCHECK(reader.ReadBits(5, &teletext_type));
+    uint8_t ignored_teletext_type;
+    RCHECK(reader.ReadBits(5, &ignored_teletext_type));
     uint8_t magazine_number;
     RCHECK(reader.ReadBits(3, &magazine_number));
     if (magazine_number == 0) {
       magazine_number = 8;
     }
 
-    uint8_t page_tenths;
-    RCHECK(reader.ReadBits(4, &page_tenths));
-    uint8_t page_digit;
-    RCHECK(reader.ReadBits(4, &page_digit));
-    const uint8_t page_number = page_tenths * 10 + page_digit;
+    uint8_t page_number_tens;
+    RCHECK(reader.ReadBits(4, &page_number_tens));
+    uint8_t page_number_units;
+    RCHECK(reader.ReadBits(4, &page_number_units));
+    const uint8_t page_number = page_number_tens * 10 + page_number_units;
 
     std::string lang(3, '\0');
     lang[0] = static_cast<char>((lang_code >> 16) & 0xff);
@@ -282,7 +278,7 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
 }
 
 void EsParserTeletext::UpdateCharset() {
-  memcpy(current_charset_, TELETEXT_CHARSET_G0_LATIN, 96 * 3);
+  memcpy(current_charset_, TELETEXT_CHARSET_G0_LATIN, sizeof(TELETEXT_CHARSET_G0_LATIN));
   if (charset_code_ > 7) {
     return;
   }
@@ -357,9 +353,8 @@ void EsParserTeletext::SendPending(const uint16_t index, const int64_t pts) {
 
 std::string EsParserTeletext::BuildText(const uint8_t* data_block,
                                         const uint8_t row) const {
-  const size_t payload_len = 40;
   std::string next_string;
-  next_string.reserve(payload_len * 2);
+  next_string.reserve(kPayloadSize * 2);
   bool leading_spaces = true;
 
   const uint16_t index = magazine_ * 100 + page_number_;
@@ -375,7 +370,7 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
     }
   }
 
-  for (size_t i = 0; i < payload_len; ++i) {
+  for (size_t i = 0; i < kPayloadSize; ++i) {
     if (column_replacement_map) {
       const auto column_itr = column_replacement_map->find(i);
       if (column_itr != column_replacement_map->cend()) {
@@ -425,11 +420,10 @@ void EsParserTeletext::ParsePacket26(const uint8_t* data_block) {
   auto& replacement_map = page_state_[index].packet_26_replacements;
 
   uint8_t row = 0;
-  const size_t payload_len = 40;
 
   std::vector<uint32_t> x26_triplets;
-  x26_triplets.reserve(13);
-  for (uint8_t i = 1; i < payload_len; i += 3) {
+  x26_triplets.reserve(kNumTriplets);
+  for (uint8_t i = 1; i < kPayloadSize; i += 3) {
     const uint32_t bytes = (TELETEXT_BITREVERSE_8[data_block[i + 2]] << 16) |
                            (TELETEXT_BITREVERSE_8[data_block[i + 1]] << 8) |
                            TELETEXT_BITREVERSE_8[data_block[i]];
