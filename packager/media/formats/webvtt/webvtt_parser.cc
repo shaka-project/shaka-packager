@@ -226,11 +226,11 @@ bool WebVttParser::Parse() {
     // header text.
     if (block.size() != 1) {
       LOG(WARNING) << "Failed to read WEBVTT header - "
-                 << "block size should be 1 but was " << block.size() << ".";
+                   << "block size should be 1 but was " << block.size() << ".";
     }
     if (block[0] != "WEBVTT" && block[0] != "\xEF\xBB\xBFWEBVTT") {
       LOG(WARNING) << "Failed to read WEBVTT header - should be WEBVTT but was "
-                 << block[0];
+                   << block[0];
     }
     initialized_ = true;
   }
