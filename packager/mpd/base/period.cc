@@ -239,7 +239,8 @@ bool Period::SetNewAdaptationSetAttributes(
                                          accessibility.substr(pos + 1));
   }
 
-  new_adaptation_set->set_codec(GetBaseCodec(media_info));
+  const std::string& codec = GetBaseCodec(media_info);
+  new_adaptation_set->set_codec(codec);
 
   if (media_info.has_video_info()) {
     // Because 'language' is ignored for videos, |adaptation_sets| must have
@@ -291,31 +292,20 @@ bool Period::SetNewAdaptationSetAttributes(
       new_adaptation_set->set_transfer_characteristics(
           media_info.video_info().transfer_characteristics());
     }
-
+  } else if (media_info.has_audio_info()) {
+    if (codec == "mp4a" || codec == "ac-3" || codec == "ec-3" ||
+        codec == "ac-4") {
+      if (mpd_options_.dash_profile == DashProfile::kLive) {
+        new_adaptation_set->ForceStartwithSAP(1);
+      } else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
+        new_adaptation_set->ForceSubsegmentStartswithSAP(1);
+      }
+    }
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
     // true, so carelessly set it to true.
     // In practice it doesn't really make sense to adapt between text tracks.
     new_adaptation_set->ForceSetSegmentAlignment(true);
-  }
-
-  if (mpd_options_.dash_profile == DashProfile::kLive) {
-    // According to Dolby Digital Plus and Dolby AC-4 specs, startWithSAP
-    // attribute shall be set to 1. Other audio codecs do not have
-    // requirement on this value, we assume them to be 1 as well.
-    if (GetBaseCodec(media_info) == "mp4a" ||
-        GetBaseCodec(media_info) == "ac-3" ||
-        GetBaseCodec(media_info) == "ec-3" ||
-        GetBaseCodec(media_info) == "ac-4") {
-      new_adaptation_set->ForceStartwithSAP(1);
-    }
-  } else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
-    if (GetBaseCodec(media_info) == "mp4a" ||
-        GetBaseCodec(media_info) == "ac-3" ||
-        GetBaseCodec(media_info) == "ec-3" ||
-        GetBaseCodec(media_info) == "ac-4") {
-      new_adaptation_set->ForceSubsegmentStartswithSAP(1);
-    }
   }
   return true;
 }
