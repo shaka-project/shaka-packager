@@ -58,6 +58,9 @@ ABSL_FLAG(bool,
           false,
           "If enabled, only use one thread when generating content.");
 
+// From absl/log:
+ABSL_DECLARE_FLAG(int, stderrthreshold);
+
 namespace shaka {
 namespace {
 
@@ -555,6 +558,12 @@ int PackagerMain(int argc, char** argv) {
 
   auto usage = absl::StrFormat(kUsage, argv[0]);
   absl::SetProgramUsageMessage(usage);
+
+  // Before parsing the command line, change the default value of some flags
+  // provided by libraries.
+
+  // Always log to stderr.  Log levels are still controlled by --minloglevel.
+  absl::SetFlag(&FLAGS_stderrthreshold, 0);
 
   auto remaining_args = absl::ParseCommandLine(argc, argv);
   if (absl::GetFlag(FLAGS_licenses)) {
