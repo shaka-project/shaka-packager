@@ -177,9 +177,7 @@ AdaptationSet::AdaptationSet(const std::string& language,
                              uint32_t* counter)
     : representation_counter_(counter),
       language_(language),
-      mpd_options_(mpd_options),
-      segments_aligned_(kSegmentAlignmentUnknown),
-      force_set_segment_alignment_(false) {
+      mpd_options_(mpd_options) {
   DCHECK(counter);
 }
 

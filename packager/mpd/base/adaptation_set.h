@@ -319,14 +319,14 @@ class AdaptationSet {
   std::set<Role> roles_;
 
   // True iff all the segments are aligned.
-  SegmentAligmentStatus segments_aligned_;
-  bool force_set_segment_alignment_;
+  SegmentAligmentStatus segments_aligned_ = kSegmentAlignmentUnknown;
+  bool force_set_segment_alignment_ = false;
 
   // The stream access point for subsegment
-  uint8_t subsegment_start_with_sap_;
+  uint8_t subsegment_start_with_sap_ = 0;
 
   // The stream access point for segment
-  uint8_t start_with_sap_;
+  uint8_t start_with_sap_ = 0;
 
   // Keeps track of segment start times of Representations.
   // For static MPD, this will not be cleared, all the segment start times are
