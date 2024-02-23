@@ -15,5 +15,6 @@ ABSL_DECLARE_FLAG(std::string, hls_base_url);
 ABSL_DECLARE_FLAG(std::string, hls_key_uri);
 ABSL_DECLARE_FLAG(std::string, hls_playlist_type);
 ABSL_DECLARE_FLAG(int32_t, hls_media_sequence_number);
+ABSL_DECLARE_FLAG(std::optional<double>, hls_start_time_offset);
 
 #endif  // PACKAGER_APP_HLS_FLAGS_H_

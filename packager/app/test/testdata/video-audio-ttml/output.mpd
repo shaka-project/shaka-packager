@@ -7,7 +7,7 @@
         <BaseURL>bear-english-text.ttml</BaseURL>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
+    <AdaptationSet id="1" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <Representation id="0" bandwidth="133334" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>

@@ -100,9 +100,24 @@ jobs:
       - name: Install Linux deps
         if: runner.os == 'Linux'
         # NOTE: CMake is already installed in GitHub Actions VMs, but not
-        # necessarily in a self-hosted runner.
+        # necessarily in a self-hosted runner.  We also need a minimum version
+        # that may be greater than what is available in Ubuntu, so we set up
+        # the official CMake PPA first.
         run: |
-          sudo apt update && sudo apt install -y \
+          kitware_key_url="https://apt.kitware.com/keys/kitware-archive-latest.asc"
+          kitware_key_path="/usr/share/keyrings/kitware-archive-keyring.gpg"
+          kitware_sources_path="/etc/apt/sources.list.d/kitware.list"
+
+          wget -O - "$kitware_key_url" 2>/dev/null | gpg --dearmor - \
+              | sudo tee "$kitware_key_path" >/dev/null
+
+          . /etc/lsb-release  # Defines $DISTRIB_CODENAME (jammy, focal, etc)
+
+          echo "deb [signed-by=$kitware_key_path] https://apt.kitware.com/ubuntu/ $DISTRIB_CODENAME main" \
+              | sudo tee "$kitware_sources_path" >/dev/null
+
+          sudo apt update
+          sudo apt install -y \
               cmake \
               ninja-build
 

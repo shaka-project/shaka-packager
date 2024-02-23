@@ -28,7 +28,7 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="2" contentType="audio" subsegmentAlignment="true">
+    <AdaptationSet id="2" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <Representation id="3" bandwidth="133334" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>

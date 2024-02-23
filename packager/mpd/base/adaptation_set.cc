@@ -59,6 +59,8 @@ std::string RoleToText(AdaptationSet::Role role) {
       return "commentary";
     case AdaptationSet::kRoleDub:
       return "dub";
+    case AdaptationSet::kRoleForcedSubtitle:
+      return "forced-subtitle";
     case AdaptationSet::kRoleDescription:
       return "description";
     default:
@@ -175,9 +177,7 @@ AdaptationSet::AdaptationSet(const std::string& language,
                              uint32_t* counter)
     : representation_counter_(counter),
       language_(language),
-      mpd_options_(mpd_options),
-      segments_aligned_(kSegmentAlignmentUnknown),
-      force_set_segment_alignment_(false) {
+      mpd_options_(mpd_options) {
   DCHECK(counter);
 }
 
@@ -276,6 +276,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
     }
   }
+
   if (video_heights_.size() == 1) {
     suppress_representation_height = true;
     if (!adaptation_set.SetIntegerAttribute("height", *video_heights_.begin()))
@@ -285,6 +286,15 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
                                             *video_heights_.rbegin())) {
       return std::nullopt;
     }
+  }
+
+  if (subsegment_start_with_sap_) {
+    if (!adaptation_set.SetIntegerAttribute("subsegmentStartsWithSAP",
+                                            subsegment_start_with_sap_))
+      return std::nullopt;
+  } else if (start_with_sap_) {
+    if (!adaptation_set.SetIntegerAttribute("startWithSAP", start_with_sap_))
+      return std::nullopt;
   }
 
   if (video_frame_rates_.size() == 1) {
@@ -410,6 +420,14 @@ void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
 void AdaptationSet::AddAdaptationSetSwitching(
     const AdaptationSet* adaptation_set) {
   switchable_adaptation_sets_.push_back(adaptation_set);
+}
+
+void AdaptationSet::ForceSubsegmentStartswithSAP(uint32_t sap_value) {
+  subsegment_start_with_sap_ = sap_value;
+}
+
+void AdaptationSet::ForceStartwithSAP(uint32_t sap_value) {
+  start_with_sap_ = sap_value;
 }
 
 // For dynamic MPD, storing all start_time and duration will out-of-memory

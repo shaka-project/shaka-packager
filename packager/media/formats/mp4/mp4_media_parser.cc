@@ -90,6 +90,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecDTSL;
     case FOURCC_dtse:
       return kCodecDTSE;
+    case FOURCC_dtsx:
+      return kCodecDTSX;
     case FOURCC_dtsp:
       return kCodecDTSP;
     case FOURCC_dtsm:
@@ -492,6 +494,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_config = entry.ddts.extra_data;
           max_bitrate = entry.ddts.max_bitrate;
           avg_bitrate = entry.ddts.avg_bitrate;
+          break;
+        case FOURCC_dtsx:
+          codec_config = entry.udts.data;
           break;
         case FOURCC_ac_3:
           codec_config = entry.dac3.data;
