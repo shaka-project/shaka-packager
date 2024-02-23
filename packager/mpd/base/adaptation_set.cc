@@ -276,6 +276,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
     }
   }
+
   if (video_heights_.size() == 1) {
     suppress_representation_height = true;
     if (!adaptation_set.SetIntegerAttribute("height", *video_heights_.begin()))
@@ -286,11 +287,13 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
     }
   }
-  if (subsegment_start_with_sap_ == 1) {
-    if (!adaptation_set.SetIntegerAttribute("subsegmentStartsWithSAP", 1))
+
+  if (subsegment_start_with_sap_) {
+    if (!adaptation_set.SetIntegerAttribute("subsegmentStartsWithSAP",
+                                            subsegment_start_with_sap_))
       return std::nullopt;
-  } else if (start_with_sap_ == 1) {
-    if (!adaptation_set.SetIntegerAttribute("startWithSAP", 1))
+  } else if (start_with_sap_) {
+    if (!adaptation_set.SetIntegerAttribute("startWithSAP", start_with_sap_))
       return std::nullopt;
   }
 
