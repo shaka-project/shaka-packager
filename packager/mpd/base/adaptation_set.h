@@ -118,6 +118,17 @@ class AdaptationSet {
   ///        attribute.
   virtual void ForceSetSegmentAlignment(bool segment_alignment);
 
+  /// Forces the subsegmentStartswithSAP field to be set to @a sap_value.
+  /// Use this if you are certain with stream access point value of the
+  /// subsegment.
+  /// @param sap_value is the value used for subsegmentstartsWithSAP attribute.
+  virtual void ForceSubsegmentStartswithSAP(uint32_t sap_value);
+
+  /// Forces the StartswithSAP field to be set to @a sap_value.
+  /// Use this if you are certain with stream access point value of the segment.
+  /// @param sap_value is the value used for  startWithSAP attribute.
+  virtual void ForceStartwithSAP(uint32_t sap_value);
+
   /// Adds the adaptation set this adaptation set can switch to.
   /// @param adaptation_set points to the switchable adaptation set.
   virtual void AddAdaptationSetSwitching(const AdaptationSet* adaptation_set);
@@ -308,8 +319,14 @@ class AdaptationSet {
   std::set<Role> roles_;
 
   // True iff all the segments are aligned.
-  SegmentAligmentStatus segments_aligned_;
-  bool force_set_segment_alignment_;
+  SegmentAligmentStatus segments_aligned_ = kSegmentAlignmentUnknown;
+  bool force_set_segment_alignment_ = false;
+
+  // The stream access point for subsegment
+  uint8_t subsegment_start_with_sap_ = 0;
+
+  // The stream access point for segment
+  uint8_t start_with_sap_ = 0;
 
   // Keeps track of segment start times of Representations.
   // For static MPD, this will not be cleared, all the segment start times are

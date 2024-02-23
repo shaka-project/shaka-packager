@@ -49,7 +49,7 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="3" contentType="audio" subsegmentAlignment="true">
+    <AdaptationSet id="3" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>

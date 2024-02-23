@@ -588,8 +588,8 @@ TEST_F(PeriodTest, OrderedByAdaptationSetId) {
       R"(<Period id="9">)"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      R"(  <AdaptationSet id="0" contentType=""/>)"
-      R"(  <AdaptationSet id="1" contentType=""/>)"
+      R"(  <AdaptationSet id="0" contentType="" subsegmentStartsWithSAP="1"/>)"
+      R"(  <AdaptationSet id="1" contentType="" subsegmentStartsWithSAP="1"/>)"
       R"(</Period>)";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
