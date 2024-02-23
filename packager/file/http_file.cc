@@ -372,6 +372,12 @@ void HttpFile::ThreadMain() {
         error_message);
   }
 
+  // In some cases it is possible that the server has already closed the
+  // connection without reading the request body. This can for example happen
+  // when the server responds with a non-successful status code. In this case we
+  // need to make sure to close the upload cache here, otherwise some other
+  // thread may block forever on Flush().
+  upload_cache_.Close();
   download_cache_.Close();
   task_exit_event_.Notify();
 }
