@@ -36,6 +36,7 @@ namespace hls {
 namespace {
 
 const char kUriBase64Prefix[] = "data:text/plain;base64,";
+const char kUriBase64Utf16Prefix[] = "data:text/plain;charset=UTF-16;base64,";
 const char kUriFairPlayPrefix[] = "skd://";
 const char kWidevineDashIfIopUUID[] =
     "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
@@ -57,6 +58,12 @@ bool IsFairPlaySystemId(const std::vector<uint8_t>& system_id) {
                     media::kFairPlaySystemId);
 }
 
+bool IsPlayReadySystemId(const std::vector<uint8_t>& system_id) {
+  return system_id.size() == std::size(media::kPlayReadySystemId) &&
+         std::equal(system_id.begin(), system_id.end(),
+                    media::kPlayReadySystemId);
+}
+
 std::string Base64EncodeData(const std::string& prefix,
                              const std::string& data) {
     std::string data_base64;
@@ -65,7 +72,7 @@ std::string Base64EncodeData(const std::string& prefix,
 }
 
 std::string VectorToString(const std::vector<uint8_t>& v) {
-    return std::string(v.begin(), v.end());
+  return std::string(v.begin(), v.end());
 }
 
 // Segment URL is relative to either output directory or the directory
@@ -468,6 +475,20 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     const std::vector<uint8_t> empty_iv;
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
                                     empty_iv, "com.apple.streamingkeydelivery",
+                                    "1", media_playlist.get());
+    return true;
+  }
+  if (IsPlayReadySystemId(system_id)) {
+    std::unique_ptr<media::PsshBoxBuilder> b =
+        media::PsshBoxBuilder::ParseFromBox(
+            protection_system_specific_data.data(),
+            protection_system_specific_data.size());
+    std::string pssh_data(reinterpret_cast<const char*>(b->pssh_data().data()),
+                          b->pssh_data().size());
+    std::string key_uri_data_base64 =
+        Base64EncodeData(kUriBase64Utf16Prefix, pssh_data);
+    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
+                                    empty_key_id, iv, "com.microsoft.playready",
                                     "1", media_playlist.get());
     return true;
   }
