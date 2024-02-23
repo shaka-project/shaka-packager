@@ -766,5 +766,61 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
                    "</Representation>"));
 }
 
+TEST(XmlNodeTest, AddDTSCAudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("dtsc");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.set_num_channels(6);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dts.com,2014:dash:audio_channel_configuration:2012\"\n"
+          "   value=\"6\"/>\n"
+          "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddDTSEAudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("dtse");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.set_num_channels(6);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dts.com,2014:dash:audio_channel_configuration:2012\"\n"
+          "   value=\"6\"/>\n"
+          "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddDTSXAudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("dtsx");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.mutable_codec_specific_data()->set_channel_mask(0x3F);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation audioSamplingRate=\"48000\">\n"
+                   "  <AudioChannelConfiguration\n"
+                   "   schemeIdUri=\n"
+                   "    \"tag:dts.com,2018:uhd:audio_channel_configuration\"\n"
+                   "   value=\"0000003F\"/>\n"
+                   "</Representation>\n"));
+}
+
 }  // namespace xml
 }  // namespace shaka

@@ -49,6 +49,7 @@ enum Codec {
   kCodecDTSL,
   kCodecDTSM,
   kCodecDTSP,
+  kCodecDTSX,
   kCodecEAC3,
   kCodecFlac,
   kCodecOpus,

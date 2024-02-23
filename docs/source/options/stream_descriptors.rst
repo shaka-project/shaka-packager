@@ -73,6 +73,15 @@ These are the available fields:
     CEA allows specifying up to 4 streams within a single video stream. If not
     specified, all subtitles will be merged together.
 
+:forced_subtitle:
+
+    Optional boolean value (0|1). If set to 1 indicates that this stream is a
+    Forced Narrative subtitle that should be displayed when subtitles are otherwise
+    off, for example used to caption short portions of the audio that might be in
+    a foreign language. For DASH this will set role to **forced_subtitle**, for HLS
+    it will set FORCED=YES and AUTOSELECT=YES. Only valid for subtitles.
+
+
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/dash_stream_descriptors.rst
 .. include:: /options/hls_stream_descriptors.rst

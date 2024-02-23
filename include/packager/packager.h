@@ -152,6 +152,9 @@ struct StreamDescriptor {
   /// Set to true to indicate that the stream is for hls only.
   bool hls_only = false;
 
+  /// Optional, indicates if this is a Forced Narrative subtitle stream.
+  bool forced_subtitle = false;
+
   /// Optional for DASH output. It defines the Label element in Adaptation Set.
   std::string dash_label;
 };

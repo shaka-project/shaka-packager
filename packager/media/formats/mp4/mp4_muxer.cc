@@ -86,6 +86,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_dtse;
     case kCodecDTSM:
       return FOURCC_dtsm;
+    case kCodecDTSX:
+      return FOURCC_dtsx;
     case kCodecEAC3:
       return FOURCC_ec_3;
     case kCodecAC4:
@@ -497,6 +499,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.ddts.avg_bitrate = audio_info->avg_bitrate();
       audio.ddts.sampling_frequency = audio_info->sampling_frequency();
       audio.ddts.pcm_sample_depth = audio_info->sample_bits();
+      break;
+    case kCodecDTSX:
+      audio.udts.data = audio_info->codec_config();
       break;
     case kCodecAC3:
       audio.dac3.data = audio_info->codec_config();

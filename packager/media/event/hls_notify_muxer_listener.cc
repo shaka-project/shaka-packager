@@ -26,6 +26,7 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
     const std::vector<std::string>& characteristics,
+    bool forced_subtitle,
     hls::HlsNotifier* hls_notifier,
     std::optional<uint32_t> index)
     : playlist_name_(playlist_name),
@@ -33,6 +34,7 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
       characteristics_(characteristics),
+      forced_subtitle_(forced_subtitle),
       hls_notifier_(hls_notifier),
       index_(index) {
   DCHECK(hls_notifier);
@@ -102,6 +104,9 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   if (!characteristics_.empty()) {
     for (const std::string& characteristic : characteristics_)
       media_info->add_hls_characteristics(characteristic);
+  }
+  if (forced_subtitle_) {
+    media_info->set_forced_subtitle(forced_subtitle_);
   }
   if (index_.has_value())
     media_info->set_index(index_.value());
