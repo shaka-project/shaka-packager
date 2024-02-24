@@ -31,6 +31,9 @@ ABSL_FLAG(std::string,
           "",
           "Packager version for testing. Should be used for testing only.");
 
+// From absl/log:
+ABSL_DECLARE_FLAG(int, stderrthreshold);
+
 namespace shaka {
 namespace {
 const char kUsage[] =
@@ -109,6 +112,13 @@ int MpdMain(int argc, char** argv) {
 
   auto usage = absl::StrFormat(kUsage, argv[0]);
   absl::SetProgramUsageMessage(usage);
+
+  // Before parsing the command line, change the default value of some flags
+  // provided by libraries.
+
+  // Always log to stderr.  Log levels are still controlled by --minloglevel.
+  absl::SetFlag(&FLAGS_stderrthreshold, 0);
+
   absl::ParseCommandLine(argc, argv);
 
   if (absl::GetFlag(FLAGS_licenses)) {
