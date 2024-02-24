@@ -77,6 +77,7 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
   data.dash_only = stream.dash_only;
   data.index = stream.index;
   data.dash_label = stream.dash_label;
+  data.input_format = stream.input_format;
   return data;
 };
 
@@ -447,6 +448,7 @@ Status CreateDemuxer(const StreamDescriptor& stream,
                      std::shared_ptr<Demuxer>* new_demuxer) {
   std::shared_ptr<Demuxer> demuxer = std::make_shared<Demuxer>(stream.input);
   demuxer->set_dump_stream_info(packaging_params.test_params.dump_stream_info);
+  demuxer->set_input_format(stream.input_format);
 
   if (packaging_params.decryption_params.key_provider != KeyProvider::kNone) {
     std::unique_ptr<KeySource> decryption_key_source(

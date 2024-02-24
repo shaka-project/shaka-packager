@@ -75,6 +75,10 @@ class Demuxer : public OriginHandler {
     dump_stream_info_ = dump_stream_info;
   }
 
+  void set_input_format(std::string input_format) {
+    input_format_ = input_format;
+  }
+
  protected:
   /// @name MediaHandler implementation overrides.
   /// @{
@@ -148,6 +152,8 @@ class Demuxer : public OriginHandler {
   // Whether to dump stream info when it is received.
   bool dump_stream_info_ = false;
   Status init_event_status_;
+  // Explicitly defined input format, for avoiding autodetection.
+  std::string input_format_;
 };
 
 }  // namespace media

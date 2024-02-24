@@ -40,6 +40,10 @@ class MuxerListenerFactory {
     // told to output media info.
     std::string media_info_output;
 
+    // Explicit input format, for avoiding autodetection when needed.
+    // This is useful for cases such as live WebVTT through UDP.
+    std::string input_format;
+
     // HLS specific values needed to write to HLS manifests. Will only be used
     // if an HlsNotifier is given to the factory.
     std::string hls_group_id;
