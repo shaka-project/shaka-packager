@@ -1969,6 +1969,27 @@ size_t FlacSpecific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
+ALACSpecific::ALACSpecific() = default;
+ALACSpecific::~ALACSpecific() = default;
+
+FourCC ALACSpecific::BoxType() const {
+  return FOURCC_alac;
+}
+
+bool ALACSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t ALACSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 AudioSampleEntry::AudioSampleEntry() = default;
 AudioSampleEntry::~AudioSampleEntry() = default;
 
@@ -2011,6 +2032,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&dops));
   RCHECK(buffer->TryReadWriteChild(&dfla));
   RCHECK(buffer->TryReadWriteChild(&mhac));
+  RCHECK(buffer->TryReadWriteChild(&alac));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of AudioSampleEntry. See
@@ -2036,6 +2058,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
+         dac4.ComputeSize() + mhac.ComputeSize() + alac.ComputeSize() +
          dac4.ComputeSize() + mhac.ComputeSize() + udts.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.

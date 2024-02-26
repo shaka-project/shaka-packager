@@ -382,6 +382,15 @@ struct FlacSpecific : FullBox {
   std::vector<uint8_t> data;
 };
 
+// ALAC specific decoder configuration box:
+//   https://wiki.multimedia.cx/index.php/Apple_Lossless_Audio_Coding
+// We do not care about the actual data inside, which is simply copied over.
+struct ALACSpecific : FullBox {
+  DECLARE_BOX_METHODS(ALACSpecific);
+
+  std::vector<uint8_t> data;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
 
@@ -409,6 +418,7 @@ struct AudioSampleEntry : Box {
   OpusSpecific dops;
   FlacSpecific dfla;
   MHAConfiguration mhac;
+  ALACSpecific alac;
 };
 
 struct WebVTTConfigurationBox : Box {

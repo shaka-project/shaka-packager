@@ -1477,6 +1477,15 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('flac-with-encryption', verify_decryption=True)
 
+  def testAlac(self):
+    streams = [
+      self._GetStream('audio', test_file='bear-alac.mp4'),
+    ]
+    flags = self._GetFlags(output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('audio-alac')
+
   def testAv1Mp4WithEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'], test_files=['bear-av1.mp4']),
