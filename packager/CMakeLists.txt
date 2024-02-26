@@ -57,6 +57,9 @@ include_directories(..)
 # Public include folder, to reference public headers as packager/foo.h
 include_directories(../include)
 
+# Include settings for optional fully-static binaries.
+include("fully-static.cmake")
+
 # Include our module for gtest-based testing.
 include("gtest.cmake")
 
@@ -171,6 +174,7 @@ target_link_libraries(packager
   libpackager
   license_notice
   string_utils
+  ${EXTRA_EXE_LIBRARIES}
 )
 
 add_executable(mpd_generator
@@ -187,6 +191,7 @@ target_link_libraries(mpd_generator
   license_notice
   mpd_builder
   mpd_util
+  ${EXTRA_EXE_LIBRARIES}
   )
 
 add_executable(packager_test

@@ -34,3 +34,6 @@
 [submodule "packager/third_party/c-ares/source"]
 	path = packager/third_party/c-ares/source
 	url = https://github.com/c-ares/c-ares
+[submodule "packager/third_party/mimalloc/source"]
+	path = packager/third_party/mimalloc/source
+	url = https://github.com/microsoft/mimalloc

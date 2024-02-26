@@ -149,9 +149,24 @@ jobs:
             export PACKAGER_LOW_MEMORY_BUILD=yes
           fi
 
+          # Do fully static release builds on Linux.
+          if [[ "${{ runner.os }}" == "Linux" && \
+                "$BUILD_CONFIG" == "Release-static" ]]; then
+            FULLY_STATIC="ON"
+            # Use a musl cross-compiler, since glibc static executables are not
+            # portable.
+            wget https://musl.cc/x86_64-linux-musl-cross.tgz
+            tar xf x86_64-linux-musl-cross.tgz
+            export CC=`pwd`/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc
+            export CXX=`pwd`/x86_64-linux-musl-cross/bin/x86_64-linux-musl-g++
+          else
+            FULLY_STATIC="OFF"
+          fi
+
           cmake \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
             -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
+            -DFULLY_STATIC="$FULLY_STATIC" \
             -S . \
             -B build/
 
@@ -179,7 +194,16 @@ jobs:
             exit 0
           fi
 
-          # TODO: Check static executables?
+          # Check static executables
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            echo "::group::Check static executables"
+            # If ldd succeeds, then these are dynamic executables, so we fail
+            # this step if ldd succeeds.  The output of ldd will still be
+            # logged.
+            ldd build/packager/packager && exit 1
+            ldd build/packager/mpd_generator && exit 1
+            echo "::endgroup::"
+          fi
 
           echo "::group::Prepare artifacts folder"
           mkdir artifacts

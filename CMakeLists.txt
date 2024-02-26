@@ -15,9 +15,13 @@ include("packager/policies.cmake")
 # Project name.  May not contain spaces.  Versioning is managed elsewhere.
 project(shaka-packager VERSION "")
 
-# The only build option for Shaka Packager is whether to build a shared
-# libpackager library.  By default, don't.
+# Whether to build a shared libpackager library.  By default, don't.
 option(BUILD_SHARED_LIBS "Build libpackager as a shared library" OFF)
+
+# Whether to attempt a static linking of the command line front-end.
+# Only supported on Linux and with musl.  This will also cause us to link
+# against mimalloc to replace the standard allocator in musl, which is slow.
+option(FULLY_STATIC "Attempt fully static linking of all CLI apps" OFF)
 
 # Enable CMake's test infrastructure.
 enable_testing()
