@@ -108,7 +108,7 @@ jobs:
           kitware_key_path="/usr/share/keyrings/kitware-archive-keyring.gpg"
           kitware_sources_path="/etc/apt/sources.list.d/kitware.list"
 
-          wget -O - "$kitware_key_url" 2>/dev/null | gpg --dearmor - \
+          curl -sL "$kitware_key_url" | gpg --dearmor - \
               | sudo tee "$kitware_key_path" >/dev/null
 
           . /etc/lsb-release  # Defines $DISTRIB_CODENAME (jammy, focal, etc)
@@ -149,9 +149,32 @@ jobs:
             export PACKAGER_LOW_MEMORY_BUILD=yes
           fi
 
+          # Do fully static release builds on Linux.
+          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
+          if [[ "${{ runner.os }}" == "Linux" && \
+                "$BUILD_CONFIG" == "Release-static" ]]; then
+            # Enable build settings for fully-static.
+            FULLY_STATIC="ON"
+
+            # Use a musl toolchain, since glibc static executables are not
+            # portable.
+            if [[ "${{matrix.target_arch}}" == "arm64" ]]; then
+              MUSL_ARCH="aarch64"
+            else
+              MUSL_ARCH="x86_64"
+            fi
+            curl -LO https://musl.cc/"$MUSL_ARCH"-linux-musl-native.tgz
+            tar xf "$MUSL_ARCH"-linux-musl-native.tgz
+            export CC=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-gcc
+            export CXX=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-g++
+          else
+            FULLY_STATIC="OFF"
+          fi
+
           cmake \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
             -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
+            -DFULLY_STATIC="$FULLY_STATIC" \
             -S . \
             -B build/
 
@@ -179,7 +202,21 @@ jobs:
             exit 0
           fi
 
-          # TODO: Check static executables?
+          # Check static executables
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            echo "::group::Check static executables"
+            for exe in build/packager/{packager,mpd_generator}; do
+              # Capture information about the executables, but also let it be
+              # logged to stdout.
+              ldd "$exe" | tee static.log
+              # The phrase "statically linked" means we got it right.  Fail if
+              # we don't find it.
+              if ! cat static.log | grep -q statically; then
+                exit 1
+              fi
+            done
+            echo "::endgroup::"
+          fi
 
           echo "::group::Prepare artifacts folder"
           mkdir artifacts
