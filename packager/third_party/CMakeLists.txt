@@ -31,6 +31,9 @@ else()
   # Surprisingly, both of these are required to satisfy various platforms and
   # compilers at once.
   add_compile_options(-Wno-error -Wno-error=all)
+  # Hide warnings in third-party code.  The noise isn't helpful, and this line
+  # can be commented out if we ever want to see/audit third-party warnings.
+  add_compile_options(-w)
 endif()
 
 # These all use EXCLUDE_FROM_ALL so that only the referenced targets get built.
