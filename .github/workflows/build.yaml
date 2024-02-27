@@ -156,30 +156,17 @@ jobs:
             # Enable build settings for fully-static.
             FULLY_STATIC="ON"
 
-            # Use a musl cross-compiler, since glibc static executables are not
+            # Use a musl toolchain, since glibc static executables are not
             # portable.
             if [[ "${{matrix.target_arch}}" == "arm64" ]]; then
               MUSL_ARCH="aarch64"
             else
               MUSL_ARCH="x86_64"
             fi
-            curl -LO https://musl.cc/"$MUSL_ARCH"-linux-musl-cross.tgz
-            tar xf "$MUSL_ARCH"-linux-musl-cross.tgz
-            export CC=`pwd`/"$MUSL_ARCH"-linux-musl-cross/bin/"$MUSL_ARCH"-linux-musl-gcc
-            export CXX=`pwd`/"$MUSL_ARCH"-linux-musl-cross/bin/"$MUSL_ARCH"-linux-musl-g++
-
-            # FIXME: Debugging musl cross compiler on arm64
-            set -x
-            uname -a
-            ls -l "$CC"
-            file "$CC"
-            "$CC" --version
-            echo "int main() { return 0; }" > compiler-test.c
-            "$CC" -o compiler-test compiler-test.c -static
-            ls -l compiler-test
-            file compiler-test
-            ./compiler-test; echo $?
-            set +x
+            curl -LO https://musl.cc/"$MUSL_ARCH"-linux-musl-native.tgz
+            tar xf "$MUSL_ARCH"-linux-musl-native.tgz
+            export CC=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-gcc
+            export CXX=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-g++
           else
             FULLY_STATIC="OFF"
           fi
