@@ -208,8 +208,10 @@ jobs:
             # If ldd succeeds, then these are dynamic executables, so we fail
             # this step if ldd succeeds.  The output of ldd will still be
             # logged.
+            set +e # No exit on failure.
             ldd build/packager/packager && exit 1
             ldd build/packager/mpd_generator && exit 1
+            set -e # Re-enable exit on failure.
             echo "::endgroup::"
           fi
 
