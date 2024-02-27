@@ -2058,8 +2058,8 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
-         dac4.ComputeSize() + mhac.ComputeSize() + alac.ComputeSize() +
          dac4.ComputeSize() + mhac.ComputeSize() + udts.ComputeSize() +
+         alac.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
