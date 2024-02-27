@@ -108,7 +108,7 @@ jobs:
           kitware_key_path="/usr/share/keyrings/kitware-archive-keyring.gpg"
           kitware_sources_path="/etc/apt/sources.list.d/kitware.list"
 
-          wget -O - "$kitware_key_url" 2>/dev/null | gpg --dearmor - \
+          curl -sL "$kitware_key_url" | gpg --dearmor - \
               | sudo tee "$kitware_key_path" >/dev/null
 
           . /etc/lsb-release  # Defines $DISTRIB_CODENAME (jammy, focal, etc)
@@ -163,7 +163,7 @@ jobs:
             else
               MUSL_ARCH="x86_64"
             fi
-            wget https://musl.cc/"$MUSL_ARCH"-linux-musl-cross.tgz
+            curl -LO https://musl.cc/"$MUSL_ARCH"-linux-musl-cross.tgz
             tar xf "$MUSL_ARCH"-linux-musl-cross.tgz
             export CC=`pwd`/"$MUSL_ARCH"-linux-musl-cross/bin/"$MUSL_ARCH"-linux-musl-gcc
             export CXX=`pwd`/"$MUSL_ARCH"-linux-musl-cross/bin/"$MUSL_ARCH"-linux-musl-g++
