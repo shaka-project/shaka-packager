@@ -136,7 +136,7 @@ const char kUsage[] =
     "    used to caption short portions of the audio that might be in a \n"
     "    foreign language. For DASH this will set role to forced_subtitle, \n"
     "    for HLS it will set FORCED=YES and AUTOSELECT=YES. \n"
-    "    Only valid for subtitles.";
+    "    Only valid for subtitles.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";
