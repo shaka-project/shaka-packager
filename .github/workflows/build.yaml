@@ -205,13 +205,14 @@ jobs:
           # Check static executables
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             echo "::group::Check static executables"
-            # If ldd succeeds, then these are dynamic executables, so we fail
-            # this step if ldd succeeds.  The output of ldd will still be
-            # logged.
-            set +e # No exit on failure.
-            ldd build/packager/packager && exit 1
-            ldd build/packager/mpd_generator && exit 1
-            set -e # Re-enable exit on failure.
+            # Capture file information about the executables, but also let it
+            # be logged to stdout.
+            file -L build/packager/{packager,mpd_generator} | tee static.log
+            # The phrase "dynamically linked" means we messed this up.  Fail if
+            # we find it.
+            if cat static.log | grep -q dynamically; then
+              exit 1
+            fi
             echo "::endgroup::"
           fi
 
