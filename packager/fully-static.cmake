@@ -16,10 +16,12 @@ if(FULLY_STATIC)
 
   # Tell CMake not to plan to relink the executables, which wouldn't make sense
   # in this context and causes CMake to fail at configure time when using a
-  # cross-compiler for musl.
+  # musl toolchain for static builds.
   set(CMAKE_SKIP_BUILD_RPATH ON)
 
   # Set extra linker options necessary for fully static linking.  These apply
-  # to all executables, which is critical when using a musl cross-compiler.
+  # to all executables, which is critical when using a musl toolchain.  Without
+  # applying these to all executables, we could create dynamic musl executables
+  # as intermediate outputs, which then could not run on a glibc host system.
   add_link_options(-static-libgcc -static-libstdc++ -static)
 endif()

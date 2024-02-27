@@ -107,8 +107,8 @@ cmake --build build --parallel
 ```
 
 To build portable, fully-static executables on Linux, you will need either musl
-as your system libc, or a musl cross-compiler toolchain.  To create a portable,
-fully-static build for Linux, configure CMake with:
+as your system libc, or a musl toolchain.  (See [musl.cc](https://musl.cc).
+To create a portable, fully-static build for Linux, configure CMake with:
 
 ```shell
   -DCMAKE_BUILD_TYPE=Release \
