@@ -19,9 +19,9 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="2" contentType="video" width="640" height="360" maxFrameRate="30000/30030" par="16:9">
+    <AdaptationSet id="2" contentType="video" width="640" height="360" maxFrameRate="30000/22022" par="16:9">
       <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="1"/>
-      <Representation id="2" bandwidth="211545" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/60060" maxPlayoutRate="60" codingDependency="false">
+      <Representation id="2" bandwidth="211545" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/22022" maxPlayoutRate="60" codingDependency="false">
         <BaseURL>bear-640x360-video-trick_play_factor_2.mp4</BaseURL>
         <SegmentBase indexRange="870-925" timescale="30000">
           <Initialization range="0-869"/>
