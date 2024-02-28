@@ -99,7 +99,9 @@ class Segmenter {
 
   /// @return The sample duration in the timescale of the media.
   ///         Returns 0 if no samples are added yet.
-  int32_t sample_duration() const { return sample_durations_[1]; }
+  int32_t sample_duration() const {
+    return sample_durations_[num_samples_ < 2 ? 0 : 1];
+  }
 
  protected:
   /// Update segmentation progress using ProgressListener.

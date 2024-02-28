@@ -49,6 +49,7 @@ Status TsMuxer::Finalize() {
 
 Status TsMuxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
+
   // The duration of the first sample may have been adjusted, so use
   // the duration of the second sample instead.
   if (num_samples_ < 2) {
