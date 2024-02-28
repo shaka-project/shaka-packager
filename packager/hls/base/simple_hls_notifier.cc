@@ -58,6 +58,12 @@ bool IsFairPlaySystemId(const std::vector<uint8_t>& system_id) {
                     media::kFairPlaySystemId);
 }
 
+bool IsLegacyFairPlaySystemId(const std::vector<uint8_t>& system_id) {
+  return system_id.size() == std::size(media::kLegacyFairPlaySystemId) &&
+         std::equal(system_id.begin(), system_id.end(),
+                    media::kLegacyFairPlaySystemId);
+}
+
 bool IsPlayReadySystemId(const std::vector<uint8_t>& system_id) {
   return system_id.size() == std::size(media::kPlayReadySystemId) &&
          std::equal(system_id.begin(), system_id.end(),
@@ -462,7 +468,7 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
                                     iv, "identity", "", media_playlist.get());
     return true;
   }
-  if (IsFairPlaySystemId(system_id)) {
+  if (IsFairPlaySystemId(system_id) || IsLegacyFairPlaySystemId(system_id)) {
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
