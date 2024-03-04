@@ -127,6 +127,26 @@ jobs:
         run: |
           brew install ninja
 
+      - name: Check Mac CPU architecture
+        if: runner.os == 'macOS'
+        # In case we get confused about GitHub's mac VM image labels,
+        # explicitly check that the CPU type matches our expectations.
+        run: |
+          if [[ "${{matrix.target_arch}}" == "arm64" ]]; then
+            CORRECT_LABEL="arm64"
+          else
+            CORRECT_LABEL="x86_64"
+          fi
+
+          LABEL=$(uname -m)
+          if [[ "$LABEL" != "$CORRECT_LABEL" ]]; then
+            echo "Wrong hardware label \"$LABEL\", expecting \"$CORRECT_LABEL\"."
+            echo "Full uname string: $(uname -a)"
+            echo "Full sysctl CPU info:"
+            sysctl machdep.cpu
+            exit 1
+          fi
+
       - name: Generate build files
         run: |
           mkdir -p build/
