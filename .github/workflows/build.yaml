@@ -139,6 +139,8 @@ jobs:
           fi
 
           LABEL=$(uname -m)
+          echo "Hardware label: \"$LABEL\""
+
           if [[ "$LABEL" != "$CORRECT_LABEL" ]]; then
             echo "Wrong hardware label \"$LABEL\", expecting \"$CORRECT_LABEL\"."
             echo "Full uname string: $(uname -a)"
