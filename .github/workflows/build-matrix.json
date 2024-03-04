@@ -9,9 +9,18 @@
       "generator": "Ninja"
     },
     {
-      "os": "macos-latest",
+      "comment": "Explicit macOS versions are required for explicit x64 CPU.",
+      "os": "macos-14",
       "os_name": "osx",
       "target_arch": "x64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
+      "comment": "Explicit macOS versions are required for explicit arm64 CPU.",
+      "os": "macos-14-arm64",
+      "os_name": "osx",
+      "target_arch": "arm64",
       "exe_ext": "",
       "generator": "Ninja"
     },
