@@ -292,7 +292,10 @@ void CheckVideoInitSegment(const FullSegmentBuffer& buffer,
   }
 }
 
-void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
+void CheckSegment(const LiveConfig& config,
+                  const FullSegmentBuffer& buffer,
+                  const uint32_t expected_timescale,
+                  const bool check_decode_time) {
   bool err(true);
   size_t bytes_to_read(buffer.SegmentSize());
   const uint8_t* data(buffer.SegmentData());
@@ -315,7 +318,7 @@ void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
     EXPECT_FALSE(err);
 
     media::mp4::SegmentIndex expected;
-    expected.timescale = 10000000;
+    expected.timescale = expected_timescale;
     SegmentIndexBoxChecker checker(expected);
     checker.Check(reader.get());
 
@@ -330,6 +333,10 @@ void CheckSegment(const LiveConfig& config, const FullSegmentBuffer& buffer) {
 
     media::mp4::MovieFragment expected;
     expected.header.sequence_number = config.segment_number;
+    expected.tracks.resize(1);
+    if (check_decode_time)
+      expected.tracks[0].decode_time.decode_time =
+          config.timed_text_decode_time;
 
     MovieFragmentBoxChecker checker(expected);
     checker.Check(reader.get());
@@ -800,7 +807,7 @@ TEST_F(LivePackagerBaseTest, CustomMoofSequenceNumber) {
     ASSERT_EQ(Status::OK, packager.Package(init_seg, media_seg, out));
     ASSERT_GT(out.SegmentSize(), 0);
 
-    CheckSegment(live_config, out);
+    CheckSegment(live_config, out, 10000000, false);
   }
 }
 
@@ -942,4 +949,134 @@ INSTANTIATE_TEST_CASE_P(
             5, "audio/en/init.mp4", LiveConfig::EncryptionScheme::SAMPLE_AES,
             LiveConfig::OutputFormat::TS, LiveConfig::TrackType::AUDIO,
             "audio/en/%05d.m4s", false}));
+
+TEST_F(LivePackagerBaseTest, TestPackageTimedTextHybrikComp) {
+  for (unsigned int i = 0; i < kNumSegments; i++) {
+    std::string segment_num =
+        absl::StrFormat("timed_text/input/en.m3u8_%010d.vtt", i);
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(segment_num);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
+
+    FullSegmentBuffer out;
+
+    LiveConfig live_config;
+    live_config.format = LiveConfig::OutputFormat::VTTMP4;
+    live_config.track_type = LiveConfig::TrackType::TEXT;
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
+    live_config.segment_number = i + 1;
+    live_config.timed_text_decode_time = (i * 5000);
+
+    SetupLivePackagerConfig(live_config);
+    ASSERT_EQ(Status::OK, live_packager_->PackageTimedText(media_seg, out));
+    ASSERT_GT(out.SegmentSize(), 0);
+
+    CheckSegment(live_config, out, 1000, true);
+
+    std::vector<uint8_t> exp_seg_buf = ReadTestDataFile(
+        absl::StrFormat("timed_text/expected/%05d.m4s", i + 1));
+    ASSERT_FALSE(exp_seg_buf.empty());
+
+    std::vector<uint8_t> buffer(out.SegmentData(),
+                                out.SegmentData() + out.SegmentSize());
+    ASSERT_EQ(exp_seg_buf, buffer);
+  }
+}
+
+struct TimedTextTestCase {
+  const char* media_segment_format;
+  LiveConfig::TrackType track_type;
+  LiveConfig::OutputFormat output_format;
+  Status expected_status;
+  int64_t start_decode_time;
+};
+
+class TimedTextParameterizedTest
+    : public LivePackagerBaseTest,
+      public ::testing::WithParamInterface<TimedTextTestCase> {};
+
+TEST_P(TimedTextParameterizedTest, VerifyTimedText) {
+  for (unsigned int i = 0; i < kNumSegments; i++) {
+    std::string format_output;
+
+    std::vector<absl::FormatArg> format_args;
+    format_args.emplace_back(i);
+    absl::UntypedFormatSpec format(GetParam().media_segment_format);
+
+    ASSERT_TRUE(absl::FormatUntyped(&format_output, format, format_args));
+    std::vector<uint8_t> segment_buffer = ReadTestDataFile(format_output);
+    ASSERT_FALSE(segment_buffer.empty());
+
+    SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
+    FullSegmentBuffer out;
+
+    LiveConfig live_config;
+    live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
+    live_config.format = GetParam().output_format;
+    live_config.track_type = GetParam().track_type;
+    if (live_config.format == LiveConfig::OutputFormat::VTTMP4 ||
+        live_config.format == LiveConfig::OutputFormat::TTMLMP4) {
+      live_config.segment_number = i + 1;
+      live_config.timed_text_decode_time =
+          GetParam().start_decode_time + (i * 5000);
+    }
+
+    SetupLivePackagerConfig(live_config);
+    ASSERT_EQ(GetParam().expected_status,
+              live_packager_->PackageTimedText(media_seg, out));
+    if (GetParam().expected_status == Status::OK) {
+      ASSERT_GT(out.SegmentSize(), 0);
+      if (live_config.format == LiveConfig::OutputFormat::VTTMP4 ||
+          live_config.format == LiveConfig::OutputFormat::TTMLMP4) {
+        CheckSegment(live_config, out, 1000, true);
+      }
+    }
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(
+    LivePackagerTimedText,
+    TimedTextParameterizedTest,
+    ::testing::Values(
+        // VTT in text --> VTT in MP4
+        TimedTextTestCase{
+            "timed_text/input/en.m3u8_%010d.vtt",
+            LiveConfig::TrackType::TEXT,
+            LiveConfig::OutputFormat::VTTMP4,
+            Status::OK,
+            16000,
+        },
+        // VTT in text --> TTML in Text
+        TimedTextTestCase{
+            "timed_text/input/en.m3u8_%010d.vtt",
+            LiveConfig::TrackType::TEXT,
+            LiveConfig::OutputFormat::TTML,
+            Status::OK,
+            0,
+        },
+        // VTT in text --> TTML in MP4
+        TimedTextTestCase{
+            "timed_text/input/en.m3u8_%010d.vtt",
+            LiveConfig::TrackType::TEXT,
+            LiveConfig::OutputFormat::TTMLMP4,
+            Status::OK,
+            16000,
+        },
+        // Invalid track type of audio
+        TimedTextTestCase{
+            "timed_text/input/en.m3u8_%010d.vtt",
+            LiveConfig::TrackType::AUDIO,
+            LiveConfig::OutputFormat::TTMLMP4,
+            Status(error::INVALID_ARGUMENT, "Stream not available"),
+            0,
+        },
+        // Invalid track type of video
+        TimedTextTestCase{
+            "timed_text/input/en.m3u8_%010d.vtt",
+            LiveConfig::TrackType::VIDEO,
+            LiveConfig::OutputFormat::TTMLMP4,
+            Status(error::INVALID_ARGUMENT, "Stream not available"),
+            0,
+        }));
 }  // namespace shaka

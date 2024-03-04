@@ -22,7 +22,7 @@ namespace media {
 // Used to parse a WebVTT source into Cues that will be sent downstream.
 class WebVttParser : public MediaParser {
  public:
-  WebVttParser();
+  WebVttParser(bool webvtt_header_only_output_segment = false);
 
   void Init(const InitCB& init_cb,
             const NewMediaSampleCB& new_media_sample_cb,
@@ -52,6 +52,7 @@ class WebVttParser : public MediaParser {
   bool saw_cue_ = false;
   bool stream_info_dispatched_ = false;
   bool initialized_ = false;
+  bool webvtt_header_only_output_segment_ = false;
 };
 
 }  // namespace media

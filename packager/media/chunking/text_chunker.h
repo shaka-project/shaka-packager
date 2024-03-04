@@ -20,7 +20,9 @@ namespace media {
 // is when a cue event is seen.
 class TextChunker : public MediaHandler {
  public:
-  explicit TextChunker(double segment_duration_in_seconds);
+  explicit TextChunker(double segment_duration_in_seconds,
+                       int64_t timed_text_decode_time = -1,
+                       bool adjust_sample_boundaries = false);
 
  private:
   TextChunker(const TextChunker&) = delete;
@@ -51,6 +53,10 @@ class TextChunker : public MediaHandler {
   // Time values are in scaled units.
   int64_t segment_start_ = -1;     // Set when the first sample comes in.
   int64_t segment_duration_ = -1;  // Set in OnStreamInfo.
+
+  // Only for Live Packaging to address the case when a sample ends after the
+  // segment end which results in duplicate moof mdat pairs.
+  bool adjust_sample_boundaries_ = false;
 
   // All samples that make up the current segment. We must store the samples
   // until the segment ends because a cue event may end the segment sooner

@@ -31,6 +31,14 @@ struct ChunkingParams {
   /// and mdat atom. Each chunk is uploaded immediately upon creation,
   /// decoupling latency from segment duration.
   bool low_latency_dash_mode = false;
+
+  /// Used to set the decode time for only for timed text packing, specifically
+  /// when packaging from VTT to VTT in MP4 or TTML in MP4.
+  int64_t timed_text_decode_time = -1;
+
+  /// Enable VTT text chunking adjustment when the sample end time falls outside
+  /// the segment end time.
+  bool adjust_sample_boundaries = false;
 };
 
 }  // namespace shaka

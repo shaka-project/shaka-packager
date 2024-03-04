@@ -101,7 +101,7 @@ TEST_F(WebVttParserTest, ParseOnlyHeader) {
   ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
   ASSERT_TRUE(parser_->Flush());
 
-  ASSERT_TRUE(streams_.empty());
+  ASSERT_FALSE(streams_.empty());
   ASSERT_TRUE(samples_.empty());
 }
 
@@ -115,7 +115,7 @@ TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
   ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
   ASSERT_TRUE(parser_->Flush());
 
-  ASSERT_TRUE(streams_.empty());
+  ASSERT_FALSE(streams_.empty());
   ASSERT_TRUE(samples_.empty());
 }
 

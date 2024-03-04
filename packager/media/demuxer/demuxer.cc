@@ -203,7 +203,7 @@ Status Demuxer::InitializeParser() {
       parser_.reset(new WebMMediaParser());
       break;
     case CONTAINER_WEBVTT:
-      parser_.reset(new WebVttParser());
+      parser_.reset(new WebVttParser(webvtt_header_only_output_segment_));
       break;
     case CONTAINER_UNKNOWN: {
       const int64_t kDumpSizeLimit = 512;

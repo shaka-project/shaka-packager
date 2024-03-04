@@ -190,7 +190,8 @@ void ParseSettings(const std::string& id,
 
 }  // namespace
 
-WebVttParser::WebVttParser() {}
+WebVttParser::WebVttParser(bool webvtt_header_only_output_segment)
+    : webvtt_header_only_output_segment_(webvtt_header_only_output_segment) {}
 
 void WebVttParser::Init(const InitCB& init_cb,
                         const NewMediaSampleCB& new_media_sample_cb,
@@ -207,7 +208,20 @@ void WebVttParser::Init(const InitCB& init_cb,
 
 bool WebVttParser::Flush() {
   reader_.Flush();
-  return Parse();
+  const bool isOK = Parse();
+  // Handle case when Parser was initialized but stream information not filled
+  // This happens when we parse an empty webvtt file (only contains a header)
+  if (initialized_ && !stream_info_dispatched_) {
+    DispatchTextStreamInfo();
+    if (webvtt_header_only_output_segment_) {
+      // This is a workaround in the case of header only input WEBVTT and the
+      // need to produce an output segment
+      const auto sample = std::make_shared<TextSample>("", 0, 1, TextSettings{},
+                                                       TextFragment{});
+      return new_text_sample_cb_(kStreamIndex, sample);
+    }
+  }
+  return isOK;
 }
 
 bool WebVttParser::Parse(const uint8_t* buf, int size) {

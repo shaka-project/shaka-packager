@@ -16,8 +16,12 @@ namespace {
 const size_t kStreamIndex = 0;
 }  // namespace
 
-TextChunker::TextChunker(double segment_duration_in_seconds)
-    : segment_duration_in_seconds_(segment_duration_in_seconds){};
+TextChunker::TextChunker(double segment_duration_in_seconds,
+                         int64_t timed_text_decode_time,
+                         bool adjust_sample_boundaries)
+    : segment_duration_in_seconds_(segment_duration_in_seconds),
+      segment_start_(timed_text_decode_time),
+      adjust_sample_boundaries_(adjust_sample_boundaries){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {
@@ -90,6 +94,16 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   while (sample_start >= segment_start_ + segment_duration_) {
     // |DispatchSegment| will advance |segment_start_|.
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
+  }
+
+  // TODO??: Is this the right approach in the case when the sample starts
+  // before the segment end but the sample end time is after the segment
+  // end. This in an effort to prevent a duplicate moof - mdat pair.
+  if (sample->EndTime() > segment_start_ + segment_duration_ &&
+      adjust_sample_boundaries_) {
+    sample = std::make_shared<TextSample>(sample->id(), sample->start_time(),
+                                          segment_start_ + segment_duration_,
+                                          sample->settings(), sample->body());
   }
 
   samples_in_current_segment_.push_back(std::move(sample));
