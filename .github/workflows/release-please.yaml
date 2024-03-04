@@ -13,8 +13,13 @@ on:
       - v[0-9]*
 
 jobs:
+  settings:
+    name: Settings
+    uses: ./.github/workflows/settings.yaml
+
   release:
     runs-on: ubuntu-latest
+    needs: settings
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -101,11 +106,13 @@ jobs:
   # Do a complete build
   build:
     name: Build
-    needs: release
+    needs: [settings, release]
     if: needs.release.outputs.release_created
     uses: ./.github/workflows/build.yaml
     with:
       ref: ${{ github.ref }}
+      self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
 
   # Attach build artifacts to the release
   artifacts:
