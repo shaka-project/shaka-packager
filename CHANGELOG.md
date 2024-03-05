@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [3.0.1](https://github.com/shaka-project/shaka-packager/compare/v3.0.0...v3.0.1) (2024-03-05)
+
+
+### Bug Fixes
+
+* **CI:** Add Mac-arm64 to build matrix ([#1359](https://github.com/shaka-project/shaka-packager/issues/1359)) ([c456ad6](https://github.com/shaka-project/shaka-packager/commit/c456ad64d1291bcf057c22a5c34479fcb4bbda55))
+* **CI:** Add missing Linux arm64 builds to release ([9c033b9](https://github.com/shaka-project/shaka-packager/commit/9c033b9d40087a9a4eef6a013d17fd696c44459c))
+
 ## [3.0.0](https://github.com/shaka-project/shaka-packager/compare/v2.6.1...v3.0.0) (2024-02-28)
 
 
