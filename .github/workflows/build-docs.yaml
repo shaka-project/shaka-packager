@@ -40,7 +40,7 @@ jobs:
               breathe
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
 
@@ -66,12 +66,12 @@ jobs:
           chmod -R +rX gh-pages/
 
       - name: Upload docs artifacts
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: gh-pages
 
       - name: Debug
-        uses: mxschmitt/action-tmate@v3.6
+        uses: mxschmitt/action-tmate@v3.17
         with:
           limit-access-to-actor: true
         if: failure() && inputs.debug
