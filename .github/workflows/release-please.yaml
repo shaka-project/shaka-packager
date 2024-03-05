@@ -129,7 +129,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload \
+          gh -R ${{ github.repository }} release upload \
               ${{ needs.release.outputs.tag_name }} artifacts/* \
               --clobber
 
