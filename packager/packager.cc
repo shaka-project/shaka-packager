@@ -418,6 +418,10 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
     text_info->set_language(language);
   }
 
+  if (stream_descriptor.index.has_value()) {
+    text_media_info->set_index(stream_descriptor.index.value());
+  }
+
   text_media_info->set_media_file_name(stream_descriptor.output);
   text_media_info->set_container_type(MediaInfo::CONTAINER_TEXT);
 

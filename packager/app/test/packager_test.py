@@ -1732,6 +1732,18 @@ class PackagerFunctionalTest(PackagerAppTest):
                                              force_cl_index=True))
     self._CheckTestResults('forced-commandline-ordering')
 
+  def testForcedCommandlineOrderingWithTTML(self):
+    streams = [
+      self._GetStream('video', test_file='bear-640x360.mp4'),
+      self._GetStream('audio', test_file='bear-640x360.mp4'),
+      self._GetStream('text',  test_file='bear-english.ttml'),
+    ]
+
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True, output_hls=False,
+                                             force_cl_index=True))
+    self._CheckTestResults('forced-commandline-ordering-ttml')
+
   def testAllowCodecSwitchingWithCommandlineOrdering(self):
     streams = [
         self._GetStream('audio', test_file='bear-640x360.mp4'),
