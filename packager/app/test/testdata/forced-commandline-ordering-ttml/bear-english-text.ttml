@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" xml:lang="en">
+  <body>
+    <div>
+      <p begin="0.1s" end="0.8s">Yup, that's a bear, eh.</p>
+      <p begin="1.0s" end="4.7s">He 's... um... doing bear-like stuff.</p>
+    </div>
+  </body>
+</tt>
