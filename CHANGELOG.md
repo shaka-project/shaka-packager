@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.0.2](https://github.com/shaka-project/shaka-packager/compare/v3.0.1...v3.0.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* duplicate representation id for TTML when forced ordering is on ([#1364](https://github.com/shaka-project/shaka-packager/issues/1364)) ([0fd815a](https://github.com/shaka-project/shaka-packager/commit/0fd815a160cc4546ea0c13ac916727777f5cdd41)), closes [#1362](https://github.com/shaka-project/shaka-packager/issues/1362)
+
 ## [3.0.1](https://github.com/shaka-project/shaka-packager/compare/v3.0.0...v3.0.1) (2024-03-05)
 
 
