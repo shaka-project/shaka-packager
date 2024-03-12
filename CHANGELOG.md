@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [3.0.3](https://github.com/shaka-project/shaka-packager/compare/v3.0.2...v3.0.3) (2024-03-12)
+
+
+### Bug Fixes
+
+* Fix NPM binary publication ([#1371](https://github.com/shaka-project/shaka-packager/issues/1371)) ([4cb6536](https://github.com/shaka-project/shaka-packager/commit/4cb653606047b086affc111321187c7889fa238a)), closes [#1369](https://github.com/shaka-project/shaka-packager/issues/1369)
+* Fix tags in official Docker images and binaries ([#1370](https://github.com/shaka-project/shaka-packager/issues/1370)) ([d83c7b1](https://github.com/shaka-project/shaka-packager/commit/d83c7b1d4505a08ef578390115cf28bea77404c2)), closes [#1366](https://github.com/shaka-project/shaka-packager/issues/1366)
+
 ## [3.0.2](https://github.com/shaka-project/shaka-packager/compare/v3.0.1...v3.0.2) (2024-03-07)
 
 
