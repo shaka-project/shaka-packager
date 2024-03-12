@@ -14,6 +14,7 @@ var commandNames = {
   },
   darwin: {
     'x64': 'packager-osx-x64',
+    'arm64': 'packager-osx-arm64',
   },
   win32: {
     'x64': 'packager-win-x64.exe',
