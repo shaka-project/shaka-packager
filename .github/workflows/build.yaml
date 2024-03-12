@@ -96,6 +96,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive
+          fetch-tags: true
 
       - name: Install Linux deps
         if: runner.os == 'Linux'
