@@ -55,7 +55,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-tags: true
-          persist-credentials: false
 
       - name: Compute latest
         id: compute
