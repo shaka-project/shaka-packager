@@ -494,7 +494,6 @@ void AppendPlaylists(const std::string& default_audio_language,
                     base_url, content);
     }
   }
-  
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
