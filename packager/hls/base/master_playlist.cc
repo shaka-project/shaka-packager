@@ -438,7 +438,8 @@ bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
 }
 
 bool TagslistOrderFn(const MediaTagslist& a, const MediaTagslist& b) {
-  return a.playlist->GetMediaInfo().index() < b.playlist->GetMediaInfo().index();
+  return a.playlist->GetMediaInfo().index() < 
+         b.playlist->GetMediaInfo().index();
 }
 
 void AppendPlaylists(const std::string& default_audio_language,
@@ -446,8 +447,7 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
-  std::map<std::string, std::list<const MediaPlaylist*>> 
-      audio_playlist_groups;
+  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
   std::map<std::string, std::list<const MediaPlaylist*>>
       subtitle_playlist_groups;
   std::list<const MediaPlaylist*> video_playlists;
@@ -485,25 +485,27 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
     std::list<MediaTagslist> audio_playlists =
-      BuildMediaTags(audio_playlist_groups, default_audio_language, base_url);
+        BuildMediaTags(audio_playlist_groups, default_audio_language, base_url);
     if (has_index) {
       audio_playlists.sort(TagslistOrderFn);
     }
     for (const auto& pl : audio_playlists) {
-        BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect, base_url, content);
+      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect, 
+                    base_url, content);
     }
   }
   
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
-    std::list<MediaTagslist> subtitle_playlists =
-      BuildMediaTags(subtitle_playlist_groups, default_text_language, base_url);
+    std::list<MediaTagslist> subtitle_playlists = BuildMediaTags(
+        subtitle_playlist_groups, default_text_language, base_url);
     if (has_index) {
       subtitle_playlists.sort(TagslistOrderFn);
     }
     for (const auto& pl : subtitle_playlists) {
-        BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect, base_url, content);
+      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect, 
+                    base_url, content);
     }
   }
 
