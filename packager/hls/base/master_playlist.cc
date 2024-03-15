@@ -438,7 +438,7 @@ bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
 }
 
 bool TagslistOrderFn(const MediaTagslist& a, const MediaTagslist& b) {
-  return a.playlist->GetMediaInfo().index() < 
+  return a.playlist->GetMediaInfo().index() <
          b.playlist->GetMediaInfo().index();
 }
 
@@ -490,7 +490,7 @@ void AppendPlaylists(const std::string& default_audio_language,
       audio_playlists.sort(TagslistOrderFn);
     }
     for (const auto& pl : audio_playlists) {
-      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect, 
+      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect,
                     base_url, content);
     }
   }
@@ -504,7 +504,7 @@ void AppendPlaylists(const std::string& default_audio_language,
       subtitle_playlists.sort(TagslistOrderFn);
     }
     for (const auto& pl : subtitle_playlists) {
-      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect, 
+      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect,
                     base_url, content);
     }
   }
