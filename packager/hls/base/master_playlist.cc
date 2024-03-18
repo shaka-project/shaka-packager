@@ -55,6 +55,14 @@ struct Variant {
   uint64_t avg_audio_bitrate = 0;
 };
 
+// This structure is used to store the playlist and its tags.
+struct MediaTagslist {
+  const MediaPlaylist* playlist;
+  std::string group_id;
+  bool is_default;
+  bool is_autoselect;
+};
+
 uint64_t GetMaximumMaxBitrate(const std::list<const MediaPlaylist*> playlists) {
   uint64_t max = 0;
   for (const auto& playlist : playlists) {
@@ -364,11 +372,12 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   out->append("\n");
 }
 
-void BuildMediaTags(
-    std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>& groups,
+std::list<MediaTagslist> BuildMediaTags(
+    const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
     const std::string& default_language,
-    const std::string& base_url,
-    std::string* out) {
+    const std::string& base_url) {
+  std::list<MediaTagslist> mediaTag_playlist;
+
   for (const auto& group : groups) {
     const std::string& group_id = group.first;
     const auto& playlists = group.second;
@@ -412,22 +421,25 @@ void BuildMediaTags(
         is_autoselect = true;
       }
 
-      BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,
-                    out);
+      MediaTagslist mediaTagslist;
+      mediaTagslist.playlist = playlist;
+      mediaTagslist.group_id = group_id;
+      mediaTagslist.is_default = is_default;
+      mediaTagslist.is_autoselect = is_autoselect;
+      mediaTag_playlist.push_back(mediaTagslist);
     }
   }
+
+  return mediaTag_playlist;
 }
 
-bool ListOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
+bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
   return a->GetMediaInfo().index() < b->GetMediaInfo().index();
 }
 
-bool GroupOrderFn(std::pair<std::string, std::list<const MediaPlaylist*>>& a,
-                  std::pair<std::string, std::list<const MediaPlaylist*>>& b) {
-  a.second.sort(ListOrderFn);
-  b.second.sort(ListOrderFn);
-  return a.second.front()->GetMediaInfo().index() <
-         b.second.front()->GetMediaInfo().index();
+bool TagslistOrderFn(const MediaTagslist& a, const MediaTagslist& b) {
+  return a.playlist->GetMediaInfo().index() <
+         b.playlist->GetMediaInfo().index();
 }
 
 void AppendPlaylists(const std::string& default_audio_language,
@@ -465,38 +477,35 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
-  // convert the std::map to std::list and reorder it if indexes were provided
-  std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
-      audio_groups_list(audio_playlist_groups.begin(),
-                        audio_playlist_groups.end());
-  std::list<std::pair<std::string, std::list<const MediaPlaylist*>>>
-      subtitle_groups_list(subtitle_playlist_groups.begin(),
-                           subtitle_playlist_groups.end());
   if (has_index) {
-    audio_groups_list.sort(GroupOrderFn);
-    for (const auto& group : audio_groups_list) {
-      std::list<const MediaPlaylist*> group_playlists = group.second;
-      group_playlists.sort(ListOrderFn);
-    }
-    subtitle_groups_list.sort(GroupOrderFn);
-    for (const auto& group : subtitle_groups_list) {
-      std::list<const MediaPlaylist*> group_playlists = group.second;
-      group_playlists.sort(ListOrderFn);
-    }
-    video_playlists.sort(ListOrderFn);
-    iframe_playlists.sort(ListOrderFn);
+    video_playlists.sort(PlaylistOrderFn);
+    iframe_playlists.sort(PlaylistOrderFn);
   }
 
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(audio_groups_list, default_audio_language, base_url,
-                   content);
+    std::list<MediaTagslist> audio_playlists =
+        BuildMediaTags(audio_playlist_groups, default_audio_language, base_url);
+    if (has_index) {
+      audio_playlists.sort(TagslistOrderFn);
+    }
+    for (const auto& pl : audio_playlists) {
+      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect,
+                    base_url, content);
+    }
   }
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(subtitle_groups_list, default_text_language, base_url,
-                   content);
+    std::list<MediaTagslist> subtitle_playlists = BuildMediaTags(
+        subtitle_playlist_groups, default_text_language, base_url);
+    if (has_index) {
+      subtitle_playlists.sort(TagslistOrderFn);
+    }
+    for (const auto& pl : subtitle_playlists) {
+      BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect,
+                    base_url, content);
+    }
   }
 
   std::list<Variant> variants =
@@ -522,7 +531,7 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (!audio_playlist_groups.empty() && video_playlists.empty() &&
       subtitle_playlist_groups.empty()) {
     content->append("\n");
-    for (const auto& playlist_group : audio_groups_list) {
+    for (const auto& playlist_group : audio_playlist_groups) {
       Variant variant;
       // Populate |audio_group_id|, which will be propagated to "AUDIO" field.
       // Leaving other fields, e.g. xxx_audio_bitrate in |Variant|, as
