@@ -27,4 +27,21 @@ ABSL_DECLARE_FLAG(bool, include_mspr_pro_for_playready);
 ABSL_DECLARE_FLAG(bool, dash_force_segment_list);
 ABSL_DECLARE_FLAG(bool, low_latency_dash_mode);
 
+// Session based urls
+ABSL_DECLARE_FLAG(std::string, sbd_url_all);
+ABSL_DECLARE_FLAG(std::string, sbd_template_all);
+ABSL_DECLARE_FLAG(std::string, sbd_key_all);
+
+ABSL_DECLARE_FLAG(std::string, sbd_url_video);
+ABSL_DECLARE_FLAG(std::string, sbd_template_video);
+ABSL_DECLARE_FLAG(std::string, sbd_key_video);
+
+ABSL_DECLARE_FLAG(std::string, sbd_url_audio);
+ABSL_DECLARE_FLAG(std::string, sbd_template_audio);
+ABSL_DECLARE_FLAG(std::string, sbd_key_audio);
+ABSL_DECLARE_FLAG(std::string, sbd_url_text);
+
+ABSL_DECLARE_FLAG(std::string, sbd_template_text);
+ABSL_DECLARE_FLAG(std::string, sbd_key_text);
+
 #endif  // APP_MPD_FLAGS_H_
