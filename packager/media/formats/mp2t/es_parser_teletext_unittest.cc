@@ -5,6 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <gtest/gtest.h>
+#include <functional>
 
 #include "packager/base/bind.h"
 #include "packager/media/base/text_sample.h"
@@ -165,7 +166,7 @@ const uint8_t PES_8937764[] = {
     0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x23, 0xc7, 0x75, 0x8c, 0x1c,
     0x04, 0x04, 0x04, 0x86, 0x4f, 0xce, 0x75, 0x75, 0x75, 0x8c, 0x8c};
 
-const uint32_t pes_pid = 123;
+const uint32_t kPesPid = 123;
 
 }  // namespace
 
@@ -187,13 +188,13 @@ class EsParserTeletextTest : public ::testing::Test {
 
 TEST_F(EsParserTeletextTest, descriptor_substreams_has_index_888_language_cat) {
   auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-
+                                  base::Unretained(this), kPesPid);
   auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+                                 base::Unretained(this), kPesPid);
+
 
   std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
-      pes_pid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
 
   const auto parse_result =
       es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
@@ -211,13 +212,12 @@ TEST_F(EsParserTeletextTest, descriptor_substreams_has_index_888_language_cat) {
 
 TEST_F(EsParserTeletextTest, pes_283413_line_emitted_on_next_pes) {
   auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-
+                                  base::Unretained(this), kPesPid);
   auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+                                 base::Unretained(this), kPesPid);
 
   std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
-      pes_pid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
 
   auto parse_result =
       es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
@@ -235,13 +235,12 @@ TEST_F(EsParserTeletextTest, pes_283413_line_emitted_on_next_pes) {
 
 TEST_F(EsParserTeletextTest, multiple_lines_with_same_pts) {
   auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
-                                  base::Unretained(this), pes_pid);
-
+                                 base::Unretained(this), kPesPid);
   auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
-                                 base::Unretained(this), pes_pid);
+                                 base::Unretained(this), kPesPid);
 
   std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
-      pes_pid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
 
   auto parse_result =
       es_parser_teletext->Parse(PES_8768632, sizeof(PES_8768632), 8768632, 0);
@@ -262,6 +261,100 @@ TEST_F(EsParserTeletextTest, multiple_lines_with_same_pts) {
   EXPECT_EQ("-Sí?", text_sample_->body().sub_fragments[0].body);
   EXPECT_TRUE(text_sample_->body().sub_fragments[1].newline);
   EXPECT_EQ("-Sí.", text_sample_->body().sub_fragments[2].body);
+<<<<<<< HEAD
+=======
+  TextSettings settings = text_sample_->settings();
+  EXPECT_EQ(10, settings.line.value().value);
+  EXPECT_EQ("ttx_10", settings.region);
+  EXPECT_EQ(1, text_samples_.size());
+}
+
+// separate_lines_with_slightly_different_pts has the original lines
+// 18 and 22, with different alignment, which means that they should
+// result in two parallel text samples.
+TEST_F(EsParserTeletextTest, separate_lines_with_slightly_different_pts) {
+  auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
+                                 base::Unretained(this), kPesPid);
+  auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
+                                base::Unretained(this), kPesPid);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  auto parse_result =
+      es_parser_teletext->Parse(PES_867681, sizeof(PES_867681), 867681, 0);
+  EXPECT_TRUE(parse_result);
+
+  parse_result =
+      es_parser_teletext->Parse(PES_871281, sizeof(PES_871281), 871281, 0);
+  EXPECT_TRUE(parse_result);
+
+  parse_result =
+      es_parser_teletext->Parse(PES_1011695, sizeof(PES_1011695), 1011695, 0);
+  EXPECT_TRUE(parse_result);
+
+  EXPECT_NE(nullptr, text_sample_.get());
+  EXPECT_EQ(2, text_samples_.size());
+  // The subtitles should get the same start and end time
+  EXPECT_EQ(867681, text_samples_[0]->start_time());
+  EXPECT_EQ(867681, text_samples_[1]->start_time());
+  EXPECT_EQ(1011695, text_samples_[0]->EndTime());
+  EXPECT_EQ(1011695, text_samples_[0]->EndTime());
+  EXPECT_EQ(1, text_samples_[0]->body().sub_fragments.size());
+  EXPECT_EQ(1, text_samples_[1]->body().sub_fragments.size());
+  EXPECT_EQ("-Luke !", text_samples_[0]->body().sub_fragments[0].body);
+  EXPECT_EQ("ttx_9", text_samples_[0]->settings().region);
+  EXPECT_EQ(TextAlignment::kLeft, text_samples_[0]->settings().text_alignment);
+  EXPECT_EQ("-Je vais aux cours d'été.",
+            text_samples_[1]->body().sub_fragments[0].body);
+  EXPECT_EQ(11, text_samples_[1]->settings().line.value().value);
+  EXPECT_EQ("ttx_11", text_samples_[1]->settings().region);
+  EXPECT_EQ(TextAlignment::kCenter, text_samples_[1]->settings().text_alignment);
+}
+
+// consecutive_lines_with_slightly_different_pts has the original lines
+// 20 and 22 with same alignment, which means that they should
+// result in one text sample with two lines.
+TEST_F(EsParserTeletextTest, consecutive_lines_with_slightly_different_pts) {
+  auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
+                                  base::Unretained(this), kPesPid);
+  auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
+                                 base::Unretained(this), kPesPid);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  auto parse_result =
+      es_parser_teletext->Parse(PES_1033297, sizeof(PES_1033297), 1033297, 0);
+  EXPECT_TRUE(parse_result);
+
+  parse_result =
+      es_parser_teletext->Parse(PES_1036900, sizeof(PES_1036900), 1036900, 0);
+  EXPECT_TRUE(parse_result);
+
+  parse_result =
+      es_parser_teletext->Parse(PES_1173713, sizeof(PES_1173713), 1173713, 0);
+  EXPECT_TRUE(parse_result);
+
+  EXPECT_NE(nullptr, text_sample_.get());
+  EXPECT_EQ(1, text_samples_.size());
+  // The subtitles should get the same start and end time
+  EXPECT_EQ(1033297, text_sample_->start_time());
+  EXPECT_EQ(1173713, text_sample_->EndTime());
+  EXPECT_EQ(3, text_sample_->body().sub_fragments.size());
+  TextSettings settings = text_sample_->settings();
+  EXPECT_EQ(10, settings.line.value().value);
+  EXPECT_EQ("ttx_10", settings.region);
+  EXPECT_EQ(TextAlignment::kCenter, settings.text_alignment);
+  EXPECT_EQ("J'ai loupé", text_sample_->body().sub_fragments[0].body);
+  EXPECT_EQ("yellow", text_sample_->body().sub_fragments[0].style.color);
+  EXPECT_TRUE(text_sample_->body().sub_fragments[1].newline);
+  EXPECT_EQ("l'initiation à l'algèbre.",
+            text_sample_->body().sub_fragments[2].body);
+  EXPECT_EQ("yellow",
+            text_sample_->body().sub_fragments[2].style.backgroundColor);
+  EXPECT_EQ("blue", text_sample_->body().sub_fragments[2].style.color);
+>>>>>>> f349e95ba5 (fix: backport all callback calls)
 }
 
 }  // namespace mp2t

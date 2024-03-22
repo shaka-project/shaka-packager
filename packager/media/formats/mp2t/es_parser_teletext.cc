@@ -19,6 +19,8 @@ namespace mp2t {
 namespace {
 
 const uint8_t EBU_TELETEXT_WITH_SUBTITLING = 0x03;
+const int kPayloadSize = 40;
+const int kNumTriplets = 13;
 
 template <typename T>
 constexpr T bit(T value, const size_t bit_pos) {
@@ -28,7 +30,7 @@ constexpr T bit(T value, const size_t bit_pos) {
 uint8_t ReadHamming(BitReader& reader) {
   uint8_t bits;
   RCHECK(reader.ReadBits(8, &bits));
-  return HAMMING_8_4[bits];
+  return TELETEXT_HAMMING_8_4[bits];
 }
 
 bool Hamming_24_18(const uint32_t value, uint32_t& out_result) {
@@ -36,15 +38,15 @@ bool Hamming_24_18(const uint32_t value, uint32_t& out_result) {
 
   uint8_t test = 0;
   for (uint8_t i = 0; i < 23; i++) {
-    test ^= ((result >> i) & 0x01) * (i + 33);
+    test ^= ((result >> i) & 0x01) * (i + 0x21);
   }
-  test ^= ((result >> 23) & 0x01) * 32;
+  test ^= ((result >> 0x17) & 0x01) * 0x20;
 
   if ((test & 0x1f) != 0x1f) {
     if ((test & 0x20) == 0x20) {
       return false;
     }
-    result ^= 1 << (30 - test);
+    result ^= 1 << (0x1e - test);
   }
 
   out_result = (result & 0x000004) >> 2 | (result & 0x000070) >> 3 |
@@ -66,19 +68,19 @@ bool ParseSubtitlingDescriptor(
   for (size_t i = 0; i < data_size; i += 8) {
     uint32_t lang_code;
     RCHECK(reader.ReadBits(24, &lang_code));
-    uint8_t teletext_type;
-    RCHECK(reader.ReadBits(5, &teletext_type));
+    uint8_t ignored_teletext_type;
+    RCHECK(reader.ReadBits(5, &ignored_teletext_type));
     uint8_t magazine_number;
     RCHECK(reader.ReadBits(3, &magazine_number));
     if (magazine_number == 0) {
       magazine_number = 8;
     }
 
-    uint8_t page_tenths;
-    RCHECK(reader.ReadBits(4, &page_tenths));
-    uint8_t page_digit;
-    RCHECK(reader.ReadBits(4, &page_digit));
-    const uint8_t page_number = page_tenths * 10 + page_digit;
+    uint8_t page_number_tens;
+    RCHECK(reader.ReadBits(4, &page_number_tens));
+    uint8_t page_number_units;
+    RCHECK(reader.ReadBits(4, &page_number_units));
+    const uint8_t page_number = page_number_tens * 10 + page_number_units;
 
     std::string lang(3, '\0');
     lang[0] = static_cast<char>((lang_code >> 16) & 0xff);
@@ -276,14 +278,36 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
 }
 
 void EsParserTeletext::UpdateCharset() {
-  memcpy(current_charset_, CHARSET_G0_LATIN, 96 * 3);
-  switch (charset_code_) {
-    case CHARSET_PORTUGUESE_SPANISH:
-      for (size_t i = 0; i < 13; ++i) {
-        const size_t position = NATIONAL_CHAR_INDEX_G0[i];
-        memcpy(current_charset_[position], PORTUGUESE_SPANISH[i], 3);
-      }
+  memcpy(current_charset_, TELETEXT_CHARSET_G0_LATIN, sizeof(TELETEXT_CHARSET_G0_LATIN));
+  if (charset_code_ > 7) {
+    return;
+  }
+  const auto teletext_national_subset =
+      static_cast<TELETEXT_NATIONAL_SUBSET>(charset_code_);
+
+  switch (teletext_national_subset) {
+    case TELETEXT_NATIONAL_SUBSET::ENGLISH:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_ENGLISH);
       break;
+    case TELETEXT_NATIONAL_SUBSET::FRENCH:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_FRENCH);
+      break;
+    case TELETEXT_NATIONAL_SUBSET::SWEDISH_FINNISH_HUNGARIAN:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_SWEDISH_FINNISH_HUNGARIAN);
+      break;
+    case TELETEXT_NATIONAL_SUBSET::CZECH_SLOVAK:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_CZECH_SLOVAK);
+      break;
+    case TELETEXT_NATIONAL_SUBSET::GERMAN:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_GERMAN);
+      break;
+    case TELETEXT_NATIONAL_SUBSET::PORTUGUESE_SPANISH:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_PORTUGUESE_SPANISH);
+      break;
+    case TELETEXT_NATIONAL_SUBSET::ITALIAN:
+      UpdateNationalSubset(TELETEXT_NATIONAL_SUBSET_ITALIAN);
+      break;
+    case TELETEXT_NATIONAL_SUBSET::NONE:
     default:
       break;
   }
@@ -329,9 +353,8 @@ void EsParserTeletext::SendPending(const uint16_t index, const int64_t pts) {
 
 std::string EsParserTeletext::BuildText(const uint8_t* data_block,
                                         const uint8_t row) const {
-  const size_t payload_len = 40;
   std::string next_string;
-  next_string.reserve(payload_len * 2);
+  next_string.reserve(kPayloadSize * 2);
   bool leading_spaces = true;
 
   const uint16_t index = magazine_ * 100 + page_number_;
@@ -347,7 +370,7 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
     }
   }
 
-  for (size_t i = 0; i < payload_len; ++i) {
+  for (size_t i = 0; i < kPayloadSize; ++i) {
     if (column_replacement_map) {
       const auto column_itr = column_replacement_map->find(i);
       if (column_itr != column_replacement_map->cend()) {
@@ -357,9 +380,10 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
       }
     }
 
-    char next_char = static_cast<char>(BITREVERSE_8[data_block[i]] & 0x7f);
+    char next_char =
+        static_cast<char>(TELETEXT_BITREVERSE_8[data_block[i]] & 0x7f);
 
-    if (next_char < 32 || next_char > 127) {
+    if (next_char < 32) {
       next_char = 0x20;
     }
 
@@ -396,14 +420,13 @@ void EsParserTeletext::ParsePacket26(const uint8_t* data_block) {
   auto& replacement_map = page_state_[index].packet_26_replacements;
 
   uint8_t row = 0;
-  const size_t payload_len = 40;
 
   std::vector<uint32_t> x26_triplets;
-  x26_triplets.reserve(13);
-  for (uint8_t i = 1; i < payload_len; i += 3) {
-    const uint32_t bytes = (BITREVERSE_8[data_block[i + 2]] << 16) |
-                           (BITREVERSE_8[data_block[i + 1]] << 8) |
-                           BITREVERSE_8[data_block[i]];
+  x26_triplets.reserve(kNumTriplets);
+  for (uint8_t i = 1; i < kPayloadSize; i += 3) {
+    const uint32_t bytes = (TELETEXT_BITREVERSE_8[data_block[i + 2]] << 16) |
+                           (TELETEXT_BITREVERSE_8[data_block[i + 1]] << 8) |
+                           TELETEXT_BITREVERSE_8[data_block[i]];
     uint32_t triplet;
     if (Hamming_24_18(bytes, triplet)) {
       x26_triplets.emplace_back(triplet);
@@ -429,9 +452,9 @@ void EsParserTeletext::ParsePacket26(const uint8_t* data_block) {
     const uint8_t data = (triplet & 0x3f800) >> 11;
 
     if (mode == 0x0f && row_address_group == 0x0 && data > 0x1f) {
-      SetPacket26ReplacementString(
-          replacement_map, row, address,
-          reinterpret_cast<const char*>(CHARSET_G2_LATIN[data - 0x20]));
+      SetPacket26ReplacementString(replacement_map, row, address,
+                                   reinterpret_cast<const char*>(
+                                       TELETEXT_CHARSET_G2_LATIN[data - 0x20]));
     }
 
     if (mode == 0x10 && row_address_group == 0x0 && data == 0x40) {
@@ -446,19 +469,28 @@ void EsParserTeletext::ParsePacket26(const uint8_t* data_block) {
       SetPacket26ReplacementString(
           replacement_map, row, address,
           reinterpret_cast<const char*>(
-              G2_LATIN_ACCENTS[mode - 0x11][data - 0x41]));
+              TELETEXT_G2_LATIN_ACCENTS[mode - 0x11][data - 0x41]));
 
     } else if (data >= 0x61 && data <= 0x7a) {
       SetPacket26ReplacementString(
           replacement_map, row, address,
           reinterpret_cast<const char*>(
-              G2_LATIN_ACCENTS[mode - 0x11][data - 0x47]));
+              TELETEXT_G2_LATIN_ACCENTS[mode - 0x11][data - 0x47]));
 
     } else if ((data & 0x7f) >= 0x20) {
-      SetPacket26ReplacementString(replacement_map, row, address,
-                                   reinterpret_cast<const char*>(
-                                       CHARSET_G0_LATIN[(data & 0x7f) - 0x20]));
+      SetPacket26ReplacementString(
+          replacement_map, row, address,
+          reinterpret_cast<const char*>(
+              TELETEXT_CHARSET_G0_LATIN[(data & 0x7f) - 0x20]));
     }
+  }
+}
+
+void EsParserTeletext::UpdateNationalSubset(
+    const uint8_t national_subset[13][3]) {
+  for (size_t i = 0; i < 13; ++i) {
+    const size_t position = TELETEXT_NATIONAL_CHAR_INDEX_G0[i];
+    memcpy(current_charset_[position], national_subset[i], 3);
   }
 }
 

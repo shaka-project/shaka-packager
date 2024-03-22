@@ -55,6 +55,7 @@ class EsParserTeletext : public EsParser {
   void SendPending(const uint16_t index, const int64_t pts);
   std::string BuildText(const uint8_t* data_block, const uint8_t row) const;
   void ParsePacket26(const uint8_t* data_block);
+  void UpdateNationalSubset(const uint8_t national_subset[13][3]);
 
   static void SetPacket26ReplacementString(
       RowColReplacementMap& replacement_map,
