@@ -26,7 +26,7 @@ option(FULLY_STATIC "Attempt fully static linking of all CLI apps" OFF)
 # Enable CMake's test infrastructure.
 enable_testing()
 
-option(SKIP_INTEGRATION_TESTS "Skip the packager integration tests" ON)
+option(SKIP_INTEGRATION_TESTS "Skip the packager integration tests" OFF)
 
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)
