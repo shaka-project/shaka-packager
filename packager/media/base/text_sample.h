@@ -82,6 +82,11 @@ struct TextFragmentStyle {
   base::Optional<bool> underline;
   base::Optional<bool> bold;
   base::Optional<bool> italic;
+  // The colors could be any string that can be interpreted as
+  // a color in TTML (or WebVTT). As a start, the 8 teletext colors are used,
+  // i.e. black, red, green, yellow, blue, magenta, cyan, and white
+  std::string color;
+  std::string backgroundColor;
 };
 
 /// Represents a recursive structure of styled blocks of text.  Only one of

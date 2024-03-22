@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "packager/base/callback.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 
 namespace shaka {
@@ -39,8 +40,15 @@ class EsParserTeletext : public EsParser {
   using RowColReplacementMap =
       std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::string>>;
 
+  struct TextRow {
+    TextAlignment alignment;
+    int row_number;
+    bool double_height;
+    TextFragment fragment;
+  };
+
   struct TextBlock {
-    std::vector<std::string> lines;
+    std::vector<TextRow> rows;
     RowColReplacementMap packet_26_replacements;
     int64_t pts;
   };
@@ -50,10 +58,10 @@ class EsParserTeletext : public EsParser {
                       const uint8_t* data_block,
                       const uint8_t packet_nr,
                       const uint8_t magazine,
-                      std::string& display_text);
+                      TextRow& display_text);
   void UpdateCharset();
   void SendPending(const uint16_t index, const int64_t pts);
-  std::string BuildText(const uint8_t* data_block, const uint8_t row) const;
+  TextRow BuildRow(const uint8_t* data_block, const uint8_t row) const;
   void ParsePacket26(const uint8_t* data_block);
   void UpdateNationalSubset(const uint8_t national_subset[13][3]);
 
