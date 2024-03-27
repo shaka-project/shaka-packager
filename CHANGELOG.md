@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [3.0.4](https://github.com/shaka-project/shaka-packager/compare/v3.0.3...v3.0.4) (2024-03-27)
+
+
+### Bug Fixes
+
+* BaseURL missing when MPD base path is empty ([#1380](https://github.com/shaka-project/shaka-packager/issues/1380)) ([90c3c3f](https://github.com/shaka-project/shaka-packager/commit/90c3c3f9b3e8e36706b9769e574aa316e8bbb351)), closes [#1378](https://github.com/shaka-project/shaka-packager/issues/1378)
+* Fix NPM binary selection on ARM Macs ([#1376](https://github.com/shaka-project/shaka-packager/issues/1376)) ([733af91](https://github.com/shaka-project/shaka-packager/commit/733af9128dfa7c46dd7a9fe3f8361ab50a829afe)), closes [#1375](https://github.com/shaka-project/shaka-packager/issues/1375)
+
 ## [3.0.3](https://github.com/shaka-project/shaka-packager/compare/v3.0.2...v3.0.3) (2024-03-12)
 
 
