@@ -231,7 +231,13 @@ if(NOT SKIP_INTEGRATION_TESTS)
     COMMAND ${PYTHON_EXECUTABLE} packager_test.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
+
+  set_property(TEST packager_test_py
+    PROPERTY ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
+  )
 endif()
+
+
 
 configure_file(packager.pc.in packager.pc @ONLY)
 

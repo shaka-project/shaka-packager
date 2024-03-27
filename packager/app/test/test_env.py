@@ -19,7 +19,10 @@ import sys
 
 # Define static global objects and attributes.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
+SRC_DIR = os.environ.get('PACKAGER_SRC_DIR')
+if not SRC_DIR:
+    # fallback to computing src dir from script dir
+    SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
 
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
