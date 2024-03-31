@@ -756,7 +756,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=2),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True, force_cl_index=False))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     self._CheckTestResults('audio-video-with-two-trick-play')
 
   def testAudioVideoWithTwoTrickPlayDecreasingRate(self):
@@ -767,7 +768,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=1),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True, force_cl_index=False))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     # Since the stream descriptors are sorted in packager app, a different
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
