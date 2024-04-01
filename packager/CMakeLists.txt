@@ -227,17 +227,21 @@ add_custom_target(packager_test_py_copy ALL
 )
 
 if(NOT SKIP_INTEGRATION_TESTS)
-  add_test (NAME packager_test_py
-    COMMAND ${PYTHON_EXECUTABLE} packager_test.py
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
+  if(NOT Python3_EXECUTABLE)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
+  endif()
 
-  set_property(TEST packager_test_py
-    PROPERTY ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
-  )
+  if (Python3_EXECUTABLE)
+    add_test (NAME packager_test_py
+      COMMAND ${Python3_EXECUTABLE} packager_test.py
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    set_property(TEST packager_test_py
+            PROPERTY ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
+    )
+  endif()
 endif()
-
-
 
 configure_file(packager.pc.in packager.pc @ONLY)
 
