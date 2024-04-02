@@ -231,18 +231,16 @@ if(NOT SKIP_INTEGRATION_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
   endif()
 
-  if (Python3_EXECUTABLE)
-    add_test (NAME packager_test_py
-      COMMAND ${Python3_EXECUTABLE} packager_test.py
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
+  add_test (NAME packager_test_py
+    COMMAND ${Python3_EXECUTABLE} packager_test.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
-    set_tests_properties(packager_test_py PROPERTIES
-            ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
-                        "PACKAGER_BIN=$<TARGET_FILE:packager>"
-                        "MPD_GENERATOR_BIN=$<TARGET_FILE:mpd_generator>"
-    )
-  endif()
+  set_tests_properties(packager_test_py PROPERTIES
+          ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
+                      "PACKAGER_BIN=$<TARGET_FILE:packager>"
+                      "MPD_GENERATOR_BIN=$<TARGET_FILE:mpd_generator>"
+  )
 endif()
 
 configure_file(packager.pc.in packager.pc @ONLY)
