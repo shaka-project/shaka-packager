@@ -17,21 +17,14 @@ class PackagerApp(object):
   """Main integration class for testing the packager binaries."""
 
   def __init__(self):
-    self.packager_binary = os.path.join(test_env.SCRIPT_DIR,
-                                        self._GetBinaryName('packager'))
-    self.mpd_generator_binary = os.path.join(
-        test_env.SCRIPT_DIR, self._GetBinaryName('mpd_generator'))
+    self.packager_binary = test_env.PACKAGER_BIN
+    self.mpd_generator_binary = test_env.MPD_GENERATOR_BIN
     # Set this to empty for now in case GetCommandLine() is called before
     # Package().
     self.packaging_command_line = ''
     assert os.path.exists(self.packager_binary), (
         'Please run from output directory, e.g. out/Debug/packager_test.py\n'
         '  Missing: ' + self.packager_binary)
-
-  def _GetBinaryName(self, name):
-    if platform.system() == 'Windows':
-      name += '.exe'
-    return name
 
   def GetEnv(self):
     env = os.environ.copy()

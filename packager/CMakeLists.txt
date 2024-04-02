@@ -237,8 +237,10 @@ if(NOT SKIP_INTEGRATION_TESTS)
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
-    set_property(TEST packager_test_py
-            PROPERTY ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
+    set_tests_properties(packager_test_py PROPERTIES
+            ENVIRONMENT "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}"
+                        "PACKAGER_BIN=$<TARGET_FILE:packager>"
+                        "MPD_GENERATOR_BIN=$<TARGET_FILE:mpd_generator>"
     )
   endif()
 endif()
