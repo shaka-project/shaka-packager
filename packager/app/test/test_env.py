@@ -19,9 +19,9 @@ import sys
 
 
 def GetBinaryName(name):
-    if platform.system() == 'Windows':
-        name += '.exe'
-    return name
+  if platform.system() == 'Windows':
+    name += '.exe'
+  return name
 
 # Define static global objects and attributes.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -30,15 +30,15 @@ if not SRC_DIR:
   # fallback to computing src dir from script dir
   SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
 
-PACKAGER_BIN = os.environ.get("PACKAGER_BIN")
+PACKAGER_BIN = os.environ.get('PACKAGER_BIN')
 if not PACKAGER_BIN:
-    PACKAGER_BIN = os.path.join(SCRIPT_DIR,
-                                GetBinaryName('packager'))
+  PACKAGER_BIN = os.path.join(SCRIPT_DIR,
+                              GetBinaryName('packager'))
 
-MPD_GENERATOR_BIN = os.environ.get("MPD_GENERATOR_BIN")
+MPD_GENERATOR_BIN = os.environ.get('MPD_GENERATOR_BIN')
 if not MPD_GENERATOR_BIN:
-    MPD_GENERATOR_BIN = os.path.join(SCRIPT_DIR,
-                                     GetBinaryName('mpd_generator'))
+  MPD_GENERATOR_BIN = os.path.join(SCRIPT_DIR,
+                                   GetBinaryName('mpd_generator'))
 
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
