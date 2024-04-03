@@ -239,6 +239,11 @@ if(NOT SKIP_INTEGRATION_TESTS)
   set(test_environment_vars "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}")
   list(APPEND test_environment_vars "PACKAGER_BIN=$<TARGET_FILE:packager>")
   list(APPEND test_environment_vars "MPD_GENERATOR_BIN=$<TARGET_FILE:mpd_generator>")
+  if(BUILD_SHARED_LIBS)
+    list(APPEND test_environment_vars "BUILD_TYPE=shared")
+  else()
+    list(APPEND test_environment_vars "BUILD_TYPE=static")
+  endif()
 
   set_tests_properties(packager_test_py PROPERTIES
           ENVIRONMENT "${test_environment_vars}"

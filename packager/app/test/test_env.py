@@ -40,13 +40,11 @@ if not MPD_GENERATOR_BIN:
   MPD_GENERATOR_BIN = os.path.join(SCRIPT_DIR,
                                    GetBinaryName('mpd_generator'))
 
+BUILD_TYPE = os.environ.get('BUILD_TYPE', 'static')
+
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
-
 parser.add_argument('--test_update_golden_files', action='store_true')
-
-parser.add_argument('--libpackager_type', default='static_library',
-                    choices=['static_library', 'shared_library'])
 
 parser.add_argument('--v')
 parser.add_argument('--vmodule')

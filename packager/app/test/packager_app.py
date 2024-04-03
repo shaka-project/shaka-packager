@@ -29,7 +29,7 @@ class PackagerApp(object):
   def GetEnv(self):
     env = os.environ.copy()
     if (platform.system() == 'Darwin' and
-        test_env.options.libpackager_type == 'shared_library'):
+        test_env.BUILD_TYPE == 'shared'):
       env['DYLD_FALLBACK_LIBRARY_PATH'] = test_env.SCRIPT_DIR
     return env
 
