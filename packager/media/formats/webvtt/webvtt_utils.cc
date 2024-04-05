@@ -22,6 +22,8 @@ namespace media {
 
 namespace {
 
+constexpr const char* kRegionTeletextPrefix = "ttx_";
+
 bool GetTotalMilliseconds(uint64_t hours,
                           uint64_t minutes,
                           uint64_t seconds,
@@ -211,7 +213,9 @@ std::string MsToWebVttTimestamp(uint64_t ms) {
 
 std::string WebVttSettingsToString(const TextSettings& settings) {
   std::string ret;
-  if (!settings.region.empty()) {
+  if (!settings.region.empty() &&
+      settings.region.find(kRegionTeletextPrefix) != 0) {
+    // Don't add teletext ttx_ regions, since accompanied by global line numbers
     ret += " region:";
     ret += settings.region;
   }
@@ -224,7 +228,8 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
         break;
       case TextUnitType::kLines:
         ret += " line:";
-        ret += base::DoubleToString(settings.line->value);
+        // The line number should be an integer
+        ret += base::DoubleToString(std::round(settings.line->value));
         break;
       case TextUnitType::kPixels:
         LOG(WARNING) << "WebVTT doesn't support pixel line settings";
