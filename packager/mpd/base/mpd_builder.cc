@@ -417,19 +417,17 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
 
   if (!mpd_file_path.empty()) {
     const std::filesystem::path mpd_dir(mpd_file_path.parent_path());
-    if (!mpd_dir.empty()) {
-      if (media_info->has_media_file_name()) {
-        media_info->set_media_file_url(
-            MakePathRelative(media_info->media_file_name(), mpd_dir));
-      }
-      if (media_info->has_init_segment_name()) {
-        media_info->set_init_segment_url(
-            MakePathRelative(media_info->init_segment_name(), mpd_dir));
-      }
-      if (media_info->has_segment_template()) {
-        media_info->set_segment_template_url(
-            MakePathRelative(media_info->segment_template(), mpd_dir));
-      }
+    if (media_info->has_media_file_name()) {
+      media_info->set_media_file_url(
+          MakePathRelative(media_info->media_file_name(), mpd_dir));
+    }
+    if (media_info->has_init_segment_name()) {
+      media_info->set_init_segment_url(
+          MakePathRelative(media_info->init_segment_name(), mpd_dir));
+    }
+    if (media_info->has_segment_template()) {
+      media_info->set_segment_template_url(
+          MakePathRelative(media_info->segment_template(), mpd_dir));
     }
   }
 }
