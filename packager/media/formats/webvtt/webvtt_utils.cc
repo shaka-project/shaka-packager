@@ -10,6 +10,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <cmath>
 #include <unordered_set>
 
 #include "packager/base/logging.h"
