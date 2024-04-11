@@ -305,6 +305,7 @@ Status LivePackager::PackageInit(const Segment& init_segment,
   };
 
   shaka::PackagingParams packaging_params;
+  packaging_params.single_threaded = true;
   packaging_params.chunking_params.segment_duration_in_seconds =
       DEFAULT_SEGMENT_DURATION;
 
@@ -368,6 +369,7 @@ Status LivePackager::Package(const Segment& init_segment,
   };
 
   shaka::PackagingParams packaging_params;
+  packaging_params.single_threaded = true;
   packaging_params.chunking_params.segment_duration_in_seconds =
       DEFAULT_SEGMENT_DURATION;
 
@@ -426,6 +428,7 @@ Status LivePackager::PackageTimedText(const Segment& in,
   };
 
   shaka::PackagingParams packaging_params;
+  packaging_params.single_threaded = true;
   packaging_params.chunking_params.segment_duration_in_seconds =
       DEFAULT_SEGMENT_DURATION;
   packaging_params.chunking_params.timed_text_decode_time =
