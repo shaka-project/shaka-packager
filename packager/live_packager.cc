@@ -17,6 +17,7 @@
 #include <packager/file.h>
 
 #include <packager/live_packager.h>
+#include <packager/live_packager_export.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/aes_encryptor.h>
@@ -180,7 +181,7 @@ class SegmentManager {
   virtual int64_t OnSegmentWrite(const std::string& name,
                                  const void* buffer,
                                  uint64_t size,
-                                 FullSegmentBuffer& out);
+                                 SegmentBuffer& out);
 
   virtual Status InitializeEncryption(const LiveConfig& config,
                                       EncryptionParams& encryption_params);
@@ -201,7 +202,7 @@ class Aes128EncryptedSegmentManager : public SegmentManager {
   int64_t OnSegmentWrite(const std::string& name,
                          const void* buffer,
                          uint64_t size,
-                         FullSegmentBuffer& out) override;
+                         SegmentBuffer& out) override;
 
   Status InitializeEncryption(const LiveConfig& config,
                               EncryptionParams& encryption_params) override;
@@ -223,6 +224,18 @@ const uint8_t* SegmentData::Data() const {
 
 size_t SegmentData::Size() const {
   return size_;
+}
+
+void SegmentBuffer::AppendData(const uint8_t* data, size_t size) {
+  std::copy(data, data + size, std::back_inserter(buffer_));
+}
+
+size_t SegmentBuffer::Size() const {
+  return buffer_.size();
+}
+
+const uint8_t* SegmentBuffer::Data() const {
+  return buffer_.data();
 }
 
 void FullSegmentBuffer::SetInitSegment(const uint8_t* data, size_t size) {
@@ -279,7 +292,7 @@ LivePackager::LivePackager(const LiveConfig& config)
 LivePackager::~LivePackager() = default;
 
 Status LivePackager::PackageInit(const Segment& init_segment,
-                                 FullSegmentBuffer& output) {
+                                 SegmentBuffer& output) {
   SegmentDataReader reader(init_segment);
 
   shaka::BufferCallbackParams callback_params;
@@ -288,18 +301,24 @@ Status LivePackager::PackageInit(const Segment& init_segment,
     return reader.Read(buffer, size);
   };
 
-  callback_params.write_func = [&output](const std::string& name,
-                                         const void* data, uint64_t size) {
-    output.AppendData(reinterpret_cast<const uint8_t*>(data), size);
+  callback_params.write_func = [](const std::string& name, const void* data,
+                                  uint64_t size) {
+    // skip writing any media segment data
     return size;
   };
 
   shaka::BufferCallbackParams init_callback_params;
   init_callback_params.write_func = [&output](const std::string& name,
                                               const void* data, uint64_t size) {
-    if (output.InitSegmentSize() == 0) {
+    // For live packaging it is observed that the init segment callback is
+    // invoked more than once. The initial callback does not contain the MEHD
+    // box data and furthermore does not contain fragment duration.
+    // If an MP4 file is created in real-time, such as used in live-streaming,
+    // it is not likely that the fragment_duration is known in advance and this
+    // box may be omitted.
+    if (output.Size() == 0) {
       LOG(INFO) << "init segment callback, name: " << name << " size: " << size;
-      output.SetInitSegment(reinterpret_cast<const uint8_t*>(data), size);
+      output.AppendData(reinterpret_cast<const uint8_t*>(data), size);
     }
     return size;
   };
@@ -340,7 +359,7 @@ Status LivePackager::PackageInit(const Segment& init_segment,
 
 Status LivePackager::Package(const Segment& init_segment,
                              const Segment& media_segment,
-                             FullSegmentBuffer& out) {
+                             SegmentBuffer& out) {
   MultiSegmentDataReader reader(init_segment, media_segment);
   shaka::BufferCallbackParams callback_params;
   callback_params.read_func = [&reader](const std::string& name, void* buffer,
@@ -354,17 +373,9 @@ Status LivePackager::Package(const Segment& init_segment,
   };
 
   shaka::BufferCallbackParams init_callback_params;
-  init_callback_params.write_func = [&out](const std::string& name,
-                                           const void* data, uint64_t size) {
-    // For live packaging it is observed that the init segment callback is
-    // invoked more than once. The initial callback does not contain the MEHD
-    // box data and furthermore does not contain fragment duration.
-    // If an MP4 file is created in real-time, such as used in live-streaming,
-    // it is not likely that the fragment_duration is known in advance and this
-    // box may be omitted.
-    if (out.InitSegmentSize() == 0) {
-      out.SetInitSegment(reinterpret_cast<const uint8_t*>(data), size);
-    }
+  init_callback_params.write_func = [](const std::string& name,
+                                       const void* data, uint64_t size) {
+    // skip writing any init segment data
     return size;
   };
 
@@ -455,7 +466,7 @@ SegmentManager::SegmentManager() = default;
 int64_t SegmentManager::OnSegmentWrite(const std::string& name,
                                        const void* buffer,
                                        uint64_t size,
-                                       FullSegmentBuffer& out) {
+                                       SegmentBuffer& out) {
   out.AppendData(reinterpret_cast<const uint8_t*>(buffer), size);
   return size;
 }
@@ -508,7 +519,7 @@ Aes128EncryptedSegmentManager::~Aes128EncryptedSegmentManager() = default;
 int64_t Aes128EncryptedSegmentManager::OnSegmentWrite(const std::string& name,
                                                       const void* buffer,
                                                       uint64_t size,
-                                                      FullSegmentBuffer& out) {
+                                                      SegmentBuffer& out) {
   //  if (!encryptor_->InitializeWithIv(key_, iv_)) {
   //    LOG(WARNING) << "failed to initialize encryptor with key and iv";
   //    // Negative size will trigger a status error within the packager

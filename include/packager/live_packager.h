@@ -32,6 +32,20 @@ class SegmentData final : public Segment {
   const size_t size_ = 0;
 };
 
+class SegmentBuffer final : public Segment {
+ public:
+  SegmentBuffer() = default;
+  ~SegmentBuffer() = default;
+
+  void AppendData(const uint8_t* data, size_t size);
+
+  virtual const uint8_t* Data() const override;
+  virtual size_t Size() const override;
+
+ private:
+  std::vector<uint8_t> buffer_;
+};
+
 class FullSegmentBuffer final : public Segment {
  public:
   FullSegmentBuffer() = default;
@@ -115,7 +129,7 @@ class LivePackager {
   /// @param init_segment contains the init segment data.
   /// @param output contains the packaged init segment data.
   /// @return OK on success, an appropriate error code on failure.
-  Status PackageInit(const Segment& init_segment, FullSegmentBuffer& output);
+  Status PackageInit(const Segment& init_segment, SegmentBuffer& output);
 
   /// Performs packaging of segment data.
   /// @param init_segment contains the init segment data.
@@ -124,7 +138,7 @@ class LivePackager {
   /// @return OK on success, an appropriate error code on failure.
   Status Package(const Segment& init_segment,
                  const Segment& media_segment,
-                 FullSegmentBuffer& output);
+                 SegmentBuffer& output);
 
   Status PackageTimedText(const Segment& media_segment,
                           FullSegmentBuffer& output);

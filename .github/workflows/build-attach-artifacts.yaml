@@ -1,0 +1,150 @@
+# Copyright 2023 Pluto TV
+
+name: Build and attach release artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag of the release'
+        required: true
+        type: string
+
+# By default, run all commands in a bash shell.  On Windows, the default would
+# otherwise be powershell.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_matrix_config:
+    name: Matrix configuration
+    runs-on: ubuntu-latest
+    outputs:
+      INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
+      OS: ${{ steps.configure.outputs.OS }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Configure Build Matrix
+        id: configure
+        shell: node {0}
+        run: |
+          const enableSelfHosted = false;
+
+          // Use enableSelfHosted to decide what the build matrix below should
+          // include.
+          const {hosted, selfHosted} = require("${{ github.workspace }}/.github/workflows/build-matrix.json");
+          const include = enableSelfHosted ? hosted.concat(selfHosted) : hosted;
+          const os = include.map((config) => config.os);
+
+          // Output JSON objects consumed by the build matrix below.
+          const fs = require('fs');
+          fs.writeFileSync(process.env.GITHUB_OUTPUT,
+              [
+                `INCLUDE=${ JSON.stringify(include) }`,
+                `OS=${ JSON.stringify(os) }`,
+              ].join('\n'),
+              {flag: 'a'});
+
+          // Log the outputs, for the sake of debugging this script.
+          console.log({enableSelfHosted, include, os});
+
+  build:
+    needs: build_matrix_config
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.build_matrix_config.outputs.INCLUDE) }}
+        os: ${{ fromJSON(needs.build_matrix_config.outputs.OS) }}
+        build_type: ["Release"]
+        lib_type: ["shared"]
+
+    name: ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          submodules: recursive
+
+      - name: Generate build files
+        run: |
+          mkdir -p build/
+
+          cmake \
+            -DCMAKE_BUILD_TYPE="Release" \
+            -DBUILD_SHARED_LIBS=1 \
+            -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
+            -S . \
+            -B build/
+
+      - name: Build
+        run: cmake --build build/ --parallel $(getconf _NPROCESSORS_ONLN)
+
+      - name: Prepare artifacts
+        run: |
+          echo "::group::Prepare artifacts folder"
+          mkdir artifacts
+          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cd build/packager/Release
+          else
+            cd build/packager
+          fi
+          echo "::endgroup::"
+
+          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
+          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
+
+          echo "::group::Copy libpackager"
+          cp libpackager${{ matrix.exe_ext }} $ARTIFACTS/libpackager$EXE_SUFFIX
+          echo "::endgroup::"
+
+      - name: Upload release build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 5
+
+  update_release:
+    needs: [build]
+    name: Update release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          submodules: recursive
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      # Debug
+      - name: Display structure of downloaded files
+        run: ls -la
+
+      - name: Attach artifact
+        id: attach_artifact
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          allowUpdates: true
+          replacesArtifacts: true
+          artifacts: |
+            artifacts/*
+            include/packager/live_packager_export.h
+          token: ${{ secrets.GITHUB_TOKEN }}
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          tag: ${{ inputs.tag }}
+          draft: false

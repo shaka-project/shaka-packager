@@ -2,37 +2,27 @@
   "comment1": "runners hosted by GitHub, always enabled",
   "hosted": [
     {
-      "os": "ubuntu-latest",
+      "os": "ubuntu-20.04",
       "os_name": "linux",
       "target_arch": "x64",
-      "exe_ext": "",
+      "exe_ext": ".so",
       "generator": "Ninja"
     },
     {
-      "os": "macos-latest",
+      "comment": "Explicit macOS version 13 is required for explicit x64 CPU.",
+      "os": "macos-13",
       "os_name": "osx",
       "target_arch": "x64",
-      "exe_ext": "",
+      "exe_ext": ".dylib",
       "generator": "Ninja"
     },
     {
-      "os": "windows-latest",
-      "os_name": "win",
-      "target_arch": "x64",
-      "exe_ext": ".exe",
-      "generator": ""
-    }
-  ],
-
-  "comment2": "runners hosted by the owner, enabled by the 'self_hosted' environment being created on the repo",
-  "selfHosted": [
-    {
-      "os": "self-hosted-linux-arm64",
-      "os_name": "linux",
+      "comment": "Explicit macOS version 14 is required for explicit arm64 CPU.",
+      "os": "macos-14",
+      "os_name": "osx",
       "target_arch": "arm64",
-      "exe_ext": "",
-      "generator": "Ninja",
-      "low_mem": "yes"
+      "exe_ext": ".dylib",
+      "generator": "Ninja"
     }
   ]
 }
