@@ -7,7 +7,6 @@
 #include <packager/media/formats/mp2t/es_parser_teletext.h>
 
 #include <packager/media/base/bit_reader.h>
-#include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/timestamp.h>
 #include <packager/media/formats/mp2t/es_parser_teletext_tables.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
@@ -17,6 +16,8 @@ namespace media {
 namespace mp2t {
 
 namespace {
+
+constexpr const char* kRegionTeletextPrefix = "ttx_";
 
 const uint8_t EBU_TELETEXT_WITH_SUBTITLING = 0x03;
 const int kPayloadSize = 40;
@@ -94,14 +95,6 @@ bool ParseSubtitlingDescriptor(
   return true;
 }
 
-std::string RemoveTrailingSpaces(const std::string& input) {
-  const auto index = input.find_last_not_of(' ');
-  if (index == std::string::npos) {
-    return "";
-  }
-  return input.substr(0, index + 1);
-}
-
 }  // namespace
 
 EsParserTeletext::EsParserTeletext(const uint32_t pid,
@@ -169,7 +162,7 @@ bool EsParserTeletext::ParseInternal(const uint8_t* data,
                                      const int64_t pts) {
   BitReader reader(data, size);
   RCHECK(reader.SkipBits(8));
-  std::vector<std::string> lines;
+  std::vector<TextRow> rows;
 
   while (reader.bits_available()) {
     uint8_t data_unit_id;
@@ -179,7 +172,8 @@ bool EsParserTeletext::ParseInternal(const uint8_t* data,
     RCHECK(reader.ReadBits(8, &data_unit_length));
 
     if (data_unit_length != 44) {
-      LOG(ERROR) << "Bad Teletext data length";
+      // Don't log an error, since this is pretty common case.
+      // LOG(ERROR) << "Bad Teletext data length";
       break;
     }
 
@@ -207,27 +201,26 @@ bool EsParserTeletext::ParseInternal(const uint8_t* data,
     const uint8_t* data_block = reader.current_byte_ptr();
     RCHECK(reader.SkipBytes(40));
 
-    std::string display_text;
-    if (ParseDataBlock(pts, data_block, packet_nr, magazine, display_text)) {
-      lines.emplace_back(std::move(display_text));
+    TextRow row;
+    if (ParseDataBlock(pts, data_block, packet_nr, magazine, row)) {
+      rows.emplace_back(std::move(row));
     }
   }
 
-  if (lines.empty()) {
+  if (rows.empty()) {
     return true;
   }
-
   const uint16_t index = magazine_ * 100 + page_number_;
   auto page_state_itr = page_state_.find(index);
   if (page_state_itr == page_state_.end()) {
-    page_state_.emplace(index, TextBlock{std::move(lines), {}, last_pts_});
+    page_state_.emplace(index, TextBlock{std::move(rows), {}, last_pts_});
 
   } else {
-    for (auto& line : lines) {
-      auto& page_state_lines = page_state_itr->second.lines;
-      page_state_lines.emplace_back(std::move(line));
+    for (auto& row : rows) {
+      auto& page_state_lines = page_state_itr->second.rows;
+      page_state_lines.emplace_back(std::move(row));
     }
-    lines.clear();
+    rows.clear();
   }
 
   return true;
@@ -237,13 +230,17 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
                                       const uint8_t* data_block,
                                       const uint8_t packet_nr,
                                       const uint8_t magazine,
-                                      std::string& display_text) {
+                                      TextRow& row) {
   if (packet_nr == 0) {
     last_pts_ = pts;
     BitReader reader(data_block, 32);
 
     const uint8_t page_number_units = ReadHamming(reader);
     const uint8_t page_number_tens = ReadHamming(reader);
+    if (page_number_units == 0xf || page_number_tens == 0xf) {
+      RCHECK(reader.SkipBits(40));
+      return false;
+    }
     const uint8_t page_number = 10 * page_number_tens + page_number_units;
 
     const uint16_t index = magazine * 100 + page_number;
@@ -251,9 +248,6 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
 
     page_number_ = page_number;
     magazine_ = magazine;
-    if (page_number == 0xFF) {
-      return false;
-    }
 
     RCHECK(reader.SkipBits(40));
     const uint8_t subcode_c11_c14 = ReadHamming(reader);
@@ -273,7 +267,7 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
     return false;
   }
 
-  display_text = BuildText(data_block, packet_nr);
+  row = BuildRow(data_block, packet_nr);
   return true;
 }
 
@@ -317,45 +311,81 @@ void EsParserTeletext::SendPending(const uint16_t index, const int64_t pts) {
   auto page_state_itr = page_state_.find(index);
 
   if (page_state_itr == page_state_.end() ||
-      page_state_itr->second.lines.empty()) {
+      page_state_itr->second.rows.empty()) {
     return;
   }
 
-  const auto& pending_lines = page_state_itr->second.lines;
+  const auto& pending_rows = page_state_itr->second.rows;
   const auto pending_pts = page_state_itr->second.pts;
 
-  TextFragmentStyle text_fragment_style;
   TextSettings text_settings;
   std::shared_ptr<TextSample> text_sample;
+  std::vector<TextFragment> sub_fragments;
 
-  if (pending_lines.size() == 1) {
-    TextFragment text_fragment(text_fragment_style, pending_lines[0].c_str());
-    text_sample = std::make_shared<TextSample>("", pending_pts, pts,
-                                               text_settings, text_fragment);
-
+  if (pending_rows.size() == 1) {
+    // This is a single line of formatted text.
+    // Propagate row number/2 and alignment
+    const float line_nr = float(pending_rows[0].row_number) / 2.0;
+    text_settings.line = TextNumber(line_nr, TextUnitType::kLines);
+    text_settings.region = kRegionTeletextPrefix + std::to_string(int(line_nr));
+    text_settings.text_alignment = pending_rows[0].alignment;
+    text_sample = std::make_shared<TextSample>(
+        "", pending_pts, pts, text_settings, pending_rows[0].fragment);
+    text_sample->set_sub_stream_index(index);
+    emit_sample_cb_(text_sample);
+    page_state_.erase(index);
+    return;
   } else {
-    std::vector<TextFragment> sub_fragments;
-    for (const auto& line : pending_lines) {
-      sub_fragments.emplace_back(text_fragment_style, line.c_str());
-      sub_fragments.emplace_back(text_fragment_style, true);
+    int32_t latest_row_nr = -1;
+    bool last_double_height = false;
+    bool new_sample = true;
+    for (const auto& row : pending_rows) {
+      int row_nr = row.row_number;
+      bool double_height = row.double_height;
+      int row_step = last_double_height ? 2 : 1;
+      if (latest_row_nr != -1) {  // Not the first row
+        if (row_nr != latest_row_nr + row_step) {
+          // Send what has been collected since not adjacent
+          text_sample =
+              std::make_shared<TextSample>("", pending_pts, pts, text_settings,
+                                           TextFragment({}, sub_fragments));
+          text_sample->set_sub_stream_index(index);
+          emit_sample_cb_(text_sample);
+          new_sample = true;
+        } else {
+          // Add a newline and the next row to the current sample
+          sub_fragments.push_back(TextFragment({}, true));
+          sub_fragments.push_back(row.fragment);
+          new_sample = false;
+        }
+      }
+      if (new_sample) {
+        const float line_nr = float(row.row_number) / 2.0;
+        text_settings.line = TextNumber(line_nr, TextUnitType::kLines);
+        text_settings.region =
+            kRegionTeletextPrefix + std::to_string(int(line_nr));
+        text_settings.text_alignment = row.alignment;
+        sub_fragments.clear();
+        sub_fragments.push_back(row.fragment);
+      }
+      last_double_height = double_height;
+      latest_row_nr = row_nr;
     }
-    sub_fragments.pop_back();
-    TextFragment text_fragment(text_fragment_style, sub_fragments);
-    text_sample = std::make_shared<TextSample>("", pending_pts, pts,
-                                               text_settings, text_fragment);
   }
 
+  text_sample = std::make_shared<TextSample>(
+      "", pending_pts, pts, text_settings, TextFragment({}, sub_fragments));
   text_sample->set_sub_stream_index(index);
   emit_sample_cb_(text_sample);
 
   page_state_.erase(index);
 }
 
-std::string EsParserTeletext::BuildText(const uint8_t* data_block,
-                                        const uint8_t row) const {
+// BuildRow builds a row with alignment information.
+EsParserTeletext::TextRow EsParserTeletext::BuildRow(const uint8_t* data_block,
+                                                     const uint8_t row) const {
   std::string next_string;
   next_string.reserve(kPayloadSize * 2);
-  bool leading_spaces = true;
 
   const uint16_t index = magazine_ * 100 + page_number_;
   const auto page_state_itr = page_state_.find(index);
@@ -370,12 +400,19 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
     }
   }
 
+  int32_t start_pos = 0;
+  int32_t end_pos = 0;
+  bool double_height = false;
+  TextFragmentStyle text_style = TextFragmentStyle();
+  text_style.color = "white";
+  text_style.backgroundColor = "black";
+  // A typical 40 character line looks like:
+  // doubleHeight, [color] spaces, Start, Start, text, End End, spaces
   for (size_t i = 0; i < kPayloadSize; ++i) {
     if (column_replacement_map) {
       const auto column_itr = column_replacement_map->find(i);
       if (column_itr != column_replacement_map->cend()) {
         next_string.append(column_itr->second);
-        leading_spaces = false;
         continue;
       }
     }
@@ -383,17 +420,68 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
     char next_char =
         static_cast<char>(TELETEXT_BITREVERSE_8[data_block[i]] & 0x7f);
 
-    if (next_char < 32) {
-      next_char = 0x20;
-    }
-
-    if (leading_spaces) {
-      if (next_char == 0x20) {
-        continue;
+    if (next_char < 0x20) {
+      // Here are control characters, which are not printable.
+      // These include colors, double-height, flashing, etc.
+      // We only handle one-foreground color and double-height.
+      switch (next_char) {
+        case 0x0:  // Alpha Black (not included in Level 1.5)
+          // color = ColorBlack
+          break;
+        case 0x1:
+          text_style.color = "red";
+          break;
+        case 0x2:
+          text_style.color = "green";
+          break;
+        case 0x3:
+          text_style.color = "yellow";
+          break;
+        case 0x4:
+          text_style.color = "blue";
+          break;
+        case 0x5:
+          text_style.color = "magenta";
+          break;
+        case 0x6:
+          text_style.color = "cyan";
+          break;
+        case 0x7:
+          text_style.color = "white";
+          break;
+        case 0x08:  // Flash (not handled)
+          break;
+        case 0x09:  // Steady (not handled)
+          break;
+        case 0xa:  // End Box
+          end_pos = i - 1;
+          break;
+        case 0xb:  // Start Box, typically twice due to double height
+          start_pos = i + 1;
+          continue;  // Do not propagate as a space
+          break;
+        case 0xc:  // Normal size
+          break;
+        case 0xd:  // Double height, typically always used
+          double_height = true;
+          break;
+        case 0x1c:  // Black background (not handled)
+          break;
+        case 0x1d:  // Set background color from text color.
+          text_style.backgroundColor = text_style.color;
+          text_style.color = "black";  // Avoid having same as background
+          break;
+        default:
+          // Rest of codes below 0x20 are not part of Level 1.5 or related to
+          // mosaic graphics (non-text)
+          break;
       }
-      leading_spaces = false;
+      next_char =
+          0x20;  // These characters result in a space if between start and end
     }
-
+    if (start_pos == 0 || end_pos != 0) {  // Not between start and end
+      continue;
+    }
     switch (next_char) {
       case '&':
         next_string.append("&amp;");
@@ -407,8 +495,25 @@ std::string EsParserTeletext::BuildText(const uint8_t* data_block,
       } break;
     }
   }
+  if (end_pos == 0) {
+    end_pos = kPayloadSize - 1;
+  }
 
-  return RemoveTrailingSpaces(next_string);
+  // Using start_pos and end_pos we approximated alignment of text
+  // depending on the number of spaces to the left and right of the text.
+  auto left_right_diff = start_pos - (kPayloadSize - 1 - end_pos);
+  TextAlignment alignment;
+  if (left_right_diff > 4) {
+    alignment = TextAlignment::kRight;
+  } else if (left_right_diff < -4) {
+    alignment = TextAlignment::kLeft;
+  } else {
+    alignment = TextAlignment::kCenter;
+  }
+  const auto text_row = TextRow(
+      {alignment, row, double_height, {TextFragment(text_style, next_string)}});
+
+  return text_row;
 }
 
 void EsParserTeletext::ParsePacket26(const uint8_t* data_block) {
