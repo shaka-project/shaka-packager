@@ -97,7 +97,7 @@ struct LiveConfig {
   OutputFormat format;
   TrackType track_type;
 
-  // TODO: should we allow for keys to be hex string?
+  /// Encryption parameters
   std::vector<uint8_t> iv;
   std::vector<uint8_t> key;
   std::vector<uint8_t> key_id;
@@ -118,6 +118,10 @@ struct LiveConfig {
   /// Used for timed text packaging to set the fragment decode time when the
   /// output format is either VTT in MP4 or TTML in MP4.
   int64_t timed_text_decode_time = -1;
+
+  /// Decryption parameters
+  std::vector<uint8_t> decryption_key;
+  std::vector<uint8_t> decryption_key_id;
 };
 
 class LivePackager {

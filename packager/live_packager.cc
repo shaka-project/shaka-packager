@@ -334,6 +334,13 @@ Status LivePackager::PackageInit(const Segment& init_segment,
 
   // in order to enable init packaging as a separate execution.
   packaging_params.init_segment_only = true;
+  if (!config_.decryption_key.empty() && !config_.decryption_key_id.empty()) {
+    DecryptionParams& decryption_params = packaging_params.decryption_params;
+    decryption_params.key_provider = KeyProvider::kRawKey;
+    RawKeyParams::KeyInfo& key_info = decryption_params.raw_key.key_map[""];
+    key_info.key = config_.decryption_key;
+    key_info.key_id = config_.decryption_key_id;
+  }
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
   // As a side effect of InitializeEncryption, encryption_params will be
@@ -391,6 +398,14 @@ Status LivePackager::Package(const Segment& init_segment,
   packaging_params.enable_null_ts_packet_stuffing = true;
   packaging_params.cts_offset_adjustment =
       config_.format == LiveConfig::OutputFormat::TS;
+
+  if (!config_.decryption_key.empty() && !config_.decryption_key_id.empty()) {
+    DecryptionParams& decryption_params = packaging_params.decryption_params;
+    decryption_params.key_provider = KeyProvider::kRawKey;
+    RawKeyParams::KeyInfo& key_info = decryption_params.raw_key.key_map[""];
+    key_info.key = config_.decryption_key;
+    key_info.key_id = config_.decryption_key_id;
+  }
 
   EncryptionParams& encryption_params = packaging_params.encryption_params;
   // As a side effect of InitializeEncryption, encryption_params will be

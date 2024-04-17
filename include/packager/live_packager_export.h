@@ -63,6 +63,11 @@ typedef struct LivePackagerConfig {
   /// Used for timed text packaging to set the fragment decode time when the
   /// output format is either VTT in MP4 or TTML in MP4.
   int64_t timed_text_decode_time;
+
+  /// Decryption parameters
+  bool enable_decryption;
+  uint8_t decryption_key[KEY_SIZE];
+  uint8_t decryption_key_id[KEY_ID_SIZE];
 } LivePackagerConfig_t;
 
 typedef struct LivePackager_buffer_s* LivePackagerBuffer_t;
