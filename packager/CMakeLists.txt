@@ -66,6 +66,11 @@ include("gtest.cmake")
 # Include our module for building protos.
 include("protobuf.cmake")
 
+# Find Python3 used by integration tests, license notice and version string
+if(NOT Python3_EXECUTABLE)
+  find_package(Python3 COMPONENTS Interpreter REQUIRED)
+endif()
+
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
 add_subdirectory(kv_pairs)
@@ -227,10 +232,6 @@ add_custom_target(packager_test_py_copy ALL
 )
 
 if(NOT SKIP_INTEGRATION_TESTS)
-  if(NOT Python3_EXECUTABLE)
-    find_package(Python3 COMPONENTS Interpreter REQUIRED)
-  endif()
-
   add_test (NAME packager_test_py
     COMMAND ${Python3_EXECUTABLE} packager_test.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
