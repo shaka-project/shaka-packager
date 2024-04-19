@@ -13,7 +13,7 @@ if(BUILD_SHARED_LIBS)
 
   # Custom commands aren't targets, but have outputs.
   add_custom_command(
-    DEPENDS mpd_generator packager libpackager
+    DEPENDS mpd_generator packager libpackager pssh_box_py
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     OUTPUT ${TEST_INSTALL_DIR}
     COMMAND

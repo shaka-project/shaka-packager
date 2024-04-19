@@ -31,3 +31,9 @@ add_custom_command(
         ${CMAKE_BINARY_DIR}/packager/)
 
 add_custom_target(pssh_box_py ALL DEPENDS ${PSSH_BOX_OUTPUTS})
+
+# Always install the python tools.
+install(PROGRAMS ${CMAKE_BINARY_DIR}/packager/pssh-box.py
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/packager/pssh-box-protos
+        DESTINATION ${CMAKE_INSTALL_BINDIR})

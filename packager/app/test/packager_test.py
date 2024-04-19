@@ -485,7 +485,7 @@ class PackagerAppTest(unittest.TestCase):
                 use_fake_clock=True,
                 allow_codec_switching=False,
                 dash_force_segment_list=False,
-                force_cl_index=False):
+                force_cl_index=None):
 
     flags = ['--single_threaded']
 
@@ -570,8 +570,10 @@ class PackagerAppTest(unittest.TestCase):
     if allow_codec_switching:
       flags += ['--allow_codec_switching']
 
-    if force_cl_index:
+    if force_cl_index is True:
       flags += ['--force_cl_index']
+    elif force_cl_index is False:
+      flags += ['--noforce_cl_index']
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -754,7 +756,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=2),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     self._CheckTestResults('audio-video-with-two-trick-play')
 
   def testAudioVideoWithTwoTrickPlayDecreasingRate(self):
@@ -765,7 +768,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=1),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     # Since the stream descriptors are sorted in packager app, a different
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
@@ -1510,8 +1514,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   # TODO(kqyang): Fix shared_library not supporting strip_parameter_set_nalus
   # problem.
-  @unittest.skipUnless(
-      test_env.options.libpackager_type == 'static_library',
+  @unittest.skipIf(
+      test_env.BUILD_TYPE == 'shared',
       'libpackager shared_library does not support '
       '--strip_parameter_set_nalus flag.'
   )
