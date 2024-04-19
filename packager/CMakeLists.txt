@@ -233,7 +233,7 @@ add_custom_target(packager_test_py_copy ALL
 
 if(NOT SKIP_INTEGRATION_TESTS)
   add_test (NAME packager_test_py
-    COMMAND ${Python3_EXECUTABLE} packager_test.py
+    COMMAND "${Python3_EXECUTABLE}" packager_test.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
 
