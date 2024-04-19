@@ -256,12 +256,6 @@ configure_file(packager.pc.in packager.pc @ONLY)
 # Always install the binaries.
 install(TARGETS mpd_generator packager)
 
-# Always install the python tools.
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/pssh-box.py
-  DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pssh-box-protos
-  DESTINATION ${CMAKE_INSTALL_BINDIR})
-
 # With shared libraries, also install the library, headers, and pkgconfig.
 # The static library isn't usable as a standalone because it doesn't include
 # its static dependencies (zlib, absl, etc).
