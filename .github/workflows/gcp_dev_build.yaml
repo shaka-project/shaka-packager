@@ -9,6 +9,9 @@ name: Build/Push to Dev Bucket
 #
 # Can also be run manually for debugging purposes.
 on:
+  push:
+    tags:
+      - "v*.*"
   # For manual debugging:
   workflow_dispatch:
     inputs:

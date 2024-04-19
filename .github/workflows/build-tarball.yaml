@@ -263,7 +263,7 @@ jobs:
           echo "outputs.tag ${{ needs.setup.outputs.tag }}"
           echo "vars.outputs.sha_short ${{ steps.vars.outputs.sha_short }}"
           echo "inputs.ref ${{ inputs.ref }}"
-          echo "final tar packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}-${{ github.event.inputs.tag || github.ref_name }}.tgz"
+          echo "final tar packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}.tgz"
           cd tarball
           tar -cavf ../packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}.tgz \
             ./bin ./utils
@@ -295,7 +295,7 @@ jobs:
           Bucket: gs://vidbot-storage/packager
         run: |
           gsutil cp build/packager/packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}.tgz \
-            $Bucket/packager-${{ matrix.target_arch }}-${{ github.event.inputs.tag }}.tgz
+            $Bucket/packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}-${{ github.ref_name }}.tgz
 
       - name: Copy Release Builds to Google Bucket
         if: contains(inputs.destination, 'ent')
@@ -303,7 +303,7 @@ jobs:
           Bucket: gs://videorobot-software/packager
         run: |
           gsutil cp build/packager/packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}.tgz \
-            $Bucket/packager-${{ matrix.target_arch }}-${{ github.event.inputs.tag }}.tgz
+            $Bucket/packager-${{ matrix.target_arch }}-${{ steps.vars.outputs.sha_short }}-${{ github.ref_name }}.tgz
 
       - name: Debug
         uses: mxschmitt/action-tmate@v3.6
