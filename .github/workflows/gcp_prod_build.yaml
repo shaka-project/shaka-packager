@@ -1,0 +1,50 @@
+name: Build/Push to Prod Bucket
+
+# Runs when a new tag is created that looks like a version number.
+#
+# 1. On all combinations of OS, build type, and library type:
+#    a. builds Packager
+#    b. runs all tests
+# 2. Copies the release to GCP bucket
+#
+# Can also be run manually for debugging purposes.
+on:
+  push:
+    tags:
+      - "v*.*"
+  # For manual debugging:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Branch to build"
+        default: "main"
+        required: True
+
+# If another instance of this workflow is started for the same PR, cancel the
+# old one.  If a PR is updated and a new test run is started, the old test run
+# will be cancelled automatically to conserve resources.
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  settings:
+    name: Settings
+    uses: ./.github/workflows/settings.yaml
+
+  lint:
+    name: Lint
+    uses: ./.github/workflows/lint.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+
+  build_and_test:
+    needs: [lint, settings]
+    name: Build and test
+    uses: ./.github/workflows/build-tarball.yaml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+      self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
+      destination: 'ent'
+    secrets: inherit
