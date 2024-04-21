@@ -172,8 +172,8 @@ bool EsParserTeletext::ParseInternal(const uint8_t* data,
     RCHECK(reader.ReadBits(8, &data_unit_length));
 
     if (data_unit_length != 44) {
-      // Don't log an error, since this is pretty common case.
-      // LOG(ERROR) << "Bad Teletext data length";
+      // Don't continue parsing the rest of the data if length is wrong.
+      LOG(WARNING) << "Bad Teletext data length";
       break;
     }
 
