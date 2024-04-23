@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <utility>
 #include <vector>
 
 #include <absl/flags/flag.h>
@@ -3086,6 +3087,36 @@ size_t VTTCueBox::ComputeSizeInternal() {
   return HeaderSize() + cue_source_id.ComputeSize() + cue_id.ComputeSize() +
          cue_time.ComputeSize() + cue_settings.ComputeSize() +
          cue_payload.ComputeSize();
+}
+
+DASHEventMessageBox::DASHEventMessageBox() = default;
+DASHEventMessageBox::~DASHEventMessageBox() = default;
+
+FourCC DASHEventMessageBox::BoxType() const {
+  return FOURCC_emsg;
+}
+
+size_t DASHEventMessageBox::ComputeSizeInternal() {
+  const static uint8_t kNull_sz = 1;
+  const static uint8_t kNumUint32s_v0 = 4;
+  size_t size = HeaderSize() + scheme_id_uri.size() + kNull_sz + value.size() +
+                kNull_sz + (kNumUint32s_v0 * sizeof(uint32_t)) +
+                message_data.size();
+  return size;
+}
+
+bool DASHEventMessageBox::ReadWriteInternal(BoxBuffer* buffer) {
+  uint8_t num_bytes = (version == 1) ? sizeof(uint64_t) : sizeof(uint32_t);
+  RCHECK(
+      ReadWriteHeaderInternal(buffer) &&
+      buffer->ReadWriteCString(&scheme_id_uri) &&
+      buffer->ReadWriteCString(&value) && buffer->ReadWriteUInt32(&timescale) &&
+      buffer->ReadWriteUInt64NBytes(&presentation_time_delta, num_bytes) &&
+      buffer->ReadWriteUInt32(&event_duration) && buffer->ReadWriteUInt32(&id));
+
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : message_data.size();
+  RCHECK(buffer->ReadWriteVector(&message_data, size));
+  return true;
 }
 
 }  // namespace mp4

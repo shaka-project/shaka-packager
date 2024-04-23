@@ -14,6 +14,7 @@ namespace media {
 enum FourCC : uint32_t {
   FOURCC_NULL = 0,
 
+  FOURCC_emsg = 0x656d7367,  // 'emsg'
   FOURCC_ID32 = 0x49443332,
   FOURCC_Head = 0x48656164,
   FOURCC_Opus = 0x4f707573,

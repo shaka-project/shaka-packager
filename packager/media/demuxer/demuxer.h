@@ -13,6 +13,7 @@
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/container_names.h>
+#include <packager/media/formats/mp4/dash_event_message_handler.h>
 #include <packager/media/origin/origin_handler.h>
 #include <packager/status.h>
 
@@ -62,6 +63,9 @@ class Demuxer : public OriginHandler {
   /// @param handler is the handler for the specified stream.
   Status SetHandler(const std::string& stream_label,
                     std::shared_ptr<MediaHandler> handler);
+
+  void SetDashEventMessageHandler(
+      const std::shared_ptr<mp4::DashEventMessageHandler>& handler);
 
   /// Override the language in the specified stream. If the specified stream is
   /// a video stream or invalid, this function is a no-op.
@@ -128,7 +132,6 @@ class Demuxer : public OriginHandler {
                            std::shared_ptr<MediaSample> sample);
   bool NewTextSampleEvent(uint32_t track_id,
                           std::shared_ptr<TextSample> sample);
-  // Helper function to push the sample to corresponding stream.
   bool PushMediaSample(uint32_t track_id, std::shared_ptr<MediaSample> sample);
   bool PushTextSample(uint32_t track_id, std::shared_ptr<TextSample> sample);
 
@@ -162,6 +165,8 @@ class Demuxer : public OriginHandler {
   // need to produce an output segment
   bool webvtt_header_only_output_segment_ = false;
   Status init_event_status_;
+
+  std::shared_ptr<mp4::DashEventMessageHandler> dash_event_handler_;
 };
 
 }  // namespace media

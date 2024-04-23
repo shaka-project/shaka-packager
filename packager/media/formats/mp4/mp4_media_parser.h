@@ -16,6 +16,7 @@
 #include <packager/media/base/decryptor_source.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/offset_byte_queue.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {
@@ -28,7 +29,7 @@ struct ProtectionSystemSpecificHeader;
 
 class MP4MediaParser : public MediaParser {
  public:
-  MP4MediaParser(bool cts_offset_adjustment = false);
+  explicit MP4MediaParser(bool cts_offset_adjustment = false);
   ~MP4MediaParser() override;
 
   /// @name MediaParser implementation overrides.
@@ -49,6 +50,12 @@ class MP4MediaParser : public MediaParser {
   /// @return true if successful, false otherwise.
   bool LoadMoov(const std::string& file_path);
 
+  typedef std::function<bool(
+      std::shared_ptr<mp4::DASHEventMessageBox> emsg_box_info)>
+      DASHEventMessageBoxCB;
+
+  void SetEventMessageBoxCB(const DASHEventMessageBoxCB& event_message_cb);
+
  private:
   enum State {
     kWaitingForInit,
@@ -60,6 +67,7 @@ class MP4MediaParser : public MediaParser {
   bool ParseBox(bool* err);
   bool ParseMoov(mp4::BoxReader* reader);
   bool ParseMoof(mp4::BoxReader* reader);
+  bool ParseEmsg(mp4::BoxReader* reader);
 
   bool FetchKeysIfNecessary(
       const std::vector<ProtectionSystemSpecificHeader>& headers);
@@ -83,6 +91,7 @@ class MP4MediaParser : public MediaParser {
   State state_;
   InitCB init_cb_;
   NewMediaSampleCB new_sample_cb_;
+  DASHEventMessageBoxCB event_message_cb_;
   KeySource* decryption_key_source_;
   std::unique_ptr<DecryptorSource> decryptor_source_;
 

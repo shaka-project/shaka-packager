@@ -220,6 +220,11 @@ class MP4MediaParserTest {
     return samples_;
   }
 
+  const std::vector<std::shared_ptr<media::mp4::DASHEventMessageBox>>&
+  GetEmsgSamples() {
+    return emsg_samples_;
+  }
+
   bool Parse(const uint8_t* buf, size_t len) {
     // Use a memoryfile so we can read inputs directly without going to disk
     const std::string input_fname = "memory://file1";
@@ -275,11 +280,18 @@ class MP4MediaParserTest {
         std::bind(&MP4MediaParserTest::NewTextSampleF, this,
                   std::placeholders::_1, std::placeholders::_2),
         decryption_key_source);
+
+    parser_->SetEventMessageBoxCB(
+        [this](std::shared_ptr<media::mp4::DASHEventMessageBox> info) {
+          emsg_samples_.push_back(std::move(info));
+          return true;
+        });
   }
 
   std::unique_ptr<media::mp4::MP4MediaParser> parser_ =
       std::make_unique<media::mp4::MP4MediaParser>();
   std::vector<std::shared_ptr<media::MediaSample>> samples_;
+  std::vector<std::shared_ptr<media::mp4::DASHEventMessageBox>> emsg_samples_;
 };
 
 void CheckVideoInitSegment(const SegmentBuffer& buffer, media::FourCC format) {
@@ -1070,6 +1082,7 @@ struct LivePackagerReEncryptCase {
   LiveConfig::OutputFormat output_format;
   LiveConfig::TrackType track_type;
   const char* media_segment_format;
+  bool emsg_processing;
 };
 
 class LivePackagerTestReEncrypt
@@ -1117,6 +1130,16 @@ class LivePackagerTestReEncrypt
       std::make_unique<MP4MediaParserTest>(key_source_.get());
 };
 
+inline bool operator==(const media::mp4::DASHEventMessageBox& lhs,
+                       const media::mp4::DASHEventMessageBox& rhs) {
+  return std::tie(lhs.scheme_id_uri, lhs.value, lhs.timescale,
+                  lhs.presentation_time_delta, lhs.event_duration, lhs.id,
+                  lhs.message_data) ==
+         std::tie(rhs.scheme_id_uri, rhs.value, rhs.timescale,
+                  rhs.presentation_time_delta, rhs.event_duration, rhs.id,
+                  rhs.message_data);
+}
+
 TEST_P(LivePackagerTestReEncrypt, VerifyReEncryption) {
   std::vector<uint8_t> init_segment_buffer =
       ReadTestDataFile(GetParam().init_segment_name);
@@ -1137,12 +1160,13 @@ TEST_P(LivePackagerTestReEncrypt, VerifyReEncryption) {
 
     SegmentBuffer out;
     LiveConfig live_config;
-    live_config.segment_number = i;
+    live_config.segment_number = i + 1;
     live_config.format = GetParam().output_format;
     live_config.track_type = GetParam().track_type;
     live_config.protection_scheme = GetParam().encryption_scheme;
     live_config.decryption_key = HexStringToVector(kKeyHex);
     live_config.decryption_key_id = HexStringToVector(kKeyIdHex);
+    live_config.emsg_processing = GetParam().emsg_processing;
 
     SetupLivePackagerConfig(live_config);
 
@@ -1155,33 +1179,56 @@ TEST_P(LivePackagerTestReEncrypt, VerifyReEncryption) {
   auto expected_buf = ReadExpectedData();
   CHECK(parser_noenc_->Parse(expected_buf.data(), expected_buf.size()));
   auto& expected_samples = parser_noenc_->GetSamples();
+  auto& expected_emsg_samples = parser_noenc_->GetEmsgSamples();
 
   CHECK(parser_enc_->Parse(actual_buf.Data(), actual_buf.Size()));
   auto& actual_samples = parser_enc_->GetSamples();
+  auto& actual_emsg_samples = parser_enc_->GetEmsgSamples();
 
   CHECK_EQ(expected_samples.size(), actual_samples.size());
+  ASSERT_GT(expected_samples.size(), 0);
   CHECK(std::equal(
       expected_samples.begin(), expected_samples.end(), actual_samples.begin(),
       actual_samples.end(), [](const auto& s1, const auto& s2) {
         return s1->data_size() == s2->data_size() &&
                0 == memcmp(s1->data(), s2->data(), s1->data_size());
       }));
+
+  if (GetParam().emsg_processing) {
+    ASSERT_GT(expected_emsg_samples.size(), 0);
+    CHECK_EQ(expected_emsg_samples.size(), actual_emsg_samples.size());
+    CHECK(
+        std::equal(expected_emsg_samples.begin(), expected_emsg_samples.end(),
+                   actual_emsg_samples.begin(), actual_emsg_samples.end(),
+                   [](const auto& s1, const auto& s2) { return *s1 == *s2; }));
+  } else {
+    ASSERT_EQ(actual_emsg_samples.size(), 0);
+  }
 }
 
 INSTANTIATE_TEST_CASE_P(
     LivePackagerReEncryptTypes,
     LivePackagerTestReEncrypt,
     ::testing::Values(
-        // Verify decrypt FMP4 and re-encrypt to FMP4 with CENC encryption.
+        // Verify decrypt FMP4 and re-encrypt to FMP4 with CENC encryption,
+        // ENABLE processing EMSG.
         LivePackagerReEncryptCase{
             7, "encrypted/prd_data/init.mp4",
             LiveConfig::EncryptionScheme::CENC, LiveConfig::OutputFormat::FMP4,
-            LiveConfig::TrackType::VIDEO, "encrypted/prd_data/%05d.m4s"},
-        // Verify decrypt FMP4 and re-encrypt to FMP4 with CBCS encryption.
+            LiveConfig::TrackType::VIDEO, "encrypted/prd_data/%05d.m4s", true},
+        // Verify decrypt FMP4 and re-encrypt to FMP4 with CBCS encryption,
+        // ENABLE processing EMSG.
         LivePackagerReEncryptCase{
             7, "encrypted/prd_data/init.mp4",
             LiveConfig::EncryptionScheme::CBCS, LiveConfig::OutputFormat::FMP4,
-            LiveConfig::TrackType::VIDEO, "encrypted/prd_data/%05d.m4s"}));
+            LiveConfig::TrackType::VIDEO, "encrypted/prd_data/%05d.m4s", true},
+        // Verify decrypt FMP4 and re-encrypt to FMP4 with CBCS encryption,
+        // DISABLE processing EMSG
+        LivePackagerReEncryptCase{7, "encrypted/prd_data/init.mp4",
+                                  LiveConfig::EncryptionScheme::CBCS,
+                                  LiveConfig::OutputFormat::FMP4,
+                                  LiveConfig::TrackType::VIDEO,
+                                  "encrypted/prd_data/%05d.m4s", false}));
 
 struct TimedTextTestCase {
   const char* media_segment_format;

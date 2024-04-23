@@ -15,6 +15,7 @@
 #include <packager/media/formats/webm/webm_muxer.h>
 #include <packager/media/formats/webvtt/webvtt_muxer.h>
 #include <packager/packager.h>
+#include "packager/media/formats/mp4/dash_event_message_handler.h"
 
 namespace shaka {
 namespace media {
@@ -30,7 +31,8 @@ MuxerFactory::MuxerFactory(const PackagingParams& packaging_params)
 
 std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
     MediaContainerName output_format,
-    const StreamDescriptor& stream) {
+    const StreamDescriptor& stream,
+    std::shared_ptr<mp4::DashEventMessageHandler> dash_handler) {
   MuxerOptions options;
   options.mp4_params = mp4_params_;
   options.transport_stream_timestamp_offset_ms =
@@ -68,6 +70,8 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
         break;
       }
       muxer = std::make_shared<mp4::MP4Muxer>(options);
+      dynamic_cast<mp4::MP4Muxer*>(muxer.get())
+          ->SetDashEventMessageHandler(dash_handler);
       break;
     default:
       LOG(ERROR) << "Cannot support muxing to " << output_format;

@@ -85,6 +85,10 @@ struct PackagingParams {
   /// Flag used as a workaround in the case of header only input WEBVTT and the
   /// need to produce an output segment
   bool webvtt_header_only_output_segment = false;
+
+  /// Flag used to enable parsing of EMSG (Event Message) boxes during fmp4
+  /// parsing, and writing EMSG box data to output segments.
+  bool emsg_processing = false;
 };
 
 /// Defines a single input/output stream.

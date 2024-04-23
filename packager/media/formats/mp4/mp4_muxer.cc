@@ -169,6 +169,11 @@ Status MP4Muxer::InitializeMuxer() {
   return Status::OK;
 }
 
+void MP4Muxer::SetDashEventMessageHandler(
+    const std::shared_ptr<mp4::DashEventMessageHandler>& emsg_handler) {
+  emsg_handler_ = emsg_handler;
+}
+
 Status MP4Muxer::Finalize() {
   // This happens on streams that are not initialized, i.e. not going through
   // DelayInitializeMuxer, which can only happen if there are no samples from
@@ -312,6 +317,8 @@ Status MP4Muxer::DelayInitializeMuxer() {
   } else {
     segmenter_.reset(
         new MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov)));
+    dynamic_cast<MultiSegmentSegmenter*>(segmenter_.get())
+        ->SetDashEventMessageHandler(emsg_handler_);
   }
 
   const Status segmenter_initialized =

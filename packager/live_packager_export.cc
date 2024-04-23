@@ -21,6 +21,7 @@ LivePackager_t livepackager_new(LivePackagerConfig_t cfg) {
       .timed_text_decode_time = cfg.timed_text_decode_time,
       .decryption_key = {},
       .decryption_key_id = {},
+      .emsg_processing = cfg.emsg_processing,
   };
 
   if (cfg.protection_scheme != ENCRYPTION_SCHEME_NONE) {

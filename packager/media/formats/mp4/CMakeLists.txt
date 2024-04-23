@@ -39,6 +39,8 @@ add_library(mp4 STATIC
   track_run_iterator.h
   mp4_init_muxer.h
   mp4_init_muxer.cc
+  dash_event_message_handler.cc
+  dash_event_message_handler.h
 )
 target_link_libraries(mp4
   media_base

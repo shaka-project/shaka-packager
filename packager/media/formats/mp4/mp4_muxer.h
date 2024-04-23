@@ -12,6 +12,7 @@
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/muxer.h>
+#include "dash_event_message_handler.h"
 
 namespace shaka {
 namespace media {
@@ -35,6 +36,9 @@ class MP4Muxer : public Muxer {
   /// Create a MP4Muxer object from MuxerOptions.
   explicit MP4Muxer(const MuxerOptions& options);
   ~MP4Muxer() override;
+
+  void SetDashEventMessageHandler(
+      const std::shared_ptr<mp4::DashEventMessageHandler>& emsg_handler);
 
  protected:
   Status DelayInitializeMuxer();
@@ -75,6 +79,8 @@ class MP4Muxer : public Muxer {
   std::optional<int64_t> edit_list_offset_;
 
   std::unique_ptr<Segmenter> segmenter_;
+
+  std::shared_ptr<mp4::DashEventMessageHandler> emsg_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4Muxer);
 };

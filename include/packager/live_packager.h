@@ -122,6 +122,10 @@ struct LiveConfig {
   /// Decryption parameters
   std::vector<uint8_t> decryption_key;
   std::vector<uint8_t> decryption_key_id;
+
+  /// Flag used to enable parsing of EMSG (Event Message) boxes during fmp4
+  /// parsing, and writing EMSG box data to output segments.
+  bool emsg_processing = false;
 };
 
 class LivePackager {

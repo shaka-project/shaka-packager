@@ -64,6 +64,10 @@ typedef struct LivePackagerConfig {
   /// output format is either VTT in MP4 or TTML in MP4.
   int64_t timed_text_decode_time;
 
+  /// Flag used to enable parsing of EMSG (Event Message) boxes during fmp4
+  /// parsing, and writing EMSG box data to output segments.
+  bool emsg_processing;
+
   /// Decryption parameters
   bool enable_decryption;
   uint8_t decryption_key[KEY_SIZE];

@@ -73,7 +73,7 @@ bool GetStreamIndex(const std::string& stream_label, size_t* stream_index) {
   return true;
 }
 
-}
+}  // namespace
 
 namespace shaka {
 namespace media {
@@ -145,6 +145,11 @@ Status Demuxer::SetHandler(const std::string& stream_label,
   return MediaHandler::SetHandler(stream_index, std::move(handler));
 }
 
+void Demuxer::SetDashEventMessageHandler(
+    const std::shared_ptr<mp4::DashEventMessageHandler>& handler) {
+  dash_event_handler_ = handler;
+}
+
 void Demuxer::SetLanguageOverride(const std::string& stream_label,
                                   const std::string& language_override) {
   size_t stream_index = kInvalidStreamIndex;
@@ -185,6 +190,14 @@ Status Demuxer::InitializeParser() {
   switch (container_name_) {
     case CONTAINER_MOV:
       parser_.reset(new mp4::MP4MediaParser(cts_offset_adjustment_));
+      dynamic_cast<mp4::MP4MediaParser*>(parser_.get())
+          ->SetEventMessageBoxCB(
+              [this](std::shared_ptr<mp4::DASHEventMessageBox> emsg_box_info) {
+                if (dash_event_handler_) {
+                  dash_event_handler_->OnDashEvent(std::move(emsg_box_info));
+                }
+                return true;
+              });
       break;
     case CONTAINER_MPEG2TS:
       parser_.reset(new mp2t::Mp2tMediaParser());

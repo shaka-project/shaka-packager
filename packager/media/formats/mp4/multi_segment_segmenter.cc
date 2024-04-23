@@ -22,6 +22,7 @@
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/key_frame_info.h>
+#include "dash_event_message_handler.h"
 
 namespace shaka {
 namespace media {
@@ -127,6 +128,10 @@ Status MultiSegmentSegmenter::WriteSegment() {
   if (options().mp4_params.generate_sidx_in_media_segments)
     sidx()->Write(buffer.get());
 
+  if (emsg_handler_) {
+    emsg_handler_->FlushEventMessages(buffer.get());
+  }
+
   const size_t segment_header_size = buffer->Size();
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
   DCHECK_NE(segment_size, 0u);
@@ -166,6 +171,11 @@ Status MultiSegmentSegmenter::WriteSegment() {
   }
 
   return Status::OK;
+}
+
+void MultiSegmentSegmenter::SetDashEventMessageHandler(
+    const std::shared_ptr<mp4::DashEventMessageHandler>& handler) {
+  emsg_handler_ = handler;
 }
 
 }  // namespace mp4

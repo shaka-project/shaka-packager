@@ -246,6 +246,21 @@ struct ID3v2 : FullBox {
   std::vector<uint8_t> id3v2_data;
 };
 
+// DASHEventMessageBox v0 and v1
+struct DASHEventMessageBox : FullBox {
+  DECLARE_BOX_METHODS(DASHEventMessageBox);
+
+  inline uint32_t GetID() const { return id; }
+
+  std::string scheme_id_uri;
+  std::string value;
+  uint32_t timescale = 0u;
+  uint64_t presentation_time_delta = 0u;
+  uint32_t event_duration = 0u;
+  uint32_t id = 0u;
+  std::vector<uint8_t> message_data;
+};
+
 struct Metadata : FullBox {
   DECLARE_BOX_METHODS(Metadata);
 
