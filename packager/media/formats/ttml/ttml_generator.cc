@@ -56,7 +56,7 @@ void TtmlGenerator::Initialize(const std::map<std::string, TextRegion>& regions,
   language_ = language;
   time_scale_ = time_scale;
   // Add ebu_tt_d_regions
-  float step = 74.1 / 11;
+  float step = 74.1f / 11;
   for (int i = 0; i < 12; i++) {
     TextRegion region;
     float verPos = 10.0 + int(float(step) * float(i));
