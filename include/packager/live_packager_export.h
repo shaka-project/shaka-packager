@@ -34,6 +34,15 @@ typedef enum EncryptionScheme {
   ENCRYPTION_SCHEME_CENC,
 } EncryptionScheme_t;
 
+typedef enum ContentProtectionSystem {
+  NONE = 0,
+  COMMON = (1 << 0),
+  WIDEVINE = (1 << 1),
+  PLAYREADY = (1 << 2),
+  FAIRPLAY = (1 << 3),
+  MARLIN = (1 << 4),
+} ContentProtectionSystem_t;
+
 #define IV_MAX_SIZE 16
 #define KEY_SIZE 16
 #define KEY_ID_SIZE 16
@@ -47,6 +56,7 @@ typedef struct LivePackagerConfig {
   uint8_t key[KEY_SIZE];
   uint8_t key_id[KEY_ID_SIZE];
   EncryptionScheme_t protection_scheme;
+  ContentProtectionSystem_t protection_system;
 
   /// User-specified segment number.
   /// For FMP4 output:

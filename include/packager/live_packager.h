@@ -102,6 +102,7 @@ struct LiveConfig {
   std::vector<uint8_t> key;
   std::vector<uint8_t> key_id;
   EncryptionScheme protection_scheme = EncryptionScheme::NONE;
+  ProtectionSystem protection_system = ProtectionSystem::kNone;
 
   /// User-specified segment number.
   /// For FMP4 output:

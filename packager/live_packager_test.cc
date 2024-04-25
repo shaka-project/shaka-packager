@@ -13,6 +13,7 @@
 
 #include <absl/log/log.h>
 #include <absl/strings/str_format.h>
+#include <gmock/gmock-matchers.h>
 #include <packager/crypto_params.h>
 #include <packager/file.h>
 #include <packager/live_packager.h>
@@ -32,6 +33,7 @@
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 
 #include "absl/strings/escaping.h"
+#include "packager/media/base/protection_system_ids.h"
 
 namespace shaka {
 namespace {
@@ -331,6 +333,71 @@ void CheckVideoInitSegment(const SegmentBuffer& buffer, media::FourCC format) {
 
     MovieBoxChecker checker(expected);
     checker.Check(reader.get());
+  }
+}
+
+void CheckVideoPsshInfo(const ProtectionSystem& config,
+                        const SegmentBuffer& buffer) {
+  bool err(true);
+  size_t bytes_to_read(buffer.Size());
+  const uint8_t* data(buffer.Data());
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    FileTypeBoxChecker checker;
+    checker.Check(reader.get());
+
+    data += reader->size();
+    bytes_to_read -= reader->size();
+  }
+
+  {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+    EXPECT_FALSE(err);
+
+    media::mp4::Movie moov;
+    CHECK(ParseAndCheckType(moov, reader.get()));
+
+    std::vector<std::vector<uint8_t>> expected_pssh_system_ids;
+    if (has_flag(config, ProtectionSystem::kCommon)) {
+      expected_pssh_system_ids.emplace_back(std::begin(media::kCommonSystemId),
+                                            std::end(media::kCommonSystemId));
+    }
+    if (has_flag(config, ProtectionSystem::kPlayReady)) {
+      expected_pssh_system_ids.emplace_back(
+          std::begin(media::kPlayReadySystemId),
+          std::end(media::kPlayReadySystemId));
+    }
+    if (has_flag(config, ProtectionSystem::kWidevine)) {
+      expected_pssh_system_ids.emplace_back(
+          std::begin(media::kWidevineSystemId),
+          std::end(media::kWidevineSystemId));
+    }
+
+    std::vector<uint8_t> widevine_system_id(
+        media::kWidevineSystemId,
+        media::kWidevineSystemId + std::size(media::kWidevineSystemId));
+    std::vector<uint8_t> playready_system_id(
+        media::kPlayReadySystemId,
+        media::kPlayReadySystemId + std::size(media::kPlayReadySystemId));
+
+    std::vector<std::vector<uint8_t>> actual_pssh_system_ids;
+    if (!moov.pssh.empty()) {
+      for (const auto& pssh : moov.pssh) {
+        auto pssh_builder = media::PsshBoxBuilder::ParseFromBox(
+            pssh.raw_box.data(), pssh.raw_box.size());
+        auto system_id = pssh_builder->system_id();
+        actual_pssh_system_ids.emplace_back(system_id);
+      }
+    }
+
+    ASSERT_THAT(actual_pssh_system_ids,
+                ::testing::UnorderedElementsAreArray(expected_pssh_system_ids));
+    ASSERT_EQ(actual_pssh_system_ids.size(), expected_pssh_system_ids.size());
   }
 }
 
@@ -1081,6 +1148,7 @@ struct LivePackagerReEncryptCase {
   LiveConfig::EncryptionScheme encryption_scheme;
   LiveConfig::OutputFormat output_format;
   LiveConfig::TrackType track_type;
+  ProtectionSystem protection_system;
   const char* media_segment_format;
   bool emsg_processing;
 };
@@ -1095,6 +1163,7 @@ class LivePackagerTestReEncrypt
     live_config.format = GetParam().output_format;
     live_config.track_type = GetParam().track_type;
     live_config.protection_scheme = GetParam().encryption_scheme;
+    live_config.protection_system = GetParam().protection_system;
     live_config.decryption_key = HexStringToVector(kKeyHex);
     live_config.decryption_key_id = HexStringToVector(kKeyIdHex);
     SetupLivePackagerConfig(live_config);
@@ -1149,6 +1218,9 @@ TEST_P(LivePackagerTestReEncrypt, VerifyReEncryption) {
 
   SegmentBuffer actual_buf;
   ASSERT_EQ(Status::OK, live_packager_->PackageInit(init_seg, actual_buf));
+  if (GetParam().protection_system != ProtectionSystem::kNone) {
+    CheckVideoPsshInfo(GetParam().protection_system, actual_buf);
+  }
 
   for (unsigned int i = 0; i < GetParam().num_segments; i++) {
     std::string input_fname;
@@ -1197,10 +1269,11 @@ TEST_P(LivePackagerTestReEncrypt, VerifyReEncryption) {
   if (GetParam().emsg_processing) {
     ASSERT_GT(expected_emsg_samples.size(), 0);
     CHECK_EQ(expected_emsg_samples.size(), actual_emsg_samples.size());
-    CHECK(
-        std::equal(expected_emsg_samples.begin(), expected_emsg_samples.end(),
-                   actual_emsg_samples.begin(), actual_emsg_samples.end(),
-                   [](const auto& s1, const auto& s2) { return *s1 == *s2; }));
+    CHECK(std::equal(expected_emsg_samples.begin(), expected_emsg_samples.end(),
+                     actual_emsg_samples.begin(), actual_emsg_samples.end(),
+                     [](const auto& s1, const auto& s2) {
+                       return (*s1.get()) == (*s2.get());
+                     }));
   } else {
     ASSERT_EQ(actual_emsg_samples.size(), 0);
   }
@@ -1215,20 +1288,28 @@ INSTANTIATE_TEST_CASE_P(
         LivePackagerReEncryptCase{
             7, "encrypted/prd_data/init.mp4",
             LiveConfig::EncryptionScheme::CENC, LiveConfig::OutputFormat::FMP4,
-            LiveConfig::TrackType::VIDEO, "encrypted/prd_data/%05d.m4s", true},
+            LiveConfig::TrackType::VIDEO,
+            ProtectionSystem::kPlayReady | ProtectionSystem::kWidevine,
+            "encrypted/prd_data/%05d.m4s", true},
         // Verify decrypt FMP4 and re-encrypt to FMP4 with CBCS encryption,
         // ENABLE processing EMSG.
         LivePackagerReEncryptCase{
             7, "encrypted/prd_data/init.mp4",
             LiveConfig::EncryptionScheme::CBCS, LiveConfig::OutputFormat::FMP4,
-            LiveConfig::TrackType::VIDEO, "encrypted/prd_data/%05d.m4s", true},
+            LiveConfig::TrackType::VIDEO, ProtectionSystem::kWidevine,
+            "encrypted/prd_data/%05d.m4s", true},
         // Verify decrypt FMP4 and re-encrypt to FMP4 with CBCS encryption,
         // DISABLE processing EMSG
-        LivePackagerReEncryptCase{7, "encrypted/prd_data/init.mp4",
-                                  LiveConfig::EncryptionScheme::CBCS,
-                                  LiveConfig::OutputFormat::FMP4,
-                                  LiveConfig::TrackType::VIDEO,
-                                  "encrypted/prd_data/%05d.m4s", false}));
+        LivePackagerReEncryptCase{
+            7,
+            "encrypted/prd_data/init.mp4",
+            LiveConfig::EncryptionScheme::CBCS,
+            LiveConfig::OutputFormat::FMP4,
+            LiveConfig::TrackType::VIDEO,
+            ProtectionSystem::kPlayReady,
+            "encrypted/prd_data/%05d.m4s",
+            false,
+        }));
 
 struct TimedTextTestCase {
   const char* media_segment_format;
