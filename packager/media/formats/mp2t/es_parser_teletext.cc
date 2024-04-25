@@ -10,6 +10,7 @@
 #include <packager/media/base/timestamp.h>
 #include <packager/media/formats/mp2t/es_parser_teletext_tables.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
+#include <iostream>
 
 namespace shaka {
 namespace media {
@@ -171,16 +172,17 @@ bool EsParserTeletext::ParseInternal(const uint8_t* data,
     uint8_t data_unit_length;
     RCHECK(reader.ReadBits(8, &data_unit_length));
 
+    if (data_unit_id != EBU_TELETEXT_WITH_SUBTITLING) {
+      RCHECK(reader.SkipBytes(data_unit_length));
+      continue;
+    }
+
     if (data_unit_length != 44) {
-      // Don't continue parsing the rest of the data if length is wrong.
-      LOG(WARNING) << "Bad Teletext data length";
+      // Teletext data unit length is always 44 bytes
+      LOG(ERROR) << "Bad Teletext data length";
       break;
     }
 
-    if (data_unit_id != EBU_TELETEXT_WITH_SUBTITLING) {
-      RCHECK(reader.SkipBytes(44));
-      continue;
-    }
 
     RCHECK(reader.SkipBits(16));
 
