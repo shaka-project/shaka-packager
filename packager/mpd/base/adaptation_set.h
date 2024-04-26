@@ -43,8 +43,14 @@ class AdaptationSet {
     kRoleSupplementary,
     kRoleCommentary,
     kRoleDub,
+    kRoleDescription,
+    kRoleSign,
+    kRoleMetadata,
+    kRoleEnhancedAudioIntelligibility,
+    kRoleEmergency,
     kRoleForcedSubtitle,
-    kRoleDescription
+    kRoleEasyreader,
+    kRoleKaraoke,
   };
 
   virtual ~AdaptationSet();
