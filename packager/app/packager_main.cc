@@ -125,7 +125,7 @@ const char kUsage[] =
     "  - dash_accessibilities (accessibilities): Optional semicolon separated\n"
     "    list of values for DASH Accessibility elements. The value should be\n"
     "    in the format: scheme_id_uri=value.\n"
-    "  - dash_role4s (roles): Optional semicolon separated list of values for\n"
+    "  - dash_roles (roles): Optional semicolon separated list of values for\n"
     "    DASH Role elements. The value should be one of: caption, subtitle, \n"
     "    main, alternate, supplementary, commentary, dub, description, sign, \n"
     "    metadata, enhanced-audio- intelligibility, emergency, \n"
