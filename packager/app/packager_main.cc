@@ -336,6 +336,50 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
   return true;
 }
 
+void addSBDParams(const std::string& sbd_url,
+                  const std::string& sbd_template,
+                  const std::string& sbd_key,
+                  const std::string content_type,
+                  MpdParams& mpd_params) {
+  // Get comma separted urls
+  std::vector<std::string> sbd_urls = absl::StrSplit(sbd_url, ",");
+  std::vector<std::string> sbd_templates = absl::StrSplit(sbd_template, ",");
+
+  std::vector<std::vector<std::pair<std::string, std::string>>> sbd_keys_all;
+
+  if (!sbd_key.empty()) {
+    std::vector<std::string> sbd_keys = absl::StrSplit(sbd_key, ":");
+    for (std::string key : sbd_keys) {
+      std::vector<KVPair> pairs = SplitStringIntoKeyValuePairs(key, '=', ',');
+      if (pairs.empty()) {
+        LOG(ERROR) << "Invalid --sbd_key keyname/defaultvalue pairs.";
+      }
+
+      std::vector<std::pair<std::string, std::string>> v;
+      for (const auto& string_pair : pairs) {
+        v.push_back(std::make_pair(string_pair.first, string_pair.second));
+      }
+      sbd_keys_all.push_back(v);
+    }
+  }
+
+  // store sbd details in mpd params.
+  for (int i = 0; i < (int)sbd_urls.size(); i++) {
+    if (content_type == "all")
+      mpd_params.sbd_adaptation_set_all.push_back(
+          {sbd_urls[i], sbd_templates[i], sbd_keys_all[i]});
+    if (content_type == "video")
+      mpd_params.sbd_adaptation_set_video.push_back(
+          {sbd_urls[i], sbd_templates[i], sbd_keys_all[i]});
+    if (content_type == "audio")
+      mpd_params.sbd_adaptation_set_audio.push_back(
+          {sbd_urls[i], sbd_templates[i], sbd_keys_all[i]});
+    if (content_type == "text")
+      mpd_params.sbd_adaptation_set_text.push_back(
+          {sbd_urls[i], sbd_templates[i], sbd_keys_all[i]});
+  }
+}
+
 std::optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
@@ -522,6 +566,25 @@ std::optional<PackagingParams> GetPackagingParams() {
   mpd_params.include_mspr_pro =
       absl::GetFlag(FLAGS_include_mspr_pro_for_playready);
   mpd_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
+
+  if (!absl::GetFlag(FLAGS_sbd_url_all).empty())
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_all),
+                 absl::GetFlag(FLAGS_sbd_template_all),
+                 absl::GetFlag(FLAGS_sbd_key_all), "all", mpd_params);
+
+  if (!absl::GetFlag(FLAGS_sbd_url_video).empty()) {
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_video),
+                 absl::GetFlag(FLAGS_sbd_template_video),
+                 absl::GetFlag(FLAGS_sbd_key_video), "video", mpd_params);
+  }
+  if (!absl::GetFlag(FLAGS_sbd_url_audio).empty())
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_audio),
+                 absl::GetFlag(FLAGS_sbd_template_audio),
+                 absl::GetFlag(FLAGS_sbd_key_audio), "audio", mpd_params);
+  if (!absl::GetFlag(FLAGS_sbd_url_text).empty())
+    addSBDParams(absl::GetFlag(FLAGS_sbd_url_text),
+                 absl::GetFlag(FLAGS_sbd_template_text),
+                 absl::GetFlag(FLAGS_sbd_key_text), "text", mpd_params);
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(absl::GetFlag(FLAGS_hls_playlist_type),

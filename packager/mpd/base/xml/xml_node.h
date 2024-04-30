@@ -19,6 +19,7 @@
 #include <packager/macros/classes.h>
 #include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_options.h>
 
 typedef struct _xmlNode xmlNode;
 
@@ -135,7 +136,8 @@ class RepresentationBaseXmlNode : public XmlNode {
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
   [[nodiscard]] bool AddEssentialProperty(const std::string& scheme_id_uri,
-                                          const std::string& value);
+                                          const std::string& value,
+                                          const MpdOptions& mpd_options);
 
  protected:
   explicit RepresentationBaseXmlNode(const std::string& name);
@@ -147,6 +149,16 @@ class RepresentationBaseXmlNode : public XmlNode {
   [[nodiscard]] bool AddDescriptor(const std::string& descriptor_name,
                                    const std::string& scheme_id_uri,
                                    const std::string& value);
+
+  bool AddDescriptorSBD(const std::string& descriptor_name,
+                        const std::string& scheme_id_uri,
+                        const std::string& value,
+                        const MpdOptions& mpd_options);
+
+  bool AddSBDInfo(const std::vector<MpdParams::SBD>& sbd_adaptation_set,
+                  const std::string& descriptor_name,
+                  const std::string& scheme_id_uri,
+                  const std::string& value);
 
  private:
   [[nodiscard]] bool AddContentProtectionElement(
