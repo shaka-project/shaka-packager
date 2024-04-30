@@ -119,14 +119,17 @@ TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
   ASSERT_TRUE(samples_.empty());
 }
 
-TEST_F(WebVttParserTest, FailToParseHeaderWrongWord) {
+TEST_F(WebVttParserTest, ParseNoHeaderWithoutExiting) {
+  // A proper WebVTT file should have the "WEBVTT" string header.
+  // But UDP input (not file) may be ingested when the header already
+  // passed, and it will not be repeated later.
   const uint8_t text[] =
-      "NOT WEBVTT\n"
+      "00:00:01.000 --> 00:00:02.000\n"
       "\n";
 
   ASSERT_NO_FATAL_FAILURE(SetUpAndInitialize());
 
-  ASSERT_FALSE(parser_->Parse(text, sizeof(text) - 1));
+  ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
 
   ASSERT_TRUE(streams_.empty());
   ASSERT_TRUE(samples_.empty());
@@ -140,7 +143,7 @@ TEST_F(WebVttParserTest, FailToParseHeaderNotOneLine) {
 
   ASSERT_NO_FATAL_FAILURE(SetUpAndInitialize());
 
-  ASSERT_FALSE(parser_->Parse(text, sizeof(text) - 1));
+  ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
 
   ASSERT_TRUE(streams_.empty());
   ASSERT_TRUE(samples_.empty());

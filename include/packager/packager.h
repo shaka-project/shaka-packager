@@ -152,6 +152,11 @@ struct StreamDescriptor {
   /// Set to true to indicate that the stream is for hls only.
   bool hls_only = false;
 
+  /// Optional value which specifies input container format.
+  /// Useful for live streaming situations, like auto-detecting webvtt without
+  /// its initial header.
+  std::string input_format;
+
   /// Optional, indicates if this is a Forced Narrative subtitle stream.
   bool forced_subtitle = false;
 

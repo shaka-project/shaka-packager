@@ -102,6 +102,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecEAC3;
     case FOURCC_ac_4:
       return kCodecAC4;
+    case FOURCC_alac:
+      return kCodecALAC;
     case FOURCC_fLaC:
       return kCodecFlac;
     case FOURCC_mha1:
@@ -513,6 +515,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse dac4.";
             return false;
           }
+          break;
+        case FOURCC_alac:
+          codec_config = entry.alac.data;
           break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;

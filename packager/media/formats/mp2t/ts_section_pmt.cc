@@ -21,6 +21,7 @@ namespace {
 
 const int kISO639LanguageDescriptor = 0x0A;
 const int kMaximumBitrateDescriptor = 0x0E;
+const int kTeletextDescriptor = 0x56;
 const int kSubtitlingDescriptor = 0x59;
 
 }  // namespace
@@ -125,9 +126,17 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
       es_info_length -= 2;
 
       // See ETSI EN 300 468 Section 6.1
-      if (stream_type == TsStreamType::kPesPrivateData &&
-          descriptor_tag == kSubtitlingDescriptor) {
-        pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+      if (stream_type == TsStreamType::kPesPrivateData) {
+        switch (descriptor_tag) {
+          case kTeletextDescriptor:
+            pid_info.back().stream_type = TsStreamType::kTeletextSubtitles;
+            break;
+          case kSubtitlingDescriptor:
+            pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+            break;
+          default:
+            break;
+        }
       } else if (descriptor_tag == kISO639LanguageDescriptor &&
                  descriptor_length >= 4) {
         // See section 2.6.19 of ISO-13818

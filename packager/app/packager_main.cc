@@ -58,6 +58,9 @@ ABSL_FLAG(bool,
           false,
           "If enabled, only use one thread when generating content.");
 
+// From absl/log:
+ABSL_DECLARE_FLAG(int, stderrthreshold);
+
 namespace shaka {
 namespace {
 
@@ -89,6 +92,10 @@ const char kUsage[] =
     "  - output_format (format): Optional value which specifies the format\n"
     "    of the output files (MP4 or WebM).  If not specified, it will be\n"
     "    derived from the file extension of the output file.\n"
+    "  - input_format (format): Optional value which specifies the format\n"
+    "    of the input files or streams. If not specified, it will be\n"
+    "    autodetected, which in some cases (such as live UDP webvtt) may\n"
+    "    fail.\n"
     "  - skip_encryption=0|1: Optional. Defaults to 0 if not specified. If\n"
     "    it is set to 1, no encryption of the stream will be made.\n"
     "  - drm_label: Optional value for custom DRM label, which defines the\n"
@@ -119,9 +126,10 @@ const char kUsage[] =
     "    list of values for DASH Accessibility elements. The value should be\n"
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
-    "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    forced-subtitle, main, alternate, supplementary, commentary, \n"
-    "    description and dub. See DASH\n"
+    "    DASH Role elements. The value should be one of: caption, subtitle, \n"
+    "    main, alternate, supplementary, commentary, dub, description, sign, \n"
+    "    metadata, enhanced-audio- intelligibility, emergency, \n"
+    "    forced-subtitle, easyreader, and karaoke. See DASH\n"
     "    (ISO/IEC 23009-1) specification for details.\n"
     "  - forced_subtitle: Optional boolean value (0|1). If set to 1 \n"
     "    indicates that this stream is a Forced Narrative subtitle that \n"
@@ -129,7 +137,7 @@ const char kUsage[] =
     "    used to caption short portions of the audio that might be in a \n"
     "    foreign language. For DASH this will set role to forced_subtitle, \n"
     "    for HLS it will set FORCED=YES and AUTOSELECT=YES. \n"
-    "    Only valid for subtitles.";
+    "    Only valid for subtitles.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";
@@ -618,6 +626,12 @@ int PackagerMain(int argc, char** argv) {
 
   auto usage = absl::StrFormat(kUsage, argv[0]);
   absl::SetProgramUsageMessage(usage);
+
+  // Before parsing the command line, change the default value of some flags
+  // provided by libraries.
+
+  // Always log to stderr.  Log levels are still controlled by --minloglevel.
+  absl::SetFlag(&FLAGS_stderrthreshold, 0);
 
   auto remaining_args = absl::ParseCommandLine(argc, argv);
   if (absl::GetFlag(FLAGS_licenses)) {

@@ -2,7 +2,7 @@
 <!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.736067S">
   <Period id="0">
-    <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
+    <AdaptationSet id="0" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
@@ -27,7 +27,7 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="2" contentType="video" width="640" height="360" maxFrameRate="30000/30030" par="16:9">
+    <AdaptationSet id="2" contentType="video" width="640" height="360" maxFrameRate="30000/22022" par="16:9">
       <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
@@ -39,7 +39,7 @@
           <Initialization range="0-1137"/>
         </SegmentBase>
       </Representation>
-      <Representation id="3" bandwidth="212297" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/60060" maxPlayoutRate="60" codingDependency="false">
+      <Representation id="3" bandwidth="212297" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/22022" maxPlayoutRate="60" codingDependency="false">
         <BaseURL>bear-640x360-video-trick_play_factor_2.mp4</BaseURL>
         <SegmentBase indexRange="1138-1193" timescale="30000">
           <Initialization range="0-1137"/>

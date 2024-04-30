@@ -498,6 +498,7 @@ class PackagerAppTest(unittest.TestCase):
                 sbd_url_text=None,
                 sbd_template_text=None,
                 sbd_key_text=None):
+
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -609,8 +610,10 @@ class PackagerAppTest(unittest.TestCase):
     if allow_codec_switching:
       flags += ['--allow_codec_switching']
 
-    if force_cl_index:
+    if force_cl_index is True:
       flags += ['--force_cl_index']
+    elif force_cl_index is False:
+      flags += ['--noforce_cl_index']
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -793,7 +796,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=2),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     self._CheckTestResults('audio-video-with-two-trick-play')
 
   def testAudioVideoWithTwoTrickPlayDecreasingRate(self):
@@ -804,7 +808,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=1),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     # Since the stream descriptors are sorted in packager app, a different
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
@@ -1535,6 +1540,15 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('flac-with-encryption', verify_decryption=True)
 
+  def testAlac(self):
+    streams = [
+      self._GetStream('audio', test_file='bear-alac.mp4'),
+    ]
+    flags = self._GetFlags(output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('audio-alac')
+
   def testAv1Mp4WithEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'], test_files=['bear-av1.mp4']),
@@ -1559,8 +1573,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   # TODO(kqyang): Fix shared_library not supporting strip_parameter_set_nalus
   # problem.
-  @unittest.skipUnless(
-      test_env.options.libpackager_type == 'static_library',
+  @unittest.skipIf(
+      test_env.BUILD_TYPE == 'shared',
       'libpackager shared_library does not support '
       '--strip_parameter_set_nalus flag.'
   )
@@ -1654,6 +1668,13 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['audio', 'video'], hls=True, test_files=['bear-640x360-ec3.mp4']),
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('ec3-and-hls-single-segment-mp4-encrypted')
+
+  def testHlsSingleSegmentTs(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'], hls=True, test_files=['bear-640x360.ts']),
+        self._GetFlags(output_hls=True))
+    self._CheckTestResults('hls-single-segment-ts')
 
   def testEc3PackedAudioEncrypted(self):
     streams = [
@@ -1773,6 +1794,18 @@ class PackagerFunctionalTest(PackagerAppTest):
                               self._GetFlags(output_dash=True, output_hls=True,
                                              force_cl_index=True))
     self._CheckTestResults('forced-commandline-ordering')
+
+  def testForcedCommandlineOrderingWithTTML(self):
+    streams = [
+      self._GetStream('video', test_file='bear-640x360.mp4'),
+      self._GetStream('audio', test_file='bear-640x360.mp4'),
+      self._GetStream('text',  test_file='bear-english.ttml'),
+    ]
+
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True, output_hls=False,
+                                             force_cl_index=True))
+    self._CheckTestResults('forced-commandline-ordering-ttml')
 
   def testAllowCodecSwitchingWithCommandlineOrdering(self):
     streams = [

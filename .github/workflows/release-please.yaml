@@ -13,27 +13,28 @@ on:
       - v[0-9]*
 
 jobs:
+  settings:
+    name: Settings
+    uses: ./.github/workflows/settings.yaml
+
   release:
     runs-on: ubuntu-latest
+    needs: settings
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       # Create/update release PR
-      - uses: google-github-actions/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v4
         id: release
         with:
-          # Required input to specify the release type.  This is not really a
-          # go project, but go projects in release-please only update
-          # CHANGELOG.md and nothing else.  This is what we want.
-          release-type: go
           # Make sure we create the PR against the correct branch.
-          default-branch: ${{ github.ref_name }}
+          target-branch: ${{ github.ref_name }}
           # Use a special shaka-bot access token for releases.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
-          # Temporary settings to bootstrap v3.0.0.
-          last-release-sha: 634af6591ce8c701587a78042ae7f81761725710
-          bootstrap-sha: 634af6591ce8c701587a78042ae7f81761725710
+          # See also settings in these files:
+          manifest-file: .release-please-manifest.json
+          config-file: .release-please-config.json
 
   # The jobs below are all conditional on a release having been created by
   # someone merging the release PR.
@@ -51,10 +52,9 @@ jobs:
     outputs:
       latest: ${{ steps.compute.outputs.latest }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-tags: true
-          persist-credentials: false
 
       - name: Compute latest
         id: compute
@@ -101,11 +101,13 @@ jobs:
   # Do a complete build
   build:
     name: Build
-    needs: release
+    needs: [settings, release]
     if: needs.release.outputs.release_created
     uses: ./.github/workflows/build.yaml
     with:
       ref: ${{ github.ref }}
+      self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
+      debug: ${{ needs.settings.outputs.debug != '' }}
 
   # Attach build artifacts to the release
   artifacts:
@@ -114,22 +116,21 @@ jobs:
     needs: [release, build]
     if: needs.release.outputs.release_created
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts
+          merge-multiple: true
 
       - name: Debug
         run: find -ls
 
       - name: Attach packager to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.release.outputs.tag_name }}
-          make_latest: false  # Already set for the release
-          file_glob: true
-          file: artifacts/artifacts*/*
-          overwrite: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          gh -R ${{ github.repository }} release upload \
+              ${{ needs.release.outputs.tag_name }} artifacts/* \
+              --clobber
 
   # Surprisingly, Shaka Packager binaries can be installed via npm.
   # Publish NPM package updates.

@@ -45,3 +45,9 @@ Examples
       in=in_en.vtt,stream=text,language=en,output=out_en.mp4 \
       in=in_sp.vtt,stream=text,language=sp,output=out_sp.mp4 \
       in=in_fr.vtt,stream=text,language=fr,output=out_fr.mp4
+
+* Get a single 3-digit page from DVB-teletext and set language for output formats stpp (TTML in mp4), wvtt (WebVTT in mp4) and HLS WebVTT::
+
+    $ packager in=input.ts,stream=text,cc_index=888,lang=en,format=ttml+mp4,output=output.mp4
+    $ packager in=input.ts,stream=text,cc_index=888,lang=en,output=output.mp4
+    $ packager in=input.ts,stream=text,cc_index=888,segment_template=text/$Number$.vtt,playlist_name=text/main.m3u8,hls_group_id=text,hls_name=ENGLISH

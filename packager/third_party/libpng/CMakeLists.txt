@@ -25,6 +25,8 @@ set(PNG_BUILD_ZLIB ON)
 set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../zlib/source/")
 # Tell libpng where to find zlib library to link to.
 set(ZLIB_LIBRARY zlibstatic)
+# Tell libpng where to find libm on Linux (-lm).
+set(M_LIBRARY m)
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
