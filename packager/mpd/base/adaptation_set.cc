@@ -59,10 +59,22 @@ std::string RoleToText(AdaptationSet::Role role) {
       return "commentary";
     case AdaptationSet::kRoleDub:
       return "dub";
-    case AdaptationSet::kRoleForcedSubtitle:
-      return "forced-subtitle";
     case AdaptationSet::kRoleDescription:
       return "description";
+    case AdaptationSet::kRoleSign:
+      return "sign";
+    case AdaptationSet::kRoleMetadata:
+      return "metadata";
+    case AdaptationSet::kRoleEnhancedAudioIntelligibility:
+      return "enhanced-audio-intelligibility";
+    case AdaptationSet::kRoleEmergency:
+      return "emergency";
+    case AdaptationSet::kRoleForcedSubtitle:
+      return "forced-subtitle";
+    case AdaptationSet::kRoleEasyreader:
+      return "easyreader";
+    case AdaptationSet::kRoleKaraoke:
+      return "karaoke";
     default:
       return "unknown";
   }
