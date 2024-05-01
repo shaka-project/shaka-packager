@@ -575,7 +575,7 @@ class PackagerAppTest(unittest.TestCase):
     elif force_cl_index is False:
       flags += ['--noforce_cl_index']
 
-    if start_segment_number:
+    if start_segment_number is not None:
       flags += ['--start_segment_number', start_segment_number]
 
     if ad_cues:
@@ -830,7 +830,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
     streams = audio_video_streams
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
-                              start_segment_number='0'))
+                              start_segment_number=0))
     self._CheckTestResults('dash-start-number')
 
   def testAudioVideoWithLanguageOverride(self):
