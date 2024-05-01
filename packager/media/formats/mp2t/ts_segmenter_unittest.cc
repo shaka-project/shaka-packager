@@ -196,7 +196,6 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   TsSegmenter segmenter(options, &mock_listener);
 
   const int32_t kFirstPts = 1000;
-  const int64_t kSegmentNumber = 1;
 
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
@@ -208,11 +207,6 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
   // Doesn't really matter how long this is.
   sample2->set_duration(kInputTimescale * 7);
-
-  EXPECT_CALL(mock_listener,
-              OnNewSegment("memory://file1.ts",
-                           kFirstPts * kTimeScale / kInputTimescale,
-                           kTimeScale * 11, _, _));
 
   Sequence writer_sequence;
   EXPECT_CALL(*mock_ts_writer_, NewSegment(_))
@@ -265,8 +259,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-  EXPECT_OK(segmenter.FinalizeSegment(kFirstPts, sample1->duration(),
-                                      kSegmentNumber));
+  EXPECT_OK(segmenter.FinalizeSegment(kFirstPts, sample1->duration()));
   EXPECT_OK(segmenter.AddSample(*sample2));
 }
 
@@ -310,8 +303,6 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
 
-  const int64_t kSegmentNumber = 1;
-
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -325,8 +316,7 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
 
-  EXPECT_OK(segmenter.FinalizeSegment(0, 100 /* arbitrary duration*/,
-                                      kSegmentNumber));
+  EXPECT_OK(segmenter.FinalizeSegment(0, 100 /* arbitrary duration*/));
 }
 
 TEST_F(TsSegmenterTest, EncryptedSample) {
@@ -350,10 +340,10 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   ON_CALL(*mock_pes_packet_generator_, Flush()).WillByDefault(Return(true));
 
   const uint8_t kAnyData[] = {
-      0x01, 0x0F, 0x3C,
+      0x01,
+      0x0F,
+      0x3C,
   };
-
-  const int64_t kSegmentNumber = 1;
 
   std::shared_ptr<MediaSample> sample1 =
       MediaSample::CopyFrom(kAnyData, std::size(kAnyData), kIsKeyFrame);
@@ -399,8 +389,6 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       .InSequence(pes_packet_sequence)
       .WillOnce(Return(new PesPacket()));
 
-  EXPECT_CALL(mock_listener, OnNewSegment("memory://file1.ts", _, _, _, _));
-
   MockTsWriter* mock_ts_writer_raw = mock_ts_writer_.get();
 
   segmenter.InjectPesPacketGeneratorForTesting(
@@ -409,7 +397,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-  EXPECT_OK(segmenter.FinalizeSegment(1, sample1->duration(), kSegmentNumber));
+  EXPECT_OK(segmenter.FinalizeSegment(1, sample1->duration()));
   // Signal encrypted if sample is encrypted.
   EXPECT_CALL(*mock_ts_writer_raw, SignalEncrypted());
   sample2->set_is_encrypted(true);

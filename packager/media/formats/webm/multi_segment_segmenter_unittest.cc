@@ -16,8 +16,8 @@ namespace media {
 namespace {
 
 const int32_t kTimeScale = 1000000;
-const int64_t kDuration = 1000000;c
-onst int64_t kSegmentNumber1 = 1;
+const int64_t kDuration = 1000000;
+const int64_t kSegmentNumber1 = 1;
 const int64_t kSegmentNumber2 = 2;
 const bool kSubsegment = true;
 

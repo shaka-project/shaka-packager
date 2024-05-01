@@ -474,7 +474,8 @@ class SegmentTemplateTest : public RepresentationTest {
       // At this point, only the first chunk of the low latency segment has been
       // written. The bandwidth will be updated once the segment is fully
       // written and the segment duration and size are known.
-      representation_->AddNewSegment(start_time, duration, size);
+      representation_->AddNewSegment(start_time, duration, size,
+                                     segment_number_++);
       return;
     }
 

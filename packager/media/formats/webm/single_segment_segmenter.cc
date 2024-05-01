@@ -25,9 +25,8 @@ Status SingleSegmentSegmenter::FinalizeSegment(int64_t start_timestamp,
                                                int64_t duration_timestamp,
                                                bool is_subsegment,
                                                int64_t segment_number) {
-  Status status = Segmenter::FinalizeSegment(start_timestamp,
-                                             duration_timestamp, is_subsegment,
-                                             segment_index);
+  Status status = Segmenter::FinalizeSegment(
+      start_timestamp, duration_timestamp, is_subsegment, segment_number);
   if (!status.ok())
     return status;
   // No-op for subsegment in single segment mode.

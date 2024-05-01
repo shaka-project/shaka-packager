@@ -752,11 +752,11 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
   const bool kIsLowLatency = true;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartNumber, kDuration, kRepeat},
+      {kStartNumber, kDuration, kRepeat, kStartNumber},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
   EXPECT_THAT(
       representation,
       XmlNodeEqual("<Representation>"

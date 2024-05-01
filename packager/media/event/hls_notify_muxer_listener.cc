@@ -249,7 +249,8 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
   if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kSegment;
-    event_info.segment_info = {start_time, duration, segment_file_size};
+    event_info.segment_info = {start_time, duration, segment_file_size,
+                               segment_number};
     event_info_.push_back(event_info);
   } else {
     // For multisegment, it always starts from the beginning of the file.

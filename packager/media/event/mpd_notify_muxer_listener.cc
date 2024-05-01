@@ -214,7 +214,7 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
     EventInfo event_info;
     event_info.type = EventInfoType::kSegment;
     event_info.segment_info = {start_time, duration, segment_file_size,
-        segment_number};
+                               segment_number};
     event_info_.push_back(event_info);
   }
 }

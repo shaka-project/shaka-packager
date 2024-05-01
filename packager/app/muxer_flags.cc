@@ -78,4 +78,4 @@ ABSL_FLAG(int64_t,
           start_segment_number,
           1,
           "Indicates the startNumber in DASH SegmentTemplate and HLS "
-          "segment name.);
+          "segment name.");

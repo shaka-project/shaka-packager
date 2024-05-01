@@ -234,7 +234,7 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
-    status = DoFinalizeChunk();
+    status = DoFinalizeChunk(segment_info.segment_number);
     if (!status.ok())
       return status;
   }

@@ -128,8 +128,7 @@ class Segmenter {
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
   virtual Status DoFinalizeSegment(int64_t segment_number) = 0;
-
-  virtual Status DoFinalizeChunk() { return Status::OK; }
+  virtual Status DoFinalizeChunk(int64_t segment_number) { return Status::OK; }
 
   uint32_t GetReferenceStreamId();
 

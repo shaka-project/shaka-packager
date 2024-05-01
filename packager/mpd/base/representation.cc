@@ -305,8 +305,7 @@ std::optional<xml::XmlNode> Representation::GetXml() {
   if (HasLiveOnlyFields(media_info_) &&
       !representation.AddLiveOnlyInfo(
           media_info_, segment_infos_,
-          mpd_options_.mpd_params.low_latency_dash_mode,
-          )) {
+          mpd_options_.mpd_params.low_latency_dash_mode)) {
     LOG(ERROR) << "Failed to add Live info.";
     return std::nullopt;
   }
