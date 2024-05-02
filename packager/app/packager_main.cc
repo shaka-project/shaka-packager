@@ -360,6 +360,8 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_segment_sap_aligned);
   chunking_params.subsegment_sap_aligned =
       absl::GetFlag(FLAGS_fragment_sap_aligned);
+  chunking_params.start_segment_number =
+      absl::GetFlag(FLAGS_start_segment_number);
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;

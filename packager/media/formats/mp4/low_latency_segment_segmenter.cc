@@ -71,13 +71,13 @@ Status LowLatencySegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status LowLatencySegmentSegmenter::DoFinalizeSegment() {
+Status LowLatencySegmentSegmenter::DoFinalizeSegment(int64_t segment_number) {
   return FinalizeSegment();
 }
 
-Status LowLatencySegmentSegmenter::DoFinalizeChunk() {
+Status LowLatencySegmentSegmenter::DoFinalizeChunk(int64_t segment_number) {
   if (is_initial_chunk_in_seg_) {
-    return WriteInitialChunk();
+    return WriteInitialChunk(segment_number);
   }
   return WriteChunk();
 }
@@ -98,7 +98,7 @@ Status LowLatencySegmentSegmenter::WriteInitSegment() {
   return buffer->WriteToFile(file.get());
 }
 
-Status LowLatencySegmentSegmenter::WriteInitialChunk() {
+Status LowLatencySegmentSegmenter::WriteInitialChunk(int64_t segment_number) {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);
@@ -161,9 +161,9 @@ Status LowLatencySegmentSegmenter::WriteInitialChunk() {
     }
     // Add the current segment in the manifest.
     // Following chunks will be appended to the open segment file.
-    muxer_listener()->OnNewSegment(file_name_,
-                                   sidx()->earliest_presentation_time,
-                                   segment_duration, segment_size_);
+    muxer_listener()->OnNewSegment(
+        file_name_, sidx()->earliest_presentation_time, segment_duration,
+        segment_size_, segment_number);
     is_initial_chunk_in_seg_ = false;
   }
 

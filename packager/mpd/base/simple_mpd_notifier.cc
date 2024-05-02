@@ -109,14 +109,15 @@ bool SimpleMpdNotifier::NotifySegmentDuration(uint32_t container_id) {
 bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
                                          int64_t start_time,
                                          int64_t duration,
-                                         uint64_t size) {
+                                         uint64_t size,
+                                         int64_t segment_number) {
   absl::MutexLock lock(&lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  it->second->AddNewSegment(start_time, duration, size);
+  it->second->AddNewSegment(start_time, duration, size, segment_number);
   return true;
 }
 

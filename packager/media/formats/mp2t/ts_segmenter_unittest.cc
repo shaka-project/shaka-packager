@@ -84,6 +84,7 @@ class MockTsWriter : public TsWriter {
 
   MOCK_METHOD1(NewSegment, bool(BufferWriter* buffer_writer));
   MOCK_METHOD0(SignalEncrypted, void());
+  MOCK_METHOD0(FinalizeSegment, bool());
 
   // Similar to the hack above but takes a std::unique_ptr.
   MOCK_METHOD2(AddPesPacketMock, bool(PesPacket* pes_packet,
@@ -232,7 +233,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(1u));
- 
+
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));

@@ -234,14 +234,15 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
-    status = DoFinalizeChunk();
+    status = DoFinalizeChunk(segment_info.segment_number);
     if (!status.ok())
       return status;
   }
 
   if (!segment_info.is_subsegment || segment_info.is_final_chunk_in_seg) {
     // Finalize the segment.
-    status = DoFinalizeSegment();
+    status = DoFinalizeSegment(segment_info.segment_number);
+
     // Reset segment information to initial state.
     sidx_->references.clear();
     key_frame_infos_.clear();

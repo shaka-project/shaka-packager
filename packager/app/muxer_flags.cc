@@ -73,3 +73,9 @@ ABSL_FLAG(
     "If the first sample comes after default_text_zero_bias_ms then the start "
     "of the stream will not be padded as we cannot assume the start time of "
     "the stream.");
+
+ABSL_FLAG(int64_t,
+          start_segment_number,
+          1,
+          "Indicates the startNumber in DASH SegmentTemplate and HLS "
+          "segment name.");
