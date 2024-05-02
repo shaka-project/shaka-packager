@@ -576,7 +576,7 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--noforce_cl_index']
 
     if start_segment_number is not None:
-      flags += ['--start_segment_number', start_segment_number]
+      flags += ['--start_segment_number', str(start_segment_number)]
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
