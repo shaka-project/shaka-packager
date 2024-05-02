@@ -230,16 +230,19 @@ std::set<std::string> GetUUIDs(
 
 bool AdaptationSet::SwitchableAdaptationSet(
     const AdaptationSet& adaptation_set) {
-  if (!protected_content_)
-    return !adaptation_set.protected_content();
 
-  if (!adaptation_set.protected_content())
-    return false;
+  // adaptation sets are switchable if both are not protected
+  if (!protected_content_ && !adaptation_set.protected_content()) {
+    return true;
+  }
 
-  // Get all the UUIDs of the AdaptationSet. If another AdaptationSet has the
-  // same UUIDs then those are switchable.
-  return GetUUIDs(protected_content_) ==
-         GetUUIDs(adaptation_set.protected_content());
+  // or if both are protected and have the same UUID
+  if (protected_content_ && adaptation_set.protected_content()) {
+    return GetUUIDs(protected_content_) ==
+           GetUUIDs(adaptation_set.protected_content());
+  }
+
+  return false;
 }
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
