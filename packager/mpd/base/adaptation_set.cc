@@ -216,8 +216,8 @@ bool AdaptationSet::MatchAdaptationSet(
   if (!media_info.has_protected_content())
     return false;
 
-  return protected_content_->SerializeAsString() ==
-         media_info.protected_content().SerializeAsString();
+  return ProtectedContentEq(*protected_content_,
+                            media_info.protected_content());
 }
 
 std::set<std::string> GetUUIDs(
