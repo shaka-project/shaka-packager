@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <packager/mpd/base/xml/xml_node.h>
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
 
@@ -208,6 +209,29 @@ class AdaptationSet {
     transfer_characteristics_ = transfer_characteristics;
   };
 
+  /// Return ProtectedContent.
+  const MediaInfo::ProtectedContent* protected_content() const {
+    return protected_content_;
+  };
+
+  /// Set AdaptationSet@protected_content.
+  /// @param media_info to extract the ProtectedContent from.
+  void set_protected_content(const MediaInfo& media_info);
+
+  /// Check if the protected content associated with this AdaptationSet  matches
+  /// with the one in |media_info|.
+  /// @param media_info to extract ProtectedContent from.
+  /// @param content_protection_in_adaptation_set to indicate if there is
+  ///        protected content in AdaptationSet.
+  /// @return true if there is a match.
+  bool MatchAdaptationSet(const MediaInfo& media_info,
+                          bool content_protection_in_adaptation_set);
+
+  /// Check if the adaptation sets are switchable.
+  /// @param adaptation_set to compare this AdaptationSet with.
+  /// @return true if AdaptationSets are switchable.
+  bool SwitchableAdaptationSet(const AdaptationSet& adaptation_set);
+
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
@@ -357,6 +381,9 @@ class AdaptationSet {
 
   // The label of this AdaptationSet.
   std::string label_;
+
+  // ProtectedContent of this AdaptationSet.
+  MediaInfo::ProtectedContent* protected_content_;
 };
 
 }  // namespace shaka
