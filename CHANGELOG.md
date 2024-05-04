@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [3.1.0](https://github.com/shaka-project/shaka-packager/compare/v3.0.4...v3.1.0) (2024-05-03)
+
+
+### Features
+
+* add missing DASH roles from ISO/IEC 23009-1 section 5.8.5.5 ([#1390](https://github.com/shaka-project/shaka-packager/issues/1390)) ([fe885b3](https://github.com/shaka-project/shaka-packager/commit/fe885b3ade020b197a04fc63ee41fd90e7e11a14))
+* get start number from muxer and specify initial sequence number ([#879](https://github.com/shaka-project/shaka-packager/issues/879)) ([bb104fe](https://github.com/shaka-project/shaka-packager/commit/bb104fef5d745ac3a0a8c1e6fb4f1b1a9b27d8ae))
+* teletext formatting ([#1384](https://github.com/shaka-project/shaka-packager/issues/1384)) ([4b5e80d](https://github.com/shaka-project/shaka-packager/commit/4b5e80d02c10fd1ddb8f7e0f2f1a8608782d8442))
+
 ## [3.0.4](https://github.com/shaka-project/shaka-packager/compare/v3.0.3...v3.0.4) (2024-03-27)
 
 
