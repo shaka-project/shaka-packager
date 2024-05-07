@@ -1460,6 +1460,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-with-encryption')
 
+  # TODO(cosmin): shared_library build does not support
+  #  use_dovi_supplemental_codecs
+  @unittest.skipIf(
+    test_env.BUILD_TYPE == 'shared',
+    'libpackager shared_library does not support '
+    '--use_dovi_supplemental_codecs flag.'
+  )
   def testDolbyVisionProfile8UsingSupplementalCodecs(self):
     streams = [
       self._GetStream('video', test_file='sparks_dovi_8.mp4')
@@ -1471,6 +1478,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-supplemental-codecs')
 
+  # TODO(cosmin): shared_library build does not support
+  #  use_dovi_supplemental_codecs
+  @unittest.skipIf(
+    test_env.BUILD_TYPE == 'shared',
+    'libpackager shared_library does not support '
+    '--use_dovi_supplemental_codecs flag.'
+  )
   def testDolbyVisionProfile10UsingSupplementalCodecs(self):
     streams = [
       self._GetStream('video', test_file='sparks_dovi_10.mp4')
