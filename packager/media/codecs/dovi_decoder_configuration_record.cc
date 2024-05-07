@@ -24,7 +24,8 @@ bool DOVIDecoderConfigurationRecord::Parse(const std::vector<uint8_t>& data) {
   RCHECK(reader.ReadBits(8, &major_version) && major_version == 1 &&
          reader.ReadBits(8, &minor_version) && minor_version == 0 &&
          reader.ReadBits(7, &profile_) && reader.ReadBits(6, &level_) &&
-         reader.SkipBits(3) && reader.ReadBits(4, &bl_signal_compatibility_id_));
+         reader.SkipBits(3) &&
+         reader.ReadBits(4, &bl_signal_compatibility_id_));
   return true;
 }
 
@@ -47,8 +48,7 @@ FourCC DOVIDecoderConfigurationRecord::GetDoViCompatibleBrand(
     case 4:
       if (transfer_characteristics == 14) {
         return FOURCC_db4g;
-      }
-      else if (transfer_characteristics == 18) {
+      } else if (transfer_characteristics == 18) {
         return FOURCC_db4h;
       }
     default:

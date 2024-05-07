@@ -1464,7 +1464,9 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = [
       self._GetStream('video', test_file='sparks_dovi_8.mp4')
     ]
-    flags = self._GetFlags(output_dash=True, output_hls=True, use_dovi_supplemental_codecs=True)
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-supplemental-codecs')
@@ -1473,7 +1475,9 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = [
       self._GetStream('video', test_file='sparks_dovi_10.mp4')
     ]
-    flags = self._GetFlags(output_dash=True, output_hls=True, use_dovi_supplemental_codecs=True)
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-10-supplemental-codecs')

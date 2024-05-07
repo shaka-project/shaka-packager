@@ -238,9 +238,11 @@ Status MP4Muxer::DelayInitializeMuxer() {
 
       // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolby_vision_bitstreams_within_the_iso_base_media_file_format_dec2017.pdf
       std::string codec_string =
-          static_cast<const VideoStreamInfo*>(streams()[0].get())->codec_string();
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->codec_string();
       std::string supplemental_codec_string =
-          static_cast<const VideoStreamInfo*>(streams()[0].get())->supplemental_codec();
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->supplemental_codec();
       if (codec_string.find("dvh") != std::string::npos ||
           supplemental_codec_string.find("dvh") != std::string::npos)
         ftyp->compatible_brands.push_back(FOURCC_dby1);

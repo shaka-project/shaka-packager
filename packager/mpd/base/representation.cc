@@ -273,9 +273,12 @@ std::optional<xml::XmlNode> Representation::GetXml() {
   }
 
   if (!supplemental_codecs_.empty() && !supplemental_profiles_.empty()) {
-    if (!representation.SetStringAttribute("scte214:supplementalCodecs", supplemental_codecs_) ||
-        !representation.SetStringAttribute("scte214:supplementalProfiles", supplemental_profiles_)) {
-      LOG(ERROR) << "Failed to add supplemental codecs/profiles to Representation XML.";
+    if (!representation.SetStringAttribute("scte214:supplementalCodecs",
+                                           supplemental_codecs_) ||
+        !representation.SetStringAttribute("scte214:supplementalProfiles",
+                                           supplemental_profiles_)) {
+      LOG(ERROR) << "Failed to add supplemental codecs/profiles to "
+                    "Representation XML.";
     }
   }
 

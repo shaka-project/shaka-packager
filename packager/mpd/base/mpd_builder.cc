@@ -55,12 +55,9 @@ bool AddMpdNameSpaceInfo(XmlNode* mpd) {
   static const char kMsprNamespace[] = "urn:microsoft:playready";
   static const char kScte214Namespace[] = "scte214";
 
-
   const std::map<std::string, std::string> uris = {
-      {"cenc", kCencNamespace},
-      {"mas", kMarlinNamespace},
-      {"xlink", kXmlNamespaceXlink},
-      {"mspr", kMsprNamespace},
+      {"cenc", kCencNamespace},       {"mas", kMarlinNamespace},
+      {"xlink", kXmlNamespaceXlink},  {"mspr", kMsprNamespace},
       {"scte214", kScte214Namespace},
   };
 

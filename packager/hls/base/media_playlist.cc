@@ -393,10 +393,10 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
     codec_ = AdjustVideoCodec(media_info.video_info().codec());
-    if (media_info.video_info().has_supplemental_codec()
-        && media_info.video_info().has_compatible_brand()) {
-      supplemental_codec_ = AdjustVideoCodec(
-          media_info.video_info().supplemental_codec());
+    if (media_info.video_info().has_supplemental_codec() &&
+        media_info.video_info().has_compatible_brand()) {
+      supplemental_codec_ =
+          AdjustVideoCodec(media_info.video_info().supplemental_codec());
       compatible_brand_ = static_cast<media::FourCC>(
           media_info.video_info().compatible_brand());
     }
@@ -589,7 +589,8 @@ std::string MediaPlaylist::GetVideoRange() const {
       // Dolby Vision profile 8.4 may have a transfer_characteristics 14, the
       // actual value refers to preferred_transfer_characteristic value in SEI
       // message, using compatible brand as a workaround
-      if (!supplemental_codec_.empty() && compatible_brand_ == media::FOURCC_db4g)
+      if (!supplemental_codec_.empty() &&
+          compatible_brand_ == media::FOURCC_db4g)
         return "HLG";
       else
         return "SDR";

@@ -150,7 +150,6 @@ std::vector<uint8_t> GetDOVIDecoderConfig(
   return std::vector<uint8_t>();
 }
 
-
 bool UpdateCodecStringForDolbyVision(
     FourCC actual_format,
     const std::vector<CodecConfiguration>& configs,
@@ -188,14 +187,12 @@ bool UpdateCodecStringForDolbyVision(
   return true;
 }
 
-
-bool UpdateDolbyVisionInfo(
-    FourCC actual_format,
-    const std::vector<CodecConfiguration>& configs,
-    uint8_t transfer_characteristics,
-    std::string* codec_string,
-    std::string* dovi_supplemental_codec_string,
-    FourCC* dovi_compatible_brand) {
+bool UpdateDolbyVisionInfo(FourCC actual_format,
+                           const std::vector<CodecConfiguration>& configs,
+                           uint8_t transfer_characteristics,
+                           std::string* codec_string,
+                           std::string* dovi_supplemental_codec_string,
+                           FourCC* dovi_compatible_brand) {
   DOVIDecoderConfigurationRecord dovi_config;
   if (!dovi_config.Parse(GetDOVIDecoderConfig(configs))) {
     LOG(ERROR) << "Failed to parse Dolby Vision decoder "
@@ -445,7 +442,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
   std::vector<std::shared_ptr<StreamInfo>> streams;
 
-  bool use_dovi_supplemental = absl::GetFlag(FLAGS_use_dovi_supplemental_codecs);
+  bool use_dovi_supplemental =
+      absl::GetFlag(FLAGS_use_dovi_supplemental_codecs);
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
@@ -696,8 +694,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                 return false;
               }
             } else {
-              if (!UpdateCodecStringForDolbyVision(
-        actual_format, entry.extra_codec_configs, &codec_string)) {
+              if (!UpdateCodecStringForDolbyVision(actual_format,
+                                                   entry.extra_codec_configs,
+                                                   &codec_string)) {
                 return false;
               }
             }
@@ -774,8 +773,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                 return false;
               }
             } else {
-              if (!UpdateCodecStringForDolbyVision(
-                      actual_format, entry.extra_codec_configs, &codec_string)) {
+              if (!UpdateCodecStringForDolbyVision(actual_format,
+                                                   entry.extra_codec_configs,
+                                                   &codec_string)) {
                 return false;
               }
             }
@@ -826,7 +826,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           nalu_length_size, track->media.header.language.code, is_encrypted));
 
       if (use_dovi_supplemental) {
-        video_stream_info->set_supplemental_codec(dovi_supplemental_codec_string);
+        video_stream_info->set_supplemental_codec(
+            dovi_supplemental_codec_string);
         video_stream_info->set_compatible_brand(dovi_compatible_brand);
       }
       video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());

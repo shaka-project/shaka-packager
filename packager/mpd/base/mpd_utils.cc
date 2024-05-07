@@ -133,7 +133,8 @@ std::string GetSupplementalCodecs(const MediaInfo& media_info) {
   CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
                     media_info.has_text_info()));
 
-  if (media_info.has_video_info() && media_info.video_info().has_supplemental_codec()) {
+  if (media_info.has_video_info() &&
+      media_info.video_info().has_supplemental_codec()) {
     return media_info.video_info().supplemental_codec();
   }
   return "";
@@ -143,9 +144,10 @@ std::string GetSupplementalProfiles(const MediaInfo& media_info) {
   CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
                     media_info.has_text_info()));
 
-  if (media_info.has_video_info() && media_info.video_info().has_compatible_brand()) {
-    return FourCCToString(static_cast<media::FourCC>(
-        media_info.video_info().compatible_brand()));
+  if (media_info.has_video_info() &&
+      media_info.video_info().has_compatible_brand()) {
+    return FourCCToString(
+        static_cast<media::FourCC>(media_info.video_info().compatible_brand()));
   }
   return "";
 }
