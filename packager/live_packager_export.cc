@@ -1,5 +1,6 @@
 #include <packager/live_packager.h>
 #include <packager/live_packager_export.h>
+#include <cstring>
 
 #include <memory>
 
@@ -70,49 +71,58 @@ size_t livepackager_buf_size(LivePackagerBuffer_t buf) {
   return buf->inner->Size();
 }
 
-bool livepackager_package_init(LivePackager_t lp,
-                               const uint8_t* init,
-                               size_t init_len,
-                               LivePackagerBuffer_t dest) {
+LivePackagerStatus_t livepackager_package_init(LivePackager_t lp,
+                                               const uint8_t* init,
+                                               size_t init_len,
+                                               LivePackagerBuffer_t dest) {
   shaka::SegmentData input(init, init_len);
-  return lp->inner->PackageInit(input, *dest->inner).ok();
+  shaka::Status status = lp->inner->PackageInit(input, *dest->inner);
+  return LivePackagerStatus_s{
+      status.ok() ? nullptr : strdup(status.ToString().c_str()), status.ok()};
 }
 
-bool livepackager_package(LivePackager_t lp,
-                          const uint8_t* init,
-                          size_t init_len,
-                          const uint8_t* media,
-                          size_t media_len,
-                          LivePackagerBuffer_t dest) {
+LivePackagerStatus_t livepackager_package(LivePackager_t lp,
+                                          const uint8_t* init,
+                                          size_t init_len,
+                                          const uint8_t* media,
+                                          size_t media_len,
+                                          LivePackagerBuffer_t dest) {
   shaka::SegmentData input_init(init, init_len);
   shaka::SegmentData input_media(media, media_len);
-  return lp->inner->Package(input_init, input_media, *dest->inner).ok();
+  shaka::Status status =
+      lp->inner->Package(input_init, input_media, *dest->inner);
+
+  return LivePackagerStatus_s{
+      status.ok() ? nullptr : strdup(status.ToString().c_str()), status.ok()};
 }
 
-bool livepackager_package_timedtext_init(LivePackager_t lp,
-                                         const uint8_t* seg,
-                                         size_t seg_len,
-                                         LivePackagerBuffer_t dest) {
+LivePackagerStatus_t livepackager_package_timedtext_init(
+    LivePackager_t lp,
+    const uint8_t* seg,
+    size_t seg_len,
+    LivePackagerBuffer_t dest) {
   shaka::SegmentData input_seg(seg, seg_len);
   shaka::FullSegmentBuffer out;
-  if (!lp->inner->PackageTimedText(input_seg, out).ok()) {
-    return false;
+  shaka::Status status = lp->inner->PackageTimedText(input_seg, out);
+  if (!status.ok()) {
+    return LivePackagerStatus_s{strdup(status.ToString().c_str()), status.ok()};
   }
 
   dest->inner->AppendData(out.InitSegmentData(), out.InitSegmentSize());
-  return true;
+  return LivePackagerStatus_s{nullptr, status.ok()};
 }
 
-bool livepackager_package_timedtext(LivePackager_t lp,
-                                    const uint8_t* seg,
-                                    size_t seg_len,
-                                    LivePackagerBuffer_t dest) {
+LivePackagerStatus_t livepackager_package_timedtext(LivePackager_t lp,
+                                                    const uint8_t* seg,
+                                                    size_t seg_len,
+                                                    LivePackagerBuffer_t dest) {
   shaka::SegmentData input_seg(seg, seg_len);
   shaka::FullSegmentBuffer out;
-  if (!lp->inner->PackageTimedText(input_seg, out).ok()) {
-    return false;
+  shaka::Status status = lp->inner->PackageTimedText(input_seg, out);
+  if (!status.ok()) {
+    return LivePackagerStatus_s{strdup(status.ToString().c_str()), status.ok()};
   }
 
   dest->inner->AppendData(out.SegmentData(), out.SegmentSize());
-  return true;
+  return LivePackagerStatus_s{nullptr, status.ok()};
 }

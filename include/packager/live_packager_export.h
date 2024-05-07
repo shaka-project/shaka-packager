@@ -94,30 +94,39 @@ size_t livepackager_buf_size(LivePackagerBuffer_t buf);
 
 typedef struct LivePackager_instance_s* LivePackager_t;
 
+typedef struct LivePackagerStatus_s {
+  /// In the event of an error this field will not be NULL and contain error
+  /// message with status code. Clients will need to free this memory in the
+  /// event that error_message is not NULL.
+  const char* error_message;
+  bool ok;
+} LivePackagerStatus_t;
+
 LivePackager_t livepackager_new(LivePackagerConfig_t cfg);
 void livepackager_free(LivePackager_t lp);
 
-bool livepackager_package_init(LivePackager_t lp,
-                               const uint8_t* init,
-                               size_t init_len,
-                               LivePackagerBuffer_t dest);
+LivePackagerStatus_t livepackager_package_init(LivePackager_t lp,
+                                               const uint8_t* init,
+                                               size_t init_len,
+                                               LivePackagerBuffer_t dest);
 
-bool livepackager_package(LivePackager_t lp,
-                          const uint8_t* init,
-                          size_t init_len,
-                          const uint8_t* media,
-                          size_t media_len,
-                          LivePackagerBuffer_t dest);
+LivePackagerStatus_t livepackager_package(LivePackager_t lp,
+                                          const uint8_t* init,
+                                          size_t init_len,
+                                          const uint8_t* media,
+                                          size_t media_len,
+                                          LivePackagerBuffer_t dest);
 
-bool livepackager_package_timedtext_init(LivePackager_t lp,
-                                         const uint8_t* seg,
-                                         size_t seg_len,
-                                         LivePackagerBuffer_t dest);
+LivePackagerStatus_t livepackager_package_timedtext_init(
+    LivePackager_t lp,
+    const uint8_t* seg,
+    size_t seg_len,
+    LivePackagerBuffer_t dest);
 
-bool livepackager_package_timedtext(LivePackager_t lp,
-                                    const uint8_t* seg,
-                                    size_t seg_len,
-                                    LivePackagerBuffer_t dest);
+LivePackagerStatus_t livepackager_package_timedtext(LivePackager_t lp,
+                                                    const uint8_t* seg,
+                                                    size_t seg_len,
+                                                    LivePackagerBuffer_t dest);
 
 #ifdef __cplusplus
 }
