@@ -48,9 +48,9 @@ FourCC DOVIDecoderConfigurationRecord::GetDoViCompatibleBrand(
     case 4:
       if (transfer_characteristics == 14) {
         return FOURCC_db4g;
-      } else if (transfer_characteristics == 18) {
-        return FOURCC_db4h;
       }
+      // transfer_characteristics == 18
+      return FOURCC_db4h;
     default:
       return FOURCC_NULL;
   }
