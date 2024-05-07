@@ -167,7 +167,7 @@ std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   // Add baseurls to MPD.
   for (const std::string& base_url : base_urls_) {
     XmlNode xml_base_url("BaseURL");
-    xml_base_url.SetContent(base_url);
+    xml_base_url.SetUrlEncodedContent(base_url);
 
     if (!mpd.AddChild(std::move(xml_base_url)))
       return std::nullopt;
