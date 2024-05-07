@@ -54,7 +54,6 @@ FourCC DOVIDecoderConfigurationRecord::GetDoViCompatibleBrand(
     default:
       return FOURCC_NULL;
   }
-  return FOURCC_NULL;
 }
 
 }  // namespace media
