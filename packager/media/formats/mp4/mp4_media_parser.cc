@@ -177,6 +177,9 @@ bool UpdateCodecStringForDolbyVision(
       // See above.
       *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvh1);
       break;
+    case FOURCC_av01:
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dav1);
+      break;
     default:
       LOG(ERROR) << "Unsupported format with extra codec "
                  << FourCCToString(actual_format);
@@ -214,6 +217,9 @@ bool UpdateDolbyVisionInfo(
     case FOURCC_hvc1:
       // See above.
       *dovi_supplemental_codec_string = dovi_config.GetCodecString(FOURCC_dvh1);
+      break;
+    case FOURCC_av01:
+      *dovi_supplemental_codec_string = dovi_config.GetCodecString(FOURCC_dav1);
       break;
     default:
       LOG(ERROR) << "Unsupported format with extra codec "
@@ -670,12 +676,31 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           // Generate the full codec string if the colr atom is present.
           if (entry.colr.color_parameter_type != FOURCC_NULL) {
+            transfer_characteristics = entry.colr.transfer_characteristics;
             codec_string = av1_config.GetCodecString(
                 entry.colr.color_primaries, entry.colr.transfer_characteristics,
                 entry.colr.matrix_coefficients,
                 entry.colr.video_full_range_flag);
           } else {
             codec_string = av1_config.GetCodecString();
+          }
+
+          if (!entry.extra_codec_configs.empty()) {
+            // |extra_codec_configs| is present only for Dolby Vision.
+            if (use_dovi_supplemental) {
+              if (!UpdateDolbyVisionInfo(
+                      actual_format, entry.extra_codec_configs,
+                      transfer_characteristics, &codec_string,
+                      &dovi_supplemental_codec_string,
+                      &dovi_compatible_brand)) {
+                return false;
+              }
+            } else {
+              if (!UpdateCodecStringForDolbyVision(
+        actual_format, entry.extra_codec_configs, &codec_string)) {
+                return false;
+              }
+            }
           }
           break;
         }

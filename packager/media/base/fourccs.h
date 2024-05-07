@@ -47,6 +47,7 @@ enum FourCC : uint32_t {
   FOURCC_dac3 = 0x64616333,
   FOURCC_dac4 = 0x64616334,
   FOURCC_dash = 0x64617368,
+  FOURCC_dav1 = 0x64617631,
   FOURCC_db1p = 0x64623170,
   FOURCC_db2g = 0x64623267,
   FOURCC_db4g = 0x64623467,
