@@ -37,6 +37,13 @@
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/track_run_iterator.h>
 
+ABSL_FLAG(bool,
+          use_dovi_supplemental_codecs,
+          false,
+          "Set to true to signal DolbyVision using the modern supplemental "
+          "codecs approach instead of the legacy "
+          "duplicate representations approach");
+
 namespace shaka {
 namespace media {
 namespace mp4 {
@@ -143,6 +150,7 @@ std::vector<uint8_t> GetDOVIDecoderConfig(
   return std::vector<uint8_t>();
 }
 
+
 bool UpdateCodecStringForDolbyVision(
     FourCC actual_format,
     const std::vector<CodecConfiguration>& configs,
@@ -174,6 +182,46 @@ bool UpdateCodecStringForDolbyVision(
                  << FourCCToString(actual_format);
       return false;
   }
+  return true;
+}
+
+
+bool UpdateDolbyVisionInfo(
+    FourCC actual_format,
+    const std::vector<CodecConfiguration>& configs,
+    uint8_t transfer_characteristics,
+    std::string* codec_string,
+    std::string* dovi_supplemental_codec_string,
+    FourCC* dovi_compatible_brand) {
+  DOVIDecoderConfigurationRecord dovi_config;
+  if (!dovi_config.Parse(GetDOVIDecoderConfig(configs))) {
+    LOG(ERROR) << "Failed to parse Dolby Vision decoder "
+                  "configuration record.";
+    return false;
+  }
+  switch (actual_format) {
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
+      // Non-Backward compatibility mode. Replace the code string with
+      // Dolby Vision only.
+      *codec_string = dovi_config.GetCodecString(actual_format);
+      break;
+    case FOURCC_hev1:
+      // Backward compatibility mode. Use supplemental codec indicating Dolby
+      // Dolby Vision content.
+      *dovi_supplemental_codec_string = dovi_config.GetCodecString(FOURCC_dvhe);
+      break;
+    case FOURCC_hvc1:
+      // See above.
+      *dovi_supplemental_codec_string = dovi_config.GetCodecString(FOURCC_dvh1);
+      break;
+    default:
+      LOG(ERROR) << "Unsupported format with extra codec "
+                 << FourCCToString(actual_format);
+      return false;
+  }
+  *dovi_compatible_brand =
+      dovi_config.GetDoViCompatibleBrand(transfer_characteristics);
   return true;
 }
 
@@ -391,6 +439,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
   std::vector<std::shared_ptr<StreamInfo>> streams;
 
+  bool use_dovi_supplemental = absl::GetFlag(FLAGS_use_dovi_supplemental_codecs);
+
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
     const int32_t timescale = track->media.header.timescale;
@@ -604,6 +654,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                &pixel_height);
       }
       std::string codec_string;
+      std::string dovi_supplemental_codec_string("");
+      FourCC dovi_compatible_brand = FOURCC_NULL;
       uint8_t nalu_length_size = 0;
       uint8_t transfer_characteristics = 0;
 
@@ -688,9 +740,19 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
           if (!entry.extra_codec_configs.empty()) {
             // |extra_codec_configs| is present only for Dolby Vision.
-            if (!UpdateCodecStringForDolbyVision(
-                    actual_format, entry.extra_codec_configs, &codec_string)) {
-              return false;
+            if (use_dovi_supplemental) {
+              if (!UpdateDolbyVisionInfo(
+                      actual_format, entry.extra_codec_configs,
+                      transfer_characteristics, &codec_string,
+                      &dovi_supplemental_codec_string,
+                      &dovi_compatible_brand)) {
+                return false;
+              }
+            } else {
+              if (!UpdateCodecStringForDolbyVision(
+                      actual_format, entry.extra_codec_configs, &codec_string)) {
+                return false;
+              }
             }
           }
           break;
@@ -737,6 +799,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           transfer_characteristics,
           0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
+
+      if (use_dovi_supplemental) {
+        video_stream_info->set_supplemental_codec(dovi_supplemental_codec_string);
+        video_stream_info->set_compatible_brand(dovi_compatible_brand);
+      }
       video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());
       video_stream_info->set_colr_data((entry.colr.raw_box).data(),
                                        (entry.colr.raw_box).size());
