@@ -151,6 +151,8 @@ bool Representation::Init() {
     return false;
 
   codecs_ = GetCodecs(media_info_);
+  supplemental_codecs_ = GetSupplementalCodecs(media_info_);
+  supplemental_profiles_ = GetSupplementalProfiles(media_info_);
   return true;
 }
 
@@ -268,6 +270,13 @@ std::optional<xml::XmlNode> Representation::GetXml() {
         representation.SetStringAttribute("codecs", codecs_)) ||
       !representation.SetStringAttribute("mimeType", mime_type_)) {
     return std::nullopt;
+  }
+
+  if (!supplemental_codecs_.empty() && !supplemental_profiles_.empty()) {
+    if (!representation.SetStringAttribute("scte214:supplementalCodecs", supplemental_codecs_) ||
+        !representation.SetStringAttribute("scte214:supplementalProfiles", supplemental_profiles_)) {
+      LOG(ERROR) << "Failed to add supplemental codecs/profiles to Representation XML.";
+    }
   }
 
   const bool has_video_info = media_info_.has_video_info();

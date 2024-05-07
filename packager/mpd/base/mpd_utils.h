@@ -45,6 +45,10 @@ std::string GetLanguage(const MediaInfo& media_info);
 // comma.
 std::string GetCodecs(const MediaInfo& media_info);
 
+std::string GetSupplementalCodecs(const MediaInfo& media_info);
+
+std::string GetSupplementalProfiles(const MediaInfo& media_info);
+
 // Returns a codec string without variants. For example, "mp4a" instead of
 // "mp4a.40.2". May return a format for text streams.
 std::string GetBaseCodec(const MediaInfo& media_info);
