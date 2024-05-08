@@ -244,7 +244,9 @@ Status MP4Muxer::DelayInitializeMuxer() {
           static_cast<const VideoStreamInfo*>(streams()[0].get())
               ->supplemental_codec();
       if (codec_string.find("dvh") != std::string::npos ||
-          supplemental_codec_string.find("dvh") != std::string::npos)
+          supplemental_codec_string.find("dvh") != std::string::npos ||
+          codec_string.find("dav1") != std::string::npos ||
+          supplemental_codec_string.find("dav1") != std::string::npos)
         ftyp->compatible_brands.push_back(FOURCC_dby1);
       FourCC extra_brand =
           static_cast<const VideoStreamInfo*>(streams()[0].get())

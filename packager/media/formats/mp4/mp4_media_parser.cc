@@ -163,6 +163,7 @@ bool UpdateCodecStringForDolbyVision(
   switch (actual_format) {
     case FOURCC_dvh1:
     case FOURCC_dvhe:
+    case FOURCC_dav1:
       // Non-Backward compatibility mode. Replace the code string with
       // Dolby Vision only.
       *codec_string = dovi_config.GetCodecString(actual_format);
@@ -202,6 +203,7 @@ bool UpdateDolbyVisionInfo(FourCC actual_format,
   switch (actual_format) {
     case FOURCC_dvh1:
     case FOURCC_dvhe:
+    case FOURCC_dav1:
       // Non-Backward compatibility mode. Replace the code string with
       // Dolby Vision only.
       *codec_string = dovi_config.GetCodecString(actual_format);
