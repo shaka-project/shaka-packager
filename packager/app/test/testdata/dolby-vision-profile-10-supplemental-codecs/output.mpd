@@ -6,8 +6,8 @@
       <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:TransferCharacteristics" value="16"/>
       <Representation id="0" bandwidth="550702" codecs="av01.0.04M.10.0.111.09.16.09.0" mimeType="video/mp4" scte214:supplementalCodecs="dav1.10.01" scte214:supplementalProfiles="db1p" sar="1:1">
         <BaseURL>sparks_dovi_10-video.mp4</BaseURL>
-        <SegmentBase indexRange="867-922" timescale="60000">
-          <Initialization range="0-866"/>
+        <SegmentBase indexRange="871-926" timescale="60000">
+          <Initialization range="0-870"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
