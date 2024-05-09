@@ -39,6 +39,8 @@ class VideoStreamInfo : public StreamInfo {
                   uint32_t height,
                   uint32_t pixel_width,
                   uint32_t pixel_height,
+                  uint8_t color_primaries,
+                  uint8_t matrix_coefficients,
                   uint8_t transfer_characteristics,
                   uint32_t trick_play_factor,
                   uint8_t nalu_length_size,
@@ -67,6 +69,8 @@ class VideoStreamInfo : public StreamInfo {
   /// @return 0 if unknown.
   uint32_t pixel_height() const { return pixel_height_; }
   uint8_t transfer_characteristics() const { return transfer_characteristics_; }
+  uint8_t color_primaries() const { return color_primaries_; }
+  uint8_t matrix_coefficients() const { return matrix_coefficients_; }
   uint8_t nalu_length_size() const { return nalu_length_size_; }
   uint32_t trick_play_factor() const { return trick_play_factor_; }
   uint32_t playback_rate() const { return playback_rate_; }
@@ -90,6 +94,12 @@ class VideoStreamInfo : public StreamInfo {
   void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
   void set_transfer_characteristics(uint8_t transfer_characteristics) {
     transfer_characteristics_ = transfer_characteristics;
+  }
+  void set_color_primaries(uint8_t color_primaries) {
+    color_primaries_ = color_primaries;
+  }
+  void set_matrix_coefficients(uint8_t matrix_coefficients) {
+    matrix_coefficients_ = matrix_coefficients;
   }
   void set_trick_play_factor(uint32_t trick_play_factor) {
     trick_play_factor_ = trick_play_factor;
@@ -120,6 +130,8 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t pixel_width_;
   uint32_t pixel_height_;
   uint8_t transfer_characteristics_ = 0;
+  uint8_t color_primaries_ = 0;
+  uint8_t matrix_coefficients_ = 0;
   uint32_t trick_play_factor_ = 0;  // Non-zero for trick-play streams.
 
   // Playback rate is the attribute for trick play stream, which signals the

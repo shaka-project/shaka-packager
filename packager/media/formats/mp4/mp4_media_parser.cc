@@ -664,6 +664,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       FourCC dovi_compatible_brand = FOURCC_NULL;
       uint8_t nalu_length_size = 0;
       uint8_t transfer_characteristics = 0;
+      uint8_t color_primaries = 0;
+      uint8_t matrix_coefficients = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
@@ -677,9 +679,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           // Generate the full codec string if the colr atom is present.
           if (entry.colr.color_parameter_type != FOURCC_NULL) {
             transfer_characteristics = entry.colr.transfer_characteristics;
+            color_primaries = entry.colr.color_primaries;
+            matrix_coefficients = entry.colr.matrix_coefficients;
             codec_string = av1_config.GetCodecString(
-                entry.colr.color_primaries, entry.colr.transfer_characteristics,
-                entry.colr.matrix_coefficients,
+                color_primaries, transfer_characteristics, matrix_coefficients,
                 entry.colr.video_full_range_flag);
           } else {
             codec_string = av1_config.GetCodecString();
@@ -715,6 +718,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string = avc_config.GetCodecString(actual_format);
           nalu_length_size = avc_config.nalu_length_size();
           transfer_characteristics = avc_config.transfer_characteristics();
+          color_primaries = avc_config.color_primaries();
+          matrix_coefficients = avc_config.matrix_coefficients();
 
           // Use configurations from |avc_config| if it is valid.
           if (avc_config.coded_width() != 0) {
@@ -763,6 +768,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string = hevc_config.GetCodecString(actual_format);
           nalu_length_size = hevc_config.nalu_length_size();
           transfer_characteristics = hevc_config.transfer_characteristics();
+          color_primaries = hevc_config.color_primaries();
+          matrix_coefficients = hevc_config.matrix_coefficients();
 
           if (!entry.extra_codec_configs.empty()) {
             // |extra_codec_configs| is present only for Dolby Vision.
@@ -822,8 +829,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           track->header.track_id, timescale, duration, video_codec,
           GetH26xStreamFormat(actual_format), codec_string,
           codec_configuration_data.data(), codec_configuration_data.size(),
-          coded_width, coded_height, pixel_width, pixel_height,
-          transfer_characteristics,
+          coded_width, coded_height, pixel_width, pixel_height, color_primaries,
+          matrix_coefficients, transfer_characteristics,
           0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
 

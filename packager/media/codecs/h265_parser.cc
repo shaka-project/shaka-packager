@@ -680,9 +680,11 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
     bool colour_description_present_flag;
     TRUE_OR_RETURN(br->ReadBool(&colour_description_present_flag));
     if (colour_description_present_flag) {
-      TRUE_OR_RETURN(br->SkipBits(8));  // colour_primaries
+      TRUE_OR_RETURN(
+          br->ReadBits(8, &vui->color_primaries));  // color_primaries
       TRUE_OR_RETURN(br->ReadBits(8, &vui->transfer_characteristics));
-      TRUE_OR_RETURN(br->SkipBits(8));  // matrix_coeffs
+      TRUE_OR_RETURN(
+          br->ReadBits(8, &vui->matrix_coefficients));  // matrix_coeffs
     }
   }
 

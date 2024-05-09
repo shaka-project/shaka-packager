@@ -177,8 +177,10 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
       pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH265, stream_format,
       decoder_config.GetCodecString(codec_fourcc), decoder_config_record.data(),
       decoder_config_record.size(), coded_width, coded_height, pixel_width,
-      pixel_height, sps->vui_parameters.transfer_characteristics, 0,
-      nalu_length_size, std::string(), false);
+      pixel_height, sps->vui_parameters.color_primaries,
+      sps->vui_parameters.matrix_coefficients,
+      sps->vui_parameters.transfer_characteristics, 0, nalu_length_size,
+      std::string(), false);
 
   // Video config notification.
   new_stream_info_cb_(last_video_decoder_config_);

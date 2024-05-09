@@ -98,6 +98,13 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
     video_info->set_transfer_characteristics(
         video_stream_info->transfer_characteristics());
   }
+  if (video_stream_info->color_primaries() > 0) {
+    video_info->set_color_primaries(video_stream_info->color_primaries());
+  }
+  if (video_stream_info->matrix_coefficients() > 0) {
+    video_info->set_matrix_coefficients(
+        video_stream_info->matrix_coefficients());
+  }
 }
 
 void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
