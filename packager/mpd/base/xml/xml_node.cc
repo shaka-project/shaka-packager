@@ -60,7 +60,7 @@ std::string urlEncode(const std::string& input) {
   char* output = curl_easy_escape(curl, input.c_str(), input.length());
   if (output) {
     std::string encodedUrl(output);
-    curl_free(output);        // Free the output string when done
+    curl_free(output);  // Free the output string when done
     return encodedUrl;
   }
   return "";  // Return empty string if initialization fails
