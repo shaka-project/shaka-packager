@@ -55,17 +55,13 @@ const char kDTSECodec[] = "dtse";
 const char kDTSXCodec[] = "dtsx";
 
 std::string urlEncode(const std::string& input) {
-  CURL* curl = curl_easy_init();  // Initialize a CURL session
-  if (curl) {
-    char* output = curl_easy_escape(curl, input.c_str(), input.length());
-    if (output) {
-      std::string encodedUrl(output);
-      curl_free(output);        // Free the output string when done
-      curl_easy_cleanup(curl);  // Clean up the CURL session
-      return encodedUrl;
-    }
-    curl_easy_cleanup(
-        curl);  // Clean up the CURL session even if encoding fails
+  // NOTE: According to the docs, "Since 7.82.0, the curl parameter is ignored".
+  CURL* curl = NULL;
+  char* output = curl_easy_escape(curl, input.c_str(), input.length());
+  if (output) {
+    std::string encodedUrl(output);
+    curl_free(output);        // Free the output string when done
+    return encodedUrl;
   }
   return "";  // Return empty string if initialization fails
 }
