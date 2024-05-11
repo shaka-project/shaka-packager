@@ -272,6 +272,11 @@ bool Period::SetNewAdaptationSetAttributes(
       new_adaptation_set->set_transfer_characteristics(
           media_info.video_info().transfer_characteristics());
     }
+
+    new_adaptation_set->set_matrix_coefficients(
+        media_info.video_info().matrix_coefficients());
+    new_adaptation_set->set_color_primaries(
+        media_info.video_info().color_primaries());
   } else if (media_info.has_audio_info()) {
     if (codec == "mp4a" || codec == "ac-3" || codec == "ec-3" ||
         codec == "ac-4") {

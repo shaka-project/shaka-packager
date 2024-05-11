@@ -249,6 +249,8 @@ class Representation {
   const uint32_t id_;
   std::string mime_type_;
   std::string codecs_;
+  std::string supplemental_codecs_;
+  std::string supplemental_profiles_;
   BandwidthEstimator bandwidth_estimator_;
   const MpdOptions& mpd_options_;
 

@@ -17,6 +17,7 @@
 #include <packager/macros/classes.h>
 #include <packager/mpd/base/bandwidth_estimator.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include "packager/media/base/fourccs.h"
 
 namespace shaka {
 
@@ -80,6 +81,8 @@ class MediaPlaylist {
   const std::string& group_id() const { return group_id_; }
   MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
+  const std::string& supplemental_codec() const { return supplemental_codec_; }
+  const media::FourCC& compatible_brand() const { return compatible_brand_; }
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
@@ -265,6 +268,8 @@ class MediaPlaylist {
   // Whether to use byte range for SegmentInfoEntry.
   bool use_byte_range_ = false;
   std::string codec_;
+  std::string supplemental_codec_;
+  media::FourCC compatible_brand_;
   std::string language_;
   std::vector<std::string> characteristics_;
   bool forced_subtitle_ = false;

@@ -1227,7 +1227,7 @@ INSTANTIATE_TEST_CASE_P(VideoRanges,
                         Values(VideoRangeTestData{"hvc1.2.4.L63.90", 0, ""},
                                VideoRangeTestData{"hvc1.2.4.L63.90", 1, "SDR"},
                                VideoRangeTestData{"hvc1.2.4.L63.90", 16, "PQ"},
-                               VideoRangeTestData{"hvc1.2.4.L63.90", 18, "PQ"},
+                               VideoRangeTestData{"hvc1.2.4.L63.90", 18, "HLG"},
                                VideoRangeTestData{"dvh1.05.08", 0, "PQ"}));
 
 }  // namespace hls

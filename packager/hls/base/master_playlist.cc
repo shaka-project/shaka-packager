@@ -228,6 +228,15 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
                     variant.text_codecs.end());
   tag.AddQuotedString("CODECS", absl::StrJoin(all_codecs, ","));
 
+  if (playlist.supplemental_codec() != "" &&
+      playlist.compatible_brand() != media::FOURCC_NULL) {
+    std::vector<std::string> supplemental_codecs;
+    supplemental_codecs.push_back(playlist.supplemental_codec());
+    supplemental_codecs.push_back(FourCCToString(playlist.compatible_brand()));
+    tag.AddQuotedString("SUPPLEMENTAL-CODECS",
+                        absl::StrJoin(supplemental_codecs, "/"));
+  }
+
   uint32_t width;
   uint32_t height;
   if (playlist.GetDisplayResolution(&width, &height)) {
