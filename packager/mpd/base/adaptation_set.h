@@ -143,6 +143,11 @@ class AdaptationSet {
   /// @return true if id is set, false otherwise.
   bool has_id() const { return static_cast<bool>(id_); }
 
+  /// @return true if id is set, false otherwise.
+  std::optional<uint32_t> SortIndex() const {
+    return index_.has_value() ? index_ : id_;
+  }
+
   // Must be unique in the Period.
   uint32_t id() const { return id_.value(); }
 

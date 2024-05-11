@@ -107,11 +107,14 @@ std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   adaptation_sets_.sort(
       [](const std::unique_ptr<AdaptationSet>& adaptation_set_a,
          const std::unique_ptr<AdaptationSet>& adaptation_set_b) {
-        if (!adaptation_set_a->has_id())
+        auto index_a = adaptation_set_a->SortIndex();
+        auto index_b = adaptation_set_b->SortIndex();
+
+        if (!index_a)
           return false;
-        if (!adaptation_set_b->has_id())
+        if (!index_b)
           return true;
-        return adaptation_set_a->id() < adaptation_set_b->id();
+        return index_a < index_b;
       });
 
   xml::XmlNode period("Period");

@@ -1704,7 +1704,9 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testAllowCodecSwitching(self):
     streams = [
+        self._GetStream('video', test_file='bear-1280x720-hevc.mp4'),
         self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360-vp9.mp4'),
         self._GetStream('video', test_file='bear-640x360.mp4'),
         self._GetStream('video', test_file='bear-1280x720.mp4'),
         self._GetStream('audio', test_file='bear-640x360.mp4'),

@@ -328,8 +328,6 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   bool suppress_representation_height = false;
   bool suppress_representation_frame_rate = false;
 
-  if (index_.has_value())
-    id_ = index_.value();
   if (id_ && !adaptation_set.SetId(id_.value()))
     return std::nullopt;
   if (!adaptation_set.SetStringAttribute("contentType", content_type_))
@@ -425,10 +423,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!trick_play_reference_ids.empty())
       trick_play_reference_ids += ' ';
     CHECK(tp_adaptation_set->has_id());
-    trick_play_reference_ids +=
-        std::to_string(tp_adaptation_set->index_.has_value()
-                           ? tp_adaptation_set->index_.value()
-                           : tp_adaptation_set->id());
+    trick_play_reference_ids += std::to_string(tp_adaptation_set->id());
   }
   if (!trick_play_reference_ids.empty() &&
       !adaptation_set.AddEssentialProperty(
@@ -442,9 +437,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!switching_ids.empty())
       switching_ids += ',';
     CHECK(s_adaptation_set->has_id());
-    switching_ids += std::to_string(s_adaptation_set->index_.has_value()
-                                        ? s_adaptation_set->index_.value()
-                                        : s_adaptation_set->id());
+    switching_ids += std::to_string(s_adaptation_set->id());
   }
   if (!switching_ids.empty() &&
       !adaptation_set.AddSupplementalProperty(
