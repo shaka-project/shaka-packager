@@ -51,6 +51,7 @@ target_link_libraries(mpd_builder
   media_base
   mpd_media_info_proto
   utils_clock
+  libcurl
 )
 
 
