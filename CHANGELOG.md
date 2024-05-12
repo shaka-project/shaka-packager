@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [3.2.0](https://github.com/shaka-project/shaka-packager/compare/v3.1.0...v3.2.0) (2024-05-11)
+
+
+### Features
+
+* support Dolby Vision profile 8.x (HEVC) and 10.x (AV1) in HLS and DASH  ([#1396](https://github.com/shaka-project/shaka-packager/issues/1396)) ([a99cfe0](https://github.com/shaka-project/shaka-packager/commit/a99cfe036f09de51b488f87f4cb126a1bcd3a286))
+
+
+### Bug Fixes
+
+* adaptation set IDs were referenced by lowest representation ID  ([#1394](https://github.com/shaka-project/shaka-packager/issues/1394)) ([94db9c9](https://github.com/shaka-project/shaka-packager/commit/94db9c9db3e73073925205355dd61a6dc9785065)), closes [#1393](https://github.com/shaka-project/shaka-packager/issues/1393)
+* escape media URLs in MPD ([#1395](https://github.com/shaka-project/shaka-packager/issues/1395)) ([98b44d0](https://github.com/shaka-project/shaka-packager/commit/98b44d01df6a952466b5a1667818da877502da97))
+* set yuv full range flag to 1 for VP9 with sRGB ([#1398](https://github.com/shaka-project/shaka-packager/issues/1398)) ([f6f60e5](https://github.com/shaka-project/shaka-packager/commit/f6f60e5fff8d5c9b13fbf65f494eba651050ccb9))
+
 ## [3.1.0](https://github.com/shaka-project/shaka-packager/compare/v3.0.4...v3.1.0) (2024-05-03)
 
 
