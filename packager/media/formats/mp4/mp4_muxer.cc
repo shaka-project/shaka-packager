@@ -293,6 +293,11 @@ Status MP4Muxer::DelayInitializeMuxer() {
       entry.media_time = edit_list_offset_.value();
       entry.media_rate_integer = 1;
       trak.edit.list.edits.push_back(entry);
+    } else if (stream->media_time() != 0) {
+      EditListEntry entry;
+      entry.media_time = stream->media_time();
+      entry.media_rate_integer = 1;
+      trak.edit.list.edits.push_back(entry);
     }
 
     if (stream->is_encrypted() && options().mp4_params.include_pssh_in_stream) {

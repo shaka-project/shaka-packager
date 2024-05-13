@@ -590,6 +590,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           num_channels, sampling_frequency, seek_preroll_ns, codec_delay_ns,
           max_bitrate, avg_bitrate, track->media.header.language.code,
           is_encrypted));
+
+      const EditList& edit_list = track->edit.list;
+      if (edit_list.edits.size() == 1u) {
+        streams.back()->set_media_time(edit_list.edits.front().media_time);
+      }
     }
 
     if (samp_descr.type == kVideo) {
@@ -756,6 +761,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         }
         video_stream_info->set_eme_init_data(pssh_raw_data.data(),
                                              pssh_raw_data.size());
+      }
+
+      const EditList& edit_list = track->edit.list;
+      if (edit_list.edits.size() == 1u) {
+        video_stream_info->set_media_time(edit_list.edits.front().media_time);
       }
 
       streams.push_back(video_stream_info);

@@ -29,6 +29,7 @@
 #include <packager/media/formats/mp2t/ts_packet.h>
 #include <packager/media/formats/mp2t/ts_section.h>
 #include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_definitions_comparison.h>
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 
@@ -295,6 +296,31 @@ class MP4MediaParserTest {
   std::vector<std::shared_ptr<media::MediaSample>> samples_;
   std::vector<std::shared_ptr<media::mp4::DASHEventMessageBox>> emsg_samples_;
 };
+
+bool GetBox(const Segment& buffer, media::mp4::Box& out) {
+  bool err(true);
+  size_t bytes_to_read(buffer.Size());
+  const uint8_t* data(buffer.Data());
+
+  while (bytes_to_read > 0) {
+    std::unique_ptr<media::mp4::BoxReader> reader(
+        media::mp4::BoxReader::ReadBox(data, bytes_to_read, &err));
+
+    if (err) {
+      return false;
+    }
+
+    if (reader->type() == out.BoxType()) {
+      out.Parse(reader.get());
+      return true;
+    }
+
+    data += reader->size();
+    bytes_to_read -= reader->size();
+  }
+
+  return false;
+}
 
 void CheckVideoInitSegment(const SegmentBuffer& buffer, media::FourCC format) {
   bool err(true);
@@ -841,6 +867,38 @@ TEST_F(LivePackagerBaseTest, VerifyPrdDecryptReEncrypt) {
 
     ASSERT_TRUE(decryptor.Crypt(buffer, &decrypted));
     ASSERT_EQ(decrypted, exp_decrypted_segment_buffer);
+  }
+}
+
+TEST_F(LivePackagerBaseTest, EditListAfterRepackage) {
+  std::vector<uint8_t> init_segment_buffer =
+      ReadTestDataFile("encrypted/prd_data/init.mp4");
+  ASSERT_FALSE(init_segment_buffer.empty());
+
+  LiveConfig live_config;
+  live_config.format = LiveConfig::OutputFormat::FMP4;
+  live_config.track_type = LiveConfig::TrackType::VIDEO;
+  live_config.protection_scheme = LiveConfig::EncryptionScheme::CENC;
+  live_config.decryption_key = HexStringToVector(kKeyHex);
+  live_config.decryption_key_id = HexStringToVector(kKeyIdHex);
+  SetupLivePackagerConfig(live_config);
+
+  SegmentData init_seg(init_segment_buffer.data(), init_segment_buffer.size());
+  SegmentBuffer actual_buf;
+  const auto status = live_packager_->PackageInit(init_seg, actual_buf);
+  ASSERT_EQ(Status::OK, status);
+  ASSERT_GT(actual_buf.Size(), 0);
+
+  media::mp4::Movie exp_moov;
+  ASSERT_TRUE(GetBox(init_seg, exp_moov));
+  media::mp4::Movie act_moov;
+  ASSERT_TRUE(GetBox(actual_buf, act_moov));
+
+  ASSERT_EQ(exp_moov.tracks.size(), act_moov.tracks.size());
+  for (size_t i(0); i < exp_moov.tracks.size(); ++i) {
+    const auto& exp_track = exp_moov.tracks[i];
+    const auto& act_track = act_moov.tracks[i];
+    EXPECT_EQ(exp_track.edit.list.edits, act_track.edit.list.edits);
   }
 }
 
