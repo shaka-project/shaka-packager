@@ -595,6 +595,14 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       if (edit_list.edits.size() == 1u) {
         streams.back()->set_media_time(edit_list.edits.front().media_time);
       }
+
+      for (const auto& trex : moov_->extends.tracks) {
+        if (trex.track_id == track->header.track_id) {
+          streams.back()->set_default_sample_duration(
+              trex.default_sample_duration);
+          break;
+        }
+      }
     }
 
     if (samp_descr.type == kVideo) {
@@ -766,6 +774,14 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const EditList& edit_list = track->edit.list;
       if (edit_list.edits.size() == 1u) {
         video_stream_info->set_media_time(edit_list.edits.front().media_time);
+      }
+
+      for (const auto& trex : moov_->extends.tracks) {
+        if (trex.track_id == track->header.track_id) {
+          video_stream_info->set_default_sample_duration(
+              trex.default_sample_duration);
+          break;
+        }
       }
 
       streams.push_back(video_stream_info);

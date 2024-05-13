@@ -264,6 +264,9 @@ Status MP4Muxer::DelayInitializeMuxer() {
     TrackExtends& trex = moov->extends.tracks[i];
     trex.track_id = trak.header.track_id;
     trex.default_sample_description_index = 1;
+    if (stream->get_default_sample_duration() != 0) {
+      trex.default_sample_duration = stream->get_default_sample_duration();
+    }
 
     bool generate_trak_result = false;
     switch (stream->stream_type()) {

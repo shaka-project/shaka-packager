@@ -870,7 +870,7 @@ TEST_F(LivePackagerBaseTest, VerifyPrdDecryptReEncrypt) {
   }
 }
 
-TEST_F(LivePackagerBaseTest, EditListAfterRepackage) {
+TEST_F(LivePackagerBaseTest, MoovAfterRepackage) {
   std::vector<uint8_t> init_segment_buffer =
       ReadTestDataFile("encrypted/prd_data/init.mp4");
   ASSERT_FALSE(init_segment_buffer.empty());
@@ -900,6 +900,8 @@ TEST_F(LivePackagerBaseTest, EditListAfterRepackage) {
     const auto& act_track = act_moov.tracks[i];
     EXPECT_EQ(exp_track.edit.list.edits, act_track.edit.list.edits);
   }
+
+  EXPECT_EQ(exp_moov.extends.tracks, act_moov.extends.tracks);
 }
 
 TEST_F(LivePackagerBaseTest, EncryptionFailure) {
