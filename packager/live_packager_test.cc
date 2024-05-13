@@ -893,6 +893,7 @@ TEST_F(LivePackagerBaseTest, MoovAfterRepackage) {
   ASSERT_TRUE(GetBox(init_seg, exp_moov));
   media::mp4::Movie act_moov;
   ASSERT_TRUE(GetBox(actual_buf, act_moov));
+  ASSERT_EQ(exp_moov.extends.header, act_moov.extends.header);
 
   ASSERT_EQ(exp_moov.tracks.size(), act_moov.tracks.size());
   for (size_t i(0); i < exp_moov.tracks.size(); ++i) {
