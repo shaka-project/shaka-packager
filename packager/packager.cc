@@ -523,7 +523,8 @@ std::unique_ptr<MediaHandler> CreateTextChunker(
   const float segment_length_in_seconds =
       chunking_params.segment_duration_in_seconds;
   return std::unique_ptr<MediaHandler>(new TextChunker(
-      segment_length_in_seconds, chunking_params.start_segment_number));
+      segment_length_in_seconds, chunking_params.start_segment_number,
+      chunking_params.ts_ttx_heartbeat_shift));
 }
 
 Status CreateTtmlJobs(

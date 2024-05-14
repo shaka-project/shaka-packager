@@ -9,6 +9,7 @@
 
 #include <list>
 
+#include <packager/chunking_params.h>
 #include <packager/media/base/media_handler.h>
 
 namespace shaka {
@@ -22,6 +23,9 @@ class TextChunker : public MediaHandler {
  public:
   explicit TextChunker(double segment_duration_in_seconds,
                        int64_t start_segment_number);
+  explicit TextChunker(double segment_duration_in_seconds,
+                       int64_t start_segment_number,
+                       int64_t ts_ttx_heartbeat_shift);
 
  private:
   TextChunker(const TextChunker&) = delete;
@@ -53,14 +57,28 @@ class TextChunker : public MediaHandler {
   int64_t segment_start_ = -1;     // Set when the first sample comes in.
   int64_t segment_duration_ = -1;  // Set in OnStreamInfo.
 
-  // Segment number that keeps monotically increasing.
+  // Segment number that keeps monotonically increasing.
   // Set to start_segment_number in constructor.
   int64_t segment_number_ = 1;
+
+  // A shift in PTS values for text heart beats from other MPEG-2 TS
+  // elementary streams. Can be set from command line.
+  int64_t ts_ttx_heartbeat_shift_ = kDefaultTtxHeartbeatShift;
+
+  // Used to check if media heart beats are coming before text timestamps
+  // This value has the shift applied and is used for warnings
+  int64_t latest_media_heartbeat_time_ = -1;
 
   // All samples that make up the current segment. We must store the samples
   // until the segment ends because a cue event may end the segment sooner
   // than we expected.
   std::list<std::shared_ptr<const TextSample>> samples_in_current_segment_;
+
+  // For live input which we cannot wait for sample end time since
+  // it may come after the current segment is supposed to finish.
+  // By storing them in this list we can retrieve them and crop them
+  // to the segment interval before adding them to samples_in_current_segment_
+  std::list<std::shared_ptr<const TextSample>> samples_without_end_;
 };
 
 }  // namespace media
