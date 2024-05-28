@@ -225,6 +225,9 @@ const uint8_t PES_1173713[] = {
     0x83, 0x73, 0x2a, 0xcb, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
     0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
 
+// Minimal HeartBeat PES payload
+const uint8_t PES_MINIMAL_HEARTBEAT[] = {0xff};
+
 const uint32_t kPesPid = 123;
 
 }  // namespace
@@ -321,7 +324,8 @@ TEST_F(EsParserTeletextTest, multiple_lines_with_same_pts) {
   EXPECT_TRUE(parse_result);
 
   EXPECT_NE(nullptr, text_sample_.get());
-  EXPECT_EQ(8768632, text_sample_->start_time());
+  EXPECT_EQ(8773087, text_sample_->start_time());  // The time is from first
+                                                   // row, not from packet 26
   EXPECT_EQ(8937764, text_sample_->EndTime());
   EXPECT_EQ(3, text_sample_->body().sub_fragments.size());
   EXPECT_EQ("-Sí?", text_sample_->body().sub_fragments[0].body);
@@ -419,6 +423,35 @@ TEST_F(EsParserTeletextTest, consecutive_lines_with_slightly_different_pts) {
   EXPECT_EQ("yellow",
             text_sample_->body().sub_fragments[2].style.backgroundColor);
   EXPECT_EQ("blue", text_sample_->body().sub_fragments[2].style.color);
+}
+
+// An empty TextSample should be generated every 500ms as no text
+// but other PES packets are received.
+TEST_F(EsParserTeletextTest, generate_zero_duration_samples_if_no_text) {
+  auto on_new_stream = base::Bind(&EsParserTeletextTest::OnNewStreamInfo,
+                                  base::Unretained(this), kPesPid);
+  auto on_emit_text = base::Bind(&EsParserTeletextTest::OnEmitTextSample,
+                                 base::Unretained(this), kPesPid);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  int64_t pts = 12000;
+  for (int i = 0; i < 5; i++) {
+    auto parse_result =
+        es_parser_teletext->Parse(PES_MINIMAL_HEARTBEAT, sizeof(PES_MINIMAL_HEARTBEAT), pts, 0);
+    EXPECT_TRUE(parse_result);
+    pts += 22500;  // 0.25s
+  }
+
+  EXPECT_NE(nullptr, text_sample_.get());
+  EXPECT_EQ(2, text_samples_.size());
+  int64_t target_pts = 12000 + 45000;
+  for (auto const& sample : text_samples_) {
+    EXPECT_EQ(0, sample->duration());
+    EXPECT_EQ(target_pts, sample->start_time());
+    target_pts += 45000;
+  }
 }
 
 }  // namespace mp2t

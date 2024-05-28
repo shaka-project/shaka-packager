@@ -670,10 +670,10 @@ Status CreateAudioVideoJobs(
       }
 
       std::vector<std::shared_ptr<MediaHandler>> handlers;
-      if (is_text) {
+      /* if (is_text) {
         handlers.emplace_back(
             std::make_shared<TextPadder>(kDefaultTextZeroBiasMs));
-      }
+      } */
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
       }

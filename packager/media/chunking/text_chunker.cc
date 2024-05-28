@@ -90,7 +90,9 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
-  samples_in_current_segment_.push_back(std::move(sample));
+  if (sample->duration() > 0) {
+    samples_in_current_segment_.push_back(std::move(sample));
+  }
 
   return Status::OK;
 }

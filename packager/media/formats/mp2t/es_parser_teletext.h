@@ -37,6 +37,7 @@ class EsParserTeletext : public EsParser {
   void Reset() override;
 
  private:
+  void ResetPTS(int64_t pts);
   using RowColReplacementMap =
       std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::string>>;
 
@@ -64,6 +65,7 @@ class EsParserTeletext : public EsParser {
   TextRow BuildRow(const uint8_t* data_block, const uint8_t row) const;
   void ParsePacket26(const uint8_t* data_block);
   void UpdateNationalSubset(const uint8_t national_subset[13][3]);
+  void SendHeartBeatSample(const int64_t pts);
 
   static void SetPacket26ReplacementString(
       RowColReplacementMap& replacement_map,
@@ -82,6 +84,7 @@ class EsParserTeletext : public EsParser {
   uint8_t charset_code_;
   char current_charset_[96][3];
   int64_t last_pts_;
+  bool inside_sample_;
 };
 
 }  // namespace mp2t
