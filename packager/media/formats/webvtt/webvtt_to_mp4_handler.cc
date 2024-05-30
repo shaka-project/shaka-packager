@@ -191,7 +191,7 @@ Status WebVttToMp4Handler::DispatchCurrentSegment(int64_t segment_start,
 
   // Move through the segment, jumping between each change to the current state.
   // A change is defined as a group of one or more DisplayActions.
-  int section_start = segment_start;
+  int64_t section_start = segment_start;
 
   // |actions| is a map of [time] -> [action].
   auto actions = CreateActionList(segment_start, segment_end, current_segment_);

@@ -1075,6 +1075,8 @@ struct LivePackagerTestCase {
   LiveConfig::TrackType track_type;
   const char* media_segment_format;
   bool compare_samples;
+  std::string exp_init;
+  const char* exp_media_seg;
 };
 
 class LivePackagerEncryptionTest
@@ -1094,13 +1096,14 @@ class LivePackagerEncryptionTest
  protected:
   static std::vector<uint8_t> ReadExpectedData() {
     // TODO: make this more generic to handle mp2t as well
-    std::vector<uint8_t> buf = ReadTestDataFile("expected/fmp4/init.mp4");
+    std::vector<uint8_t> buf = ReadTestDataFile(GetParam().exp_init);
     for (unsigned int i = 0; i < GetParam().num_segments; i++) {
-      auto seg_buf =
-          ReadTestDataFile(absl::StrFormat("expected/fmp4/%04d.m4s", i + 1));
-      buf.insert(buf.end(), seg_buf.begin(), seg_buf.end());
+      std::string input_fname;
+      if (FormatWithIndex(GetParam().exp_media_seg, i, input_fname)) {
+        auto seg_buf = ReadTestDataFile(input_fname);
+        buf.insert(buf.end(), seg_buf.begin(), seg_buf.end());
+      }
     }
-
     return buf;
   }
 
@@ -1176,32 +1179,62 @@ INSTANTIATE_TEST_CASE_P(
         LivePackagerTestCase{
             10, "input/init.mp4", LiveConfig::EncryptionScheme::SAMPLE_AES,
             LiveConfig::OutputFormat::TS, LiveConfig::TrackType::VIDEO,
-            "input/%04d.m4s", false},
+            "input/%04d.m4s", false, "expected/fmp4/init.mp4",
+            "expected/fmp4/%04d.m4s"},
         // Verify FMP4 to TS with AES-128 encryption.
         LivePackagerTestCase{
             10, "input/init.mp4", LiveConfig::EncryptionScheme::AES_128,
             LiveConfig::OutputFormat::TS, LiveConfig::TrackType::VIDEO,
-            "input/%04d.m4s", false},
+            "input/%04d.m4s", false, "expected/fmp4/init.mp4",
+            "expected/fmp4/%04d.m4s"},
         // Verify FMP4 to FMP4 with Sample AES encryption.
         LivePackagerTestCase{
             10, "input/init.mp4", LiveConfig::EncryptionScheme::SAMPLE_AES,
             LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::VIDEO,
-            "input/%04d.m4s", true},
+            "input/%04d.m4s", true, "expected/fmp4/init.mp4",
+            "expected/fmp4/%04d.m4s"},
         // Verify FMP4 to FMP4 with CENC encryption.
         LivePackagerTestCase{
             10, "input/init.mp4", LiveConfig::EncryptionScheme::CENC,
             LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::VIDEO,
-            "input/%04d.m4s", true},
+            "input/%04d.m4s", true, "expected/fmp4/init.mp4",
+            "expected/fmp4/%04d.m4s"},
         // Verify FMP4 to FMP4 with CBCS encryption.
         LivePackagerTestCase{
             10, "input/init.mp4", LiveConfig::EncryptionScheme::CBCS,
             LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::VIDEO,
-            "input/%04d.m4s", true},
+            "input/%04d.m4s", true, "expected/fmp4/init.mp4",
+            "expected/fmp4/%04d.m4s"},
         // Verify AUDIO segments only to TS with Sample AES encryption.
         LivePackagerTestCase{
             5, "audio/en/init.mp4", LiveConfig::EncryptionScheme::SAMPLE_AES,
             LiveConfig::OutputFormat::TS, LiveConfig::TrackType::AUDIO,
-            "audio/en/%05d.m4s", false}));
+            "audio/en/%05d.m4s", false, "expected/fmp4/init.mp4",
+            "expected/fmp4/%04d.m4s"},
+        // Verify packaging of CMAF Video segments, no encryption
+        LivePackagerTestCase{
+            10, "cmaf/video/init.mp4", LiveConfig::EncryptionScheme::NONE,
+            LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::VIDEO,
+            "cmaf/video/seg_34313817%01d.m4s", true, "cmaf/video/init.mp4",
+            "cmaf/video/seg_34313817%01d.m4s"},
+        // Verify packaging of CMAF Audio segments
+        LivePackagerTestCase{
+            10, "cmaf/audio/init.mp4", LiveConfig::EncryptionScheme::NONE,
+            LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::AUDIO,
+            "cmaf/audio/seg_34313817%01d.m4s", true, "cmaf/audio/init.mp4",
+            "cmaf/audio/seg_34313817%01d.m4s"},
+        // Verify packaging of CMAF audio segments, with encryption
+        LivePackagerTestCase{
+            10, "cmaf/audio/init.mp4", LiveConfig::EncryptionScheme::CENC,
+            LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::AUDIO,
+            "cmaf/audio/seg_34313817%01d.m4s", true, "cmaf/audio/init.mp4",
+            "cmaf/audio/seg_34313817%01d.m4s"},
+        // Verify packaging of CMAF video segments, with encryption
+        LivePackagerTestCase{
+            10, "cmaf/video/init.mp4", LiveConfig::EncryptionScheme::CENC,
+            LiveConfig::OutputFormat::FMP4, LiveConfig::TrackType::VIDEO,
+            "cmaf/video/seg_34313817%01d.m4s", true, "cmaf/video/init.mp4",
+            "cmaf/video/seg_34313817%01d.m4s"}));
 
 struct LivePackagerReEncryptCase {
   unsigned int num_segments;
@@ -1499,4 +1532,36 @@ INSTANTIATE_TEST_CASE_P(
             Status(error::INVALID_ARGUMENT, "Stream not available"),
             0,
         }));
+
+// Exercise edge case found in webvtt_to_mp4_handler for large decode times.
+// Issue was a narrow conversion from int64_t to int (32 bit) for segment_start.
+// Valid decode times can be int64_t.
+TEST_F(LivePackagerBaseTest, TestCmafTimedText) {
+  std::vector<uint8_t> segment_buffer =
+      ReadTestDataFile("timed_text/cmaf/text_cmaf_fragment_343138171.vtt");
+  ASSERT_FALSE(segment_buffer.empty());
+
+  SegmentData media_seg(segment_buffer.data(), segment_buffer.size());
+
+  FullSegmentBuffer out;
+
+  LiveConfig live_config;
+  live_config.format = LiveConfig::OutputFormat::VTTMP4;
+  live_config.track_type = LiveConfig::TrackType::TEXT;
+  live_config.protection_scheme = LiveConfig::EncryptionScheme::NONE;
+  live_config.segment_number = 343138171;
+  live_config.timed_text_decode_time = (154412176500000 / 90000) * 1000;
+
+  SetupLivePackagerConfig(live_config);
+  ASSERT_EQ(Status::OK, live_packager_->PackageTimedText(media_seg, out));
+  ASSERT_GT(out.SegmentSize(), 0);
+
+  CheckTextInitSegment(out, media::FourCC::FOURCC_text,
+                       media::FourCC::FOURCC_wvtt);
+
+  SegmentBuffer seg;
+  seg.AppendData(out.SegmentData(), out.SegmentSize());
+  CheckSegment(live_config, seg, 1000, true);
+}
+
 }  // namespace shaka
