@@ -5,7 +5,8 @@
       "os": "ubuntu-20.04",
       "os_name": "linux",
       "target_arch": "x64",
-      "exe_ext": ".so",
+      "lib_ext": ".so",
+      "exe_ext": "",
       "generator": "Ninja"
     },
     {
@@ -13,7 +14,8 @@
       "os": "macos-13",
       "os_name": "osx",
       "target_arch": "x64",
-      "exe_ext": ".dylib",
+      "lib_ext": ".dylib",
+      "exe_ext": "",
       "generator": "Ninja"
     },
     {
@@ -21,7 +23,8 @@
       "os": "macos-14",
       "os_name": "osx",
       "target_arch": "arm64",
-      "exe_ext": ".dylib",
+      "lib_ext": ".dylib",
+      "exe_ext": "",
       "generator": "Ninja"
     }
   ]

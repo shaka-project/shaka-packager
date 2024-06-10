@@ -58,7 +58,8 @@ class Segmenter {
   /// Finalize the (sub)segment.
   virtual Status FinalizeSegment(int64_t start_timestamp,
                                  int64_t duration_timestamp,
-                                 bool is_subsegment) = 0;
+                                 bool is_subsegment,
+                                 int64_t segment_number) = 0;
 
   /// @return true if there is an initialization range, while setting @a start
   ///         and @a end; or false if initialization range does not apply.
@@ -139,8 +140,11 @@ class Segmenter {
   ProgressListener* progress_listener_ = nullptr;
   uint64_t progress_target_ = 0;
   uint64_t accumulated_progress_ = 0;
+
   int64_t first_timestamp_ = 0;
-  int64_t sample_duration_ = 0;
+  int64_t sample_durations_[2] = {0, 0};
+  size_t num_samples_ = 0;
+
   // The position (in bytes) of the start of the Segment payload in the init
   // file.  This is also the size of the header before the SeekHead.
   uint64_t segment_payload_pos_ = 0;

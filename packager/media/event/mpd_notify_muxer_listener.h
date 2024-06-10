@@ -52,7 +52,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
   void OnNewSegment(const std::string& file_name,
                     int64_t start_time,
                     int64_t duration,
-                    uint64_t segment_file_size) override;
+                    uint64_t segment_file_size,
+                    int64_t segment_number) override;
   void OnCompletedSegment(int64_t duration,
                           uint64_t segment_file_size) override;
   void OnKeyFrame(int64_t timestamp,
@@ -67,6 +68,10 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   void set_roles(const std::vector<std::string>& roles) { roles_ = roles; }
 
+  void set_index(std::optional<uint32_t> idx) { index_ = idx; }
+
+  void set_dash_label(std::string label) { dash_label_ = label; }
+
  private:
   MpdNotifyMuxerListener(const MpdNotifyMuxerListener&) = delete;
   MpdNotifyMuxerListener& operator=(const MpdNotifyMuxerListener&) = delete;
@@ -79,6 +84,9 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   std::vector<std::string> accessibilities_;
   std::vector<std::string> roles_;
+  std::string dash_label_;
+
+  std::optional<uint32_t> index_ = 0;
 
   bool is_encrypted_ = false;
   // Storage for values passed to OnEncryptionInfoReady().

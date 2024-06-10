@@ -1,4 +1,4 @@
-FROM alpine:3.12 as builder
+FROM alpine:3.19 as builder
 
 # Install utilities, libraries, and dev tools.
 RUN apk add --no-cache \
@@ -10,21 +10,20 @@ RUN apk add --no-cache \
 # merged.
 WORKDIR shaka-packager
 COPY . /shaka-packager/
-RUN mkdir build
+RUN rm -rf build
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
 RUN cmake --build build/ --config Debug --parallel
 
 # Copy only result binaries to our final image.
-FROM alpine:3.12
+FROM alpine:3.19
 RUN apk add --no-cache libstdc++ python3
-# TODO(joeyparrish): Copy binaries when build system is complete
-#COPY --from=builder /shaka-packager/build/packager \
-#                    /shaka-packager/build/mpd_generator \
-#                    /shaka-packager/build/pssh-box.py \
-#                    /usr/bin/
+COPY --from=builder /shaka-packager/build/packager/packager \
+                    /shaka-packager/build/packager/mpd_generator \
+                    /shaka-packager/build/packager/pssh-box.py \
+                    /usr/bin/
 
 # Copy pyproto directory, which is needed by pssh-box.py script. This line
 # cannot be combined with the line above as Docker's copy command skips the
 # directory itself. See https://github.com/moby/moby/issues/15858 for details.
-# TODO(joeyparrish): Copy binaries when build system is complete
-#COPY --from=builder /shaka-packager/build/pyproto /usr/bin/pyproto
+COPY --from=builder /shaka-packager/build/packager/pssh-box-protos \
+                    /usr/bin/pssh-box-protos

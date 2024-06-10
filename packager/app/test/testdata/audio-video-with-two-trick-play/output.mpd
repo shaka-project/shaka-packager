@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360665798187256S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.736067S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="973483" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
@@ -10,7 +10,7 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="1" contentType="video" width="640" height="360" maxFrameRate="30000/30030" par="16:9">
+    <AdaptationSet id="1" contentType="video" width="640" height="360" maxFrameRate="30000/22022" par="16:9">
       <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="0"/>
       <Representation id="1" bandwidth="211545" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/30030" maxPlayoutRate="30" codingDependency="false">
         <BaseURL>bear-640x360-video-trick_play_factor_1.mp4</BaseURL>
@@ -18,14 +18,14 @@
           <Initialization range="0-869"/>
         </SegmentBase>
       </Representation>
-      <Representation id="2" bandwidth="211545" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/60060" maxPlayoutRate="60" codingDependency="false">
+      <Representation id="2" bandwidth="211545" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/22022" maxPlayoutRate="60" codingDependency="false">
         <BaseURL>bear-640x360-video-trick_play_factor_2.mp4</BaseURL>
         <SegmentBase indexRange="870-925" timescale="30000">
           <Initialization range="0-869"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="2" contentType="audio" subsegmentAlignment="true">
+    <AdaptationSet id="2" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <Representation id="3" bandwidth="133334" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>

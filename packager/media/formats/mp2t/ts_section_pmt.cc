@@ -10,11 +10,21 @@
 
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
+#include <packager/media/formats/mp2t/ts_audio_type.h>
 #include <packager/media/formats/mp2t/ts_stream_type.h>
 
 namespace shaka {
 namespace media {
 namespace mp2t {
+
+namespace {
+
+const int kISO639LanguageDescriptor = 0x0A;
+const int kMaximumBitrateDescriptor = 0x0E;
+const int kTeletextDescriptor = 0x56;
+const int kSubtitlingDescriptor = 0x59;
+
+}  // namespace
 
 TsSectionPmt::TsSectionPmt(const RegisterPesCb& register_pes_cb)
     : register_pes_cb_(register_pes_cb) {
@@ -82,6 +92,9 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
     TsStreamType stream_type;
     const uint8_t* descriptor;
     size_t descriptor_length;
+    std::string lang;
+    uint32_t max_bitrate;
+    TsAudioType audio_type;
   };
   std::vector<Info> pid_info;
   while (static_cast<int>(bit_reader->bits_available()) >
@@ -99,22 +112,67 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
     // Do not register the PID right away.
     // Wait for the end of the section to be fully parsed
     // to make sure there is no error.
-    pid_info.push_back({pid_es, stream_type, descriptor, es_info_length});
+    pid_info.push_back({pid_es, stream_type, descriptor, es_info_length, "", 0,
+                        TsAudioType::kUndefined});
 
     // Read the ES info descriptors.
     // Defined in section 2.6 of ISO-13818.
-    if (es_info_length > 0) {
-      uint8_t descriptor_tag;
+    uint8_t descriptor_tag;
+    uint8_t descriptor_length;
+
+    while (es_info_length) {
       RCHECK(bit_reader->ReadBits(8, &descriptor_tag));
-      es_info_length--;
+      RCHECK(bit_reader->ReadBits(8, &descriptor_length));
+      es_info_length -= 2;
 
       // See ETSI EN 300 468 Section 6.1
-      if (stream_type == TsStreamType::kPesPrivateData &&
-          descriptor_tag == 0x59) {  // subtitling_descriptor
-        pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+      if (stream_type == TsStreamType::kPesPrivateData) {
+        switch (descriptor_tag) {
+          case kTeletextDescriptor:
+            pid_info.back().stream_type = TsStreamType::kTeletextSubtitles;
+            break;
+          case kSubtitlingDescriptor:
+            pid_info.back().stream_type = TsStreamType::kDvbSubtitles;
+            break;
+          default:
+            break;
+        }
+      } else if (descriptor_tag == kISO639LanguageDescriptor &&
+                 descriptor_length >= 4) {
+        // See section 2.6.19 of ISO-13818
+        // Descriptor can contain 0..N language defintions,
+        // we process only the first one
+        RCHECK(es_info_length >= 4);
+
+        char lang[3];
+        RCHECK(bit_reader->ReadBits(8, &lang[0]));  // ISO_639_language_code
+        RCHECK(bit_reader->ReadBits(8, &lang[1]));
+        RCHECK(bit_reader->ReadBits(8, &lang[2]));
+        RCHECK(bit_reader->ReadBits(8, &pid_info.back().audio_type));
+        pid_info.back().lang = std::string(lang, 3);
+
+        es_info_length -= 4;
+        descriptor_length -= 4;
+      } else if (descriptor_tag == kMaximumBitrateDescriptor &&
+                 descriptor_length >= 3) {
+        // See section 2.6.25 of ISO-13818
+        RCHECK(es_info_length >= 3);
+
+        uint32_t max_bitrate;
+        RCHECK(bit_reader->SkipBits(2));  // reserved
+        RCHECK(bit_reader->ReadBits(22, &max_bitrate));
+        // maximum bitrate is stored in units of 50 bytes per second
+        pid_info.back().max_bitrate = 50 * 8 * max_bitrate;
+
+        es_info_length -= 3;
+        descriptor_length -= 3;
       }
+
+      RCHECK(bit_reader->SkipBits(8 * descriptor_length));
+      es_info_length -= descriptor_length;
     }
-    RCHECK(bit_reader->SkipBits(8 * es_info_length));
+
+    RCHECK(bit_reader->SkipBytes(es_info_length));
   }
 
   // Read the CRC.
@@ -123,8 +181,8 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
 
   // Once the PMT has been proved to be correct, register the PIDs.
   for (auto& info : pid_info) {
-    register_pes_cb_(info.pid_es, info.stream_type, info.descriptor,
-                     info.descriptor_length);
+    register_pes_cb_(info.pid_es, info.stream_type, info.max_bitrate, info.lang,
+                     info.audio_type, info.descriptor, info.descriptor_length);
   }
 
   return true;

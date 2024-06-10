@@ -12,11 +12,16 @@
 #include <memory>
 #include <vector>
 
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
+
 #include <packager/macros/classes.h>
 #include <packager/media/base/decryptor_source.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/offset_byte_queue.h>
 #include <packager/media/formats/mp4/box_definitions.h>
+
+ABSL_DECLARE_FLAG(bool, use_dovi_supplemental_codecs);
 
 namespace shaka {
 namespace media {

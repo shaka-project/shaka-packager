@@ -21,6 +21,7 @@ namespace media {
 class TextChunker : public MediaHandler {
  public:
   explicit TextChunker(double segment_duration_in_seconds,
+                       int64_t start_segment_number,
                        int64_t timed_text_decode_time = -1,
                        bool adjust_sample_boundaries = false);
 
@@ -53,6 +54,10 @@ class TextChunker : public MediaHandler {
   // Time values are in scaled units.
   int64_t segment_start_ = -1;     // Set when the first sample comes in.
   int64_t segment_duration_ = -1;  // Set in OnStreamInfo.
+
+  // Segment number that keeps monotically increasing.
+  // Set to start_segment_number in constructor.
+  int64_t segment_number_ = 1;
 
   // Only for Live Packaging to address the case when a sample ends after the
   // segment end which results in duplicate moof mdat pairs.

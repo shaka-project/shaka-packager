@@ -54,7 +54,7 @@ class Muxer : public MediaHandler {
   /// If no clock is injected, the code uses std::chrone::system_clock::now()
   /// to generate the time-stamps.
   /// @param clock is the Clock to be injected.
-  void set_clock(Clock* clock) { clock_.reset(clock); }
+  void set_clock(std::shared_ptr<Clock> clock) { clock_ = clock; }
 
  protected:
   /// @name MediaHandler implementation overrides.
@@ -112,12 +112,12 @@ class Muxer : public MediaHandler {
 
   std::unique_ptr<MuxerListener> muxer_listener_;
   std::unique_ptr<ProgressListener> progress_listener_;
-  std::unique_ptr<Clock> clock_;
+  std::shared_ptr<Clock> clock_;
 
   // In VOD single segment case with Ad Cues, |output_file_name| is allowed to
   // be a template. In this case, there will be NumAdCues + 1 files generated.
   std::string output_file_template_;
-  size_t output_file_index_ = 0;
+  size_t output_file_index_ = 1;
 };
 
 }  // namespace media

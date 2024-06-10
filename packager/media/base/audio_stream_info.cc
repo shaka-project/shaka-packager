@@ -25,6 +25,8 @@ std::string AudioCodecToString(Codec codec) {
       return "AAC";
     case kCodecAC3:
       return "AC3";
+    case kCodecALAC:
+      return "ALAC";
     case kCodecDTSC:
       return "DTSC";
     case kCodecDTSE:
@@ -138,6 +140,8 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "mp4a.40." + absl::StrFormat("%hhu", audio_object_type);
     case kCodecAC3:
       return "ac-3";
+    case kCodecALAC:
+      return "alac";
     case kCodecDTSC:
       return "dtsc";
     case kCodecDTSE:
@@ -150,6 +154,8 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "dts-";
     case kCodecDTSP:
       return "dts+";
+    case kCodecDTSX:
+      return "dtsx";
     case kCodecEAC3:
       return "ec-3";
     case kCodecAC4:

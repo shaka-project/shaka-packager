@@ -84,6 +84,8 @@ const uint32_t kWidth = 1280;
 const uint32_t kHeight = 720;
 const uint32_t kPixelWidth = 1;
 const uint32_t kPixelHeight = 1;
+const uint8_t kColorPrimaries = 0;
+const uint8_t kMatrixCoefficients = 0;
 const uint8_t kTransferCharacteristics = 0;
 const uint16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 1;
@@ -125,8 +127,8 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
       kTrackId, kTimeScale, kDuration, codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
       std::size(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   return stream_info;
 }
 
@@ -358,8 +360,8 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
       kTrackId, kTestTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
       std::size(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());

@@ -1,4 +1,4 @@
-FROM fedora:34
+FROM fedora:35
 
 # Install utilities, libraries, and dev tools.
 RUN yum install -y \

@@ -174,7 +174,8 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
           codec_fourcc, decoder_config_record[1], decoder_config_record[2],
           decoder_config_record[3]),
       decoder_config_record.data(), decoder_config_record.size(), coded_width,
-      coded_height, pixel_width, pixel_height, sps->transfer_characteristics, 0,
+      coded_height, pixel_width, pixel_height, sps->color_primaries,
+      sps->matrix_coefficients, sps->transfer_characteristics, 0,
       nalu_length_size, std::string(), false);
   DVLOG(1) << "Profile IDC: " << sps->profile_idc;
   DVLOG(1) << "Level IDC: " << sps->level_idc;

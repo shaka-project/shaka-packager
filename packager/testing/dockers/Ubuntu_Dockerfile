@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Tell apt not to prompt us for anything.
 ENV DEBIAN_FRONTEND noninteractive
@@ -7,7 +7,18 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get install -y \
         curl \
-        build-essential cmake git ninja-build python3
+        build-essential git ninja-build python3 wget
+
+# Install the official CMake repo to get CMake v3.24+:
+ENV kitware_key_url https://apt.kitware.com/keys/kitware-archive-latest.asc
+ENV kitware_key_path /usr/share/keyrings/kitware-archive-keyring.gpg
+ENV kitware_sources_path /etc/apt/sources.list.d/kitware.list
+ENV DISTRIB_CODENAME jammy
+
+RUN wget -O - "$kitware_key_url" 2>/dev/null | gpg --dearmor - > "$kitware_key_path"
+RUN echo "deb [signed-by=$kitware_key_path] https://apt.kitware.com/ubuntu/ $DISTRIB_CODENAME main" > "$kitware_sources_path"
+
+RUN apt-get update && apt-get install -y cmake
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

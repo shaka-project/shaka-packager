@@ -45,7 +45,7 @@ if(MSVC)
 else()
   # Lots of warnings and all warnings as errors.
   # Note that we can't use -Wpedantic due to absl's int128 headers.
-  add_compile_options(-Wall -Wextra -Wno-documentation -Wno-deprecated-declarations -Wno-deprecated -Wno-documentation-deprecated-sync)
+  add_compile_options(-Wall -Wextra -Werror)
   # Several warning suppression flags are required on one compiler version and
   # not understood by another.  Do not treat these as errors.
   add_compile_options(-Wno-unknown-warning-option)
@@ -61,11 +61,19 @@ include_directories(..)
 # Public include folder, to reference public headers as packager/foo.h
 include_directories(../include)
 
+# Include settings for optional fully-static binaries.
+include("fully-static.cmake")
+
 # Include our module for gtest-based testing.
 include("gtest.cmake")
 
 # Include our module for building protos.
 include("protobuf.cmake")
+
+# Find Python3 used by integration tests, license notice and version string
+if(NOT Python3_EXECUTABLE)
+  find_package(Python3 COMPONENTS Interpreter REQUIRED)
+endif()
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
@@ -120,36 +128,23 @@ set(libpackager_deps
 )
 
 # A static library target is always built.
-add_library(libpackager_static STATIC ${libpackager_sources})
-target_link_libraries(libpackager_static ${libpackager_deps})
 
-# And always installed as libpackager.a:
-if(NOT MSVC)
-  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME packager)
+if(BUILD_SHARED_LIBS)
+  add_library(libpackager SHARED ${libpackager_sources})
+  target_link_libraries(libpackager ${libpackager_deps})
+  target_compile_definitions(libpackager PUBLIC SHAKA_IMPLEMENTATION)
 else()
-  set_property(TARGET libpackager_static PROPERTY OUTPUT_NAME libpackager)
+  add_library(libpackager STATIC ${libpackager_sources})
+  target_link_libraries(libpackager ${libpackager_deps})
 endif()
 
-# A shared library target is conditional (default OFF):
-if(BUILD_SHARED_LIBS)
-  add_library(libpackager_shared SHARED ${libpackager_sources})
-  target_link_libraries(libpackager_shared ${libpackager_deps})
-  target_compile_definitions(libpackager_shared PUBLIC SHAKA_IMPLEMENTATION)
-
-  # And always installed as libpackager.so / libpackager.dll:
-  if(NOT MSVC)
-    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME packager)
-  else()
-    set_property(TARGET libpackager_shared PROPERTY OUTPUT_NAME libpackager)
-  endif()
-
-  # If we're building a shared library, this is what the "libpackager" target
-  # aliases to.
-  add_library(libpackager ALIAS libpackager_shared)
+# The library is always installed as
+# libpackager.so / libpackager.dll / libpackager.a / libpackager.lib:
+if(NOT MSVC)
+  # The "lib" prefix is implied outside of MSVC.
+  set_property(TARGET libpackager PROPERTY OUTPUT_NAME packager)
 else()
-  # If we're not building a shared library, the "libpackager" target aliases to
-  # the static library.
-  add_library(libpackager ALIAS libpackager_static)
+  set_property(TARGET libpackager PROPERTY OUTPUT_NAME libpackager)
 endif()
 
 add_executable(packager
@@ -178,8 +173,6 @@ add_executable(packager
   app/stream_descriptor.h
   app/validate_flag.cc
   app/validate_flag.h
-  app/vlog_flags.cc
-  app/vlog_flags.h
   app/widevine_encryption_flags.cc
   app/widevine_encryption_flags.h
 )
@@ -187,29 +180,31 @@ target_link_libraries(packager
   absl::flags
   absl::flags_parse
   absl::log
-  absl::log_flags
+  # See https://github.com/abseil/abseil-cpp/blob/c14dfbf9/absl/log/CMakeLists.txt#L464-L467
+  $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   hex_bytes_flags
   libpackager
   license_notice
   string_utils
+  ${EXTRA_EXE_LIBRARIES}
 )
 
 add_executable(mpd_generator
   app/mpd_generator.cc
   app/mpd_generator_flags.h
-  app/vlog_flags.cc
-  app/vlog_flags.h
 )
 target_link_libraries(mpd_generator
   absl::flags
   absl::flags_parse
   absl::log
-  absl::log_flags
+  # See https://github.com/abseil/abseil-cpp/blob/c14dfbf9/absl/log/CMakeLists.txt#L464-L467
+  $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags>
   absl::strings
   license_notice
   mpd_builder
   mpd_util
+  ${EXTRA_EXE_LIBRARIES}
   )
 
 add_executable(packager_test
@@ -264,8 +259,21 @@ add_custom_target(packager_test_py_copy ALL
 
 if(NOT SKIP_INTEGRATION_TESTS)
   add_test (NAME packager_test_py
-    COMMAND ${PYTHON_EXECUTABLE} packager_test.py
+    COMMAND "${Python3_EXECUTABLE}" packager_test.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+
+  set(test_environment_vars "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}")
+  list(APPEND test_environment_vars "PACKAGER_BIN=$<TARGET_FILE:packager>")
+  list(APPEND test_environment_vars "MPD_GENERATOR_BIN=$<TARGET_FILE:mpd_generator>")
+  if(BUILD_SHARED_LIBS)
+    list(APPEND test_environment_vars "BUILD_TYPE=shared")
+  else()
+    list(APPEND test_environment_vars "BUILD_TYPE=static")
+  endif()
+
+  set_tests_properties(packager_test_py PROPERTIES
+          ENVIRONMENT "${test_environment_vars}"
   )
 endif()
 
@@ -274,19 +282,13 @@ configure_file(packager.pc.in packager.pc @ONLY)
 # Always install the binaries.
 install(TARGETS mpd_generator packager)
 
-# Always install the python tools.
-install(PROGRAMS ${CMAKE_BINARY_DIR}/pssh-box.py
-  DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(DIRECTORY ${CMAKE_BINARY_DIR}/pssh-box-protos
-  DESTINATION ${CMAKE_INSTALL_BINDIR})
-
 # With shared libraries, also install the library, headers, and pkgconfig.
 # The static library isn't usable as a standalone because it doesn't include
 # its static dependencies (zlib, absl, etc).
 if(BUILD_SHARED_LIBS)
-  install(TARGETS libpackager_shared)
+  install(TARGETS libpackager)
   install(DIRECTORY ../include/packager
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-  install(FILES ${CMAKE_BINARY_DIR}/packager/packager.pc
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/packager.pc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 endif()

@@ -1639,6 +1639,16 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
           extra_codec_configs.push_back(std::move(dv_box));
       }
     }
+    const bool is_av1 = actual_format == FOURCC_av01;
+    if (is_av1) {
+      for (FourCC fourcc : {FOURCC_dvvC}) {
+        CodecConfiguration dv_box;
+        dv_box.box_type = fourcc;
+        RCHECK(buffer->TryReadWriteChild(&dv_box));
+        if (!dv_box.data.empty())
+          extra_codec_configs.push_back(std::move(dv_box));
+      }
+    }
   } else {
     for (CodecConfiguration& extra_codec_config : extra_codec_configs)
       RCHECK(buffer->ReadWriteChild(&extra_codec_config));
@@ -1817,6 +1827,27 @@ size_t DTSSpecific::ComputeSizeInternal() {
          sizeof(kDdtsExtraData);
 }
 
+UDTSSpecific::UDTSSpecific() = default;
+UDTSSpecific::~UDTSSpecific() = default;
+
+FourCC UDTSSpecific::BoxType() const {
+  return FOURCC_udts;
+}
+
+bool UDTSSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteVector(
+             &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
+  return true;
+}
+
+size_t UDTSSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 AC3Specific::AC3Specific() = default;
 AC3Specific::~AC3Specific() = default;
 
@@ -1954,6 +1985,27 @@ size_t FlacSpecific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
+ALACSpecific::ALACSpecific() = default;
+ALACSpecific::~ALACSpecific() = default;
+
+FourCC ALACSpecific::BoxType() const {
+  return FOURCC_alac;
+}
+
+bool ALACSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t ALACSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 AudioSampleEntry::AudioSampleEntry() = default;
 AudioSampleEntry::~AudioSampleEntry() = default;
 
@@ -1989,12 +2041,14 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->TryReadWriteChild(&esds));
   RCHECK(buffer->TryReadWriteChild(&ddts));
+  RCHECK(buffer->TryReadWriteChild(&udts));
   RCHECK(buffer->TryReadWriteChild(&dac3));
   RCHECK(buffer->TryReadWriteChild(&dec3));
   RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
   RCHECK(buffer->TryReadWriteChild(&dfla));
   RCHECK(buffer->TryReadWriteChild(&mhac));
+  RCHECK(buffer->TryReadWriteChild(&alac));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of AudioSampleEntry. See
@@ -2020,7 +2074,8 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
-         dac4.ComputeSize() + mhac.ComputeSize() +
+         dac4.ComputeSize() + mhac.ComputeSize() + udts.ComputeSize() +
+         alac.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.

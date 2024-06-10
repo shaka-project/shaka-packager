@@ -62,3 +62,20 @@ ABSL_FLAG(int32_t,
           "input. For example, timestamps from ISO-BMFF after adjusted by "
           "EditList could be negative. In transport streams, timestamps are "
           "not allowed to be less than zero.");
+ABSL_FLAG(
+    int32_t,
+    default_text_zero_bias_ms,
+    0,
+    "A positive value, in milliseconds. It is the threshold used to "
+    "determine if we should assume that the text stream actually starts "
+    "at time zero. If the first sample comes before default_text_zero_bias_ms, "
+    "then the start will be padded as the stream is assumed to start at zero. "
+    "If the first sample comes after default_text_zero_bias_ms then the start "
+    "of the stream will not be padded as we cannot assume the start time of "
+    "the stream.");
+
+ABSL_FLAG(int64_t,
+          start_segment_number,
+          1,
+          "Indicates the startNumber in DASH SegmentTemplate and HLS "
+          "segment name.");

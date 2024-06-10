@@ -2,24 +2,24 @@
 <!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="dynamic" publishTime="some_time" availabilityStartTime="some_time" minimumUpdatePeriod="PT5S" timeShiftBufferDepth="PT1800S">
   <Period id="0" start="PT0S">
-    <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="90000/3003" segmentAlignment="true" par="16:9">
-      <Representation id="0" bandwidth="1023201" codecs="avc1.64001e" mimeType="video/MP2T" sar="1:1">
-        <SegmentTemplate timescale="90000" media="bear-640x360-video-$Number$.ts" startNumber="1">
-          <SegmentTimeline>
-            <S t="15006" d="90090" r="1"/>
-            <S t="195186" d="66066"/>
-          </SegmentTimeline>
-        </SegmentTemplate>
-      </Representation>
-    </AdaptationSet>
-    <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
-      <Representation id="1" bandwidth="194319" codecs="mp4a.40.2" mimeType="audio/MP2T" audioSamplingRate="44100">
+    <AdaptationSet id="0" contentType="audio" startWithSAP="1" segmentAlignment="true">
+      <Representation id="0" bandwidth="194319" codecs="mp4a.40.2" mimeType="audio/MP2T" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="90000" media="bear-640x360-audio-$Number$.ts" startNumber="1">
           <SegmentTimeline>
             <S t="12916" d="87771"/>
             <S t="100688" d="89860"/>
             <S t="190549" d="71052"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="video" width="640" height="360" frameRate="90000/3003" segmentAlignment="true" par="16:9">
+      <Representation id="1" bandwidth="1023201" codecs="avc1.64001e" mimeType="video/MP2T" sar="1:1">
+        <SegmentTemplate timescale="90000" media="bear-640x360-video-$Number$.ts" startNumber="1">
+          <SegmentTimeline>
+            <S t="15006" d="90090" r="1"/>
+            <S t="195186" d="66066"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>

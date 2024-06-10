@@ -417,6 +417,16 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     ddts->pcm_sample_depth = 24;
   }
 
+  void Fill(UDTSSpecific* udts) {
+    const uint8_t kUdtsData[] = {0x01, 0x20, 0x00, 0x00, 0x0, 0x3F, 0x80, 0x00};
+    udts->data.assign(kUdtsData, kUdtsData + std::size(kUdtsData));
+  }
+
+  void Modify(UDTSSpecific* udts) {
+    const uint8_t kUdtsData[] = {0x01, 0x20, 0x01, 0x80, 0xA, 0x3F, 0x80, 0x00};
+    udts->data.assign(kUdtsData, kUdtsData + std::size(kUdtsData));
+  }
+
   void Fill(AC3Specific* dac3) {
     const uint8_t kAc3Data[] = {0x50, 0x11, 0x60};
     dac3->data.assign(kAc3Data, kAc3Data + std::size(kAc3Data));
@@ -1211,6 +1221,20 @@ TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
   entry.samplesize = 16;
   entry.samplerate = 44100;
   Fill(&entry.ddts);
+  entry.Write(this->buffer_.get());
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, UDTSSampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_dtsx;
+  entry.data_reference_index = 2;
+  entry.channelcount = 6;
+  entry.samplesize = 16;
+  entry.samplerate = 48000;
+  Fill(&entry.udts);
   entry.Write(this->buffer_.get());
   AudioSampleEntry entry_readback;
   ASSERT_TRUE(ReadBack(&entry_readback));

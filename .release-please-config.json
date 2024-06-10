@@ -1,0 +1,11 @@
+{
+  "packages": {
+    ".": {
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "component": "",
+      "release-type-comment": "This is not really a go project, but go projects in release-please only update CHANGELOG.md and nothing else.  This is what we want.",
+      "release-type": "go"
+    }
+  }
+}

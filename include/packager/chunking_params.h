@@ -39,6 +39,9 @@ struct ChunkingParams {
   /// Enable VTT text chunking adjustment when the sample end time falls outside
   /// the segment end time.
   bool adjust_sample_boundaries = false;
+
+  /// Indicates the startNumber in DASH SegmentTemplate and HLS segment name.
+  int64_t start_segment_number = 1;
 };
 
 }  // namespace shaka

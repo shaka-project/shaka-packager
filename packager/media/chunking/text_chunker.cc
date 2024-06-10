@@ -17,10 +17,12 @@ const size_t kStreamIndex = 0;
 }  // namespace
 
 TextChunker::TextChunker(double segment_duration_in_seconds,
+                         int64_t start_segment_number,
                          int64_t timed_text_decode_time,
                          bool adjust_sample_boundaries)
     : segment_duration_in_seconds_(segment_duration_in_seconds),
       segment_start_(timed_text_decode_time),
+      segment_number_(start_segment_number),
       adjust_sample_boundaries_(adjust_sample_boundaries){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
@@ -64,14 +66,12 @@ Status TextChunker::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 
   // Convert the event's time to be scaled to the time of each sample.
   const int64_t event_time = ScaleTime(event->time_in_seconds);
-
   // Output all full segments before the segment that the cue event interupts.
   while (segment_start_ + segment_duration_ < event_time) {
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
   const int64_t shorten_duration = event_time - segment_start_;
-
   RETURN_IF_ERROR(DispatchSegment(shorten_duration));
   return DispatchCueEvent(kStreamIndex, std::move(event));
 }
@@ -99,7 +99,7 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   // TODO??: Is this the right approach in the case when the sample starts
   // before the segment end but the sample end time is after the segment
   // end. This in an effort to prevent a duplicate moof - mdat pair.
-  if (sample->EndTime() > segment_start_ + segment_duration_ &&
+  if (sample->EndTime() >= segment_start_ + segment_duration_ &&
       adjust_sample_boundaries_) {
     sample = std::make_shared<TextSample>(sample->id(), sample->start_time(),
                                           segment_start_ + segment_duration_,
@@ -123,6 +123,8 @@ Status TextChunker::DispatchSegment(int64_t duration) {
   std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
   info->start_timestamp = segment_start_;
   info->duration = duration;
+  info->segment_number = segment_number_++;
+
   RETURN_IF_ERROR(DispatchSegmentInfo(kStreamIndex, std::move(info)));
 
   // Move onto the next segment.

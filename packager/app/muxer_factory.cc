@@ -91,7 +91,7 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
   return muxer;
 }
 
-void MuxerFactory::OverrideClock(Clock* clock) {
+void MuxerFactory::OverrideClock(std::shared_ptr<Clock> clock) {
   clock_ = clock;
 }
 }  // namespace media

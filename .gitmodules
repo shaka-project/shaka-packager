@@ -15,7 +15,7 @@
 	url = https://github.com/Mbed-TLS/mbedtls
 [submodule "packager/third_party/zlib/source"]
 	path = packager/third_party/zlib/source
-	url = https://github.com/joeyparrish/zlib
+	url = https://github.com/madler/zlib
 [submodule "packager/third_party/libpng/source"]
 	path = packager/third_party/libpng/source
 	url = https://github.com/glennrp/libpng
@@ -34,3 +34,6 @@
 [submodule "packager/third_party/c-ares/source"]
 	path = packager/third_party/c-ares/source
 	url = https://github.com/c-ares/c-ares
+[submodule "packager/third_party/mimalloc/source"]
+	path = packager/third_party/mimalloc/source
+	url = https://github.com/microsoft/mimalloc

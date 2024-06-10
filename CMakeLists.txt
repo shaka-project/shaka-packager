@@ -7,7 +7,7 @@
 # Root-level CMake build file.
 
 # Minimum CMake version.  This must be in the root level CMakeLists.txt.
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.24)
 
 # These policy settings should be included before the project definition.
 include("packager/policies.cmake")
@@ -15,14 +15,18 @@ include("packager/policies.cmake")
 # Project name.  May not contain spaces.  Versioning is managed elsewhere.
 project(shaka-packager VERSION "")
 
-# The only build option for Shaka Packager is whether to build a shared
-# libpackager library.  By default, don't.
+# Whether to build a shared libpackager library.  By default, don't.
 option(BUILD_SHARED_LIBS "Build libpackager as a shared library" OFF)
+
+# Whether to attempt a static linking of the command line front-end.
+# Only supported on Linux and with musl.  This will also cause us to link
+# against mimalloc to replace the standard allocator in musl, which is slow.
+option(FULLY_STATIC "Attempt fully static linking of all CLI apps" OFF)
 
 # Enable CMake's test infrastructure.
 enable_testing()
 
-option(SKIP_INTEGRATION_TESTS "Skip the packager integration tests" ON)
+option(SKIP_INTEGRATION_TESTS "Skip the packager integration tests" OFF)
 
 # Subdirectories with their own CMakeLists.txt
 add_subdirectory(packager)

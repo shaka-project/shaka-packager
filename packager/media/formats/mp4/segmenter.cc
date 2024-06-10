@@ -143,8 +143,12 @@ Status Segmenter::AddSample(size_t stream_id, const MediaSample& sample) {
   if (!status.ok())
     return status;
 
-  if (sample_duration_ == 0)
-    sample_duration_ = sample.duration();
+  // The duration of the first sample may have been adjusted, so use
+  // the duration of the second sample instead.
+  if (num_samples_ < 2) {
+    sample_durations_[num_samples_] = sample.duration();
+    num_samples_++;
+  }
   stream_durations_[stream_id] += sample.duration();
   return Status::OK;
 }
@@ -232,14 +236,15 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
-    status = DoFinalizeChunk();
+    status = DoFinalizeChunk(segment_info.segment_number);
     if (!status.ok())
       return status;
   }
 
   if (!segment_info.is_subsegment || segment_info.is_final_chunk_in_seg) {
     // Finalize the segment.
-    status = DoFinalizeSegment();
+    status = DoFinalizeSegment(segment_info.segment_number);
+
     // Reset segment information to initial state.
     sidx_->references.clear();
     key_frame_infos_.clear();

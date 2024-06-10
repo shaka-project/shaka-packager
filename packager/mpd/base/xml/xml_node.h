@@ -83,6 +83,8 @@ class XmlNode {
   /// Similar to SetContent, but appends to the end of existing content.
   void AddContent(const std::string& content);
 
+  void AddUrlEncodedContent(const std::string& content);
+
   /// Set the contents of an XML element using a string.
   /// This cannot set child elements because <> will become &lt; and &rt;
   /// This should be used to set the text for the element, e.g. setting
@@ -90,6 +92,8 @@ class XmlNode {
   /// @param content is a string containing the text-encoded child elements to
   ///        be added to the element.
   void SetContent(const std::string& content);
+
+  void SetUrlEncodedContent(const std::string& content);
 
   /// @return namespaces used in the node and its descendents.
   std::set<std::string> ExtractReferencedNamespaces() const;
@@ -171,6 +175,9 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
   [[nodiscard]] bool AddRoleElement(const std::string& scheme_id_uri,
                                     const std::string& value);
 
+  /// @param value is element's content.
+  [[nodiscard]] bool AddLabelElement(const std::string& value);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AdaptationSetXmlNode);
 };
@@ -217,7 +224,6 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   [[nodiscard]] bool AddLiveOnlyInfo(
       const MediaInfo& media_info,
       const std::list<SegmentInfo>& segment_infos,
-      uint32_t start_number,
       bool low_latency_dash_mode);
 
  private:

@@ -34,7 +34,6 @@
 #include <packager/app/raw_key_encryption_flags.h>
 #include <packager/app/retired_flags.h>
 #include <packager/app/stream_descriptor.h>
-#include <packager/app/vlog_flags.h>
 #include <packager/app/widevine_encryption_flags.h>
 #include <packager/file.h>
 #include <packager/kv_pairs/kv_pairs.h>
@@ -58,6 +57,9 @@ ABSL_FLAG(bool,
           single_threaded,
           false,
           "If enabled, only use one thread when generating content.");
+
+// From absl/log:
+ABSL_DECLARE_FLAG(int, stderrthreshold);
 
 namespace shaka {
 namespace {
@@ -90,6 +92,10 @@ const char kUsage[] =
     "  - output_format (format): Optional value which specifies the format\n"
     "    of the output files (MP4 or WebM).  If not specified, it will be\n"
     "    derived from the file extension of the output file.\n"
+    "  - input_format (format): Optional value which specifies the format\n"
+    "    of the input files or streams. If not specified, it will be\n"
+    "    autodetected, which in some cases (such as live UDP webvtt) may\n"
+    "    fail.\n"
     "  - skip_encryption=0|1: Optional. Defaults to 0 if not specified. If\n"
     "    it is set to 1, no encryption of the stream will be made.\n"
     "  - drm_label: Optional value for custom DRM label, which defines the\n"
@@ -120,9 +126,18 @@ const char kUsage[] =
     "    list of values for DASH Accessibility elements. The value should be\n"
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
-    "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    main, alternate, supplementary, commentary, description and dub. See\n"
-    "    DASH (ISO/IEC 23009-1) specification for details.\n";
+    "    DASH Role elements. The value should be one of: caption, subtitle, \n"
+    "    main, alternate, supplementary, commentary, dub, description, sign, \n"
+    "    metadata, enhanced-audio- intelligibility, emergency, \n"
+    "    forced-subtitle, easyreader, and karaoke. See DASH\n"
+    "    (ISO/IEC 23009-1) specification for details.\n"
+    "  - forced_subtitle: Optional boolean value (0|1). If set to 1 \n"
+    "    indicates that this stream is a Forced Narrative subtitle that \n"
+    "    should be displayed when subtitles are otherwise off, for example \n"
+    "    used to caption short portions of the audio that might be in a \n"
+    "    foreign language. For DASH this will set role to forced_subtitle, \n"
+    "    for HLS it will set FORCED=YES and AUTOSELECT=YES. \n"
+    "    Only valid for subtitles.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";
@@ -345,6 +360,8 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_segment_sap_aligned);
   chunking_params.subsegment_sap_aligned =
       absl::GetFlag(FLAGS_fragment_sap_aligned);
+  chunking_params.start_segment_number =
+      absl::GetFlag(FLAGS_start_segment_number);
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
@@ -461,6 +478,8 @@ std::optional<PackagingParams> GetPackagingParams() {
 
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
+  packaging_params.default_text_zero_bias_ms =
+      absl::GetFlag(FLAGS_default_text_zero_bias_ms);
 
   packaging_params.output_media_info = absl::GetFlag(FLAGS_output_media_info);
 
@@ -523,6 +542,7 @@ std::optional<PackagingParams> GetPackagingParams() {
   hls_params.default_text_language = absl::GetFlag(FLAGS_default_text_language);
   hls_params.media_sequence_number =
       absl::GetFlag(FLAGS_hls_media_sequence_number);
+  hls_params.start_time_offset = absl::GetFlag(FLAGS_hls_start_time_offset);
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);
@@ -546,6 +566,12 @@ int PackagerMain(int argc, char** argv) {
   auto usage = absl::StrFormat(kUsage, argv[0]);
   absl::SetProgramUsageMessage(usage);
 
+  // Before parsing the command line, change the default value of some flags
+  // provided by libraries.
+
+  // Always log to stderr.  Log levels are still controlled by --minloglevel.
+  absl::SetFlag(&FLAGS_stderrthreshold, 0);
+
   auto remaining_args = absl::ParseCommandLine(argc, argv);
   if (absl::GetFlag(FLAGS_licenses)) {
     for (const char* line : kLicenseNotice)
@@ -561,8 +587,6 @@ int PackagerMain(int argc, char** argv) {
   if (absl::GetFlag(FLAGS_quiet)) {
     absl::SetMinLogLevel(absl::LogSeverityAtLeast::kWarning);
   }
-
-  handle_vlog_flags();
 
   absl::InitializeLog();
 
@@ -584,6 +608,14 @@ int PackagerMain(int argc, char** argv) {
       return kArgumentValidationFailed;
     stream_descriptors.push_back(stream_descriptor.value());
   }
+
+  if (absl::GetFlag(FLAGS_force_cl_index)) {
+    int index = 0;
+    for (auto& descriptor : stream_descriptors) {
+      descriptor.index = index++;
+    }
+  }
+
   Packager packager;
   Status status =
       packager.Initialize(packaging_params.value(), stream_descriptors);

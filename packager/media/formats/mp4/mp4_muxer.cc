@@ -76,6 +76,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_mp4a;
     case kCodecAC3:
       return FOURCC_ac_3;
+    case kCodecALAC:
+      return FOURCC_alac;
     case kCodecDTSC:
       return FOURCC_dtsc;
     case kCodecDTSH:
@@ -86,6 +88,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_dtse;
     case kCodecDTSM:
       return FOURCC_dtsm;
+    case kCodecDTSX:
+      return FOURCC_dtsx;
     case kCodecEAC3:
       return FOURCC_ec_3;
     case kCodecAC4:
@@ -210,7 +214,8 @@ Status MP4Muxer::FinalizeSegment(size_t stream_id,
   DCHECK(segmenter_);
   VLOG(3) << "Finalizing " << (segment_info.is_subsegment ? "sub" : "")
           << "segment " << segment_info.start_timestamp << " duration "
-          << segment_info.duration;
+          << segment_info.duration << " segment number "
+          << segment_info.segment_number;
   return segmenter_->FinalizeSegment(stream_id, segment_info);
 }
 
@@ -237,8 +242,22 @@ Status MP4Muxer::DelayInitializeMuxer() {
         ftyp->compatible_brands.push_back(codec_fourcc);
 
       // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolby_vision_bitstreams_within_the_iso_base_media_file_format_dec2017.pdf
-      if (streams()[0].get()->codec_string().find("dvh") != std::string::npos)
+      std::string codec_string =
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->codec_string();
+      std::string supplemental_codec_string =
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->supplemental_codec();
+      if (codec_string.find("dvh") != std::string::npos ||
+          supplemental_codec_string.find("dvh") != std::string::npos ||
+          codec_string.find("dav1") != std::string::npos ||
+          supplemental_codec_string.find("dav1") != std::string::npos)
         ftyp->compatible_brands.push_back(FOURCC_dby1);
+      FourCC extra_brand =
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->compatible_brand();
+      if (extra_brand != FOURCC_NULL)
+        ftyp->compatible_brands.push_back(extra_brand);
     }
 
     // CMAF allows only one track/stream per file.
@@ -518,6 +537,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.ddts.sampling_frequency = audio_info->sampling_frequency();
       audio.ddts.pcm_sample_depth = audio_info->sample_bits();
       break;
+    case kCodecDTSX:
+      audio.udts.data = audio_info->codec_config();
+      break;
     case kCodecAC3:
       audio.dac3.data = audio_info->codec_config();
       break;
@@ -526,6 +548,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       break;
     case kCodecAC4:
       audio.dac4.data = audio_info->codec_config();
+      break;
+    case kCodecALAC:
+      audio.alac.data = audio_info->codec_config();
       break;
     case kCodecFlac:
       audio.dfla.data = audio_info->codec_config();
@@ -712,10 +737,7 @@ uint64_t MP4Muxer::IsoTimeNow() {
   const uint64_t kIsomTimeOffset = 2082844800l;
 
   // Get the current system time since January 1, 1970, in seconds.
-  std::chrono::system_clock::duration duration =
-      std::chrono::system_clock::now().time_since_epoch();
-  std::int64_t secondsSince1970 =
-      std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+  std::int64_t secondsSince1970 = Now();
 
   // Add the offset of seconds between January 1, 1970, and January 1, 1904.
   return secondsSince1970 + kIsomTimeOffset;

@@ -99,10 +99,10 @@ jobs:
           echo "::endgroup::"
 
           SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
-          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
+          LIB_SUFFIX="$SUFFIX${{ matrix.lib_ext}}"
 
           echo "::group::Copy libpackager"
-          cp libpackager${{ matrix.exe_ext }} $ARTIFACTS/libpackager$EXE_SUFFIX
+          cp libpackager${{ matrix.lib_ext }} $ARTIFACTS/libpackager$LIB_SUFFIX
           echo "::endgroup::"
 
       - name: Upload release build artifacts

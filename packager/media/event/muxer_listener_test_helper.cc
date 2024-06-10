@@ -23,6 +23,8 @@ std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(
       H26xStreamFormat::kUnSpecified, param.codec_string,
       param.codec_config.data(), param.codec_config.size(), param.width,
       param.height, param.pixel_width, param.pixel_height,
+      0,  // color_primaries
+      0,  // matrix_coefficients
       0,  // transfer_characteristics
       0,  // trick_play_factor
       param.nalu_length_size, param.language, param.is_encrypted);
@@ -102,6 +104,54 @@ std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo() {
            {std::begin(kExpectedDefaultPsshBox),
             // -1 to remove the null terminator.
             std::end(kExpectedDefaultPsshBox) - 1}}};
+}
+
+AudioStreamInfoParameters::AudioStreamInfoParameters() {}
+AudioStreamInfoParameters::~AudioStreamInfoParameters() {}
+
+std::shared_ptr<AudioStreamInfo> CreateAudioStreamInfo(
+    const AudioStreamInfoParameters& param) {
+  return std::make_shared<AudioStreamInfo>(
+      param.track_id, param.time_scale, param.duration, param.codec,
+      param.codec_string, param.codec_config.data(), param.codec_config.size(),
+      param.sample_bits, param.num_channels, param.sampling_frequency,
+      param.seek_preroll_ns, param.codec_delay_ns, param.max_bitrate,
+      param.avg_bitrate, param.language, param.is_encrypted);
+}
+
+AudioStreamInfoParameters GetAudioStreamInfoParams(
+    Codec codec,
+    const char* codec_string,
+    const std::vector<uint8_t>& codec_config) {
+  const int kTrackId = 0;
+  const int32_t kTimeScale = 10;
+  const int64_t kAudioStreamDuration = 200;
+  const char* kLanuageUndefined = "und";
+  const uint8_t kSampleBits = 16;
+  const uint8_t kNumChannels = 6;
+  const uint32_t kSamplingFrequency = 48000;
+  const uint64_t kSeekPrerollNs = 0;
+  const uint64_t kCodecDelayNs = 0;
+  const uint32_t kMaxBitrate = 0;
+  const uint32_t kAvgBitrate = 0;
+  const bool kEncryptedFlag = false;
+  AudioStreamInfoParameters params;
+  params.track_id = kTrackId;
+  params.time_scale = kTimeScale;
+  params.duration = kAudioStreamDuration;
+  params.codec = codec;
+  params.codec_string = codec_string;
+  params.language = kLanuageUndefined;
+  params.sample_bits = kSampleBits;
+  params.num_channels = kNumChannels;
+  params.sampling_frequency = kSamplingFrequency;
+  params.seek_preroll_ns = kSeekPrerollNs;
+  params.codec_delay_ns = kCodecDelayNs;
+  params.max_bitrate = kMaxBitrate;
+  params.avg_bitrate = kAvgBitrate;
+  params.codec_config = codec_config;
+  params.is_encrypted = kEncryptedFlag;
+  return params;
 }
 
 }  // namespace media

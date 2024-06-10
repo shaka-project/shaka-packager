@@ -7,10 +7,10 @@
 # Copy the pssh-box.py script and its protos into the required directory
 # structure.
 set(PSSH_BOX_OUTPUTS
-    ${CMAKE_BINARY_DIR}/pssh-box.py
-    ${CMAKE_BINARY_DIR}/pssh-box-protos
-    ${CMAKE_BINARY_DIR}/pssh-box-protos/widevine_common_encryption_pb2.py
-    ${CMAKE_BINARY_DIR}/pssh-box-protos/widevine_pssh_data_pb2.py)
+    ${CMAKE_BINARY_DIR}/packager/pssh-box.py
+    ${CMAKE_BINARY_DIR}/packager/pssh-box-protos
+    ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/widevine_common_encryption_pb2.py
+    ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/widevine_pssh_data_pb2.py)
 
 add_custom_command(
     DEPENDS
@@ -19,15 +19,21 @@ add_custom_command(
     OUTPUT ${PSSH_BOX_OUTPUTS}
     COMMAND
         ${CMAKE_COMMAND} -E make_directory
-        ${CMAKE_BINARY_DIR}/pssh-box-protos/
+        ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/
     COMMAND
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_BINARY_DIR}/packager/media/base/widevine_common_encryption_pb2.py
         ${CMAKE_BINARY_DIR}/packager/media/base/widevine_pssh_data_pb2.py
-        ${CMAKE_BINARY_DIR}/pssh-box-protos/
+        ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/
     COMMAND
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/pssh-box.py
-        ${CMAKE_BINARY_DIR}/)
+        ${CMAKE_BINARY_DIR}/packager/)
 
 add_custom_target(pssh_box_py ALL DEPENDS ${PSSH_BOX_OUTPUTS})
+
+# Always install the python tools.
+install(PROGRAMS ${CMAKE_BINARY_DIR}/packager/pssh-box.py
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/packager/pssh-box-protos
+        DESTINATION ${CMAKE_INSTALL_BINDIR})

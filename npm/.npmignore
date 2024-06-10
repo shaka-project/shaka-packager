@@ -1,0 +1,8 @@
+# This file is required for us, even if empty.
+#
+# The default .npmignore would disallow bin/, which contains binaries for our
+# NPM release.  Every release before v3.0.3 was missing .npmignore, and
+# therefore had no binaries.  These were unusable in NPM, and have been marked
+# as deprecated because of it.
+#
+# See also https://github.com/shaka-project/shaka-packager/issues/1369

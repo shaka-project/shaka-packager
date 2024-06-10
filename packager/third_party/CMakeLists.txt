@@ -23,6 +23,17 @@ if(MSVC)
   # Use warning level 3 in third-party code, as opposed to level 4 used in our
   # own code.
   add_compile_options(/W3)
+
+  # Do not treat warnings as errors in third-party code.
+  add_compile_options(/WX-)
+else()
+  # Do not treat warnings as errors in third-party code.
+  # Surprisingly, both of these are required to satisfy various platforms and
+  # compilers at once.
+  add_compile_options(-Wno-error -Wno-error=all)
+  # Hide warnings in third-party code.  The noise isn't helpful, and this line
+  # can be commented out if we ever want to see/audit third-party warnings.
+  add_compile_options(-w)
 endif()
 
 # These all use EXCLUDE_FROM_ALL so that only the referenced targets get built.
@@ -35,6 +46,7 @@ add_subdirectory(libpng EXCLUDE_FROM_ALL)
 add_subdirectory(libwebm EXCLUDE_FROM_ALL)
 add_subdirectory(libxml2 EXCLUDE_FROM_ALL)
 add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
+add_subdirectory(mimalloc EXCLUDE_FROM_ALL)
 add_subdirectory(mongoose EXCLUDE_FROM_ALL)
 add_subdirectory(protobuf EXCLUDE_FROM_ALL)
 add_subdirectory(zlib EXCLUDE_FROM_ALL)

@@ -44,6 +44,8 @@ std::unique_ptr<MuxerListener> CreateMpdListenerInternal(
   auto listener = std::make_unique<MpdNotifyMuxerListener>(notifier);
   listener->set_accessibilities(stream.dash_accessiblities);
   listener->set_roles(stream.dash_roles);
+  listener->set_index(stream.index);
+  listener->set_dash_label(stream.dash_label);
   return listener;
 }
 
@@ -60,6 +62,7 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
   const std::string& group_id = stream.hls_group_id;
   const std::string& iframe_playlist_name = stream.hls_iframe_playlist_name;
   const std::vector<std::string>& characteristics = stream.hls_characteristics;
+  const bool forced_subtitle = stream.forced_subtitle;
 
   if (name.empty()) {
     name = absl::StrFormat("stream_%d", stream_index);
@@ -72,11 +75,12 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
   const bool kIFramesOnly = true;
   std::list<std::unique_ptr<MuxerListener>> listeners;
   listeners.emplace_back(new HlsNotifyMuxerListener(
-      playlist_name, !kIFramesOnly, name, group_id, characteristics, notifier));
+      playlist_name, !kIFramesOnly, name, group_id, characteristics,
+      forced_subtitle, notifier, stream.index));
   if (!iframe_playlist_name.empty()) {
     listeners.emplace_back(new HlsNotifyMuxerListener(
         iframe_playlist_name, kIFramesOnly, name, group_id,
-        std::vector<std::string>(), notifier));
+        std::vector<std::string>(), forced_subtitle, notifier, stream.index));
   }
   return listeners;
 }

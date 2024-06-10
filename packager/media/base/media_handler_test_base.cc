@@ -31,7 +31,10 @@ const uint32_t kWidth = 10u;
 const uint32_t kHeight = 20u;
 const uint32_t kPixelWidth = 2u;
 const uint32_t kPixelHeight = 3u;
+const uint8_t kColorPrimaries = 0;
+const uint8_t kMatrixCoefficients = 0;
 const uint8_t kTransferCharacteristics = 0;
+
 const int16_t kTrickPlayFactor = 0;
 const uint8_t kNaluLengthSize = 1u;
 const bool kEncrypted = true;
@@ -207,8 +210,9 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
   return std::unique_ptr<VideoStreamInfo>(new VideoStreamInfo(
       kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
       kCodecString, kCodecConfig, sizeof(kCodecConfig), width, height,
-      kPixelWidth, kPixelHeight, kTransferCharacteristics, kTrickPlayFactor,
-      kNaluLengthSize, kLanguage, !kEncrypted));
+      kPixelWidth, kPixelHeight, kColorPrimaries, kMatrixCoefficients,
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      !kEncrypted));
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(
@@ -251,11 +255,13 @@ std::shared_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
 std::unique_ptr<SegmentInfo> MediaHandlerTestBase::GetSegmentInfo(
     int64_t start_timestamp,
     int64_t duration,
-    bool is_subsegment) const {
+    bool is_subsegment,
+    int64_t segment_number) const {
   std::unique_ptr<SegmentInfo> info(new SegmentInfo);
   info->start_timestamp = start_timestamp;
   info->duration = duration;
   info->is_subsegment = is_subsegment;
+  info->segment_number = segment_number;
 
   return info;
 }

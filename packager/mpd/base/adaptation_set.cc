@@ -61,6 +61,20 @@ std::string RoleToText(AdaptationSet::Role role) {
       return "dub";
     case AdaptationSet::kRoleDescription:
       return "description";
+    case AdaptationSet::kRoleSign:
+      return "sign";
+    case AdaptationSet::kRoleMetadata:
+      return "metadata";
+    case AdaptationSet::kRoleEnhancedAudioIntelligibility:
+      return "enhanced-audio-intelligibility";
+    case AdaptationSet::kRoleEmergency:
+      return "emergency";
+    case AdaptationSet::kRoleForcedSubtitle:
+      return "forced-subtitle";
+    case AdaptationSet::kRoleEasyreader:
+      return "easyreader";
+    case AdaptationSet::kRoleKaraoke:
+      return "karaoke";
     default:
       return "unknown";
   }
@@ -176,15 +190,77 @@ AdaptationSet::AdaptationSet(const std::string& language,
     : representation_counter_(counter),
       language_(language),
       mpd_options_(mpd_options),
-      segments_aligned_(kSegmentAlignmentUnknown),
-      force_set_segment_alignment_(false) {
+      protected_content_(nullptr) {
   DCHECK(counter);
 }
 
-AdaptationSet::~AdaptationSet() {}
+AdaptationSet::~AdaptationSet() {
+  delete protected_content_;
+}
+
+void AdaptationSet::set_protected_content(const MediaInfo& media_info) {
+  DCHECK(!protected_content_);
+  protected_content_ =
+      new MediaInfo::ProtectedContent(media_info.protected_content());
+}
+
+// The easiest way to check whether two protobufs are equal, is to compare the
+// serialized version.
+bool ProtectedContentEq(
+    const MediaInfo::ProtectedContent& content_protection1,
+    const MediaInfo::ProtectedContent& content_protection2) {
+  return content_protection1.SerializeAsString() ==
+         content_protection2.SerializeAsString();
+}
+
+bool AdaptationSet::MatchAdaptationSet(
+    const MediaInfo& media_info,
+    bool content_protection_in_adaptation_set) {
+  if (codec_ != GetBaseCodec(media_info))
+    return false;
+
+  if (!content_protection_in_adaptation_set)
+    return true;
+
+  if (!protected_content_)
+    return !media_info.has_protected_content();
+
+  if (!media_info.has_protected_content())
+    return false;
+
+  return ProtectedContentEq(*protected_content_,
+                            media_info.protected_content());
+}
+
+std::set<std::string> GetUUIDs(
+    const MediaInfo::ProtectedContent* protected_content) {
+  std::set<std::string> uuids;
+  for (const auto& entry : protected_content->content_protection_entry())
+    uuids.insert(entry.uuid());
+  return uuids;
+}
+
+bool AdaptationSet::SwitchableAdaptationSet(
+    const AdaptationSet& adaptation_set) {
+  // adaptation sets are switchable if both are not protected
+  if (!protected_content_ && !adaptation_set.protected_content()) {
+    return true;
+  }
+
+  // or if both are protected and have the same UUID
+  if (protected_content_ && adaptation_set.protected_content()) {
+    return GetUUIDs(protected_content_) ==
+           GetUUIDs(adaptation_set.protected_content());
+  }
+
+  return false;
+}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
-  const uint32_t representation_id = (*representation_counter_)++;
+  const uint32_t representation_id = media_info.has_index()
+                                         ? media_info.index()
+                                         : (*representation_counter_)++;
+
   // Note that AdaptationSet outlive Representation, so this object
   // will die before AdaptationSet.
   std::unique_ptr<RepresentationStateChangeListener> listener(
@@ -271,6 +347,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
     }
   }
+
   if (video_heights_.size() == 1) {
     suppress_representation_height = true;
     if (!adaptation_set.SetIntegerAttribute("height", *video_heights_.begin()))
@@ -280,6 +357,15 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
                                             *video_heights_.rbegin())) {
       return std::nullopt;
     }
+  }
+
+  if (subsegment_start_with_sap_) {
+    if (!adaptation_set.SetIntegerAttribute("subsegmentStartsWithSAP",
+                                            subsegment_start_with_sap_))
+      return std::nullopt;
+  } else if (start_with_sap_) {
+    if (!adaptation_set.SetIntegerAttribute("startWithSAP", start_with_sap_))
+      return std::nullopt;
   }
 
   if (video_frame_rates_.size() == 1) {
@@ -293,6 +379,22 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
             "maxFrameRate", video_frame_rates_.rbegin()->second)) {
       return std::nullopt;
     }
+  }
+
+  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && matrix_coefficients_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:MatrixCoefficients",
+          std::to_string(matrix_coefficients_))) {
+    return std::nullopt;
+  }
+
+  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && color_primaries_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:ColourPrimaries",
+          std::to_string(color_primaries_))) {
+    return std::nullopt;
   }
 
   // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
@@ -372,6 +474,9 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
+  if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
+    return std::nullopt;
+
   for (const auto& representation_pair : representation_map_) {
     const auto& representation = representation_pair.second;
     if (suppress_representation_width)
@@ -397,6 +502,14 @@ void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
 void AdaptationSet::AddAdaptationSetSwitching(
     const AdaptationSet* adaptation_set) {
   switchable_adaptation_sets_.push_back(adaptation_set);
+}
+
+void AdaptationSet::ForceSubsegmentStartswithSAP(uint32_t sap_value) {
+  subsegment_start_with_sap_ = sap_value;
+}
+
+void AdaptationSet::ForceStartwithSAP(uint32_t sap_value) {
+  start_with_sap_ = sap_value;
 }
 
 // For dynamic MPD, storing all start_time and duration will out-of-memory
@@ -453,6 +566,19 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 
     AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
   }
+
+  // the command-line index for this AdaptationSet will be the
+  // minimum of the Representations in the set
+  if (media_info.has_index()) {
+    if (index_.has_value()) {
+      index_ = std::min(index_.value(), media_info.index());
+    } else {
+      index_ = media_info.index();
+    }
+  }
+
+  if (media_info.has_dash_label())
+    label_ = media_info.dash_label();
 
   if (media_info.has_video_info()) {
     content_type_ = "video";

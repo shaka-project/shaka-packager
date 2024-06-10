@@ -32,6 +32,8 @@ const uint16_t kWidth = 100;
 const uint16_t kHeight = 100;
 const uint16_t kPixelWidth = 100;
 const uint16_t kPixelHeight = 100;
+const uint8_t kColorPrimaries = 0;
+const uint8_t kMatrixCoefficients = 0;
 const uint8_t kTransferCharacteristics = 0;
 const int16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 0;
@@ -88,8 +90,9 @@ VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo(
   return new VideoStreamInfo(
       kTrackId, time_scale, kDurationInSeconds * time_scale, kCodec,
       H26xStreamFormat::kUnSpecified, kCodecString, NULL, 0, kWidth, kHeight,
-      kPixelWidth, kPixelHeight, kTransferCharacteristics, kTrickPlayFactor,
-      kNaluLengthSize, kLanguage, false);
+      kPixelWidth, kPixelHeight, kColorPrimaries, kMatrixCoefficients,
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      false);
 }
 
 std::string SegmentTestBase::OutputFileName() const {

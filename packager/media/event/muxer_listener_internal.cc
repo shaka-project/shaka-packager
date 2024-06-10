@@ -20,6 +20,7 @@
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/ac4_audio_util.h>
+#include <packager/media/codecs/dts_audio_specific_config.h>
 #include <packager/media/codecs/ec3_audio_util.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/utils/bytes_to_string_view.h>
@@ -72,6 +73,8 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   DCHECK(video_stream_info);
   DCHECK(media_info);
   MediaInfo_VideoInfo* video_info = media_info->mutable_video_info();
+  video_info->set_supplemental_codec(video_stream_info->supplemental_codec());
+  video_info->set_compatible_brand(video_stream_info->compatible_brand());
   video_info->set_codec(video_stream_info->codec_string());
   video_info->set_width(video_stream_info->width());
   video_info->set_height(video_stream_info->height());
@@ -94,6 +97,13 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   if (video_stream_info->transfer_characteristics() > 0) {
     video_info->set_transfer_characteristics(
         video_stream_info->transfer_characteristics());
+  }
+  if (video_stream_info->color_primaries() > 0) {
+    video_info->set_color_primaries(video_stream_info->color_primaries());
+  }
+  if (video_stream_info->matrix_coefficients() > 0) {
+    video_info->set_matrix_coefficients(
+        video_stream_info->matrix_coefficients());
   }
 }
 
@@ -164,6 +174,16 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     }
     codec_data->set_ac4_ims_flag(ac4_ims_flag);
     codec_data->set_ac4_cbi_flag(ac4_cbi_flag);
+  }
+
+  if (audio_stream_info->codec() == kCodecDTSX) {
+    auto* codec_data = audio_info->mutable_codec_specific_data();
+    uint32_t channel_mask;
+    if (!GetDTSXChannelMask(codec_config, channel_mask)) {
+      LOG(ERROR) << "Failed to parse DTSX channel mask.";
+      return;
+    }
+    codec_data->set_channel_mask(channel_mask);
   }
 }
 

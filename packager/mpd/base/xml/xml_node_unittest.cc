@@ -370,18 +370,18 @@ class LiveSegmentTimelineTest : public ::testing::Test {
 };
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
-  const uint32_t kStartNumber = 1;
+  const uint32_t kSegmentNumber = 1;
   const int64_t kStartTime = 0;
   const int64_t kDuration = 100;
   const uint64_t kRepeat = 9;
   const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartTime, kDuration, kRepeat},
+      {kStartTime, kDuration, kRepeat, kSegmentNumber},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -392,18 +392,18 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
 }
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
-  const uint32_t kStartNumber = 1;
   const int64_t kNonZeroStartTime = 500;
   const int64_t kDuration = 100;
+  const uint32_t kSegmentNumber = 1;
   const uint64_t kRepeat = 9;
   const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
-      {kNonZeroStartTime, kDuration, kRepeat},
+      {kNonZeroStartTime, kDuration, kRepeat, kSegmentNumber},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(representation,
               XmlNodeEqual(
@@ -417,18 +417,18 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
 }
 
 TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
-  const uint32_t kStartNumber = 6;
   const int64_t kNonZeroStartTime = 500;
   const int64_t kDuration = 100;
+  const uint32_t kSegmentNumber = 6;
   const uint64_t kRepeat = 9;
   const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
-      {kNonZeroStartTime, kDuration, kRepeat},
+      {kNonZeroStartTime, kDuration, kRepeat, kSegmentNumber},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -439,8 +439,9 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
 }
 
 TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
-  const uint32_t kStartNumber = 1;
   const bool kIsLowLatency = false;
+  const uint32_t kSegmentNumber1 = 1;
+  const uint32_t kSegmentNumber11 = 11;
 
   const int64_t kStartTime1 = 0;
   const int64_t kDuration1 = 100;
@@ -451,12 +452,12 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
   const uint64_t kRepeat2 = 0;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartTime1, kDuration1, kRepeat1},
-      {kStartTime2, kDuration2, kRepeat2},
+      {kStartTime1, kDuration1, kRepeat1, kSegmentNumber1},
+      {kStartTime2, kDuration2, kRepeat2, kSegmentNumber11},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -467,8 +468,9 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
 }
 
 TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
-  const uint32_t kStartNumber = 1;
   const bool kIsLowLatency = false;
+  const uint32_t kSegmentNumber1 = 1;
+  const uint32_t kSegmentNumber11 = 11;
 
   const int64_t kStartTime1 = 0;
   const int64_t kDuration1 = 100;
@@ -479,12 +481,12 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
   const uint64_t kRepeat2 = 1;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartTime1, kDuration1, kRepeat1},
-      {kStartTime2, kDuration2, kRepeat2},
+      {kStartTime1, kDuration1, kRepeat1, kSegmentNumber1},
+      {kStartTime2, kDuration2, kRepeat2, kSegmentNumber11},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(representation,
               XmlNodeEqual(
@@ -499,8 +501,9 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
 }
 
 TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
-  const uint32_t kStartNumber = 1;
   const bool kIsLowLatency = false;
+  const uint32_t kSegmentNumber1 = 1;
+  const uint32_t kSegmentNumber11 = 11;
 
   const int64_t kStartTime1 = 0;
   const int64_t kDuration1 = 100;
@@ -512,12 +515,12 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
   const uint64_t kRepeat2 = 0;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartTime1, kDuration1, kRepeat1},
-      {kStartTime2, kDuration2, kRepeat2},
+      {kStartTime1, kDuration1, kRepeat1, kSegmentNumber1},
+      {kStartTime2, kDuration2, kRepeat2, kSegmentNumber11},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(representation,
               XmlNodeEqual(
@@ -532,14 +535,14 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
 }
 
 TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
-  const uint32_t kStartNumber = 1;
   const int64_t kStartTime = 0;
   const int64_t kDuration = 100;
+  const uint32_t kSegmentNumber = 1;
   const uint64_t kRepeat = 9;
   const bool kIsLowLatency = false;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartTime, kDuration, kRepeat},
+      {kStartTime, kDuration, kRepeat, kSegmentNumber},
   };
   RepresentationXmlNode representation;
   FlagSaver<bool> segment_number_saver(
@@ -547,7 +550,7 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
   absl::SetFlag(&FLAGS_dash_add_last_segment_number_when_needed, true);
 
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
 
   EXPECT_THAT(
       representation,
@@ -749,21 +752,77 @@ TEST_F(LowLatencySegmentTest, LowLatencySegmentTemplate) {
   const bool kIsLowLatency = true;
 
   std::list<SegmentInfo> segment_infos = {
-      {kStartNumber, kDuration, kRepeat},
+      {kStartNumber, kDuration, kRepeat, kStartNumber},
   };
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, kIsLowLatency));
+                                             kIsLowLatency));
   EXPECT_THAT(
       representation,
       XmlNodeEqual("<Representation>"
                    "  <SegmentTemplate timescale=\"90000\" duration=\"450000\" "
-                   "                   availabilityTimeOffset=\"4.9751\" "
+                   "                   availabilityTimeOffset=\"4.975099\" "
                    "                   availabilityTimeComplete=\"false\" "
                    "                   initialization=\"init.m4s\" "
                    "                   media=\"$Number$.m4s\" "
                    "                   startNumber=\"1\"/>"
                    "</Representation>"));
+}
+
+TEST(XmlNodeTest, AddDTSCAudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("dtsc");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.set_num_channels(6);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dts.com,2014:dash:audio_channel_configuration:2012\"\n"
+          "   value=\"6\"/>\n"
+          "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddDTSEAudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("dtse");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.set_num_channels(6);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dts.com,2014:dash:audio_channel_configuration:2012\"\n"
+          "   value=\"6\"/>\n"
+          "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddDTSXAudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("dtsx");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.mutable_codec_specific_data()->set_channel_mask(0x3F);
+
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(representation.AddAudioInfo(audio_info));
+  EXPECT_THAT(
+      representation,
+      XmlNodeEqual("<Representation audioSamplingRate=\"48000\">\n"
+                   "  <AudioChannelConfiguration\n"
+                   "   schemeIdUri=\n"
+                   "    \"tag:dts.com,2018:uhd:audio_channel_configuration\"\n"
+                   "   value=\"0000003F\"/>\n"
+                   "</Representation>\n"));
 }
 
 }  // namespace xml

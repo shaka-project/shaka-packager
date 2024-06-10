@@ -60,6 +60,10 @@ class AudioStreamInfo : public StreamInfo {
     sampling_frequency_ = sampling_frequency;
   }
 
+  void set_max_bitrate(const uint32_t max_bitrate) {
+    max_bitrate_ = max_bitrate;
+  }
+
   /// @param audio_object_type is only used by AAC Codec, ignored otherwise.
   /// @return The codec string.
   static std::string GetCodecString(Codec codec, uint8_t audio_object_type);

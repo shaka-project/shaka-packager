@@ -4,15 +4,32 @@
 var path = require('path');
 var spawnSync = require('child_process').spawnSync;
 
-// Command names per-platform:
+// Command names per-platform (process.platform) and per-architecture
+// (process.arch):
 var commandNames = {
-  linux: 'packager-linux',
-  darwin: 'packager-osx',
-  win32: 'packager-win.exe',
+  linux: {
+    'x64': 'packager-linux-x64',
+    'arm64': 'packager-linux-arm64',
+  },
+  darwin: {
+    'x64': 'packager-osx-x64',
+    'arm64': 'packager-osx-arm64',
+  },
+  win32: {
+    'x64': 'packager-win-x64.exe',
+  },
 };
 
 // Find the platform-specific binary:
-var binaryPath = path.resolve(__dirname, 'bin', commandNames[process.platform]);
+if (!(process.platform in commandNames)) {
+  throw new Error('Platform not supported: ' + process.platform);
+}
+if (!(process.arch in commandNames[process.platform])) {
+  throw new Error(
+      'Architecture not supported: ' + process.platform + '/' + process.arch);
+}
+var commandName = commandNames[process.platform][process.arch];
+var binaryPath = path.resolve(__dirname, 'bin', commandName);
 
 // Find the args to pass to that binary:
 // argv[0] is node itself, and argv[1] is the script.

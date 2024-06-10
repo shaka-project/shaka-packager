@@ -21,7 +21,6 @@
 #include <absl/strings/str_split.h>
 
 #include <packager/app/mpd_generator_flags.h>
-#include <packager/app/vlog_flags.h>
 #include <packager/mpd/util/mpd_writer.h>
 #include <packager/tools/license_notice.h>
 #include <packager/version/version.h>
@@ -31,6 +30,9 @@ ABSL_FLAG(std::string,
           test_packager_version,
           "",
           "Packager version for testing. Should be used for testing only.");
+
+// From absl/log:
+ABSL_DECLARE_FLAG(int, stderrthreshold);
 
 namespace shaka {
 namespace {
@@ -110,6 +112,13 @@ int MpdMain(int argc, char** argv) {
 
   auto usage = absl::StrFormat(kUsage, argv[0]);
   absl::SetProgramUsageMessage(usage);
+
+  // Before parsing the command line, change the default value of some flags
+  // provided by libraries.
+
+  // Always log to stderr.  Log levels are still controlled by --minloglevel.
+  absl::SetFlag(&FLAGS_stderrthreshold, 0);
+
   absl::ParseCommandLine(argc, argv);
 
   if (absl::GetFlag(FLAGS_licenses)) {
@@ -123,8 +132,6 @@ int MpdMain(int argc, char** argv) {
     std::cerr << "Usage " << absl::ProgramUsageMessage();
     return status;
   }
-
-  handle_vlog_flags();
 
   absl::InitializeLog();
 

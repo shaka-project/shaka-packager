@@ -17,6 +17,9 @@ sudo apt-get install -y \
 
 Note that `git` must be v1.7.6 or above to support relative paths in submodules.
 
+Note also that `cmake` must be v3.24 or above to support a linker setting
+needed for `absl::log_flags`.
+
 ## Mac system requirements
 
  * [Xcode](https://developer.apple.com/xcode) 7.3+.
@@ -101,6 +104,18 @@ After configuring CMake you can run the build with
 
 ```shell
 cmake --build build --parallel
+```
+
+To build portable, fully-static executables on Linux, you will need either musl
+as your system libc, or a musl toolchain.  (See [musl.cc](https://musl.cc).
+To create a portable, fully-static build for Linux, configure CMake with:
+
+```shell
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_SHARED_LIBS="OFF" \
+  -DFULLY_STATIC="ON" \
+  -DCMAKE_C_COMPILER=/path/to/x86_64-linux-musl-gcc \
+  -DCMAKE_CXX_COMPILER=/path/to/x86_64-linux-musl-g++
 ```
 
 #### Windows

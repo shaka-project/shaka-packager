@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360665798187256S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.736067S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" maxWidth="640" maxHeight="360" frameRate="90000/3003" subsegmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="378998" codecs="avc3.64000d" mimeType="video/mp4" sar="1:1" width="320" height="180">
@@ -16,7 +16,7 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
+    <AdaptationSet id="1" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <Representation id="1" bandwidth="131925" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-multi-configs-1.mp4</BaseURL>

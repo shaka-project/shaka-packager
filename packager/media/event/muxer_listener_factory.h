@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -39,6 +40,10 @@ class MuxerListenerFactory {
     // told to output media info.
     std::string media_info_output;
 
+    // Explicit input format, for avoiding autodetection when needed.
+    // This is useful for cases such as live WebVTT through UDP.
+    std::string input_format;
+
     // HLS specific values needed to write to HLS manifests. Will only be used
     // if an HlsNotifier is given to the factory.
     std::string hls_group_id;
@@ -46,6 +51,7 @@ class MuxerListenerFactory {
     std::string hls_playlist_name;
     std::string hls_iframe_playlist_name;
     std::vector<std::string> hls_characteristics;
+    bool forced_subtitle = false;
     bool hls_only = false;
 
     // DASH specific values needed to write DASH mpd. Will only be used if an
@@ -53,6 +59,8 @@ class MuxerListenerFactory {
     std::vector<std::string> dash_accessiblities;
     std::vector<std::string> dash_roles;
     bool dash_only = false;
+    std::optional<uint32_t> index;
+    std::string dash_label;
   };
 
   /// Create a new muxer listener.

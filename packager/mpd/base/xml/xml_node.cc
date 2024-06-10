@@ -18,6 +18,7 @@
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
+#include <curl/curl.h>
 #include <libxml/tree.h>
 
 #include <packager/macros/compiler.h>
@@ -49,6 +50,21 @@ typedef MediaInfo::VideoInfo VideoInfo;
 namespace {
 const char kEC3Codec[] = "ec-3";
 const char kAC4Codec[] = "ac-4";
+const char kDTSCCodec[] = "dtsc";
+const char kDTSECodec[] = "dtse";
+const char kDTSXCodec[] = "dtsx";
+
+std::string urlEncode(const std::string& input) {
+  // NOTE: According to the docs, "Since 7.82.0, the curl parameter is ignored".
+  CURL* curl = NULL;
+  char* output = curl_easy_escape(curl, input.c_str(), input.length());
+  if (output) {
+    std::string encodedUrl(output);
+    curl_free(output);  // Free the output string when done
+    return encodedUrl;
+  }
+  return "";  // Return empty string if initialization fails
+}
 
 std::string RangeToString(const Range& range) {
   return absl::StrFormat("%u-%u", range.begin(), range.end());
@@ -217,9 +233,17 @@ void XmlNode::AddContent(const std::string& content) {
   xmlNodeAddContent(impl_->node.get(), BAD_CAST content.c_str());
 }
 
+void XmlNode::AddUrlEncodedContent(const std::string& content) {
+  AddContent(urlEncode(content));
+}
+
 void XmlNode::SetContent(const std::string& content) {
   DCHECK(impl_->node);
   xmlNodeSetContent(impl_->node.get(), BAD_CAST content.c_str());
+}
+
+void XmlNode::SetUrlEncodedContent(const std::string& content) {
+  SetContent(urlEncode(content));
 }
 
 std::set<std::string> XmlNode::ExtractReferencedNamespaces() const {
@@ -337,6 +361,12 @@ bool AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
   return AddDescriptor("Role", scheme_id_uri, value);
 }
 
+bool AdaptationSetXmlNode::AddLabelElement(const std::string& value) {
+  XmlNode descriptor("Label");
+  descriptor.SetContent(value);
+  return AddChild(std::move(descriptor));
+}
+
 RepresentationXmlNode::RepresentationXmlNode()
     : RepresentationBaseXmlNode("Representation") {}
 RepresentationXmlNode::~RepresentationXmlNode() {}
@@ -391,7 +421,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
 
   if (media_info.has_media_file_url() && !use_single_segment_url_with_media) {
     XmlNode base_url("BaseURL");
-    base_url.SetContent(media_info.media_file_url());
+    base_url.SetUrlEncodedContent(media_info.media_file_url());
 
     RCHECK(AddChild(std::move(base_url)));
   }
@@ -443,7 +473,8 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
 
   if (use_single_segment_url_with_media) {
     XmlNode media_url("SegmentURL");
-    RCHECK(media_url.SetStringAttribute("media", media_info.media_file_url()));
+    RCHECK(media_url.SetStringAttribute(
+        "media", urlEncode(media_info.media_file_url())));
     RCHECK(child.AddChild(std::move(media_url)));
   }
 
@@ -466,9 +497,12 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32_t start_number,
     bool low_latency_dash_mode) {
   XmlNode segment_template("SegmentTemplate");
+
+  int start_number =
+      segment_infos.empty() ? 1 : segment_infos.begin()->start_segment_number;
+
   if (media_info.has_reference_time_scale()) {
     RCHECK(segment_template.SetIntegerAttribute(
         "timescale", media_info.reference_time_scale()));
@@ -612,6 +646,18 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
                            "1");
     }
     return ret;
+  } else if (audio_info.codec() == kDTSCCodec ||
+             audio_info.codec() == kDTSECodec) {
+    audio_channel_config_value =
+        absl::StrFormat("%u", audio_info.num_channels());
+    audio_channel_config_scheme =
+        "tag:dts.com,2014:dash:audio_channel_configuration:2012";
+  } else if (audio_info.codec() == kDTSXCodec) {
+    const auto& codec_data = audio_info.codec_specific_data();
+    audio_channel_config_value =
+        absl::StrFormat("%08X", codec_data.channel_mask());
+    audio_channel_config_scheme =
+        "tag:dts.com,2018:uhd:audio_channel_configuration";
   } else {
     audio_channel_config_value =
         absl::StrFormat("%u", audio_info.num_channels());

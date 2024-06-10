@@ -1467,7 +1467,8 @@ TEST_P(TimedTextParameterizedTest, VerifyTimedText) {
 
         std::vector<uint8_t> actual_buf(out.SegmentData(),
                                         out.SegmentData() + out.SegmentSize());
-        ASSERT_EQ(expected_buf, actual_buf);
+
+        EXPECT_EQ(expected_buf, actual_buf);
       }
     }
   }

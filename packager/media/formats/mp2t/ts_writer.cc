@@ -15,7 +15,6 @@
 #include <packager/media/formats/mp2t/pes_packet.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
 #include <packager/media/formats/mp2t/ts_packet_writer_util.h>
-#include <packager/media/formats/mp2t/ts_section.h>
 
 namespace shaka {
 namespace media {

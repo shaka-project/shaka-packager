@@ -24,6 +24,7 @@ enum FourCC : uint32_t {
   FOURCC_ac_3 = 0x61632d33,  // "ac-3"
   FOURCC_ac_4 = 0x61632d34,  // "ac-4"
   FOURCC_ac3d = 0x61633364,
+  FOURCC_alac = 0x616c6163,
   FOURCC_apad = 0x61706164,
   FOURCC_av01 = 0x61763031,
   FOURCC_av1C = 0x61763143,
@@ -47,6 +48,11 @@ enum FourCC : uint32_t {
   FOURCC_dac3 = 0x64616333,
   FOURCC_dac4 = 0x64616334,
   FOURCC_dash = 0x64617368,
+  FOURCC_dav1 = 0x64617631,
+  FOURCC_db1p = 0x64623170,
+  FOURCC_db2g = 0x64623267,
+  FOURCC_db4g = 0x64623467,
+  FOURCC_db4h = 0x64623468,
   FOURCC_dby1 = 0x64627931,
   FOURCC_ddts = 0x64647473,
   FOURCC_dec3 = 0x64656333,
@@ -59,6 +65,7 @@ enum FourCC : uint32_t {
   FOURCC_dtsl = 0x6474736c,
   FOURCC_dtsm = 0x6474732d,  // "dts-"
   FOURCC_dtsp = 0x6474732b,  // "dts+"
+  FOURCC_dtsx = 0x64747378,  // "dtsx"
   FOURCC_dvcC = 0x64766343,
   FOURCC_dvh1 = 0x64766831,
   FOURCC_dvhe = 0x64766865,
@@ -152,8 +159,9 @@ enum FourCC : uint32_t {
   FOURCC_trex = 0x74726578,
   FOURCC_trun = 0x7472756e,
   FOURCC_udta = 0x75647461,
-  FOURCC_url = 0x75726c20,  // "url "
-  FOURCC_urn = 0x75726e20,  // "urn "
+  FOURCC_udts = 0x75647473,  // "udts"
+  FOURCC_url = 0x75726c20,   // "url "
+  FOURCC_urn = 0x75726e20,   // "urn "
   FOURCC_uuid = 0x75756964,
   FOURCC_vide = 0x76696465,
   FOURCC_vlab = 0x766c6162,

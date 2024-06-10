@@ -26,12 +26,6 @@ on:
         type: boolean
         default: false
 
-    secrets:
-      # The GITHUB_TOKEN name is reserved, but not passed through implicitly.
-      # So we call our secret parameter simply TOKEN.
-      TOKEN:
-        required: false
-
 # By default, run all commands in a bash shell.  On Windows, the default would
 # otherwise be powershell.
 defaults:
@@ -50,7 +44,7 @@ jobs:
       INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
       OS: ${{ steps.configure.outputs.OS }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
 
@@ -98,25 +92,63 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive
+          fetch-tags: true
 
       - name: Install Linux deps
         if: runner.os == 'Linux'
         # NOTE: CMake is already installed in GitHub Actions VMs, but not
-        # necessarily in a self-hosted runner.
+        # necessarily in a self-hosted runner.  We also need a minimum version
+        # that may be greater than what is available in Ubuntu, so we set up
+        # the official CMake PPA first.
         run: |
-          sudo apt update && sudo apt install -y \
+          kitware_key_url="https://apt.kitware.com/keys/kitware-archive-latest.asc"
+          kitware_key_path="/usr/share/keyrings/kitware-archive-keyring.gpg"
+          kitware_sources_path="/etc/apt/sources.list.d/kitware.list"
+
+          curl -sL "$kitware_key_url" | gpg --dearmor - \
+              | sudo tee "$kitware_key_path" >/dev/null
+
+          . /etc/lsb-release  # Defines $DISTRIB_CODENAME (jammy, focal, etc)
+
+          echo "deb [signed-by=$kitware_key_path] https://apt.kitware.com/ubuntu/ $DISTRIB_CODENAME main" \
+              | sudo tee "$kitware_sources_path" >/dev/null
+
+          sudo apt update
+          sudo apt install -y \
               cmake \
               ninja-build
 
       - name: Install Mac deps
         if: runner.os == 'macOS'
-        # NOTE: GitHub Action VMs do not install ninja by default.
+        # NOTE: GitHub Actions VMs on Mac do not install ninja by default.
         run: |
           brew install ninja
+
+      - name: Check Mac CPU architecture
+        if: runner.os == 'macOS'
+        # In case we get confused about GitHub's mac VM image labels,
+        # explicitly check that the CPU type matches our expectations.
+        run: |
+          if [[ "${{matrix.target_arch}}" == "arm64" ]]; then
+            CORRECT_LABEL="arm64"
+          else
+            CORRECT_LABEL="x86_64"
+          fi
+
+          LABEL=$(uname -m)
+          echo "Hardware label: \"$LABEL\""
+
+          if [[ "$LABEL" != "$CORRECT_LABEL" ]]; then
+            echo "Wrong hardware label \"$LABEL\", expecting \"$CORRECT_LABEL\"."
+            echo "Full uname string: $(uname -a)"
+            echo "Full sysctl CPU info:"
+            sysctl machdep.cpu
+            exit 1
+          fi
 
       - name: Generate build files
         run: |
@@ -142,9 +174,32 @@ jobs:
             export PACKAGER_LOW_MEMORY_BUILD=yes
           fi
 
+          # Do fully static release builds on Linux.
+          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
+          if [[ "${{ runner.os }}" == "Linux" && \
+                "$BUILD_CONFIG" == "Release-static" ]]; then
+            # Enable build settings for fully-static.
+            FULLY_STATIC="ON"
+
+            # Use a musl toolchain, since glibc static executables are not
+            # portable.
+            if [[ "${{matrix.target_arch}}" == "arm64" ]]; then
+              MUSL_ARCH="aarch64"
+            else
+              MUSL_ARCH="x86_64"
+            fi
+            curl -LO https://musl.cc/"$MUSL_ARCH"-linux-musl-native.tgz
+            tar xf "$MUSL_ARCH"-linux-musl-native.tgz
+            export CC=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-gcc
+            export CXX=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-g++
+          else
+            FULLY_STATIC="OFF"
+          fi
+
           cmake \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
             -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
+            -DFULLY_STATIC="$FULLY_STATIC" \
             -DBUILD_LIVE_TEST="$BUILD_LIVE_TEST" \
             -S . \
             -B build/
@@ -160,74 +215,81 @@ jobs:
         run: ctest -C "${{ matrix.build_type }}" -V --test-dir build/
 
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@150e2f992e4fad1379da2056d1d1c279f520e058
+        uses: mikepenz/action-junit-report@v4
         if: ${{ always() }}
         with:
           report_paths: 'junit-reports/TEST-*.xml'
 
-      # TODO(joeyparrish): Prepare artifacts when build system is complete again
-#      - name: Prepare artifacts (static release only)
-#        run: |
-#          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
-#          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
-#            echo "Skipping artifacts for $BUILD_CONFIG."
-#            exit 0
-#          fi
-#          if [[ "${{ runner.os }}" == "Linux" ]]; then
-#            echo "::group::Check for static executables"
-#            (
-#              cd build/Release
-#              # Prove that we built static executables on Linux.  First, check that
-#              # the executables exist, and fail if they do not.  Then check "ldd",
-#              # which will fail if the executable is not dynamically linked.  If
-#              # "ldd" succeeds, we fail the workflow.  Finally, we call "true" so
-#              # that the last executed statement will be a success, and the step
-#              # won't be failed if we get that far.
-#              ls packager mpd_generator >/dev/null || exit 1
-#              ldd packager 2>&1 && exit 1
-#              ldd mpd_generator 2>&1 && exit 1
-#              true
-#            )
-#            echo "::endgroup::"
-#          fi
-#          echo "::group::Prepare artifacts folder"
-#          mkdir artifacts
-#          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
-#          cd build/Release
-#          echo "::endgroup::"
-#          echo "::group::Strip executables"
-#          strip packager${{ matrix.exe_ext }}
-#          strip mpd_generator${{ matrix.exe_ext }}
-#          echo "::endgroup::"
-#          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
-#          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
-#          echo "::group::Copy packager"
-#          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
-#          echo "::endgroup::"
-#          echo "::group::Copy mpd_generator"
-#          cp mpd_generator${{ matrix.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
-#          echo "::endgroup::"
-#          # The pssh-box bundle is OS and architecture independent.  So only do
-#          # it on this one OS and architecture, and give it a more generic
-#          # filename.
-#          if [[ '${{ matrix.os_name }}' == 'linux' && '${{ matrix.target_arch }}' == 'x64' ]]; then
-#            echo "::group::Tar pssh-box"
-#            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pyproto pssh-box.py
-#            echo "::endgroup::"
-#          fi
+      - name: Prepare artifacts (static release only)
+        run: |
+          BUILD_CONFIG="${{ matrix.build_type }}-${{ matrix.lib_type }}"
+          if [[ "$BUILD_CONFIG" != "Release-static" ]]; then
+            echo "Skipping artifacts for $BUILD_CONFIG."
+            exit 0
+          fi
 
-      # TODO(joeyparrish): Attach artifacts when build system is complete again
-#      - name: Attach artifacts to release
-#        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
-#        uses: dwenegar/upload-release-assets@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          release_id: ${{ needs.draft_release.outputs.release_id }}
-#          assets_path: artifacts
+          # Check static executables
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            echo "::group::Check static executables"
+            for exe in build/packager/{packager,mpd_generator}; do
+              # Capture information about the executables, but also let it be
+              # logged to stdout.
+              ldd "$exe" | tee static.log
+              # The phrase "statically linked" means we got it right.  Fail if
+              # we don't find it.
+              if ! cat static.log | grep -q statically; then
+                exit 1
+              fi
+            done
+            echo "::endgroup::"
+          fi
+
+          echo "::group::Prepare artifacts folder"
+          mkdir artifacts
+          ARTIFACTS="$GITHUB_WORKSPACE/artifacts"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cd build/packager/Release
+          else
+            cd build/packager
+          fi
+          echo "::endgroup::"
+
+          echo "::group::Strip executables"
+          strip packager${{ matrix.exe_ext }}
+          strip mpd_generator${{ matrix.exe_ext }}
+          echo "::endgroup::"
+
+          SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
+          EXE_SUFFIX="$SUFFIX${{ matrix.exe_ext}}"
+
+          echo "::group::Copy packager"
+          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$EXE_SUFFIX
+          echo "::endgroup::"
+
+          echo "::group::Copy mpd_generator"
+          cp mpd_generator${{ matrix.exe_ext }} $ARTIFACTS/mpd_generator$EXE_SUFFIX
+          echo "::endgroup::"
+
+          # The pssh-box bundle is OS and architecture independent.  So only do
+          # it on this one OS and architecture, and give it a more generic
+          # filename.
+          if [[ '${{ matrix.os_name }}' == 'linux' && '${{ matrix.target_arch }}' == 'x64' ]]; then
+            echo "::group::Tar pssh-box"
+            tar -czf $ARTIFACTS/pssh-box.py.tar.gz pssh-box.py pssh-box-protos
+            echo "::endgroup::"
+          fi
+
+      - name: Upload static release build artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
+        with:
+          name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 5
 
       - name: Debug
-        uses: mxschmitt/action-tmate@v3.6
+        uses: mxschmitt/action-tmate@v3.17
         with:
           limit-access-to-actor: true
         if: failure() && inputs.debug

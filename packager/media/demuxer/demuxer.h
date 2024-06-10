@@ -88,6 +88,10 @@ class Demuxer : public OriginHandler {
     webvtt_header_only_output_segment_ = webvtt_header_only_output_segment;
   }
 
+  void set_input_format(std::string input_format) {
+    input_format_ = input_format;
+  }
+
  protected:
   /// @name MediaHandler implementation overrides.
   /// @{
@@ -167,6 +171,9 @@ class Demuxer : public OriginHandler {
   Status init_event_status_;
 
   std::shared_ptr<mp4::DashEventMessageHandler> dash_event_handler_;
+
+  // Explicitly defined input format, for avoiding autodetection.
+  std::string input_format_;
 };
 
 }  // namespace media

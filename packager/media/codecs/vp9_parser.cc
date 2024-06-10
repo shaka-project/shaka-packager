@@ -285,6 +285,7 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
     }
   } else {
     // Assume 4:4:4 for colorspace SRGB.
+    yuv_full_range = true;
     chroma_subsampling = VPCodecConfigurationRecord::CHROMA_444;
     if (codec_config->profile() & 1) {
       bool reserved;

@@ -49,6 +49,12 @@ message MediaInfo {
     // Transfer characteristics. Useful to determine the VIDEO-RANGE for HLS,
     // i.e. whether it is SDR or HDR.
     optional uint32 transfer_characteristics = 10;
+    optional uint32 color_primaries = 11;
+    optional uint32 matrix_coefficients = 12;
+
+    // Fro Dolby Vision back compatiable content.
+    optional string supplemental_codec = 13;
+    optional uint32 compatible_brand = 14;
   }
 
   message AudioInfo {
@@ -212,4 +218,15 @@ message MediaInfo {
   // with respect to the reference time scale.
   // Equal to the target segment duration times the reference time scale.
   optional uint64 segment_duration = 25;
+
+  // Marks stream as a Forced Narrative subtitle stream, indicated using
+  // forced-subtitle role in DASH
+  // and FORCED=YES in HLS
+  optional bool forced_subtitle = 26 [default = false];
+
+  // stream index for consistent ordering of streams
+  optional uint32 index = 28;
+
+  // DASH only. Label element.
+  optional string dash_label = 29;
 }

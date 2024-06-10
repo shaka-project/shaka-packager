@@ -44,13 +44,13 @@ class LowLatencySegmentSegmenter : public Segmenter {
   // Segmenter implementation overrides.
   Status DoInitialize() override;
   Status DoFinalize() override;
-  Status DoFinalizeSegment() override;
-  Status DoFinalizeChunk() override;
+  Status DoFinalizeSegment(int64_t segment_number) override;
+  Status DoFinalizeChunk(int64_t segment_number) override;
 
   // Write segment to file.
   Status WriteInitSegment();
   Status WriteChunk();
-  Status WriteInitialChunk();
+  Status WriteInitialChunk(int64_t segment_number);
   Status FinalizeSegment();
 
   uint64_t GetSegmentDuration();

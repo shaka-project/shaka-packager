@@ -1,0 +1,37 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
+
+# A workflow to build the official docker image.
+name: Official Docker image
+
+# Runs when called from another workflow.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+# By default, run all commands in a bash shell.  On Windows, the default would
+# otherwise be powershell.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  official_docker_image:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          submodules: recursive
+
+      - name: Build
+        shell: bash
+        run: docker buildx build .

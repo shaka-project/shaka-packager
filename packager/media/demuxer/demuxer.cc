@@ -170,21 +170,25 @@ Status Demuxer::InitializeParser() {
                   "Cannot open file for reading " + file_name_);
   }
 
-  // Read enough bytes before detecting the container.
   int64_t bytes_read = 0;
   bool eof = false;
-  while (static_cast<size_t>(bytes_read) < kInitBufSize) {
-    int64_t read_result =
-        media_file_->Read(buffer_.get() + bytes_read, kInitBufSize);
-    if (read_result < 0)
-      return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
-    if (read_result == 0) {
-      eof = true;
-      break;
+  if (input_format_.empty()) {
+    // Read enough bytes before detecting the container.
+    while (static_cast<size_t>(bytes_read) < kInitBufSize) {
+      int64_t read_result =
+          media_file_->Read(buffer_.get() + bytes_read, kInitBufSize);
+      if (read_result < 0)
+        return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
+      if (read_result == 0) {
+        eof = true;
+        break;
+      }
+      bytes_read += read_result;
     }
-    bytes_read += read_result;
+    container_name_ = DetermineContainer(buffer_.get(), bytes_read);
+  } else {
+    container_name_ = DetermineContainerFromFormatName(input_format_);
   }
-  container_name_ = DetermineContainer(buffer_.get(), bytes_read);
 
   // Initialize media parser.
   switch (container_name_) {

@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          sudo apt install -y doxygen
+          sudo apt install -y doxygen graphviz
           python3 -m pip install \
               sphinx==7.1.2 \
               sphinxcontrib.plantuml \
@@ -40,7 +40,7 @@ jobs:
               breathe
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
 
@@ -61,8 +61,17 @@ jobs:
           cp -a build/doxygen/html gh-pages/docs
           cp docs/index.html gh-pages/index.html
 
+          # Now set permissions on the generated docs.
+          # https://github.com/actions/upload-pages-artifact#file-permissions
+          chmod -R +rX gh-pages/
+
+      - name: Upload docs artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: gh-pages
+
       - name: Debug
-        uses: mxschmitt/action-tmate@v3.6
+        uses: mxschmitt/action-tmate@v3.17
         with:
           limit-access-to-actor: true
         if: failure() && inputs.debug

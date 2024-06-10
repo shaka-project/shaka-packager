@@ -129,9 +129,6 @@ bool AesCbcEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
 }
 
 size_t AesCbcEncryptor::RequiredOutputSize(size_t plaintext_size) {
-  // mbedtls requires a buffer large enough for one extra block.
-  // TODO: the extra addition of AES_BLOCK_SIZE seems to be causing issues for
-  // video only Sample-AES encryption and a recent regression in functionality.
   return plaintext_size + NumPaddingBytes(plaintext_size);
 }
 
@@ -162,7 +159,7 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
   DCHECK_EQ(residual_block.size(), residual_block_size);
 
   if (cbc_size != 0) {
-    CbcEncryptBlocks(plaintext, cbc_size, ciphertext);
+    CbcEncryptBlocks(plaintext, cbc_size, ciphertext, internal_iv_.data());
   } else if (padding_scheme_ == kCtsPadding) {
     // Don't have a full block, leave unencrypted.
     memcpy(ciphertext, plaintext, plaintext_size);
@@ -185,21 +182,16 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
 
     // Pad residue block with PKCS5 padding.
     residual_block.resize(AES_BLOCK_SIZE, static_cast<char>(num_padding_bytes));
-
     CbcEncryptBlocks(residual_block.data(), AES_BLOCK_SIZE,
-                     residual_ciphertext_block);
+                     residual_ciphertext_block, internal_iv_.data());
   } else {
     DCHECK_EQ(num_padding_bytes, 0u);
     DCHECK_EQ(padding_scheme_, kCtsPadding);
 
     // Zero-pad the residual block and encrypt using CBC.
     residual_block.resize(AES_BLOCK_SIZE, 0);
-    // mbedtls requires an extra block in the output buffer, and it cannot be
-    // the same as the input buffer.
-    std::vector<uint8_t> encrypted_residual_block(AES_BLOCK_SIZE * 2);
-
     CbcEncryptBlocks(residual_block.data(), AES_BLOCK_SIZE,
-                     encrypted_residual_block.data());
+                     residual_block.data(), internal_iv_.data());
 
     // Replace the last full block with the zero-padded, encrypted residual
     // block, and replace the residual block with the equivalent portion of the
@@ -210,8 +202,8 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
     // https://en.wikipedia.org/wiki/Ciphertext_stealing#CS2
     memcpy(residual_ciphertext_block,
            residual_ciphertext_block - AES_BLOCK_SIZE, residual_block_size);
-    memcpy(residual_ciphertext_block - AES_BLOCK_SIZE,
-           encrypted_residual_block.data(), AES_BLOCK_SIZE);
+    memcpy(residual_ciphertext_block - AES_BLOCK_SIZE, residual_block.data(),
+           AES_BLOCK_SIZE);
   }
   return true;
 }
@@ -229,20 +221,20 @@ size_t AesCbcEncryptor::NumPaddingBytes(size_t size) const {
 
 void AesCbcEncryptor::CbcEncryptBlocks(const uint8_t* plaintext,
                                        size_t plaintext_size,
-                                       uint8_t* ciphertext) {
+                                       uint8_t* ciphertext,
+                                       uint8_t* iv) {
   CHECK_EQ(plaintext_size % AES_BLOCK_SIZE, 0u);
 
   size_t output_size = 0;
-  CHECK_EQ(
-      mbedtls_cipher_crypt(&cipher_ctx_, internal_iv_.data(), AES_BLOCK_SIZE,
-                           plaintext, plaintext_size, ciphertext, &output_size),
-      0);
+  CHECK_EQ(mbedtls_cipher_crypt(&cipher_ctx_, iv, AES_BLOCK_SIZE, plaintext,
+                                plaintext_size, ciphertext, &output_size),
+           0);
 
   CHECK_EQ(output_size % AES_BLOCK_SIZE, 0u);
   CHECK_GT(output_size, 0u);
 
   uint8_t* last_block = ciphertext + output_size - AES_BLOCK_SIZE;
-  internal_iv_.assign(last_block, last_block + AES_BLOCK_SIZE);
+  memcpy(iv, last_block, AES_BLOCK_SIZE);
 }
 
 }  // namespace media

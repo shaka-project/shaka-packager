@@ -135,7 +135,7 @@ TEST_F(PeriodTest, GetXml) {
       "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -167,7 +167,7 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
       "<Period id=\"9\" start=\"PT5.6S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -207,7 +207,7 @@ TEST_F(PeriodTest, LowLatencyDashMpdGetXml) {
       "  </ServiceDescription>"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -240,7 +240,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       "<Period id=\"9\" duration=\"PT100.234S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));
@@ -248,7 +248,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\" id=\"0\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXmlSuppressDuration));
@@ -582,14 +582,14 @@ TEST_F(PeriodTest, OrderedByAdaptationSetId) {
                                       ConvertToMediaInfo(kContent2),
                                       content_protection_in_adaptation_set_));
 
-  adaptation_set_1_ptr->set_id(2);
-  adaptation_set_2_ptr->set_id(1);
+  adaptation_set_1_ptr->set_id(1);
+  adaptation_set_2_ptr->set_id(0);
   const char kExpectedXml[] =
       R"(<Period id="9">)"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      R"(  <AdaptationSet id="1" contentType=""/>)"
-      R"(  <AdaptationSet id="2" contentType=""/>)"
+      R"(  <AdaptationSet id="0" contentType="" subsegmentStartsWithSAP="1"/>)"
+      R"(  <AdaptationSet id="1" contentType="" subsegmentStartsWithSAP="1"/>)"
       R"(</Period>)";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration),
               XmlNodeEqual(kExpectedXml));

@@ -17,6 +17,7 @@
 #include <packager/macros/classes.h>
 #include <packager/mpd/base/bandwidth_estimator.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include "packager/media/base/fourccs.h"
 
 namespace shaka {
 
@@ -80,6 +81,8 @@ class MediaPlaylist {
   const std::string& group_id() const { return group_id_; }
   MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
+  const std::string& supplemental_codec() const { return supplemental_codec_; }
+  const media::FourCC& compatible_brand() const { return compatible_brand_; }
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
@@ -91,6 +94,9 @@ class MediaPlaylist {
   void SetLanguageForTesting(const std::string& language);
 
   /// For testing only.
+  void SetForcedSubtitleForTesting(const bool forced_subtitle);
+
+  /// For testing only.
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
 
@@ -99,6 +105,7 @@ class MediaPlaylist {
   ///        to this playlist.
   /// @return true on success, false otherwise.
   virtual bool SetMediaInfo(const MediaInfo& media_info);
+  MediaInfo GetMediaInfo() const { return media_info_; }
 
   /// Set the sample duration. Sample duration is used to generate frame rate.
   /// Sample duration is not available right away especially. This allows
@@ -222,6 +229,8 @@ class MediaPlaylist {
     return characteristics_;
   }
 
+  bool forced_subtitle() const { return forced_subtitle_; }
+
   bool is_dvs() const {
     // HLS Authoring Specification for Apple Devices
     // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
@@ -259,8 +268,11 @@ class MediaPlaylist {
   // Whether to use byte range for SegmentInfoEntry.
   bool use_byte_range_ = false;
   std::string codec_;
+  std::string supplemental_codec_;
+  media::FourCC compatible_brand_;
   std::string language_;
   std::vector<std::string> characteristics_;
+  bool forced_subtitle_ = false;
   uint32_t media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;

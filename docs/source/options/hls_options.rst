@@ -76,7 +76,20 @@ HLS options
     The EXT-X-MEDIA-SEQUENCE documentation can be read here:
     https://tools.ietf.org/html/rfc8216#section-4.3.3.2.
 
+--hls_start_time_offset <seconds>
+
+    Sets EXT-X-START on the media playlists to specify the preferred point
+    at wich the player should start playing.
+    A positive number indicates a time offset from the beginning of the playlist.
+    A negative number indicates a negative time offset from the end of the
+    last media segment in the playlist.
+
 --hls_only=0|1
 
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
     stream is HLS only.
+
+--force_cl_index
+
+    True forces the muxer to order streams in the order given 
+    on the command-line. False uses the previous unordered behavior.

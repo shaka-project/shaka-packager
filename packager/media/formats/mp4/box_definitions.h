@@ -349,6 +349,12 @@ struct DTSSpecific : Box {
   std::vector<uint8_t> extra_data;
 };
 
+struct UDTSSpecific : Box {
+  DECLARE_BOX_METHODS(UDTSSpecific);
+
+  std::vector<uint8_t> data;
+};
+
 struct AC3Specific : Box {
   DECLARE_BOX_METHODS(AC3Specific);
 
@@ -391,6 +397,15 @@ struct FlacSpecific : FullBox {
   std::vector<uint8_t> data;
 };
 
+// ALAC specific decoder configuration box:
+//   https://wiki.multimedia.cx/index.php/Apple_Lossless_Audio_Coding
+// We do not care about the actual data inside, which is simply copied over.
+struct ALACSpecific : FullBox {
+  DECLARE_BOX_METHODS(ALACSpecific);
+
+  std::vector<uint8_t> data;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
 
@@ -411,12 +426,14 @@ struct AudioSampleEntry : Box {
 
   ElementaryStreamDescriptor esds;
   DTSSpecific ddts;
+  UDTSSpecific udts;
   AC3Specific dac3;
   EC3Specific dec3;
   AC4Specific dac4;
   OpusSpecific dops;
   FlacSpecific dfla;
   MHAConfiguration mhac;
+  ALACSpecific alac;
 };
 
 struct WebVTTConfigurationBox : Box {

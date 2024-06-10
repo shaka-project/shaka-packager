@@ -21,5 +21,7 @@ ABSL_DECLARE_FLAG(bool, generate_sidx_in_media_segments);
 ABSL_DECLARE_FLAG(std::string, temp_dir);
 ABSL_DECLARE_FLAG(bool, mp4_include_pssh_in_stream);
 ABSL_DECLARE_FLAG(int32_t, transport_stream_timestamp_offset_ms);
+ABSL_DECLARE_FLAG(int32_t, default_text_zero_bias_ms);
+ABSL_DECLARE_FLAG(int64_t, start_segment_number);
 
 #endif  // APP_MUXER_FLAGS_H_

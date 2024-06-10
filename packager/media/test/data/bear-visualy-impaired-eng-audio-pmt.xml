@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tsduck>
+  <PMT version="0" current="true" service_id="0x0001" PCR_PID="0x0100">
+    <metadata PID="4,096"/>
+    <component elementary_PID="0x0101" stream_type="0x0F">
+      <ISO_639_language_descriptor>
+        <language code="eng" audio_type="0x03"/>
+      </ISO_639_language_descriptor>
+      <maximum_bitrate_descriptor maximum_bitrate="131,600"/>
+    </component>
+  </PMT>
+</tsduck>
