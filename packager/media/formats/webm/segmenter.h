@@ -58,7 +58,8 @@ class Segmenter {
   /// Finalize the (sub)segment.
   virtual Status FinalizeSegment(int64_t start_timestamp,
                                  int64_t duration_timestamp,
-                                 bool is_subsegment) = 0;
+                                 bool is_subsegment,
+                                 int64_t segment_number) = 0;
 
   /// @return true if there is an initialization range, while setting @a start
   ///         and @a end; or false if initialization range does not apply.

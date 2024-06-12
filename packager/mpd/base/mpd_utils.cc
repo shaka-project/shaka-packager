@@ -15,6 +15,7 @@
 #include <libxml/tree.h>
 
 #include <packager/macros/logging.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/mpd/base/adaptation_set.h>
@@ -125,6 +126,29 @@ std::string GetCodecs(const MediaInfo& media_info) {
     return TextCodecString(media_info);
 
   NOTIMPLEMENTED();
+  return "";
+}
+
+std::string GetSupplementalCodecs(const MediaInfo& media_info) {
+  CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
+                    media_info.has_text_info()));
+
+  if (media_info.has_video_info() &&
+      media_info.video_info().has_supplemental_codec()) {
+    return media_info.video_info().supplemental_codec();
+  }
+  return "";
+}
+
+std::string GetSupplementalProfiles(const MediaInfo& media_info) {
+  CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
+                    media_info.has_text_info()));
+
+  if (media_info.has_video_info() &&
+      media_info.video_info().has_compatible_brand()) {
+    return FourCCToString(
+        static_cast<media::FourCC>(media_info.video_info().compatible_brand()));
+  }
   return "";
 }
 

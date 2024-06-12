@@ -45,6 +45,8 @@ const uint32_t kWidth = 1280;
 const uint32_t kHeight = 720;
 const uint32_t kPixelWidth = 1;
 const uint32_t kPixelHeight = 1;
+const uint8_t kColorPrimaries = 0;
+const uint8_t kMatrixCoefficients = 0;
 const uint8_t kTransferCharacteristics = 0;
 const uint16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 1;
@@ -84,6 +86,7 @@ class MockTsWriter : public TsWriter {
 
   MOCK_METHOD1(NewSegment, bool(BufferWriter* buffer_writer));
   MOCK_METHOD0(SignalEncrypted, void());
+  MOCK_METHOD0(FinalizeSegment, bool());
 
   // Similar to the hack above but takes a std::unique_ptr.
   MOCK_METHOD2(AddPesPacketMock, bool(PesPacket* pes_packet,
@@ -114,8 +117,8 @@ TEST_F(TsSegmenterTest, Initialize) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       std::size(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -134,8 +137,8 @@ TEST_F(TsSegmenterTest, AddSample) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       std::size(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -186,8 +189,8 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       kTrackId, kInputTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       std::size(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "memory://file$Number$.ts";
 
@@ -232,7 +235,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(1u));
- 
+
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));
@@ -268,8 +271,8 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       std::size(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -296,8 +299,8 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       std::size(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -323,8 +326,8 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       std::size(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-      kIsEncrypted));
+      kColorPrimaries, kMatrixCoefficients, kTransferCharacteristics,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
 
   options.segment_template = "memory://file$Number$.ts";

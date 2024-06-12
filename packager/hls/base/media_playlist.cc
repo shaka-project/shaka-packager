@@ -393,6 +393,13 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
     codec_ = AdjustVideoCodec(media_info.video_info().codec());
+    if (media_info.video_info().has_supplemental_codec() &&
+        media_info.video_info().has_compatible_brand()) {
+      supplemental_codec_ =
+          AdjustVideoCodec(media_info.video_info().supplemental_codec());
+      compatible_brand_ = static_cast<media::FourCC>(
+          media_info.video_info().compatible_brand());
+    }
   } else if (media_info.has_audio_info()) {
     stream_type_ = MediaPlaylistStreamType::kAudio;
     codec_ = media_info.audio_info().codec();
@@ -576,10 +583,23 @@ std::string MediaPlaylist::GetVideoRange() const {
   // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-02#section-4.4.4.2
   switch (media_info_.video_info().transfer_characteristics()) {
     case 1:
+    case 6:
+    case 13:
+    case 14:
+      // Dolby Vision profile 8.4 may have a transfer_characteristics 14, the
+      // actual value refers to preferred_transfer_characteristic value in SEI
+      // message, using compatible brand as a workaround
+      if (!supplemental_codec_.empty() &&
+          compatible_brand_ == media::FOURCC_db4g)
+        return "HLG";
+      else
+        return "SDR";
+    case 15:
       return "SDR";
     case 16:
-    case 18:
       return "PQ";
+    case 18:
+      return "HLG";
     default:
       // Leave it empty if we do not have the transfer characteristics
       // information.
@@ -737,9 +757,9 @@ void MediaPlaylist::RemoveOldSegment(int64_t start_time) {
   if (stream_type_ == MediaPlaylistStreamType::kVideoIFramesOnly)
     return;
 
-  segments_to_be_removed_.push_back(
-      media::GetSegmentName(media_info_.segment_template(), start_time,
-                            media_sequence_number_, media_info_.bandwidth()));
+  segments_to_be_removed_.push_back(media::GetSegmentName(
+      media_info_.segment_template(), start_time, media_sequence_number_ + 1,
+      media_info_.bandwidth()));
   while (segments_to_be_removed_.size() >
          hls_params_.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();

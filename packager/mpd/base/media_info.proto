@@ -49,6 +49,12 @@ message MediaInfo {
     // Transfer characteristics. Useful to determine the VIDEO-RANGE for HLS,
     // i.e. whether it is SDR or HDR.
     optional uint32 transfer_characteristics = 10;
+    optional uint32 color_primaries = 11;
+    optional uint32 matrix_coefficients = 12;
+
+    // Fro Dolby Vision back compatiable content.
+    optional string supplemental_codec = 13;
+    optional uint32 compatible_brand = 14;
   }
 
   message AudioInfo {

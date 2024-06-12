@@ -8,6 +8,8 @@ video_info {
   decoder_config: "\001d\000\036\377\341\000\031gd\000\036\254\331@\240/\371p\021\000\000\003\003\351\000\000\352`\017\026-\226\001\000\006h\353\343\313\"\300"
   pixel_width: 1
   pixel_height: 1
+  supplemental_codec: ""
+  compatible_brand: 0
 }
 init_range {
   begin: 0

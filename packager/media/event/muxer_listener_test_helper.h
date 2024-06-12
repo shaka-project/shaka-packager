@@ -26,6 +26,8 @@ const char kExpectedDefaultPsshBox[] = "expected_pssh_box";
 const char kExpectedDefaultMediaInfo[] =
     "video_info {\n"
     "  codec: 'avc1.010101'\n"
+    "  supplemental_codec: ''\n"
+    "  compatible_brand: 0\n"
     "  width: 720\n"
     "  height: 480\n"
     "  time_scale: 10\n"
@@ -54,6 +56,8 @@ const char kExpectedDefaultMediaInfoSubsegmentRange[] =
     "  time_scale: 10\n"
     "  pixel_width: 1\n"
     "  pixel_height: 1\n"
+    "  supplemental_codec: ''\n"
+    "  compatible_brand: 0\n"
     "}\n"
     "init_range {\n"
     "  begin: 0\n"

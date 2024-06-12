@@ -485,8 +485,9 @@ class PackagerAppTest(unittest.TestCase):
                 use_fake_clock=True,
                 allow_codec_switching=False,
                 dash_force_segment_list=False,
-                force_cl_index=False):
-
+                force_cl_index=None,
+                start_segment_number=None,
+                use_dovi_supplemental_codecs=None):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -544,6 +545,9 @@ class PackagerAppTest(unittest.TestCase):
     if not dash_if_iop:
       flags.append('--generate_dash_if_iop_compliant_mpd=false')
 
+    if use_dovi_supplemental_codecs:
+      flags.append('--use_dovi_supplemental_codecs')
+
     if output_media_info:
       flags.append('--output_media_info')
     if output_dash:
@@ -570,8 +574,13 @@ class PackagerAppTest(unittest.TestCase):
     if allow_codec_switching:
       flags += ['--allow_codec_switching']
 
-    if force_cl_index:
+    if force_cl_index is True:
       flags += ['--force_cl_index']
+    elif force_cl_index is False:
+      flags += ['--noforce_cl_index']
+
+    if start_segment_number is not None:
+      flags += ['--start_segment_number', str(start_segment_number)]
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -754,7 +763,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=2),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     self._CheckTestResults('audio-video-with-two-trick-play')
 
   def testAudioVideoWithTwoTrickPlayDecreasingRate(self):
@@ -765,7 +775,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', trick_play_factor=1),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      force_cl_index=False))
     # Since the stream descriptors are sorted in packager app, a different
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
@@ -818,6 +829,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
                                                       output_hls=True))
     self._CheckTestResults('forced-subtitle')
+
+  def testDashStartNumber(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
+    streams = audio_video_streams
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                              start_segment_number=0))
+    self._CheckTestResults('dash-start-number')
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
@@ -1442,6 +1460,42 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-with-encryption')
 
+  # TODO(cosmin): shared_library build does not support
+  #  use_dovi_supplemental_codecs
+  @unittest.skipIf(
+    test_env.BUILD_TYPE == 'shared',
+    'libpackager shared_library does not support '
+    '--use_dovi_supplemental_codecs flag.'
+  )
+  def testDolbyVisionProfile8UsingSupplementalCodecs(self):
+    streams = [
+      self._GetStream('video', test_file='sparks_dovi_8.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-profile-8-supplemental-codecs')
+
+  # TODO(cosmin): shared_library build does not support
+  #  use_dovi_supplemental_codecs
+  @unittest.skipIf(
+    test_env.BUILD_TYPE == 'shared',
+    'libpackager shared_library does not support '
+    '--use_dovi_supplemental_codecs flag.'
+  )
+  def testDolbyVisionProfile10UsingSupplementalCodecs(self):
+    streams = [
+      self._GetStream('video', test_file='sparks_dovi_10.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-profile-10-supplemental-codecs')
+
   def testVp8Mp4WithEncryption(self):
     streams = [
         self._GetStream('video',
@@ -1510,8 +1564,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   # TODO(kqyang): Fix shared_library not supporting strip_parameter_set_nalus
   # problem.
-  @unittest.skipUnless(
-      test_env.options.libpackager_type == 'static_library',
+  @unittest.skipIf(
+      test_env.BUILD_TYPE == 'shared',
       'libpackager shared_library does not support '
       '--strip_parameter_set_nalus flag.'
   )
@@ -1690,7 +1744,9 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testAllowCodecSwitching(self):
     streams = [
+        self._GetStream('video', test_file='bear-1280x720-hevc.mp4'),
         self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360-vp9.mp4'),
         self._GetStream('video', test_file='bear-640x360.mp4'),
         self._GetStream('video', test_file='bear-1280x720.mp4'),
         self._GetStream('audio', test_file='bear-640x360.mp4'),

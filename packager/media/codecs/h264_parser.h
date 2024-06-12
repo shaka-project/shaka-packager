@@ -81,6 +81,8 @@ struct H264Sps {
   int sar_width;    // Set to 0 when not specified.
   int sar_height;   // Set to 0 when not specified.
   int transfer_characteristics;
+  int color_primaries;
+  int matrix_coefficients;
 
   bool timing_info_present_flag;
   long num_units_in_tick;

@@ -66,6 +66,11 @@ include("gtest.cmake")
 # Include our module for building protos.
 include("protobuf.cmake")
 
+# Find Python3 used by integration tests, license notice and version string
+if(NOT Python3_EXECUTABLE)
+  find_package(Python3 COMPONENTS Interpreter REQUIRED)
+endif()
+
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
 add_subdirectory(kv_pairs)
@@ -228,8 +233,21 @@ add_custom_target(packager_test_py_copy ALL
 
 if(NOT SKIP_INTEGRATION_TESTS)
   add_test (NAME packager_test_py
-    COMMAND ${PYTHON_EXECUTABLE} packager_test.py
+    COMMAND "${Python3_EXECUTABLE}" packager_test.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+
+  set(test_environment_vars "PACKAGER_SRC_DIR=${CMAKE_SOURCE_DIR}")
+  list(APPEND test_environment_vars "PACKAGER_BIN=$<TARGET_FILE:packager>")
+  list(APPEND test_environment_vars "MPD_GENERATOR_BIN=$<TARGET_FILE:mpd_generator>")
+  if(BUILD_SHARED_LIBS)
+    list(APPEND test_environment_vars "BUILD_TYPE=shared")
+  else()
+    list(APPEND test_environment_vars "BUILD_TYPE=static")
+  endif()
+
+  set_tests_properties(packager_test_py PROPERTIES
+          ENVIRONMENT "${test_environment_vars}"
   )
 endif()
 
@@ -237,12 +255,6 @@ configure_file(packager.pc.in packager.pc @ONLY)
 
 # Always install the binaries.
 install(TARGETS mpd_generator packager)
-
-# Always install the python tools.
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/pssh-box.py
-  DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pssh-box-protos
-  DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # With shared libraries, also install the library, headers, and pkgconfig.
 # The static library isn't usable as a standalone because it doesn't include

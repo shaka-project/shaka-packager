@@ -120,6 +120,10 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
         RCHECK(parser.ParseSps(nalu, &sps_id) == H265Parser::kOk);
         set_transfer_characteristics(
             parser.GetSps(sps_id)->vui_parameters.transfer_characteristics);
+        set_color_primaries(
+            parser.GetSps(sps_id)->vui_parameters.color_primaries);
+        set_matrix_coefficients(
+            parser.GetSps(sps_id)->vui_parameters.matrix_coefficients);
       }
     }
   }

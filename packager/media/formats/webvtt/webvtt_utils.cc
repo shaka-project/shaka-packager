@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cinttypes>
+#include <cmath>
 #include <unordered_set>
 
 #include <absl/log/check.h>
@@ -22,6 +23,8 @@ namespace shaka {
 namespace media {
 
 namespace {
+
+constexpr const char* kRegionTeletextPrefix = "ttx_";
 
 bool GetTotalMilliseconds(uint64_t hours,
                           uint64_t minutes,
@@ -228,7 +231,9 @@ std::string FloatToString(double number) {
 
 std::string WebVttSettingsToString(const TextSettings& settings) {
   std::string ret;
-  if (!settings.region.empty()) {
+  if (!settings.region.empty() &&
+      settings.region.find(kRegionTeletextPrefix) != 0) {
+    // Don't add teletext ttx_ regions, since accompanied by global line numbers
     ret += " region:";
     ret += settings.region;
   }
@@ -241,7 +246,8 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
         break;
       case TextUnitType::kLines:
         ret += " line:";
-        ret += FloatToString(settings.line->value);
+        // The line number should be an integer
+        ret += FloatToString(std::round(settings.line->value));
         break;
       case TextUnitType::kPixels:
         LOG(WARNING) << "WebVTT doesn't support pixel line settings";

@@ -53,12 +53,12 @@ bool AddMpdNameSpaceInfo(XmlNode* mpd) {
       "urn:marlin:mas:1-0:services:schemas:mpd";
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
   static const char kMsprNamespace[] = "urn:microsoft:playready";
+  static const char kScte214Namespace[] = "urn:scte:dash:scte214-extensions";
 
   const std::map<std::string, std::string> uris = {
-      {"cenc", kCencNamespace},
-      {"mas", kMarlinNamespace},
-      {"xlink", kXmlNamespaceXlink},
-      {"mspr", kMsprNamespace},
+      {"cenc", kCencNamespace},       {"mas", kMarlinNamespace},
+      {"xlink", kXmlNamespaceXlink},  {"mspr", kMsprNamespace},
+      {"scte214", kScte214Namespace},
   };
 
   for (const std::string& namespace_name : namespaces) {
@@ -167,7 +167,7 @@ std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   // Add baseurls to MPD.
   for (const std::string& base_url : base_urls_) {
     XmlNode xml_base_url("BaseURL");
-    xml_base_url.SetContent(base_url);
+    xml_base_url.SetUrlEncodedContent(base_url);
 
     if (!mpd.AddChild(std::move(xml_base_url)))
       return std::nullopt;

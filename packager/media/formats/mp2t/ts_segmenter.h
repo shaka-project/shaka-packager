@@ -54,6 +54,7 @@ class TsSegmenter {
   ///        stream's time scale.
   /// @param duration is the segment's duration in the input stream's time
   ///        scale.
+  /// @param segment_number is the segment number.
   // TODO(kqyang): Remove the usage of segment start timestamp and duration in
   // xx_segmenter, which could cause confusions on which is the source of truth
   // as the segment start timestamp and duration could be tracked locally.

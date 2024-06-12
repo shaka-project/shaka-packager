@@ -31,6 +31,9 @@ struct ChunkingParams {
   /// and mdat atom. Each chunk is uploaded immediately upon creation,
   /// decoupling latency from segment duration.
   bool low_latency_dash_mode = false;
+
+  /// Indicates the startNumber in DASH SegmentTemplate and HLS segment name.
+  int64_t start_segment_number = 1;
 };
 
 }  // namespace shaka

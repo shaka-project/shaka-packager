@@ -1,6 +1,37 @@
 # Changelog
 
 
+## [3.2.0](https://github.com/shaka-project/shaka-packager/compare/v3.1.0...v3.2.0) (2024-05-11)
+
+
+### Features
+
+* support Dolby Vision profile 8.x (HEVC) and 10.x (AV1) in HLS and DASH  ([#1396](https://github.com/shaka-project/shaka-packager/issues/1396)) ([a99cfe0](https://github.com/shaka-project/shaka-packager/commit/a99cfe036f09de51b488f87f4cb126a1bcd3a286))
+
+
+### Bug Fixes
+
+* adaptation set IDs were referenced by lowest representation ID  ([#1394](https://github.com/shaka-project/shaka-packager/issues/1394)) ([94db9c9](https://github.com/shaka-project/shaka-packager/commit/94db9c9db3e73073925205355dd61a6dc9785065)), closes [#1393](https://github.com/shaka-project/shaka-packager/issues/1393)
+* escape media URLs in MPD ([#1395](https://github.com/shaka-project/shaka-packager/issues/1395)) ([98b44d0](https://github.com/shaka-project/shaka-packager/commit/98b44d01df6a952466b5a1667818da877502da97))
+* set yuv full range flag to 1 for VP9 with sRGB ([#1398](https://github.com/shaka-project/shaka-packager/issues/1398)) ([f6f60e5](https://github.com/shaka-project/shaka-packager/commit/f6f60e5fff8d5c9b13fbf65f494eba651050ccb9))
+
+## [3.1.0](https://github.com/shaka-project/shaka-packager/compare/v3.0.4...v3.1.0) (2024-05-03)
+
+
+### Features
+
+* add missing DASH roles from ISO/IEC 23009-1 section 5.8.5.5 ([#1390](https://github.com/shaka-project/shaka-packager/issues/1390)) ([fe885b3](https://github.com/shaka-project/shaka-packager/commit/fe885b3ade020b197a04fc63ee41fd90e7e11a14))
+* get start number from muxer and specify initial sequence number ([#879](https://github.com/shaka-project/shaka-packager/issues/879)) ([bb104fe](https://github.com/shaka-project/shaka-packager/commit/bb104fef5d745ac3a0a8c1e6fb4f1b1a9b27d8ae))
+* teletext formatting ([#1384](https://github.com/shaka-project/shaka-packager/issues/1384)) ([4b5e80d](https://github.com/shaka-project/shaka-packager/commit/4b5e80d02c10fd1ddb8f7e0f2f1a8608782d8442))
+
+## [3.0.4](https://github.com/shaka-project/shaka-packager/compare/v3.0.3...v3.0.4) (2024-03-27)
+
+
+### Bug Fixes
+
+* BaseURL missing when MPD base path is empty ([#1380](https://github.com/shaka-project/shaka-packager/issues/1380)) ([90c3c3f](https://github.com/shaka-project/shaka-packager/commit/90c3c3f9b3e8e36706b9769e574aa316e8bbb351)), closes [#1378](https://github.com/shaka-project/shaka-packager/issues/1378)
+* Fix NPM binary selection on ARM Macs ([#1376](https://github.com/shaka-project/shaka-packager/issues/1376)) ([733af91](https://github.com/shaka-project/shaka-packager/commit/733af9128dfa7c46dd7a9fe3f8361ab50a829afe)), closes [#1375](https://github.com/shaka-project/shaka-packager/issues/1375)
+
 ## [3.0.3](https://github.com/shaka-project/shaka-packager/compare/v3.0.2...v3.0.3) (2024-03-12)
 
 

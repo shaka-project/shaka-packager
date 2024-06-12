@@ -126,9 +126,10 @@ const char kUsage[] =
     "    list of values for DASH Accessibility elements. The value should be\n"
     "    in the format: scheme_id_uri=value.\n"
     "  - dash_roles (roles): Optional semicolon separated list of values for\n"
-    "    DASH Role elements. The value should be one of: caption, subtitle,\n"
-    "    forced-subtitle, main, alternate, supplementary, commentary, \n"
-    "    description and dub. See DASH\n"
+    "    DASH Role elements. The value should be one of: caption, subtitle, \n"
+    "    main, alternate, supplementary, commentary, dub, description, sign, \n"
+    "    metadata, enhanced-audio- intelligibility, emergency, \n"
+    "    forced-subtitle, easyreader, and karaoke. See DASH\n"
     "    (ISO/IEC 23009-1) specification for details.\n"
     "  - forced_subtitle: Optional boolean value (0|1). If set to 1 \n"
     "    indicates that this stream is a Forced Narrative subtitle that \n"
@@ -359,6 +360,8 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_segment_sap_aligned);
   chunking_params.subsegment_sap_aligned =
       absl::GetFlag(FLAGS_fragment_sap_aligned);
+  chunking_params.start_segment_number =
+      absl::GetFlag(FLAGS_start_segment_number);
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;

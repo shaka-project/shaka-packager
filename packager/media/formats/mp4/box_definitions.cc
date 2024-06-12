@@ -1633,6 +1633,16 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
           extra_codec_configs.push_back(std::move(dv_box));
       }
     }
+    const bool is_av1 = actual_format == FOURCC_av01;
+    if (is_av1) {
+      for (FourCC fourcc : {FOURCC_dvvC}) {
+        CodecConfiguration dv_box;
+        dv_box.box_type = fourcc;
+        RCHECK(buffer->TryReadWriteChild(&dv_box));
+        if (!dv_box.data.empty())
+          extra_codec_configs.push_back(std::move(dv_box));
+      }
+    }
   } else {
     for (CodecConfiguration& extra_codec_config : extra_codec_configs)
       RCHECK(buffer->ReadWriteChild(&extra_codec_config));

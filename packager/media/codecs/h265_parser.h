@@ -52,6 +52,8 @@ struct H265VuiParameters {
   int sar_width = 0;
   int sar_height = 0;
   int transfer_characteristics = 0;
+  int color_primaries = 0;
+  int matrix_coefficients = 0;
 
   bool vui_timing_info_present_flag = false;
   long vui_num_units_in_tick = 0;

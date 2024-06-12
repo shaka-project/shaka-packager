@@ -82,7 +82,7 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
       options().segment_template.empty()
           ? options().output_file_name
           : GetSegmentName(options().segment_template, segment_start_timestamp,
-                           segment_number_++, options().bandwidth);
+                           segment_info.segment_number, options().bandwidth);
 
   const int64_t file_size = segmenter_->segment_buffer()->Size();
 
@@ -95,7 +95,8 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
         segment_path,
         segment_info.start_timestamp * segmenter_->timescale() +
             segmenter_->transport_stream_timestamp_offset(),
-        segment_info.duration * segmenter_->timescale(), file_size);
+        segment_info.duration * segmenter_->timescale(), file_size,
+        segment_info.segment_number);
   }
 
   segmenter_->set_segment_started(false);

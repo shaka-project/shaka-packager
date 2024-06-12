@@ -744,9 +744,10 @@ bool WvmMediaParser::ParseIndexEntry() {
           stream_id_count_, time_scale, track_duration, kCodecH264,
           byte_to_unit_stream_converter_.stream_format(), std::string(),
           video_codec_config.data(), video_codec_config.size(), video_width,
-          video_height, pixel_width, pixel_height,
-          0 /* transfer_characteristics */, trick_play_factor, nalu_length_size,
-          std::string(), decryption_key_source_ ? false : true));
+          video_height, pixel_width, pixel_height, 0 /* color_primaries */,
+          0 /*matrix_coefficients */, 0 /* transfer_characteristics */,
+          trick_play_factor, nalu_length_size, std::string(),
+          decryption_key_source_ ? false : true));
       program_demux_stream_map_[absl::StrFormat(
           "%u:%u", index_program_id_,
           video_pes_stream_id ? video_pes_stream_id : kDefaultVideoStreamId)] =

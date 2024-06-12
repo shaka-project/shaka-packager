@@ -102,8 +102,10 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   }
 
   void FireOnNewSegmentWithParams(const OnNewSegmentParameters& params) {
+    const int64_t kSegmentNumber = 1;
     listener_->OnNewSegment(params.file_name, params.start_time,
-                            params.duration, params.segment_file_size);
+                            params.duration, params.segment_file_size,
+                            kSegmentNumber);
   }
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
@@ -136,6 +138,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
       "  time_scale: 10\n"
       "  pixel_width: 1\n"
       "  pixel_height: 1\n"
+      "  supplemental_codec: ''\n"
+      "  compatible_brand: 0\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"
@@ -168,6 +172,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "  time_scale: 10\n"
       "  pixel_width: 1\n"
       "  pixel_height: 1\n"
+      "  supplemental_codec: ''\n"
+      "  compatible_brand: 0\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"
@@ -216,6 +222,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
       "  time_scale: 10\n"
       "  pixel_width: 8\n"
       "  pixel_height: 9\n"
+      "  supplemental_codec: ''\n"
+      "  compatible_brand: 0\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"
@@ -258,6 +266,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
       "  time_scale: 10\n"
       "  pixel_width: 1\n"
       "  pixel_height: 1\n"
+      "  supplemental_codec: ''\n"
+      "  compatible_brand: 0\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"
@@ -295,6 +305,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal_SegmentList) 
       "  time_scale: 10\n"
       "  pixel_width: 1\n"
       "  pixel_height: 1\n"
+      "  supplemental_codec: ''\n"
+      "  compatible_brand: 0\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"

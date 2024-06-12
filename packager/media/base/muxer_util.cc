@@ -110,7 +110,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
 
 std::string GetSegmentName(const std::string& segment_template,
                            int64_t segment_start_time,
-                           uint32_t segment_index,
+                           uint32_t segment_number,
                            uint32_t bandwidth) {
   DCHECK_EQ(Status::OK, ValidateSegmentTemplate(segment_template));
 
@@ -154,7 +154,7 @@ std::string GetSegmentName(const std::string& segment_template,
     absl::UntypedFormatSpec format(format_tag);
     if (identifier == "Number") {
       // SegmentNumber starts from 1.
-      format_args.emplace_back(static_cast<uint64_t>(segment_index + 1));
+      format_args.emplace_back(static_cast<uint64_t>(segment_number));
     } else if (identifier == "Time") {
       format_args.emplace_back(static_cast<uint64_t>(segment_start_time));
     } else if (identifier == "Bandwidth") {

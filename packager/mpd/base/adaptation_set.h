@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <packager/mpd/base/xml/xml_node.h>
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
 
@@ -43,8 +44,14 @@ class AdaptationSet {
     kRoleSupplementary,
     kRoleCommentary,
     kRoleDub,
+    kRoleDescription,
+    kRoleSign,
+    kRoleMetadata,
+    kRoleEnhancedAudioIntelligibility,
+    kRoleEmergency,
     kRoleForcedSubtitle,
-    kRoleDescription
+    kRoleEasyreader,
+    kRoleKaraoke,
   };
 
   virtual ~AdaptationSet();
@@ -136,6 +143,11 @@ class AdaptationSet {
   /// @return true if id is set, false otherwise.
   bool has_id() const { return static_cast<bool>(id_); }
 
+  /// @return true if id is set, false otherwise.
+  std::optional<uint32_t> SortIndex() const {
+    return index_.has_value() ? index_ : id_;
+  }
+
   // Must be unique in the Period.
   uint32_t id() const { return id_.value(); }
 
@@ -191,6 +203,24 @@ class AdaptationSet {
   /// @param codec is the new codec to be set.
   void set_codec(const std::string& codec) { codec_ = codec; };
 
+  /// @return matrix_coefficients.
+  uint32_t matrix_coefficients() const { return matrix_coefficients_; }
+
+  /// Set AdaptationSet's video matrix coefficients.
+  /// @param matrix_coefficients is the video matrix coefficients.
+  void set_matrix_coefficients(const uint32_t& matrix_coefficients) {
+    matrix_coefficients_ = matrix_coefficients;
+  };
+
+  /// @return color_primaries.
+  uint32_t color_primaries() const { return color_primaries_; }
+
+  /// Set AdaptationSet's video colour primaries.
+  /// @param color_primaries is the video colour primaries.
+  void set_color_primaries(const uint32_t& color_primaries) {
+    color_primaries_ = color_primaries;
+  };
+
   /// @return transfer_characteristics.
   uint32_t transfer_characteristics() const {
     return transfer_characteristics_;
@@ -201,6 +231,29 @@ class AdaptationSet {
   void set_transfer_characteristics(const uint32_t& transfer_characteristics) {
     transfer_characteristics_ = transfer_characteristics;
   };
+
+  /// Return ProtectedContent.
+  const MediaInfo::ProtectedContent* protected_content() const {
+    return protected_content_;
+  };
+
+  /// Set AdaptationSet@protected_content.
+  /// @param media_info to extract the ProtectedContent from.
+  void set_protected_content(const MediaInfo& media_info);
+
+  /// Check if the protected content associated with this AdaptationSet  matches
+  /// with the one in |media_info|.
+  /// @param media_info to extract ProtectedContent from.
+  /// @param content_protection_in_adaptation_set to indicate if there is
+  ///        protected content in AdaptationSet.
+  /// @return true if there is a match.
+  bool MatchAdaptationSet(const MediaInfo& media_info,
+                          bool content_protection_in_adaptation_set);
+
+  /// Check if the adaptation sets are switchable.
+  /// @param adaptation_set to compare this AdaptationSet with.
+  /// @return true if AdaptationSets are switchable.
+  bool SwitchableAdaptationSet(const AdaptationSet& adaptation_set);
 
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
@@ -343,6 +396,11 @@ class AdaptationSet {
   // stream.
   std::vector<const AdaptationSet*> trick_play_references_;
 
+  // Matrix Coefficients.
+  uint32_t matrix_coefficients_ = 0;
+  // Colour Primaries.
+  uint32_t color_primaries_ = 0;
+
   // Transfer characteristics.
   uint32_t transfer_characteristics_ = 0;
 
@@ -351,6 +409,9 @@ class AdaptationSet {
 
   // The label of this AdaptationSet.
   std::string label_;
+
+  // ProtectedContent of this AdaptationSet.
+  MediaInfo::ProtectedContent* protected_content_;
 };
 
 }  // namespace shaka
