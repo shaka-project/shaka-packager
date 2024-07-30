@@ -98,6 +98,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_fLaC;
     case kCodecOpus:
       return FOURCC_Opus;
+    case kCodecIAMF:
+      return FOURCC_iamf;
     case kCodecMha1:
       return FOURCC_mha1;
     case kCodecMhm1:
@@ -556,6 +558,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     case kCodecOpus:
       audio.dops.opus_identification_header = audio_info->codec_config();
       break;
+    case kCodecIAMF:
+      audio.iacb.data = audio_info->codec_config();
+      break;
     case kCodecMha1:
     case kCodecMhm1:
       audio.mhac.data = audio_info->codec_config();
@@ -576,11 +581,20 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     audio.channelcount = audio_info->num_channels();
     //ETSI TS 103 190-2, E.4.6 samplesize shall be set to 16.
     audio.samplesize = 16;
+  } else if (audio_info->codec() == kCodecIAMF) {
+    // IAMF sets channelcount to 0
+    // https://aomediacodec.github.io/iamf/#iasampleentry-section
+    audio.channelcount = 0;
   } else {
     audio.channelcount = audio_info->num_channels();
     audio.samplesize = audio_info->sample_bits();
   }
-  audio.samplerate = audio_info->sampling_frequency();
+
+  // IAMF sets samplerate to 0
+  // https://aomediacodec.github.io/iamf/#iasampleentry-section
+  audio.samplerate =
+      audio_info->codec() == kCodecIAMF ? 0 : audio_info->sampling_frequency();
+
   SampleTable& sample_table = trak->media.information.sample_table;
   SampleDescription& sample_description = sample_table.description;
   sample_description.type = kAudio;
