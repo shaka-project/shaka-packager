@@ -55,7 +55,7 @@ AdaptationSet::Role RoleFromString(const std::string& role_str) {
   if (role_str == "emergency")
     return AdaptationSet::Role::kRoleEmergency;
   if (role_str == "easyreader")
-    return AdaptationSet::Role::kRoleEasyreader;                
+    return AdaptationSet::Role::kRoleEasyreader;
   if (role_str == "description")
     return AdaptationSet::Role::kRoleDescription;
   return AdaptationSet::Role::kRoleUnknown;
