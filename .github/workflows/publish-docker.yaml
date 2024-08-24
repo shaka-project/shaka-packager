@@ -49,6 +49,11 @@ jobs:
           submodules: recursive
           fetch-tags: true
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -56,24 +61,26 @@ jobs:
           password: ${{ secrets.DOCKERHUB_CI_TOKEN }}
 
       - name: Push to Docker Hub
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Important: use actions/checkout source, which has the right tags!
           # Without context: ., this action will try to fetch git source
           # itself, and it will be unable to determine the correct version
           # number.
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ inputs.tag }}
 
       - name: Push to Docker Hub as "latest"
         if: ${{ inputs.latest }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Important: use actions/checkout source, which has the right tags!
           # Without context: ., this action will try to fetch git source
           # itself, and it will be unable to determine the correct version
           # number.
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:latest
