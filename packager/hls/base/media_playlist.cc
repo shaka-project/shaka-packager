@@ -181,7 +181,7 @@ class SegmentInfoEntry : public HlsEntry {
                    uint64_t segment_file_size,
                    uint64_t previous_segment_end_offset);
 
-  std::string ToString() override;
+  std::string ToString(std::string) override;
   int64_t start_time() const { return start_time_; }
   double duration_seconds() const { return duration_seconds_; }
   void set_duration_seconds(double duration_seconds) {
@@ -217,7 +217,7 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       segment_file_size_(segment_file_size),
       previous_segment_end_offset_(previous_segment_end_offset) {}
 
-std::string SegmentInfoEntry::ToString() {
+std::string SegmentInfoEntry::ToString(std::string) {
   std::string result = absl::StrFormat("#EXTINF:%.3f,", duration_seconds_);
 
   if (use_byte_range_) {
@@ -242,7 +242,7 @@ class EncryptionInfoEntry : public HlsEntry {
                       const std::string& key_format,
                       const std::string& key_format_versions);
 
-  std::string ToString() override;
+  std::string ToString(std::string) override;
 
  private:
   EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
@@ -270,9 +270,11 @@ EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
       key_format_(key_format),
       key_format_versions_(key_format_versions) {}
 
-std::string EncryptionInfoEntry::ToString() {
+std::string EncryptionInfoEntry::ToString(std::string tag_name) {
   std::string tag_string;
-  Tag tag("#EXT-X-KEY", &tag_string);
+  if (tag_name.empty())
+    tag_name = "#EXT-X-KEY";
+  Tag tag(tag_name, &tag_string);
 
   if (method_ == MediaPlaylist::EncryptionMethod::kSampleAes) {
     tag.AddString("METHOD", "SAMPLE-AES");
@@ -307,7 +309,7 @@ class DiscontinuityEntry : public HlsEntry {
  public:
   DiscontinuityEntry();
 
-  std::string ToString() override;
+  std::string ToString(std::string) override;
 
  private:
   DiscontinuityEntry(const DiscontinuityEntry&) = delete;
@@ -317,7 +319,7 @@ class DiscontinuityEntry : public HlsEntry {
 DiscontinuityEntry::DiscontinuityEntry()
     : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
 
-std::string DiscontinuityEntry::ToString() {
+std::string DiscontinuityEntry::ToString(std::string) {
   return "#EXT-X-DISCONTINUITY";
 }
 
@@ -325,7 +327,7 @@ class PlacementOpportunityEntry : public HlsEntry {
  public:
   PlacementOpportunityEntry();
 
-  std::string ToString() override;
+  std::string ToString(std::string) override;
 
  private:
   PlacementOpportunityEntry(const PlacementOpportunityEntry&) = delete;
@@ -336,7 +338,7 @@ class PlacementOpportunityEntry : public HlsEntry {
 PlacementOpportunityEntry::PlacementOpportunityEntry()
     : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
 
-std::string PlacementOpportunityEntry::ToString() {
+std::string PlacementOpportunityEntry::ToString(std::string) {
   return "#EXT-X-PLACEMENT-OPPORTUNITY";
 }
 
