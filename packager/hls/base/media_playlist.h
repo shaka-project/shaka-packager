@@ -36,7 +36,7 @@ class HlsEntry {
   virtual ~HlsEntry();
 
   EntryType type() const { return type_; }
-  virtual std::string ToString() = 0;
+  virtual std::string ToString(std::string tag_name = "") = 0;
 
  protected:
   explicit HlsEntry(EntryType type);
@@ -83,6 +83,9 @@ class MediaPlaylist {
   const std::string& codec() const { return codec_; }
   const std::string& supplemental_codec() const { return supplemental_codec_; }
   const media::FourCC& compatible_brand() const { return compatible_brand_; }
+  const std::list<std::unique_ptr<HlsEntry>>& entries() const {
+    return entries_;
+  }
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
