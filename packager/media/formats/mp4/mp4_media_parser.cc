@@ -628,7 +628,12 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         const int16_t roll_distance_in_samples =
             audio_roll_recovery_entries[0].roll_distance;
         if (roll_distance_in_samples < 0) {
-          RCHECK(sampling_frequency != 0);
+          // IAMF requires the `samplerate` field to be set to 0.
+          // (https://aomediacodec.github.io/iamf/#iasampleentry-section)
+          if (actual_format == FOURCC_iamf)
+            continue;
+
+          RCHECK((sampling_frequency != 0));
           seek_preroll_ns = kNanosecondsPerSecond *
                             (-roll_distance_in_samples) / sampling_frequency;
         } else {
