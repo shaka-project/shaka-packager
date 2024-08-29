@@ -262,6 +262,13 @@ Status MP4Muxer::DelayInitializeMuxer() {
     // supported yet.
     if (codec_fourcc != FOURCC_avc3 && codec_fourcc != FOURCC_hev1)
       ftyp->compatible_brands.push_back(FOURCC_cmfc);
+
+    if (streams()[0]->stream_type() == kStreamAudio) {
+      codec_fourcc =
+          CodecToFourCC(streams()[0]->codec(), H26xStreamFormat::kUnSpecified);
+      if (codec_fourcc == FOURCC_iamf)
+        ftyp->compatible_brands.push_back(FOURCC_iamf);
+    }
   }
 
   moov->header.creation_time = IsoTimeNow();
