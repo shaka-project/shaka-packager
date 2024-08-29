@@ -44,6 +44,18 @@ AdaptationSet::Role RoleFromString(const std::string& role_str) {
     return AdaptationSet::Role::kRoleDub;
   if (role_str == "forced-subtitle")
     return AdaptationSet::Role::kRoleForcedSubtitle;
+  if (role_str == "karaoke")
+    return AdaptationSet::Role::kRoleKaraoke;
+  if (role_str == "sign")
+    return AdaptationSet::Role::kRoleSign;
+  if (role_str == "metadata")
+    return AdaptationSet::Role::kRoleMetadata;
+  if (role_str == "enhanced-audio-intelligibility")
+    return AdaptationSet::Role::kRoleEnhancedAudioIntelligibility;
+  if (role_str == "emergency")
+    return AdaptationSet::Role::kRoleEmergency;
+  if (role_str == "easyreader")
+    return AdaptationSet::Role::kRoleEasyreader;
   if (role_str == "description")
     return AdaptationSet::Role::kRoleDescription;
   return AdaptationSet::Role::kRoleUnknown;
