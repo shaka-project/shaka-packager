@@ -657,7 +657,12 @@ Status CreateAudioVideoJobs(
       }
 
       std::vector<std::shared_ptr<MediaHandler>> handlers;
-      if (is_text) {
+      // Enable TextPadder for non-teletext text streams only.
+      // Teletext streams (cc_index >= 0) are used for live and
+      // must generate segments at the same time as video even
+      // if there is no text data, so a heart-beat mechanism
+      // is used instead of TextPadder at the next text event.
+      if (is_text && stream.cc_index < 0) {
         handlers.emplace_back(std::make_shared<TextPadder>(
             packaging_params.default_text_zero_bias_ms));
       }
