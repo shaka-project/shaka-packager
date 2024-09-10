@@ -385,6 +385,17 @@ void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
   forced_subtitle_ = forced_subtitle;
 }
 
+void MediaPlaylist::AddEncryptionInfoForTesting(
+    MediaPlaylist::EncryptionMethod method,
+    const std::string& url,
+    const std::string& key_id,
+    const std::string& iv,
+    const std::string& key_format,
+    const std::string& key_format_versions) {
+  entries_.emplace_back(new EncryptionInfoEntry(
+      method, url, key_id, iv, key_format, key_format_versions));
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   const int32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {

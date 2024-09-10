@@ -40,6 +40,7 @@ const uint32_t kEC3JocComplexityZero = 0;
 const uint32_t kEC3JocComplexity = 16;
 const bool kAC4IMSFlagEnabled = true;
 const bool kAC4CBIFlagEnabled = true;
+const bool kCreateSessionKeys = true;
 
 std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
     const std::string& filename,
@@ -143,7 +144,8 @@ class MasterPlaylistTest : public ::testing::Test {
       : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
                                             kDefaultAudioLanguage,
                                             kDefaultTextLanguage,
-                                            !kIsIndependentSegments)),
+                                            !kIsIndependentSegments,
+                                            kCreateSessionKeys)),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(std::filesystem::u8path(test_output_dir_) /
                               kDefaultMasterPlaylistName) {}
@@ -850,37 +852,27 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistWithEncryption) {
-  const uint64_t kAudioChannels = 2;
-  const uint64_t kAudioMaxBitrate = 50000;
-  const uint64_t kAudioAvgBitrate = 30000;
-
   std::unique_ptr<MockMediaPlaylist> media_playlists[] = {
+      // VIDEO
+      CreateVideoPlaylist("video-1.m3u8", "sdvideocodec", 300000, 200000),
+
       // AUDIO
       CreateAudioPlaylist("audio-1.m3u8", "audio 1", "audio-group-1",
-                          "audiocodec", "en", kAudioChannels, kAudioMaxBitrate,
-                          kAudioAvgBitrate, kEC3JocComplexityZero,
-                          !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled),
-      CreateAudioPlaylist("audio-2.m3u8", "audio 2", "audio-group-2",
-                          "audiocodec", "fr", kAudioChannels, kAudioMaxBitrate,
-                          kAudioAvgBitrate, kEC3JocComplexityZero,
-                          !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled),
+                          "audiocodec", "en", 2, 50000, 30000,
+                          kEC3JocComplexityZero, !kAC4IMSFlagEnabled,
+                          !kAC4CBIFlagEnabled),
   };
 
   // Add all the media playlists to the master playlist.
   std::list<MediaPlaylist*> media_playlist_list;
   for (const auto& media_playlist : media_playlists) {
-    media_playlist.get()->AddEncryptionInfo(
+    media_playlist.get()->AddEncryptionInfoForTesting(
         MediaPlaylist::EncryptionMethod::kSampleAes, "http://example.com", "",
         "0x12345678", "com.widevine", "1/2/4");
-    media_playlist.get()->AddSegment("file1.ts", 0, 10 * 90000L, 0UL,
-                                     1000000UL);
-    media_playlist.get()->AddSegment("file2.ts", 10 * 90000L, 30 * 0UL, 0UL,
-                                     5 * 1000000UL);
     media_playlist_list.push_back(media_playlist.get());
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-
   EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                     media_playlist_list));
 
@@ -892,19 +884,18 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistWithEncryption) {
   std::string expected =
       "#EXTM3U\n"
       "## Generated with https://github.com/shaka-project/shaka-packager "
-      "version test\n\n"
-      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/"
-      "audio-1.m3u8\",GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio "
-      "1\",DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
-      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/"
-      "audio-2.m3u8\",GROUP-ID=\"audio-group-2\",LANGUAGE=\"fr\",NAME=\"audio "
-      "2\",DEFAULT=NO,AUTOSELECT=YES,CHANNELS=\"2\"\n\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,CODECS="
-      "\"audiocodec\",AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
-      "http://playlists.org/audio-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,CODECS="
-      "\"audiocodec\",AUDIO=\"audio-group-2\",CLOSED-CAPTIONS=NONE\n"
-      "http://playlists.org/audio-2.m3u8\n";
+      "version test\n"
+      "#EXT-X-SESSION-KEY:METHOD=SAMPLE-AES,URI=\"http://example.com\","
+      "IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\",KEYFORMAT=\"com.widevine\"\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
+      "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
+      "CODECS=\"sdvideocodec,audiocodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-1\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/video-1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
 }

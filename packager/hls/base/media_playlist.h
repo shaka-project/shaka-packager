@@ -103,6 +103,14 @@ class MediaPlaylist {
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
 
+  /// For testing only.
+  void AddEncryptionInfoForTesting(MediaPlaylist::EncryptionMethod method,
+                                   const std::string& url,
+                                   const std::string& key_id,
+                                   const std::string& iv,
+                                   const std::string& key_format,
+                                   const std::string& key_format_versions);
+
   /// This must succeed before calling any other public methods.
   /// @param media_info is the info of the segments that are going to be added
   ///        to this playlist.
