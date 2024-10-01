@@ -255,9 +255,8 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   int64_t dts_section = 0;
   if (pts_dts_flags == 0x2) {
     RCHECK(bit_reader.ReadBits(40, &pts_section));
-    RCHECK((((pts_section >> 36) & 0xf) == 0x2) &&
-           IsTimestampSectionValid(pts_section));
-    is_pts_valid = true;
+    is_pts_valid = (((pts_section >> 36) & 0xf) == 0x2) &&
+                   IsTimestampSectionValid(pts_section);
   }
   if (pts_dts_flags == 0x3) {
     RCHECK(bit_reader.ReadBits(40, &pts_section));
