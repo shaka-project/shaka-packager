@@ -113,6 +113,11 @@ struct StreamDescriptor {
   /// formats, there are multiple "channels" in a single stream. This allows
   /// selecting only one channel.
   int32_t cc_index = -1;
+  /// Optional value to generate teletext heart beat signal from PTS from
+  /// other media streams. A zero value means disabled.
+  /// The timescale is 90000. For this mechanism to work, there must be
+  /// another elementary stream handled by the same mp2ts demuxer.
+  int32_t heartbeat_shift = 0;
 
   /// Required for audio when outputting HLS. It defines the name of the output
   /// stream, which is not necessarily the same as output. This is used as the

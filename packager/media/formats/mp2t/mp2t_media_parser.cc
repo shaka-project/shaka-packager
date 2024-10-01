@@ -338,6 +338,11 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
       new PidState(pes_pid, pid_type, std::move(pes_section_parser)));
   pes_pid_state->Enable();
   pids_.emplace(pes_pid, std::move(pes_pid_state));
+
+  // Keep track of text pids
+  if (pid_type == PidState::kPidTextPes) {
+    text_pids_.insert(pes_pid);
+  }
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(
@@ -414,6 +419,7 @@ void Mp2tMediaParser::OnEmitMediaSample(
                << ").";
     return;
   }
+  update_biggest_pts(new_sample->pts());
   pid_state->second->media_sample_queue_.push_back(std::move(new_sample));
 }
 
@@ -430,6 +436,17 @@ void Mp2tMediaParser::OnEmitTextSample(uint32_t pes_pid,
     LOG(ERROR) << "PID State for new sample not found (pid = "
                << pes_pid << ").";
     return;
+  }
+
+  if (new_sample->role() != TextSampleRole::kMediaHeartBeat) {
+    // Remove kMediaHeartBeats from the end of the queue
+    while (!pid_state->second->text_sample_queue_.empty()) {
+      if (pid_state->second->text_sample_queue_.back()->role() !=
+          TextSampleRole::kMediaHeartBeat) {
+        break;
+      }
+      pid_state->second->text_sample_queue_.pop_back();
+    }
   }
   pid_state->second->text_sample_queue_.push_back(std::move(new_sample));
 }
@@ -455,6 +472,27 @@ bool Mp2tMediaParser::EmitRemainingSamples() {
   }
 
   return true;
+}
+
+void Mp2tMediaParser::update_biggest_pts(int64_t pts) {
+  if (pts >= biggest_pts_ + 9000) {  // 100ms larger than last biggest
+    biggest_pts_ = pts;
+    for (auto pid : text_pids_) {
+      auto pid_state = pids_.find(pid);
+      if (pid_state == pids_.end()) {
+        LOG(ERROR) << "PID State for new sample not found (text pid = " << pid
+                   << " )";
+        continue;
+      }
+      TextSettings text_settings;
+      auto heartbeat = std::make_shared<TextSample>(
+          "", pts, pts, text_settings, TextFragment({}, ""),
+          TextSampleRole::kMediaHeartBeat);
+      // LOG(WARNING) << "Media heartbeat generated = " << pid << " pts=" <<
+      // pts;
+      OnEmitTextSample(uint32_t(pid), heartbeat);
+    }
+  }
 }
 
 }  // namespace mp2t

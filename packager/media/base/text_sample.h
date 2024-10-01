@@ -117,6 +117,21 @@ struct TextFragment {
   bool is_empty() const;
 };
 
+enum class TextSampleRole {
+  /// kCue is complete cue with both start and end time
+  kCue,
+  /// kCueWithoutEnd is cue with start time but unknown end time
+  kCueWithoutEnd,
+  /// kCueEnd has time to end a kCueWithoutEnd, if ongooing.
+  /// Can be sent multiple times with different times and then acts as heart
+  /// beat.
+  kCueEnd,
+  /// kMediaHeartBeat conveys a PTS from another media pid. Use its start_time.
+  /// Will typically be shifted up in order to avoid premature segment
+  /// generation.
+  kMediaHeartBeat,
+};
+
 class TextSample {
  public:
   TextSample(const std::string& id,
@@ -124,6 +139,13 @@ class TextSample {
              int64_t end_time,
              const TextSettings& settings,
              const TextFragment& body);
+
+  TextSample(const std::string& id,
+             int64_t start_time,
+             int64_t end_time,
+             const TextSettings& settings,
+             const TextFragment& body,
+             TextSampleRole role);
 
   const std::string& id() const { return id_; }
   int64_t start_time() const { return start_time_; }
@@ -134,6 +156,8 @@ class TextSample {
 
   int32_t sub_stream_index() const { return sub_stream_index_; }
   void set_sub_stream_index(int32_t idx) { sub_stream_index_ = idx; }
+  bool is_empty() const { return body_.is_empty(); }
+  TextSampleRole role() const { return role_; }
 
  private:
   // Allow the compiler generated copy constructor and assignment operator
@@ -146,6 +170,7 @@ class TextSample {
   const TextSettings settings_;
   const TextFragment body_;
   int32_t sub_stream_index_ = -1;
+  const TextSampleRole role_;
 };
 
 }  // namespace media

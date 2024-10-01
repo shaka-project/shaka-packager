@@ -53,3 +53,12 @@ DEFINE_int32(transport_stream_timestamp_offset_ms,
              "input. For example, timestamps from ISO-BMFF after adjusted by "
              "EditList could be negative. In transport streams, timestamps are "
              "not allowed to be less than zero.");
+DEFINE_int64(ts_text_trigger_shift,
+             180000,
+             "A positive value, in 90kHz clock. It is a shift applied to "
+             "other elementary streams PTS values to generate a heart beat for "
+             "generating text chunks from teletext in MPEG-2 TS input. "
+             "The purpose is to generate text chunks at approximately the same "
+             "time as other segments, even if there is no data in the text stream. "
+             "A smaller value results in earlier generation, but at the risk of "
+             "premature generation with incorrect cue start or end time.");

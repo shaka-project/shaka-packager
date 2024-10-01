@@ -328,6 +328,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   chunking_params.low_latency_dash_mode = FLAGS_low_latency_dash_mode;
   chunking_params.segment_sap_aligned = FLAGS_segment_sap_aligned;
   chunking_params.subsegment_sap_aligned = FLAGS_fragment_sap_aligned;
+  chunking_params.ts_text_trigger_shift = FLAGS_ts_text_trigger_shift;
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;

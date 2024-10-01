@@ -21,6 +21,8 @@ namespace shaka {
 namespace media {
 namespace mp2t {
 
+const int64_t ttx_cue_duration_placeholder = 30 * 90000;  // 30s
+
 class EsParserTeletext : public EsParser {
  public:
   EsParserTeletext(const uint32_t pid,
@@ -37,7 +39,6 @@ class EsParserTeletext : public EsParser {
   void Reset() override;
 
  private:
-  void ResetPTS(int64_t pts);
   using RowColReplacementMap =
       std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::string>>;
 
@@ -61,11 +62,11 @@ class EsParserTeletext : public EsParser {
                       const uint8_t magazine,
                       TextRow& display_text);
   void UpdateCharset();
-  void SendPending(const uint16_t index, const int64_t pts);
   TextRow BuildRow(const uint8_t* data_block, const uint8_t row) const;
   void ParsePacket26(const uint8_t* data_block);
   void UpdateNationalSubset(const uint8_t national_subset[13][3]);
-  void SendHeartBeatSample(const int64_t pts);
+  void SendStartedCue(const uint16_t index);
+  void SendCueEnd(const uint16_t index, const int64_t pts);
 
   static void SetPacket26ReplacementString(
       RowColReplacementMap& replacement_map,
@@ -84,6 +85,7 @@ class EsParserTeletext : public EsParser {
   uint8_t charset_code_;
   char current_charset_[96][3];
   int64_t last_pts_;
+  int64_t last_end_pts_;
   bool inside_sample_;
 };
 
