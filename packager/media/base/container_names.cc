@@ -830,24 +830,26 @@ static bool CheckMpeg2TransportStream(const uint8_t* buffer, int buffer_size) {
     int pid = ReadBits(&reader, 13);
     RCHECK(pid < 3 || pid > 15);
 
-    // Skip transport_scrambling_control.
-    reader.SkipBits(2);
+    if (pid != 8191) {  // More checks for non-stuffing packets
+      // Skip transport_scrambling_control.
+      reader.SkipBits(2);
 
-    // Adaptation_field_control can not be 0.
-    int adaptation_field_control = ReadBits(&reader, 2);
-    RCHECK(adaptation_field_control != 0);
+      // Adaptation_field_control can not be 0.
+      int adaptation_field_control = ReadBits(&reader, 2);
+      RCHECK(adaptation_field_control != 0);
 
-    // If there is an adaptation_field, verify it.
-    if (adaptation_field_control >= 2) {
-      // Skip continuity_counter.
-      reader.SkipBits(4);
+      // If there is an adaptation_field, verify it.
+      if (adaptation_field_control >= 2) {
+        // Skip continuity_counter.
+        reader.SkipBits(4);
 
-      // Get adaptation_field_length and verify it.
-      int adaptation_field_length = ReadBits(&reader, 8);
-      if (adaptation_field_control == 2)
-        RCHECK(adaptation_field_length == 183);
-      else
-        RCHECK(adaptation_field_length <= 182);
+        // Get adaptation_field_length and verify it.
+        int adaptation_field_length = ReadBits(&reader, 8);
+        if (adaptation_field_control == 2)
+          RCHECK(adaptation_field_length == 183);
+        else
+          RCHECK(adaptation_field_length <= 182);
+      }
     }
 
     // Attempt to determine the packet length on the first packet.
