@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright 2016 Google LLC. All rights reserved.
 #
 # Use of this source code is governed by a BSD-style
@@ -10,8 +10,6 @@
 # This file itself is considered an invalid module name because of the dash in
 # the filename: pssh-box.py
 # pylint: disable=invalid-name
-
-from __future__ import print_function
 
 import argparse
 import base64
