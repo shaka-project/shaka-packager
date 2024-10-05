@@ -1104,6 +1104,38 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('av1-webm')
 
+  def testIamfWithBaseProfileAndPcm(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio'],
+                         output_format='mp4',
+                         test_files=['bear-iamf-base-pcm.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('iamf-base-pcm-mp4')
+
+  def testIamfWithBaseProfileAndOpus(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio'],
+                         output_format='mp4',
+                         test_files=['bear-iamf-base-opus.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('iamf-base-opus-mp4')
+
+  def testIamfWithSimpleProfileAndAacLc(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio'],
+                         output_format='mp4',
+                         test_files=['bear-iamf-simple-aac-lc.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('iamf-simple-aac-lc-mp4')
+
+  def testIamfWithSimpleProfileAndFlac(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio'],
+                         output_format='mp4',
+                         test_files=['bear-iamf-simple-flac.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('iamf-simple-flac-mp4')
+
   def testEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),

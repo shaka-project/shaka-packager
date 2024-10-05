@@ -1316,6 +1316,21 @@ TEST_F(BoxDefinitionsTest, OpusSampleEntry) {
   ASSERT_EQ(entry, entry_readback);
 }
 
+TEST_F(BoxDefinitionsTest, IAMFSampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_iamf;
+  entry.data_reference_index = 2;
+  entry.channelcount = 0;
+  entry.samplesize = 16;
+  entry.samplerate = 0;
+  Fill(&entry.iacb);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
 TEST_F(BoxDefinitionsTest, FlacSampleEntry) {
   AudioSampleEntry entry;
   entry.format = FOURCC_fLaC;
