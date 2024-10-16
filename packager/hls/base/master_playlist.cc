@@ -576,8 +576,10 @@ bool MasterPlaylist::WriteMasterPlaylist(
     std::set<std::string> session_keys;
     for (const auto& playlist : playlists) {
       for (const auto& entry : playlist->entries()) {
-        if (entry->type() == HlsEntry::EntryType::kExtKey)
-          session_keys.emplace(entry->ToString("#EXT-X-SESSION-KEY"));
+        if (entry->type() == HlsEntry::EntryType::kExtKey) {
+          auto encryption_entry = dynamic_cast<EncryptionInfoEntry*>(entry.get());
+          session_keys.emplace(encryption_entry->ToString("#EXT-X-SESSION-KEY"));
+        }
       }
     }
     // session_keys will now contain all the unique session keys.

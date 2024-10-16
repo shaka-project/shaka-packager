@@ -165,6 +165,12 @@ std::string CreatePlaylistHeader(
   return header;
 }
 
+
+}  // namespace
+
+HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
+HlsEntry::~HlsEntry() {}
+
 class SegmentInfoEntry : public HlsEntry {
  public:
   // If |use_byte_range| true then this will append EXT-X-BYTERANGE
@@ -181,7 +187,7 @@ class SegmentInfoEntry : public HlsEntry {
                    uint64_t segment_file_size,
                    uint64_t previous_segment_end_offset);
 
-  std::string ToString(std::string) override;
+  std::string ToString() override;
   int64_t start_time() const { return start_time_; }
   double duration_seconds() const { return duration_seconds_; }
   void set_duration_seconds(double duration_seconds) {
@@ -217,7 +223,7 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       segment_file_size_(segment_file_size),
       previous_segment_end_offset_(previous_segment_end_offset) {}
 
-std::string SegmentInfoEntry::ToString(std::string) {
+std::string SegmentInfoEntry::ToString() {
   std::string result = absl::StrFormat("#EXTINF:%.3f,", duration_seconds_);
 
   if (use_byte_range_) {
@@ -233,28 +239,43 @@ std::string SegmentInfoEntry::ToString(std::string) {
   return result;
 }
 
-class EncryptionInfoEntry : public HlsEntry {
- public:
-  EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
-                      const std::string& url,
-                      const std::string& key_id,
-                      const std::string& iv,
-                      const std::string& key_format,
-                      const std::string& key_format_versions);
 
-  std::string ToString(std::string) override;
+class DiscontinuityEntry : public HlsEntry {
+ public:
+  DiscontinuityEntry();
+
+  std::string ToString() override;
 
  private:
-  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
-  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
-
-  const MediaPlaylist::EncryptionMethod method_;
-  const std::string url_;
-  const std::string key_id_;
-  const std::string iv_;
-  const std::string key_format_;
-  const std::string key_format_versions_;
+  DiscontinuityEntry(const DiscontinuityEntry&) = delete;
+  DiscontinuityEntry& operator=(const DiscontinuityEntry&) = delete;
 };
+
+DiscontinuityEntry::DiscontinuityEntry()
+    : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
+
+std::string DiscontinuityEntry::ToString() {
+  return "#EXT-X-DISCONTINUITY";
+}
+
+class PlacementOpportunityEntry : public HlsEntry {
+ public:
+  PlacementOpportunityEntry();
+
+  std::string ToString() override;
+
+ private:
+  PlacementOpportunityEntry(const PlacementOpportunityEntry&) = delete;
+  PlacementOpportunityEntry& operator=(const PlacementOpportunityEntry&) =
+      delete;
+};
+
+PlacementOpportunityEntry::PlacementOpportunityEntry()
+    : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
+
+std::string PlacementOpportunityEntry::ToString() {
+  return "#EXT-X-PLACEMENT-OPPORTUNITY";
+}
 
 EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
                                          const std::string& url,
@@ -269,6 +290,10 @@ EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
       iv_(iv),
       key_format_(key_format),
       key_format_versions_(key_format_versions) {}
+
+std::string EncryptionInfoEntry::ToString() {
+  return ToString("");
+}
 
 std::string EncryptionInfoEntry::ToString(std::string tag_name) {
   std::string tag_string;
@@ -304,48 +329,6 @@ std::string EncryptionInfoEntry::ToString(std::string tag_name) {
 
   return tag_string;
 }
-
-class DiscontinuityEntry : public HlsEntry {
- public:
-  DiscontinuityEntry();
-
-  std::string ToString(std::string) override;
-
- private:
-  DiscontinuityEntry(const DiscontinuityEntry&) = delete;
-  DiscontinuityEntry& operator=(const DiscontinuityEntry&) = delete;
-};
-
-DiscontinuityEntry::DiscontinuityEntry()
-    : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
-
-std::string DiscontinuityEntry::ToString(std::string) {
-  return "#EXT-X-DISCONTINUITY";
-}
-
-class PlacementOpportunityEntry : public HlsEntry {
- public:
-  PlacementOpportunityEntry();
-
-  std::string ToString(std::string) override;
-
- private:
-  PlacementOpportunityEntry(const PlacementOpportunityEntry&) = delete;
-  PlacementOpportunityEntry& operator=(const PlacementOpportunityEntry&) =
-      delete;
-};
-
-PlacementOpportunityEntry::PlacementOpportunityEntry()
-    : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
-
-std::string PlacementOpportunityEntry::ToString(std::string) {
-  return "#EXT-X-PLACEMENT-OPPORTUNITY";
-}
-
-}  // namespace
-
-HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
-HlsEntry::~HlsEntry() {}
 
 MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
                              const std::string& file_name,
