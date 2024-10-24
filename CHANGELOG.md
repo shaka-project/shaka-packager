@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.2.2](https://github.com/shaka-project/shaka-packager/compare/v3.2.1...v3.2.2) (2024-10-24)
+
+
+### Bug Fixes
+
+* **http:** Fix "Failed sending data to the peer" errors ([#1443](https://github.com/shaka-project/shaka-packager/issues/1443)) ([2c9d100](https://github.com/shaka-project/shaka-packager/commit/2c9d100d445f8db82c811c011a2c2e9078e242a2))
+
 ## [3.2.1](https://github.com/shaka-project/shaka-packager/compare/v3.2.0...v3.2.1) (2024-10-02)
 
 
