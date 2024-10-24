@@ -223,7 +223,7 @@ bool HttpFile::Delete(const std::string& url) {
   if (!file->Open()) {
     return false;
   }
-  return file->Close();
+  return file.release()->Close();
 }
 
 bool HttpFile::Open() {
