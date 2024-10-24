@@ -83,6 +83,9 @@ class MediaPlaylist {
   const std::string& codec() const { return codec_; }
   const std::string& supplemental_codec() const { return supplemental_codec_; }
   const media::FourCC& compatible_brand() const { return compatible_brand_; }
+  const std::list<std::unique_ptr<HlsEntry>>& entries() const {
+    return entries_;
+  }
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
@@ -99,6 +102,14 @@ class MediaPlaylist {
   /// For testing only.
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
+
+  /// For testing only.
+  void AddEncryptionInfoForTesting(MediaPlaylist::EncryptionMethod method,
+                                   const std::string& url,
+                                   const std::string& key_id,
+                                   const std::string& iv,
+                                   const std::string& key_format,
+                                   const std::string& key_format_versions);
 
   /// This must succeed before calling any other public methods.
   /// @param media_info is the info of the segments that are going to be added
@@ -308,6 +319,30 @@ class MediaPlaylist {
   std::list<KeyFrameInfo> key_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
+};
+
+class EncryptionInfoEntry : public HlsEntry {
+ public:
+  EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
+                      const std::string& url,
+                      const std::string& key_id,
+                      const std::string& iv,
+                      const std::string& key_format,
+                      const std::string& key_format_versions);
+
+  std::string ToString() override;
+  std::string ToString(std::string);
+
+ private:
+  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
+  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
+
+  const MediaPlaylist::EncryptionMethod method_;
+  const std::string url_;
+  const std::string key_id_;
+  const std::string iv_;
+  const std::string key_format_;
+  const std::string key_format_versions_;
 };
 
 }  // namespace hls

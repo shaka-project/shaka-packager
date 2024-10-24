@@ -550,11 +550,13 @@ void AppendPlaylists(const std::string& default_audio_language,
 MasterPlaylist::MasterPlaylist(const std::filesystem::path& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
-                               bool is_independent_segments)
+                               bool is_independent_segments,
+                               bool create_session_keys)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
       default_text_language_(default_text_language),
-      is_independent_segments_(is_independent_segments) {}
+      is_independent_segments_(is_independent_segments),
+      create_session_keys_(create_session_keys) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -568,6 +570,23 @@ bool MasterPlaylist::WriteMasterPlaylist(
   if (is_independent_segments_) {
     content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
   }
+
+  // Iterate over the playlists and add the session keys to the master playlist.
+  if (create_session_keys_) {
+    std::set<std::string> session_keys;
+    for (const auto& playlist : playlists) {
+      for (const auto& entry : playlist->entries()) {
+        if (entry->type() == HlsEntry::EntryType::kExtKey) {
+          auto encryption_entry = dynamic_cast<EncryptionInfoEntry*>(entry.get());
+          session_keys.emplace(encryption_entry->ToString("#EXT-X-SESSION-KEY"));
+        }
+      }
+    }
+    // session_keys will now contain all the unique session keys.
+    for (const auto& session_key : session_keys)
+      content.append(session_key + "\n");
+  }
+
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
                   playlists, &content);
 

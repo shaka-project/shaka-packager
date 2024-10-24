@@ -165,6 +165,12 @@ std::string CreatePlaylistHeader(
   return header;
 }
 
+
+}  // namespace
+
+HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
+HlsEntry::~HlsEntry() {}
+
 class SegmentInfoEntry : public HlsEntry {
  public:
   // If |use_byte_range| true then this will append EXT-X-BYTERANGE
@@ -233,75 +239,6 @@ std::string SegmentInfoEntry::ToString() {
   return result;
 }
 
-class EncryptionInfoEntry : public HlsEntry {
- public:
-  EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
-                      const std::string& url,
-                      const std::string& key_id,
-                      const std::string& iv,
-                      const std::string& key_format,
-                      const std::string& key_format_versions);
-
-  std::string ToString() override;
-
- private:
-  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
-  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
-
-  const MediaPlaylist::EncryptionMethod method_;
-  const std::string url_;
-  const std::string key_id_;
-  const std::string iv_;
-  const std::string key_format_;
-  const std::string key_format_versions_;
-};
-
-EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
-                                         const std::string& url,
-                                         const std::string& key_id,
-                                         const std::string& iv,
-                                         const std::string& key_format,
-                                         const std::string& key_format_versions)
-    : HlsEntry(HlsEntry::EntryType::kExtKey),
-      method_(method),
-      url_(url),
-      key_id_(key_id),
-      iv_(iv),
-      key_format_(key_format),
-      key_format_versions_(key_format_versions) {}
-
-std::string EncryptionInfoEntry::ToString() {
-  std::string tag_string;
-  Tag tag("#EXT-X-KEY", &tag_string);
-
-  if (method_ == MediaPlaylist::EncryptionMethod::kSampleAes) {
-    tag.AddString("METHOD", "SAMPLE-AES");
-  } else if (method_ == MediaPlaylist::EncryptionMethod::kAes128) {
-    tag.AddString("METHOD", "AES-128");
-  } else if (method_ == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
-    tag.AddString("METHOD", "SAMPLE-AES-CTR");
-  } else {
-    DCHECK(method_ == MediaPlaylist::EncryptionMethod::kNone);
-    tag.AddString("METHOD", "NONE");
-  }
-
-  tag.AddQuotedString("URI", url_);
-
-  if (!key_id_.empty()) {
-    tag.AddString("KEYID", key_id_);
-  }
-  if (!iv_.empty()) {
-    tag.AddString("IV", iv_);
-  }
-  if (!key_format_versions_.empty()) {
-    tag.AddQuotedString("KEYFORMATVERSIONS", key_format_versions_);
-  }
-  if (!key_format_.empty()) {
-    tag.AddQuotedString("KEYFORMAT", key_format_);
-  }
-
-  return tag_string;
-}
 
 class DiscontinuityEntry : public HlsEntry {
  public:
@@ -340,10 +277,58 @@ std::string PlacementOpportunityEntry::ToString() {
   return "#EXT-X-PLACEMENT-OPPORTUNITY";
 }
 
-}  // namespace
+EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
+                                         const std::string& url,
+                                         const std::string& key_id,
+                                         const std::string& iv,
+                                         const std::string& key_format,
+                                         const std::string& key_format_versions)
+    : HlsEntry(HlsEntry::EntryType::kExtKey),
+      method_(method),
+      url_(url),
+      key_id_(key_id),
+      iv_(iv),
+      key_format_(key_format),
+      key_format_versions_(key_format_versions) {}
 
-HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
-HlsEntry::~HlsEntry() {}
+std::string EncryptionInfoEntry::ToString() {
+  return ToString("");
+}
+
+std::string EncryptionInfoEntry::ToString(std::string tag_name) {
+  std::string tag_string;
+  if (tag_name.empty())
+    tag_name = "#EXT-X-KEY";
+  Tag tag(tag_name, &tag_string);
+
+  if (method_ == MediaPlaylist::EncryptionMethod::kSampleAes) {
+    tag.AddString("METHOD", "SAMPLE-AES");
+  } else if (method_ == MediaPlaylist::EncryptionMethod::kAes128) {
+    tag.AddString("METHOD", "AES-128");
+  } else if (method_ == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
+    tag.AddString("METHOD", "SAMPLE-AES-CTR");
+  } else {
+    DCHECK(method_ == MediaPlaylist::EncryptionMethod::kNone);
+    tag.AddString("METHOD", "NONE");
+  }
+
+  tag.AddQuotedString("URI", url_);
+
+  if (!key_id_.empty()) {
+    tag.AddString("KEYID", key_id_);
+  }
+  if (!iv_.empty()) {
+    tag.AddString("IV", iv_);
+  }
+  if (!key_format_versions_.empty()) {
+    tag.AddQuotedString("KEYFORMATVERSIONS", key_format_versions_);
+  }
+  if (!key_format_.empty()) {
+    tag.AddQuotedString("KEYFORMAT", key_format_);
+  }
+
+  return tag_string;
+}
 
 MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
                              const std::string& file_name,
@@ -381,6 +366,17 @@ void MediaPlaylist::SetCharacteristicsForTesting(
 
 void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
   forced_subtitle_ = forced_subtitle;
+}
+
+void MediaPlaylist::AddEncryptionInfoForTesting(
+    MediaPlaylist::EncryptionMethod method,
+    const std::string& url,
+    const std::string& key_id,
+    const std::string& iv,
+    const std::string& key_format,
+    const std::string& key_format_versions) {
+  entries_.emplace_back(new EncryptionInfoEntry(
+      method, url, key_id, iv, key_format, key_format_versions));
 }
 
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
