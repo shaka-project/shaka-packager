@@ -14,6 +14,7 @@
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>
 
+#include <packager/file/file_closer.h>
 #include <packager/file/thread_pool.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
@@ -174,6 +175,7 @@ HttpFile::HttpFile(HttpMethod method,
       upload_content_type_(upload_content_type),
       timeout_in_seconds_(timeout_in_seconds),
       method_(method),
+      isUpload_(method == HttpMethod::kPut || method == HttpMethod::kPost),
       download_cache_(absl::GetFlag(FLAGS_io_cache_size)),
       upload_cache_(absl::GetFlag(FLAGS_io_cache_size)),
       curl_(curl_easy_init()),
@@ -201,8 +203,7 @@ HttpFile::HttpFile(HttpMethod method,
       !AppendHeader("Content-Type: " + upload_content_type_, &temp_headers)) {
     return;
   }
-  if (method != HttpMethod::kGet &&
-      !AppendHeader("Transfer-Encoding: chunked", &temp_headers)) {
+  if (isUpload_ && !AppendHeader("Transfer-Encoding: chunked", &temp_headers)) {
     return;
   }
   for (const auto& item : headers) {
@@ -214,6 +215,16 @@ HttpFile::HttpFile(HttpMethod method,
 }
 
 HttpFile::~HttpFile() {}
+
+// static
+bool HttpFile::Delete(const std::string& url) {
+  std::unique_ptr<HttpFile, FileCloser> file(
+      new HttpFile(HttpMethod::kDelete, url));
+  if (!file->Open()) {
+    return false;
+  }
+  return file.release()->Close();
+}
 
 bool HttpFile::Open() {
   VLOG(2) << "Opening " << url_;
@@ -313,6 +324,9 @@ void HttpFile::SetupRequest() {
     case HttpMethod::kPut:
       curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
       break;
+    case HttpMethod::kDelete:
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+      break;
   }
 
   curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
@@ -322,7 +336,7 @@ void HttpFile::SetupRequest() {
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteCallback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &download_cache_);
-  if (method_ != HttpMethod::kGet) {
+  if (isUpload_) {
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, &CurlReadCallback);
     curl_easy_setopt(curl, CURLOPT_READDATA, &upload_cache_);
   }
