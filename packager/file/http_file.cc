@@ -311,7 +311,7 @@ void HttpFile::SetupRequest() {
       curl_easy_setopt(curl, CURLOPT_POST, 1L);
       break;
     case HttpMethod::kPut:
-      curl_easy_setopt(curl, CURLOPT_PUT, 1L);
+      curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
       break;
   }
 
