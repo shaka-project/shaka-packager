@@ -93,3 +93,8 @@ HLS options
 
     True forces the muxer to order streams in the order given 
     on the command-line. False uses the previous unordered behavior.
+
+--create_session_keys
+
+    Playback of Offline HLS assets shall use EXT-X-SESSION-KEY to declare all 
+    eligible content keys in the master playlist.
