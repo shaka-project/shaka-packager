@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [3.3.0](https://github.com/shaka-project/shaka-packager/compare/v3.2.1...v3.3.0) (2024-10-25)
+
+
+### Features
+
+* Add IAMF support ([#1416](https://github.com/shaka-project/shaka-packager/issues/1416)) ([dc6196d](https://github.com/shaka-project/shaka-packager/commit/dc6196d3d16cf532bf81721881624490a5a474e2)), closes [#1415](https://github.com/shaka-project/shaka-packager/issues/1415)
+* EXT-X-SESSION-KEY support ([#1427](https://github.com/shaka-project/shaka-packager/issues/1427)) ([d88ed27](https://github.com/shaka-project/shaka-packager/commit/d88ed2798cbe69197b88b394de72551716f51ac9)), closes [#36](https://github.com/shaka-project/shaka-packager/issues/36)
+* **http:** Add DELETE method support ([#1442](https://github.com/shaka-project/shaka-packager/issues/1442)) ([ddeacb2](https://github.com/shaka-project/shaka-packager/commit/ddeacb2525bfaf1c7301d415109a8149718c4f91))
+
+
+### Bug Fixes
+
+* **http:** Fix "Failed sending data to the peer" errors ([#1443](https://github.com/shaka-project/shaka-packager/issues/1443)) ([2c9d100](https://github.com/shaka-project/shaka-packager/commit/2c9d100d445f8db82c811c011a2c2e9078e242a2))
+
 ## [3.2.1](https://github.com/shaka-project/shaka-packager/compare/v3.2.0...v3.2.1) (2024-10-02)
 
 
