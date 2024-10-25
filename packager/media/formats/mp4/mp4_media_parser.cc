@@ -32,6 +32,7 @@
 #include <packager/media/codecs/ec3_audio_util.h>
 #include <packager/media/codecs/es_descriptor.h>
 #include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/codecs/iamf_audio_util.h>
 #include <packager/media/codecs/vp_codec_configuration_record.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
@@ -113,6 +114,10 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecALAC;
     case FOURCC_fLaC:
       return kCodecFlac;
+    case FOURCC_iamf:
+      return kCodecIAMF;
+    case FOURCC_ipcm:
+      return kCodecPcm;
     case FOURCC_mha1:
       return kCodecMha1;
     case FOURCC_mhm1:
@@ -583,6 +588,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_delay_ns =
               entry.dops.preskip * kNanosecondsPerSecond / sampling_frequency;
           break;
+        case FOURCC_iamf:
+          codec_config = entry.iacb.data;
+          if (!GetIamfCodecStringInfo(codec_config, audio_object_type)) {
+            LOG(ERROR) << "Failed to parse iamf.";
+            return false;
+          }
+          break;
         case FOURCC_mha1:
         case FOURCC_mhm1:
           codec_config = entry.mhac.data;
@@ -616,7 +628,12 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         const int16_t roll_distance_in_samples =
             audio_roll_recovery_entries[0].roll_distance;
         if (roll_distance_in_samples < 0) {
-          RCHECK(sampling_frequency != 0);
+          // IAMF requires the `samplerate` field to be set to 0.
+          // (https://aomediacodec.github.io/iamf/#iasampleentry-section)
+          if (actual_format == FOURCC_iamf)
+            continue;
+
+          RCHECK((sampling_frequency != 0));
           seek_preroll_ns = kNanosecondsPerSecond *
                             (-roll_distance_in_samples) / sampling_frequency;
         } else {

@@ -46,6 +46,7 @@ Shaka Packager supports:
   |       FLAC        |    I / O     |      -       |       -      |      -      |       -      |
   |       Opus        |    I / O³    |    I / O     |       -      |      -      |       -      |
   |      Vorbis       |      -       |    I / O     |       -      |      -      |       -      |
+  |       IAMF        |    I / O     |      -       |       -      |      -      |       -      |
 
   NOTES:
   - I for input and O for output.
