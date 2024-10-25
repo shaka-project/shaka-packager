@@ -151,9 +151,11 @@ bool ParseCodecConfigObu(BitReader& reader, size_t obu_size, Codec& codec) {
 
 bool GetIamfCodecStringInfo(const std::vector<uint8_t>& iacb,
                             uint8_t& codec_string_info) {
-  uint8_t primary_profile;
-  uint8_t additional_profile;
-  Codec iamf_codec;  // codec used to encode IAMF audio substreams
+  uint8_t primary_profile = 0;
+  uint8_t additional_profile = 0;
+  // codec used to encode IAMF audio substreams
+  Codec iamf_codec = Codec::kUnknownCodec;
+
   int obu_type;
   size_t obu_size;
 

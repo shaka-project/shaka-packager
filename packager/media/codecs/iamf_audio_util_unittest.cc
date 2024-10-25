@@ -19,6 +19,11 @@ namespace {
 const int kSimpleProfile = 0;
 const int kBaseProfile = 1;
 
+const std::vector<uint8_t> kIacbBase = {
+    0x01,  // configurationVersion
+    0x20   // configOBUs_size
+};
+
 const std::vector<uint8_t> kSimpleIaSequenceObu = {
     // OBU header
     0xf8,  // obu_type (5 bits), obu_redundant_copy (1 bit),
@@ -60,10 +65,8 @@ const std::vector<uint8_t> kFakeMixPresentationObu = {
 }  // namespace
 
 TEST(IamfAudioUtilTest, GetCodecStringInfoWithSimpleProfiles) {
-  std::vector<uint8_t> iacb = {
-      0x01,  // configurationVersion
-      0x20   // configOBUs_size
-  };
+  std::vector<uint8_t> iacb;
+  iacb.insert(iacb.end(), kIacbBase.begin(), kIacbBase.end());
   iacb.insert(iacb.end(), kSimpleIaSequenceObu.begin(),
               kSimpleIaSequenceObu.end());
   iacb.insert(iacb.end(), kOpusCodecConfigObu.begin(),
@@ -95,10 +98,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoTestWithBaseProfiles) {
       0x01                     // additional_profile = base
   };
 
-  std::vector<uint8_t> iacb = {
-      0x01,  // configurationVersion
-      0x20   // configOBUs_size
-  };
+  std::vector<uint8_t> iacb;
+  iacb.insert(iacb.end(), kIacbBase.begin(), kIacbBase.end());
   iacb.insert(iacb.end(), base_ia_sequence_obu.begin(),
               base_ia_sequence_obu.end());
   iacb.insert(iacb.end(), kOpusCodecConfigObu.begin(),
@@ -130,10 +131,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithPcm) {
       0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
   };
 
-  std::vector<uint8_t> iacb = {
-      0x01,  // configurationVersion
-      0x20   // configOBUs_size
-  };
+  std::vector<uint8_t> iacb;
+  iacb.insert(iacb.end(), kIacbBase.begin(), kIacbBase.end());
   iacb.insert(iacb.end(), kSimpleIaSequenceObu.begin(),
               kSimpleIaSequenceObu.end());
   iacb.insert(iacb.end(), pcm_codec_config_obu.begin(),
@@ -165,10 +164,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithMp4a) {
       0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
   };
 
-  std::vector<uint8_t> iacb = {
-      0x01,  // configurationVersion
-      0x20   // configOBUs_size
-  };
+  std::vector<uint8_t> iacb;
+  iacb.insert(iacb.end(), kIacbBase.begin(), kIacbBase.end());
   iacb.insert(iacb.end(), kSimpleIaSequenceObu.begin(),
               kSimpleIaSequenceObu.end());
   iacb.insert(iacb.end(), mp4a_codec_config_obu.begin(),
@@ -200,10 +197,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithFlac) {
       0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
   };
 
-  std::vector<uint8_t> iacb = {
-      0x01,  // configurationVersion
-      0x20   // configOBUs_size
-  };
+  std::vector<uint8_t> iacb;
+  iacb.insert(iacb.end(), kIacbBase.begin(), kIacbBase.end());
   iacb.insert(iacb.end(), kSimpleIaSequenceObu.begin(),
               kSimpleIaSequenceObu.end());
   iacb.insert(iacb.end(), flac_codec_config_obu.begin(),
