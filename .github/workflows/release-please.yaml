@@ -82,7 +82,7 @@ jobs:
     if: needs.release.outputs.release_created && needs.compute.outputs.latest
     uses: ./.github/workflows/publish-docs.yaml
     with:
-      ref: ${{ github.ref }}
+      ref: refs/tags/${{ needs.release.outputs.tag_name }}
 
   # Publish official docker image
   docker:
@@ -105,7 +105,7 @@ jobs:
     if: needs.release.outputs.release_created
     uses: ./.github/workflows/build.yaml
     with:
-      ref: ${{ github.ref }}
+      ref: refs/tags/${{ needs.release.outputs.tag_name }}
       self_hosted: ${{ needs.settings.outputs.self_hosted != '' }}
       debug: ${{ needs.settings.outputs.debug != '' }}
 
