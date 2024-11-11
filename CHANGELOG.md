@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.4.0](https://github.com/shaka-project/shaka-packager/compare/v3.3.0...v3.4.0) (2024-11-11)
+
+
+### Features
+
+* Add option to ignore HTTP output failures ([#1449](https://github.com/shaka-project/shaka-packager/issues/1449)) ([3fdc807](https://github.com/shaka-project/shaka-packager/commit/3fdc807ed3a8fbe55b58037685c6528313485bf6))
+
 ## [3.3.0](https://github.com/shaka-project/shaka-packager/compare/v3.2.1...v3.3.0) (2024-10-25)
 
 
