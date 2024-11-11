@@ -46,6 +46,11 @@ ABSL_FLAG(bool,
           false,
           "Disable peer verification. This is needed to talk to servers "
           "without valid certificates.");
+ABSL_FLAG(bool,
+          ignore_http_output_failures,
+          false,
+          "Ignore HTTP output failures. Can help recover from live stream "
+          "upload errors.");
 
 ABSL_DECLARE_FLAG(uint64_t, io_cache_size);
 
@@ -257,7 +262,7 @@ Status HttpFile::CloseWithStatus() {
   const Status result = status_;
   LOG_IF(ERROR, !result.ok()) << "HttpFile request failed: " << result;
   delete this;
-  return result;
+  return absl::GetFlag(FLAGS_ignore_http_output_failures) ? Status::OK : result;
 }
 
 bool HttpFile::Close() {
