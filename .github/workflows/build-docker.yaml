@@ -14,6 +14,12 @@ on:
       ref:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: The ref to build from.
+        required: true
+        type: string
 
 # By default, run all commands in a bash shell.  On Windows, the default would
 # otherwise be powershell.
@@ -32,6 +38,11 @@ jobs:
           ref: ${{ inputs.ref }}
           submodules: recursive
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
       - name: Build
         shell: bash
-        run: docker buildx build .
+        run: docker buildx build --platform linux/amd64,linux/arm64 .
