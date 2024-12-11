@@ -71,6 +71,10 @@ const LanguageMapPairType kLanguageMap[] = {
   { "ven", "ve" }, { "vie", "vi" }, { "vol", "vo" }, { "wel", "cy" },
   { "wln", "wa" }, { "wol", "wo" }, { "xho", "xh" }, { "yid", "yi" },
   { "yor", "yo" }, { "zha", "za" }, { "zho", "zh" }, { "zul", "zu" },
+
+  // The list is no longer alphabetized after this point, to simplify the
+  // revision history as we add missing entries on 2024-12-11.
+  { "heb", "iw" },
 };
 
 void SplitLanguageTag(const std::string& tag,
