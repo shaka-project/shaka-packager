@@ -109,7 +109,7 @@ jobs:
           kitware_key_path="/usr/share/keyrings/kitware-archive-keyring.gpg"
           kitware_sources_path="/etc/apt/sources.list.d/kitware.list"
 
-          curl -sL "$kitware_key_url" | gpg --dearmor - \
+          curl -sLk "$kitware_key_url" | gpg --dearmor - \
               | sudo tee "$kitware_key_path" >/dev/null
 
           . /etc/lsb-release  # Defines $DISTRIB_CODENAME (jammy, focal, etc)
