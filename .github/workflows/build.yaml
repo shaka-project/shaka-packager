@@ -105,16 +105,16 @@ jobs:
         # that may be greater than what is available in Ubuntu, so we set up
         # the official CMake PPA first.
         run: |
-          kitware_key_url="https://apt.kitware.com/keys/kitware-archive-latest.asc"
+          kitware_key_url="http://apt.kitware.com/keys/kitware-archive-latest.asc"
           kitware_key_path="/usr/share/keyrings/kitware-archive-keyring.gpg"
           kitware_sources_path="/etc/apt/sources.list.d/kitware.list"
 
-          curl -sLk "$kitware_key_url" | gpg --dearmor - \
+          curl -sL "$kitware_key_url" | gpg --dearmor - \
               | sudo tee "$kitware_key_path" >/dev/null
 
           . /etc/lsb-release  # Defines $DISTRIB_CODENAME (jammy, focal, etc)
 
-          echo "deb [signed-by=$kitware_key_path] https://apt.kitware.com/ubuntu/ $DISTRIB_CODENAME main" \
+          echo "deb [signed-by=$kitware_key_path] http://apt.kitware.com/ubuntu/ $DISTRIB_CODENAME main" \
               | sudo tee "$kitware_sources_path" >/dev/null
 
           sudo apt update
