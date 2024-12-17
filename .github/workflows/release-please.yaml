@@ -83,6 +83,10 @@ jobs:
     uses: ./.github/workflows/publish-docs.yaml
     with:
       ref: refs/tags/${{ needs.release.outputs.tag_name }}
+    # Required permissions to deploy to GitHub Pages:
+    permissions:
+      pages: write
+      id-token: write
 
   # Publish official docker image
   docker:
