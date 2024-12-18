@@ -33,6 +33,7 @@ jobs:
           # We must use 'fetch-depth: 2', or else the linter won't have another
           # revision to compare to.
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Lint
         shell: bash
