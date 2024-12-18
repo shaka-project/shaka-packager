@@ -48,6 +48,7 @@ jobs:
           ref: ${{ inputs.tag }}
           submodules: recursive
           fetch-tags: true
+          persist-credentials: false
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
