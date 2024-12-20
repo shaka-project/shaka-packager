@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.4.1](https://github.com/shaka-project/shaka-packager/compare/v3.4.0...v3.4.1) (2024-12-20)
+
+
+### Bug Fixes
+
+* Add "iw" variant of Hebrew language code ([#1458](https://github.com/shaka-project/shaka-packager/issues/1458)) ([df745bd](https://github.com/shaka-project/shaka-packager/commit/df745bdf1ac7609779d3cecfda01c71090150983)), closes [#1457](https://github.com/shaka-project/shaka-packager/issues/1457)
+
 ## [3.4.0](https://github.com/shaka-project/shaka-packager/compare/v3.3.0...v3.4.0) (2024-11-11)
 
 
