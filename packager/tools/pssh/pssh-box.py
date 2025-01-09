@@ -63,7 +63,7 @@ class BinaryReader(object):
   def read_bytes(self, count):
     """Reads the given number of bytes into an array."""
     if len(self.data) < self.position + count:
-      raise Exception('Invalid PSSH box, not enough data')
+      raise RuntimeError('Invalid PSSH box, not enough data')
     ret = self.data[self.position:self.position+count]
     self.position += count
     return ret
@@ -211,7 +211,7 @@ def _parse_playready_data(data):
   reader = BinaryReader(data, little_endian=True)
   size = reader.read_int(4)
   if size != len(data):
-    raise Exception('Length incorrect')
+    raise RuntimeError('Length incorrect')
 
   ret = []
   count = reader.read_int(2)
@@ -236,10 +236,10 @@ def _parse_playready_data(data):
           '    ' + base64.b64encode(record_data)
       ])
     else:
-      raise Exception('Invalid record type %d' % record_type)
+      raise RuntimeError('Invalid record type %d' % record_type)
 
   if reader.has_data():
-    raise Exception('Extra data after records')
+    raise RuntimeError('Extra data after records')
 
   return ret
 
@@ -254,13 +254,13 @@ def _parse_boxes(data):
 
     box_type = reader.read_bytes(4)
     if box_type != b'pssh':
-      raise Exception(
+      raise RuntimeError(
           'Invalid box type 0x%s, not \'pssh\'' % box_type.encode('hex'))
 
     version_and_flags = reader.read_int(4)
     version = version_and_flags >> 24
     if version > 1:
-      raise Exception('Invalid PSSH version %d' % version)
+      raise RuntimeError('Invalid PSSH version %d' % version)
 
     system_id = reader.read_bytes(16)
 
@@ -276,7 +276,7 @@ def _parse_boxes(data):
     pssh_data = reader.read_bytes(pssh_data_size)
 
     if start + size != reader.position:
-      raise Exception('Box size does not match size of data')
+      raise RuntimeError('Box size does not match size of data')
 
     pssh = Pssh(version, system_id, key_ids, pssh_data)
     boxes.append(pssh)
@@ -398,7 +398,7 @@ def main(all_args):
 
     if ns.format:
       if output_format:
-        raise Exception('Can only specify one of: --base64, --hex, --human')
+        raise RuntimeError('Can only specify one of: --base64, --hex, --human')
       else:
         output_format = ns.format
 
@@ -407,26 +407,27 @@ def main(all_args):
 
     pssh_data = ns.pssh_data
     if pssh_data and ns.content_id:
-      raise Exception('Cannot specify both --pssh-data and --content-id')
+      raise RuntimeError('Cannot specify both --pssh-data and --content-id')
     if ns.protection_scheme:
       if ns.system_id != WIDEVINE_SYSTEM_ID:
-        raise Exception(
+        raise RuntimeError(
             '--protection-scheme only valid with Widevine system ID')
     if ns.content_id:
       if ns.system_id != WIDEVINE_SYSTEM_ID:
-        raise Exception('--content-id only valid with Widevine system ID')
+        raise RuntimeError('--content-id only valid with Widevine system ID')
 
     # Ignore if we have no data.
     if not pssh_data and not ns.key_id and not ns.system_id:
       continue
     if not ns.system_id:
-      raise Exception('System ID is required')
+      raise RuntimeError('System ID is required')
     if ns.system_id == WIDEVINE_SYSTEM_ID:
       # Always generate version 0 for Widevine for backward compatibility.
       version = 0
       if not pssh_data:
         if not ns.key_id and not ns.content_id:
-          raise Exception('Widevine system needs key-id or content-id or both')
+          raise RuntimeError(
+              'Widevine system needs key-id or content-id or both')
         pssh_data = _generate_widevine_data(ns.key_id, ns.content_id,
                                             ns.provider, ns.protection_scheme)
     else:

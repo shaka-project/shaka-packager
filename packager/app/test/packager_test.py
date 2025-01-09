@@ -291,6 +291,7 @@ class PackagerAppTest(unittest.TestCase):
       shutil.rmtree(self.tmp_dir)
     super().tearDown()
 
+  # pylint: disable=too-many-positional-arguments
   def _GetStream(self,
                  descriptor,
                  language=None,
@@ -457,6 +458,7 @@ class PackagerAppTest(unittest.TestCase):
 
     return out
 
+  # pylint: disable=too-many-positional-arguments
   def _GetFlags(self,
                 strip_parameter_set_nalus=True,
                 encryption=False,
