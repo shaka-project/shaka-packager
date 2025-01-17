@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.4.2](https://github.com/shaka-project/shaka-packager/compare/v3.4.1...v3.4.2) (2025-01-17)
+
+
+### Bug Fixes
+
+* **ci:** Fix incomplete 3.4.1 release ([#1471](https://github.com/shaka-project/shaka-packager/issues/1471)) ([b882572](https://github.com/shaka-project/shaka-packager/commit/b882572b5458c93e1589ae04c0a79a3a10a75942))
+
 ## [3.4.1](https://github.com/shaka-project/shaka-packager/compare/v3.4.0...v3.4.1) (2024-12-20)
 
 
