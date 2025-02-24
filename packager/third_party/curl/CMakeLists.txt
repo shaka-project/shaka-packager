@@ -45,5 +45,5 @@ add_subdirectory(source)
 # Our enabling of c-ares doesn't automatically set a dependency between libcurl
 # and c-ares.  Fix that now.
 if(USE_ARES)
-  target_link_libraries(libcurl c-ares)
+  target_link_libraries(libcurl_static PUBLIC c-ares)
 endif()
