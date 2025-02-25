@@ -108,3 +108,5 @@ There are several ways you can get Shaka Packager.
 If you have improvements or fixes, we would love to have your contributions.
 See https://github.com/shaka-project/shaka-packager/blob/main/CONTRIBUTING.md for
 details.
+
+this is for test only
