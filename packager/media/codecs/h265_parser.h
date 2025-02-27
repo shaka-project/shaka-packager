@@ -353,7 +353,9 @@ class H265Parser {
 
   Result SkipScalingListData(H26xBitReader* br);
 
-  Result SkipHrdParameters(int max_num_sub_layers_minus1, H26xBitReader* br);
+  Result SkipHrdParameters(bool common_inf_present_flag,
+                           int max_num_sub_layers_minus1,
+                           H26xBitReader* br);
 
   Result SkipSubLayerHrdParameters(int cpb_cnt_minus1,
                                    bool sub_pic_hdr_params_present_flag,

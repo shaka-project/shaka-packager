@@ -724,7 +724,7 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
     bool vui_hdr_parameters_present_flag;
     TRUE_OR_RETURN(br->ReadBool(&vui_hdr_parameters_present_flag));
     if (vui_hdr_parameters_present_flag) {
-      OK_OR_RETURN(SkipHrdParameters(max_num_sub_layers_minus1, br));
+      OK_OR_RETURN(SkipHrdParameters(true, max_num_sub_layers_minus1, br));
     }
   }
 
@@ -1055,14 +1055,12 @@ H265Parser::Result H265Parser::SkipScalingListData(H26xBitReader* br) {
   return kOk;
 }
 
-H265Parser::Result H265Parser::SkipHrdParameters(int max_num_sub_layers_minus1,
+H265Parser::Result H265Parser::SkipHrdParameters(bool common_inf_present_flag,
+                                                 int max_num_sub_layers_minus1,
                                                  H26xBitReader* br) {
-  // common_inf_present_flag is always 1 when parsing vui_parameters.
-  const bool common_inf_present_flag = true;
-
   int ignored;
-  bool nal_hdr_parameters_present_flag;
-  bool vcl_hdr_parameters_present_flag;
+  bool nal_hdr_parameters_present_flag = false;
+  bool vcl_hdr_parameters_present_flag = false;
   bool sub_pic_hdr_params_present_flag = false;
   if (common_inf_present_flag) {
     TRUE_OR_RETURN(br->ReadBool(&nal_hdr_parameters_present_flag));
