@@ -542,7 +542,8 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
   TRUE_OR_RETURN(br->ReadBool(&sps->temporal_id_nesting_flag));
 
   OK_OR_RETURN(
-      ReadProfileTierLevel(true, sps->max_sub_layers_minus1, br, sps.get()));
+      ReadProfileTierLevel(true, sps->max_sub_layers_minus1, br, nullptr,
+                           sps->general_profile_tier_level_data));
 
   TRUE_OR_RETURN(br->ReadUE(&sps->seq_parameter_set_id));
   TRUE_OR_RETURN(br->ReadUE(&sps->chroma_format_idc));
@@ -979,7 +980,8 @@ H265Parser::Result H265Parser::ReadProfileTierLevel(
     bool profile_present,
     int max_num_sub_layers_minus1,
     H26xBitReader* br,
-    H265Sps* sps) {
+    int* prev_data,
+    int* general_profile_tier_level_data) {
   // Reads whole element, ignores it.
 
   if (profile_present) {
@@ -992,10 +994,13 @@ H265Parser::Result H265Parser::ReadProfileTierLevel(
     //   general_frame_only_constraint_flag
     //   44-bits of other flags
     for (int i = 0; i < 11; i++)
-      TRUE_OR_RETURN(br->ReadBits(8, &sps->general_profile_tier_level_data[i]));
+      TRUE_OR_RETURN(br->ReadBits(8, &general_profile_tier_level_data[i]));
+  } else if (prev_data != nullptr) {
+    memcpy(general_profile_tier_level_data, prev_data,
+           kGeneralProfileTierLevelBytes*sizeof(general_profile_tier_level_data[0]));
   }
   // general_level_idc
-  TRUE_OR_RETURN(br->ReadBits(8, &sps->general_profile_tier_level_data[11]));
+  TRUE_OR_RETURN(br->ReadBits(8, &general_profile_tier_level_data[11]));
 
   std::vector<bool> sub_layer_profile_present(max_num_sub_layers_minus1);
   std::vector<bool> sub_layer_level_present(max_num_sub_layers_minus1);

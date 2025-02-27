@@ -23,6 +23,13 @@ enum H265SliceType { kBSlice = 0, kPSlice = 1, kISlice = 2 };
 
 const int kMaxRefPicSetCount = 16;
 
+// 12 bytes for general profile_tier_level() info:
+//   1 byte:  general_profile_space, general_tier_flag, general_profile_idc
+//   4 bytes: general_profile_compatibility_flags
+//   6 bytes: general_constraint_indicator_flags
+//   1 byte:  general_level_idc
+const int kGeneralProfileTierLevelBytes = 12;
+
 // On success, |coded_width| and |coded_height| contains coded resolution after
 // cropping; |pixel_width:pixel_height| contains pixel aspect ratio, 1:1 is
 // assigned if it is not present in SPS.
@@ -349,7 +356,8 @@ class H265Parser {
   Result ReadProfileTierLevel(bool profile_present,
                               int max_num_sub_layers_minus1,
                               H26xBitReader* br,
-                              H265Sps* sps);
+                              int* prev_data,
+                              int* general_profile_tier_level_data);
 
   Result SkipScalingListData(H26xBitReader* br);
 
