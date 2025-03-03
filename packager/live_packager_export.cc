@@ -15,7 +15,8 @@ LivePackager_t livepackager_new(LivePackagerConfig_t cfg) {
   converted.iv = {};
   converted.key = {};
   converted.key_id = {};
-  converted.protection_scheme = shaka::LiveConfig::EncryptionScheme(cfg.protection_scheme);
+  converted.protection_scheme =
+      shaka::LiveConfig::EncryptionScheme(cfg.protection_scheme);
   converted.protection_system = shaka::ProtectionSystem::kNone;
   converted.segment_number = cfg.segment_number;
   converted.m2ts_offset_ms = cfg.m2ts_offset_ms;
