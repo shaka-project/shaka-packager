@@ -165,7 +165,6 @@ std::string CreatePlaylistHeader(
   return header;
 }
 
-
 }  // namespace
 
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
@@ -238,7 +237,6 @@ std::string SegmentInfoEntry::ToString() {
 
   return result;
 }
-
 
 class DiscontinuityEntry : public HlsEntry {
  public:
@@ -339,10 +337,10 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
       name_(name),
       group_id_(group_id),
       media_sequence_number_(hls_params_.media_sequence_number) {
-        // When there's a forced media_sequence_number, start with discontinuity
-        if (media_sequence_number_ > 0)
-          entries_.emplace_back(new DiscontinuityEntry());
-      }
+  // When there's a forced media_sequence_number, start with discontinuity
+  if (media_sequence_number_ > 0)
+    entries_.emplace_back(new DiscontinuityEntry());
+}
 
 MediaPlaylist::~MediaPlaylist() {}
 
