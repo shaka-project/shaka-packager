@@ -106,7 +106,7 @@ jobs:
           echo "::endgroup::"
           
           echo "::group::Copy packager"
-          cp packager${{ matrix.lib_ext }} $ARTIFACTS/packager$LIB_SUFFIX
+          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$SUFFIX
           echo "::endgroup::"
 
       - name: Upload release build artifacts
