@@ -350,14 +350,14 @@ void BuildMediaTag(const MediaPlaylist& playlist,
       // to handle Dolby Digital Plus JOC content.
       // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
       std::string channel_string =
-        std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
+          std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
       // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
       // CBI without object-based audio) for Dolby internal use only. IMSA is
       // not included in any publicly-available specifications as of June, 2020.
       std::string channel_string =
-        std::to_string(playlist.GetNumChannels()) + "/IMSA";
+          std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else {
       // According to HLS spec:
@@ -577,8 +577,10 @@ bool MasterPlaylist::WriteMasterPlaylist(
     for (const auto& playlist : playlists) {
       for (const auto& entry : playlist->entries()) {
         if (entry->type() == HlsEntry::EntryType::kExtKey) {
-          auto encryption_entry = dynamic_cast<EncryptionInfoEntry*>(entry.get());
-          session_keys.emplace(encryption_entry->ToString("#EXT-X-SESSION-KEY"));
+          auto encryption_entry =
+              dynamic_cast<EncryptionInfoEntry*>(entry.get());
+          session_keys.emplace(
+              encryption_entry->ToString("#EXT-X-SESSION-KEY"));
         }
       }
     }
