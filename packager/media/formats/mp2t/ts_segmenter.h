@@ -86,7 +86,6 @@ class TsSegmenter {
   // Writes PES packets (carried in TsPackets) to a buffer.
   Status WritePesPackets();
 
-  const MuxerOptions& muxer_options_;
   MuxerListener* const listener_;
 
   // Codec for the stream.

@@ -45,6 +45,8 @@ std::string AudioCodecToString(Codec codec) {
       return "AC4";
     case kCodecFlac:
       return "FLAC";
+    case kCodecIAMF:
+      return "IAMF";
     case kCodecOpus:
       return "Opus";
     case kCodecVorbis:
@@ -168,6 +170,39 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
           (audio_object_type & 0x18) >> 3, audio_object_type & 0x7);
     case kCodecFlac:
       return "flac";
+    case kCodecIAMF: {
+      // https://aomediacodec.github.io/iamf/#codecsparameter
+      // The codecs parameter string is composed as
+      //
+      // iamf.xxx.yyy.<standalone_codec_string>
+      //
+      // - xxx is the IAMF primary profile
+      // - yyy is the IAMF additional profile
+      // - <standalone_codec_string> are the elements of the codecs parameter
+      //   string if that stream was carried in its own track
+      //
+      // audio_object_type is composed of primary_profile (2 bits),
+      // additional_profile (2 bits) and (IAMF codec - kCodecAudio) (4 bits).
+      const int iamf_codec = (audio_object_type & 0xF) + kCodecAudio;
+
+      const std::string iamf_codec_string =
+          absl::StrFormat("iamf.%03d.%03d", (audio_object_type & 0xC0) >> 6,
+                          (audio_object_type & 0x30) >> 4);
+
+      switch (iamf_codec) {
+        case kCodecOpus:
+          return absl::StrFormat("%s.%s", iamf_codec_string, "Opus");
+        case kCodecAAC:
+          return absl::StrFormat("%s.%s", iamf_codec_string, "mp4a.40.2");
+        case kCodecFlac:
+          return absl::StrFormat("%s.%s", iamf_codec_string, "fLaC");
+        case kCodecPcm:
+          return absl::StrFormat("%s.%s", iamf_codec_string, "ipcm");
+        default:
+          LOG(WARNING) << "Unknown IAMF codec: " << iamf_codec;
+          return "unknown";
+      }
+    }
     case kCodecOpus:
       return "opus";
     case kCodecMP3:
