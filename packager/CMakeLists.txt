@@ -44,8 +44,8 @@ if(MSVC)
   add_definitions(-DWIN32_LEAN_AND_MEAN)
 
   # enable c++ 20
-  set(CMAKE_CXX_STANDARD 20)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  # set(CMAKE_CXX_STANDARD 20)
+  # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 else()
   # Lots of warnings and all warnings as errors.
   # Note that we can't use -Wpedantic due to absl's int128 headers.
