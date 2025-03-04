@@ -6,13 +6,8 @@ RUN zypper addrepo \
     https://download.opensuse.org/repositories/devel:tools:building/15.6/devel:tools:building.repo
 RUN zypper --no-gpg-checks refresh
 
-RUN ldd --version
-RUN zypper search --match-exact cmake-full
-
 # Install cmake 
-RUN zypper in -y \
-    curl wich \
-    cmake
+RUN zypper install cmake-full=3.24.0
 
 # Install utilities, libraries, and dev tools.
 RUN zypper in -y \
