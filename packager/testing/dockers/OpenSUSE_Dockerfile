@@ -1,4 +1,4 @@
-FROM opensuse/leap:15.5
+FROM opensuse/leap:15.6
 
 # OpenSUSE 15.5 doesn't have the required CMake 3.24+, but we can add it
 # through another repo:
@@ -7,6 +7,7 @@ RUN zypper addrepo \
 RUN zypper --no-gpg-checks refresh
 
 # Install cmake 
+RUN zypper ref
 RUN zypper install cmake=3.26.0
 
 # Install utilities, libraries, and dev tools.
