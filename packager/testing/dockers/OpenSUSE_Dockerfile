@@ -3,7 +3,7 @@ FROM opensuse/leap:15.5
 # OpenSUSE 15.5 doesn't have the required CMake 3.24+, but we can add it
 # through another repo:
 RUN zypper addrepo \
-    https://download.opensuse.org/repositories/devel:tools:building/15.5/devel:tools:building.repo
+    https://download.opensuse.org/repositories/devel:tools:building/15.6/devel:tools:building.repo
 RUN zypper --no-gpg-checks refresh
 
 # Install utilities, libraries, and dev tools.
