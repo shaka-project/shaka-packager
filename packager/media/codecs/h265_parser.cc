@@ -542,42 +542,88 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   TRUE_OR_RETURN(br->ReadBits(4, &sps->video_parameter_set_id));
   TRUE_OR_RETURN(br->ReadBits(3, &sps->max_sub_layers_minus1));
-  TRUE_OR_RETURN(br->ReadBool(&sps->temporal_id_nesting_flag));
+  const bool multi_layer_ext_sps_flag = nalu.nuh_layer_id() != 0 && sps->max_sub_layers_minus1 == 7;
 
-  OK_OR_RETURN(
-      ReadProfileTierLevel(true, sps->max_sub_layers_minus1, br, nullptr,
-                           sps->general_profile_tier_level_data));
+  const H265Vps* vps = active_vpses_[sps->video_parameter_set_id].get();
+  
+  int layer_id_in_vps = 0;
+  if (vps != nullptr && vps->vps_max_layers_minus1 > 0) {
+    layer_id_in_vps = vps->layer_id_in_vps[nalu.nuh_layer_id()];
+  }
+  if (!multi_layer_ext_sps_flag) {
+    TRUE_OR_RETURN(br->ReadBool(&sps->temporal_id_nesting_flag));
+
+    OK_OR_RETURN(
+        ReadProfileTierLevel(true, sps->max_sub_layers_minus1, br, nullptr,
+                             sps->general_profile_tier_level_data));
+  } else {
+    // VPS is needed in this case.
+    TRUE_OR_RETURN(vps != nullptr);
+
+    // Get profile/tier/level from the VPS.
+    // Assume the last (output) layer set is the target output layer set.
+    const int profile_tier_level_idx = 
+        vps->profile_tier_level_idx[vps->vps_num_layer_sets_minus1][layer_id_in_vps];
+    TRUE_OR_RETURN(profile_tier_level_idx < vps->num_profile_tier_levels);
+    memcpy(sps->general_profile_tier_level_data,
+           vps->general_profile_tier_level_data[profile_tier_level_idx],
+           12*sizeof(sps->general_profile_tier_level_data[0]));
+  }
 
   TRUE_OR_RETURN(br->ReadUE(&sps->seq_parameter_set_id));
-  TRUE_OR_RETURN(br->ReadUE(&sps->chroma_format_idc));
-  if (sps->chroma_format_idc == 3) {
-    TRUE_OR_RETURN(br->ReadBool(&sps->separate_colour_plane_flag));
-  }
-  TRUE_OR_RETURN(br->ReadUE(&sps->pic_width_in_luma_samples));
-  TRUE_OR_RETURN(br->ReadUE(&sps->pic_height_in_luma_samples));
 
-  TRUE_OR_RETURN(br->ReadBool(&sps->conformance_window_flag));
-  if (sps->conformance_window_flag) {
-    TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_left_offset));
-    TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_right_offset));
-    TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_top_offset));
-    TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_bottom_offset));
-  }
+  if (multi_layer_ext_sps_flag) {
+    int sps_rep_format_idx = 0;
+    bool update_rep_format_flag;
+    TRUE_OR_RETURN(br->ReadBool(&update_rep_format_flag));
+    if (update_rep_format_flag) {
+      TRUE_OR_RETURN(br->ReadBits(8, &sps_rep_format_idx));
+      // Currently only one rep_format() is supported in the VPS
+      TRUE_OR_RETURN(sps_rep_format_idx == 0);
+    }
+    const H265RepFormat *rep_format = &vps->rep_format[sps_rep_format_idx];
+    sps->chroma_format_idc = rep_format->chroma_format_vps_idc;
+    sps->separate_colour_plane_flag = rep_format->separate_colour_plane_vps_flag;
+    sps->pic_width_in_luma_samples = rep_format->pic_width_vps_in_luma_samples;
+    sps->pic_height_in_luma_samples = rep_format->pic_height_vps_in_luma_samples;
+    sps->conf_win_left_offset = rep_format->conf_win_vps_left_offset;
+    sps->conf_win_right_offset = rep_format->conf_win_vps_right_offset;
+    sps->conf_win_top_offset = rep_format->conf_win_vps_top_offset;
+    sps->conf_win_bottom_offset = rep_format->conf_win_vps_bottom_offset;
+    sps->bit_depth_luma_minus8 = rep_format->bit_depth_vps_luma_minus8;
+    sps->bit_depth_chroma_minus8 = rep_format->bit_depth_vps_chroma_minus8;
+  } else {
+    TRUE_OR_RETURN(br->ReadUE(&sps->chroma_format_idc));
+    if (sps->chroma_format_idc == 3) {
+      TRUE_OR_RETURN(br->ReadBool(&sps->separate_colour_plane_flag));
+    }
+    TRUE_OR_RETURN(br->ReadUE(&sps->pic_width_in_luma_samples));
+    TRUE_OR_RETURN(br->ReadUE(&sps->pic_height_in_luma_samples));
 
-  TRUE_OR_RETURN(br->ReadUE(&sps->bit_depth_luma_minus8));
-  TRUE_OR_RETURN(br->ReadUE(&sps->bit_depth_chroma_minus8));
+    TRUE_OR_RETURN(br->ReadBool(&sps->conformance_window_flag));
+    if (sps->conformance_window_flag) {
+      TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_left_offset));
+      TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_right_offset));
+      TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_top_offset));
+      TRUE_OR_RETURN(br->ReadUE(&sps->conf_win_bottom_offset));
+    }
+
+    TRUE_OR_RETURN(br->ReadUE(&sps->bit_depth_luma_minus8));
+    TRUE_OR_RETURN(br->ReadUE(&sps->bit_depth_chroma_minus8));
+  }
   TRUE_OR_RETURN(br->ReadUE(&sps->log2_max_pic_order_cnt_lsb_minus4));
 
-  TRUE_OR_RETURN(br->ReadBool(&sps->sub_layer_ordering_info_present_flag));
-  int start = sps->sub_layer_ordering_info_present_flag
-                  ? 0
-                  : sps->max_sub_layers_minus1;
-  for (int i = start; i <= sps->max_sub_layers_minus1; i++) {
-    TRUE_OR_RETURN(br->ReadUE(&sps->max_dec_pic_buffering_minus1[i]));
-    TRUE_OR_RETURN(br->ReadUE(&sps->max_num_reorder_pics[i]));
-    TRUE_OR_RETURN(br->ReadUE(&sps->max_latency_increase_plus1[i]));
+  if (!multi_layer_ext_sps_flag) {
+    TRUE_OR_RETURN(br->ReadBool(&sps->sub_layer_ordering_info_present_flag));
+    int start = sps->sub_layer_ordering_info_present_flag
+                    ? 0
+                    : sps->max_sub_layers_minus1;
+    for (int i = start; i <= sps->max_sub_layers_minus1; i++) {
+      TRUE_OR_RETURN(br->ReadUE(&sps->max_dec_pic_buffering_minus1[i]));
+      TRUE_OR_RETURN(br->ReadUE(&sps->max_num_reorder_pics[i]));
+      TRUE_OR_RETURN(br->ReadUE(&sps->max_latency_increase_plus1[i]));
+    }
   }
-
   TRUE_OR_RETURN(br->ReadUE(&sps->log2_min_luma_coding_block_size_minus3));
   TRUE_OR_RETURN(br->ReadUE(&sps->log2_diff_max_min_luma_coding_block_size));
   TRUE_OR_RETURN(br->ReadUE(&sps->log2_min_luma_transform_block_size_minus2));
@@ -587,9 +633,17 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   TRUE_OR_RETURN(br->ReadBool(&sps->scaling_list_enabled_flag));
   if (sps->scaling_list_enabled_flag) {
-    TRUE_OR_RETURN(br->ReadBool(&sps->scaling_list_data_present_flag));
-    if (sps->scaling_list_data_present_flag) {
-      OK_OR_RETURN(SkipScalingListData(br));
+    bool sps_infer_scaling_list_flag = false;
+    if (multi_layer_ext_sps_flag) {
+      TRUE_OR_RETURN(br->ReadBool(&sps_infer_scaling_list_flag));
+    }
+    if (sps_infer_scaling_list_flag) {
+      TRUE_OR_RETURN(br->SkipBits(6));  // sps_scaling_list_ref_layer_id
+    } else {
+      TRUE_OR_RETURN(br->ReadBool(&sps->scaling_list_data_present_flag));
+      if (sps->scaling_list_data_present_flag) {
+        OK_OR_RETURN(SkipScalingListData(br));
+      }
     }
   }
 

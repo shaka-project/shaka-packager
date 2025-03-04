@@ -45,6 +45,22 @@ const uint8_t kSpsDataWithVps[] = {
     0xCB, 0x96, 0xF4, 0xA4, 0x21, 0x19, 0x3F, 0x8C, 0x04, 0x04, 0x00, 0x00,
     0x03, 0x00, 0x04, 0x00, 0x00, 0x03, 0x01, 0x68, 0x20};
 
+// Stereo video sample.
+const uint8_t kStereoVideoVpsData[] = {
+    0x40, 0x01, 0x0C, 0x11, 0xFF, 0xFF, 0x21, 0x60, 0x00, 0x00, 0x03, 0x00,
+    0xB0, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x78, 0x93, 0x05, 0x6F,
+    0x78, 0x20, 0x00, 0x28, 0x24, 0x59, 0x72, 0x60, 0x20, 0x00, 0x00, 0x03,
+    0x00, 0xF8, 0x80, 0x00, 0x00, 0x03, 0x00, 0x07, 0x88, 0xD0, 0x78, 0x00,
+    0x44, 0x0A, 0x01, 0xE5, 0xC9, 0x7D, 0x20};
+const uint8_t kStereoVideoSpsData0[] = {
+    0x42, 0x01, 0x01, 0x21, 0x60, 0x00, 0x00, 0x03, 0x00, 0xB0, 0x00, 0x00,
+    0x03, 0x00, 0x00, 0x03, 0x00, 0x78, 0xA0, 0x03, 0xC0, 0x80, 0x11, 0x07,
+    0xCB, 0x96, 0x4E, 0xE4, 0xC9, 0xAE, 0xD4, 0x94, 0x04, 0x04, 0x04, 0x0B,
+    0xB4, 0x28, 0x4D, 0x01,};
+const uint8_t kStereoVideoSpsData1[] = {
+    0x42, 0x09, 0x0E, 0x85, 0xB9, 0x32, 0x6B, 0xBE, 0x80, 0x2E, 0xD0, 0xA1,
+    0x34, 0x04};
+
 }  // namespace
 
 TEST(H265ParserTest, ParseSliceHeader) {
@@ -257,6 +273,67 @@ TEST(H265ParserTest, VpsProfileTierLevelMatchesSpsProfileTierLevel) {
   EXPECT_EQ(general_tier_flag_sps, general_tier_flag_vps);
   EXPECT_EQ(general_profile_idc_sps, general_profile_idc_vps);
   EXPECT_EQ(general_level_idc_sps, general_level_idc_vps);
+}
+
+TEST(H265ParserTest, ParseStereoVideoVpsAndSps) {
+  int id;
+  Nalu nalu;
+  H265Parser parser;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoVpsData, std::size(kStereoVideoVpsData)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseVps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSpsData0, std::size(kStereoVideoSpsData0)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+  const H265Sps* sps0 = parser.GetSps(id);
+  ASSERT_TRUE(sps0);
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSpsData1, std::size(kStereoVideoSpsData1)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+  const H265Sps* sps1 = parser.GetSps(id);
+  ASSERT_TRUE(sps1);
+
+  EXPECT_EQ(sps0->video_parameter_set_id, sps1->video_parameter_set_id);
+  const H265Vps* vps = parser.GetVps(sps0->video_parameter_set_id);
+  ASSERT_TRUE(vps);
+
+  EXPECT_TRUE(vps->vps_base_layer_internal_flag);
+  EXPECT_TRUE(vps->vps_base_layer_available_flag);
+
+  // Expect 2 layers for stereo video.
+  EXPECT_EQ(1, vps->vps_max_layers_minus1);
+  EXPECT_EQ(1, vps->vps_max_layer_id);
+  EXPECT_EQ(1, vps->vps_num_layer_sets_minus1);
+  EXPECT_EQ(0, vps->layer_id_in_vps[0]);
+  EXPECT_EQ(1, vps->layer_id_in_vps[1]);
+
+  // Expect 2 views for stereo video.
+  EXPECT_EQ(2, vps->num_views);
+  EXPECT_EQ(0, vps->view_id[0]);
+  EXPECT_EQ(1, vps->view_id[1]);
+
+  EXPECT_EQ(3, vps->num_profile_tier_levels);
+  EXPECT_EQ(1, vps->num_rep_formats);
+
+  // Base layer (primary view) profile_idc.
+  EXPECT_EQ(1, (sps0->general_profile_tier_level_data[0] & 0x1F));
+  // Layer 1 (secondary view) profile_idc.
+  EXPECT_EQ(6, (sps1->general_profile_tier_level_data[0] & 0x1F));
+
+  // Expect the following to be the same between the two SPSs
+  EXPECT_EQ(sps0->chroma_format_idc, sps1->chroma_format_idc);
+  EXPECT_EQ(sps0->separate_colour_plane_flag, sps1->separate_colour_plane_flag);
+  EXPECT_EQ(sps0->pic_width_in_luma_samples, sps1->pic_width_in_luma_samples);
+  EXPECT_EQ(sps0->pic_height_in_luma_samples, sps1->pic_height_in_luma_samples);
+  EXPECT_EQ(sps0->conf_win_left_offset, sps1->conf_win_left_offset);
+  EXPECT_EQ(sps0->conf_win_right_offset, sps1->conf_win_right_offset);
+  EXPECT_EQ(sps0->conf_win_top_offset, sps1->conf_win_top_offset);
+  EXPECT_EQ(sps0->conf_win_bottom_offset, sps1->conf_win_bottom_offset);
+  EXPECT_EQ(sps0->bit_depth_luma_minus8, sps1->bit_depth_luma_minus8);
+  EXPECT_EQ(sps0->bit_depth_chroma_minus8, sps1->bit_depth_chroma_minus8);
+   
+  // This is from 8-bit test content.
+  EXPECT_EQ(0, sps1->bit_depth_luma_minus8);
+  EXPECT_EQ(0, sps1->bit_depth_chroma_minus8);
 }
 
 }  // namespace H265
