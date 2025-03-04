@@ -7,7 +7,7 @@ RUN zypper addrepo \
 RUN zypper --no-gpg-checks refresh
 
 # Install cmake 
-RUN zypper install cmake-full=3.24.0
+RUN zypper install cmake=3.23.2
 
 # Install utilities, libraries, and dev tools.
 RUN zypper in -y \
