@@ -36,6 +36,15 @@ const uint8_t kSliceData2[] = {0x02, 0x01, 0xd0, 0x29, 0xc9, 0xfd, 0x63, 0x22,
                                0x52, 0x04, 0x06, 0x13, 0x3d, 0xc6, 0xf0, 0xb9,
                                0x55, 0x98, 0xa0, 0x16, 0x57, 0xf6, 0xb8, 0x25};
 
+const uint8_t kVpsData[] = {
+    0x40, 0x01, 0x0C, 0x01, 0xFF, 0xFF, 0x01, 0x40, 0x00, 0x00, 0x03, 0x00,
+    0x90, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x96, 0xBC, 0x09};
+const uint8_t kSpsDataWithVps[] = {
+    0x42, 0x01, 0x01, 0x01, 0x40, 0x00, 0x00, 0x03, 0x00, 0x90, 0x00, 0x00,
+    0x03, 0x00, 0x00, 0x03, 0x00, 0x96, 0xA0, 0x03, 0xC0, 0x80, 0x11, 0x07,
+    0xCB, 0x96, 0xF4, 0xA4, 0x21, 0x19, 0x3F, 0x8C, 0x04, 0x04, 0x00, 0x00,
+    0x03, 0x00, 0x04, 0x00, 0x00, 0x03, 0x01, 0x68, 0x20};
+
 }  // namespace
 
 TEST(H265ParserTest, ParseSliceHeader) {
@@ -204,6 +213,50 @@ TEST(H265ParserTest, ExtractResolutionFromSpsDataWithCrop) {
   EXPECT_EQ(240u, coded_height);
   EXPECT_EQ(855u, pixel_width);
   EXPECT_EQ(857u, pixel_height);
+}
+
+TEST(H265ParserTest, ParseVps) {
+  Nalu nalu;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kVpsData, std::size(kVpsData)));
+  ASSERT_EQ(Nalu::H265_VPS, nalu.type());
+
+  int id = 0;
+  H265Parser parser;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseVps(nalu, &id));
+  ASSERT_EQ(0, id);
+
+  const H265Vps* vps = parser.GetVps(id);
+  ASSERT_TRUE(vps);
+
+  EXPECT_EQ(0, vps->vps_max_layers_minus1);
+  EXPECT_EQ(0, vps->vps_max_layer_id);
+  EXPECT_EQ(0, vps->vps_num_layer_sets_minus1);
+}
+
+TEST(H265ParserTest, VpsProfileTierLevelMatchesSpsProfileTierLevel) {
+  // Parse the VPS and SPS and check their general_profile_tier_level_data.
+  int id;
+  Nalu nalu;
+  H265Parser parser;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kVpsData, std::size(kVpsData)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseVps(nalu, &id));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsDataWithVps, std::size(kSpsDataWithVps)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+
+  const H265Sps* sps = parser.GetSps(id);
+  ASSERT_TRUE(sps);
+  const H265Vps* vps = parser.GetVps(sps->video_parameter_set_id);
+  ASSERT_TRUE(vps);
+
+  int general_tier_flag_sps = (sps->general_profile_tier_level_data[0] >> 5) & 0x01;
+  int general_profile_idc_sps = sps->general_profile_tier_level_data[0] & 0x1F;
+  int general_level_idc_sps = sps->general_profile_tier_level_data[11];
+  int general_tier_flag_vps = (vps->general_profile_tier_level_data[0][0] >> 5) & 0x01;
+  int general_profile_idc_vps = vps->general_profile_tier_level_data[0][0] & 0x1F;
+  int general_level_idc_vps = vps->general_profile_tier_level_data[0][11];
+  EXPECT_EQ(general_tier_flag_sps, general_tier_flag_vps);
+  EXPECT_EQ(general_profile_idc_sps, general_profile_idc_vps);
+  EXPECT_EQ(general_level_idc_sps, general_level_idc_vps);
 }
 
 }  // namespace H265

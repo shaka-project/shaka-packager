@@ -169,6 +169,9 @@ H265Pps::~H265Pps() {}
 H265Sps::H265Sps() {}
 H265Sps::~H265Sps() {}
 
+H265Vps::H265Vps() {}
+H265Vps::~H265Vps() {}
+
 int H265Sps::GetPicSizeInCtbsY() const {
   int min_cb_log2_size_y = log2_min_luma_coding_block_size_minus3 + 3;
   int ctb_log2_size_y =
@@ -643,12 +646,482 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
   return kOk;
 }
 
+H265Parser::Result H265Parser::ParseVps(const Nalu& nalu, int* vps_id) {
+  DCHECK_EQ(Nalu::H265_VPS, nalu.type());
+
+  // Reads only the data needed.
+  H26xBitReader reader;
+  reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
+  H26xBitReader* br = &reader;
+
+  bool temp_bool;
+  int temp_int;
+
+  std::unique_ptr<H265Vps> vps(new H265Vps);
+
+  *vps_id = -1;
+  TRUE_OR_RETURN(br->ReadBits(4, &vps->vps_video_parameter_set_id));
+
+  TRUE_OR_RETURN(br->ReadBool(&vps->vps_base_layer_internal_flag));
+  TRUE_OR_RETURN(br->ReadBool(&vps->vps_base_layer_available_flag));
+
+  TRUE_OR_RETURN(br->ReadBits(6, &vps->vps_max_layers_minus1));
+  TRUE_OR_RETURN(vps->vps_max_layers_minus1 + 1 <= kMaxLayers);
+
+  TRUE_OR_RETURN(br->ReadBits(3, &vps->vps_max_sub_layers_minus1));
+
+  // vps_temporal_id_nesting_flag, vps_reserved_0xffff_16bits
+  TRUE_OR_RETURN(br->SkipBits(17));
+
+  OK_OR_RETURN(
+      ReadProfileTierLevel(true, vps->vps_max_sub_layers_minus1, br, nullptr,
+                           vps.get()->general_profile_tier_level_data[0]));
+  vps->num_profile_tier_levels = 1;
+
+  // vps_sub_layer_ordering_info_present_flag
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));
+  int start = temp_bool ? 0 : vps->vps_max_sub_layers_minus1;
+  for (int i = start; i <= vps->vps_max_sub_layers_minus1; i++) {
+    // vps_max_dec_pic_buffering_minus1[i], vps_max_num_reorder_pics[i],
+    // vps_max_latency_increase_plus1[i]
+    TRUE_OR_RETURN(br->ReadUE(&temp_int));
+    TRUE_OR_RETURN(br->ReadUE(&temp_int));
+    TRUE_OR_RETURN(br->ReadUE(&temp_int)); 
+  }
+
+  TRUE_OR_RETURN(br->ReadBits(6, &vps->vps_max_layer_id));
+  TRUE_OR_RETURN(br->ReadUE(&vps->vps_num_layer_sets_minus1));
+
+  if ((vps->vps_max_layers_minus1 < 1 || vps->vps_num_layer_sets_minus1 < 1) ||
+      (!vps->vps_base_layer_internal_flag || !vps->vps_base_layer_internal_flag) ||
+      (vps->vps_max_layer_id < vps->vps_max_layers_minus1)) {
+    // 1. Must have more than 1 layer set for stereo video.
+    // 2. The base layer must included within the bitstream.
+    // 3. Must have enough layer ID range to support the number of layers.
+
+    // If any one of the above conditions fails, assume just a single layer video. 
+    vps->vps_max_layers_minus1 = 0;
+    *vps_id = vps->vps_video_parameter_set_id;
+    active_vpses_[*vps_id] = std::move(vps);
+    return kOk;
+  }
+
+  // Define each layer set information: list of layer IDs, etc.
+  int layer_set_layer_id_list[kMaxLayerSets][kMaxLayerIdPlus1];
+  int num_layers_in_id_list[kMaxLayerSets];
+  int layer_set_max_layer_id[kMaxLayerSets];
+  // The first layer set is comprised of only the base layer.
+  layer_set_layer_id_list[0][0] = 0;
+  num_layers_in_id_list[0] = 1;
+  layer_set_max_layer_id[0] = 0;
+  // Define other layer sets.
+  for (int i = 1; i <= vps->vps_num_layer_sets_minus1; i++) {
+    int n = 0;
+    for (int j = 0; j <= vps->vps_max_layer_id; j++) {
+      bool layer_id_included_flag;
+      TRUE_OR_RETURN(br->ReadBool(&layer_id_included_flag));
+      if (layer_id_included_flag) {
+        layer_set_layer_id_list[i][n++] = j;
+        layer_set_max_layer_id[i] = j;
+      }
+    }
+    num_layers_in_id_list[i] = n;
+  }
+
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_timing_info_present_flag
+  if (temp_bool) {
+    TRUE_OR_RETURN(br->SkipBits(64));  // vps_num_units_in_tick, vps_time_scale
+    TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_poc_proportional_to_timing_flag
+    if (temp_bool) {
+      TRUE_OR_RETURN(br->ReadUE(&temp_int));  // vps_num_ticks_poc_diff_one_minus1
+    }
+    TRUE_OR_RETURN(br->ReadUE(&temp_int));  // vps_num_hrd_parameters
+    for (int i = 0; i < temp_int; i++) {
+      int hrd_layer_set_idx;
+      TRUE_OR_RETURN(br->ReadUE(&hrd_layer_set_idx));
+      
+      bool common_inf_present_flag = true;
+      if (i != 0) {
+        TRUE_OR_RETURN(br->ReadBool(&common_inf_present_flag));
+      }
+      OK_OR_RETURN(SkipHrdParameters(common_inf_present_flag, 
+                                     vps->vps_max_sub_layers_minus1, br));
+    }
+  }
+
+  // For stereo video, vps_extension() needs to be parsed.
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_extension_flag
+  if (!temp_bool) {
+    // If no vps_extension(), then fallback to single layer HEVC.
+    vps->vps_max_layers_minus1 = 0;
+    *vps_id = vps->vps_video_parameter_set_id;
+    active_vpses_[*vps_id] = std::move(vps);
+    return kOk;
+  }
+
+  OK_OR_RETURN(ByteAlignment(br));
+
+  OK_OR_RETURN(
+      ReadProfileTierLevel(false, vps->vps_max_sub_layers_minus1, br, 
+                           vps.get()->general_profile_tier_level_data[0], 
+                           vps.get()->general_profile_tier_level_data[1]));
+
+  bool splitting_flag;
+  bool scalability_mask_flag[16];
+  int num_scalability_types = 0;
+  TRUE_OR_RETURN(br->ReadBool(&splitting_flag));
+  for (int i = 0; i < 16; i++) {
+    TRUE_OR_RETURN(br->ReadBool(&scalability_mask_flag[i]));
+    if (scalability_mask_flag[i]) {
+      num_scalability_types++;
+    }
+  }
+  
+  // As listed in Table F.1 of the spec, num_scalability_types indicates the 
+  // number of different scalability dimensions.  If there is no scalability
+  // dimension, then we simply have a single-layer HEVC.  Currently, only 2
+  // view multi-view coding is supported; in other cases, simply fallback to
+  // single-layer HEVC. 
+  if (num_scalability_types == 0 ||
+      num_scalability_types > kMaxScalabilityTypes ||
+      !scalability_mask_flag[1]) {
+    vps->vps_max_sub_layers_minus1 = 0;
+    *vps_id = vps->vps_video_parameter_set_id;
+    active_vpses_[*vps_id] = std::move(vps);
+    return kOk;
+  }
+
+  vps->scalability_type = H265Vps::kMultiview;
+
+  int dimension_id_len_minus1[kMaxScalabilityTypes];
+  for (int i = 0; i < num_scalability_types - (splitting_flag ? 1 : 0); i++) {
+    TRUE_OR_RETURN(br->ReadBits(3, &dimension_id_len_minus1[i]));
+  }
+
+  int dim_bit_offset[kMaxScalabilityTypes + 1];
+  dim_bit_offset[0] = 0;
+  if (splitting_flag) {
+    for (int i = 1; i < num_scalability_types; i++) {
+      for (int j = 0; j < i; j++) {
+        dim_bit_offset[i] += dimension_id_len_minus1[j] + 1;
+      }
+    }
+    dim_bit_offset[num_scalability_types] = 6;
+  }
+
+  int dimension_id[kMaxLayers][kMaxScalabilityTypes];
+  for (int j = 0; j < num_scalability_types; j++) {
+    dimension_id[0][j] = 0;
+  }
+
+  // Get layer_id_in_nuh that maps the layer ID used in this VPS to the NAL
+  // unit header's parsed layer ID - nuh_layer_id.
+  int layer_id_in_nuh[kMaxLayers];
+  layer_id_in_nuh[0] = 0;
+
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_nuh_layer_id_present_flag
+  for (int i = 1; i <= vps->vps_max_layers_minus1; i++) {
+    if (temp_bool) {
+      TRUE_OR_RETURN(br->ReadBits(6, &layer_id_in_nuh[i])); 
+    } else {
+      layer_id_in_nuh[i] = i;
+    }
+    if (!splitting_flag) {
+      for (int j = 0; j < num_scalability_types; j++) {
+        TRUE_OR_RETURN(br->ReadBits(dimension_id_len_minus1[j] + 1, &dimension_id[i][j]));
+      }
+    } else {
+      for (int j = 0; j < num_scalability_types; j++) {
+        dimension_id[i][j] = (layer_id_in_nuh[i] & ((1 << dim_bit_offset[j + 1]) - 1)) >> dim_bit_offset[j];
+      }
+    }
+  }
+
+  // Derive view_order_idx[] and num_views following (F-3) in
+  // Subsection F.7.4.3.1.1 of the standard.
+  int view_order_idx[kMaxLayerIdPlus1];
+  vps->num_views = 1;
+  for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+    view_order_idx[layer_id_in_nuh[i]] = -1;
+    for (int sm_idx = 0, j = 0; sm_idx < 16; sm_idx++) {
+      if (scalability_mask_flag[sm_idx]) {
+        if (sm_idx == 1) { // multiview
+          // Note that view_order_idx is expected to be an index as it is used
+          // to access view_id_val[]; however, dimension_id[i][j] is not
+          // expected to follow the index constraint.  It is up to the encoder
+          // to ensure that the dimension_id[i][j] is consistent with the use
+          // of view_order_idx.
+          view_order_idx[layer_id_in_nuh[i]] = dimension_id[i][j];
+        }
+        j++;
+      }
+    }
+    if (i > 0) {
+      bool new_view = true;
+      for (int j = 0; j < i; j++) {
+        if (view_order_idx[layer_id_in_nuh[i]] == view_order_idx[layer_id_in_nuh[j]]) {
+          new_view = false;
+          break;
+        }
+      }
+      if (new_view) {
+        vps->num_views++;
+      }
+    }
+  }
+
+  int view_id_len;
+  TRUE_OR_RETURN(br->ReadBits(4, &view_id_len));
+  if (vps->num_views != kNumViews || view_id_len == 0) {
+    NOTIMPLEMENTED() << "Only multiview extension with 2 views is supported.";
+    return kUnsupportedStream;
+  }
+
+  int view_id_val[kNumViews];
+  for (int i = 0; i < vps->num_views; i++) {
+    TRUE_OR_RETURN(br->ReadBits(view_id_len, &view_id_val[i]));
+  }
+
+  for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+    vps->layer_id_in_vps[layer_id_in_nuh[i]] = i;
+  }
+  for (int i = 0; i <= vps->vps_max_layer_id; i++) {
+    int view_id_val_idx = std::min(view_order_idx[i], vps->num_views - 1);
+    vps->view_id[vps->layer_id_in_vps[i]] = view_id_val_idx >= 0 ? view_id_val[view_id_val_idx] : kInvalidId;
+  }
+
+  // Derive H.265 layer dependency structure following (F-4) in
+  // Subsection F.7.4.3.1.1 of the standard.
+  bool direct_dependency_flag[kMaxLayers][kMaxLayers];
+  bool dependency_flag[kMaxLayers][kMaxLayers];
+  for (int i = 1; i <= vps->vps_max_layers_minus1; i++) {
+    for (int j = 0; j < i; j++) {
+      TRUE_OR_RETURN(br->ReadBool(&direct_dependency_flag[i][j]));
+      dependency_flag[i][j] = direct_dependency_flag[i][j];
+    }
+  }
+  for (int i = 1; i <= vps->vps_max_layers_minus1; i++) {
+    for (int j = 0; j < vps->vps_max_layers_minus1; j++) {
+      for (int k = 0; k < i; k++) {
+        if (dependency_flag[i][k] && dependency_flag[k][j]) {
+          dependency_flag[i][j] = true;
+          break;
+        }
+      }
+    }
+  }
+
+  // Derive num_direct_ref_layers following (F-5) in Subsection F.7.4.3.1.1.
+  for (int i = 1; i <= vps->vps_max_layers_minus1; i++) {
+    int d = 0;
+    for (int j = 0; j < i; j++) {
+      if (direct_dependency_flag[i][j]) {
+        vps->id_direct_ref_layers[layer_id_in_nuh[i]][d++] = layer_id_in_nuh[j];
+      }
+    }
+    vps->num_direct_ref_layers[layer_id_in_nuh[i]] = d;
+  }
+  // Derive num_independent_layers following (F-6) in Subsection F.7.4.3.1.1.
+  int num_independent_layers = 0;
+  for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+    if (vps->num_direct_ref_layers[layer_id_in_nuh[i]] == 0) {
+      num_independent_layers++;
+    }
+  }
+
+  if (num_independent_layers > 1) {
+    NOTIMPLEMENTED() << "Only single independent layer is supported.";
+    return kUnsupportedStream;
+  }
+
+  // Since num_independent_layers <= 1, no need to parse num_add_layer_sets or
+  // highest_layer_idx_plus1.
+
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_sub_layers_max_minus1_present_flag
+  if (temp_bool) {
+    for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+      TRUE_OR_RETURN(br->ReadBits(3, &vps->sub_layers_vps_max_minus1[i]));
+    }
+  }
+
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // max_tid_ref_present_flag
+  if (temp_bool) {
+    for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+      for (int j = i + 1; j <=  vps->vps_max_layers_minus1; j++) {
+        if (direct_dependency_flag[j][i]) {
+          TRUE_OR_RETURN(br->ReadBits(3, &vps->max_tid_il_ref_pics_plus1[i][j]));
+        } else {
+          vps->max_tid_il_ref_pics_plus1[i][j] = 7;
+        }
+      }
+    }
+  } else {
+    for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+      for (int j = i + 1; j <=  vps->vps_max_layers_minus1; j++) {
+        vps->max_tid_il_ref_pics_plus1[i][j] = 7;
+      }
+    }
+  }
+
+  TRUE_OR_RETURN(br->ReadBool(&vps->default_ref_layers_active_flag)); 
+
+  // Get profile_tier_level()s needed for non-base layer.
+  TRUE_OR_RETURN(br->ReadUE(&temp_int));  // vps_num_profile_tier_level_minus1
+  vps->num_profile_tier_levels = temp_int + 1;
+  if (vps->num_profile_tier_levels > kMaxNumProfileTierLevels) {
+    NOTIMPLEMENTED() << "Only up to " << kMaxNumProfileTierLevels 
+                     << " profile_tier_levels are supported in the L-HEVC case.";
+    return kUnsupportedStream;
+  }
+  // Note that vps_base_layer_internal_flag is always true, so i starts from 2
+  if (vps->num_profile_tier_levels > 2) {
+    for (int i = 2; i < vps->num_profile_tier_levels; i++) {
+      TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_profile_present_flag[i]
+      OK_OR_RETURN(
+        ReadProfileTierLevel(temp_bool, vps->vps_max_sub_layers_minus1, br, 
+                             vps.get()->general_profile_tier_level_data[i-1],
+                             vps.get()->general_profile_tier_level_data[i]));
+    }
+  }
+
+  TRUE_OR_RETURN(br->ReadUE(&temp_int));  // num_add_olss
+  if (temp_int > 0) {
+    NOTIMPLEMENTED() << "No additional output layer sets are supported.";
+    return kUnsupportedStream;
+  }
+  int num_output_layer_sets = vps->vps_num_layer_sets_minus1 + 1 + temp_int;
+
+  int default_output_layer_idc;
+  TRUE_OR_RETURN(br->ReadBits(2, &default_output_layer_idc));
+
+  bool output_layer_flag[kMaxOuputLayerSets][kMaxLayerIdPlus1];
+  int num_output_layers_in_output_layer_set[kMaxOuputLayerSets];
+  int ols_highest_output_layer_id[kMaxOuputLayerSets];
+  for (int i = 0; i <= vps->vps_num_layer_sets_minus1; i++) {
+    num_output_layers_in_output_layer_set[i] = 0;
+    ols_highest_output_layer_id[i] = layer_set_max_layer_id[i];
+    if (default_output_layer_idc == 0) {
+      for (int j = 0; j < num_layers_in_id_list[i]; j++) {
+        output_layer_flag[i][j] = true;
+      }
+      num_output_layers_in_output_layer_set[i] = num_layers_in_id_list[i];
+    } else if (default_output_layer_idc == 1) {
+      for (int j = 0; j < num_layers_in_id_list[i]; j++) {
+        output_layer_flag[i][j] = layer_set_layer_id_list[i][j] == layer_set_max_layer_id[i];
+      }
+      num_output_layers_in_output_layer_set[i] = 1;
+    } else {
+      output_layer_flag[0][0] = true;
+      num_output_layers_in_output_layer_set[0] = 1;
+    }
+  }
+
+  // Below simplified as num_output_layer_sets == vps_num_layer_sets_minus1+1.
+  for (int i = 1; i < num_output_layer_sets; i++) {
+    if (default_output_layer_idc == 2) {
+      for (int j = 0; j < num_layers_in_id_list[i]; j++) {
+        TRUE_OR_RETURN(br->ReadBool(&output_layer_flag[i][j]));
+        if (output_layer_flag[i][j]) {
+          num_output_layers_in_output_layer_set[i] += 1;
+          ols_highest_output_layer_id[i] = layer_set_layer_id_list[i][j];
+        }
+      }
+    }
+
+    for (int j = 0; j < num_layers_in_id_list[i]; j++) {
+      if (vps->num_profile_tier_levels > 1) {
+        bool necessary_layer_flag = output_layer_flag[i][j];
+        int bit_len = ceil(log2(vps->num_profile_tier_levels));
+        if (!necessary_layer_flag) {
+          int curr_layer_id_in_vps = vps->layer_id_in_vps[layer_set_layer_id_list[i][j]];
+          for (int k = 0; k < j; k++) {
+            int ref_layer_id_in_vps = vps->layer_id_in_vps[layer_set_layer_id_list[i][k]];
+            if (dependency_flag[curr_layer_id_in_vps][ref_layer_id_in_vps]) {
+              necessary_layer_flag = true;
+              break;
+            }
+          }
+        }
+        if (necessary_layer_flag) {
+          TRUE_OR_RETURN(br->ReadBits(bit_len, &vps->profile_tier_level_idx[i][j]));
+        }
+      }
+    }
+    if (num_output_layers_in_output_layer_set[i] == 1
+        && vps->num_direct_ref_layers[ols_highest_output_layer_id[i]] > 0) {
+      TRUE_OR_RETURN(br->SkipBits(1));  // alt_output_layer_flag[i]
+    }
+  }
+
+  TRUE_OR_RETURN(br->ReadUE(&temp_int));  // vps_num_rep_formats_minus1
+  vps->num_rep_formats = temp_int + 1;
+  if (vps->num_rep_formats > kMaxNumRepFromats) {
+    NOTIMPLEMENTED() << "Only up to " << kMaxNumRepFromats
+                     << " rep_formats are supported.";
+    return kUnsupportedStream;
+  }
+  
+  for (int i = 0; i < vps->num_rep_formats; i++) {
+    // Parse rep_format().
+    H265RepFormat *rep_format = &vps->rep_format[i];
+    TRUE_OR_RETURN(br->ReadBits(16, &rep_format->pic_width_vps_in_luma_samples));
+    TRUE_OR_RETURN(br->ReadBits(16, &rep_format->pic_height_vps_in_luma_samples));
+    TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // chroma_and_bit_depth_vps_present_flag
+    if (temp_bool) {
+      TRUE_OR_RETURN(br->ReadBits(2, &rep_format->chroma_format_vps_idc));
+      if (rep_format->chroma_format_vps_idc == 3) {
+        TRUE_OR_RETURN(br->ReadBool(&rep_format->separate_colour_plane_vps_flag));
+      }
+      TRUE_OR_RETURN(br->ReadBits(4, &rep_format->bit_depth_vps_luma_minus8));
+      TRUE_OR_RETURN(br->ReadBits(4, &rep_format->bit_depth_vps_luma_minus8));
+    }
+    TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // conformance_window_vps_flag
+    if (temp_bool) {
+      TRUE_OR_RETURN(br->ReadUE(&rep_format->conf_win_vps_left_offset));
+      TRUE_OR_RETURN(br->ReadUE(&rep_format->conf_win_vps_right_offset));
+      TRUE_OR_RETURN(br->ReadUE(&rep_format->conf_win_vps_top_offset));
+      TRUE_OR_RETURN(br->ReadUE(&rep_format->conf_win_vps_bottom_offset));
+    }
+  }
+
+  // Since kMaxNumRepFromats and vps_num_rep_formats_minus1 == 0, no need to
+  // parse rep_format_idx_present_flag.  Since rep_format_idx_present_flag is
+  // inferred to be 0, no need to parse vps_rep_format_idx[i].
+
+  TRUE_OR_RETURN(br->ReadBool(&vps->max_one_active_ref_layer_flag));
+  // For stereo views, the secondary view only depends on the primary view, so
+  // at most 1 ref layer is needed!
+  TRUE_OR_RETURN(vps->max_one_active_ref_layer_flag);
+
+  TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // vps_poc_lsb_aligned_flag
+
+  for (int i = 1; i <= vps->vps_max_layers_minus1; i++) {
+    if (vps->num_direct_ref_layers[layer_id_in_nuh[i]] == 0) {
+      TRUE_OR_RETURN(br->ReadBool(&vps->poc_lsb_not_present_flag[i]));
+    } else {
+      vps->poc_lsb_not_present_flag[i] = false;
+    }
+  }
+
+  // Ignore remaining data.
+
+  *vps_id = vps->vps_video_parameter_set_id;
+
+  active_vpses_[*vps_id] = std::move(vps);
+
+  return kOk;
+}
+
 const H265Pps* H265Parser::GetPps(int pps_id) {
   return active_ppses_[pps_id].get();
 }
 
 const H265Sps* H265Parser::GetSps(int sps_id) {
   return active_spses_[sps_id].get();
+}
+
+const H265Vps* H265Parser::GetVps(int vps_id) {
+  return active_vpses_[vps_id].get();
 }
 
 H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
