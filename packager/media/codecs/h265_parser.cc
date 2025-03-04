@@ -52,7 +52,10 @@ namespace media {
 
 namespace {
 int GetNumPicTotalCurr(const H265SliceHeader& slice_header,
-                       const H265Sps& sps) {
+                       const H265Sps& sps,
+                       const H265Vps& vps,
+                       int nuh_layer_id,
+                       int nuh_temporal_id) {
   int num_pic_total_curr = 0;
   const H265ReferencePictureSet& ref_pic_set =
       slice_header.short_term_ref_pic_set_sps_flag
@@ -68,7 +71,31 @@ int GetNumPicTotalCurr(const H265SliceHeader& slice_header,
       num_pic_total_curr++;
   }
 
-  return num_pic_total_curr + slice_header.used_by_curr_pic_lt;
+  num_pic_total_curr += slice_header.used_by_curr_pic_lt;
+
+  int num_active_ref_layer_pics = 0;
+  if (nuh_layer_id > 0) {
+    int num_ref_layer_pics = 0;
+    for (int i = 0; i < vps.num_direct_ref_layers[nuh_layer_id]; i++) {
+      int ref_layer_idx = vps.layer_id_in_vps[vps.id_direct_ref_layers[nuh_layer_id][i]];
+      if (vps.sub_layers_vps_max_minus1[ref_layer_idx] >= nuh_temporal_id &&
+          (nuh_temporal_id == 0 || vps.max_tid_il_ref_pics_plus1[ref_layer_idx][vps.layer_id_in_vps[nuh_layer_id]] > nuh_temporal_id)) {
+        num_ref_layer_pics++;
+      }
+    }
+    if (num_ref_layer_pics > 0) {
+      if (vps.default_ref_layers_active_flag) {
+        num_active_ref_layer_pics = num_ref_layer_pics;
+      } else if (!slice_header.inter_layer_pred_enabled_flag) {
+        num_active_ref_layer_pics = 0;
+      } else if (vps.max_one_active_ref_layer_flag || vps.num_direct_ref_layers[nuh_layer_id] == 1) {
+        num_active_ref_layer_pics = 1;
+      } else {
+        LOG(ERROR) << "For stereo views, num_direct_ref_layers is expected to be 1.";
+      }
+    }
+  }
+  return num_pic_total_curr + num_active_ref_layer_pics;
 }
 
 void GetAspectRatioInfo(const H265Sps& sps,
@@ -225,6 +252,12 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
   const H265Sps* sps = GetSps(pps->seq_parameter_set_id);
   TRUE_OR_RETURN(sps);
 
+  const H265Vps* vps = GetVps(sps->video_parameter_set_id);
+  const int nuh_layer_id = nalu.nuh_layer_id();
+  if (nuh_layer_id > 0) {
+    TRUE_OR_RETURN(vps);
+  }
+
   if (!slice_header->first_slice_segment_in_pic_flag) {
     if (pps->dependent_slice_segments_enabled_flag) {
       TRUE_OR_RETURN(br->ReadBool(&slice_header->dependent_slice_segment_flag));
@@ -243,11 +276,14 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
       TRUE_OR_RETURN(br->ReadBits(2, &slice_header->colour_plane_id));
     }
 
-    if (nalu.type() != Nalu::H265_IDR_W_RADL &&
-        nalu.type() != Nalu::H265_IDR_N_LP) {
+    if ( (nuh_layer_id > 0 && !vps->poc_lsb_not_present_flag[vps->layer_id_in_vps[nuh_layer_id]]) ||
+         (nalu.type() != Nalu::H265_IDR_W_RADL && nalu.type() != Nalu::H265_IDR_N_LP) ) {
       TRUE_OR_RETURN(br->ReadBits(sps->log2_max_pic_order_cnt_lsb_minus4 + 4,
                                   &slice_header->slice_pic_order_cnt_lsb));
+    }
 
+    if (nalu.type() != Nalu::H265_IDR_W_RADL &&
+        nalu.type() != Nalu::H265_IDR_N_LP) {
       TRUE_OR_RETURN(
           br->ReadBool(&slice_header->short_term_ref_pic_set_sps_flag));
       if (!slice_header->short_term_ref_pic_set_sps_flag) {
@@ -303,9 +339,14 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
       }
     }
 
-    if (nalu.nuh_layer_id() != 0) {
-      NOTIMPLEMENTED() << "Multi-layer streams are not supported.";
-      return kUnsupportedStream;
+    if (nuh_layer_id > 0 &&
+        !vps->default_ref_layers_active_flag &&
+        vps->num_direct_ref_layers[nuh_layer_id] > 0) {
+      TRUE_OR_RETURN(br->ReadBool(&slice_header->inter_layer_pred_enabled_flag));
+      if (slice_header->inter_layer_pred_enabled_flag && vps->num_direct_ref_layers[nuh_layer_id] > 1) {
+        NOTIMPLEMENTED() << "For stereo video, num_direct_ref_layers is expected to be 1.";
+        return kUnsupportedStream;
+      }
     }
 
     if (sps->sample_adaptive_offset_enabled_flag) {
@@ -331,7 +372,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
         }
       }
 
-      const int num_pic_total_curr = GetNumPicTotalCurr(*slice_header, *sps);
+      const int num_pic_total_curr =
+          GetNumPicTotalCurr(*slice_header, *sps, *vps, nuh_layer_id, nalu.nuh_temporal_id());
       if (pps->lists_modification_present_flag && num_pic_total_curr > 1) {
         OK_OR_RETURN(SkipReferencePictureListModification(
             *slice_header, *pps, num_pic_total_curr, br));

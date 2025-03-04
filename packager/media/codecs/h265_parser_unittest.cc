@@ -56,10 +56,28 @@ const uint8_t kStereoVideoSpsData0[] = {
     0x42, 0x01, 0x01, 0x21, 0x60, 0x00, 0x00, 0x03, 0x00, 0xB0, 0x00, 0x00,
     0x03, 0x00, 0x00, 0x03, 0x00, 0x78, 0xA0, 0x03, 0xC0, 0x80, 0x11, 0x07,
     0xCB, 0x96, 0x4E, 0xE4, 0xC9, 0xAE, 0xD4, 0x94, 0x04, 0x04, 0x04, 0x0B,
-    0xB4, 0x28, 0x4D, 0x01,};
+    0xB4, 0x28, 0x4D, 0x01};
 const uint8_t kStereoVideoSpsData1[] = {
     0x42, 0x09, 0x0E, 0x85, 0xB9, 0x32, 0x6B, 0xBE, 0x80, 0x2E, 0xD0, 0xA1,
     0x34, 0x04};
+const uint8_t kStereoVideoPpsData0[] = {
+    0x44, 0x01, 0xC5, 0xE3, 0x0F, 0x09, 0xC1, 0x80, 0xC7, 0xB0, 0x9A, 0x01,
+    0x40};
+const uint8_t kStereoVideoPpsData1[] = {
+    0x44, 0x09, 0x48, 0x5A, 0x43, 0x0F, 0x09, 0xC1, 0x80, 0xC7, 0xB4, 0x9A,
+    0x01, 0x40};
+const uint8_t kStereoVideoSliceDataIntra0[] = {
+    0x26, 0x01, 0xA3, 0xC6, 0xAC, 0x30, 0x02, 0x0C, 0xB0, 0x02, 0x49, 0x88,
+    0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF8};
+const uint8_t kStereoVideoSliceDataIntra1[] = {
+    0x26, 0x09, 0x90, 0x80, 0x3C, 0xC6, 0xAC, 0x30, 0x01, 0x20, 0x6A, 0x01,
+    0x37, 0x28, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF8};
+const uint8_t kStereoVideoSliceDataInter0[] = {
+    0x02, 0x01, 0xC4, 0x03, 0x7C, 0xC4, 0xAC, 0x30, 0x00, 0x0F, 0xAA, 0x00,
+    0x1B, 0x30, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF8};
+const uint8_t kStereoVideoSliceDataInter1[] = {
+    0x02, 0x09, 0xA1, 0x00, 0x9A, 0x00, 0xBD, 0x65, 0x89, 0x58, 0x60, 0x00,
+    0x30, 0x2C, 0x00, 0x41, 0xC0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF0};
 
 }  // namespace
 
@@ -334,6 +352,108 @@ TEST(H265ParserTest, ParseStereoVideoVpsAndSps) {
   // This is from 8-bit test content.
   EXPECT_EQ(0, sps1->bit_depth_luma_minus8);
   EXPECT_EQ(0, sps1->bit_depth_chroma_minus8);
+}
+
+TEST(H265ParserTest, ParseStereoVideoSliceHeaderIntra) {
+  // Parse the VPS, SPS and PPS first so the data is available.
+  int id;
+  Nalu nalu;
+  H265Parser parser;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoVpsData, std::size(kStereoVideoVpsData)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseVps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSpsData0, std::size(kStereoVideoSpsData0)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSpsData1, std::size(kStereoVideoSpsData1)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoPpsData0, std::size(kStereoVideoPpsData0)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoPpsData1, std::size(kStereoVideoPpsData1)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
+
+  // Parse the slice header for layer 0.
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSliceDataIntra0, std::size(kStereoVideoSliceDataIntra0)));
+  H265SliceHeader header0;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSliceHeader(nalu, &header0));
+  EXPECT_EQ(0, nalu.nuh_layer_id());
+  EXPECT_TRUE(header0.first_slice_segment_in_pic_flag);
+  EXPECT_EQ(0, header0.pic_parameter_set_id);
+  EXPECT_FALSE(header0.dependent_slice_segment_flag);
+  EXPECT_EQ(2, header0.slice_type);
+  EXPECT_EQ(136u, header0.header_bit_size);
+
+  // Parse the slice header for layer 1.
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSliceDataIntra1, std::size(kStereoVideoSliceDataIntra1)));
+  H265SliceHeader header1;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSliceHeader(nalu, &header1));
+  const H265Pps* pps = parser.GetPps(header1.pic_parameter_set_id);
+  ASSERT_TRUE(pps);
+  const H265Sps* sps = parser.GetSps(pps->seq_parameter_set_id);
+  ASSERT_TRUE(sps);
+  const H265Vps* vps = parser.GetVps(sps->video_parameter_set_id);
+  ASSERT_TRUE(vps);
+  EXPECT_EQ(1, vps->num_direct_ref_layers[1]);
+
+  EXPECT_EQ(1, nalu.nuh_layer_id());
+  EXPECT_TRUE(header1.first_slice_segment_in_pic_flag);
+  EXPECT_EQ(1, header1.pic_parameter_set_id);
+  EXPECT_FALSE(header1.dependent_slice_segment_flag);
+  EXPECT_EQ(1, header1.slice_type);
+  EXPECT_EQ(152u, header1.header_bit_size);
+}
+
+TEST(H265ParserTest, ParseStereoVideoSliceHeaderInter) {
+  // Parse the SPS and PPS first so the data is available.
+  int id;
+  Nalu nalu;
+  H265Parser parser;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoVpsData, std::size(kStereoVideoVpsData)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseVps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSpsData0, std::size(kStereoVideoSpsData0)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSpsData1, std::size(kStereoVideoSpsData1)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoPpsData0, std::size(kStereoVideoPpsData0)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
+
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoPpsData1, std::size(kStereoVideoPpsData1)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
+
+  // Parse the slice header for layer 0.
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSliceDataInter0, std::size(kStereoVideoSliceDataInter0)));
+  H265SliceHeader header0;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSliceHeader(nalu, &header0));
+  EXPECT_EQ(0, nalu.nuh_layer_id());
+  EXPECT_TRUE(header0.first_slice_segment_in_pic_flag);
+  EXPECT_EQ(0, header0.pic_parameter_set_id);
+  EXPECT_FALSE(header0.dependent_slice_segment_flag);
+  EXPECT_EQ(1, header0.slice_type);
+  EXPECT_EQ(152u, header0.header_bit_size);
+
+  // Parse the slice header for layer 1.
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kStereoVideoSliceDataInter1, std::size(kStereoVideoSliceDataInter1)));
+  H265SliceHeader header1;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSliceHeader(nalu, &header1));
+  const H265Pps* pps = parser.GetPps(header1.pic_parameter_set_id);
+  ASSERT_TRUE(pps);
+  const H265Sps* sps = parser.GetSps(pps->seq_parameter_set_id);
+  ASSERT_TRUE(sps);
+  const H265Vps* vps = parser.GetVps(sps->video_parameter_set_id);
+  ASSERT_TRUE(vps);
+  EXPECT_EQ(1, vps->num_direct_ref_layers[1]);
+
+  EXPECT_EQ(1, nalu.nuh_layer_id());
+  EXPECT_TRUE(header1.first_slice_segment_in_pic_flag);
+  EXPECT_EQ(1, header1.pic_parameter_set_id);
+  EXPECT_FALSE(header1.dependent_slice_segment_flag);
+  EXPECT_EQ(1, header1.slice_type);
+  EXPECT_EQ(176u, header1.header_bit_size);
 }
 
 }  // namespace H265

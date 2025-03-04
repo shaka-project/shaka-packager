@@ -369,6 +369,8 @@ struct H265SliceHeader {
   int num_entry_point_offsets = 0;
   int offset_len_minus1 = 0;
   std::vector<int> entry_point_offset_minus1;
+
+  bool inter_layer_pred_enabled_flag = false;
 };
 
 /// A class to parse H.265 streams.  This is incomplete and skips many pieces.
