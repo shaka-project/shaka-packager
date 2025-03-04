@@ -1,0 +1,55 @@
+name: Release to Hybrik ECR
+
+# Runs when a new release is published on GitHub.
+# Creates a corresponding ECR release and publishes it.
+#
+# Can also be run manually for debugging purposes.
+on:
+  release:
+    types: [published]
+  # For manual debugging:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The tag to release to ECR"
+        required: True
+
+env:
+  DOCKER_IMAGE_NAME: shaka-packager
+  ECR_REPO: 284439818173.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  upload_hybrik_ecr:
+    name: Upload to Hybrik ECR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute ref
+        id: ref
+        # We could be building from a workflow dispatch (manual run), or a
+        # release event.  Subsequent steps can refer to $TARGET_REF to
+        # determine the correct ref in all cases.
+        run: |
+          echo "TARGET_REF=${{ github.event.inputs.ref || github.event.release.tag_name }}" >> $GITHUB_ENV
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.TARGET_REF }}
+      - name: Login ECR
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_HYBRIK_SERVICE_ECR }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_HYBRIK_SERVICE_ECR }}
+          aws-region: us-east-1
+      # Creates AWS ECR repo
+      - id: create-ecr
+        uses: ./.github/actions/create-ecr
+        with:
+          repo: $DOCKER_IMAGE_NAME
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and push image
+        id: build-image
+        run: |
+          docker build -f Dockerfile -t $ECR_REPO/$DOCKER_IMAGE_NAME:$TARGET_REF --build-arg GIT_LOGIN=pluto-depoy --build-arg GIT_TOKEN=${{ secrets.PLUTO_DEPLOY_TOKEN }} --build-arg GIT_TAG=$TARGET_REF .
+          docker push $ECR_REPO/$DOCKER_IMAGE_NAME:$TARGET_REF
