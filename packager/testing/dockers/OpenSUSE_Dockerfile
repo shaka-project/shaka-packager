@@ -6,10 +6,18 @@ RUN zypper addrepo \
     https://download.opensuse.org/repositories/devel:tools:building/15.6/devel:tools:building.repo
 RUN zypper --no-gpg-checks refresh
 
+RUN ldd --version
+RUN zypper search --match-exact cmake-full
+
+# Install cmake 
+RUN zypper in -y \
+    curl wich \
+    cmake
+
 # Install utilities, libraries, and dev tools.
 RUN zypper in -y \
         curl which \
-        cmake gcc9-c++ git ninja python3
+        gcc9-c++ git ninja python3
 
 # OpenSUSE 15.5 doesn't have the required gcc 9+ by default, but we can install
 # it as gcc9 and symlink it.
