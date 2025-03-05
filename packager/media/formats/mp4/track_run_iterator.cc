@@ -20,6 +20,11 @@
 #include <packager/media/formats/mp4/sync_sample_iterator.h>
 
 ABSL_FLAG(bool,
+          skip_empty_edits,
+          false,
+          "MP4 only: skip empty entries inside editlists.");
+
+ABSL_FLAG(bool,
           mp4_reset_initial_composition_offset_to_zero,
           true,
           "MP4 only. If it is true, reset the initial composition offset to "
@@ -149,8 +154,10 @@ static void PopulateSampleInfo(const TrackExtends& trex,
 class CompareMinTrackRunDataOffset {
  public:
   bool operator()(const TrackRunInfo& a, const TrackRunInfo& b) {
-    int64_t a_aux = a.aux_info_total_size ? a.aux_info_start_offset : kInvalidOffset;
-    int64_t b_aux = b.aux_info_total_size ? b.aux_info_start_offset : kInvalidOffset;
+    int64_t a_aux =
+        a.aux_info_total_size ? a.aux_info_start_offset : kInvalidOffset;
+    int64_t b_aux =
+        b.aux_info_total_size ? b.aux_info_start_offset : kInvalidOffset;
 
     int64_t a_lesser = std::min(a_aux, a.sample_start_offset);
     int64_t a_greater = std::max(a_aux, a.sample_start_offset);
@@ -349,11 +356,10 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     if (!traf.sample_encryption.sample_encryption_data.empty()) {
       RCHECK(audio_sample_entry || video_sample_entry);
       const uint8_t default_per_sample_iv_size =
-          audio_sample_entry
-              ? audio_sample_entry->sinf.info.track_encryption
-                    .default_per_sample_iv_size
-              : video_sample_entry->sinf.info.track_encryption
-                    .default_per_sample_iv_size;
+          audio_sample_entry ? audio_sample_entry->sinf.info.track_encryption
+                                   .default_per_sample_iv_size
+                             : video_sample_entry->sinf.info.track_encryption
+                                   .default_per_sample_iv_size;
       RCHECK(traf.sample_encryption.ParseFromSampleEncryptionData(
           default_per_sample_iv_size, &sample_encryption_entries));
     }
@@ -408,8 +414,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
           const std::vector<uint8_t>& sizes =
               traf.auxiliary_size.sample_info_sizes;
           tri.aux_info_sizes.insert(
-              tri.aux_info_sizes.begin(),
-              sizes.begin() + sample_count_sum,
+              tri.aux_info_sizes.begin(), sizes.begin() + sample_count_sum,
               sizes.begin() + sample_count_sum + trun.sample_count);
         }
 
@@ -507,7 +512,9 @@ bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
   return true;
 }
 
-bool TrackRunIterator::IsRunValid() const { return run_itr_ != runs_.end(); }
+bool TrackRunIterator::IsRunValid() const {
+  return run_itr_ != runs_.end();
+}
 
 bool TrackRunIterator::IsSampleValid() const {
   return IsRunValid() && (sample_itr_ != run_itr_->samples.end());
@@ -672,8 +679,14 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
   if (!edits.empty()) {
     // ISO/IEC 14496-12:2015 8.6.6 Edit List Box.
     for (const EditListEntry& edit : edits) {
+      LOG(INFO) << "EditListEnty found: media time = " << edit.media_time
+                << " duration = " << edit.segment_duration;
       if (edit.media_rate_integer != 1) {
         LOG(INFO) << "dwell EditListEntry is ignored.";
+        continue;
+      }
+      if (edit.media_time == -1 && absl::GetFlag(FLAGS_skip_empty_edits)) {  // skip empty edit
+        LOG(INFO) << "empty EditListEntry is ignored.";
         continue;
       }
 
