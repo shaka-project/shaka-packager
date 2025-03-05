@@ -40,9 +40,12 @@ jobs:
         run: |
           const fs = require('fs');
           const files = fs.readdirSync('packager/testing/dockers/');
-          const matrix = files.map((file) => {
+          var matrix = files.map((file) => {
             return { os_name: file.replace('_Dockerfile', '') };
           });
+
+          // remove SUSE for now - will wait for Google to fix it
+          matrix = matrix.filter((entry) => entry.os_name !== 'OpenSUSE');
 
           // Output a JSON object consumed by the build matrix below.
           fs.writeFileSync(process.env.GITHUB_OUTPUT,
