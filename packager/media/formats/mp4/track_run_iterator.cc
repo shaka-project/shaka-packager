@@ -685,7 +685,8 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
         LOG(INFO) << "dwell EditListEntry is ignored.";
         continue;
       }
-      if (edit.media_time == -1 && absl::GetFlag(FLAGS_skip_empty_edits)) {  // skip empty edit
+      if (edit.media_time == -1 &&
+          absl::GetFlag(FLAGS_skip_empty_edits)) {  // skip empty edit
         LOG(INFO) << "empty EditListEntry is ignored.";
         continue;
       }
