@@ -105,7 +105,7 @@ class Muxer : public MediaHandler {
   Status ReinitializeMuxer(int64_t timestamp);
 
   MuxerOptions options_;
-  std::vector<std::shared_ptr<const StreamInfo>> streams_;
+  std::vector<std::shared_ptr<const StreamInfo> > streams_;
   std::vector<uint8_t> current_key_id_;
   bool encryption_started_ = false;
   bool cancelled_ = false;
