@@ -28,7 +28,7 @@ class MP4Info {
 
  protected:
   bool FeedParserWithData(const std::string& name);
-  void InitF(const std::vector<std::shared_ptr<StreamInfo> >& streams);
+  void InitF(const std::vector<std::shared_ptr<StreamInfo>>& streams);
   bool NewSampleF(uint32_t track_id, std::shared_ptr<MediaSample> sample);
   bool NewTextSampleF(uint32_t track_id, std::shared_ptr<TextSample> sample);
 

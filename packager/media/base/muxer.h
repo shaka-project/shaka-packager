@@ -96,16 +96,15 @@ class Muxer : public MediaHandler {
   virtual Status AddTextSample(size_t stream_id, const TextSample& sample);
 
   // Finalize the segment or subsegment.
-  virtual Status FinalizeSegment(
-      size_t stream_id,
-      const SegmentInfo& segment_info) = 0;
+  virtual Status FinalizeSegment(size_t stream_id,
+                                 const SegmentInfo& segment_info) = 0;
 
   // Re-initialize Muxer. Could be called on StreamInfo or CueEvent.
   // |timestamp| may be used to set the output file name.
   Status ReinitializeMuxer(int64_t timestamp);
 
   MuxerOptions options_;
-  std::vector<std::shared_ptr<const StreamInfo> > streams_;
+  std::vector<std::shared_ptr<const StreamInfo>> streams_;
   std::vector<uint8_t> current_key_id_;
   bool encryption_started_ = false;
   bool cancelled_ = false;
