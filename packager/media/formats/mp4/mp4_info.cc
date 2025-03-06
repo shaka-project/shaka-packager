@@ -1,9 +1,5 @@
 #include "packager/media/formats/mp4/mp4_info.h"
-#include "packager/base/bind.h"
-#include "packager/base/files/file_util.h"
-#include "packager/file/file.h"
 #include "packager/file/file_closer.h"
-#include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/formats/mp4/mp4_media_parser.h"
@@ -25,9 +21,11 @@ bool MP4Info::Parse() {
   if (read_chunk_size_ == 0) {
     return false;
   }
-  parser_->Init(base::Bind(&MP4Info::InitF, base::Unretained(this)),
-                base::Bind(&MP4Info::NewSampleF, base::Unretained(this)),
-                base::Bind(&MP4Info::NewTextSampleF, base::Unretained(this)),
+  parser_->Init(std::bind(&MP4Info::InitF, this, std::placeholders::_1),
+                std::bind(&MP4Info::NewSampleF, this, std::placeholders::_1,
+                          std::placeholders::_2),
+                std::bind(&MP4Info::NewTextSampleF, this, std::placeholders::_1,
+                          std::placeholders::_2),
                 nullptr);
   return FeedParserWithData(file_path_);
 }
