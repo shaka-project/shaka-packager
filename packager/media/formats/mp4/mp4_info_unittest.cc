@@ -17,15 +17,15 @@ class MP4InfoTest : public testing::Test {
 };
 
 TEST_F(MP4InfoTest, VideoSamplesDuration) {
-  std::filesystem path = GetTestDataFilePath("bear-640x360-av_frag.mp4");
-  MP4Info info(path.value(), kDefaultInfoReadSize);
+  std::filesystem::path src = GetTestDataFilePath("bear-640x360-av_frag.mp4");
+  MP4Info info(src.value(), kDefaultInfoReadSize);
   EXPECT_TRUE(info.Parse());
   EXPECT_FLOAT_EQ(2.736, info.GetVideoSamplesDurationSec());
 }
 
 TEST_F(MP4InfoTest, ZeroReadSize) {
-  std::filesystem path = GetTestDataFilePath("bear-640x360-av_frag.mp4");
-  MP4Info info(path.value(), 0);
+  std::filesystem::path src = GetTestDataFilePath("bear-640x360-av_frag.mp4");
+  MP4Info info(src.value(), 0);
   EXPECT_FALSE(info.Parse());
 }
 
