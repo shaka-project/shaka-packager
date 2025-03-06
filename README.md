@@ -1,3 +1,25 @@
+<!-- PROJECT LOGO -->
+<br />
+<p align="center"><img src="docs/pluto-tv.svg" alt="PlutoTV" width="333" height="187"></p>
+
+This fork includes features that allow dynamic packaging on per-segment basis, 
+custom Pluto TV metadata for ID3 tags, updates to TTML generation, and other tweaks.
+
+# Release process
+
+# Sync with Google code
+
+- Sync with Google main branch and make PR
+- Fix all merge conflicts
+
+# Linux Dockers
+We disabled OpenSUSE Dockerfile for now, since it is still broken on Google's side.
+
+# Submodules
+The Shaka uses cURL as submodule. Please make sure you are pointed to the correct branch (the same as original shaka branch).
+Don't update it, otherwise it will break the build.
+
+
 [comment]: # (While not ideal, absolute URLs are used here as it is the        )
 [comment]: # (simplest way to make the links work on GitHub and Docker Hub.    )
 [comment]: # (These links in cloned repositories will point back to the main   )
