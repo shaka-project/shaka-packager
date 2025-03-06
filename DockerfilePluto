@@ -1,0 +1,39 @@
+FROM alpine:3.8 as builder
+
+ARG GIT_LOGIN
+ARG GIT_TOKEN
+ARG GIT_TAG
+
+# Install packages needed for Shaka Packager.
+RUN apk add --no-cache bash build-base curl findutils git ninja python python3 \
+                       bsd-compat-headers linux-headers libexecinfo-dev c-ares-dev
+
+# Install depot_tools.
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+ENV PATH $PATH:/depot_tools
+
+# Alpine uses musl which does not have mallinfo defined in malloc.h. Define the
+# structure to workaround a Chromium base bug.
+RUN sed -i \
+    '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
+    /usr/include/malloc.h
+
+ENV GYP_DEFINES='musl=1'
+# Alpine does not support python3 yet, but depot_tools enabled python3
+# by default. Disable python3 explicitly for now.
+# See https://github.com/google/shaka-packager/issues/763 for details.
+ENV GCLIENT_PY3=0
+# Bypass VPYTHON included by depot_tools, which no longer works in Alpine.
+ENV VPYTHON_BYPASS="manually managed python not supported by chrome operations"
+
+# Build shaka-packager
+WORKDIR shaka_packager
+RUN gclient config https://${GIT_LOGIN}:${GIT_TOKEN}@github.com/Pluto-tv/shaka-packager.git@${GIT_TAG} --name=src
+RUN gclient sync
+RUN cd src && ninja -C out/Release
+
+# Copy only result binaries to our final image.
+FROM alpine:3.8
+RUN apk add --no-cache libstdc++ c-ares
+COPY --from=builder /shaka_packager/src/out/Release/packager \
+                    /usr/bin/

@@ -1,0 +1,30 @@
+{
+    "rules": [
+      {
+        "rulePriority": 1,
+        "description": "Expire untagged images",
+        "selection": {
+          "tagStatus": "untagged",
+          "countType": "sinceImagePushed",
+          "countUnit": "days",
+          "countNumber": 1
+        },
+        "action": {
+          "type": "expire"
+        }
+      },
+      {
+        "rulePriority": 2,
+        "description": "Expire tagged images",
+        "selection": {
+          "tagStatus": "any",
+          "countType": "sinceImagePushed",
+          "countUnit": "days",
+          "countNumber": 75
+        },
+        "action": {
+          "type": "expire"
+        }
+      }
+    ]
+  }
