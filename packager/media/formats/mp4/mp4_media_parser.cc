@@ -789,20 +789,23 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           matrix_coefficients = hevc_config.matrix_coefficients();
 
           if (!entry.extra_codec_configs.empty()) {
-            // |extra_codec_configs| is present only for Dolby Vision.
-            if (use_dovi_supplemental) {
-              if (!UpdateDolbyVisionInfo(
-                      actual_format, entry.extra_codec_configs,
-                      transfer_characteristics, &codec_string,
-                      &dovi_supplemental_codec_string,
-                      &dovi_compatible_brand)) {
-                return false;
-              }
-            } else {
-              if (!UpdateCodecStringForDolbyVision(actual_format,
-                                                   entry.extra_codec_configs,
-                                                   &codec_string)) {
-                return false;
+            // |extra_codec_configs| is present for Dolby Vision and/or
+            // stereo MV-HEVC.
+            if (entry.HaveDolbyVisionConfig()) {
+              if (use_dovi_supplemental) {
+                if (!UpdateDolbyVisionInfo(
+                        actual_format, entry.extra_codec_configs,
+                        transfer_characteristics, &codec_string,
+                        &dovi_supplemental_codec_string,
+                        &dovi_compatible_brand)) {
+                  return false;
+                }
+              } else {
+                if (!UpdateCodecStringForDolbyVision(actual_format,
+                                                     entry.extra_codec_configs,
+                                                     &codec_string)) {
+                  return false;
+                }
               }
             }
           }
