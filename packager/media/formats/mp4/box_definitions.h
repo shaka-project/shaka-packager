@@ -303,6 +303,7 @@ struct VideoSampleEntry : Box {
   // Currently |extra_codec_configs| can include configs for Dolby Vision
   // and/or Multiview.
   bool HaveDolbyVisionConfig() const;
+  bool HaveLHEVCConfig() const;
 
   FourCC format = FOURCC_NULL;
   // data_reference_index is 1-based and "dref" box is mandatory so it is

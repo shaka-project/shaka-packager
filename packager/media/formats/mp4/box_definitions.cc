@@ -1744,6 +1744,14 @@ bool VideoSampleEntry::HaveDolbyVisionConfig() const {
   return false;
 }
 
+bool VideoSampleEntry::HaveLHEVCConfig() const {
+  for (CodecConfiguration codec_config : extra_codec_configs) {
+    if (codec_config.box_type == FOURCC_lhvC)
+      return true;
+  }
+  return false;
+}
+
 ElementaryStreamDescriptor::ElementaryStreamDescriptor() = default;
 ElementaryStreamDescriptor::~ElementaryStreamDescriptor() = default;
 

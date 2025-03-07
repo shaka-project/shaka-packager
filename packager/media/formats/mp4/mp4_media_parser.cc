@@ -155,6 +155,16 @@ std::vector<uint8_t> GetDOVIDecoderConfig(
   return std::vector<uint8_t>();
 }
 
+std::vector<uint8_t> GetLHEVCDecoderConfig(
+    const std::vector<CodecConfiguration>& configs) {
+  for (const CodecConfiguration& config : configs) {
+    if (config.box_type == FOURCC_lhvC) {
+      return config.data;
+    }
+  }
+  return std::vector<uint8_t>();
+}
+
 bool UpdateCodecStringForDolbyVision(
     FourCC actual_format,
     const std::vector<CodecConfiguration>& configs,
@@ -232,6 +242,19 @@ bool UpdateDolbyVisionInfo(FourCC actual_format,
   }
   *dovi_compatible_brand =
       dovi_config.GetDoViCompatibleBrand(transfer_characteristics);
+  return true;
+}
+
+bool UpdateLHEVCInfo(FourCC actual_format,
+                     HEVCDecoderConfigurationRecord& hevc_config,
+                     const std::vector<CodecConfiguration>& configs,
+                     std::string* codec_string) {
+  if (!hevc_config.ParseLHEVCConfig(GetLHEVCDecoderConfig(configs))) {
+    LOG(ERROR) << "Failed to parse L-HEVC decoder "
+                  "configuration record.";
+    return false;
+  }
+  *codec_string = hevc_config.GetCodecString(actual_format);
   return true;
 }
 
@@ -806,6 +829,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                                      &codec_string)) {
                   return false;
                 }
+              }
+            }
+            if (entry.HaveLHEVCConfig()) {
+              if (!UpdateLHEVCInfo(
+                      actual_format, hevc_config, entry.extra_codec_configs,
+                      &codec_string)) {
+                return false;
               }
             }
           }
