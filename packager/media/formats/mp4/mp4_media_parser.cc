@@ -889,6 +889,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             dovi_supplemental_codec_string);
         video_stream_info->set_compatible_brand(dovi_compatible_brand);
       }
+      video_stream_info->set_layered_codec_config(
+                             GetLHEVCDecoderConfig(entry.extra_codec_configs));
       video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());
       video_stream_info->set_colr_data((entry.colr.raw_box).data(),
                                        (entry.colr.raw_box).size());

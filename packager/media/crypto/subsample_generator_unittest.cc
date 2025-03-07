@@ -128,6 +128,8 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
  public:
   MOCK_METHOD1(Initialize,
                bool(const std::vector<uint8_t>& decoder_configuration));
+  MOCK_METHOD1(InitializeLayered,
+               bool(const std::vector<uint8_t>& layered_decoder_configuration));
   MOCK_METHOD1(ProcessNalu, bool(const Nalu& nalu));
   MOCK_METHOD1(GetHeaderSize, int64_t(const Nalu& nalu));
 };
