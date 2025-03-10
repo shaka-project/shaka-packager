@@ -340,6 +340,20 @@ void Segmenter::FinalizeFragmentForKeyRotation(
   sample_group_entry.key_id = encryption_config.key_id;
 }
 
+std::vector<FourCC> Segmenter::GetTrackTypes() const {
+  std::vector<FourCC> track_types;
+  if (moov_->tracks.empty()) {
+    LOG(WARNING) << "No tracks in moov, returning NULL track type.";
+    track_types.push_back(FOURCC_NULL);
+  } else if (moov_->tracks.size() > 1) {
+    LOG(WARNING) << "More than 1 track being written to the output file.";
+  }
+  for (const Track& track : moov_->tracks) {
+    track_types.push_back(track.media.handler.handler_type);
+  }
+  return track_types;
+}
+
 }  // namespace mp4
 }  // namespace media
 }  // namespace shaka
