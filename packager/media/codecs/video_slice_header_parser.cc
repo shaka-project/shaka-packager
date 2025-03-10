@@ -76,7 +76,7 @@ H265VideoSliceHeaderParser::H265VideoSliceHeaderParser() {}
 H265VideoSliceHeaderParser::~H265VideoSliceHeaderParser() {}
 
 bool H265VideoSliceHeaderParser::ParseParameterSets(
-  const HEVCDecoderConfigurationRecord& config) {
+    const HEVCDecoderConfigurationRecord& config) {
   int id;
   for (size_t i = 0; i < config.nalu_count(); i++) {
     const Nalu& nalu = config.nalu(i);
@@ -104,7 +104,7 @@ bool H265VideoSliceHeaderParser::Initialize(
 
 bool H265VideoSliceHeaderParser::InitializeLayered(
     const std::vector<uint8_t>& layered_decoder_configuration) {
-  if (layered_decoder_configuration.size() > 0) {   
+  if (layered_decoder_configuration.size() > 0) {
     HEVCDecoderConfigurationRecord lhevc_config;
     lhevc_config.SetParser(&parser_);
     RCHECK(lhevc_config.ParseLHEVCConfig(layered_decoder_configuration));

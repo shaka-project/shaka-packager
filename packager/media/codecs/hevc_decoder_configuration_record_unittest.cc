@@ -185,8 +185,10 @@ TEST(LHEVCDecoderConfigurationRecordTest, Success) {
   EXPECT_EQ(0x36, hevc_config.nalu(0).payload_size());
   EXPECT_EQ(0x40, hevc_config.nalu(0).data()[0]);
 
-  std::vector<uint8_t> lhevc_bytes(kLhevcDecoderConfigurationData,
-      kLhevcDecoderConfigurationData + std::size(kLhevcDecoderConfigurationData));
+  std::vector<uint8_t> lhevc_bytes(
+      kLhevcDecoderConfigurationData,
+      kLhevcDecoderConfigurationData +
+          std::size(kLhevcDecoderConfigurationData));
   ASSERT_TRUE(hevc_config.ParseLHEVCConfig(lhevc_bytes));
   EXPECT_EQ(4u, hevc_config.nalu_length_size());
   EXPECT_EQ("hvc1.6.40.L120.bf", hevc_config.GetCodecString(FOURCC_hvc1));

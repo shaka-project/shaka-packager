@@ -104,7 +104,9 @@ class StreamInfo {
   Codec codec() const { return codec_; }
   const std::string& codec_string() const { return codec_string_; }
   const std::vector<uint8_t>& codec_config() const { return codec_config_; }
-  const std::vector<uint8_t>& layered_codec_config() const { return layered_codec_config_; }
+  const std::vector<uint8_t>& layered_codec_config() const {
+    return layered_codec_config_;
+  }
   const std::string& language() const { return language_; }
   bool is_encrypted() const { return is_encrypted_; }
   bool has_clear_lead() const { return has_clear_lead_; }

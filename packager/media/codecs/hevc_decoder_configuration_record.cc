@@ -79,13 +79,13 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
   uint8_t num_of_arrays = 0;
   if (!layered_) {
     RCHECK(reader.Read1(&version_) && version_ == 1 &&
-          reader.Read1(&profile_indication) &&
-          reader.Read4(&general_profile_compatibility_flags_) &&
-          reader.ReadToVector(&general_constraint_indicator_flags_, 6) &&
-          reader.Read1(&general_level_idc_) &&
-          reader.SkipBytes(8) &&  // Skip uninterested fields.
-          reader.Read1(&length_size_minus_one) &&
-          reader.Read1(&num_of_arrays));
+           reader.Read1(&profile_indication) &&
+           reader.Read4(&general_profile_compatibility_flags_) &&
+           reader.ReadToVector(&general_constraint_indicator_flags_, 6) &&
+           reader.Read1(&general_level_idc_) &&
+           reader.SkipBytes(8) &&  // Skip uninterested fields.
+           reader.Read1(&length_size_minus_one) &&
+           reader.Read1(&num_of_arrays));
 
     general_profile_space_ = profile_indication >> 6;
     RCHECK(general_profile_space_ <= 3u);
@@ -104,7 +104,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
   set_nalu_length_size((length_size_minus_one & 0x3) + 1);
 
   if (parser_ == nullptr) {
-    if (internal_parser_used_ == true) 
+    if (internal_parser_used_ == true)
       parser_ = &internal_parser_;
     else {
       LOG(ERROR) << "Internal parser is not used, but parser_ is not set!";
@@ -135,7 +135,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
       } else if (nalu.type() == Nalu::H265_SPS) {
         int sps_id = 0;
         RCHECK(parser_->ParseSps(nalu, &sps_id) == H265Parser::kOk);
-        const H265Sps *sps = parser_->GetSps(sps_id);
+        const H265Sps* sps = parser_->GetSps(sps_id);
         if (!layered_) {
           set_transfer_characteristics(
               sps->vui_parameters.transfer_characteristics);
@@ -143,8 +143,8 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
           set_matrix_coefficients(sps->vui_parameters.matrix_coefficients);
         } else {
           // Get profile/tier/level info from the SPS/VPS.
-          const int *general_profile_tier_level_data =
-            sps->general_profile_tier_level_data;
+          const int* general_profile_tier_level_data =
+              sps->general_profile_tier_level_data;
           general_profile_space_ =
               (general_profile_tier_level_data[0] & 0xFF) >> 6;
           RCHECK(general_profile_space_ <= 3u);
@@ -159,7 +159,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
           general_constraint_indicator_flags_.resize(6);
           for (int k = 0; k < 6; ++k) {
             general_constraint_indicator_flags_[i] =
-              general_profile_tier_level_data[5+i] & 0xFF;
+                general_profile_tier_level_data[5 + i] & 0xFF;
           }
           general_level_idc_ = general_profile_tier_level_data[11] & 0xFF;
         }
@@ -197,7 +197,8 @@ std::string HEVCDecoderConfigurationRecord::GetCodecString(
   return absl::StrJoin(fields, ".");
 }
 
-bool HEVCDecoderConfigurationRecord::ParseLHEVCConfig(const std::vector<uint8_t>& data) {
+bool HEVCDecoderConfigurationRecord::ParseLHEVCConfig(
+    const std::vector<uint8_t>& data) {
   layered_ = true;
   return Parse(data.data(), data.size());
 }

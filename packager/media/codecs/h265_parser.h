@@ -29,9 +29,9 @@ const int kMaxRefPicSetCount = 16;
 //   6 bytes: general_constraint_indicator_flags
 //   1 byte:  general_level_idc
 const int kGeneralProfileTierLevelBytes = 12;
-// The standard allows up to 64, but for MV-HEVC support for stereo video, 
+// The standard allows up to 64, but for MV-HEVC support for stereo video,
 // there is no need for more than 3.
-const int kMaxNumProfileTierLevels = 3; 
+const int kMaxNumProfileTierLevels = 3;
 // The standard allows up to 64, but for MV-HEVC support for stereo video, only
 // 2 layers are needed for the two views.
 const int kMaxLayers = 2;
@@ -45,7 +45,8 @@ const int kMaxNumRepFromats = 1;
 const int kMaxLayerIdPlus1 = 64;
 // For stereo video support of MV-HEVC, no need for more than 3 layer sets.
 const int kMaxLayerSets = 3;
-// Only support the case where the output layer set is the same as the layer set.
+// Only support the case where the output layer set is the same as the layer
+// set.
 const int kMaxOuputLayerSets = kMaxLayerSets;
 
 const int kInvalidId = -1;
@@ -251,7 +252,13 @@ struct H265Vps {
   H265Vps();
   ~H265Vps();
 
-  enum { kTexture = 0, kMultiview = 1, kSpatial = 2, kAuxiliary = 3, kNone = 16 };
+  enum {
+    kTexture = 0,
+    kMultiview = 1,
+    kSpatial = 2,
+    kAuxiliary = 3,
+    kNone = 16
+  };
 
   // Many of the fields here are required when parsing so the default here may
   // not be valid.
@@ -266,13 +273,14 @@ struct H265Vps {
   int vps_max_sub_layers_minus1 = 0;
   int sub_layers_vps_max_minus1[kMaxLayers];
   int max_tid_il_ref_pics_plus1[kMaxLayers][kMaxLayers];
-  
+
   int layer_id_in_vps[kMaxLayerIdPlus1];
   int view_id[kMaxLayerIdPlus1];
 
   int num_views = 0;
 
-  int general_profile_tier_level_data[kMaxNumProfileTierLevels][kGeneralProfileTierLevelBytes];
+  int general_profile_tier_level_data[kMaxNumProfileTierLevels]
+                                     [kGeneralProfileTierLevelBytes];
   int num_profile_tier_levels = 0;
   int profile_tier_level_idx[kMaxOuputLayerSets][kMaxLayerIdPlus1];
 

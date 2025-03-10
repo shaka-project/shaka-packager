@@ -29,8 +29,8 @@ class HEVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   // Can specify an existing parser to use for referencing to previously parsed
   // parameter sets.
   void SetParser(H265Parser* parser) {
-      parser_ = parser;
-      internal_parser_used_ = false; 
+    parser_ = parser;
+    internal_parser_used_ = false;
   }
   bool ParseLHEVCConfig(const std::vector<uint8_t>& data);
 

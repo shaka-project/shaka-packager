@@ -56,7 +56,8 @@ class H264VideoSliceHeaderParser : public VideoSliceHeaderParser {
   /// @name VideoSliceHeaderParser implementation overrides.
   /// @{
   bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
-  bool InitializeLayered(const std::vector<uint8_t>& decoder_configuration) override;
+  bool InitializeLayered(
+      const std::vector<uint8_t>& decoder_configuration) override;
   bool ProcessNalu(const Nalu& nalu) override;
   int64_t GetHeaderSize(const Nalu& nalu) override;
   /// @}
@@ -75,13 +76,14 @@ class H265VideoSliceHeaderParser : public VideoSliceHeaderParser {
   /// @name VideoSliceHeaderParser implementation overrides.
   /// @{
   bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
-  bool InitializeLayered(const std::vector<uint8_t>& decoder_configuration) override;
+  bool InitializeLayered(
+      const std::vector<uint8_t>& decoder_configuration) override;
   bool ProcessNalu(const Nalu& nalu) override;
   int64_t GetHeaderSize(const Nalu& nalu) override;
   /// @}
 
  private:
-  bool ParseParameterSets(const HEVCDecoderConfigurationRecord& config); 
+  bool ParseParameterSets(const HEVCDecoderConfigurationRecord& config);
 
   H265Parser parser_;
 
