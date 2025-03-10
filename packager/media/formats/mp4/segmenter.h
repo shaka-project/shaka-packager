@@ -127,7 +127,7 @@ class Segmenter {
   }
 
   std::vector<FourCC> GetTrackTypes() const;
-  
+
  private:
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;

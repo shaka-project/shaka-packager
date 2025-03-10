@@ -269,8 +269,10 @@ double Segmenter::GetDuration() const {
 void Segmenter::UpdateProgress(uint64_t progress) {
   accumulated_progress_ += progress;
 
-  if (!progress_listener_) return;
-  if (progress_target_ == 0) return;
+  if (!progress_listener_)
+    return;
+  if (progress_target_ == 0)
+    return;
   // It might happen that accumulated progress exceeds progress_target due to
   // computation errors, e.g. rounding error. Cap it so it never reports > 100%
   // progress.
@@ -283,7 +285,8 @@ void Segmenter::UpdateProgress(uint64_t progress) {
 }
 
 void Segmenter::SetComplete() {
-  if (!progress_listener_) return;
+  if (!progress_listener_)
+    return;
   progress_listener_->OnProgress(1.0);
 }
 
