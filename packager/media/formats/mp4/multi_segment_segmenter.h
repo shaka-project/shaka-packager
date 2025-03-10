@@ -39,8 +39,8 @@ class MultiSegmentSegmenter : public Segmenter {
   void SetDashEventMessageHandler(
       const std::shared_ptr<mp4::DashEventMessageHandler>& handler);
 
-  bool IsVideoHandler() const;     
-  
+  bool IsVideoHandler() const;
+
  private:
   // Segmenter implementation overrides.
   Status DoInitialize() override;
