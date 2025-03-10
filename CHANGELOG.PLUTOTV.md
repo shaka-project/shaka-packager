@@ -1,3 +1,7 @@
+## [2.6.1_pluto.v2] - 2022-03-25
+### Added
+ - Add ability to dynamically create and insert ID3 EMSG For AD Events. [TRANS-1686][https://plutotv.atlassian.net/browse/TRANS-1686]
+
 ## [2.6.1_pluto.v1] - 2022-01-27
 ### Fixed
  - Fix WebVTT: END_OF_STREAM error when there is no or only one cue (#1018)
