@@ -138,6 +138,8 @@ class Segmenter {
     return track_types;
   }
 
+  uint64_t progress_target_ = 0u;
+
  private:
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
@@ -160,7 +162,6 @@ class Segmenter {
   std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
   MuxerListener* muxer_listener_ = nullptr;
   ProgressListener* progress_listener_ = nullptr;
-  uint64_t progress_target_ = 0u;
   uint64_t accumulated_progress_ = 0u;
   int64_t sample_durations_[2] = {0, 0};
   size_t num_samples_ = 0;
