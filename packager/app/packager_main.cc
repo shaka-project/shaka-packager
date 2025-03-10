@@ -485,8 +485,9 @@ std::optional<PackagingParams> GetPackagingParams() {
     return std::nullopt;
   }
   mp4_params.pluto_ad_event_settings.starting_index =
-      FLAGS_pluto_ad_event_starting_index;
-  mp4_params.pluto_ad_event_settings.max_index = FLAGS_pluto_ad_event_max_index;
+      absl::GetFlag(FLAGS_pluto_ad_event_starting_index);
+  mp4_params.pluto_ad_event_settings.max_index =
+      absl::GetFlag(FLAGS_pluto_ad_event_max_index);
 
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);

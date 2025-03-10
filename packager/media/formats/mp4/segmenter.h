@@ -138,8 +138,6 @@ class Segmenter {
     return track_types;
   }
 
-  uint64_t progress_target_ = 0u;
-
  private:
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
