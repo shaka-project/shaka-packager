@@ -80,17 +80,18 @@ ABSL_FLAG(int64_t,
           "Indicates the startNumber in DASH SegmentTemplate and HLS "
           "segment name.");
 
-ABSL_FLAG(std::string, 
-    pluto_content_id, 
-    "", 
-    "Pluto TV Content ID for input media.");
+ABSL_FLAG(std::string,
+          pluto_content_id,
+          "",
+          "Pluto TV Content ID for input media.");
 
 ABSL_FLAG(bool,
-    pluto_ad_event,
-    false,
-    "Add Pluto TV Ad Event ID3s to output Media.");
+          pluto_ad_event,
+          false,
+          "Add Pluto TV Ad Event ID3s to output Media.");
 
-ABSL_FLAG(int32_t,
+ABSL_FLAG(
+    int32_t,
     pluto_ad_event_starting_index,
     0,
     "Pluto TV Ad Event starting index.  This determines the first point "
@@ -101,7 +102,8 @@ ABSL_FLAG(int32_t,
     "EMSG box of Ad Event type will be inserted at the beginning of the "
     "following segment. ");
 
-ABSL_FLAG(int32_t,
+ABSL_FLAG(
+    int32_t,
     pluto_ad_event_max_index,
     0,
     "Pluto TV Ad Event maximum index.  This determines the last point "
@@ -112,4 +114,4 @@ ABSL_FLAG(int32_t,
     "It could be used to indicate that an event within an ad is over. "
     "NOTE: EMSG boxes of this type are set to the first PTS in the segment, "
     "max index should never match the 'current index' value. "
-    "A zero value will be ignored.");          
+    "A zero value will be ignored.");

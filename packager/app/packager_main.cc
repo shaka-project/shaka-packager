@@ -477,8 +477,10 @@ std::optional<PackagingParams> GetPackagingParams() {
   mp4_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
 
   mp4_params.pluto_content_id = absl::GetFlag(FLAGS_pluto_content_id);
-  mp4_params.pluto_ad_event_settings.pluto_ad_event = absl::GetFlag(FLAGS_pluto_ad_event);
-  if (absl::GetFlag(FLAGS_pluto_ad_event) && absl::GetFlag(FLAGS_pluto_content_id).empty()) {
+  mp4_params.pluto_ad_event_settings.pluto_ad_event =
+      absl::GetFlag(FLAGS_pluto_ad_event);
+  if (absl::GetFlag(FLAGS_pluto_ad_event) &&
+      absl::GetFlag(FLAGS_pluto_content_id).empty()) {
     LOG(ERROR) << "Invalid --pluto_ad_event requires --pluto_content_id";
     return std::nullopt;
   }
