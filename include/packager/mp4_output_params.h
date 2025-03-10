@@ -33,6 +33,8 @@ struct Mp4OutputParams {
   uint32_t sequence_number = 0;
 
   struct PlutoAdEventSettings {
+    std::string event_stream_id_url = "www.pluto.tv";
+    std::string event_stream_value = "999";
     bool pluto_ad_event = false;
     uint32_t starting_index = 0;
     uint32_t max_index = 0;

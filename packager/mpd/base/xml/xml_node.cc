@@ -346,6 +346,16 @@ bool RepresentationBaseXmlNode::AddContentProtectionElement(
   return AddChild(std::move(content_protection_node));
 }
 
+bool RepresentationBaseXmlNode::AddInbandEventStream(const std::string& id_uri,
+                                                     const std::string& value) {
+  XmlNode in_band_event_stream_node("InbandEventStream");
+
+  RCHECK(in_band_event_stream_node.SetStringAttribute("schemeIdUri", id_uri));
+  RCHECK(in_band_event_stream_node.SetStringAttribute("value", value));
+
+  return AddChild(std::move(in_band_event_stream_node));
+}
+
 AdaptationSetXmlNode::AdaptationSetXmlNode()
     : RepresentationBaseXmlNode("AdaptationSet") {}
 AdaptationSetXmlNode::~AdaptationSetXmlNode() {}
@@ -582,7 +592,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       audio_channel_config_value =
           absl::StrFormat("%04X", codec_data.channel_mask());
       audio_channel_config_scheme =
-        "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
+          "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
     } else {
       // Calculate EC3 channel configuration descriptor value with MPEG scheme.
       // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
@@ -591,9 +601,9 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
           absl::StrFormat("%u", ec3_channel_mpeg_value);
       audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
     }
-    bool ret = AddDescriptor("AudioChannelConfiguration",
-                             audio_channel_config_scheme,
-                             audio_channel_config_value);
+    bool ret =
+        AddDescriptor("AudioChannelConfiguration", audio_channel_config_scheme,
+                      audio_channel_config_value);
     // Dolby Digital Plus JOC descriptor. Spec: ETSI TS 103 420 v1.2.1
     // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
     // D.2.2.
@@ -628,18 +638,18 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       // Note that the channel config schemes for EC-3 and AC-4 are different.
       // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
       audio_channel_config_scheme =
-        "tag:dolby.com,2015:dash:audio_channel_configuration:2015";
+          "tag:dolby.com,2015:dash:audio_channel_configuration:2015";
     } else {
       // Calculate AC-4 channel configuration descriptor value with MPEG scheme.
-      // Spec: ETSI TS 103 190-2 V1.2.1 Digital Audio Compression (AC-4) Standard;
-      // Part 2: Immersive and personalized audio G.3.2.
+      // Spec: ETSI TS 103 190-2 V1.2.1 Digital Audio Compression (AC-4)
+      // Standard; Part 2: Immersive and personalized audio G.3.2.
       audio_channel_config_value =
           absl::StrFormat("%u", ac4_channel_mpeg_value);
       audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
     }
-    bool ret = AddDescriptor("AudioChannelConfiguration",
-                             audio_channel_config_scheme,
-                             audio_channel_config_value);
+    bool ret =
+        AddDescriptor("AudioChannelConfiguration", audio_channel_config_scheme,
+                      audio_channel_config_value);
     if (ac4_ims_flag) {
       ret &= AddDescriptor("SupplementalProperty",
                            "tag:dolby.com,2016:dash:virtualized_content:2016",

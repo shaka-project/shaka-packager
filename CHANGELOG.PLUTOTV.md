@@ -1,3 +1,7 @@
+## [2.6.1_pluto.v3] - 2022-04-06
+### Added
+ - Add InbandEventStream element to MPD. [PLAYOUT-4528][https://plutotv.atlassian.net/browse/PLAYOUT-4528]
+
 ## [2.6.1_pluto.v2] - 2022-03-25 - synced
 ### Added
  - Add ability to dynamically create and insert ID3 EMSG For AD Events. [TRANS-1686][https://plutotv.atlassian.net/browse/TRANS-1686]

@@ -427,6 +427,19 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     return std::nullopt;
   }
 
+  if (AdaptationSet::IsVideo()) {
+    if (mpd_options_.mpd_params.in_band_event_stream_video_params.size() > 0) {
+      for (const auto& event_stream_params :
+           mpd_options_.mpd_params.in_band_event_stream_video_params) {
+        if (!adaptation_set.AddInbandEventStream(
+                event_stream_params.event_stream_id_uri,
+                event_stream_params.event_stream_value)) {
+          return std::nullopt;
+        }
+      }
+    }
+  }
+
   if (!adaptation_set.AddContentProtectionElements(
           content_protection_elements_)) {
     return std::nullopt;
