@@ -1,4 +1,4 @@
-## [2.6.1_pluto.v3] - 2022-04-06
+## [2.6.1_pluto.v3] - 2022-04-06 synced
 ### Added
  - Add InbandEventStream element to MPD. [PLAYOUT-4528][https://plutotv.atlassian.net/browse/PLAYOUT-4528]
 
