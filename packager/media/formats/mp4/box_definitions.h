@@ -250,7 +250,15 @@ struct ID3v2 : FullBox {
 struct DASHEventMessageBox : FullBox {
   DECLARE_BOX_METHODS(DASHEventMessageBox);
 
+  DASHEventMessageBox(const char* _scheme_id_uri,
+                      const char* _value,
+                      uint32_t _timescale,
+                      uint32_t _ptd,
+                      uint32_t _event_duration,
+                      uint32_t _id);
+  void SetTimescale(uint32_t new_timescale);
   inline uint32_t GetID() const { return id; }
+  uint32_t GetTimescale() const;
 
   std::string scheme_id_uri;
   std::string value;
@@ -266,6 +274,25 @@ struct Metadata : FullBox {
 
   HandlerReference handler;
   ID3v2 id3v2;
+};
+
+struct PlutoAdEventMessageBox : DASHEventMessageBox {
+  /*
+  A Pluto Business implementation of the DASHEventMessageBox.
+  This is the Ad Event.
+  Has its own functions which will be used to generate the Ad Event.
+  */
+ public:
+  PlutoAdEventMessageBox();
+  PlutoAdEventMessageBox(int current_idx,
+                         int max_index,
+                         const std::string& content_id);
+  ~PlutoAdEventMessageBox() override;
+
+ private:
+  void GenerateClickableAdID3(int current_idx,
+                              int max_index,
+                              const std::string& content_id);
 };
 
 // This defines a common structure for various CodecConfiguration boxes:

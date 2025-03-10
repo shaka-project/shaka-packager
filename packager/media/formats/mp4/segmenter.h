@@ -124,6 +124,22 @@ class Segmenter {
     progress_target_ = progress_target;
   }
 
+  std::vector<FourCC> GetTrackTypes() const {
+    std::vector<FourCC> track_types;
+    if (moov_->tracks.empty()) {
+      LOG(WARNING) << "No tracks in moov, returning NULL track type.";
+      track_types.push_back(FOURCC_NULL);
+    } else if (moov_->tracks.size() > 1) {
+      LOG(WARNING) << "More than 1 track being written to the output file.";
+    }
+    for (const Track& track : moov_->tracks) {
+      track_types.push_back(track.media.handler.handler_type);
+    }
+    return track_types;
+  }
+
+  uint64_t progress_target_ = 0u;
+
  private:
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;

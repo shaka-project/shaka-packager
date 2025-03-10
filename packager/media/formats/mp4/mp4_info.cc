@@ -8,10 +8,6 @@ namespace shaka {
 namespace media {
 namespace mp4 {
 
-static float roundToMs(float sec) {
-  return round(sec * 1000.0) / 1000.0;
-}
-
 MP4Info::MP4Info(std::string filePath, size_t read_size)
     : file_path_(std::move(filePath)), read_chunk_size_(read_size) {
   parser_.reset(new MP4MediaParser());
@@ -30,18 +26,16 @@ bool MP4Info::Parse() {
   return FeedParserWithData(file_path_);
 }
 
-float MP4Info::GetVideoSamplesDurationSec() const {
+uint64_t MP4Info::GetVideoSamplesDuration() const {
   auto video_stream =
       std::find_if(streams_.begin(), streams_.end(),
                    [](const std::shared_ptr<StreamInfo>& stream) {
                      return stream->stream_type() == kStreamVideo;
                    });
   if (video_stream == streams_.end()) {  // no video stream
-    return 0.0;
+    return 0;
   }
-  return roundToMs(
-      float(samples_duration_map_.at((*video_stream)->track_id())) /
-      (*video_stream)->time_scale());
+  return samples_duration_map_.at((*video_stream)->track_id());
 }
 
 bool MP4Info::FeedParserWithData(const std::string& name) {

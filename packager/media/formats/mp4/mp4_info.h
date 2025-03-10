@@ -18,13 +18,13 @@ class MP4Info {
   std::map<uint32_t, size_t> samples_duration_map_;
   std::unique_ptr<MP4MediaParser> parser_;
   std::string file_path_;
-  size_t read_chunk_size_;
+  uint64_t read_chunk_size_;
 
  public:
   MP4Info(std::string filePath, size_t read_size);
   bool Parse();
   // Info
-  float GetVideoSamplesDurationSec() const;
+  uint64_t GetVideoSamplesDuration() const;
 
  protected:
   bool FeedParserWithData(const std::string& name);

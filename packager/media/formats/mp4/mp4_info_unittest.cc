@@ -20,7 +20,7 @@ TEST_F(MP4InfoTest, VideoSamplesDuration) {
   std::filesystem::path src = GetTestDataFilePath("bear-640x360-av_frag.mp4");
   MP4Info info(src.string(), kDefaultInfoReadSize);
   EXPECT_TRUE(info.Parse());
-  EXPECT_FLOAT_EQ(static_cast<float>(2.736), info.GetVideoSamplesDurationSec());
+  EXPECT_EQ(82082, static_cast<int>(info.GetVideoSamplesDuration()));
 }
 
 TEST_F(MP4InfoTest, ZeroReadSize) {

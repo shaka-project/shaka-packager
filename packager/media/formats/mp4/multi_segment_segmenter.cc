@@ -136,6 +136,36 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
   DCHECK_NE(segment_size, 0u);
 
   RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
+
+  if (IsVideoHandler() &&
+      options().mp4_params.pluto_ad_event_settings.pluto_ad_event) {
+    std::unique_ptr<BufferWriter> emsg_buffer(new BufferWriter);
+    const uint32_t time_scale = sidx()->timescale;
+
+    const uint64_t earliest_pts = sidx()->earliest_presentation_time;
+    const uint32_t current_index = earliest_pts / time_scale;
+    uint32_t max_index = progress_target_ / time_scale;
+    if (options().mp4_params.pluto_ad_event_settings.max_index > 0) {
+      max_index = options()
+                      .mp4_params.pluto_ad_event_settings
+                      .max_index;  // Override max index if set on cmd line
+    }
+
+    if (static_cast<uint32_t>(current_index) >=
+            options().mp4_params.pluto_ad_event_settings.starting_index &&
+        current_index < max_index) {
+      // at or beyond starting index and less than max index
+      DLOG(INFO) << "Generating EMSG ID3 with CIDX: " << current_index
+                 << " - midx: " << max_index;
+
+      PlutoAdEventMessageBox pluto_emsg = PlutoAdEventMessageBox(
+          current_index, max_index, options().mp4_params.pluto_content_id);
+      pluto_emsg.SetTimescale(time_scale);
+      pluto_emsg.Write(emsg_buffer.get());
+    }
+    RETURN_IF_ERROR(emsg_buffer->WriteToFile(file.get()));
+  }
+
   if (muxer_listener()) {
     for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
       muxer_listener()->OnKeyFrame(
@@ -175,6 +205,14 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
 void MultiSegmentSegmenter::SetDashEventMessageHandler(
     const std::shared_ptr<mp4::DashEventMessageHandler>& handler) {
   emsg_handler_ = handler;
+}
+
+bool MultiSegmentSegmenter::IsVideoHandler() const {
+  for (const FourCC fourcc : GetTrackTypes()) {
+    if (fourcc == FOURCC_vide)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace mp4
