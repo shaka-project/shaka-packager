@@ -3199,10 +3199,6 @@ void DASHEventMessageBox_v0::SetPts(uint32_t new_pts) {
   presentation_time_delta = new_pts;
 }
 
-uint32_t DASHEventMessageBox_v0::GetTimescale() const {
-  return timescale;
-}
-
 size_t DASHEventMessageBox_v0::ComputeSizeInternal() {
   const static uint8_t kNull_sz = 1;
   const static uint8_t kNumUint32s_v0 = 4;
