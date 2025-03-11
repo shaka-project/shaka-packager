@@ -62,12 +62,7 @@ class MP4MediaParser : public MediaParser {
   void SetEventMessageBoxCB(const DASHEventMessageBoxCB& event_message_cb);
 
  private:
-  enum State {
-    kWaitingForInit,
-    kParsingBoxes,
-    kEmittingSamples,
-    kError
-  };
+  enum State { kWaitingForInit, kParsingBoxes, kEmittingSamples, kError };
 
   bool ParseBox(bool* err);
   bool ParseMoov(mp4::BoxReader* reader);

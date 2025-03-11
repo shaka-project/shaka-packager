@@ -294,7 +294,8 @@ class MP4MediaParserTest {
   std::unique_ptr<media::mp4::MP4MediaParser> parser_ =
       std::make_unique<media::mp4::MP4MediaParser>();
   std::vector<std::shared_ptr<media::MediaSample>> samples_;
-  std::vector<std::shared_ptr<media::mp4::DASHEventMessageBox_v0>> emsg_samples_;
+  std::vector<std::shared_ptr<media::mp4::DASHEventMessageBox_v0>>
+      emsg_samples_;
 };
 
 bool GetBox(const Segment& buffer, media::mp4::Box& out) {

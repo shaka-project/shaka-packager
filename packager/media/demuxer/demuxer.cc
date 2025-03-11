@@ -196,7 +196,8 @@ Status Demuxer::InitializeParser() {
       parser_.reset(new mp4::MP4MediaParser(cts_offset_adjustment_));
       dynamic_cast<mp4::MP4MediaParser*>(parser_.get())
           ->SetEventMessageBoxCB(
-              [this](std::shared_ptr<mp4::DASHEventMessageBox_v0> emsg_box_info) {
+              [this](
+                  std::shared_ptr<mp4::DASHEventMessageBox_v0> emsg_box_info) {
                 if (dash_event_handler_) {
                   dash_event_handler_->OnDashEvent(std::move(emsg_box_info));
                 }

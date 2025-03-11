@@ -115,3 +115,9 @@ ABSL_FLAG(
     "NOTE: EMSG boxes of this type are set to the first PTS in the segment, "
     "max index should never match the 'current index' value. "
     "A zero value will be ignored.");
+
+ABSL_FLAG(double,
+          target_duration_in_ms,
+          0,
+          "Used for target_duration_in_ms in subtitle segmenter for subtitles "
+          "when there is no video track");
