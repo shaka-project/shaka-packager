@@ -298,7 +298,10 @@ PlutoAdEventWriter::PlutoAdEventWriter(int start_index,
     exit(-1);
   }
   uint64_t max_duration_ms = (progress_target_ * 1000) / timescale_;
-  max_duration_ms = (max_duration_ms / 1000) * 1000;
+  max_duration_ms = (max_duration_ms / 1000) * 1000;  // rounding down
+  if (max_duration_ms > 200) {
+    max_duration_ms -= 200;  // final beacon before segment duration
+  }
   // Using rounded duration to apply fix for TRANS-2626
   calculateQuartiles(max_duration_ms);
 }
