@@ -56,7 +56,7 @@ class MP4MediaParser : public MediaParser {
   bool LoadMoov(const std::string& file_path);
 
   typedef std::function<bool(
-      std::shared_ptr<mp4::DASHEventMessageBox> emsg_box_info)>
+      std::shared_ptr<mp4::DASHEventMessageBox_v0> emsg_box_info)>
       DASHEventMessageBoxCB;
 
   void SetEventMessageBoxCB(const DASHEventMessageBoxCB& event_message_cb);
