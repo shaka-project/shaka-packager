@@ -1,7 +1,7 @@
-## [2.6.1_pluto.v8] - 2022-12-12
+## [2.6.1_pluto.v8.1] - 2022-12-12
 ### Added
  - Creates a psuedo random starting EMSG ID based on the content ID. [TRANS-3036][https://plutotv.atlassian.net/browse/TRANS-3036]
- 
+
 ## [2.6.1_pluto.v4] - 2022-06-02 - it was in Google base
 ### Added
  - Add label attribute in AdaptationSet for DASH manifest. [TRANS-2319][https://plutotv.atlassian.net/browse/TRANS-2319]
