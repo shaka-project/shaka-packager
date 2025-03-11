@@ -3,13 +3,14 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_EMSG_AD_BEACON_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_EMSG_AD_BEACON_H_
 
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
-#include "packager/media/base/buffer_writer.h"
-#include "packager/media/emsg/pluto_emsg/hasher.h"
-#include "packager/media/formats/mp4/box_definitions.h"
-
 #include <memory>
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+
+#include "packager/media/emsg/pluto_emsg/hasher.h"
 
 namespace shaka {
 namespace media {
