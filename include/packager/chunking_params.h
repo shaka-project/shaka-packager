@@ -42,9 +42,6 @@ struct ChunkingParams {
 
   /// Indicates the startNumber in DASH SegmentTemplate and HLS segment name.
   int64_t start_segment_number = 1;
-
-  /// Total duration of all subtitles
-  double target_duration_in_ms;
 };
 
 }  // namespace shaka

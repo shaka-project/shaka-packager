@@ -66,7 +66,6 @@ const char* ErrorCodeToString(Code error_code) {
 }  // namespace error
 
 const Status Status::OK = Status(error::OK, "");
-// const Status Status::CANCELLED = Status(error::CANCELLED, "");
 const Status Status::UNKNOWN = Status(error::UNKNOWN, "");
 
 Status::Status(error::Code error_code, const std::string& error_message)

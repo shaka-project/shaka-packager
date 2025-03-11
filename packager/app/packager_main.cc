@@ -336,23 +336,7 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
   return true;
 }
 
-bool HasVideoSelector(const std::vector<StreamDescriptor>& v) {
-  auto isVideo = [](const StreamDescriptor e) {
-    return e.stream_selector == "video";
-  };
-  auto iter = std::find_if(v.begin(), v.end(), isVideo);
-  return iter != v.end();
-}
-
-double TargetDuration(const std::vector<StreamDescriptor>& stream_descriptors) {
-  return absl::GetFlag(FLAGS_target_duration_in_ms) &&
-                 !HasVideoSelector(stream_descriptors)
-             ? absl::GetFlag(FLAGS_target_duration_in_ms)
-             : 0;
-}
-
-std::optional<PackagingParams> GetPackagingParams(
-    const std::vector<StreamDescriptor>& stream_descriptors) {
+std::optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
   packaging_params.temp_dir = absl::GetFlag(FLAGS_temp_dir);
@@ -376,7 +360,6 @@ std::optional<PackagingParams> GetPackagingParams(
       absl::GetFlag(FLAGS_segment_sap_aligned);
   chunking_params.subsegment_sap_aligned =
       absl::GetFlag(FLAGS_fragment_sap_aligned);
-  chunking_params.target_duration_in_ms = TargetDuration(stream_descriptors);
   chunking_params.start_segment_number =
       absl::GetFlag(FLAGS_start_segment_number);
 
@@ -627,6 +610,10 @@ int PackagerMain(int argc, char** argv) {
     return kArgumentValidationFailed;
   }
 
+  std::optional<PackagingParams> packaging_params = GetPackagingParams();
+  if (!packaging_params)
+    return kArgumentValidationFailed;
+
   std::vector<StreamDescriptor> stream_descriptors;
   for (size_t i = 1; i < remaining_args.size(); ++i) {
     std::optional<StreamDescriptor> stream_descriptor =
@@ -642,11 +629,6 @@ int PackagerMain(int argc, char** argv) {
       descriptor.index = index++;
     }
   }
-
-  std::Optional<PackagingParams> packaging_params =
-      GetPackagingParams(stream_descriptors);
-  if (!packaging_params)
-    return kArgumentValidationFailed;
 
   Packager packager;
   Status status =
