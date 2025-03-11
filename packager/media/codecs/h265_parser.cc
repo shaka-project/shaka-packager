@@ -1062,6 +1062,10 @@ H265Parser::Result H265Parser::ParseVps(const Nalu& nalu, int* vps_id) {
     for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
       TRUE_OR_RETURN(br->ReadBits(3, &vps->sub_layers_vps_max_minus1[i]));
     }
+  } else {
+    for (int i = 0; i <= vps->vps_max_layers_minus1; i++) {
+      vps->sub_layers_vps_max_minus1[i] = vps->vps_max_sub_layers_minus1;
+    }
   }
 
   TRUE_OR_RETURN(br->ReadBool(&temp_bool));  // max_tid_ref_present_flag
