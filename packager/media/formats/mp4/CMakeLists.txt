@@ -52,7 +52,6 @@ target_link_libraries(mp4
   media_event
   absl::flags
   ttml
-  emsg::pluto_emsg
   )
 
 add_executable(mp4_unittest
