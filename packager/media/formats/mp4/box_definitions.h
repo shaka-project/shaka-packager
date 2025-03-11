@@ -279,8 +279,9 @@ struct Metadata : FullBox {
 struct PlutoAdEventMessageBox : DASHEventMessageBox {
   /*
   A Pluto Business implementation of the DASHEventMessageBox.
-  This is the Ad Event.
-  Has its own functions which will be used to generate the Ad Event.
+  This is a www.pluto.tv 999 Event.
+  Has its own functions which will be used to generate the www.pluto.tv 999
+  event.
   */
  public:
   PlutoAdEventMessageBox();

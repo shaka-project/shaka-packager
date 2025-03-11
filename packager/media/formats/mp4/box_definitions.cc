@@ -53,7 +53,7 @@ const char kDolbyVisionCompressorName[] = "\013DOVI Coding";
 const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
 const char kPlutoTvSchemeUri[] = "www.pluto.tv";
-const char kPlutoAdEventValue[] = "Ad Event";
+const char kPlutoAdEventValue[] = "999";
 
 // According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either
 // 64-bit (8-byte) or 128-bit (16-byte).
