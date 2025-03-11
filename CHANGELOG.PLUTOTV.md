@@ -1,3 +1,7 @@
+## [2.6.1_pluto.v4] - 2022-06-02 - it was in Google base
+### Added
+ - Add label attribute in AdaptationSet for DASH manifest. [TRANS-2319][https://plutotv.atlassian.net/browse/TRANS-2319]
+
 ## [2.6.1_pluto.v3] - 2022-04-06 synced
 ### Added
  - Add InbandEventStream element to MPD. [PLAYOUT-4528][https://plutotv.atlassian.net/browse/PLAYOUT-4528]
