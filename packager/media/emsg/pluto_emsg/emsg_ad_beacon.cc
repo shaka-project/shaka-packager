@@ -12,6 +12,7 @@ namespace shaka {
 namespace media {
 namespace emsg {
 
+const uint16_t MOVE_FINAL_DURATION_BY_MS = 100;
 const char kPlutoTvSchemeUri[] = "www.pluto.tv";
 const char kPlutoAdEventValue[] = "999";
 
@@ -299,11 +300,15 @@ PlutoAdEventWriter::PlutoAdEventWriter(int start_index,
   }
   uint64_t max_duration_ms = (progress_target_ * 1000) / timescale_;
   max_duration_ms = (max_duration_ms / 1000) * 1000;  // rounding down
-  if (max_duration_ms > 200) {
-    max_duration_ms -= 200;  // final beacon before segment duration
+  if (max_duration_ms > MOVE_FINAL_DURATION_BY_MS) {
+    max_duration_ms -=
+        MOVE_FINAL_DURATION_BY_MS;  // final beacon before segment duration
   }
   // Using rounded duration to apply fix for TRANS-2626
   calculateQuartiles(max_duration_ms);
+
+  // TRANS-3036: Hash tag_id to ensure it is unique
+  tag_id_ = shaka::media::hasher::Hasher32(content_id_);
 }
 
 uint32_t PlutoAdEventWriter::getWTATagNeeded() const {

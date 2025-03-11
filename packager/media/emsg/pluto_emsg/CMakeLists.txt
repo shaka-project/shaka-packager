@@ -6,6 +6,7 @@
 
 add_library(pluto_emsg STATIC
     emsg_ad_beacon.cc
+    hasher.cc
 )
 
 target_link_libraries(pluto_emsg)
