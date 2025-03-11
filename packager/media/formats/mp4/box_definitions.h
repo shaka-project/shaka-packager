@@ -246,19 +246,22 @@ struct ID3v2 : FullBox {
   std::vector<uint8_t> id3v2_data;
 };
 
-// DASHEventMessageBox v0 and v1
-struct DASHEventMessageBox : FullBox {
-  DECLARE_BOX_METHODS(DASHEventMessageBox);
+// DASHEventMessageBox v0
+struct DASHEventMessageBox_v0 : FullBox {
+  DECLARE_BOX_METHODS(DASHEventMessageBox_v0);
+  DASHEventMessageBox_v0(const char* _scheme_id_uri,
+                         const char* _value,
+                         uint32_t _timescale,
+                         uint32_t _ptd,
+                         uint32_t _event_duration,
+                         uint32_t _id);
 
-  DASHEventMessageBox(const char* _scheme_id_uri,
-                      const char* _value,
-                      uint32_t _timescale,
-                      uint32_t _ptd,
-                      uint32_t _event_duration,
-                      uint32_t _id);
   void SetTimescale(uint32_t new_timescale);
+  inline uint32_t GetTimescale() const { return timescale; }
+  void SetPts(uint32_t new_pts);
+  inline uint32_t GetPts() const { return presentation_time_delta; }
+  void SetID(uint32_t new_id);
   inline uint32_t GetID() const { return id; }
-  uint32_t GetTimescale() const;
 
   std::string scheme_id_uri;
   std::string value;
@@ -269,31 +272,35 @@ struct DASHEventMessageBox : FullBox {
   std::vector<uint8_t> message_data;
 };
 
+// DASHEventMessageBox v1
+struct DASHEventMessageBox_v1 : FullBox {
+  DECLARE_BOX_METHODS(DASHEventMessageBox_v1);
+  DASHEventMessageBox_v1(const char* _scheme_id_uri,
+                         const char* _value,
+                         uint32_t _timescale,
+                         uint64_t _pts,
+                         uint32_t _event_duration,
+                         uint32_t _id);
+  void SetTimescale(uint32_t new_timescale);
+  inline uint32_t GetTimescale() const { return timescale; }
+  void SetPts(uint64_t new_pts);
+  inline uint64_t GetPts() const { return presentation_time; }
+  void SetID(uint32_t new_id);
+  inline uint32_t GetID() const { return id; }
+  std::string scheme_id_uri;
+  std::string value;
+  uint32_t timescale = 0u;
+  uint64_t presentation_time = 0u;
+  uint32_t event_duration = 0u;
+  uint32_t id = 0u;
+  std::vector<uint8_t> message_data;
+};
+
 struct Metadata : FullBox {
   DECLARE_BOX_METHODS(Metadata);
 
   HandlerReference handler;
   ID3v2 id3v2;
-};
-
-struct PlutoAdEventMessageBox : DASHEventMessageBox {
-  /*
-  A Pluto Business implementation of the DASHEventMessageBox.
-  This is a www.pluto.tv 999 Event.
-  Has its own functions which will be used to generate the www.pluto.tv 999
-  event.
-  */
- public:
-  PlutoAdEventMessageBox();
-  PlutoAdEventMessageBox(int current_idx,
-                         int max_index,
-                         const std::string& content_id);
-  ~PlutoAdEventMessageBox() override;
-
- private:
-  void GenerateClickableAdID3(int current_idx,
-                              int max_index,
-                              const std::string& content_id);
 };
 
 // This defines a common structure for various CodecConfiguration boxes:

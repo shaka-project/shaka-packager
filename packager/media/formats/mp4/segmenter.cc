@@ -106,6 +106,25 @@ Status Segmenter::Initialize(
     id3_tag.AddPrivateFrame(GetPackagerProjectUrl(), version);
     CHECK(id3_tag.WriteToVector(&moov_->metadata.id3v2.id3v2_data));
   }
+
+  if (kStreamVideo == streams[0]->stream_type() &&
+      options().mp4_params.pluto_ad_event_settings.pluto_ad_event) {
+    const uint32_t time_scale = sidx()->timescale;
+    if (time_scale == 0) {
+      LOG(ERROR)
+          << "Failure while processing: timescale of input media is equal to "
+          << time_scale << std::endl;
+      exit(-1);
+    }
+    const uint32_t max_index =
+        (options().mp4_params.pluto_ad_event_settings.max_index > 0)
+            ? options().mp4_params.pluto_ad_event_settings.max_index
+            : progress_target_ / time_scale;
+
+    pluto_ad_event_writer_ = emsg::PlutoAdEventWriter(
+        options().mp4_params.pluto_ad_event_settings.starting_index, max_index,
+        time_scale, progress_target_, options().mp4_params.pluto_content_id);
+  }
   return DoInitialize();
 }
 
@@ -355,6 +374,27 @@ std::vector<FourCC> Segmenter::GetTrackTypes() const {
     track_types.push_back(track.media.handler.handler_type);
   }
   return track_types;
+}
+
+bool Segmenter::IsVideoHandler() const {
+  for (const FourCC fourcc : GetTrackTypes()) {
+    if (fourcc == FOURCC_vide)
+      return true;
+  }
+  return false;
+}
+
+uint64_t Segmenter::stream_duration(uint64_t x) const {
+  if (stream_durations_.size() == 0) {
+    LOG(ERROR) << "Failure while processing: no stream durations in input media"
+               << std::endl;
+    exit(-1);
+  }
+  if (x < stream_durations_.size()) {
+    return stream_durations_[x];
+  } else {
+    return stream_durations_[0];
+  }
 }
 
 }  // namespace mp4
