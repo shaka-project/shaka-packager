@@ -1,6 +1,50 @@
 # Changelog
 
 
+## [3.4.2](https://github.com/shaka-project/shaka-packager/compare/v3.4.1...v3.4.2) (2025-01-17)
+
+
+### Bug Fixes
+
+* **ci:** Fix incomplete 3.4.1 release ([#1471](https://github.com/shaka-project/shaka-packager/issues/1471)) ([b882572](https://github.com/shaka-project/shaka-packager/commit/b882572b5458c93e1589ae04c0a79a3a10a75942))
+
+## [3.4.1](https://github.com/shaka-project/shaka-packager/compare/v3.4.0...v3.4.1) (2024-12-20)
+
+
+### Bug Fixes
+
+* Add "iw" variant of Hebrew language code ([#1458](https://github.com/shaka-project/shaka-packager/issues/1458)) ([df745bd](https://github.com/shaka-project/shaka-packager/commit/df745bdf1ac7609779d3cecfda01c71090150983)), closes [#1457](https://github.com/shaka-project/shaka-packager/issues/1457)
+
+## [3.4.0](https://github.com/shaka-project/shaka-packager/compare/v3.3.0...v3.4.0) (2024-11-11)
+
+
+### Features
+
+* Add option to ignore HTTP output failures ([#1449](https://github.com/shaka-project/shaka-packager/issues/1449)) ([3fdc807](https://github.com/shaka-project/shaka-packager/commit/3fdc807ed3a8fbe55b58037685c6528313485bf6))
+
+## [3.3.0](https://github.com/shaka-project/shaka-packager/compare/v3.2.1...v3.3.0) (2024-10-25)
+
+
+### Features
+
+* Add IAMF support ([#1416](https://github.com/shaka-project/shaka-packager/issues/1416)) ([dc6196d](https://github.com/shaka-project/shaka-packager/commit/dc6196d3d16cf532bf81721881624490a5a474e2)), closes [#1415](https://github.com/shaka-project/shaka-packager/issues/1415)
+* EXT-X-SESSION-KEY support ([#1427](https://github.com/shaka-project/shaka-packager/issues/1427)) ([d88ed27](https://github.com/shaka-project/shaka-packager/commit/d88ed2798cbe69197b88b394de72551716f51ac9)), closes [#36](https://github.com/shaka-project/shaka-packager/issues/36)
+* **http:** Add DELETE method support ([#1442](https://github.com/shaka-project/shaka-packager/issues/1442)) ([ddeacb2](https://github.com/shaka-project/shaka-packager/commit/ddeacb2525bfaf1c7301d415109a8149718c4f91))
+
+
+### Bug Fixes
+
+* **http:** Fix "Failed sending data to the peer" errors ([#1443](https://github.com/shaka-project/shaka-packager/issues/1443)) ([2c9d100](https://github.com/shaka-project/shaka-packager/commit/2c9d100d445f8db82c811c011a2c2e9078e242a2))
+
+## [3.2.1](https://github.com/shaka-project/shaka-packager/compare/v3.2.0...v3.2.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* Add Missing Dash Roles to RoleFromString function ([#1418](https://github.com/shaka-project/shaka-packager/issues/1418)) ([#1419](https://github.com/shaka-project/shaka-packager/issues/1419)) ([9cb00e9](https://github.com/shaka-project/shaka-packager/commit/9cb00e91ab0d081b1f2132abaad7c23ef15047b7))
+* Break header installation for the shared library ([#1407](https://github.com/shaka-project/shaka-packager/issues/1407)) ([b5c2cb8](https://github.com/shaka-project/shaka-packager/commit/b5c2cb8b73701911f765a149dd37521026e7ed2a)), closes [#1406](https://github.com/shaka-project/shaka-packager/issues/1406)
+* Embed full python protobuf library ([#1438](https://github.com/shaka-project/shaka-packager/issues/1438)) ([f07fd0d](https://github.com/shaka-project/shaka-packager/commit/f07fd0d997b0c84bde78d2dd9a62bdf0fac19ec1)), closes [#1436](https://github.com/shaka-project/shaka-packager/issues/1436)
+
 ## [3.2.0](https://github.com/shaka-project/shaka-packager/compare/v3.1.0...v3.2.0) (2024-05-11)
 
 

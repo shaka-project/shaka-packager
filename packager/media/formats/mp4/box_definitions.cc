@@ -1958,6 +1958,27 @@ size_t OpusSpecific::ComputeSizeInternal() {
          kOpusMagicSignatureSize;
 }
 
+IAMFSpecific::IAMFSpecific() = default;
+IAMFSpecific::~IAMFSpecific() = default;
+
+FourCC IAMFSpecific::BoxType() const {
+  return FOURCC_iacb;
+}
+
+bool IAMFSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t IAMFSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 FlacSpecific::FlacSpecific() = default;
 FlacSpecific::~FlacSpecific() = default;
 
@@ -2040,6 +2061,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&dec3));
   RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
+  RCHECK(buffer->TryReadWriteChild(&iacb));
   RCHECK(buffer->TryReadWriteChild(&dfla));
   RCHECK(buffer->TryReadWriteChild(&mhac));
   RCHECK(buffer->TryReadWriteChild(&alac));
@@ -2069,7 +2091,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
          dac4.ComputeSize() + mhac.ComputeSize() + udts.ComputeSize() +
-         alac.ComputeSize() +
+         alac.ComputeSize() + iacb.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.

@@ -111,12 +111,20 @@ File* CreateHttpsFile(const char* file_name, const char* mode) {
   return new HttpFile(method, std::string("https://") + file_name);
 }
 
+bool DeleteHttpsFile(const char* file_name) {
+  return HttpFile::Delete(std::string("https://") + file_name);
+}
+
 File* CreateHttpFile(const char* file_name, const char* mode) {
   HttpMethod method = HttpMethod::kGet;
   if (strcmp(mode, "r") != 0) {
     method = HttpMethod::kPut;
   }
   return new HttpFile(method, std::string("http://") + file_name);
+}
+
+bool DeleteHttpFile(const char* file_name) {
+  return HttpFile::Delete(std::string("http://") + file_name);
 }
 
 File* CreateMemoryFile(const char* file_name, const char* mode) {
@@ -138,8 +146,8 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kUdpFilePrefix, &CreateUdpFile, nullptr, nullptr},
     {kMemoryFilePrefix, &CreateMemoryFile, &DeleteMemoryFile, nullptr},
     {kCallbackFilePrefix, &CreateCallbackFile, nullptr, nullptr},
-    {kHttpFilePrefix, &CreateHttpFile, nullptr, nullptr},
-    {kHttpsFilePrefix, &CreateHttpsFile, nullptr, nullptr},
+    {kHttpFilePrefix, &CreateHttpFile, &DeleteHttpFile, nullptr},
+    {kHttpsFilePrefix, &CreateHttpsFile, &DeleteHttpsFile, nullptr},
 };
 
 std::string_view GetFileTypePrefix(std::string_view file_name) {

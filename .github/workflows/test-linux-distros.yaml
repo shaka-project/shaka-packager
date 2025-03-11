@@ -32,6 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Configure Build Matrix
         id: configure
@@ -69,6 +70,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive
+          persist-credentials: false
 
       - name: Build in Docker
         run: ./packager/testing/test_dockers.sh "${{ matrix.os_name }}"

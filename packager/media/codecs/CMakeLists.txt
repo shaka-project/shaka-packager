@@ -24,6 +24,7 @@ add_library(media_codecs STATIC
     h26x_byte_to_unit_stream_converter.cc
     hevc_decoder_configuration_record.cc
     hls_audio_util.cc
+    iamf_audio_util.cc
     nal_unit_to_byte_stream_converter.cc
     nalu_reader.cc
     video_slice_header_parser.cc
@@ -52,6 +53,7 @@ add_executable(media_codecs_unittest
     h26x_bit_reader_unittest.cc
     hevc_decoder_configuration_record_unittest.cc
     hls_audio_util_unittest.cc
+    iamf_audio_util_unittest.cc
     nal_unit_to_byte_stream_converter_unittest.cc
     nalu_reader_unittest.cc
     video_slice_header_parser_unittest.cc

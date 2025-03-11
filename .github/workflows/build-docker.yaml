@@ -31,6 +31,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive
+          persist-credentials: false
 
       - name: Build
         shell: bash

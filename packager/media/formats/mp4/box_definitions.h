@@ -373,6 +373,12 @@ struct OpusSpecific : Box {
   uint16_t preskip = 0u;
 };
 
+struct IAMFSpecific : Box {
+  DECLARE_BOX_METHODS(IAMFSpecific);
+
+  std::vector<uint8_t> data;
+};
+
 // FLAC specific decoder configuration box:
 //   https://github.com/xiph/flac/blob/master/doc/isoflac.txt
 // We do not care about the actual data inside, which is simply copied over.
@@ -416,6 +422,7 @@ struct AudioSampleEntry : Box {
   EC3Specific dec3;
   AC4Specific dac4;
   OpusSpecific dops;
+  IAMFSpecific iacb;
   FlacSpecific dfla;
   MHAConfiguration mhac;
   ALACSpecific alac;

@@ -36,7 +36,7 @@ class HlsEntry {
   virtual ~HlsEntry();
 
   EntryType type() const { return type_; }
-  virtual std::string ToString(std::string tag_name = "") = 0;
+  virtual std::string ToString() = 0;
 
  protected:
   explicit HlsEntry(EntryType type);
@@ -319,6 +319,30 @@ class MediaPlaylist {
   std::list<KeyFrameInfo> key_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
+};
+
+class EncryptionInfoEntry : public HlsEntry {
+ public:
+  EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
+                      const std::string& url,
+                      const std::string& key_id,
+                      const std::string& iv,
+                      const std::string& key_format,
+                      const std::string& key_format_versions);
+
+  std::string ToString() override;
+  std::string ToString(std::string);
+
+ private:
+  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
+  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
+
+  const MediaPlaylist::EncryptionMethod method_;
+  const std::string url_;
+  const std::string key_id_;
+  const std::string iv_;
+  const std::string key_format_;
+  const std::string key_format_versions_;
 };
 
 }  // namespace hls
