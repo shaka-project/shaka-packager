@@ -89,7 +89,7 @@ add_subdirectory(status)
 add_subdirectory(third_party)
 add_subdirectory(tools)
 add_subdirectory(utils)
-add_subdirectory(emsg/pluto_emsg)
+add_subdirectory(media/emsg/pluto_emsg)
 add_subdirectory(version)
 
 set(libpackager_sources
