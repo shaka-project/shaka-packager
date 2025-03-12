@@ -22,6 +22,8 @@ jobs:
   upload_hybrik_ecr:
     name: Upload to Hybrik ECR
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Compute ref
         id: ref
