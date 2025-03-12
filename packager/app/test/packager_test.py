@@ -1109,7 +1109,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testMvHevcMp4(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'], test_files=['water-mv-hevc.mp4']),
-        self._GetFlags(output_dash=True, output_hls=True))
+        self._GetFlags())
     self._CheckTestResults('mv-hevc-mp4')
 
   def testIamfWithBaseProfileAndPcm(self):
@@ -1595,7 +1595,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testMvHevcMp4WithEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'], test_files=['water-mv-hevc.mp4']),
-        self._GetFlags(encryption=True, output_dash=True, output_hls=True))
+        self._GetFlags(encryption=True))
     self._CheckTestResults('mv-hevc-mp4-with-encryption', verify_decryption=True)
 
   def testWvmInput(self):
