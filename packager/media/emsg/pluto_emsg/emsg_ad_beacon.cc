@@ -1,12 +1,13 @@
-#include "packager/media/emsg/pluto_emsg/emsg_ad_beacon.h"
-
-#include "packager/base/base64.h"
-#include "packager/base/logging.h"
-#include "packager/status_macros.h"
+#include <packager/media/emsg/pluto_emsg/emsg_ad_beacon.h>
 
 #include <cmath>
 #include <iostream>
 #include <mutex>
+
+// #include "packager/base/base64.h"
+#include <packager/macros/logging.h>
+
+#include "google/protobuf/stubs/status_macros.h"
 
 namespace shaka {
 namespace media {
