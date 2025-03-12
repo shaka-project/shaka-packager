@@ -129,6 +129,7 @@ set(libpackager_deps
   mbedtls
   string_utils
   version
+  pluto_emsg
 )
 
 # A static library target is always built.
