@@ -1,0 +1,10 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:1
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="water-mv-hevc-video.mp4",BYTERANGE="1670@0"
+#EXTINF:0.056,
+#EXT-X-BYTERANGE:85878@1714
+water-mv-hevc-video.mp4
+#EXT-X-ENDLIST
