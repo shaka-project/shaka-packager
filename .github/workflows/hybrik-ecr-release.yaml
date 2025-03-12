@@ -47,5 +47,5 @@ jobs:
       - name: Build and push image
         id: build-image
         run: |
-          docker build -f Dockerfile -t $ECR_REPO/$DOCKER_IMAGE_NAME:$TARGET_REF --build-arg GIT_LOGIN=pluto-depoy --build-arg GIT_TOKEN=${{ secrets.PLUTO_DEPLOY_TOKEN }} --build-arg GIT_TAG=$TARGET_REF .
+          docker build -f Dockerfile -t $ECR_REPO/$DOCKER_IMAGE_NAME:$(echo $TARGET_REF | tr / -) --build-arg GIT_LOGIN=pluto-depoy --build-arg GIT_TOKEN=${{ secrets.PLUTO_DEPLOY_TOKEN }} --build-arg GIT_TAG=$TARGET_REF .
           docker push $ECR_REPO/$DOCKER_IMAGE_NAME:$(echo $TARGET_REF | tr / -)
