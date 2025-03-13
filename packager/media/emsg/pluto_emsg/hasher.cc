@@ -47,7 +47,7 @@ uint32_t Hasher32(string input) {
   const size_t lenInput = input.length();
   const uint8_t* pInput_bytes = reinterpret_cast<const uint8_t*>(input.c_str());
   uint8_t outArray[EVP_MAX_MD_SIZE] = {0};
-  
+
   EVP_DigestInit_ex(ctx, EVP_md5(), NULL);        // Initialize MD5
   EVP_DigestUpdate(ctx, pInput_bytes, lenInput);  // Process data
   EVP_DigestFinal_ex(ctx, outArray, NULL);        // Get final hash
