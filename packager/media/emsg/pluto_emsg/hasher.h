@@ -1,5 +1,5 @@
-#include <iostream>
 #include <cstdint>
+#include <iostream>
 
 namespace shaka {
 namespace media {
