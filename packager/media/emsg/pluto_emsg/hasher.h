@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdint>
 
 namespace shaka {
 namespace media {

@@ -12,6 +12,9 @@ add_library(pluto_emsg STATIC
     hasher.cc
 )
 
+# suppress MD5 warnings
+add_compile_options(-Wno-deprecated-declarations)
+
 # Include OpenSSL headers
 target_include_directories(pluto_emsg PRIVATE ${OPENSSL_INCLUDE_DIR})
 target_link_libraries(pluto_emsg 
