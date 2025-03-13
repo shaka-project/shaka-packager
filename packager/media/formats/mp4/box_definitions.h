@@ -258,8 +258,8 @@ struct DASHEventMessageBox_v0 : FullBox {
 
   void SetTimescale(uint32_t new_timescale);
   inline uint32_t GetTimescale() const { return timescale; }
-  void SetPts(uint32_t new_pts);
-  inline uint32_t GetPts() const { return presentation_time_delta; }
+  void SetPts(uint64_t new_pts);
+  inline uint64_t GetPts() const { return presentation_time_delta; }
   void SetID(uint32_t new_id);
   inline uint32_t GetID() const { return id; }
 
