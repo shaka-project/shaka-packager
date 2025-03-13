@@ -4,7 +4,11 @@
 #include <iostream>
 #include <mutex>
 
-// #include "packager/base/base64.h"
+// #include "base64.h"
+#include <absl/strings/escaping.h>
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/macros/logging.h>
 
 #include "google/protobuf/stubs/status_macros.h"
@@ -39,7 +43,7 @@ void syncsafe_Bytes(uint32_t original_val, uint8_t* retVal) {
 
 std::vector<uint8_t> base64_encode(const std::vector<uint8_t>& in) {
   std::string temp;
-  base::Base64Encode(std::string(in.begin(), in.end()), &temp);
+  absl::Base64Escape(std::string(in.begin(), in.end()), &temp);
   std::vector<uint8_t> output(temp.begin(), temp.end());
   return output;
 }
@@ -360,8 +364,13 @@ shaka::Status PlutoAdEventWriter::WriteAdEvents(
       PlutoAdEventMessageBox pluto_emsg = PlutoAdEventMessageBox(
           current_index_, max_index_, content_id_, data_payload_, timescale_,
           pts_to_write_, tag_id_++);
+
       pluto_emsg.Write(emsg_buffer.get());
-      RETURN_IF_ERROR(emsg_buffer->WriteToFile(file));
+      shaka::Status status = emsg_buffer->WriteToFile(file);
+      if (!status.ok()) {
+        return status;
+      }
+
       data_payload_ = 0;
       if (quartiles_.empty()) {
         break;

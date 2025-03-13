@@ -5,8 +5,6 @@
 
 #include <memory>
 
-#include <packager/file.h>
-#include <packager/file/file_closer.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 
