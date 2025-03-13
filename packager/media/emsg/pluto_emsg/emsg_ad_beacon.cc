@@ -4,13 +4,8 @@
 #include <iostream>
 #include <mutex>
 
-// #include "base64.h"
 #include <absl/strings/escaping.h>
-
-#include <packager/file.h>
-#include <packager/file/file_closer.h>
 #include <packager/macros/logging.h>
-
 #include "google/protobuf/stubs/status_macros.h"
 
 namespace shaka {
