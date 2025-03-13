@@ -4,9 +4,15 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
+
 add_library(pluto_emsg STATIC
     emsg_ad_beacon.cc
     hasher.cc
 )
 
-target_link_libraries(pluto_emsg)
+# Include OpenSSL headers
+target_include_directories(mylib PRIVATE ${OPENSSL_INCLUDE_DIR})
+
+target_link_libraries(pluto_emsg PRIVATE OpenSSL::Crypto)
