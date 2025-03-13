@@ -1596,7 +1596,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['video'], test_files=['water-mv-hevc.mp4']),
         self._GetFlags(encryption=True))
-    self._CheckTestResults('mv-hevc-mp4-with-encryption', verify_decryption=True)
+    self._CheckTestResults('mv-hevc-mp4-with-encryption',
+                           verify_decryption=True)
 
   def testWvmInput(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'
