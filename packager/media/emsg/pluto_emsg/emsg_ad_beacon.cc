@@ -6,7 +6,7 @@
 
 #include <absl/strings/escaping.h>
 #include <packager/macros/logging.h>
-#include "google/protobuf/stubs/status_macros.h"
+// #include "google/protobuf/stubs/status_macros.h"
 
 namespace shaka {
 namespace media {
