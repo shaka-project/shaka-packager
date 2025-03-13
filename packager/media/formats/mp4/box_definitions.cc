@@ -3195,7 +3195,7 @@ void DASHEventMessageBox_v0::SetTimescale(uint32_t new_timescale) {
   timescale = new_timescale;
 }
 
-void DASHEventMessageBox_v0::SetPts(uint32_t new_pts) {
+void DASHEventMessageBox_v0::SetPts(uint64_t new_pts) {
   presentation_time_delta = new_pts;
 }
 
