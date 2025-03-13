@@ -1,6 +1,6 @@
 #include "packager/media/emsg/pluto_emsg/hasher.h"
 
-#include <md5.h>
+#include <openssl/md5.h>
 #include <cstdint>
 #include <iostream>
 #include <list>
