@@ -13,6 +13,6 @@ add_library(pluto_emsg STATIC
 )
 
 # Include OpenSSL headers
-target_include_directories(mylib PRIVATE ${OPENSSL_INCLUDE_DIR})
+target_include_directories(pluto_emsg PRIVATE ${OPENSSL_INCLUDE_DIR})
 
 target_link_libraries(pluto_emsg PRIVATE OpenSSL::Crypto)
