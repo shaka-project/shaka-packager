@@ -1,4 +1,5 @@
 FROM archlinux:latest
+# NOARM - tells workflow to skip arm for this, because there is no arm image
 
 # Install utilities, libraries, and dev tools.
 RUN pacman -Suy --needed --noconfirm \
