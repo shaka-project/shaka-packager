@@ -127,6 +127,12 @@ jobs:
               ninja-build \
               libssl-dev
 
+      - name: Verify OpenSSL Installation
+        run: |
+          openssl version
+          dpkg -L libssl-dev | grep evp.h
+          ls -l /usr/include/openssl/
+            
       - name: Install Mac deps
         if: runner.os == 'macOS'
         # NOTE: GitHub Actions VMs on Mac do not install ninja by default.
