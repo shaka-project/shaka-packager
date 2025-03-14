@@ -1,3 +1,7 @@
+## [2.6.1_pluto.v8.5.2] - 2025-01-27
+### Added
+ - Update schemeIdUri for ID3 PRIV tags to use scheme "https://aomedia.org/emsg/ID3". [TRANS-7290][https://plutotv.atlassian.net/browse/TRANS-7290]
+ 
 ## [2.6.1_pluto.v8.1] - 2022-12-12
 ### Added
  - Creates a psuedo random starting EMSG ID based on the content ID. [TRANS-3036][https://plutotv.atlassian.net/browse/TRANS-3036]

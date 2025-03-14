@@ -13,7 +13,7 @@ namespace media {
 namespace emsg {
 
 const uint16_t MOVE_FINAL_DURATION_BY_MS = 100;
-const char kPlutoTvSchemeUri[] = "www.pluto.tv";
+const char kPlutoTvSchemeUri[] = "https://aomedia.org/emsg/ID3";
 const char kPlutoAdEventValue[] = "999";
 
 /*
@@ -274,7 +274,7 @@ PlutoAdEventMessageBox::PlutoAdEventMessageBox(int current_idx,
     : DASHEventMessageBox_v0(kPlutoTvSchemeUri,
                              kPlutoAdEventValue,
                              timescale,
-                             pts,
+                             static_cast<uint32_t>(pts),
                              0x000000FF,  // uint32_t _event_duration,
                              tag_id) {
   GenerateClickableAdID3(current_idx, max_index, content_id, data_payload);
