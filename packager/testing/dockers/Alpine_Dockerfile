@@ -4,7 +4,8 @@ FROM alpine:3.19
 RUN apk add --no-cache \
         bash curl \
         bsd-compat-headers linux-headers \
-        build-base cmake git ninja python3
+        build-base cmake git ninja python3 \
+        openssl-dev
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".
