@@ -7,15 +7,17 @@
 # Find OpenSSL
 find_package(OpenSSL REQUIRED)
 
+# Include OpenSSL headers
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 add_library(pluto_emsg STATIC
     emsg_ad_beacon.cc
     hasher.cc
 )
 
-# Include OpenSSL headers
-include_directories(${OPENSSL_INCLUDE_DIR})
 target_include_directories(pluto_emsg PRIVATE ${OPENSSL_INCLUDE_DIR})
 target_link_libraries(pluto_emsg 
+    OpenSSL::SSL
     OpenSSL::Crypto
     absl::base
     absl::log)
