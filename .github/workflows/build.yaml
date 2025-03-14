@@ -130,7 +130,7 @@ jobs:
       - name: Verify OpenSSL Installation
         run: |
           openssl version
-          dpkg -L libssl-dev | grep evp.h
+          find /usr/include -name evp.h || echo "evp.h not found"
           ls -l /usr/include/openssl/
             
       - name: Install Mac deps
