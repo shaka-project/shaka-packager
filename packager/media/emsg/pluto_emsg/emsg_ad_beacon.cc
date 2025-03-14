@@ -238,7 +238,7 @@ void PlutoAdEventWriter::calculateQuartiles(uint64_t max_duration_ms) {
         CalculateEndOfQuartile(max_duration_ms, static_cast<uint8_t>(i)),
         timescale_);
     // determine data based on i
-    ptsData.data = GetQuartileDataPayload(i);
+    ptsData.data = GetQuartileDataPayload(static_cast<uint8_t>(i));
     // push back
     quartiles_.push_back(ptsData);
   }
