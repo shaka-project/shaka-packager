@@ -261,7 +261,8 @@ void PlutoAdEventMessageBox::GenerateClickableAdID3(
   uint8_t p_content_id_bytes[CONTENT_ID_BUFFER_SIZE];
   memset(p_content_id_bytes, 0, CONTENT_ID_BUFFER_SIZE);
   hex2bin(content_id, p_content_id_bytes);
-  message_data = make_clickableAdID3Tag(current_idx, max_index,
+  message_data = make_clickableAdID3Tag(static_cast<uint16_t>(current_idx),
+                                        static_cast<uint16_t>(max_index),
                                         p_content_id_bytes, data_payload);
 }
 
