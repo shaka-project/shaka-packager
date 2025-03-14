@@ -386,7 +386,7 @@ void PlutoAdEventWriter::updateEarliestPTS(uint64_t earliest_pts) {
         << timescale_ << std::endl;
     exit(-1);
   }
-  current_index_ = earliest_pts_ / timescale_;
+  current_index_ = static_cast<int>(earliest_pts_ / timescale_);
 }
 
 void PlutoAdEventWriter::updateStreamDuration(uint64_t stream_duration) {
