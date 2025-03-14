@@ -125,7 +125,7 @@ jobs:
           sudo apt install -y \
               cmake \
               ninja-build \
-              openssl
+              libssl-dev
 
       - name: Install Mac deps
         if: runner.os == 'macOS'
