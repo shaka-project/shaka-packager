@@ -4,7 +4,8 @@ FROM fedora:35
 RUN yum install -y \
         which \
         libatomic \
-        cmake gcc-c++ git ninja-build python3
+        cmake gcc-c++ git ninja-build python3 \
+        openssl-devel
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

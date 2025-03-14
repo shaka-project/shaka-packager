@@ -7,7 +7,8 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y apt-utils
 RUN apt-get install -y \
         curl \
-        build-essential git ninja-build python3 wget
+        build-essential git ninja-build python3 wget \
+        libssl-dev
 
 # Install the official CMake repo to get CMake v3.24+:
 ENV kitware_key_url http://apt.kitware.com/keys/kitware-archive-latest.asc
