@@ -231,7 +231,7 @@ void PlutoAdEventWriter::calculateQuartiles(uint64_t max_duration_ms) {
 
   // Put the vector in reverse chronological order, so that elements can be
   // popped off in order.
-  for (int i = QUARTILE_COUNT - 1; i >= 0; --i) {
+  for (uint8_t i = QUARTILE_COUNT - 1; i >= 0; --i) {
     _PTS_DATA ptsData;
     // Obtain PTS
     ptsData.pts =
