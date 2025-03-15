@@ -1,4 +1,5 @@
 FROM tgagor/centos:stream9
+# NOARM - tells workflow to skip arm for this, because there is no arm image
 
 # For CentOS, Ninja is only available from the "CRB" ("Code Ready Builder")
 # repo.  Enable that first.
