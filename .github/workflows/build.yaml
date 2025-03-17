@@ -206,6 +206,8 @@ jobs:
             -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
             -DFULLY_STATIC="$FULLY_STATIC" \
             -DBUILD_LIVE_TEST="$BUILD_LIVE_TEST" \
+            -DOPENSSL_ROOT_DIR=/usr \
+            -DOPENSSL_INCLUDE_DIR=/usr/include \
             -S . \
             -B build/
 
