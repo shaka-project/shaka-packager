@@ -33,14 +33,6 @@ uint32_t hashTo32(uint8_t* p_input, size_t length) {
   return retval;
 }
 
-// uint32_t Hasher32(string input) {
-//   const size_t lenInput = input.length();
-//   const uint8_t* pInput_bytes = reinterpret_cast<const
-//   uint8_t*>(input.c_str()); uint8_t outArray[MD5_DIGEST_LENGTH] = {0};
-//   uint8_t* p_lMD5 = MD5(pInput_bytes, lenInput, outArray);
-//   return hashTo32(p_lMD5, MD5_DIGEST_LENGTH);
-// }
-
 uint32_t Hasher32(string input) {
   const size_t lenInput = input.length();
   const uint8_t* pInput_bytes = reinterpret_cast<const uint8_t*>(input.c_str());
@@ -53,25 +45,6 @@ uint32_t Hasher32(string input) {
   }
   return hashTo32(outArray, MD5_DIGEST_LENGTH);
 }
-
-// uint32_t Hasher32(string input) {
-//   EVP_MD_CTX* ctx = EVP_MD_CTX_new();
-//   if (!ctx) {
-//     return 0;
-//   }
-
-//   const size_t lenInput = input.length();
-//   const uint8_t* pInput_bytes = reinterpret_cast<const
-//   uint8_t*>(input.c_str()); uint8_t outArray[EVP_MAX_MD_SIZE] = {0};
-
-//   EVP_DigestInit_ex(ctx, EVP_md5(), NULL);        // Initialize MD5
-//   EVP_DigestUpdate(ctx, pInput_bytes, lenInput);  // Process data
-//   EVP_DigestFinal_ex(ctx, outArray, NULL);        // Get final hash
-
-//   EVP_MD_CTX_free(ctx);  // Free the context
-
-//   return hashTo32(outArray, EVP_MAX_MD_SIZE);
-// }
 
 }  // namespace hasher
 }  // namespace media
