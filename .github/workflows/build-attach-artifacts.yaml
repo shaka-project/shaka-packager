@@ -123,7 +123,7 @@ jobs:
       - name: Upload release build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}
+          name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}-${{ matrix.build_type }}
           path: artifacts/*
           if-no-files-found: error
           retention-days: 5
