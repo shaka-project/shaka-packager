@@ -60,7 +60,7 @@ jobs:
         include: ${{ fromJSON(needs.build_matrix_config.outputs.INCLUDE) }}
         os: ${{ fromJSON(needs.build_matrix_config.outputs.OS) }}
         build_type: ["Release"]
-        lib_type: ["shared"]
+        lib_type: ["shared", "static"]
 
     name: ${{ matrix.os_name }} ${{ matrix.target_arch }} ${{ matrix.build_type }} ${{ matrix.lib_type }}
     runs-on: ${{ matrix.os }}
@@ -75,10 +75,16 @@ jobs:
       - name: Generate build files
         run: |
           mkdir -p build/
+          
+          if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
+            echo "BUILD_SHARED_LIBS=1" >> $GITHUB_ENV
+          else
+            echo "BUILD_SHARED_LIBS=0" >> $GITHUB_ENV
+          fi
 
           cmake \
-            -DCMAKE_BUILD_TYPE="Release" \
-            -DBUILD_SHARED_LIBS=1 \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
             -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
             -S . \
             -B build/
@@ -101,13 +107,15 @@ jobs:
           SUFFIX="-${{ matrix.os_name }}-${{ matrix.target_arch }}"
           LIB_SUFFIX="$SUFFIX${{ matrix.lib_ext}}"
 
-          echo "::group::Copy libpackager"
-          cp libpackager${{ matrix.lib_ext }} $ARTIFACTS/libpackager$LIB_SUFFIX
-          echo "::endgroup::"
-          
-          echo "::group::Copy packager"
-          cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$SUFFIX
-          echo "::endgroup::"
+          if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
+            echo "::group::Copy libpackager"
+            cp libpackager${{ matrix.lib_ext }} $ARTIFACTS/libpackager$LIB_SUFFIX
+            echo "::endgroup::"
+          else
+            echo "::group::Copy packager"
+            cp packager${{ matrix.exe_ext }} $ARTIFACTS/packager$SUFFIX
+            echo "::endgroup::"
+          fi
 
       - name: Upload release build artifacts
         uses: actions/upload-artifact@v4
