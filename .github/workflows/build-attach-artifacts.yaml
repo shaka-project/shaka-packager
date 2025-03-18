@@ -84,7 +84,7 @@ jobs:
 
           cmake \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
+            -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }} \
             -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
             -S . \
             -B build/
