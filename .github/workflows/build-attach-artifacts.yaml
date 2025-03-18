@@ -77,17 +77,20 @@ jobs:
           mkdir -p build/
           
           if [[ "${{ matrix.lib_type }}" == "shared" ]]; then
-            echo "BUILD_SHARED_LIBS=1" >> $GITHUB_ENV
+            cmake \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DBUILD_SHARED_LIBS=1 \
+              -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
+              -S . \
+              -B build/
           else
-            echo "BUILD_SHARED_LIBS=0" >> $GITHUB_ENV
+            cmake \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DBUILD_SHARED_LIBS=0 \
+              -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
+              -S . \
+              -B build/
           fi
-
-          cmake \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }} \
-            -DUSE_WORKAROUND_FOR_TRUN_VERSION_0=1 \
-            -S . \
-            -B build/
 
       - name: Build
         run: cmake --build build/ --parallel $(getconf _NPROCESSORS_ONLN)
