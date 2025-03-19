@@ -17,10 +17,9 @@
         "rulePriority": 2,
         "description": "Expire tagged images",
         "selection": {
-          "tagStatus": "any",
-          "countType": "sinceImagePushed",
-          "countUnit": "days",
-          "countNumber": 75
+          "tagStatus": "tagged",
+          "countType": "imageCountMoreThan",
+          "countNumber": 9999
         },
         "action": {
           "type": "expire"
