@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [3.5.0](https://github.com/shaka-project/shaka-packager/compare/v3.4.2...v3.5.0) (2025-03-19)
+
+
+### Features
+
+* **ci:** Official multiarch docker images for x64 + arm64 ([#1490](https://github.com/shaka-project/shaka-packager/issues/1490)) ([9a6b2a5](https://github.com/shaka-project/shaka-packager/commit/9a6b2a50c07d61abf80e66478540948919d1ab2b))
+* MV-HEVC support for stereo video ([#1488](https://github.com/shaka-project/shaka-packager/issues/1488)) ([c22c379](https://github.com/shaka-project/shaka-packager/commit/c22c379123b683e8e4d231533d6ed24e134f6b61))
+
 ## [3.4.2](https://github.com/shaka-project/shaka-packager/compare/v3.4.1...v3.4.2) (2025-01-17)
 
 
