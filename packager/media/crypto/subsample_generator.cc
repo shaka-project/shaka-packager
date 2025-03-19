@@ -175,6 +175,11 @@ Status SubsampleGenerator::Initialize(FourCC protection_scheme,
       return Status(error::ENCRYPTION_FAILURE,
                     "Failed to read SPS and PPS data.");
     }
+    if (!header_parser_->InitializeLayered(
+            stream_info.layered_codec_config())) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "Failed to read parameter sets for the layered case.");
+    }
   }
 
   align_protected_data_ = ShouldAlignProtectedData(codec_, protection_scheme,

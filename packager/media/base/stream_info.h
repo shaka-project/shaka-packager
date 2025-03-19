@@ -104,6 +104,9 @@ class StreamInfo {
   Codec codec() const { return codec_; }
   const std::string& codec_string() const { return codec_string_; }
   const std::vector<uint8_t>& codec_config() const { return codec_config_; }
+  const std::vector<uint8_t>& layered_codec_config() const {
+    return layered_codec_config_;
+  }
   const std::string& language() const { return language_; }
   bool is_encrypted() const { return is_encrypted_; }
   bool has_clear_lead() const { return has_clear_lead_; }
@@ -116,6 +119,11 @@ class StreamInfo {
   void set_codec_config(const std::vector<uint8_t>& data) {
     codec_config_ = data;
   }
+
+  void set_layered_codec_config(const std::vector<uint8_t>& data) {
+    layered_codec_config_ = data;
+  }
+
   void set_codec_string(const std::string& codec_string) {
     codec_string_ = codec_string;
   }
@@ -149,6 +157,9 @@ class StreamInfo {
   // Optional byte data required for some audio/video decoders such as Vorbis
   // codebooks.
   std::vector<uint8_t> codec_config_;
+  // Optional byte data required for some layered video decoders such as
+  // MV-HEVC.
+  std::vector<uint8_t> layered_codec_config_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

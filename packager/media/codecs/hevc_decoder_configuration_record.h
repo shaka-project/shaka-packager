@@ -15,6 +15,7 @@
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/decoder_configuration_record.h>
+#include <packager/media/codecs/h265_parser.h>
 
 namespace shaka {
 namespace media {
@@ -25,11 +26,25 @@ class HEVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   HEVCDecoderConfigurationRecord();
   ~HEVCDecoderConfigurationRecord() override;
 
+  // Can specify an existing parser to use for referencing to previously parsed
+  // parameter sets.
+  void SetParser(H265Parser* parser) {
+    parser_ = parser;
+    internal_parser_used_ = false;
+  }
+  bool ParseLHEVCConfig(const std::vector<uint8_t>& data);
+
   /// @return The codec string.
   std::string GetCodecString(FourCC codec_fourcc) const;
 
  private:
   bool ParseInternal() override;
+
+  // If this is set true, then L-HEVC configuration record is also parsed.
+  bool layered_ = false;
+  bool internal_parser_used_ = true;
+  H265Parser* parser_ = nullptr;
+  H265Parser internal_parser_;
 
   uint8_t version_ = 0;
   uint8_t general_profile_space_ = 0;

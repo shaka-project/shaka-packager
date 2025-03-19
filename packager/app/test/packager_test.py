@@ -1106,6 +1106,12 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('av1-webm')
 
+  def testMvHevcMp4(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'], test_files=['water-mv-hevc.mp4']),
+        self._GetFlags())
+    self._CheckTestResults('mv-hevc-mp4')
+
   def testIamfWithBaseProfileAndPcm(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio'],
@@ -1585,6 +1591,13 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['video'], test_files=['bear-av1.webm']),
         self._GetFlags(encryption=True, output_dash=True, output_hls=True))
     self._CheckTestResults('av1-webm-with-encryption', verify_decryption=True)
+
+  def testMvHevcMp4WithEncryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'], test_files=['water-mv-hevc.mp4']),
+        self._GetFlags(encryption=True))
+    self._CheckTestResults('mv-hevc-mp4-with-encryption',
+                           verify_decryption=True)
 
   def testWvmInput(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'

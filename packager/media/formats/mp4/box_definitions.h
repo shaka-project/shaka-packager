@@ -300,6 +300,10 @@ struct VideoSampleEntry : Box {
   std::vector<uint8_t> ExtraCodecConfigsAsVector() const;
   // Parse |extra_codec_configs| from vector.
   bool ParseExtraCodecConfigsVector(const std::vector<uint8_t>& data);
+  // Currently |extra_codec_configs| can include configs for Dolby Vision
+  // and/or Multiview.
+  bool HaveDolbyVisionConfig() const;
+  bool HaveLHEVCConfig() const;
 
   FourCC format = FOURCC_NULL;
   // data_reference_index is 1-based and "dref" box is mandatory so it is

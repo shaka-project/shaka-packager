@@ -23,6 +23,34 @@ enum H265SliceType { kBSlice = 0, kPSlice = 1, kISlice = 2 };
 
 const int kMaxRefPicSetCount = 16;
 
+// 12 bytes for general profile_tier_level() info:
+//   1 byte:  general_profile_space, general_tier_flag, general_profile_idc
+//   4 bytes: general_profile_compatibility_flags
+//   6 bytes: general_constraint_indicator_flags
+//   1 byte:  general_level_idc
+const int kGeneralProfileTierLevelBytes = 12;
+// The standard allows up to 64, but for MV-HEVC support for stereo video,
+// there is no need for more than 3.
+const int kMaxNumProfileTierLevels = 3;
+// The standard allows up to 64, but for MV-HEVC support for stereo video, only
+// 2 layers are needed for the two views.
+const int kMaxLayers = 2;
+// Only multiview scalability type is supported.
+const int kMaxScalabilityTypes = 1;
+// Only multiview scalability is supported; so num views equal num layers.
+const int kNumViews = kMaxLayers;
+// For MV-HEVC support for stereo video, only one extra rep_format() is needed.
+const int kMaxNumRepFromats = 1;
+// This is standard defined.
+const int kMaxLayerIdPlus1 = 64;
+// For stereo video support of MV-HEVC, no need for more than 3 layer sets.
+const int kMaxLayerSets = 3;
+// Only support the case where the output layer set is the same as the layer
+// set.
+const int kMaxOuputLayerSets = kMaxLayerSets;
+
+const int kInvalidId = -1;
+
 // On success, |coded_width| and |coded_height| contains coded resolution after
 // cropping; |pixel_width:pixel_height| contains pixel aspect ratio, 1:1 is
 // assigned if it is not present in SPS.
@@ -204,6 +232,70 @@ struct H265Sps {
   // Ignored: extensions...
 };
 
+struct H265RepFormat {
+  int pic_width_vps_in_luma_samples = 0;
+  int pic_height_vps_in_luma_samples = 0;
+
+  int chroma_format_vps_idc = 0;
+  bool separate_colour_plane_vps_flag = false;
+
+  int bit_depth_vps_luma_minus8 = 0;
+  int bit_depth_vps_chroma_minus8 = 0;
+
+  int conf_win_vps_left_offset = 0;
+  int conf_win_vps_right_offset = 0;
+  int conf_win_vps_top_offset = 0;
+  int conf_win_vps_bottom_offset = 0;
+};
+
+struct H265Vps {
+  H265Vps();
+  ~H265Vps();
+
+  enum {
+    kTexture = 0,
+    kMultiview = 1,
+    kSpatial = 2,
+    kAuxiliary = 3,
+    kNone = 16
+  };
+
+  // Many of the fields here are required when parsing so the default here may
+  // not be valid.
+
+  int scalability_type = kNone;
+
+  int vps_video_parameter_set_id = 0;
+  bool vps_base_layer_internal_flag = false;
+  bool vps_base_layer_available_flag = false;
+
+  int vps_max_layers_minus1 = 0;
+  int vps_max_sub_layers_minus1 = 0;
+  int sub_layers_vps_max_minus1[kMaxLayers];
+  int max_tid_il_ref_pics_plus1[kMaxLayers][kMaxLayers];
+
+  int layer_id_in_vps[kMaxLayerIdPlus1];
+  int view_id[kMaxLayerIdPlus1];
+
+  int num_views = 0;
+
+  int general_profile_tier_level_data[kMaxNumProfileTierLevels]
+                                     [kGeneralProfileTierLevelBytes];
+  int num_profile_tier_levels = 0;
+  int profile_tier_level_idx[kMaxOuputLayerSets][kMaxLayerIdPlus1];
+
+  H265RepFormat rep_format[kMaxNumRepFromats];
+  int num_rep_formats = 0;
+
+  int vps_max_layer_id = 0;
+  int vps_num_layer_sets_minus1 = 0;
+  int num_direct_ref_layers[kMaxLayerIdPlus1];
+  int id_direct_ref_layers[kMaxLayerIdPlus1][kMaxLayers];
+  bool default_ref_layers_active_flag = false;
+  bool max_one_active_ref_layer_flag = false;
+  bool poc_lsb_not_present_flag[kMaxLayers];
+};
+
 struct H265ReferencePictureListModifications {
   H265ReferencePictureListModifications();
   ~H265ReferencePictureListModifications();
@@ -285,6 +377,8 @@ struct H265SliceHeader {
   int num_entry_point_offsets = 0;
   int offset_len_minus1 = 0;
   std::vector<int> entry_point_offset_minus1;
+
+  bool inter_layer_pred_enabled_flag = false;
 };
 
 /// A class to parse H.265 streams.  This is incomplete and skips many pieces.
@@ -313,11 +407,16 @@ class H265Parser {
   /// Parses a SPS element.  This object is owned and managed by this class.
   /// The unique ID of the parsed SPS is stored in |*sps_id| if kOk is returned.
   Result ParseSps(const Nalu& nalu, int* sps_id);
+  /// Parses a VPS element.  This object is owned and managed by this class.
+  /// The unique ID of the parsed VPS is stored in |*vps_id| if kOk is returned.
+  Result ParseVps(const Nalu& nalu, int* vps_id);
 
   /// @return a pointer to the PPS with the given ID, or NULL if none exists.
   const H265Pps* GetPps(int pps_id);
   /// @return a pointer to the SPS with the given ID, or NULL if none exists.
   const H265Sps* GetSps(int sps_id);
+  /// @return a pointer to the VPS with the given ID, or NULL if none exists.
+  const H265Vps* GetVps(int vps_id);
 
  private:
   Result ParseVuiParameters(int max_num_sub_layers_minus1,
@@ -349,11 +448,14 @@ class H265Parser {
   Result ReadProfileTierLevel(bool profile_present,
                               int max_num_sub_layers_minus1,
                               H26xBitReader* br,
-                              H265Sps* sps);
+                              int* prev_data,
+                              int* general_profile_tier_level_data);
 
   Result SkipScalingListData(H26xBitReader* br);
 
-  Result SkipHrdParameters(int max_num_sub_layers_minus1, H26xBitReader* br);
+  Result SkipHrdParameters(bool common_inf_present_flag,
+                           int max_num_sub_layers_minus1,
+                           H26xBitReader* br);
 
   Result SkipSubLayerHrdParameters(int cpb_cnt_minus1,
                                    bool sub_pic_hdr_params_present_flag,
@@ -361,9 +463,11 @@ class H265Parser {
 
   Result ByteAlignment(H26xBitReader* br);
 
+  typedef std::map<int, std::unique_ptr<H265Vps>> VpsById;
   typedef std::map<int, std::unique_ptr<H265Sps>> SpsById;
   typedef std::map<int, std::unique_ptr<H265Pps>> PpsById;
 
+  VpsById active_vpses_;
   SpsById active_spses_;
   PpsById active_ppses_;
 

@@ -12,6 +12,7 @@
 #include <packager/macros/classes.h>
 #include <packager/media/codecs/h264_parser.h>
 #include <packager/media/codecs/h265_parser.h>
+#include <packager/media/codecs/hevc_decoder_configuration_record.h>
 
 namespace shaka {
 namespace media {
@@ -25,6 +26,12 @@ class VideoSliceHeaderParser {
   /// once before any calls to GetHeaderSize.
   virtual bool Initialize(
       const std::vector<uint8_t>& decoder_configuration) = 0;
+
+  /// Adds decoder configuration from the given data for the layered case;
+  /// e.g: MV-HEVC.  This must be also called once before any calls to
+  // GetHeaderSize.
+  virtual bool InitializeLayered(
+      const std::vector<uint8_t>& layered_decoder_configuration) = 0;
 
   /// Process NAL unit, in particular parameter set NAL units.  Non parameter
   /// set NAL unit is allowed but the function always returns true.
@@ -49,6 +56,8 @@ class H264VideoSliceHeaderParser : public VideoSliceHeaderParser {
   /// @name VideoSliceHeaderParser implementation overrides.
   /// @{
   bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
+  bool InitializeLayered(
+      const std::vector<uint8_t>& decoder_configuration) override;
   bool ProcessNalu(const Nalu& nalu) override;
   int64_t GetHeaderSize(const Nalu& nalu) override;
   /// @}
@@ -67,11 +76,15 @@ class H265VideoSliceHeaderParser : public VideoSliceHeaderParser {
   /// @name VideoSliceHeaderParser implementation overrides.
   /// @{
   bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
+  bool InitializeLayered(
+      const std::vector<uint8_t>& decoder_configuration) override;
   bool ProcessNalu(const Nalu& nalu) override;
   int64_t GetHeaderSize(const Nalu& nalu) override;
   /// @}
 
  private:
+  bool ParseParameterSets(const HEVCDecoderConfigurationRecord& config);
+
   H265Parser parser_;
 
   DISALLOW_COPY_AND_ASSIGN(H265VideoSliceHeaderParser);
