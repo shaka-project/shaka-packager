@@ -205,6 +205,7 @@ jobs:
             -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
             -DFULLY_STATIC="$FULLY_STATIC" \
             -DBUILD_LIVE_TEST="$BUILD_LIVE_TEST" \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -S . \
             -B build/
 
