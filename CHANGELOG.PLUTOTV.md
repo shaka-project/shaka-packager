@@ -1,15 +1,22 @@
-## [3.0.0] - 2025-03-18
-- Sync with Google Shaka version 3.4.2
-- Sync with PlutoTV ST version
+
+## [3.4.2_pluto.v9.0.0] - 2025-04-03
+ - code synced with Google Shaka Release 3.4.2
+ - code synced with shaka-packager version, used in Service Transcoder
 
 ## [2.6.1_pluto.v8.5.2] - 2025-01-27
 ### Added
  - Update schemeIdUri for ID3 PRIV tags to use scheme "https://aomedia.org/emsg/ID3". [TRANS-7290][https://plutotv.atlassian.net/browse/TRANS-7290]
- 
+## [2.6.1_pluto.v8.4.0] - 2024-02-20
+### Added
+ - Update shaka packager to include styles in the vtt to ttml conversion and manifest changes to use in dvb dash. [TRANS-4844][https://plutotv.atlassian.net/browse/TRANS-4844]
+ - Update shaka packager to enable ttml to ttml+mp4 and vtt+mp4 conversion. [TRANS-4844][https://plutotv.atlassian.net/browse/TRANS-4844]
+ - Added optional duration flag for packaging subtitles by themselves. [TRANS-5423][https://plutotv.atlassian.net/browse/TRANS-5423]
+## [2.6.1_pluto.v8.3.0] - 2023-11-23
+### Added
+ - Update shaka packager to enable ttml to ttml+mp4 and vtt+mp4 conversion. [TRANS-4845][https://plutotv.atlassian.net/browse/TRANS-4845]
 ## [2.6.1_pluto.v8.1] - 2022-12-12
 ### Added
  - Creates a psuedo random starting EMSG ID based on the content ID. [TRANS-3036][https://plutotv.atlassian.net/browse/TRANS-3036]
-
 ## [2.6.1_pluto.v4] - 2022-06-02
 ### Added
  - Add label attribute in AdaptationSet for DASH manifest. [TRANS-2319][https://plutotv.atlassian.net/browse/TRANS-2319]
@@ -25,6 +32,8 @@
 ## [2.6.1_pluto.v1] - 2022-01-27
 ### Fixed
  - Fix WebVTT: END_OF_STREAM error when there is no or only one cue (#1018)
+### Changed
+ - Limited amount of platforms and docker images for CI/CD
 ### Added
  - Add CLI option to skip empty edits inside a editlist during a packaging
  - Add ability to package empty web vtt.
