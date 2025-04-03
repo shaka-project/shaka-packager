@@ -20,7 +20,7 @@ def main():
 
   args = parser.parse_args()
 
-  with open('CHANGELOG.md', 'r', encoding='utf8') as f:
+  with open('CHANGELOG.PLUTOTV.md', 'r', encoding='utf8') as f:
     contents = f.read()
 
   # This excludes the header line with the release name and date, to match the
@@ -33,7 +33,7 @@ def main():
 
   match = re.match(r'^## \[(.*)\]', first_line)
   if not match:
-    raise RuntimeError('Unable to parse first line of CHANGELOG.md!')
+    raise RuntimeError('Unable to parse first line of CHANGELOG.PLUTOTV.md!')
 
   version = match[1]
   if not version.startswith('v'):

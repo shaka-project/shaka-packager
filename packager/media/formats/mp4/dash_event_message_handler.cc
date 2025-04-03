@@ -13,7 +13,7 @@ void DashEventMessageHandler::FlushEventMessages(BufferWriter* writer) {
   dash_event_message_queue_.clear();
 }
 void DashEventMessageHandler::OnDashEvent(
-    std::shared_ptr<DASHEventMessageBox> emsg_box_info) {
+    std::shared_ptr<DASHEventMessageBox_v0> emsg_box_info) {
   dash_event_message_queue_.push_back(std::move(emsg_box_info));
 }
 

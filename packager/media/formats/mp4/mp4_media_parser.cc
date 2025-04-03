@@ -449,7 +449,7 @@ bool MP4MediaParser::ParseBox(bool* err) {
 
 bool MP4MediaParser::ParseEmsg(BoxReader* reader) {
   if (event_message_cb_) {
-    auto emsg_box = std::make_shared<DASHEventMessageBox>();
+    auto emsg_box = std::make_shared<DASHEventMessageBox_v0>();
     RCHECK(emsg_box->Parse(reader));
     event_message_cb_(emsg_box);
   }

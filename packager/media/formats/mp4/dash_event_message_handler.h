@@ -17,7 +17,7 @@ class DashEventMessageHandler {
   DashEventMessageHandler();
   ~DashEventMessageHandler();
 
-  void OnDashEvent(std::shared_ptr<DASHEventMessageBox> emsg_box_info);
+  void OnDashEvent(std::shared_ptr<DASHEventMessageBox_v0> emsg_box_info);
 
   void FlushEventMessages(BufferWriter* writer);
 
@@ -26,7 +26,7 @@ class DashEventMessageHandler {
   DashEventMessageHandler& operator=(const DashEventMessageHandler&) = delete;
 
  private:
-  std::deque<std::shared_ptr<DASHEventMessageBox>> dash_event_message_queue_;
+  std::deque<std::shared_ptr<DASHEventMessageBox_v0>> dash_event_message_queue_;
 };
 }  // namespace mp4
 }  // namespace media
