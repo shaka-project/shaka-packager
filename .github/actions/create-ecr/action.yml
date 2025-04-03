@@ -1,0 +1,46 @@
+name: "Create a standardized ECR repo "
+description: build a go docker image and upload it to ECR
+inputs:
+  service:
+    description: 'the service name, combined with repo name to create the full repo'
+    # default: ${{ environment.SERVICE_NAME }}
+    required: false
+  repo:
+    description: 'name of the repo to create'
+    default: ${{ github.repository }}
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      name: set env vars
+      # set some derived environment vars for the rest of this job to use
+      # NOTE: these do not carry over between jobs
+      run: |
+          echo ECR_REPOSITORY=$(echo ${{ inputs.repo }} | tr 'A-Z' 'a-z') >> $GITHUB_ENV
+          # we can't use the environment context as the default, but we can access it fine here...
+          if [ "${{ inputs.service }}x" == "x" ] ; then
+            echo SVC_NAME=$SERVICE_NAME >> $GITHUB_ENV
+          else
+            echo SVC_NAME=${{ inputs.service }} >> $GITHUB_ENV
+          fi
+
+    - shell: bash
+      name: Create ECR repo
+      run: |
+        export repo="$ECR_REPOSITORY"
+        aws ecr describe-repositories --repository-names $repo || \
+          aws ecr create-repository \
+            --repository-name $repo \
+            --tags Key=src_repo,Value=${{ github.repository }} \
+                    Key=responsible,Value=devops \
+            --image-scanning-configuration scanOnPush=true # && \
+        aws ecr set-repository-policy \
+          --repository-name $repo \
+          --policy-text file://.github/actions/create-ecr/ecr-repo-policy.json
+
+        aws ecr put-lifecycle-policy --repository-name $repo \
+          --lifecycle-policy-text file://.github/actions/create-ecr/ecr-lifecycle-policy.json
+
+        # save the repo name for use in later jobs
+        echo "::set-output name=ecr-repo-name::$repo"

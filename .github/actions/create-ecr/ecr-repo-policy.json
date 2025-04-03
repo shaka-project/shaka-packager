@@ -1,0 +1,18 @@
+{
+    "Version": "2008-10-17",
+    "Statement": [
+      {
+        "Sid": "HybrikMainPull",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::284439818173:root"
+        },
+        "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:DescribeImages",
+          "ecr:GetDownloadUrlForLayer"
+        ]
+      }
+    ]
+  }

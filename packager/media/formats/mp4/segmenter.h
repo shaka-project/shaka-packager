@@ -109,6 +109,8 @@ class Segmenter {
   /// Set progress to 100%.
   void SetComplete();
 
+  uint64_t progress_target_ = 0u;
+
   const MuxerOptions& options() const { return options_; }
   FileType* ftyp() { return ftyp_.get(); }
   Movie* moov() { return moov_.get(); }
@@ -123,6 +125,8 @@ class Segmenter {
   void set_progress_target(uint64_t progress_target) {
     progress_target_ = progress_target;
   }
+
+  std::vector<FourCC> GetTrackTypes() const;
 
  private:
   virtual Status DoInitialize() = 0;
@@ -146,7 +150,6 @@ class Segmenter {
   std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
   MuxerListener* muxer_listener_ = nullptr;
   ProgressListener* progress_listener_ = nullptr;
-  uint64_t progress_target_ = 0u;
   uint64_t accumulated_progress_ = 0u;
   int64_t sample_durations_[2] = {0, 0};
   size_t num_samples_ = 0;

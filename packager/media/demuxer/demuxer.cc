@@ -27,6 +27,7 @@
 #include <packager/media/formats/webm/webm_media_parser.h>
 #include <packager/media/formats/webvtt/webvtt_parser.h>
 #include <packager/media/formats/wvm/wvm_media_parser.h>
+#include "packager/media/formats/mp4/mp4_info.h"
 
 namespace {
 // 65KB, sufficient to determine the container and likely all init data.
@@ -103,7 +104,7 @@ Status Demuxer::Run() {
     return Status::OK;
   if (!init_event_status_.ok())
     return init_event_status_;
-  if (!status.ok())
+  if (!status.ok() && status.error_code() != error::END_OF_STREAM)
     return status;
   // Check if all specified outputs exists.
   for (const auto& pair : output_handlers()) {
@@ -139,8 +140,7 @@ Status Demuxer::SetHandler(const std::string& stream_label,
                            std::shared_ptr<MediaHandler> handler) {
   size_t stream_index = kInvalidStreamIndex;
   if (!GetStreamIndex(stream_label, &stream_index)) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Invalid stream: " + stream_label);
+    return Status(error::INVALID_ARGUMENT, "Invalid stream: " + stream_label);
   }
   return MediaHandler::SetHandler(stream_index, std::move(handler));
 }
@@ -252,7 +252,8 @@ Status Demuxer::InitializeParser() {
     // descriptor |media_file_| instead of opening the same file again.
     static_cast<mp4::MP4MediaParser*>(parser_.get())->LoadMoov(file_name_);
   }
-  if (!parser_->Parse(buffer_.get(), bytes_read) || (eof && !parser_->Flush())) {
+  if (!parser_->Parse(buffer_.get(), bytes_read) ||
+      (eof && !parser_->Flush())) {
     return Status(error::PARSER_FAILURE,
                   "Cannot parse media file " + file_name_);
   }
@@ -275,13 +276,19 @@ void Demuxer::ParserInitEvent(
   bool audio_handler_set =
       output_handlers().find(kBaseAudioOutputStreamIndex) !=
       output_handlers().end();
-  bool text_handler_set =
-      output_handlers().find(kBaseTextOutputStreamIndex) !=
-      output_handlers().end();
+  bool text_handler_set = output_handlers().find(kBaseTextOutputStreamIndex) !=
+                          output_handlers().end();
   for (const std::shared_ptr<StreamInfo>& stream_info : stream_infos) {
     size_t stream_index = base_stream_index;
     if (video_handler_set && stream_info->stream_type() == kStreamVideo) {
       stream_index = kBaseVideoOutputStreamIndex;
+      // Get Fragmented Duration here.
+      if (0 == stream_info->duration()) {
+        mp4::MP4Info mp4_info(file_name_, mp4::kDefaultInfoReadSize);
+        if (mp4_info.Parse()) {
+          stream_info->set_duration(mp4_info.GetVideoSamplesDuration());
+        }
+      }
       // Only for the first video stream.
       video_handler_set = false;
     }

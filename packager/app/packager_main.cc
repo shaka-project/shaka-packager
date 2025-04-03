@@ -476,6 +476,19 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_mp4_include_pssh_in_stream);
   mp4_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
 
+  mp4_params.pluto_content_id = absl::GetFlag(FLAGS_pluto_content_id);
+  mp4_params.pluto_ad_event_settings.pluto_ad_event =
+      absl::GetFlag(FLAGS_pluto_ad_event);
+  if (absl::GetFlag(FLAGS_pluto_ad_event) &&
+      absl::GetFlag(FLAGS_pluto_content_id).empty()) {
+    LOG(ERROR) << "Invalid --pluto_ad_event requires --pluto_content_id";
+    return std::nullopt;
+  }
+  mp4_params.pluto_ad_event_settings.starting_index =
+      absl::GetFlag(FLAGS_pluto_ad_event_starting_index);
+  mp4_params.pluto_ad_event_settings.max_index =
+      absl::GetFlag(FLAGS_pluto_ad_event_max_index);
+
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
   packaging_params.default_text_zero_bias_ms =
