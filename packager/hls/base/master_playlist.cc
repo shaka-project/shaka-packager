@@ -350,14 +350,14 @@ void BuildMediaTag(const MediaPlaylist& playlist,
       // to handle Dolby Digital Plus JOC content.
       // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
       std::string channel_string =
-        std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
+          std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
       // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
       // CBI without object-based audio) for Dolby internal use only. IMSA is
       // not included in any publicly-available specifications as of June, 2020.
       std::string channel_string =
-        std::to_string(playlist.GetNumChannels()) + "/IMSA";
+          std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else {
       // According to HLS spec:
@@ -550,11 +550,13 @@ void AppendPlaylists(const std::string& default_audio_language,
 MasterPlaylist::MasterPlaylist(const std::filesystem::path& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
-                               bool is_independent_segments)
+                               bool is_independent_segments,
+                               bool create_session_keys)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
       default_text_language_(default_text_language),
-      is_independent_segments_(is_independent_segments) {}
+      is_independent_segments_(is_independent_segments),
+      create_session_keys_(create_session_keys) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -568,6 +570,25 @@ bool MasterPlaylist::WriteMasterPlaylist(
   if (is_independent_segments_) {
     content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
   }
+
+  // Iterate over the playlists and add the session keys to the master playlist.
+  if (create_session_keys_) {
+    std::set<std::string> session_keys;
+    for (const auto& playlist : playlists) {
+      for (const auto& entry : playlist->entries()) {
+        if (entry->type() == HlsEntry::EntryType::kExtKey) {
+          auto encryption_entry =
+              dynamic_cast<EncryptionInfoEntry*>(entry.get());
+          session_keys.emplace(
+              encryption_entry->ToString("#EXT-X-SESSION-KEY"));
+        }
+      }
+    }
+    // session_keys will now contain all the unique session keys.
+    for (const auto& session_key : session_keys)
+      content.append(session_key + "\n");
+  }
+
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
                   playlists, &content);
 

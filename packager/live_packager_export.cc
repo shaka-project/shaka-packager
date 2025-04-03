@@ -9,22 +9,21 @@ struct LivePackager_instance_s {
 };
 
 LivePackager_t livepackager_new(LivePackagerConfig_t cfg) {
-  shaka::LiveConfig converted{
-      .format = shaka::LiveConfig::OutputFormat(cfg.format),
-      .track_type = shaka::LiveConfig::TrackType(cfg.track_type),
-      .iv = {},
-      .key = {},
-      .key_id = {},
-      .protection_scheme =
-          shaka::LiveConfig::EncryptionScheme(cfg.protection_scheme),
-      .protection_system = shaka::ProtectionSystem::kNone,
-      .segment_number = cfg.segment_number,
-      .m2ts_offset_ms = cfg.m2ts_offset_ms,
-      .timed_text_decode_time = cfg.timed_text_decode_time,
-      .decryption_key = {},
-      .decryption_key_id = {},
-      .emsg_processing = cfg.emsg_processing,
-  };
+  shaka::LiveConfig converted;
+  converted.format = shaka::LiveConfig::OutputFormat(cfg.format);
+  converted.track_type = shaka::LiveConfig::TrackType(cfg.track_type);
+  converted.iv = {};
+  converted.key = {};
+  converted.key_id = {};
+  converted.protection_scheme =
+      shaka::LiveConfig::EncryptionScheme(cfg.protection_scheme);
+  converted.protection_system = shaka::ProtectionSystem::kNone;
+  converted.segment_number = cfg.segment_number;
+  converted.m2ts_offset_ms = cfg.m2ts_offset_ms;
+  converted.timed_text_decode_time = cfg.timed_text_decode_time;
+  converted.decryption_key = {};
+  converted.decryption_key_id = {};
+  converted.emsg_processing = cfg.emsg_processing;
 
   converted.protection_system |=
       static_cast<shaka::ProtectionSystem>(cfg.protection_system);

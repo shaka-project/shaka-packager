@@ -101,14 +101,6 @@ Backlog
 Please note the HTTP upload feature still lacks some features
 probably important for production. Contributions are welcome!
 
-HTTP DELETE
-===========
-Nothing has be done to support this yet:
-
-    Packager supports removing old segments automatically.
-    See ``preserved_segments_outside_live_window`` option in
-    DASH_ options or HLS_ options for details.
-
 Software tests
 ==============
 We should do some minimal QA, check whether the test

@@ -44,10 +44,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.tag }}
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
       - name: Compute tags
