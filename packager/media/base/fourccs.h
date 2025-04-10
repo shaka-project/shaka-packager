@@ -35,6 +35,8 @@ enum FourCC : uint32_t {
   FOURCC_cbc1 = 0x63626331,
   // This is a fake protection scheme fourcc code to indicate Apple Sample AES.
   FOURCC_cbca = 0x63626361,
+  // This is a fake protection scheme fourcc code to indicate Apple AES-128
+  FOURCC_a128 = 0x61313238,
   FOURCC_cbcs = 0x63626373,
   FOURCC_cenc = 0x63656e63,
   FOURCC_cens = 0x63656e73,

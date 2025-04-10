@@ -59,6 +59,13 @@ std::unique_ptr<AesCryptor> AesEncryptorFactory::CreateEncryptor(
             std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
       }
       break;
+    case FOURCC_a128:
+        encryptor.reset(new AesCbcEncryptor(kNoPadding, AesCryptor::kUseConstantIv));
+        // if (!encryptor->InitializeWithIv(key, iv)) {
+        //   LOG(WARNING) << "failed to initialize encryptor with key and iv";
+        //   return nullptr;
+        // }
+        break;  
     default:
       LOG(ERROR) << "Unsupported protection scheme.";
       return nullptr;
