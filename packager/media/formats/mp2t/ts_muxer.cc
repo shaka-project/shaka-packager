@@ -8,6 +8,8 @@
 
 #include <absl/log/check.h>
 
+#include <packager/media/base/aes_encryptor.h>
+
 #include <packager/macros/status.h>
 #include <packager/media/base/muxer_util.h>
 
@@ -85,6 +87,42 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
                            segment_info.segment_number, options().bandwidth);
 
   const int64_t file_size = segmenter_->segment_buffer()->Size();
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  
+  // FOR TESTING ONLY. Encrypt here
+  std::unique_ptr<AesCryptor> encryptor;
+  encryptor.reset(new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
+
+  // d59fab7cc84fef9df4c1e39ca9be395c
+  const std::vector<uint8_t> key_value = {
+    0xd5, 0x9f, 0xab, 0x7c, 0xc8, 0x4f, 0xef, 0x9d,
+    0xf4, 0xc1, 0xe3, 0x9c, 0xa9, 0xbe, 0x39, 0x5c
+  };
+  const std::vector<uint8_t>& key = key_value;
+  // 00000000000000000000000000000001
+  const std::vector<uint8_t> iv_value = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01
+  };
+  const std::vector<uint8_t>& iv = iv_value;
+  encryptor->InitializeWithIv(key, iv);
+
+  // BufferWriter* encryptedData = new BufferWriter();
+
+  int64_t buffer_size = file_size + 16; // padding
+  std::unique_ptr<uint8_t[]> encrypted_buffer(new uint8_t[buffer_size]);  
+
+  size_t encrypted_size = buffer_size;
+  encryptor->Crypt(
+      segmenter_->segment_buffer()->Buffer(), file_size,
+      encrypted_buffer.get(), &encrypted_size);
+
+  std::vector<uint8_t> encrypted_vector(encrypted_buffer.get(), encrypted_buffer.get() + encrypted_size);
+  segmenter_->segment_buffer()->SwapBuffer(&encrypted_vector);
+
+  ////////////////////////////////////////////////////////////////////////////////////////    
+    
 
   RETURN_IF_ERROR(WriteSegment(segment_path, segmenter_->segment_buffer()));
 

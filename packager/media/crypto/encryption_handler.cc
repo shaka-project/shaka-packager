@@ -207,6 +207,10 @@ Status EncryptionHandler::Process(std::unique_ptr<StreamData> stream_data) {
       return DispatchSegmentInfo(kStreamIndex, segment_info);
     }
     case StreamDataType::kMediaSample:
+      if (protection_scheme_ == FOURCC_a128) {
+        // don't encrypt sample if the protection scheme is a128.
+        return Dispatch(std::move(stream_data));
+      }
       return ProcessMediaSample(std::move(stream_data->media_sample));
     default:
       VLOG(3) << "Stream data type "
