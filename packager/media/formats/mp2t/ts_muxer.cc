@@ -8,8 +8,6 @@
 
 #include <absl/log/check.h>
 
-#include <packager/media/base/aes_encryptor.h>
-
 #include <packager/macros/status.h>
 #include <packager/media/base/muxer_util.h>
 
@@ -41,6 +39,23 @@ Status TsMuxer::InitializeMuxer() {
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
   Status status = segmenter_->Initialize(*streams()[0]);
   FireOnMediaStartEvent();
+
+  // init encryptor
+  const StreamInfo* stream_info = NULL;
+  const EncryptionConfig *encryption_config = NULL;
+  
+  if (streams().size() > 0) {
+    stream_info = streams()[0].get();
+  }
+  if (stream_info) {
+    encryption_config = &stream_info->encryption_config();
+  }
+
+  if (encryption_config && encryption_config->protection_scheme == FOURCC_a128) {
+    encryptor_.reset(new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
+    encryptor_->InitializeWithIv(encryption_config->key, encryption_config->constant_iv);
+  }
+
   return status;
 }
 
@@ -88,41 +103,18 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
 
   const int64_t file_size = segmenter_->segment_buffer()->Size();
 
-  ////////////////////////////////////////////////////////////////////////////////////////
-  
-  // FOR TESTING ONLY. Encrypt here
-  std::unique_ptr<AesCryptor> encryptor;
-  encryptor.reset(new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
+  if (segment_info.is_encrypted && encryptor_) {
+    int64_t buffer_size = file_size + 16; // + 16 - max padding
+    std::unique_ptr<uint8_t[]> encrypted_buffer(new uint8_t[buffer_size]);  
 
-  // d59fab7cc84fef9df4c1e39ca9be395c
-  const std::vector<uint8_t> key_value = {
-    0xd5, 0x9f, 0xab, 0x7c, 0xc8, 0x4f, 0xef, 0x9d,
-    0xf4, 0xc1, 0xe3, 0x9c, 0xa9, 0xbe, 0x39, 0x5c
-  };
-  const std::vector<uint8_t>& key = key_value;
-  // 00000000000000000000000000000001
-  const std::vector<uint8_t> iv_value = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01
-  };
-  const std::vector<uint8_t>& iv = iv_value;
-  encryptor->InitializeWithIv(key, iv);
+    size_t encrypted_size = buffer_size;
+    encryptor_->Crypt(
+        segmenter_->segment_buffer()->Buffer(), file_size,
+        encrypted_buffer.get(), &encrypted_size);
 
-  // BufferWriter* encryptedData = new BufferWriter();
-
-  int64_t buffer_size = file_size + 16; // padding
-  std::unique_ptr<uint8_t[]> encrypted_buffer(new uint8_t[buffer_size]);  
-
-  size_t encrypted_size = buffer_size;
-  encryptor->Crypt(
-      segmenter_->segment_buffer()->Buffer(), file_size,
-      encrypted_buffer.get(), &encrypted_size);
-
-  std::vector<uint8_t> encrypted_vector(encrypted_buffer.get(), encrypted_buffer.get() + encrypted_size);
-  segmenter_->segment_buffer()->SwapBuffer(&encrypted_vector);
-
-  ////////////////////////////////////////////////////////////////////////////////////////    
-    
+    std::vector<uint8_t> encrypted_vector(encrypted_buffer.get(), encrypted_buffer.get() + encrypted_size);
+    segmenter_->segment_buffer()->SwapBuffer(&encrypted_vector);
+  }
 
   RETURN_IF_ERROR(WriteSegment(segment_path, segmenter_->segment_buffer()));
 

@@ -379,6 +379,7 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   encryption_config_->protection_scheme = protection_scheme_;
   encryption_config_->crypt_byte_block = crypt_byte_block_;
   encryption_config_->skip_byte_block = skip_byte_block_;
+  encryption_config_->key = encryption_key.key;
 
   const std::vector<uint8_t>& iv = encryptor_->iv();
   if (encryptor_->use_constant_iv()) {
