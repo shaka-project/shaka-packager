@@ -42,22 +42,26 @@ Status TsMuxer::InitializeMuxer() {
 
   // init encryptor
   const StreamInfo* stream_info = NULL;
-  const EncryptionConfig *encryption_config = NULL;
-  
+  const EncryptionConfig* encryption_config = NULL;
+
   if (streams().size() > 0) {
     stream_info = streams()[0].get();
   }
   if (stream_info) {
     encryption_config = &stream_info->encryption_config();
-  
-    if (stream_info->stream_type() == kStreamText || stream_info->stream_type() == kStreamUnknown) {
-      return status; // No encryption for text streams.
+
+    if (stream_info->stream_type() == kStreamText ||
+        stream_info->stream_type() == kStreamUnknown) {
+      return status;  // No encryption for text streams.
     }
   }
 
-  if (encryption_config && encryption_config->protection_scheme == FOURCC_a128) {
-    encryptor_.reset(new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
-    encryptor_->InitializeWithIv(encryption_config->key, encryption_config->constant_iv);
+  if (encryption_config &&
+      encryption_config->protection_scheme == FOURCC_a128) {
+    encryptor_.reset(
+        new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
+    encryptor_->InitializeWithIv(encryption_config->key,
+                                 encryption_config->constant_iv);
   }
 
   return status;
@@ -108,15 +112,15 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
   const int64_t file_size = segmenter_->segment_buffer()->Size();
 
   if (segment_info.is_encrypted && encryptor_) {
-    int64_t buffer_size = file_size + 16; // + 16 - max padding
-    std::unique_ptr<uint8_t[]> encrypted_buffer(new uint8_t[buffer_size]);  
+    int64_t buffer_size = file_size + 16;  // + 16 - max padding
+    std::unique_ptr<uint8_t[]> encrypted_buffer(new uint8_t[buffer_size]);
 
     size_t encrypted_size = buffer_size;
-    encryptor_->Crypt(
-        segmenter_->segment_buffer()->Buffer(), file_size,
-        encrypted_buffer.get(), &encrypted_size);
+    encryptor_->Crypt(segmenter_->segment_buffer()->Buffer(), file_size,
+                      encrypted_buffer.get(), &encrypted_size);
 
-    std::vector<uint8_t> encrypted_vector(encrypted_buffer.get(), encrypted_buffer.get() + encrypted_size);
+    std::vector<uint8_t> encrypted_vector(
+        encrypted_buffer.get(), encrypted_buffer.get() + encrypted_size);
     segmenter_->segment_buffer()->SwapBuffer(&encrypted_vector);
   }
 
