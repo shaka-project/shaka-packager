@@ -49,6 +49,10 @@ Status TsMuxer::InitializeMuxer() {
   }
   if (stream_info) {
     encryption_config = &stream_info->encryption_config();
+  
+    if (stream_info->stream_type() == kStreamText || stream_info->stream_type() == kStreamUnknown) {
+      return status; // No encryption for text streams.
+    }
   }
 
   if (encryption_config && encryption_config->protection_scheme == FOURCC_a128) {
