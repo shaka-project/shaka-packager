@@ -60,9 +60,9 @@ std::unique_ptr<AesCryptor> AesEncryptorFactory::CreateEncryptor(
       }
       break;
     case FOURCC_a128:
-        // kPkcs5Padding - kNoPadding
-        encryptor.reset(new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
-        break;  
+      encryptor.reset(
+          new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
+      break;
     default:
       LOG(ERROR) << "Unsupported protection scheme.";
       return nullptr;
