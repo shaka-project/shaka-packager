@@ -8,6 +8,7 @@
 
 #include <absl/log/check.h>
 
+#include <packager/macros/crypto.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/muxer_util.h>
 
@@ -112,7 +113,7 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
   const int64_t file_size = segmenter_->segment_buffer()->Size();
 
   if (segment_info.is_encrypted && encryptor_) {
-    int64_t buffer_size = file_size + 16;  // + 16 - max padding
+    int64_t buffer_size = file_size + AES_BLOCK_SIZE;  // max padding
     std::unique_ptr<uint8_t[]> encrypted_buffer(new uint8_t[buffer_size]);
 
     size_t encrypted_size = buffer_size;
