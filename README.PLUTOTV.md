@@ -22,7 +22,7 @@ packager \
     --clear_lead=5 \
     --hls_playlist_type=VOD \
     --enable_raw_key_encryption \
-    --protection_scheme=a128 \
+    --protection_scheme=aes128 \
     --hls_key_uri=aes128.bin \
     --keys=label=k_0:key_id=0000000067e1bf604279e91b925cc2ed:key=d59fab7cc84fef9df4c1e39ca9be395c:iv=00000000000000000000000000000001
 

@@ -203,8 +203,8 @@ bool GetProtectionScheme(uint32_t* protection_scheme) {
     *protection_scheme = EncryptionParams::kProtectionSchemeCens;
     return true;
   }
-  if (absl::GetFlag(FLAGS_protection_scheme) == "a128") {
-    *protection_scheme = EncryptionParams::kProtectionSchemeA128;
+  if (absl::GetFlag(FLAGS_protection_scheme) == "aes128") {
+    *protection_scheme = EncryptionParams::kProtectionSchemeAes128;
     return true;
   }
   LOG(ERROR) << "Unrecognized protection_scheme "
