@@ -185,7 +185,7 @@ std::optional<MediaPlaylist::EncryptionMethod> StringToEncryptionMethod(
     // cbca is a place holder for sample aes.
     return MediaPlaylist::EncryptionMethod::kSampleAes;
   }
-  if (method == "aes128") {
+  if (method == "a128") {
     return MediaPlaylist::EncryptionMethod::kAes128;
   }
   return std::nullopt;
