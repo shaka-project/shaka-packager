@@ -207,6 +207,10 @@ Status EncryptionHandler::Process(std::unique_ptr<StreamData> stream_data) {
       return DispatchSegmentInfo(kStreamIndex, segment_info);
     }
     case StreamDataType::kMediaSample:
+      if (protection_scheme_ == FOURCC_a128) {
+        // don't encrypt sample if the protection scheme is AES-128.
+        return Dispatch(std::move(stream_data));
+      }
       return ProcessMediaSample(std::move(stream_data->media_sample));
     default:
       VLOG(3) << "Stream data type "
@@ -375,6 +379,7 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   encryption_config_->protection_scheme = protection_scheme_;
   encryption_config_->crypt_byte_block = crypt_byte_block_;
   encryption_config_->skip_byte_block = skip_byte_block_;
+  encryption_config_->key = encryption_key.key;
 
   const std::vector<uint8_t>& iv = encryptor_->iv();
   if (encryptor_->use_constant_iv()) {
