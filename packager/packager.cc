@@ -890,6 +890,17 @@ Status Packager::Initialize(
       LanguageToShortestForm(mpd_params.default_language);
   mpd_params.default_text_language =
       LanguageToShortestForm(mpd_params.default_text_language);
+  if (packaging_params.mp4_output_params.pluto_ad_event_settings
+          .pluto_ad_event) {
+    MpdParams::in_band_event_stream_video_param event_stream_param;
+    event_stream_param.event_stream_id_uri =
+        packaging_params.mp4_output_params.pluto_ad_event_settings
+            .event_stream_id_url;
+    event_stream_param.event_stream_value =
+        packaging_params.mp4_output_params.pluto_ad_event_settings
+            .event_stream_value;
+    mpd_params.in_band_event_stream_video_params.push_back(event_stream_param);
+  }
   hls_params.default_language =
       LanguageToShortestForm(hls_params.default_language);
   hls_params.default_text_language =

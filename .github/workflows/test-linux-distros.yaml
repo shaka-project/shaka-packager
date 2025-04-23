@@ -32,6 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Configure Build Matrix
         id: configure
@@ -39,9 +40,12 @@ jobs:
         run: |
           const fs = require('fs');
           const files = fs.readdirSync('packager/testing/dockers/');
-          const matrix = files.map((file) => {
+          var matrix = files.map((file) => {
             return { os_name: file.replace('_Dockerfile', '') };
           });
+
+          // remove SUSE for now - will wait for Google to fix it
+          matrix = matrix.filter((entry) => entry.os_name !== 'OpenSUSE');
 
           // Output a JSON object consumed by the build matrix below.
           fs.writeFileSync(process.env.GITHUB_OUTPUT,
@@ -69,6 +73,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           submodules: recursive
+          persist-credentials: false
 
       - name: Build in Docker
         run: ./packager/testing/test_dockers.sh "${{ matrix.os_name }}"

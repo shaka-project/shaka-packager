@@ -33,6 +33,7 @@ jobs:
           # We must use 'fetch-depth: 2', or else the linter won't have another
           # revision to compare to.
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Lint
         shell: bash
@@ -41,7 +42,7 @@ jobs:
           sudo install -m 755 git-clang-format /usr/local/bin/git-clang-format
           rm git-clang-format
 
-          python3 -m pip install --upgrade pylint==2.8.3
+          python3 -m pip install --upgrade pylint==3.3.3
 
           # NOTE: Must use base.sha instead of base.ref, since we don't have
           # access to the branch name that base.ref would give us.

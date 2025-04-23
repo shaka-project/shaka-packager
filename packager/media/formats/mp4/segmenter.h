@@ -17,6 +17,7 @@
 #include <packager/media/base/range.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/status.h>
+#include "packager/media/emsg/pluto_emsg/emsg_ad_beacon.h"
 
 namespace shaka {
 namespace media {
@@ -103,11 +104,19 @@ class Segmenter {
     return sample_durations_[num_samples_ < 2 ? 0 : 1];
   }
 
+  inline uint64_t accumulated_progress() const { return accumulated_progress_; }
+  uint64_t stream_duration(uint64_t x) const;
+
+  uint64_t progress_target_ = 0u;
+
  protected:
   /// Update segmentation progress using ProgressListener.
   void UpdateProgress(uint64_t progress);
   /// Set progress to 100%.
   void SetComplete();
+
+  emsg::PlutoAdEventWriter pluto_ad_event_writer_;
+  bool IsVideoHandler() const;
 
   const MuxerOptions& options() const { return options_; }
   FileType* ftyp() { return ftyp_.get(); }
@@ -123,6 +132,8 @@ class Segmenter {
   void set_progress_target(uint64_t progress_target) {
     progress_target_ = progress_target;
   }
+
+  std::vector<FourCC> GetTrackTypes() const;
 
  private:
   virtual Status DoInitialize() = 0;
@@ -146,7 +157,6 @@ class Segmenter {
   std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
   MuxerListener* muxer_listener_ = nullptr;
   ProgressListener* progress_listener_ = nullptr;
-  uint64_t progress_target_ = 0u;
   uint64_t accumulated_progress_ = 0u;
   int64_t sample_durations_[2] = {0, 0};
   size_t num_samples_ = 0;

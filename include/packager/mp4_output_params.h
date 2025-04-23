@@ -31,6 +31,17 @@ struct Mp4OutputParams {
   /// The moof header sequence number starts at 1 so values less than 1 will be
   /// set to 1.
   uint32_t sequence_number = 0;
+
+  struct PlutoAdEventSettings {
+    std::string event_stream_id_url = "https://aomedia.org/emsg/ID3";
+    std::string event_stream_value = "999";
+    bool pluto_ad_event = false;
+    uint32_t starting_index = 0;
+    uint32_t max_index = 0;
+  };
+
+  PlutoAdEventSettings pluto_ad_event_settings;
+  std::string pluto_content_id = "";
 };
 
 }  // namespace shaka

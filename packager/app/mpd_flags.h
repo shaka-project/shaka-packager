@@ -26,5 +26,9 @@ ABSL_DECLARE_FLAG(bool, allow_codec_switching);
 ABSL_DECLARE_FLAG(bool, include_mspr_pro_for_playready);
 ABSL_DECLARE_FLAG(bool, dash_force_segment_list);
 ABSL_DECLARE_FLAG(bool, low_latency_dash_mode);
+ABSL_DECLARE_FLAG(std::string, pluto_content_id);
+ABSL_DECLARE_FLAG(bool, pluto_ad_event);
+ABSL_DECLARE_FLAG(int32_t, pluto_ad_event_starting_index);
+ABSL_DECLARE_FLAG(int32_t, pluto_ad_event_max_index);
 
 #endif  // APP_MPD_FLAGS_H_

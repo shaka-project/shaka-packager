@@ -3,7 +3,14 @@
 *.swp
 *.VC.db
 *.vcxproj*
+.vscode/
+.vscode/*
 */.vs/*
+audio/
+audio/*
+main.mpd
+video/
+video/*
 *~
 .DS_store
 .cache
@@ -13,6 +20,8 @@
 .idea
 .repo
 .settings
+notes
+notes/*
 build/
 junit-reports/
 packager/docs/

@@ -4,10 +4,10 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
-name: Docker Hub Release
+name: Release to Hybrik ECR
 
 # Runs when a new release is published on GitHub.
-# Creates a corresponding Docker Hub release and publishes it.
+# Creates a corresponding ECR release and publishes it.
 #
 # Can also be run manually for debugging purposes.
 on:
@@ -17,8 +17,12 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "The tag to release to Docker Hub."
+        description: "The tag to release to ECR."
         required: True
+
+env:
+  DOCKER_IMAGE_NAME: shaka-packager
+  ECR_REPO: 284439818173.dkr.ecr.us-east-1.amazonaws.com
 
 jobs:
   publish_docker_hub:
@@ -39,14 +43,23 @@ jobs:
           ref: ${{ env.TARGET_REF }}
           submodules: recursive
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+      - name: Login ECR
+        uses: aws-actions/configure-aws-credentials@v1          
         with:
-          username: ${{ secrets.DOCKERHUB_CI_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_CI_TOKEN }}
-
-      - name: Push to Docker Hub
-        uses: docker/build-push-action@v2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_HYBRIK_SERVICE_ECR }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_HYBRIK_SERVICE_ECR }}
+          aws-region: us-east-1
+      
+          # Creates AWS ECR repo
+      - id: create-ecr
+        uses: ./.github/actions/create-ecr
         with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:latest,${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ env.TARGET_REF }}
+          repo: $DOCKER_IMAGE_NAME
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and push image
+        id: build-image
+        run: |
+          docker build -f DockerfilePluto -t $ECR_REPO/$DOCKER_IMAGE_NAME:$TARGET_REF --build-arg GIT_LOGIN=pluto-depoy --build-arg GIT_TOKEN=${{ secrets.PLUTO_DEPLOY_TOKEN }} --build-arg GIT_TAG=$TARGET_REF .
+          docker push $ECR_REPO/$DOCKER_IMAGE_NAME:$TARGET_REF

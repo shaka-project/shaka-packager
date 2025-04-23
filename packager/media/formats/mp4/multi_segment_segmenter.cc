@@ -23,6 +23,7 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/key_frame_info.h>
 #include "dash_event_message_handler.h"
+#include "packager/media/emsg/pluto_emsg/emsg_ad_beacon.h"
 
 namespace shaka {
 namespace media {
@@ -136,6 +137,14 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
   DCHECK_NE(segment_size, 0u);
 
   RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
+
+  // JDS Write ID3 into Video segment
+  if (IsVideoHandler() &&
+      options().mp4_params.pluto_ad_event_settings.pluto_ad_event) {
+    RETURN_IF_ERROR(pluto_ad_event_writer_.WriteAdEvents(
+        file.get(), sidx()->earliest_presentation_time, stream_duration(0)));
+  }
+
   if (muxer_listener()) {
     for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
       muxer_listener()->OnKeyFrame(

@@ -102,6 +102,14 @@ struct MpdParams {
   /// and is greatly influnced by the player.
   /// This parameter is required by DASH-IF Low Latency standards.
   double target_latency_seconds = 1;
+
+  /// MPD will contain InbandEventStream for Video adaptations
+  struct in_band_event_stream_video_param {
+    std::string event_stream_id_uri;
+    std::string event_stream_value;
+  };
+  std::vector<in_band_event_stream_video_param>
+      in_band_event_stream_video_params;
 };
 
 }  // namespace shaka

@@ -42,6 +42,10 @@ if(MSVC)
   # to use winsock2.h, which contains definitions that conflict with the
   # ancient winsock 1.1 interface in winsock.h.
   add_definitions(-DWIN32_LEAN_AND_MEAN)
+
+  # enable c++ 20
+  # set(CMAKE_CXX_STANDARD 20)
+  # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 else()
   # Lots of warnings and all warnings as errors.
   # Note that we can't use -Wpedantic due to absl's int128 headers.
@@ -85,6 +89,7 @@ add_subdirectory(status)
 add_subdirectory(third_party)
 add_subdirectory(tools)
 add_subdirectory(utils)
+add_subdirectory(media/emsg/pluto_emsg)
 add_subdirectory(version)
 
 set(libpackager_sources
@@ -125,6 +130,7 @@ set(libpackager_deps
   mbedtls
   string_utils
   version
+  pluto_emsg
 )
 
 # A static library target is always built.

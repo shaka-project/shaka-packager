@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <packager/media/formats/mp4/segmenter.h>
-
 #include <algorithm>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+
+#include <packager/media/formats/mp4/segmenter.h>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/id3_tag.h>
@@ -105,6 +105,25 @@ Status Segmenter::Initialize(
     Id3Tag id3_tag;
     id3_tag.AddPrivateFrame(GetPackagerProjectUrl(), version);
     CHECK(id3_tag.WriteToVector(&moov_->metadata.id3v2.id3v2_data));
+  }
+
+  if (kStreamVideo == streams[0]->stream_type() &&
+      options().mp4_params.pluto_ad_event_settings.pluto_ad_event) {
+    const uint32_t time_scale = sidx()->timescale;
+    if (time_scale == 0) {
+      LOG(ERROR)
+          << "Failure while processing: timescale of input media is equal to "
+          << time_scale << std::endl;
+      exit(-1);
+    }
+    const uint32_t max_index =
+        (options().mp4_params.pluto_ad_event_settings.max_index > 0)
+            ? options().mp4_params.pluto_ad_event_settings.max_index
+            : progress_target_ / time_scale;
+
+    pluto_ad_event_writer_ = emsg::PlutoAdEventWriter(
+        options().mp4_params.pluto_ad_event_settings.starting_index, max_index,
+        time_scale, progress_target_, options().mp4_params.pluto_content_id);
   }
   return DoInitialize();
 }
@@ -269,8 +288,10 @@ double Segmenter::GetDuration() const {
 void Segmenter::UpdateProgress(uint64_t progress) {
   accumulated_progress_ += progress;
 
-  if (!progress_listener_) return;
-  if (progress_target_ == 0) return;
+  if (!progress_listener_)
+    return;
+  if (progress_target_ == 0)
+    return;
   // It might happen that accumulated progress exceeds progress_target due to
   // computation errors, e.g. rounding error. Cap it so it never reports > 100%
   // progress.
@@ -283,7 +304,8 @@ void Segmenter::UpdateProgress(uint64_t progress) {
 }
 
 void Segmenter::SetComplete() {
-  if (!progress_listener_) return;
+  if (!progress_listener_)
+    return;
   progress_listener_->OnProgress(1.0);
 }
 
@@ -338,6 +360,41 @@ void Segmenter::FinalizeFragmentForKeyRotation(
   sample_group_entry.crypt_byte_block = encryption_config.crypt_byte_block;
   sample_group_entry.skip_byte_block = encryption_config.skip_byte_block;
   sample_group_entry.key_id = encryption_config.key_id;
+}
+
+std::vector<FourCC> Segmenter::GetTrackTypes() const {
+  std::vector<FourCC> track_types;
+  if (moov_->tracks.empty()) {
+    LOG(WARNING) << "No tracks in moov, returning NULL track type.";
+    track_types.push_back(FOURCC_NULL);
+  } else if (moov_->tracks.size() > 1) {
+    LOG(WARNING) << "More than 1 track being written to the output file.";
+  }
+  for (const Track& track : moov_->tracks) {
+    track_types.push_back(track.media.handler.handler_type);
+  }
+  return track_types;
+}
+
+bool Segmenter::IsVideoHandler() const {
+  for (const FourCC fourcc : GetTrackTypes()) {
+    if (fourcc == FOURCC_vide)
+      return true;
+  }
+  return false;
+}
+
+uint64_t Segmenter::stream_duration(uint64_t x) const {
+  if (stream_durations_.size() == 0) {
+    LOG(ERROR) << "Failure while processing: no stream durations in input media"
+               << std::endl;
+    exit(-1);
+  }
+  if (x < stream_durations_.size()) {
+    return stream_durations_[x];
+  } else {
+    return stream_durations_[0];
+  }
 }
 
 }  // namespace mp4

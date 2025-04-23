@@ -1,0 +1,46 @@
+{
+  "comment1": "runners hosted by GitHub, always enabled",
+  "hosted": [
+    {
+      "os": "ubuntu-latest",
+      "os_name": "linux",
+      "target_arch": "x64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
+      "comment": "Explicit macOS version 13 is required for explicit x64 CPU.",
+      "os": "macos-13",
+      "os_name": "osx",
+      "target_arch": "x64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
+      "comment": "Explicit macOS version 14 is required for explicit arm64 CPU.",
+      "os": "macos-14",
+      "os_name": "osx",
+      "target_arch": "arm64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
+      "os": "windows-latest",
+      "os_name": "win",
+      "target_arch": "x64",
+      "exe_ext": ".exe",
+      "generator": ""
+    },
+    {
+      "os": "ubuntu-24.04-arm",
+      "os_name": "linux",
+      "target_arch": "arm64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    }
+  ],
+
+  "comment2": "Self-hosted runners are not used since the introduction of GitHub-hosted Linux arm64 runners.  The feature still exists if a new platform becomes necessary.",
+  "selfHosted": [
+  ]
+}

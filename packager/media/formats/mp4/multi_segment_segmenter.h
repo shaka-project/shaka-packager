@@ -39,6 +39,9 @@ class MultiSegmentSegmenter : public Segmenter {
   void SetDashEventMessageHandler(
       const std::shared_ptr<mp4::DashEventMessageHandler>& handler);
 
+  void UpdateEarliestPTS(uint64_t earliest_pts);
+  void UpdateStreamDuration(uint64_t stream_duration);
+
  private:
   // Segmenter implementation overrides.
   Status DoInitialize() override;

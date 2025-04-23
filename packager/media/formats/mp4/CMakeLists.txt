@@ -41,6 +41,8 @@ add_library(mp4 STATIC
   mp4_init_muxer.cc
   dash_event_message_handler.cc
   dash_event_message_handler.h
+  mp4_info.h
+  mp4_info.cc
 )
 target_link_libraries(mp4
   media_base
@@ -61,6 +63,7 @@ add_executable(mp4_unittest
   mp4_media_parser_unittest.cc
   sync_sample_iterator_unittest.cc
   track_run_iterator_unittest.cc
+  mp4_info_unittest.cc
   )
 target_link_libraries(mp4_unittest
   file

@@ -246,16 +246,51 @@ struct ID3v2 : FullBox {
   std::vector<uint8_t> id3v2_data;
 };
 
-// DASHEventMessageBox v0 and v1
-struct DASHEventMessageBox : FullBox {
-  DECLARE_BOX_METHODS(DASHEventMessageBox);
+// DASHEventMessageBox v0
+struct DASHEventMessageBox_v0 : FullBox {
+  DECLARE_BOX_METHODS(DASHEventMessageBox_v0);
+  DASHEventMessageBox_v0(const char* _scheme_id_uri,
+                         const char* _value,
+                         uint32_t _timescale,
+                         uint32_t _ptd,
+                         uint32_t _event_duration,
+                         uint32_t _id);
 
+  void SetTimescale(uint32_t new_timescale);
+  inline uint32_t GetTimescale() const { return timescale; }
+  void SetPts(uint64_t new_pts);
+  inline uint64_t GetPts() const { return presentation_time_delta; }
+  void SetID(uint32_t new_id);
   inline uint32_t GetID() const { return id; }
 
   std::string scheme_id_uri;
   std::string value;
   uint32_t timescale = 0u;
   uint64_t presentation_time_delta = 0u;
+  uint32_t event_duration = 0u;
+  uint32_t id = 0u;
+  std::vector<uint8_t> message_data;
+};
+
+// DASHEventMessageBox v1
+struct DASHEventMessageBox_v1 : FullBox {
+  DECLARE_BOX_METHODS(DASHEventMessageBox_v1);
+  DASHEventMessageBox_v1(const char* _scheme_id_uri,
+                         const char* _value,
+                         uint32_t _timescale,
+                         uint64_t _pts,
+                         uint32_t _event_duration,
+                         uint32_t _id);
+  void SetTimescale(uint32_t new_timescale);
+  inline uint32_t GetTimescale() const { return timescale; }
+  void SetPts(uint64_t new_pts);
+  inline uint64_t GetPts() const { return presentation_time; }
+  void SetID(uint32_t new_id);
+  inline uint32_t GetID() const { return id; }
+  std::string scheme_id_uri;
+  std::string value;
+  uint32_t timescale = 0u;
+  uint64_t presentation_time = 0u;
   uint32_t event_duration = 0u;
   uint32_t id = 0u;
   std::vector<uint8_t> message_data;
@@ -388,6 +423,12 @@ struct OpusSpecific : Box {
   uint16_t preskip = 0u;
 };
 
+struct IAMFSpecific : Box {
+  DECLARE_BOX_METHODS(IAMFSpecific);
+
+  std::vector<uint8_t> data;
+};
+
 // FLAC specific decoder configuration box:
 //   https://github.com/xiph/flac/blob/master/doc/isoflac.txt
 // We do not care about the actual data inside, which is simply copied over.
@@ -431,6 +472,7 @@ struct AudioSampleEntry : Box {
   EC3Specific dec3;
   AC4Specific dac4;
   OpusSpecific dops;
+  IAMFSpecific iacb;
   FlacSpecific dfla;
   MHAConfiguration mhac;
   ALACSpecific alac;

@@ -70,6 +70,8 @@ struct HlsParams {
   /// playlist. A negative number indicates a negative time offset from the end
   /// of the last media segment in the playlist.
   std::optional<double> start_time_offset;
+  /// Create EXT-X-SESSION-KEY in master playlist
+  bool create_session_keys;
 };
 
 }  // namespace shaka

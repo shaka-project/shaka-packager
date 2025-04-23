@@ -1964,6 +1964,27 @@ size_t OpusSpecific::ComputeSizeInternal() {
          kOpusMagicSignatureSize;
 }
 
+IAMFSpecific::IAMFSpecific() = default;
+IAMFSpecific::~IAMFSpecific() = default;
+
+FourCC IAMFSpecific::BoxType() const {
+  return FOURCC_iacb;
+}
+
+bool IAMFSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t IAMFSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 FlacSpecific::FlacSpecific() = default;
 FlacSpecific::~FlacSpecific() = default;
 
@@ -2046,6 +2067,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&dec3));
   RCHECK(buffer->TryReadWriteChild(&dac4));
   RCHECK(buffer->TryReadWriteChild(&dops));
+  RCHECK(buffer->TryReadWriteChild(&iacb));
   RCHECK(buffer->TryReadWriteChild(&dfla));
   RCHECK(buffer->TryReadWriteChild(&mhac));
   RCHECK(buffer->TryReadWriteChild(&alac));
@@ -2075,7 +2097,7 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
          dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
          dac4.ComputeSize() + mhac.ComputeSize() + udts.ComputeSize() +
-         alac.ComputeSize() +
+         alac.ComputeSize() + iacb.ComputeSize() +
          // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
@@ -3144,14 +3166,40 @@ size_t VTTCueBox::ComputeSizeInternal() {
          cue_payload.ComputeSize();
 }
 
-DASHEventMessageBox::DASHEventMessageBox() = default;
-DASHEventMessageBox::~DASHEventMessageBox() = default;
+DASHEventMessageBox_v0::DASHEventMessageBox_v0() = default;
+DASHEventMessageBox_v0::DASHEventMessageBox_v0(const char* in_scheme_id_uri,
+                                               const char* in_value,
+                                               uint32_t in_timescale,
+                                               uint32_t in_ptd,
+                                               uint32_t in_event_duration,
+                                               uint32_t in_id) {
+  scheme_id_uri = in_scheme_id_uri;
+  value = in_value;
+  timescale = in_timescale;
+  presentation_time_delta = in_ptd;
+  event_duration = in_event_duration;
+  id = in_id;
+}
 
-FourCC DASHEventMessageBox::BoxType() const {
+DASHEventMessageBox_v0::~DASHEventMessageBox_v0() = default;
+
+void DASHEventMessageBox_v0::SetID(uint32_t new_id) {
+  id = new_id;
+}
+
+FourCC DASHEventMessageBox_v0::BoxType() const {
   return FOURCC_emsg;
 }
 
-size_t DASHEventMessageBox::ComputeSizeInternal() {
+void DASHEventMessageBox_v0::SetTimescale(uint32_t new_timescale) {
+  timescale = new_timescale;
+}
+
+void DASHEventMessageBox_v0::SetPts(uint64_t new_pts) {
+  presentation_time_delta = new_pts;
+}
+
+size_t DASHEventMessageBox_v0::ComputeSizeInternal() {
   const static uint8_t kNull_sz = 1;
   const static uint8_t kNumUint32s_v0 = 4;
   size_t size = HeaderSize() + scheme_id_uri.size() + kNull_sz + value.size() +
@@ -3160,7 +3208,7 @@ size_t DASHEventMessageBox::ComputeSizeInternal() {
   return size;
 }
 
-bool DASHEventMessageBox::ReadWriteInternal(BoxBuffer* buffer) {
+bool DASHEventMessageBox_v0::ReadWriteInternal(BoxBuffer* buffer) {
   uint8_t num_bytes = (version == 1) ? sizeof(uint64_t) : sizeof(uint32_t);
   RCHECK(
       ReadWriteHeaderInternal(buffer) &&
@@ -3171,6 +3219,63 @@ bool DASHEventMessageBox::ReadWriteInternal(BoxBuffer* buffer) {
 
   size_t size = buffer->Reading() ? buffer->BytesLeft() : message_data.size();
   RCHECK(buffer->ReadWriteVector(&message_data, size));
+  return true;
+}
+
+DASHEventMessageBox_v1::DASHEventMessageBox_v1() = default;
+DASHEventMessageBox_v1::DASHEventMessageBox_v1(const char* in_scheme_id_uri,
+                                               const char* in_value,
+                                               uint32_t in_timescale,
+                                               uint64_t in_pts,
+                                               uint32_t in_event_duration,
+                                               uint32_t in_id) {
+  scheme_id_uri = in_scheme_id_uri;
+  value = in_value;
+  timescale = in_timescale;
+  presentation_time = in_pts;
+  event_duration = in_event_duration;
+  id = in_id;
+  version = 1;
+}
+
+DASHEventMessageBox_v1::~DASHEventMessageBox_v1() = default;
+
+void DASHEventMessageBox_v1::SetTimescale(uint32_t new_timescale) {
+  timescale = new_timescale;
+}
+
+void DASHEventMessageBox_v1::SetPts(uint64_t new_pts) {
+  presentation_time = new_pts;
+}
+
+void DASHEventMessageBox_v1::SetID(uint32_t new_id) {
+  id = new_id;
+}
+
+FourCC DASHEventMessageBox_v1::BoxType() const {
+  return FOURCC_emsg;
+}
+
+size_t DASHEventMessageBox_v1::ComputeSizeInternal() {
+  const static uint8_t kNull_sz = 1;
+  const static uint8_t kNumUint32s_v1 = 3;
+  size_t size = HeaderSize() + scheme_id_uri.size() + kNull_sz + value.size() +
+                kNull_sz + (kNumUint32s_v1 * sizeof(uint32_t)) +
+                sizeof(uint64_t) + message_data.size();
+  return size;
+}
+
+bool DASHEventMessageBox_v1::ReadWriteInternal(BoxBuffer* buffer) {
+  //  No reading supported at this time. 20220202 JDS
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteCString(&scheme_id_uri) &&
+         buffer->ReadWriteCString(&value) &&
+         buffer->ReadWriteUInt32(&timescale) &&
+         buffer->ReadWriteUInt64(&presentation_time) &&
+         buffer->ReadWriteUInt32(&event_duration) &&
+         buffer->ReadWriteUInt32(&id) &&
+         buffer->ReadWriteVector(&message_data, message_data.size()));
+
   return true;
 }
 
