@@ -1,6 +1,6 @@
 
 ## [3.4.2_pluto.v9.1.0] - 2025-04-15
-- ClearKey encryption for HLS. Single key
+- ClearKey encryption for MPEG TS streams. Single key
 
 ## [3.4.2_pluto.v9.0.0] - 2025-04-03
  - code synced with Google Shaka Release 3.4.2
