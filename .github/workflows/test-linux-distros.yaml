@@ -25,7 +25,7 @@ jobs:
   # Configure the build matrix based on files in the repo.
   docker_matrix_config:
     name: Matrix configuration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       MATRIX: ${{ steps.configure.outputs.MATRIX }}
     steps:
