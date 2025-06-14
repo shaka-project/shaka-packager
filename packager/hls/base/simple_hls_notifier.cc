@@ -461,13 +461,12 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
 
     const MediaPlaylist::EncryptionMethod encryption_method_from_stream = stream_iterator->second->encryption_method;
 
-    // Si la méthode de chiffrement du flux est CENC (SampleAesCenc)
     if (encryption_method_from_stream == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
-      // Alors on n'ajoute PAS le format de clé "identity", car CENC doit être géré par un DRM spécifique (comme Widevine)
+      // We do NOT add the "identity" key format, because CENC must be managed by a specific DRM (like Widevine)
       LOG(INFO) << "Skipping KEYFORMAT=\"identity\" for CENC content (stream "
                 << stream_id
                 << ") as it should be handled by a specific DRM system.";
-      return true; // On sort de la fonction ici
+      return true;
     }
 
     std::string key_uri = hls_params().key_uri;
