@@ -979,6 +979,81 @@ TEST_P(WidevineSimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
       widevine_system_id_, empty_iv, pssh_builder.CreateBox()));
 }
 
+TEST_P(WidevineSimpleHlsNotifierTest, WidevineCencSkipsIdentityKeyFormat) {
+  // Utilisation du schéma de protection CENC
+  MediaInfo media_info;
+  media_info.mutable_protected_content()->set_protection_scheme(
+      kCencProtectionScheme);
+
+  // Initialisation du notifier et du mock media playlist
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist("playlist.m3u8", "", "");
+
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
+      .WillOnce(Return(mock_media_playlist));
+
+  hls_params_.playlist_type = kVodPlaylist; // Ou kLivePlaylist selon le besoin
+  SimpleHlsNotifier notifier(hls_params_);
+  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &notifier);
+  EXPECT_TRUE(notifier.Init());
+
+  uint32_t stream_id;
+  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "playlist.m3u8", "name",
+                                       "groupid", &stream_id));
+
+  // Données factices pour le test
+  const std::vector<uint8_t> key_id(16, 0x11);
+  const std::vector<uint8_t> iv(16, 0x22);
+  const std::vector<uint8_t> widevine_pssh_box = {'w', 'v', ' ', 'p', 's', 's', 'h'};
+  const std::vector<uint8_t> common_pssh_data = {'c', 'o', 'm', ' ', 'p', 's', 's', 'h'};
+
+  // Attente de l'appel pour le format de clé Widevine CENC
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  MediaPlaylist::EncryptionMethod::kSampleAesCenc,
+                  testing::StartsWith("data:text/plain;base64,"), // L'URI peut varier
+                  StrEq("0x11111111111111111111111111111111"), // key_id en héxa
+                  StrEq("0x22222222222222222222222222222222"), // iv en héxa
+                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), // Format Widevine CENC
+                  StrEq("1"))) // Version du format de clé
+      .Times(1);
+
+  // On ne s'attend PAS à un appel pour le format Widevine legacy "com.widevine" pour CENC
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  _, _, _, _, StrEq("com.widevine"), _))
+      .Times(0);
+
+  // Appel de NotifyEncryptionUpdate pour Widevine System ID
+  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
+      stream_id, key_id, widevine_system_id_, iv, widevine_pssh_box));
+
+  // On ne s'attend PAS à un appel pour le format de clé "identity"
+  // lorsque Common System ID est notifié pour un flux CENC.
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  MediaPlaylist::EncryptionMethod::kSampleAesCenc,
+                  _, // L'URI peut être la key_uri des hls_params ou basée sur key_id
+                  StrEq(""), // KEYID n'est pas utilisé pour "identity"
+                  StrEq("0x22222222222222222222222222222222"),
+                  StrEq("identity"), // Format "identity"
+                  StrEq(""))) // Pas de version pour "identity"
+      .Times(0);
+
+  // Appel de NotifyEncryptionUpdate pour Common System ID
+  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
+      stream_id, key_id, common_system_id_, iv, common_pssh_data));
+
+  // Vérification que toutes les attentes de mocks sont satisfaites
+  Mock::VerifyAndClearExpectations(mock_media_playlist);
+}
+
 INSTANTIATE_TEST_CASE_P(WidevineEnableDisableLegacyWidevineHls,
                         WidevineSimpleHlsNotifierTest,
                         ::testing::Bool());

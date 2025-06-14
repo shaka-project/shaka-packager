@@ -225,16 +225,16 @@ bool HandleWidevineKeyFormats(
   if (absl::GetFlag(FLAGS_enable_legacy_widevine_hls_signaling) &&
       encryption_method == MediaPlaylist::EncryptionMethod::kSampleAes) {
     // This format allows SAMPLE-AES only.
-    std::string key_uri_data;
-    if (!WidevinePsshToJson(protection_system_specific_data, key_id,
-                            &key_uri_data)) {
-      return false;
-    }
-    std::string key_uri_data_base64 =
-        Base64EncodeData(kUriBase64Prefix, key_uri_data);
-    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
-                                    std::vector<uint8_t>(), iv, "com.widevine",
-                                    "1", media_playlist);
+      std::string key_uri_data;
+      if (!WidevinePsshToJson(protection_system_specific_data, key_id,
+                              &key_uri_data)) {
+        return false;
+      }
+      std::string key_uri_data_base64 =
+          Base64EncodeData(kUriBase64Prefix, key_uri_data);
+      NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
+                                      std::vector<uint8_t>(), iv,
+                                      "com.widevine", "1", media_playlist);
   }
 
   std::string pssh_as_string(
@@ -458,6 +458,18 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   const std::vector<uint8_t> empty_key_id;
 
   if (IsCommonSystemId(system_id)) {
+
+    const MediaPlaylist::EncryptionMethod encryption_method_from_stream = stream_iterator->second->encryption_method;
+
+    // Si la méthode de chiffrement du flux est CENC (SampleAesCenc)
+    if (encryption_method_from_stream == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
+      // Alors on n'ajoute PAS le format de clé "identity", car CENC doit être géré par un DRM spécifique (comme Widevine)
+      LOG(INFO) << "Skipping KEYFORMAT=\"identity\" for CENC content (stream "
+                << stream_id
+                << ") as it should be handled by a specific DRM system.";
+      return true; // On sort de la fonction ici
+    }
+
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
