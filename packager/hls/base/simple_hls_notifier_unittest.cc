@@ -995,7 +995,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, WidevineCencSkipsIdentityKeyFormat) {
   EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
-  hls_params_.playlist_type = kVodPlaylist; // Ou kLivePlaylist selon le besoin
+  hls_params_.playlist_type = kVodPlaylist;
   SimpleHlsNotifier notifier(hls_params_);
   InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
   InjectMediaPlaylistFactory(std::move(factory), &notifier);
@@ -1017,7 +1017,7 @@ TEST_P(WidevineSimpleHlsNotifierTest, WidevineCencSkipsIdentityKeyFormat) {
                   StrEq("0x11111111111111111111111111111111"),
                   StrEq("0x22222222222222222222222222222222"),
                   StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"),
-                  StrEq("1"))) // Version du format de clé
+                  StrEq("1")))
       .Times(1);
 
   EXPECT_CALL(*mock_media_playlist,
