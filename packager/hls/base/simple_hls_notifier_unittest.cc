@@ -1031,12 +1031,12 @@ TEST_P(WidevineSimpleHlsNotifierTest, WidevineCencSkipsIdentityKeyFormat) {
 
   EXPECT_CALL(*mock_media_playlist,
               AddEncryptionInfo(
-                  MediaPlaylist::EncryptionMethod::kSampleAesCenc,
                   _,
-                  StrEq(""),
-                  StrEq("0x22222222222222222222222222222222"),
+                  _,
+                  _,
+                  _,
                   StrEq("identity"),
-                  StrEq("")))
+                  _))
       .Times(0);
 
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(

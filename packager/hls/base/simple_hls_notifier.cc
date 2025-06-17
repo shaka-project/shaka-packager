@@ -225,16 +225,16 @@ bool HandleWidevineKeyFormats(
   if (absl::GetFlag(FLAGS_enable_legacy_widevine_hls_signaling) &&
       encryption_method == MediaPlaylist::EncryptionMethod::kSampleAes) {
     // This format allows SAMPLE-AES only.
-      std::string key_uri_data;
-      if (!WidevinePsshToJson(protection_system_specific_data, key_id,
-                              &key_uri_data)) {
-        return false;
-      }
-      std::string key_uri_data_base64 =
-          Base64EncodeData(kUriBase64Prefix, key_uri_data);
-      NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
-                                      std::vector<uint8_t>(), iv,
-                                      "com.widevine", "1", media_playlist);
+    std::string key_uri_data;
+    if (!WidevinePsshToJson(protection_system_specific_data, key_id,
+                            &key_uri_data)) {
+      return false;
+    }
+    std::string key_uri_data_base64 =
+        Base64EncodeData(kUriBase64Prefix, key_uri_data);
+    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
+                                    std::vector<uint8_t>(), iv, "com.widevine",
+                                    "1", media_playlist);
   }
 
   std::string pssh_as_string(
