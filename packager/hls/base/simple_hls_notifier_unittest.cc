@@ -1007,36 +1007,30 @@ TEST_P(WidevineSimpleHlsNotifierTest, WidevineCencSkipsIdentityKeyFormat) {
 
   const std::vector<uint8_t> key_id(16, 0x11);
   const std::vector<uint8_t> iv(16, 0x22);
-  const std::vector<uint8_t> widevine_pssh_box = {'w', 'v', ' ', 'p', 's', 's', 'h'};
-  const std::vector<uint8_t> common_pssh_data = {'c', 'o', 'm', ' ', 'p', 's', 's', 'h'};
+  const std::vector<uint8_t> widevine_pssh_box = {'w', 'v', ' ', 'p',
+                                                  's', 's', 'h'};
+  const std::vector<uint8_t> common_pssh_data = {'c', 'o', 'm', ' ',
+                                                 'p', 's', 's', 'h'};
 
-  EXPECT_CALL(*mock_media_playlist,
-              AddEncryptionInfo(
-                  MediaPlaylist::EncryptionMethod::kSampleAesCenc,
-                  testing::StartsWith("data:text/plain;base64,"),
-                  StrEq("0x11111111111111111111111111111111"),
-                  StrEq("0x22222222222222222222222222222222"),
-                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"),
-                  StrEq("1")))
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAesCenc,
+                        testing::StartsWith("data:text/plain;base64,"),
+                        StrEq("0x11111111111111111111111111111111"),
+                        StrEq("0x22222222222222222222222222222222"),
+                        StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"),
+                        StrEq("1")))
       .Times(1);
 
   EXPECT_CALL(*mock_media_playlist,
-              AddEncryptionInfo(
-                  _, _, _, _, StrEq("com.widevine"), _))
+              AddEncryptionInfo(_, _, _, _, StrEq("com.widevine"), _))
       .Times(0);
 
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id, key_id, widevine_system_id_, iv, widevine_pssh_box));
 
-
   EXPECT_CALL(*mock_media_playlist,
-              AddEncryptionInfo(
-                  _,
-                  _,
-                  _,
-                  _,
-                  StrEq("identity"),
-                  _))
+              AddEncryptionInfo(_, _, _, _, StrEq("identity"), _))
       .Times(0);
 
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(

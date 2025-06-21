@@ -458,11 +458,13 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   const std::vector<uint8_t> empty_key_id;
 
   if (IsCommonSystemId(system_id)) {
+    const MediaPlaylist::EncryptionMethod encryption_method_from_stream =
+        stream_iterator->second->encryption_method;
 
-    const MediaPlaylist::EncryptionMethod encryption_method_from_stream = stream_iterator->second->encryption_method;
-
-    if (encryption_method_from_stream == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
-      // We do NOT add the "identity" key format, because CENC must be managed by a specific DRM (like Widevine)
+    if (encryption_method_from_stream ==
+        MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
+      // We do NOT add the "identity" key format, because CENC must be managed
+      // by a specific DRM (like Widevine)
       LOG(INFO) << "Skipping KEYFORMAT=\"identity\" for CENC content (stream "
                 << stream_id
                 << ") as it should be handled by a specific DRM system.";
