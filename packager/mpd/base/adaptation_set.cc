@@ -242,6 +242,15 @@ std::set<std::string> GetUUIDs(
 
 bool AdaptationSet::SwitchableAdaptationSet(
     const AdaptationSet& adaptation_set) {
+  // test content types
+  if (content_type_ != adaptation_set.content_type_) {
+    return false;
+  }    
+  if (protected_content_->default_key_id() !=
+      adaptation_set.protected_content_->default_key_id()) {
+    return false;
+  }
+
   // adaptation sets are switchable if both are not protected
   if (!protected_content_ && !adaptation_set.protected_content()) {
     return true;
