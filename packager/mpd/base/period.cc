@@ -234,7 +234,7 @@ bool Period::SetNewAdaptationSetAttributes(
 
   const std::string& codec = GetBaseCodec(media_info);
   new_adaptation_set->set_codec(codec);
-  new_adaptation_set->UpdateFromMediaInfo(media_info);
+  // new_adaptation_set->UpdateFromMediaInfo(media_info);
 
   if (media_info.has_video_info()) {
     // Because 'language' is ignored for videos, |adaptation_sets| must have
