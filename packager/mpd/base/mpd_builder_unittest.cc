@@ -92,6 +92,7 @@ class MpdBuilderTest : public ::testing::Test {
 
  private:
   Period* period_ = nullptr;
+  uint32_t next_adaptation_set_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(MpdBuilderTest);
 };
