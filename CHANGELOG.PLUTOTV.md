@@ -1,3 +1,5 @@
+## [3.4.2-pluto.v9.1.1] - 2025-06-26
+- Fix for AdaptationSet switching
 
 ## [3.4.2-pluto.v9.1.0] - 2025-04-28
 - ClearKey encryption for MPEG TS streams. Single key
