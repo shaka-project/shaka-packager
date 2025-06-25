@@ -12,7 +12,7 @@ WORKDIR shaka-packager
 COPY . /shaka-packager/
 RUN rm -rf build
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
-RUN cmake --build build/ --config Debug --parallel
+RUN cmake --build build --config Debug --parallel
 
 # Copy only result binaries to our final image.
 FROM alpine:3.19
