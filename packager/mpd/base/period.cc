@@ -159,6 +159,11 @@ std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   // Iterate thru AdaptationSets and add them to one big Period element.
   // Also force AdaptationSets Id to incremental order, which might not
   // be the case if force_cl_index is used.
+  int idx = 0;
+  for (auto& adaptation_set : adaptation_sets_) {
+    adaptation_set->set_id(idx++);
+  }
+
   for (const auto& adaptation_set : adaptation_sets_) {
     auto child = adaptation_set->GetXml();
     if (!child || !period.AddChild(std::move(*child)))
