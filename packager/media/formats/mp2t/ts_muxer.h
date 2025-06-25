@@ -8,6 +8,9 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_MUXER_H_
 
 #include <packager/macros/classes.h>
+
+#include <packager/media/base/aes_encryptor.h>
+
 #include <packager/media/base/muxer.h>
 #include <packager/media/formats/mp2t/ts_segmenter.h>
 
@@ -46,6 +49,9 @@ class TsMuxer : public Muxer {
 
   // Keeps track of segment ranges in single segment mode.
   MuxerListener::MediaRanges media_ranges_;
+
+  // Used by AES-128 encryption. Encrypts entire segment.
+  std::unique_ptr<AesCryptor> encryptor_;
 
   uint64_t total_duration_ = 0;
 

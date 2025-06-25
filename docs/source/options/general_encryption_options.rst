@@ -4,7 +4,7 @@ General encryption options
 --protection_scheme <scheme>
 
     Specify a protection scheme, 'cenc' or 'cbc1' or pattern-based protection
-    schemes 'cens' or 'cbcs'.
+    schemes 'cens' or 'cbcs', or 'aes128'.
 
 --crypt_byte_block
 
