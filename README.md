@@ -19,6 +19,8 @@ We disabled OpenSUSE Dockerfile for now, since it is still broken on Google's si
 The Shaka uses cURL as submodule. Please make sure you are pointed to the correct branch (the same as original shaka branch).
 Don't update it, otherwise it will break the build.
 
+If you do not see code in packager/third_party/*/source, then you should run `make submodules` to download all of the submodules in this project, otherwise you will not be able to build Shaka locally as native code or within docker.
+
 
 [comment]: # (While not ideal, absolute URLs are used here as it is the        )
 [comment]: # (simplest way to make the links work on GitHub and Docker Hub.    )
