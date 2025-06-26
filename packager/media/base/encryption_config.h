@@ -20,6 +20,7 @@ struct EncryptionConfig {
   uint8_t per_sample_iv_size = 0;
   std::vector<uint8_t> constant_iv;
   std::vector<uint8_t> key_id;
+  std::vector<uint8_t> key;  // used for AES128 encryption - one key
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
 };
 

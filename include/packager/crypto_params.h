@@ -164,6 +164,7 @@ struct EncryptionParams {
   static constexpr uint32_t kProtectionSchemeCbc1 = 0x63626331;
   static constexpr uint32_t kProtectionSchemeCens = 0x63656E73;
   static constexpr uint32_t kProtectionSchemeCbcs = 0x63626373;
+  static constexpr uint32_t kProtectionSchemeAes128 = 0x61313238;
   uint32_t protection_scheme = kProtectionSchemeCenc;
   /// The count of the encrypted blocks in the protection pattern, where each
   /// block is of size 16-bytes. There are three common patterns

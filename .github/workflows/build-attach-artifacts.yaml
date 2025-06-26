@@ -1,4 +1,4 @@
-# Copyright 2023 Pluto TV
+# Copyright 2025 Pluto TV
 
 name: Build and attach release artifacts
 
@@ -19,7 +19,7 @@ defaults:
 jobs:
   build_matrix_config:
     name: Matrix configuration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       INCLUDE: ${{ steps.configure.outputs.INCLUDE }}
       OS: ${{ steps.configure.outputs.OS }}
@@ -131,7 +131,7 @@ jobs:
   update_release:
     needs: [build]
     name: Update release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

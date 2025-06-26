@@ -509,8 +509,17 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
       GetOutputFormat(stream) == CONTAINER_AAC ||
       GetOutputFormat(stream) == CONTAINER_AC3 ||
       GetOutputFormat(stream) == CONTAINER_EAC3) {
-    VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
-    encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+    // PlutoTV: if we are passing
+    // --protection_scheme=aes128
+    // we wouold like to continue with AES-128 encryption
+    if (encryption_params.protection_scheme ==
+        EncryptionParams::kProtectionSchemeAes128) {
+      VLOG(1) << "Use AES-128 encryption for MPEG2TS or Packed Audio.";
+      encryption_params.protection_scheme = FOURCC_a128;
+    } else {
+      VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
+      encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+    }
   }
 
   if (!stream.drm_label.empty()) {
