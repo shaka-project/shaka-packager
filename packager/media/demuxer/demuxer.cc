@@ -283,13 +283,16 @@ void Demuxer::ParserInitEvent(
     size_t stream_index = base_stream_index;
     if (video_handler_set && stream_info->stream_type() == kStreamVideo) {
       stream_index = kBaseVideoOutputStreamIndex;
+
+      // commented out by IGOR
       // Get Fragmented Duration here.
-      if (0 == stream_info->duration()) {
-        mp4::MP4Info mp4_info(file_name_, mp4::kDefaultInfoReadSize);
-        if (mp4_info.Parse()) {
-          stream_info->set_duration(mp4_info.GetVideoSamplesDuration());
-        }
-      }
+      // if (0 == stream_info->duration()) {
+      //   mp4::MP4Info mp4_info(file_name_, mp4::kDefaultInfoReadSize);
+      //   if (mp4_info.Parse()) {
+      //     stream_info->set_duration(mp4_info.GetVideoSamplesDuration());
+      //   }
+      // }
+
       // Only for the first video stream.
       video_handler_set = false;
     }
