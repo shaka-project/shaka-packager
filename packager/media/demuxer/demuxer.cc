@@ -284,14 +284,14 @@ void Demuxer::ParserInitEvent(
     if (video_handler_set && stream_info->stream_type() == kStreamVideo) {
       stream_index = kBaseVideoOutputStreamIndex;
 
-      // commented out by IGOR
-      // Get Fragmented Duration here.
-      // if (0 == stream_info->duration()) {
-      //   mp4::MP4Info mp4_info(file_name_, mp4::kDefaultInfoReadSize);
-      //   if (mp4_info.Parse()) {
-      //     stream_info->set_duration(mp4_info.GetVideoSamplesDuration());
-      //   }
-      // }
+      // Get Fragmented Duration here. The code should be executed when we have one common file,
+      // not separated init and data segments.
+      if (0 == stream_info->duration() && pluto_ad_event_) {
+        mp4::MP4Info mp4_info(file_name_, mp4::kDefaultInfoReadSize);
+        if (mp4_info.Parse()) {
+          stream_info->set_duration(mp4_info.GetVideoSamplesDuration());
+        }
+      }
 
       // Only for the first video stream.
       video_handler_set = false;
