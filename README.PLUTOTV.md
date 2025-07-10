@@ -12,6 +12,13 @@ we disable OpenSUSE_Dockerfile for now, since it is still broken on Google's sid
 # Sync with Transcoder's version of Shaka
  - added ID3 support
 
+# Build with dubug and as shared lib
+
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -S . -B build/
+cmake --build build --parallel
+
+ctest -C Debug -V --test-dir build
+
 # Running individual test from Python code
 
 1. change directory in the copy of Python script, located at /buil/packager/packager_test.py

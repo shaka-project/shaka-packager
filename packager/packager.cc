@@ -471,6 +471,8 @@ Status CreateDemuxer(
   demuxer->set_webvtt_header_only_output_segment(
       packaging_params.webvtt_header_only_output_segment);
   demuxer->set_input_format(stream.input_format);
+  demuxer->set_pluto_ad_event(packaging_params.mp4_output_params
+                                  .pluto_ad_event_settings.pluto_ad_event);
 
   if (packaging_params.decryption_params.key_provider != KeyProvider::kNone) {
     std::unique_ptr<KeySource> decryption_key_source(
