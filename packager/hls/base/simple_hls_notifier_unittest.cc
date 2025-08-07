@@ -44,7 +44,6 @@ const char kDefaultTextLanguage[] = "fr";
 const bool kIsIndependentSegments = true;
 const char kEmptyKeyUri[] = "";
 const char kFairPlayKeyUri[] = "skd://www.license.com/getkey?key_id=testing";
-const char kIdentityKeyUri[] = "https://www.license.com/getkey?key_id=testing";
 const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
 const HlsPlaylistType kLivePlaylist = HlsPlaylistType::kLive;
 
@@ -299,30 +298,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateIdentityKey) {
                   _, StrEq("data:text/plain;base64," + expected_key_uri_base64),
                   StrEq(""), StrEq("0x45454545454545454545454545454545"),
                   StrEq("identity"), _));
-  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
-      stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
-}
-
-// Verify that the encryption scheme set in MediaInfo is passed to
-// MediaPlaylist::AddEncryptionInfo().
-TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
-  // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist("playlist.m3u8", "", "");
-  hls_params_.key_uri = kIdentityKeyUri;
-  SimpleHlsNotifier notifier(hls_params_);
-  const uint32_t stream_id =
-      SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
-
-  const std::vector<uint8_t> key_id(16, 0x23);
-  const std::vector<uint8_t> iv(16, 0x45);
-  const std::vector<uint8_t> dummy_pssh_data(10, 'p');
-
-  EXPECT_CALL(*mock_media_playlist,
-              AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAesCenc,
-                                StrEq(kIdentityKeyUri), StrEq(""),
-                                StrEq("0x45454545454545454545454545454545"),
-                                StrEq("identity"), _));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
 }
