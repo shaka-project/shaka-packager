@@ -190,7 +190,7 @@ jobs:
             else
               MUSL_ARCH="x86_64"
             fi
-            curl -LO https://musl.cc/"$MUSL_ARCH"-linux-musl-native.tgz
+            curl -LO https://joeyparrish.github.io/musl-cc-mirror/"$MUSL_ARCH"-linux-musl-native.tgz
             tar xf "$MUSL_ARCH"-linux-musl-native.tgz
             export CC=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-gcc
             export CXX=`pwd`/"$MUSL_ARCH"-linux-musl-native/bin/"$MUSL_ARCH"-linux-musl-g++
