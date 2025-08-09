@@ -19,12 +19,10 @@ set(PNG_DEBUG OFF)
 # Don't install anything.
 set(SKIP_INSTALL_ALL ON)
 
-# A confusing name, but this means "let us tell you where to find zlib".
-set(PNG_BUILD_ZLIB ON)
 # Tell libpng where to find zlib headers.
 set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../zlib/source/")
 # Tell libpng where to find zlib library to link to.
-set(ZLIB_LIBRARY zlibstatic)
+set(ZLIB_LIBRARY packager/third_party/zlib/source/libz.a)
 # Tell libpng where to find libm on Linux (-lm).
 set(M_LIBRARY m)
 
