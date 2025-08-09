@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_DEMUXER_H_
 #define PACKAGER_MEDIA_BASE_DEMUXER_H_
 
+#include <cstdint>
 #include <deque>
 #include <memory>
 #include <vector>

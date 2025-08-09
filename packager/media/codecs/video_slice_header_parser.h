@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_VIDEO_SLICE_HEADER_PARSER_H_
 #define PACKAGER_MEDIA_CODECS_VIDEO_SLICE_HEADER_PARSER_H_
 
+#include <cstdint>
 #include <vector>
 
 #include <packager/macros/classes.h>

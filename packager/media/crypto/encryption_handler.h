@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_CRYPTO_ENCRYPTION_HANDLER_H_
 #define PACKAGER_MEDIA_CRYPTO_ENCRYPTION_HANDLER_H_
 
+#include <cstdint>
+
 #include <packager/crypto_params.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/media_handler.h>

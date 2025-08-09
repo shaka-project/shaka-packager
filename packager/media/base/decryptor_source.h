@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_DECRYPTOR_SOURCE_H_
 #define PACKAGER_MEDIA_BASE_DECRYPTOR_SOURCE_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <vector>

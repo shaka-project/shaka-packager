@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_SEGMENTER_TEST_UTILS_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_SEGMENTER_TEST_UTILS_H_
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
 
 #include <packager/file/file_closer.h>

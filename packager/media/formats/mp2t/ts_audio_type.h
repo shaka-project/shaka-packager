@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_AUDIO_TYPE_H
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_AUDIO_TYPE_H
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace shaka {
 namespace media {

@@ -9,6 +9,7 @@
 #ifndef PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_
 #define PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

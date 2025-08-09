@@ -5,6 +5,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_H_
 
+#include <cstdint>
+
 namespace shaka {
 namespace media {
 namespace mp2t {

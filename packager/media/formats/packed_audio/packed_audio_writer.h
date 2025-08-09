@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_FORMATS_PACKED_AUDIO_PACKED_AUDIO_WRITER_H_
 #define PACKAGER_MEDIA_FORMATS_PACKED_AUDIO_PACKED_AUDIO_WRITER_H_
 
+#include <cstdint>
+
 #include <packager/file/file_closer.h>
 #include <packager/media/base/muxer.h>
 

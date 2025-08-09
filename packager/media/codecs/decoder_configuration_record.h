@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_DECODER_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_DECODER_CONFIGURATION_RECORD_H_
 
+#include <cstdint>
 #include <vector>
 
 #include <absl/log/check.h>

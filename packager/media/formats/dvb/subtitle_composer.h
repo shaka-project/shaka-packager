@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_DVB_SUBTITLE_COMPOSER_H_
 #define PACKAGER_MEDIA_DVB_SUBTITLE_COMPOSER_H_
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <vector>

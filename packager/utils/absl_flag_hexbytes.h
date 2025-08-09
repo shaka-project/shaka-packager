@@ -7,6 +7,8 @@
 #ifndef SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 #define SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 
+#include <cstdint>
+
 #include <absl/flags/flag.h>
 #include <absl/strings/ascii.h>
 #include <absl/strings/escaping.h>

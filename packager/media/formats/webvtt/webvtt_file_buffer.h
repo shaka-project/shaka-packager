@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_FILE_BUFFER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_FILE_BUFFER_H_
 
+#include <cstdint>
 #include <string>
 
 #include <packager/file.h>

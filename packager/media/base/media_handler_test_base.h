@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_BASE_MEDIA_HANDLER_TEST_BASE_H_
 #define PACKAGER_MEDIA_BASE_MEDIA_HANDLER_TEST_BASE_H_
 
+#include <cstdint>
+
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <gmock/gmock.h>

@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_HLS_NOTIFIER_H_
 #define PACKAGER_HLS_BASE_HLS_NOTIFIER_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

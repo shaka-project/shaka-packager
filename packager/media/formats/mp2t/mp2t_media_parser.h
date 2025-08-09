@@ -6,6 +6,7 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_MP2T_MEDIA_PARSER_H_
 
 #include <bitset>
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>

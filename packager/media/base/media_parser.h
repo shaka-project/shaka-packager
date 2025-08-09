@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_MEDIA_PARSER_H_
 #define PACKAGER_MEDIA_BASE_MEDIA_PARSER_H_
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>

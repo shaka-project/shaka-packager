@@ -6,10 +6,11 @@
 #ifndef PACKAGER_MEDIA_CODECS_DTS_AUDIO_SPECIFIC_CONFIG_H_
 #define PACKAGER_MEDIA_CODECS_DTS_AUDIO_SPECIFIC_CONFIG_H_
 
+#include <cstdint>
+#include <vector>
+
 #include <stddef.h>
 #include <stdint.h>
-
-#include <vector>
 
 namespace shaka {
 namespace media {

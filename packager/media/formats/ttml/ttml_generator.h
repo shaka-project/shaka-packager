@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_TTML_TTML_GENERATOR_H_
 #define PACKAGER_MEDIA_FORMATS_TTML_TTML_GENERATOR_H_
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <string>

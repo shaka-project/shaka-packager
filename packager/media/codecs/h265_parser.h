@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_H265_PARSER_H_
 #define PACKAGER_MEDIA_CODECS_H265_PARSER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <vector>

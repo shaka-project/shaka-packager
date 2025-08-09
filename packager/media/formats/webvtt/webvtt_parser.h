@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>

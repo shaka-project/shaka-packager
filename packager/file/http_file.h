@@ -7,6 +7,7 @@
 #ifndef PACKAGER_FILE_HTTP_H_
 #define PACKAGER_FILE_HTTP_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 

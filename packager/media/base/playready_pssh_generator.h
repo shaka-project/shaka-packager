@@ -7,6 +7,7 @@
 #ifndef MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 #define MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 
+#include <cstdint>
 #include <string>
 
 #include <packager/media/base/fourccs.h>
