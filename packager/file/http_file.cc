@@ -6,6 +6,8 @@
 
 #include <packager/file/http_file.h>
 
+#include <thread>
+
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
@@ -60,6 +62,10 @@ namespace {
 
 constexpr const char* kBinaryContentType = "application/octet-stream";
 constexpr const int kMinLogLevelForCurlDebugFunction = 2;
+
+// The number of times to retry requesting the server before we give up.
+constexpr const int kNumRequestErrorRetries = 5;
+constexpr const int kFirstRetryDelayMilliseconds = 1000;
 
 size_t CurlWriteCallback(char* buffer, size_t size, size_t nmemb, void* user) {
   IoCache* cache = reinterpret_cast<IoCache*>(user);
@@ -141,13 +147,9 @@ int CurlDebugCallback(CURL* /* handle */,
 
 class LibCurlInitializer {
  public:
-  LibCurlInitializer() {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-  }
+  LibCurlInitializer() { curl_global_init(CURL_GLOBAL_DEFAULT); }
 
-  ~LibCurlInitializer() {
-    curl_global_cleanup();
-  }
+  ~LibCurlInitializer() { curl_global_cleanup(); }
 
   LibCurlInitializer(const LibCurlInitializer&) = delete;
   LibCurlInitializer& operator=(const LibCurlInitializer&) = delete;
@@ -239,9 +241,6 @@ bool HttpFile::Open() {
     return false;
   }
   // TODO: Try to connect initially so we can return connection error here.
-
-  // TODO: Implement retrying with exponential backoff, see
-  // "widevine_key_source.cc"
 
   ThreadPool::instance.PostTask(std::bind(&HttpFile::ThreadMain, this));
 
@@ -376,8 +375,38 @@ void HttpFile::SetupRequest() {
 
 void HttpFile::ThreadMain() {
   SetupRequest();
+  CURLcode res;
+  int64_t sleep_duration = kFirstRetryDelayMilliseconds;
 
-  CURLcode res = curl_easy_perform(curl_.get());
+  // Try sending the request multiple times if it fails.
+  for (int i = 0; i < kNumRequestErrorRetries; ++i) {
+    res = curl_easy_perform(curl_.get());
+
+    if (res == CURLE_HTTP_RETURNED_ERROR) {
+      long res_code = 0;
+      curl_easy_getinfo(curl_.get(), CURLINFO_RESPONSE_CODE, &res_code);
+      if (res_code == 408 || res_code == 429 || res_code >= 500) {
+        // FIXME: Should we clear download_cache_ and upload_cache_ here??
+        // Retry.
+      } else {
+        // Exponential backoff won't help for this response code, Stop retrying.
+        break;
+      }
+    } else if (res == CURLE_OPERATION_TIMEDOUT) {
+      // Retry.
+    } else {
+      // Either the request was successful or exponential backoff won't help.
+      // Stop retrying.
+      break;
+    }
+
+    // Exponential backoff.
+    if (i != kNumRequestErrorRetries - 1) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(sleep_duration));
+      sleep_duration *= 2;
+    }
+  }
+
   if (res != CURLE_OK) {
     std::string error_message = curl_easy_strerror(res);
     if (res == CURLE_HTTP_RETURNED_ERROR) {
