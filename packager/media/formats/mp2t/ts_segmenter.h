@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include <packager/file.h>

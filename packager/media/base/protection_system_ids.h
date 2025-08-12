@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_IDS_H_
 #define PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_IDS_H_
 
+#include <cstdint>
+
 namespace shaka {
 namespace media {
 

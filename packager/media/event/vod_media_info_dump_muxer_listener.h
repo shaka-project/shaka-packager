@@ -11,6 +11,7 @@
 #ifndef PACKAGER_MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>

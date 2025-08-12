@@ -7,6 +7,7 @@
 #ifndef PACKAGER_UTILS_BYTES_TO_STRING_VIEW_H_
 #define PACKAGER_UTILS_BYTES_TO_STRING_VIEW_H_
 
+#include <cstdint>
 #include <string_view>
 #include <vector>
 

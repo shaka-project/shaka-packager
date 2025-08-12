@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <vector>

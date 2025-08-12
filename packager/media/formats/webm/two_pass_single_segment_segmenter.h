@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 

@@ -9,6 +9,8 @@
 #ifndef PACKAGER_APP_MANIFEST_FLAGS_H_
 #define PACKAGER_APP_MANIFEST_FLAGS_H_
 
+#include <cstdint>
+
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 

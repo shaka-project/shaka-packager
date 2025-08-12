@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_MUXER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include <packager/media/base/text_muxer.h>

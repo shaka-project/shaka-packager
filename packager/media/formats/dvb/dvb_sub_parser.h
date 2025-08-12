@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_DVB_DVB_SUB_PARSER_H_
 #define PACKAGER_MEDIA_DVB_DVB_SUB_PARSER_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 

@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_TEXT_READERS_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_TEXT_READERS_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>

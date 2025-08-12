@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_EVENT_MOCK_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_MOCK_MUXER_LISTENER_H_
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 
 #include <packager/media/base/muxer_options.h>

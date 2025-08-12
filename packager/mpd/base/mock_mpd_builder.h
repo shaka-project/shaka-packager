@@ -7,6 +7,8 @@
 #ifndef MPD_BASE_MOCK_MPD_BUILDER_H_
 #define MPD_BASE_MOCK_MPD_BUILDER_H_
 
+#include <cstdint>
+
 #include <absl/synchronization/mutex.h>
 #include <gmock/gmock.h>
 

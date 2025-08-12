@@ -7,6 +7,7 @@
 #ifndef MPD_BASE_SIMPLE_MPD_NOTIFIER_H_
 #define MPD_BASE_SIMPLE_MPD_NOTIFIER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>

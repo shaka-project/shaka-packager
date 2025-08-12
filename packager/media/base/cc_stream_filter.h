@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_CC_STREAM_FILTER_H_
 #define PACKAGER_MEDIA_BASE_CC_STREAM_FILTER_H_
 
+#include <cstdint>
 #include <string>
 
 #include <packager/media/base/media_handler.h>

@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_AUDIO_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_AUDIO_H_
 
+#include <cstdint>
 #include <functional>
 #include <list>
 #include <memory>

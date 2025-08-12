@@ -12,6 +12,7 @@
 #define MPD_BASE_MPD_BUILDER_H_
 
 #include <chrono>
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <optional>
