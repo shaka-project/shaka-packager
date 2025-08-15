@@ -1,3 +1,6 @@
+## [3.4.2-pluto.v9.1.3] - 2025-08-15
+- additional artifact for Linux arm64
+
 ## [3.4.2-pluto.v9.1.1] - 2025-06-26
 - Fix for AdaptationSet switching
 
