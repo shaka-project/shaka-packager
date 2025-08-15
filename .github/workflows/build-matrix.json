@@ -10,6 +10,13 @@
       "generator": "Ninja"
     },
     {
+      "os": "ubuntu-22.04-arm",
+      "os_name": "linux",
+      "target_arch": "arm64",
+      "exe_ext": "",
+      "generator": "Ninja"
+    },
+    {
       "comment": "Explicit macOS version 13 is required for explicit x64 CPU.",
       "os": "macos-13",
       "os_name": "osx",
