@@ -13,6 +13,7 @@
       "os": "ubuntu-22.04-arm",
       "os_name": "linux",
       "target_arch": "arm64",
+      "lib_ext": ".so",
       "exe_ext": "",
       "generator": "Ninja"
     },
