@@ -7,9 +7,8 @@
 # A workflow to publish the official docker image.
 name: Publish to Docker Hub
 
-# Runs when called from another workflow.
-# Can also be run manually for debugging purposes.
 on:
+  # Runs when called from another workflow.
   workflow_call:
     inputs:
       tag:
@@ -25,7 +24,8 @@ on:
         required: true
       DOCKERHUB_PACKAGE_NAME:
         required: true
-  # For manual debugging:
+
+  # Runs when triggered manually by a maintainer.
   workflow_dispatch:
     inputs:
       tag:
@@ -38,9 +38,21 @@ on:
         type: boolean
 
 jobs:
+  # Following multiarch GitHub Actions guide from
+  # https://docs.docker.com/build/ci/github-actions/multi-platform/
   publish_docker_hub:
-    name: Publish to Docker Hub
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - docker_arch: amd64
+            runs_on: ubuntu-latest
+
+          - docker_arch: arm64
+            runs_on: ubuntu-24.04-arm
+
+    name: Build image for ${{ matrix.docker_arch }}
+    runs-on: ${{ matrix.runs_on }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,25 +68,80 @@ jobs:
           username: ${{ secrets.DOCKERHUB_CI_USERNAME }}
           password: ${{ secrets.DOCKERHUB_CI_TOKEN }}
 
-      - name: Push to Docker Hub
-        uses: docker/build-push-action@v5
-        with:
-          # Important: use actions/checkout source, which has the right tags!
-          # Without context: ., this action will try to fetch git source
-          # itself, and it will be unable to determine the correct version
-          # number.
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ inputs.tag }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Push to Docker Hub as "latest"
-        if: ${{ inputs.latest }}
-        uses: docker/build-push-action@v5
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
         with:
           # Important: use actions/checkout source, which has the right tags!
           # Without context: ., this action will try to fetch git source
           # itself, and it will be unable to determine the correct version
           # number.
           context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:latest
+          platforms: linux/${{ matrix.docker_arch }}
+          #FIXME: labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ secrets.DOCKERHUB_PACKAGE_NAME }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.docker_arch }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # We do this as separate build and merge steps, rather than the one-step
+  # docker/build-push-action with multiple platforms, because that one-step
+  # method uses emulation that is _painfully_ slow.  We can build for arm64
+  # natively in parallel with x64 in about 1/6 the time of using emulation to
+  # do it on a single runner.  The cost is just this longer workflow.
+  publish_docker_hub_multiarch:
+    name: Publish to Docker Hub (multiarch)
+    needs: publish_docker_hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_CI_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_CI_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Merge multiarch and push to tag
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          # Get digests from file names in this folder
+          formatted_digests=$(printf '${{ secrets.DOCKERHUB_PACKAGE_NAME }}@sha256:%s ' *)
+          docker buildx imagetools create \
+              --tag ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ inputs.tag }} \
+              $formatted_digests
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ inputs.tag }}
+
+      - name: Tag multiarch as "latest"
+        if: ${{ inputs.latest }}
+        run: |
+          # Push out an alias to the tagged multiarch version we already pushed.
+          docker buildx imagetools create \
+              --tag ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:latest \
+              ${{ secrets.DOCKERHUB_PACKAGE_NAME }}:${{ inputs.tag }}

@@ -458,6 +458,19 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   const std::vector<uint8_t> empty_key_id;
 
   if (IsCommonSystemId(system_id)) {
+    const MediaPlaylist::EncryptionMethod encryption_method_from_stream =
+        stream_iterator->second->encryption_method;
+
+    if (encryption_method_from_stream ==
+        MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
+      // We do NOT add the "identity" key format, because CENC must be managed
+      // by a specific DRM (like Widevine)
+      LOG(INFO) << "Skipping KEYFORMAT=\"identity\" for CENC content (stream "
+                << stream_id
+                << ") as it should be handled by a specific DRM system.";
+      return true;
+    }
+
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to

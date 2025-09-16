@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_AUDIO_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_AUDIO_STREAM_INFO_H_
 
+#include <cstdint>
 #include <vector>
 
 #include <packager/media/base/stream_info.h>

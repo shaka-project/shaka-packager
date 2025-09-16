@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_BASE_COMMON_PSSH_GENERATOR_H_
 #define PACKAGER_MEDIA_BASE_COMMON_PSSH_GENERATOR_H_
 
+#include <cstdint>
+
 #include <packager/media/base/pssh_generator.h>
 
 namespace shaka {

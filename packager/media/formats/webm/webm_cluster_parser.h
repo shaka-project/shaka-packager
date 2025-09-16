@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_WEBM_CLUSTER_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_CLUSTER_PARSER_H_
 
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>

@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 
+#include <cstdint>
 #include <functional>
 #include <string>
 

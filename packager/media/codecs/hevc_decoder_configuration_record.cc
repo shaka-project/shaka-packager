@@ -77,25 +77,40 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
   uint8_t profile_indication = 0;
   uint8_t length_size_minus_one = 0;
   uint8_t num_of_arrays = 0;
-  RCHECK(reader.Read1(&version_) && version_ == 1 &&
-         reader.Read1(&profile_indication) &&
-         reader.Read4(&general_profile_compatibility_flags_) &&
-         reader.ReadToVector(&general_constraint_indicator_flags_, 6) &&
-         reader.Read1(&general_level_idc_) &&
-         reader.SkipBytes(8) &&  // Skip uninterested fields.
-         reader.Read1(&length_size_minus_one) &&
-         reader.Read1(&num_of_arrays));
+  if (!layered_) {
+    RCHECK(reader.Read1(&version_) && version_ == 1 &&
+           reader.Read1(&profile_indication) &&
+           reader.Read4(&general_profile_compatibility_flags_) &&
+           reader.ReadToVector(&general_constraint_indicator_flags_, 6) &&
+           reader.Read1(&general_level_idc_) &&
+           reader.SkipBytes(8) &&  // Skip uninterested fields.
+           reader.Read1(&length_size_minus_one) &&
+           reader.Read1(&num_of_arrays));
 
-  general_profile_space_ = profile_indication >> 6;
-  RCHECK(general_profile_space_ <= 3u);
-  general_tier_flag_ = ((profile_indication >> 5) & 1) == 1;
-  general_profile_idc_ = profile_indication & 0x1f;
-
+    general_profile_space_ = profile_indication >> 6;
+    RCHECK(general_profile_space_ <= 3u);
+    general_tier_flag_ = ((profile_indication >> 5) & 1) == 1;
+    general_profile_idc_ = profile_indication & 0x1f;
+  } else {
+    RCHECK(reader.Read1(&version_) && version_ == 1 &&
+           reader.SkipBytes(3) &&  // Skip uninterested fields.
+           reader.Read1(&length_size_minus_one) &&
+           reader.Read1(&num_of_arrays));
+  }
   if ((length_size_minus_one & 0x3) == 2) {
     LOG(ERROR) << "Invalid NALU length size.";
     return false;
   }
   set_nalu_length_size((length_size_minus_one & 0x3) + 1);
+
+  if (parser_ == nullptr) {
+    if (internal_parser_used_ == true)
+      parser_ = &internal_parser_;
+    else {
+      LOG(ERROR) << "Internal parser is not used, but parser_ is not set!";
+      return false;
+    }
+  }
 
   for (int i = 0; i < num_of_arrays; i++) {
     uint8_t nal_unit_type;
@@ -114,16 +129,40 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
       RCHECK(nalu.type() == nal_unit_type);
       AddNalu(nalu);
 
-      if (nalu.type() == Nalu::H265_SPS) {
-        H265Parser parser;
+      if (nalu.type() == Nalu::H265_VPS) {
+        int vps_id = 0;
+        RCHECK(parser_->ParseVps(nalu, &vps_id) == H265Parser::kOk);
+      } else if (nalu.type() == Nalu::H265_SPS) {
         int sps_id = 0;
-        RCHECK(parser.ParseSps(nalu, &sps_id) == H265Parser::kOk);
-        set_transfer_characteristics(
-            parser.GetSps(sps_id)->vui_parameters.transfer_characteristics);
-        set_color_primaries(
-            parser.GetSps(sps_id)->vui_parameters.color_primaries);
-        set_matrix_coefficients(
-            parser.GetSps(sps_id)->vui_parameters.matrix_coefficients);
+        RCHECK(parser_->ParseSps(nalu, &sps_id) == H265Parser::kOk);
+        const H265Sps* sps = parser_->GetSps(sps_id);
+        if (!layered_) {
+          set_transfer_characteristics(
+              sps->vui_parameters.transfer_characteristics);
+          set_color_primaries(sps->vui_parameters.color_primaries);
+          set_matrix_coefficients(sps->vui_parameters.matrix_coefficients);
+        } else {
+          // Get profile/tier/level info from the SPS/VPS.
+          const int* general_profile_tier_level_data =
+              sps->general_profile_tier_level_data;
+          general_profile_space_ =
+              (general_profile_tier_level_data[0] & 0xFF) >> 6;
+          RCHECK(general_profile_space_ <= 3u);
+          general_tier_flag_ =
+              ((general_profile_tier_level_data[0] & 0x3F) >> 5) == 1;
+          general_profile_idc_ = general_profile_tier_level_data[0] & 0x1F;
+          general_profile_compatibility_flags_ =
+              ((general_profile_tier_level_data[1] & 0xFF) << 24) |
+              ((general_profile_tier_level_data[2] & 0xFF) << 16) |
+              ((general_profile_tier_level_data[3] & 0xFF) << 8) |
+              (general_profile_tier_level_data[4] & 0xFF);
+          general_constraint_indicator_flags_.resize(6);
+          for (int k = 0; k < 6; ++k) {
+            general_constraint_indicator_flags_[i] =
+                general_profile_tier_level_data[5 + i] & 0xFF;
+          }
+          general_level_idc_ = general_profile_tier_level_data[11] & 0xFF;
+        }
       }
     }
   }
@@ -156,6 +195,12 @@ std::string HEVCDecoderConfigurationRecord::GetCodecString(
         absl::BytesToHexString(byte_array_to_string_view(&constraint, 1))));
 
   return absl::StrJoin(fields, ".");
+}
+
+bool HEVCDecoderConfigurationRecord::ParseLHEVCConfig(
+    const std::vector<uint8_t>& data) {
+  layered_ = true;
+  return Parse(data.data(), data.size());
 }
 
 }  // namespace media

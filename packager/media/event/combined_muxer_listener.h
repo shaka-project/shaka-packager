@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 

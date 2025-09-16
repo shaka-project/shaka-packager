@@ -7,6 +7,8 @@
 #ifndef MPD_BASE_MOCK_MPD_NOTIFIER_H_
 #define MPD_BASE_MOCK_MPD_NOTIFIER_H_
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 
 #include <packager/mpd/base/content_protection_element.h>

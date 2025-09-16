@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
+#include <cstdint>
 #include <filesystem>
 #include <list>
 #include <memory>

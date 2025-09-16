@@ -46,6 +46,11 @@ bool H264VideoSliceHeaderParser::Initialize(
   return true;
 }
 
+bool H264VideoSliceHeaderParser::InitializeLayered(
+    const std::vector<uint8_t>& layered_decoder_configuration) {
+  return true;
+}
+
 bool H264VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
   int id;
   switch (nalu.type()) {
@@ -70,20 +75,17 @@ int64_t H264VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {
 H265VideoSliceHeaderParser::H265VideoSliceHeaderParser() {}
 H265VideoSliceHeaderParser::~H265VideoSliceHeaderParser() {}
 
-bool H265VideoSliceHeaderParser::Initialize(
-    const std::vector<uint8_t>& decoder_configuration) {
+bool H265VideoSliceHeaderParser::ParseParameterSets(
+    const HEVCDecoderConfigurationRecord& config) {
   int id;
-  HEVCDecoderConfigurationRecord hevc_config;
-  RCHECK(hevc_config.Parse(decoder_configuration));
-
-  for (size_t i = 0; i < hevc_config.nalu_count(); i++) {
-    const Nalu& nalu = hevc_config.nalu(i);
+  for (size_t i = 0; i < config.nalu_count(); i++) {
+    const Nalu& nalu = config.nalu(i);
     if (nalu.type() == Nalu::H265_SPS) {
       RCHECK(parser_.ParseSps(nalu, &id) == H265Parser::kOk);
     } else if (nalu.type() == Nalu::H265_PPS) {
       RCHECK(parser_.ParsePps(nalu, &id) == H265Parser::kOk);
     } else if (nalu.type() == Nalu::H265_VPS) {
-      // Ignore since it does not affect video slice header parsing.
+      RCHECK(parser_.ParseVps(nalu, &id) == H265Parser::kOk);
     } else {
       VLOG(1) << "Ignoring decoder configuration Nalu of unknown type "
               << nalu.type();
@@ -91,6 +93,25 @@ bool H265VideoSliceHeaderParser::Initialize(
   }
 
   return true;
+}
+
+bool H265VideoSliceHeaderParser::Initialize(
+    const std::vector<uint8_t>& decoder_configuration) {
+  HEVCDecoderConfigurationRecord hevc_config;
+  RCHECK(hevc_config.Parse(decoder_configuration));
+  return ParseParameterSets(hevc_config);
+}
+
+bool H265VideoSliceHeaderParser::InitializeLayered(
+    const std::vector<uint8_t>& layered_decoder_configuration) {
+  if (layered_decoder_configuration.size() > 0) {
+    HEVCDecoderConfigurationRecord lhevc_config;
+    lhevc_config.SetParser(&parser_);
+    RCHECK(lhevc_config.ParseLHEVCConfig(layered_decoder_configuration));
+    return ParseParameterSets(lhevc_config);
+  } else {
+    return true;
+  }
 }
 
 bool H265VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
@@ -101,8 +122,7 @@ bool H265VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
     case Nalu::H265_PPS:
       return parser_.ParsePps(nalu, &id) == H265Parser::kOk;
     case Nalu::H265_VPS:
-      // Ignore since it does not affect video slice header parsing.
-      return true;
+      return parser_.ParseVps(nalu, &id) == H265Parser::kOk;
     default:
       return true;
   }

@@ -7,11 +7,19 @@
 # A workflow to build the official docker image.
 name: Official Docker image
 
-# Runs when called from another workflow.
 on:
+  # Runs when called from another workflow.
   workflow_call:
     inputs:
       ref:
+        required: true
+        type: string
+
+  # Runs when triggered manually by a maintainer.
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: The ref to build from.
         required: true
         type: string
 
@@ -23,8 +31,19 @@ defaults:
 
 jobs:
   official_docker_image:
-    name: Build
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - docker_platform: linux/amd64
+            runs_on: ubuntu-latest
+
+          - docker_platform: linux/arm64
+            runs_on: ubuntu-24.04-arm
+
+    name: Build ${{ matrix.docker_platform }}
+    runs-on: ${{ matrix.runs_on }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,4 +54,4 @@ jobs:
 
       - name: Build
         shell: bash
-        run: docker buildx build .
+        run: docker buildx build --platform ${{ matrix.docker_platform }} .

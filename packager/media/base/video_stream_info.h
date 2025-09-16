@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_BASE_VIDEO_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_VIDEO_STREAM_INFO_H_
 
+#include <cstdint>
+
 #include <packager/media/base/stream_info.h>
 
 namespace shaka {
@@ -117,7 +119,8 @@ class VideoStreamInfo : public StreamInfo {
 
  private:
   // Extra codec configuration in a stream of mp4 boxes. It is only applicable
-  // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision.
+  // to mp4 container only. It is needed by some codecs, e.g. Dolby Vision or
+  // MV-HEVC (currently only stereo video is supported).
   std::string supplemental_codec_ = "";
   FourCC compatible_brand_ = FOURCC_NULL;
   std::vector<uint8_t> extra_config_;

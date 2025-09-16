@@ -32,7 +32,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="0"/>
+      <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="1"/>
       <Representation id="2" bandwidth="212297" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" maxPlayoutRate="30" codingDependency="false">
         <BaseURL>bear-640x360-video-trick_play_factor_1.mp4</BaseURL>
         <SegmentBase indexRange="1138-1205" timescale="30000">

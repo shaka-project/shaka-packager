@@ -12,7 +12,7 @@
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
-      <SupplementalProperty schemeIdUri="urn:mpeg:dash:adaptation-set-switching:2016" value="0"/>
+      <SupplementalProperty schemeIdUri="urn:mpeg:dash:adaptation-set-switching:2016" value="2"/>
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
       <Representation id="1" bandwidth="277411" codecs="hev1.1.6.L63.90" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-hevc-video.mp4</BaseURL>

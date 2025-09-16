@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 #define PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>

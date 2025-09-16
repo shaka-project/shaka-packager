@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_MUXER_H_
 #define PACKAGER_MEDIA_BASE_TEXT_MUXER_H_
 
+#include <cstdint>
+
 #include <packager/media/base/muxer.h>
 #include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>

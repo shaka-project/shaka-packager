@@ -9,6 +9,7 @@
 #ifndef PACKAGER_MPD_BASE_PERIOD_H_
 #define PACKAGER_MPD_BASE_PERIOD_H_
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <optional>
