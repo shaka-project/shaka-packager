@@ -7,6 +7,8 @@
 #include <absl/log/log.h>
 
 #include <packager/macros/logging.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/video_util.h>
 #include <packager/media/codecs/av1_codec_configuration_record.h>
 #include <packager/media/codecs/vp_codec_configuration_record.h>
@@ -122,11 +124,22 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   // |codec_private| may be overriden later for some codecs, e.g. VP9 since for
   // VP9, the format for MP4 and WebM are different; MP4 format is used as the
   // intermediate format.
-  return std::make_shared<VideoStreamInfo>(
+  auto video_stream_info = std::make_shared<VideoStreamInfo>(
       track_num, kWebMTimeScale, 0, video_codec, H26xStreamFormat::kUnSpecified,
       codec_string, codec_private.data(), codec_private.size(),
       width_after_crop, height_after_crop, pixel_width, pixel_height, 0, 0, 0,
       0, 0, std::string(), is_encrypted);
+
+  // Set colr box data for VP8/VP9 codecs
+  if ((video_codec == kCodecVP8 || video_codec == kCodecVP9) &&
+      HasColorInfo()) {
+    std::vector<uint8_t> colr_data = GenerateColrBoxData();
+    if (!colr_data.empty()) {
+      video_stream_info->set_colr_data(colr_data.data(), colr_data.size());
+    }
+  }
+
+  return video_stream_info;
 }
 
 VPCodecConfigurationRecord WebMVideoClient::GetVpCodecConfig(
@@ -266,6 +279,54 @@ bool WebMVideoClient::OnBinary(int /*id*/,
 bool WebMVideoClient::OnFloat(int /*id*/, double /*val*/) {
   // Accept float fields we don't care about for now.
   return true;
+}
+
+bool WebMVideoClient::HasColorInfo() const {
+  return color_range_ != -1 || color_primaries_ != -1 ||
+         transfer_characteristics_ != -1 || matrix_coefficients_ != -1;
+}
+
+std::vector<uint8_t> WebMVideoClient::GenerateColrBoxData() const {
+  BufferWriter writer;
+
+  writer.AppendInt(static_cast<uint32_t>(0));  // Size placeholder
+  writer.AppendInt(FOURCC_colr);
+  writer.AppendInt(FOURCC_nclx);
+
+  // Use BT.709 as default when not specified
+  uint16_t primaries =
+      (color_primaries_ != -1) ? static_cast<uint16_t>(color_primaries_) : 1;
+  uint16_t transfer = (transfer_characteristics_ != -1)
+                          ? static_cast<uint16_t>(transfer_characteristics_)
+                          : 1;
+  uint16_t matrix = (matrix_coefficients_ != -1)
+                        ? static_cast<uint16_t>(matrix_coefficients_)
+                        : 1;
+
+  writer.AppendInt(primaries);
+  writer.AppendInt(transfer);
+  writer.AppendInt(matrix);
+
+  // WebM color_range: 0 = limited range, 1 = full range
+  uint8_t full_range_flag = 0;
+  if (color_range_ != -1) {
+    full_range_flag = (color_range_ == 1) ? 1 : 0;
+  }
+  writer.AppendInt(full_range_flag);
+
+  const uint8_t* buffer = writer.Buffer();
+  size_t buffer_size = writer.Size();
+
+  std::vector<uint8_t> data(buffer, buffer + buffer_size);
+  uint32_t box_size = static_cast<uint32_t>(data.size());
+
+  // Update size field in big-endian
+  data[0] = (box_size >> 24) & 0xFF;
+  data[1] = (box_size >> 16) & 0xFF;
+  data[2] = (box_size >> 8) & 0xFF;
+  data[3] = box_size & 0xFF;
+
+  return data;
 }
 
 }  // namespace media
