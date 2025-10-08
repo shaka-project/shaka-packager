@@ -523,7 +523,12 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
 bool SimpleHlsNotifier::Flush() {
   absl::MutexLock lock(&lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
-    playlist->SetTargetDuration(target_duration_);
+    if (hls_params().local_targetduration) {
+      playlist->SetTargetDuration(
+          static_cast<int32_t>(ceil(playlist->GetLongestSegmentDuration())));
+    } else {
+      playlist->SetTargetDuration(target_duration_);
+    }
     if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
       return false;
   }

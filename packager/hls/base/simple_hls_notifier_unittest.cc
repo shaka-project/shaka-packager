@@ -171,6 +171,82 @@ TEST_F(SimpleHlsNotifierTest, Flush) {
   EXPECT_TRUE(notifier.Flush());
 }
 
+TEST_F(SimpleHlsNotifierTest, LocalTargetDuration) {
+  // Enable local target duration calculation
+  hls_params_.local_targetduration = true;
+
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist("playlist.m3u8", "", "");
+
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
+      .WillOnce(Return(mock_media_playlist));
+
+  const int64_t kStartTime1 = 1000;
+  const int64_t kDuration1 = 5000;  // 5 seconds
+  const uint64_t kSize1 = 10000;
+  const int64_t kStartTime2 = 6000;
+  const int64_t kDuration2 = 7000;  // 7 seconds
+  const uint64_t kSize2 = 12000;
+  const std::string segment_name1 = "segment1.ts";
+  const std::string segment_name2 = "segment2.ts";
+
+  EXPECT_CALL(*mock_media_playlist,
+              AddSegment(StrEq(kTestPrefix + segment_name1), kStartTime1,
+                         kDuration1, 203, kSize1));
+  EXPECT_CALL(*mock_media_playlist,
+              AddSegment(StrEq(kTestPrefix + segment_name2), kStartTime2,
+                         kDuration2, 203, kSize2));
+
+  // The longest segment duration is 7 seconds, so target duration should be
+  // ceil(7.0) = 7
+  const double kLongestSegmentDuration = 7.0;
+  const int32_t kExpectedTargetDuration = 7;  // ceil(kLongestSegmentDuration)
+  EXPECT_CALL(*mock_media_playlist, GetLongestSegmentDuration())
+      .WillRepeatedly(Return(kLongestSegmentDuration));
+
+  SimpleHlsNotifier notifier(hls_params_);
+  MockMasterPlaylist* mock_master_playlist_ptr = mock_master_playlist.get();
+  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &notifier);
+  EXPECT_TRUE(notifier.Init());
+
+  MediaInfo media_info;
+  uint32_t stream_id;
+  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "playlist.m3u8", "name",
+                                       "groupid", &stream_id));
+
+  EXPECT_TRUE(notifier.NotifyNewSegment(stream_id, segment_name1, kStartTime1,
+                                        kDuration1, 203, kSize1));
+  EXPECT_TRUE(notifier.NotifyNewSegment(stream_id, segment_name2, kStartTime2,
+                                        kDuration2, 203, kSize2));
+
+  Mock::VerifyAndClearExpectations(mock_master_playlist_ptr);
+  Mock::VerifyAndClearExpectations(mock_media_playlist);
+
+  // When local_targetduration is enabled, SetTargetDuration should be called
+  // with the ceiling of the longest segment duration (7 seconds)
+  EXPECT_CALL(*mock_media_playlist, GetLongestSegmentDuration())
+      .WillRepeatedly(Return(kLongestSegmentDuration));
+  EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kExpectedTargetDuration))
+      .Times(1);
+  EXPECT_CALL(*mock_master_playlist_ptr,
+              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir),
+                                  ElementsAre(mock_media_playlist)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist,
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist.m3u8"))))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(notifier.Flush());
+}
+
 TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
