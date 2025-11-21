@@ -19,10 +19,12 @@ set(PNG_DEBUG OFF)
 # Don't install anything.
 set(SKIP_INSTALL_ALL ON)
 
-# Tell libpng where to find zlib headers.
+# Tell libpng where to find zlib.
+set(ZLIB_FOUND TRUE)
 set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../zlib/source/")
-# Tell libpng where to find zlib library to link to.
-set(ZLIB_LIBRARY packager/third_party/zlib/source/libz.a)
+set(ZLIB_LIBRARY zlibstatic)
+add_library(ZLIB::ZLIB ALIAS zlibstatic)
+
 # Tell libpng where to find libm on Linux (-lm).
 set(M_LIBRARY m)
 
