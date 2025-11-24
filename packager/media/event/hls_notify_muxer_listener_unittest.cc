@@ -61,6 +61,7 @@ class MockHlsNotifier : public hls::HlsNotifier {
            const std::vector<uint8_t>& system_id,
            const std::vector<uint8_t>& iv,
            const std::vector<uint8_t>& protection_system_specific_data));
+  MOCK_METHOD0(NotifyEndOfStream, bool());
   MOCK_METHOD0(Flush, bool());
 };
 
@@ -375,6 +376,8 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
       mock_notifier_,
       NotifyNewSegment(_, StrEq("filename.mp4"), kSegmentStartTime,
                        kSegmentDuration, kSegmentStartOffset, kSegmentSize));
+  EXPECT_CALL(mock_notifier_, NotifyEndOfStream());
+
   listener_.OnMediaEnd(
       GetMediaRanges(
           {{kSegmentStartOffset, kSegmentStartOffset + kSegmentSize - 1}}),
@@ -406,6 +409,8 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEndTwice) {
   EXPECT_CALL(mock_notifier_, NotifyNewSegment(_, StrEq("filename1.mp4"),
                                                kSegmentStartTime, _, _, _));
   EXPECT_CALL(mock_notifier_, NotifyCueEvent(_, kCueStartTime));
+
+  EXPECT_CALL(mock_notifier_, NotifyEndOfStream());
   listener_.OnMediaEnd(
       GetMediaRanges(
           {{kSegmentStartOffset, kSegmentStartOffset + kSegmentSize - 1}}),
@@ -419,6 +424,8 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEndTwice) {
   EXPECT_CALL(mock_notifier_,
               NotifyNewSegment(_, StrEq("filename2.mp4"),
                                kSegmentStartTime + kSegmentDuration, _, _, _));
+
+  EXPECT_CALL(mock_notifier_, NotifyEndOfStream());
   listener_.OnMediaEnd(
       GetMediaRanges(
           {{kSegmentStartOffset, kSegmentStartOffset + kSegmentSize - 1}}),
@@ -446,6 +453,8 @@ TEST_F(HlsNotifyMuxerListenerTest,
       mock_notifier_,
       NotifyNewSegment(_, StrEq("filename.mp4"), kSegmentStartTime,
                        kSegmentDuration, kSegmentStartOffset, kSegmentSize));
+  EXPECT_CALL(mock_notifier_, NotifyEndOfStream());
+
   listener_.OnMediaEnd(
       GetMediaRanges(
           {{kSegmentStartOffset, kSegmentStartOffset + kSegmentSize - 1},
@@ -516,6 +525,7 @@ TEST_P(HlsNotifyMuxerListenerKeyFrameTest, NoSegmentTemplate) {
       mock_notifier_,
       NotifyNewSegment(_, StrEq("filename.mp4"), kSegmentStartTime,
                        kSegmentDuration, kSegmentStartOffset, kSegmentSize));
+  EXPECT_CALL(mock_notifier_, NotifyEndOfStream());
 
   MuxerListener::MediaRanges ranges;
   ranges.subsegment_ranges.push_back(

@@ -510,20 +510,25 @@ void MediaPlaylist::AddPlacementOpportunity() {
   entries_.emplace_back(new PlacementOpportunityEntry());
 }
 
-bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path) {
+bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path, const bool endStream) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
+  HlsPlaylistType playlist_type = hls_params_.playlist_type;
+  if (endStream && playlist_type == HlsPlaylistType::kLive) {
+	  playlist_type = HlsPlaylistType::kVod;
+  }
+
   std::string content = CreatePlaylistHeader(
-      media_info_, target_duration_, hls_params_.playlist_type, stream_type_,
+      media_info_, target_duration_, playlist_type, stream_type_,
       media_sequence_number_, discontinuity_sequence_number_,
       hls_params_.start_time_offset);
 
   for (const auto& entry : entries_)
     absl::StrAppendFormat(&content, "%s\n", entry->ToString().c_str());
 
-  if (hls_params_.playlist_type == HlsPlaylistType::kVod) {
+  if (endStream) {
     content += "#EXT-X-ENDLIST\n";
   }
 

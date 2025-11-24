@@ -249,9 +249,9 @@ bool HandleWidevineKeyFormats(
 }
 
 bool WriteMediaPlaylist(const std::string& output_dir,
-                        MediaPlaylist* playlist) {
+                        MediaPlaylist* playlist, const bool endStream) {
   auto file_path = std::filesystem::u8path(output_dir) / playlist->file_name();
-  if (!playlist->WriteToFile(file_path)) {
+  if (!playlist->WriteToFile(file_path, endStream)) {
     LOG(ERROR) << "Failed to write playlist " << file_path.string();
     return false;
   }
@@ -390,11 +390,11 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     if (target_duration_updated) {
       for (MediaPlaylist* playlist : media_playlists_) {
         playlist->SetTargetDuration(target_duration_);
-        if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
+        if (!WriteMediaPlaylist(master_playlist_dir_, playlist, endStream))
           return false;
       }
     } else {
-      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get()))
+      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get(), endStream))
         return false;
     }
     if (!master_playlist_->WriteMasterPlaylist(
@@ -524,11 +524,16 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   return true;
 }
 
+bool SimpleHlsNotifier::NotifyEndOfStream() {
+	endStream = true;
+	return true;
+}
+
 bool SimpleHlsNotifier::Flush() {
   absl::MutexLock lock(&lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
     playlist->SetTargetDuration(target_duration_);
-    if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
+    if (!WriteMediaPlaylist(master_playlist_dir_, playlist, endStream))
       return false;
   }
   if (!master_playlist_->WriteMasterPlaylist(
