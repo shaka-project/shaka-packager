@@ -143,6 +143,10 @@ class MpdNotifier {
   virtual bool NotifyMediaInfoUpdate(uint32_t container_id,
                                      const MediaInfo& media_info) = 0;
 
+  /// Convert the stream from a dynamic Live/EVENT to a static VOD stream.
+  /// This is a no-op for VOD streams.
+  virtual bool NotifyEndOfStream() = 0;
+
   /// Call this method to force a flush. Implementations might not write out
   /// the MPD to a stream (file, stdout, etc.) when the MPD is updated, this
   /// forces a flush.
@@ -156,6 +160,8 @@ class MpdNotifier {
 
   /// @return The mpd type for this object.
   MpdType mpd_type() const { return mpd_options_.mpd_type; }
+
+  void set_duration(float duration);
 
   /// @return The value of dash_force_segment_list flag
   bool use_segment_list() const {

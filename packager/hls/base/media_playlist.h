@@ -185,7 +185,7 @@ class MediaPlaylist {
   /// @param file_path is the output file path accepted by the File
   ///        implementation.
   /// @return true on success, false otherwise.
-  virtual bool WriteToFile(const std::filesystem::path& file_path);
+  virtual bool WriteToFile(const std::filesystem::path& file_path, bool endStream);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.

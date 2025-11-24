@@ -170,7 +170,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRange) {
 
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -190,7 +190,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRangeWithOffset) {
 
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -224,7 +224,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
                               1001000, 2 * kMBytes);
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -248,7 +248,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFile) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -300,7 +300,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, SetTargetDuration) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -326,7 +326,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithSegments) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -355,7 +355,7 @@ TEST_F(MediaPlaylistMultiSegmentTest,
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -387,7 +387,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithEncryptionInfo) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -418,7 +418,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithEncryptionInfoEmptyIv) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -453,7 +453,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithClearLead) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -584,7 +584,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, InitSegment) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -618,7 +618,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, SampleAesCenc) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -658,7 +658,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, MultipleEncryptionInfo) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -678,7 +678,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, StartTimeEmpty) {
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
 
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
@@ -699,7 +699,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, StartTimeZero) {
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
 
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
@@ -720,7 +720,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, StartTimePositive) {
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
 
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
@@ -741,7 +741,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, StartTimeNegative) {
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
 
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
@@ -771,7 +771,7 @@ TEST_F(LiveMediaPlaylistTest, Basic) {
       "file2.ts\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -797,7 +797,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShifted) {
       "file3.ts\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -837,7 +837,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfo) {
       "file3.ts\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -904,7 +904,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       "file4.ts\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -934,7 +934,7 @@ TEST_F(EventMediaPlaylistTest, Basic) {
       "file2.ts\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -990,7 +990,7 @@ TEST_F(IFrameMediaPlaylistTest, SingleSegment) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -1031,7 +1031,7 @@ TEST_F(IFrameMediaPlaylistTest, MultiSegment) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -1074,7 +1074,7 @@ TEST_F(IFrameMediaPlaylistTest, MultiSegmentWithPlacementOpportunity) {
       "#EXT-X-ENDLIST\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, true));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
