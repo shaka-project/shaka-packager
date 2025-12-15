@@ -73,7 +73,7 @@ struct HlsParams {
   /// Create EXT-X-SESSION-KEY in master playlist
   bool create_session_keys;
   /// If true, TARGETDURATION will be calculated locally in MediaPlaylist.
-  bool local_targetduration = false;
+  bool per_playlist_target_duration = false;
 };
 
 }  // namespace shaka
