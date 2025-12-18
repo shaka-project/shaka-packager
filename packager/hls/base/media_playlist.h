@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
+#include <cstdint>
 #include <filesystem>
 #include <list>
 #include <memory>
@@ -17,6 +18,7 @@
 #include <packager/macros/classes.h>
 #include <packager/mpd/base/bandwidth_estimator.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include "packager/media/base/fourccs.h"
 
 namespace shaka {
 
@@ -31,6 +33,7 @@ class HlsEntry {
     kExtKey,
     kExtDiscontinuity,
     kExtPlacementOpportunity,
+    kProgramDateTime,
   };
   virtual ~HlsEntry();
 
@@ -80,6 +83,11 @@ class MediaPlaylist {
   const std::string& group_id() const { return group_id_; }
   MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
+  const std::string& supplemental_codec() const { return supplemental_codec_; }
+  const media::FourCC& compatible_brand() const { return compatible_brand_; }
+  const std::list<std::unique_ptr<HlsEntry>>& entries() const {
+    return entries_;
+  }
 
   /// For testing only.
   void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
@@ -96,6 +104,14 @@ class MediaPlaylist {
   /// For testing only.
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
+
+  /// For testing only.
+  void AddEncryptionInfoForTesting(MediaPlaylist::EncryptionMethod method,
+                                   const std::string& url,
+                                   const std::string& key_id,
+                                   const std::string& iv,
+                                   const std::string& key_format,
+                                   const std::string& key_format_versions);
 
   /// This must succeed before calling any other public methods.
   /// @param media_info is the info of the segments that are going to be added
@@ -122,6 +138,10 @@ class MediaPlaylist {
                           int64_t duration,
                           uint64_t start_byte_offset,
                           uint64_t size);
+
+  /// Set the reference time for EXT-X-PROGRAM-DATE-TIME. This is the wall clock
+  /// time for when media timestamp is 0.
+  virtual void SetReferenceTime(const absl::Time& reference_time);
 
   /// Keyframes must be added in order. It is also called before the containing
   /// segment being called.
@@ -265,6 +285,8 @@ class MediaPlaylist {
   // Whether to use byte range for SegmentInfoEntry.
   bool use_byte_range_ = false;
   std::string codec_;
+  std::string supplemental_codec_;
+  media::FourCC compatible_brand_;
   std::string language_;
   std::vector<std::string> characteristics_;
   bool forced_subtitle_ = false;
@@ -293,6 +315,9 @@ class MediaPlaylist {
   // Once a file is actually removed, it is removed from the list.
   std::list<std::string> segments_to_be_removed_;
 
+  // This is the wall clock time when media timestamp is 0.
+  absl::Time reference_time_;
+
   // Used by kVideoIFrameOnly playlists to track the i-frames (key frames).
   struct KeyFrameInfo {
     int64_t timestamp;
@@ -303,6 +328,43 @@ class MediaPlaylist {
   std::list<KeyFrameInfo> key_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
+};
+
+class ProgramDateTimeEntry : public HlsEntry {
+ public:
+  explicit ProgramDateTimeEntry(const absl::Time& program_time);
+
+  std::string ToString() override;
+
+ private:
+  ProgramDateTimeEntry(const ProgramDateTimeEntry&) = delete;
+  ProgramDateTimeEntry& operator=(const ProgramDateTimeEntry&) = delete;
+
+  const absl::Time program_time_;
+};
+
+class EncryptionInfoEntry : public HlsEntry {
+ public:
+  EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
+                      const std::string& url,
+                      const std::string& key_id,
+                      const std::string& iv,
+                      const std::string& key_format,
+                      const std::string& key_format_versions);
+
+  std::string ToString() override;
+  std::string ToString(std::string);
+
+ private:
+  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
+  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
+
+  const MediaPlaylist::EncryptionMethod method_;
+  const std::string url_;
+  const std::string key_id_;
+  const std::string iv_;
+  const std::string key_format_;
+  const std::string key_format_versions_;
 };
 
 }  // namespace hls

@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include <packager/file.h>
@@ -54,6 +55,7 @@ class TsSegmenter {
   ///        stream's time scale.
   /// @param duration is the segment's duration in the input stream's time
   ///        scale.
+  /// @param segment_number is the segment number.
   // TODO(kqyang): Remove the usage of segment start timestamp and duration in
   // xx_segmenter, which could cause confusions on which is the source of truth
   // as the segment start timestamp and duration could be tracked locally.

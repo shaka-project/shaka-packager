@@ -27,6 +27,7 @@ const char kEncryptedMp4Scheme[] = "urn:mpeg:dash:mp4protection:2011";
 const char kPsshElementName[] = "cenc:pssh";
 const char kMsproElementName[] = "mspr:pro";
 const uint32_t kTransferFunctionPQ = 16;
+const uint32_t kTransferFunctionHLG = 18;
 
 bool HasVODOnlyFields(const MediaInfo& media_info);
 
@@ -44,6 +45,10 @@ std::string GetLanguage(const MediaInfo& media_info);
 // Returns a 'codecs' string that has all the video and audio codecs joined with
 // comma.
 std::string GetCodecs(const MediaInfo& media_info);
+
+std::string GetSupplementalCodecs(const MediaInfo& media_info);
+
+std::string GetSupplementalProfiles(const MediaInfo& media_info);
 
 // Returns a codec string without variants. For example, "mp4a" instead of
 // "mp4a.40.2". May return a format for text streams.

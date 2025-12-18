@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_CODECS_WEBVTT_UTIL_H_
 #define PACKAGER_MEDIA_CODECS_WEBVTT_UTIL_H_
 
+#include <cstdint>
 #include <vector>
 
 namespace shaka {

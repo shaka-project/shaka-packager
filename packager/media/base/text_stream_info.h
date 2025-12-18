@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 

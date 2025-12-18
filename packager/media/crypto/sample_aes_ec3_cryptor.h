@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_CRYPTO_SAMPLE_AES_EC3_CRYPTOR_H_
 #define PACKAGER_MEDIA_CRYPTO_SAMPLE_AES_EC3_CRYPTOR_H_
 
+#include <cstdint>
+
 #include <packager/media/base/aes_cryptor.h>
 
 namespace shaka {

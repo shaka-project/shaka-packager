@@ -5,7 +5,7 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 execute_process(
-    COMMAND python3 generate_license_notice.py "${CMAKE_CURRENT_BINARY_DIR}"
+    COMMAND "${Python3_EXECUTABLE}" generate_license_notice.py "${CMAKE_CURRENT_BINARY_DIR}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     RESULT_VARIABLE STATUS)
 if(NOT STATUS EQUAL 0)

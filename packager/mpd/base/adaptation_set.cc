@@ -59,10 +59,22 @@ std::string RoleToText(AdaptationSet::Role role) {
       return "commentary";
     case AdaptationSet::kRoleDub:
       return "dub";
-    case AdaptationSet::kRoleForcedSubtitle:
-      return "forced-subtitle";
     case AdaptationSet::kRoleDescription:
       return "description";
+    case AdaptationSet::kRoleSign:
+      return "sign";
+    case AdaptationSet::kRoleMetadata:
+      return "metadata";
+    case AdaptationSet::kRoleEnhancedAudioIntelligibility:
+      return "enhanced-audio-intelligibility";
+    case AdaptationSet::kRoleEmergency:
+      return "emergency";
+    case AdaptationSet::kRoleForcedSubtitle:
+      return "forced-subtitle";
+    case AdaptationSet::kRoleEasyreader:
+      return "easyreader";
+    case AdaptationSet::kRoleKaraoke:
+      return "karaoke";
     default:
       return "unknown";
   }
@@ -177,11 +189,73 @@ AdaptationSet::AdaptationSet(const std::string& language,
                              uint32_t* counter)
     : representation_counter_(counter),
       language_(language),
-      mpd_options_(mpd_options) {
+      mpd_options_(mpd_options),
+      protected_content_(nullptr) {
   DCHECK(counter);
 }
 
-AdaptationSet::~AdaptationSet() {}
+AdaptationSet::~AdaptationSet() {
+  delete protected_content_;
+}
+
+void AdaptationSet::set_protected_content(const MediaInfo& media_info) {
+  DCHECK(!protected_content_);
+  protected_content_ =
+      new MediaInfo::ProtectedContent(media_info.protected_content());
+}
+
+// The easiest way to check whether two protobufs are equal, is to compare the
+// serialized version.
+bool ProtectedContentEq(
+    const MediaInfo::ProtectedContent& content_protection1,
+    const MediaInfo::ProtectedContent& content_protection2) {
+  return content_protection1.SerializeAsString() ==
+         content_protection2.SerializeAsString();
+}
+
+bool AdaptationSet::MatchAdaptationSet(
+    const MediaInfo& media_info,
+    bool content_protection_in_adaptation_set) {
+  if (codec_ != GetBaseCodec(media_info))
+    return false;
+
+  if (!content_protection_in_adaptation_set)
+    return true;
+
+  if (!protected_content_)
+    return !media_info.has_protected_content();
+
+  if (!media_info.has_protected_content())
+    return false;
+
+  return ProtectedContentEq(*protected_content_,
+                            media_info.protected_content());
+}
+
+std::set<std::string> GetUUIDs(
+    const MediaInfo::ProtectedContent* protected_content) {
+  std::set<std::string> uuids;
+  for (const auto& entry : protected_content->content_protection_entry())
+    uuids.insert(entry.uuid());
+  return uuids;
+}
+
+bool AdaptationSet::SwitchableAdaptationSet(
+    const AdaptationSet& adaptation_set) {
+
+  // adaptation sets are switchable if both are not protected
+  if (!protected_content_ && !adaptation_set.protected_content()) {
+    return true;
+  }
+
+  // or if both are protected and have the same UUID
+  if (protected_content_ && adaptation_set.protected_content()) {
+    return GetUUIDs(protected_content_) ==
+           GetUUIDs(adaptation_set.protected_content());
+  }
+
+  return false;
+}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   const uint32_t representation_id = media_info.has_index()
@@ -254,8 +328,6 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   bool suppress_representation_height = false;
   bool suppress_representation_frame_rate = false;
 
-  if (index_.has_value())
-    id_ = index_.value();
   if (id_ && !adaptation_set.SetId(id_.value()))
     return std::nullopt;
   if (!adaptation_set.SetStringAttribute("contentType", content_type_))
@@ -311,6 +383,22 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   }
 
   // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && matrix_coefficients_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:MatrixCoefficients",
+          std::to_string(matrix_coefficients_))) {
+    return std::nullopt;
+  }
+
+  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && color_primaries_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:ColourPrimaries",
+          std::to_string(color_primaries_))) {
+    return std::nullopt;
+  }
+
+  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
   if (IsVideo() && transfer_characteristics_ > 0 &&
       !adaptation_set.AddSupplementalProperty(
           "urn:mpeg:mpegB:cicp:TransferCharacteristics",
@@ -351,10 +439,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!trick_play_reference_ids.empty())
       trick_play_reference_ids += ' ';
     CHECK(tp_adaptation_set->has_id());
-    trick_play_reference_ids +=
-        std::to_string(tp_adaptation_set->index_.has_value()
-                           ? tp_adaptation_set->index_.value()
-                           : tp_adaptation_set->id());
+    trick_play_reference_ids += std::to_string(tp_adaptation_set->id());
   }
   if (!trick_play_reference_ids.empty() &&
       !adaptation_set.AddEssentialProperty(
@@ -368,9 +453,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     if (!switching_ids.empty())
       switching_ids += ',';
     CHECK(s_adaptation_set->has_id());
-    switching_ids += std::to_string(s_adaptation_set->index_.has_value()
-                                        ? s_adaptation_set->index_.value()
-                                        : s_adaptation_set->id());
+    switching_ids += std::to_string(s_adaptation_set->id());
   }
   if (!switching_ids.empty() &&
       !adaptation_set.AddSupplementalProperty(

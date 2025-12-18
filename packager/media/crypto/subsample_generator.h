@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_CRYPTO_SUBSAMPLE_GENERATOR_H_
 #define PACKAGER_MEDIA_CRYPTO_SUBSAMPLE_GENERATOR_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 

@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -72,7 +73,8 @@ class HlsNotifyMuxerListener : public MuxerListener {
   void OnNewSegment(const std::string& file_name,
                     int64_t start_time,
                     int64_t duration,
-                    uint64_t segment_file_size) override;
+                    uint64_t segment_file_size,
+                    int64_t segment_number) override;
   void OnKeyFrame(int64_t timestamp,
                   uint64_t start_byte_offset,
                   uint64_t size) override;

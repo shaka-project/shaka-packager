@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_SEGMENTER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -127,9 +128,8 @@ class Segmenter {
  private:
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
-  virtual Status DoFinalizeSegment() = 0;
-
-  virtual Status DoFinalizeChunk() { return Status::OK; }
+  virtual Status DoFinalizeSegment(int64_t segment_number) = 0;
+  virtual Status DoFinalizeChunk(int64_t segment_number) { return Status::OK; }
 
   uint32_t GetReferenceStreamId();
 

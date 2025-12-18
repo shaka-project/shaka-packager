@@ -6,6 +6,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>

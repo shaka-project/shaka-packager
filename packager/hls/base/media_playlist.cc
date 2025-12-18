@@ -165,6 +165,12 @@ std::string CreatePlaylistHeader(
   return header;
 }
 
+
+}  // namespace
+
+HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
+HlsEntry::~HlsEntry() {}
+
 class SegmentInfoEntry : public HlsEntry {
  public:
   // If |use_byte_range| true then this will append EXT-X-BYTERANGE
@@ -233,28 +239,61 @@ std::string SegmentInfoEntry::ToString() {
   return result;
 }
 
-class EncryptionInfoEntry : public HlsEntry {
+
+class DiscontinuityEntry : public HlsEntry {
  public:
-  EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
-                      const std::string& url,
-                      const std::string& key_id,
-                      const std::string& iv,
-                      const std::string& key_format,
-                      const std::string& key_format_versions);
+  DiscontinuityEntry();
 
   std::string ToString() override;
 
  private:
-  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
-  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
-
-  const MediaPlaylist::EncryptionMethod method_;
-  const std::string url_;
-  const std::string key_id_;
-  const std::string iv_;
-  const std::string key_format_;
-  const std::string key_format_versions_;
+  DiscontinuityEntry(const DiscontinuityEntry&) = delete;
+  DiscontinuityEntry& operator=(const DiscontinuityEntry&) = delete;
 };
+
+DiscontinuityEntry::DiscontinuityEntry()
+    : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
+
+std::string DiscontinuityEntry::ToString() {
+  return "#EXT-X-DISCONTINUITY";
+}
+
+ProgramDateTimeEntry::ProgramDateTimeEntry(const absl::Time& program_time)
+    : HlsEntry(HlsEntry::EntryType::kProgramDateTime),
+      program_time_(program_time) {}
+
+std::string ProgramDateTimeEntry::ToString() {
+  absl::CivilSecond cs =
+      absl::ToCivilSecond(program_time_, absl::UTCTimeZone());
+
+  int64_t total_ms = absl::ToUnixMillis(program_time_);
+  int ms = static_cast<int>(total_ms % 1000);
+  if (ms < 0)
+    ms += 1000;  // correction for possible negative times
+
+  return absl::StrFormat(
+      "#EXT-X-PROGRAM-DATE-TIME:%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", cs.year(),
+      cs.month(), cs.day(), cs.hour(), cs.minute(), cs.second(), ms);
+}
+
+class PlacementOpportunityEntry : public HlsEntry {
+ public:
+  PlacementOpportunityEntry();
+
+  std::string ToString() override;
+
+ private:
+  PlacementOpportunityEntry(const PlacementOpportunityEntry&) = delete;
+  PlacementOpportunityEntry& operator=(const PlacementOpportunityEntry&) =
+      delete;
+};
+
+PlacementOpportunityEntry::PlacementOpportunityEntry()
+    : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
+
+std::string PlacementOpportunityEntry::ToString() {
+  return "#EXT-X-PLACEMENT-OPPORTUNITY";
+}
 
 EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
                                          const std::string& url,
@@ -271,8 +310,14 @@ EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
       key_format_versions_(key_format_versions) {}
 
 std::string EncryptionInfoEntry::ToString() {
+  return ToString("");
+}
+
+std::string EncryptionInfoEntry::ToString(std::string tag_name) {
   std::string tag_string;
-  Tag tag("#EXT-X-KEY", &tag_string);
+  if (tag_name.empty())
+    tag_name = "#EXT-X-KEY";
+  Tag tag(tag_name, &tag_string);
 
   if (method_ == MediaPlaylist::EncryptionMethod::kSampleAes) {
     tag.AddString("METHOD", "SAMPLE-AES");
@@ -303,48 +348,6 @@ std::string EncryptionInfoEntry::ToString() {
   return tag_string;
 }
 
-class DiscontinuityEntry : public HlsEntry {
- public:
-  DiscontinuityEntry();
-
-  std::string ToString() override;
-
- private:
-  DiscontinuityEntry(const DiscontinuityEntry&) = delete;
-  DiscontinuityEntry& operator=(const DiscontinuityEntry&) = delete;
-};
-
-DiscontinuityEntry::DiscontinuityEntry()
-    : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
-
-std::string DiscontinuityEntry::ToString() {
-  return "#EXT-X-DISCONTINUITY";
-}
-
-class PlacementOpportunityEntry : public HlsEntry {
- public:
-  PlacementOpportunityEntry();
-
-  std::string ToString() override;
-
- private:
-  PlacementOpportunityEntry(const PlacementOpportunityEntry&) = delete;
-  PlacementOpportunityEntry& operator=(const PlacementOpportunityEntry&) =
-      delete;
-};
-
-PlacementOpportunityEntry::PlacementOpportunityEntry()
-    : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
-
-std::string PlacementOpportunityEntry::ToString() {
-  return "#EXT-X-PLACEMENT-OPPORTUNITY";
-}
-
-}  // namespace
-
-HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
-HlsEntry::~HlsEntry() {}
-
 MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
                              const std::string& file_name,
                              const std::string& name,
@@ -353,11 +356,12 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
       file_name_(file_name),
       name_(name),
       group_id_(group_id),
-      media_sequence_number_(hls_params_.media_sequence_number) {
-        // When there's a forced media_sequence_number, start with discontinuity
-        if (media_sequence_number_ > 0)
-          entries_.emplace_back(new DiscontinuityEntry());
-      }
+      media_sequence_number_(hls_params_.media_sequence_number),
+      reference_time_(absl::InfinitePast()) {
+  // When there's a forced media_sequence_number, start with discontinuity
+  if (media_sequence_number_ > 0)
+    entries_.emplace_back(new DiscontinuityEntry());
+}
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -383,6 +387,17 @@ void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
   forced_subtitle_ = forced_subtitle;
 }
 
+void MediaPlaylist::AddEncryptionInfoForTesting(
+    MediaPlaylist::EncryptionMethod method,
+    const std::string& url,
+    const std::string& key_id,
+    const std::string& iv,
+    const std::string& key_format,
+    const std::string& key_format_versions) {
+  entries_.emplace_back(new EncryptionInfoEntry(
+      method, url, key_id, iv, key_format, key_format_versions));
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   const int32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
@@ -393,6 +408,13 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
     codec_ = AdjustVideoCodec(media_info.video_info().codec());
+    if (media_info.video_info().has_supplemental_codec() &&
+        media_info.video_info().has_compatible_brand()) {
+      supplemental_codec_ =
+          AdjustVideoCodec(media_info.video_info().supplemental_codec());
+      compatible_brand_ = static_cast<media::FourCC>(
+          media_info.video_info().compatible_brand());
+    }
   } else if (media_info.has_audio_info()) {
     stream_type_ = MediaPlaylistStreamType::kAudio;
     codec_ = media_info.audio_info().codec();
@@ -446,6 +468,10 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   }
   return AddSegmentInfoEntry(file_name, start_time, duration, start_byte_offset,
                              size);
+}
+
+void MediaPlaylist::SetReferenceTime(const absl::Time& reference_time) {
+  reference_time_ = reference_time;
 }
 
 void MediaPlaylist::AddKeyFrame(int64_t timestamp,
@@ -576,10 +602,23 @@ std::string MediaPlaylist::GetVideoRange() const {
   // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-02#section-4.4.4.2
   switch (media_info_.video_info().transfer_characteristics()) {
     case 1:
+    case 6:
+    case 13:
+    case 14:
+      // Dolby Vision profile 8.4 may have a transfer_characteristics 14, the
+      // actual value refers to preferred_transfer_characteristic value in SEI
+      // message, using compatible brand as a workaround
+      if (!supplemental_codec_.empty() &&
+          compatible_brand_ == media::FOURCC_db4g)
+        return "HLG";
+      else
+        return "SDR";
+    case 15:
       return "SDR";
     case 16:
-    case 18:
       return "PQ";
+    case 18:
+      return "HLG";
     default:
       // Leave it empty if we do not have the transfer characteristics
       // information.
@@ -633,6 +672,40 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
           << segment_info->start_time() << " as the next segment starts at "
           << start_time << ".";
       entries_.emplace_back(new DiscontinuityEntry());
+    }
+  }
+
+  if (hls_params_.add_program_date_time &&
+      reference_time_ != absl::InfinitePast()) {
+    // See if we need to add a program date time tag. It is added before the
+    // first segment, and after every discontinuity.
+    bool is_first_segment = true;
+    bool is_discontinuity = false;
+    if (!entries_.empty()) {
+      for (auto it = entries_.rbegin(); it != entries_.rend(); ++it) {
+        if ((*it)->type() == HlsEntry::EntryType::kExtInf) {
+          is_first_segment = false;
+          break;
+        }
+      }
+
+      const auto& last = *entries_.back();
+      if (last.type() == HlsEntry::EntryType::kExtDiscontinuity) {
+        is_discontinuity = true;
+      } else if (entries_.size() >= 2) {
+        const auto& second_last = **std::prev(entries_.cend(), 2);
+        if (last.type() == HlsEntry::EntryType::kExtKey &&
+            second_last.type() == HlsEntry::EntryType::kExtDiscontinuity) {
+          is_discontinuity = true;
+        }
+      }
+    }
+
+    if (is_first_segment || is_discontinuity) {
+      const absl::Time program_time =
+          reference_time_ +
+          absl::Seconds(static_cast<double>(start_time) / time_scale_);
+      entries_.emplace_back(new ProgramDateTimeEntry(program_time));
     }
   }
 
@@ -737,9 +810,9 @@ void MediaPlaylist::RemoveOldSegment(int64_t start_time) {
   if (stream_type_ == MediaPlaylistStreamType::kVideoIFramesOnly)
     return;
 
-  segments_to_be_removed_.push_back(
-      media::GetSegmentName(media_info_.segment_template(), start_time,
-                            media_sequence_number_, media_info_.bandwidth()));
+  segments_to_be_removed_.push_back(media::GetSegmentName(
+      media_info_.segment_template(), start_time, media_sequence_number_ + 1,
+      media_info_.bandwidth()));
   while (segments_to_be_removed_.size() >
          hls_params_.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();

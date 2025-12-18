@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          sudo apt install -y doxygen
+          sudo apt install -y doxygen graphviz
           python3 -m pip install \
               sphinx==7.1.2 \
               sphinxcontrib.plantuml \
@@ -43,6 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Generate docs
         run: |

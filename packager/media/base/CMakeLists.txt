@@ -80,6 +80,7 @@ target_link_libraries(media_handler_test_base
 add_executable(media_base_unittest
     aes_cryptor_unittest.cc
     aes_pattern_cryptor_unittest.cc
+    audio_stream_info_unittest.cc
     audio_timestamp_helper_unittest.cc
     bit_reader_unittest.cc
     bit_writer_unittest.cc

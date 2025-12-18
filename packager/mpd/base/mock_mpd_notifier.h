@@ -7,6 +7,8 @@
 #ifndef MPD_BASE_MOCK_MPD_NOTIFIER_H_
 #define MPD_BASE_MOCK_MPD_NOTIFIER_H_
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 
 #include <packager/mpd/base/content_protection_element.h>
@@ -25,11 +27,12 @@ class MockMpdNotifier : public MpdNotifier {
                bool(const MediaInfo& media_info, uint32_t* container_id));
   MOCK_METHOD2(NotifySampleDuration,
                bool(uint32_t container_id, int32_t sample_duration));
-  MOCK_METHOD4(NotifyNewSegment,
+  MOCK_METHOD5(NotifyNewSegment,
                bool(uint32_t container_id,
                     int64_t start_time,
                     int64_t duration,
-                    uint64_t size));
+                    uint64_t size,
+                    int64_t segment_number));
   MOCK_METHOD3(NotifyCompletedSegment,
                bool(uint32_t container_id, int64_t duration, uint64_t size));
   MOCK_METHOD1(NotifyAvailabilityTimeOffset, bool(uint32_t container_id));

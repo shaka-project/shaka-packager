@@ -87,11 +87,13 @@ class MpdNotifier {
   /// @param duration is the duration of the new segment, in units of the
   ///        stream's time scale.
   /// @param size is the new segment size in bytes.
+  /// @param segment_number is the segment number.
   /// @return true on success, false otherwise.
   virtual bool NotifyNewSegment(uint32_t container_id,
                                 int64_t start_time,
                                 int64_t duration,
-                                uint64_t size) = 0;
+                                uint64_t size,
+                                int64_t segment_number) = 0;
 
   /// Notifies MpdBuilder that a segment is fully written and provides the
   /// segment's complete duration and size. For Low Latency only. Note, size and

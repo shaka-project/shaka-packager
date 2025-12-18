@@ -5,7 +5,7 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 execute_process(
-    COMMAND python3 generate_version_string.py
+    COMMAND "${Python3_EXECUTABLE}" generate_version_string.py
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     RESULT_VARIABLE STATUS
     OUTPUT_VARIABLE PACKAGER_VERSION

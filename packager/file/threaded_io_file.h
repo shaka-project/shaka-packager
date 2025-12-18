@@ -8,6 +8,7 @@
 #define PACKAGER_FILE_THREADED_IO_FILE_H_
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 
 #include <absl/synchronization/mutex.h>

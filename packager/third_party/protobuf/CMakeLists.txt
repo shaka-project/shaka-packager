@@ -30,3 +30,6 @@ add_definitions(-DNDEBUG)
 
 # With these set in scope of this folder, load the library's own CMakeLists.txt.
 add_subdirectory(source)
+
+# Build generated python sources for the protobuf library.
+include("protobuf_py.cmake")

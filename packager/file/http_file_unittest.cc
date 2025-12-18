@@ -273,6 +273,18 @@ TEST_F(HttpFileTest, MultipleChunks) {
   ASSERT_JSON_STRING(json, "headers.Transfer-Encoding", "chunked");
 }
 
+TEST_F(HttpFileTest, BasicDelete) {
+  FilePtr file(new HttpFile(HttpMethod::kDelete, server_.ReflectUrl(),
+                            kNoContentType, kNoHeaders, kDefaultTestTimeout));
+  ASSERT_TRUE(file);
+  ASSERT_TRUE(file->Open());
+
+  auto json = HandleResponse(file);
+  ASSERT_TRUE(json.is_object());
+  ASSERT_TRUE(file.release()->Close());
+  ASSERT_JSON_STRING(json, "method", "DELETE");
+}
+
 TEST_F(HttpFileTest, Error404) {
   FilePtr file(new HttpFile(HttpMethod::kGet, server_.StatusCodeUrl(404),
                             kNoContentType, kNoHeaders, kDefaultTestTimeout));

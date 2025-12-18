@@ -7,6 +7,8 @@
 #ifndef PACKAGER_MEDIA_CRYPTO_AES_ENCRYPTOR_FACTORY_H_
 #define PACKAGER_MEDIA_CRYPTO_AES_ENCRYPTOR_FACTORY_H_
 
+#include <cstdint>
+
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/stream_info.h>
 

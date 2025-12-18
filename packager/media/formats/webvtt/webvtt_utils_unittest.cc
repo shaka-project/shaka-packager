@@ -160,6 +160,16 @@ TEST(WebVttUtilsTest, SettingsToString) {
             "region:foo line:27% position:42% size:54% direction:rl align:end");
 }
 
+TEST(WebVttUtilsTest, TeletextSettingsToStringRemovesRegionOutputsIntegerLine) {
+  TextSettings settings;
+  settings.region = "ttx_9";
+  settings.line = TextNumber(9.5, TextUnitType::kLines);
+  settings.text_alignment = TextAlignment::kCenter;
+
+  const auto actual = WebVttSettingsToString(settings);
+  EXPECT_EQ(actual, "line:10 align:center");
+}
+
 TEST(WebVttUtilsTest, SettingsToString_IgnoresDefaults) {
   TextSettings settings;
   settings.region = "foo";

@@ -63,6 +63,8 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
   const uint16_t kHeight = 20u;
   const uint32_t kPixelWidth = 2u;
   const uint32_t kPixelHeight = 3u;
+  const uint8_t kColorPrimaries = 0;
+  const uint8_t kMatrixCoefficients = 0;
   const uint8_t kTransferCharacteristics = 0;
   const int16_t kTrickPlayFactor = 0;
   const uint8_t kNaluLengthSize = 1u;
@@ -85,8 +87,9 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
   return VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, codec, H26xStreamFormat::kUnSpecified,
       kCodecString, codec_config, codec_config_size, kWidth, kHeight,
-      kPixelWidth, kPixelHeight, kTransferCharacteristics, kTrickPlayFactor,
-      kNaluLengthSize, kLanguage, !kEncrypted);
+      kPixelWidth, kPixelHeight, kColorPrimaries, kMatrixCoefficients,
+      kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      !kEncrypted);
 }
 
 AudioStreamInfo GetAudioStreamInfo(Codec codec) {
@@ -125,6 +128,8 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
  public:
   MOCK_METHOD1(Initialize,
                bool(const std::vector<uint8_t>& decoder_configuration));
+  MOCK_METHOD1(InitializeLayered,
+               bool(const std::vector<uint8_t>& layered_decoder_configuration));
   MOCK_METHOD1(ProcessNalu, bool(const Nalu& nalu));
   MOCK_METHOD1(GetHeaderSize, int64_t(const Nalu& nalu));
 };

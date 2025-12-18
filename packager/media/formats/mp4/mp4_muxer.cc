@@ -98,6 +98,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_fLaC;
     case kCodecOpus:
       return FOURCC_Opus;
+    case kCodecIAMF:
+      return FOURCC_iamf;
     case kCodecMha1:
       return FOURCC_mha1;
     case kCodecMhm1:
@@ -209,7 +211,8 @@ Status MP4Muxer::FinalizeSegment(size_t stream_id,
   DCHECK(segmenter_);
   VLOG(3) << "Finalizing " << (segment_info.is_subsegment ? "sub" : "")
           << "segment " << segment_info.start_timestamp << " duration "
-          << segment_info.duration;
+          << segment_info.duration << " segment number "
+          << segment_info.segment_number;
   return segmenter_->FinalizeSegment(stream_id, segment_info);
 }
 
@@ -236,8 +239,22 @@ Status MP4Muxer::DelayInitializeMuxer() {
         ftyp->compatible_brands.push_back(codec_fourcc);
 
       // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolby_vision_bitstreams_within_the_iso_base_media_file_format_dec2017.pdf
-      if (streams()[0].get()->codec_string().find("dvh") != std::string::npos)
+      std::string codec_string =
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->codec_string();
+      std::string supplemental_codec_string =
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->supplemental_codec();
+      if (codec_string.find("dvh") != std::string::npos ||
+          supplemental_codec_string.find("dvh") != std::string::npos ||
+          codec_string.find("dav1") != std::string::npos ||
+          supplemental_codec_string.find("dav1") != std::string::npos)
         ftyp->compatible_brands.push_back(FOURCC_dby1);
+      FourCC extra_brand =
+          static_cast<const VideoStreamInfo*>(streams()[0].get())
+              ->compatible_brand();
+      if (extra_brand != FOURCC_NULL)
+        ftyp->compatible_brands.push_back(extra_brand);
     }
 
     // CMAF allows only one track/stream per file.
@@ -245,6 +262,13 @@ Status MP4Muxer::DelayInitializeMuxer() {
     // supported yet.
     if (codec_fourcc != FOURCC_avc3 && codec_fourcc != FOURCC_hev1)
       ftyp->compatible_brands.push_back(FOURCC_cmfc);
+
+    if (streams()[0]->stream_type() == kStreamAudio) {
+      codec_fourcc =
+          CodecToFourCC(streams()[0]->codec(), H26xStreamFormat::kUnSpecified);
+      if (codec_fourcc == FOURCC_iamf)
+        ftyp->compatible_brands.push_back(FOURCC_iamf);
+    }
   }
 
   moov->header.creation_time = IsoTimeNow();
@@ -541,6 +565,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     case kCodecOpus:
       audio.dops.opus_identification_header = audio_info->codec_config();
       break;
+    case kCodecIAMF:
+      audio.iacb.data = audio_info->codec_config();
+      break;
     case kCodecMha1:
     case kCodecMhm1:
       audio.mhac.data = audio_info->codec_config();
@@ -561,11 +588,20 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     audio.channelcount = audio_info->num_channels();
     //ETSI TS 103 190-2, E.4.6 samplesize shall be set to 16.
     audio.samplesize = 16;
+  } else if (audio_info->codec() == kCodecIAMF) {
+    // IAMF sets channelcount to 0
+    // https://aomediacodec.github.io/iamf/#iasampleentry-section
+    audio.channelcount = 0;
   } else {
     audio.channelcount = audio_info->num_channels();
     audio.samplesize = audio_info->sample_bits();
   }
-  audio.samplerate = audio_info->sampling_frequency();
+
+  // IAMF sets samplerate to 0
+  // https://aomediacodec.github.io/iamf/#iasampleentry-section
+  audio.samplerate =
+      audio_info->codec() == kCodecIAMF ? 0 : audio_info->sampling_frequency();
+
   SampleTable& sample_table = trak->media.information.sample_table;
   SampleDescription& sample_description = sample_table.description;
   sample_description.type = kAudio;

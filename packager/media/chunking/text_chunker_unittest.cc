@@ -30,6 +30,8 @@ const size_t kOutput = 0;
 const bool kEncrypted = true;
 const bool kSubSegment = true;
 
+const int64_t kStartSegmentNumber = 1;
+
 const char* kNoId = "";
 const char* kNoPayload = "";
 }  // namespace
@@ -38,7 +40,8 @@ class TextChunkerTest : public MediaHandlerTestBase {
  protected:
   Status Init(double segment_duration) {
     return SetUpAndInitializeGraph(
-        std::make_shared<TextChunker>(segment_duration), kInputs, kOutputs);
+        std::make_shared<TextChunker>(segment_duration, kStartSegmentNumber),
+        kInputs, kOutputs);
   }
 };
 

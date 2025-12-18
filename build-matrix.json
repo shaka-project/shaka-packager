@@ -30,18 +30,17 @@
       "target_arch": "x64",
       "exe_ext": ".exe",
       "generator": ""
-    }
-  ],
-
-  "comment2": "runners hosted by the owner, enabled by the 'self_hosted' environment being created on the repo",
-  "selfHosted": [
+    },
     {
-      "os": "self-hosted-linux-arm64",
+      "os": "ubuntu-24.04-arm",
       "os_name": "linux",
       "target_arch": "arm64",
       "exe_ext": "",
-      "generator": "Ninja",
-      "low_mem": "yes"
+      "generator": "Ninja"
     }
+  ],
+
+  "comment2": "Self-hosted runners are not used since the introduction of GitHub-hosted Linux arm64 runners.  The feature still exists if a new platform becomes necessary.",
+  "selfHosted": [
   ]
 }

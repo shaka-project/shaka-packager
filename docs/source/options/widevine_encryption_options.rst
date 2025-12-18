@@ -9,6 +9,10 @@ Widevine encryption options
     --protection_systems is not specified. Use --protection_systems to generate
     multiple protection systems.
 
+--enable_entitlement_license
+
+    Enable entitlement license in the Widevine encryption request.
+
 --enable_widevine_decryption
 
     Enable decryption with Widevine key server. User should provide either

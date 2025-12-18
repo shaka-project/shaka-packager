@@ -73,6 +73,8 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   DCHECK(video_stream_info);
   DCHECK(media_info);
   MediaInfo_VideoInfo* video_info = media_info->mutable_video_info();
+  video_info->set_supplemental_codec(video_stream_info->supplemental_codec());
+  video_info->set_compatible_brand(video_stream_info->compatible_brand());
   video_info->set_codec(video_stream_info->codec_string());
   video_info->set_width(video_stream_info->width());
   video_info->set_height(video_stream_info->height());
@@ -95,6 +97,13 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   if (video_stream_info->transfer_characteristics() > 0) {
     video_info->set_transfer_characteristics(
         video_stream_info->transfer_characteristics());
+  }
+  if (video_stream_info->color_primaries() > 0) {
+    video_info->set_color_primaries(video_stream_info->color_primaries());
+  }
+  if (video_stream_info->matrix_coefficients() > 0) {
+    video_info->set_matrix_coefficients(
+        video_stream_info->matrix_coefficients());
   }
 }
 

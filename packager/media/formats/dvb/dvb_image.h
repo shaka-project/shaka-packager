@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_DVB_DVB_IMAGE_H_
 #define PACKAGER_MEDIA_DVB_DVB_IMAGE_H_
 
+#include <cstdint>
 #include <memory>
 #include <type_traits>
 

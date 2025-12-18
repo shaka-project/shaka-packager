@@ -53,12 +53,12 @@ bool AddMpdNameSpaceInfo(XmlNode* mpd) {
       "urn:marlin:mas:1-0:services:schemas:mpd";
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
   static const char kMsprNamespace[] = "urn:microsoft:playready";
+  static const char kScte214Namespace[] = "urn:scte:dash:scte214-extensions";
 
   const std::map<std::string, std::string> uris = {
-      {"cenc", kCencNamespace},
-      {"mas", kMarlinNamespace},
-      {"xlink", kXmlNamespaceXlink},
-      {"mspr", kMsprNamespace},
+      {"cenc", kCencNamespace},       {"mas", kMarlinNamespace},
+      {"xlink", kXmlNamespaceXlink},  {"mspr", kMsprNamespace},
+      {"scte214", kScte214Namespace},
   };
 
   for (const std::string& namespace_name : namespaces) {
@@ -167,7 +167,7 @@ std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   // Add baseurls to MPD.
   for (const std::string& base_url : base_urls_) {
     XmlNode xml_base_url("BaseURL");
-    xml_base_url.SetContent(base_url);
+    xml_base_url.SetUrlEncodedContent(base_url);
 
     if (!mpd.AddChild(std::move(xml_base_url)))
       return std::nullopt;
@@ -417,19 +417,17 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
 
   if (!mpd_file_path.empty()) {
     const std::filesystem::path mpd_dir(mpd_file_path.parent_path());
-    if (!mpd_dir.empty()) {
-      if (media_info->has_media_file_name()) {
-        media_info->set_media_file_url(
-            MakePathRelative(media_info->media_file_name(), mpd_dir));
-      }
-      if (media_info->has_init_segment_name()) {
-        media_info->set_init_segment_url(
-            MakePathRelative(media_info->init_segment_name(), mpd_dir));
-      }
-      if (media_info->has_segment_template()) {
-        media_info->set_segment_template_url(
-            MakePathRelative(media_info->segment_template(), mpd_dir));
-      }
+    if (media_info->has_media_file_name()) {
+      media_info->set_media_file_url(
+          MakePathRelative(media_info->media_file_name(), mpd_dir));
+    }
+    if (media_info->has_init_segment_name()) {
+      media_info->set_init_segment_url(
+          MakePathRelative(media_info->init_segment_name(), mpd_dir));
+    }
+    if (media_info->has_segment_template()) {
+      media_info->set_segment_template_url(
+          MakePathRelative(media_info->segment_template(), mpd_dir));
     }
   }
 }

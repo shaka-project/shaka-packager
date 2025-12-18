@@ -6,9 +6,15 @@
 
 # A reusable workflow to extract settings from a repository.
 # To enable a setting, create a "GitHub Environment" with the same name.
-# This is a hack to enable per-repo settings that aren't copied to a fork.
-# Without this, test workflows for a fork would time out waiting for
-# self-hosted runners that the fork doesn't have.
+#
+# This enables per-repo settings that aren't copied to a fork.  This is better
+# than "vars" or "secrets", since those would require the use of
+# `pull_request_target` instead of `pull_request` triggers, which come with
+# additional risks such as the bypassing of "require approval" rules for
+# workflows.
+#
+# Without a setting for flags like "self_hosted", test workflows for a fork
+# would time out waiting for self-hosted runners that the fork doesn't have.
 name: Settings
 
 # Runs when called from another workflow.

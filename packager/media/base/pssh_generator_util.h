@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_PSSH_GENERATOR_UTIL_H_
 #define PACKAGER_MEDIA_BASE_PSSH_GENERATOR_UTIL_H_
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <set>

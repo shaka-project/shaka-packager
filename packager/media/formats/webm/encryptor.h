@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_ENCRYPTOR_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_ENCRYPTOR_H_
 
+#include <cstdint>
 #include <vector>
 
 #include <mkvmuxer/mkvmuxer.h>

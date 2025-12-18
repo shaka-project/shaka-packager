@@ -35,6 +35,10 @@ class DOVIDecoderConfigurationRecord {
   ///         DASH and HLS manifests.
   std::string GetCodecString(FourCC codec_fourcc) const;
 
+  /// @return The compatiable brand in the format defined by
+  /// https://mp4ra.org/#/brands.
+  FourCC GetDoViCompatibleBrand(const uint8_t transfer_characteristics) const;
+
  private:
   DOVIDecoderConfigurationRecord(const DOVIDecoderConfigurationRecord&) =
       delete;
@@ -42,6 +46,7 @@ class DOVIDecoderConfigurationRecord {
       const DOVIDecoderConfigurationRecord&) = delete;
 
   uint8_t profile_ = 0;
+  uint8_t bl_signal_compatibility_id_ = 0;
   uint8_t level_ = 0;
 };
 

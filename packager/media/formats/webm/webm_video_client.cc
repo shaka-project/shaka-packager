@@ -125,8 +125,8 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   return std::make_shared<VideoStreamInfo>(
       track_num, kWebMTimeScale, 0, video_codec, H26xStreamFormat::kUnSpecified,
       codec_string, codec_private.data(), codec_private.size(),
-      width_after_crop, height_after_crop, pixel_width, pixel_height, 0, 0,
-      0 /* transfer_characteristics */, std::string(), is_encrypted);
+      width_after_crop, height_after_crop, pixel_width, pixel_height, 0, 0, 0,
+      0, 0, std::string(), is_encrypted);
 }
 
 VPCodecConfigurationRecord WebMVideoClient::GetVpCodecConfig(

@@ -14,6 +14,7 @@ set(PSSH_BOX_OUTPUTS
 
 add_custom_command(
     DEPENDS
+        protobuf_py
         widevine_protos
         pssh-box.py
     OUTPUT ${PSSH_BOX_OUTPUTS}
@@ -26,8 +27,18 @@ add_custom_command(
         ${CMAKE_BINARY_DIR}/packager/media/base/widevine_pssh_data_pb2.py
         ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/
     COMMAND
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_BINARY_DIR}/packager/third_party/protobuf/py/google
+        ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/google
+    COMMAND
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/pssh-box.py
         ${CMAKE_BINARY_DIR}/packager/)
 
 add_custom_target(pssh_box_py ALL DEPENDS ${PSSH_BOX_OUTPUTS})
+
+# Always install the python tools.
+install(PROGRAMS ${CMAKE_BINARY_DIR}/packager/pssh-box.py
+        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/packager/pssh-box-protos
+        DESTINATION ${CMAKE_INSTALL_BINDIR})

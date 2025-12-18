@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 #define PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>
@@ -72,6 +73,9 @@ class SimpleHlsNotifier : public HlsNotifier {
   bool Flush() override;
   /// }@
 
+ protected:
+  const absl::Time& reference_time() const { return reference_time_; }
+
  private:
   friend class SimpleHlsNotifierTest;
 
@@ -93,6 +97,7 @@ class SimpleHlsNotifier : public HlsNotifier {
   uint32_t sequence_number_ = 0;
 
   absl::Mutex lock_;
+  absl::Time reference_time_ = absl::InfinitePast();
 
   DISALLOW_COPY_AND_ASSIGN(SimpleHlsNotifier);
 };

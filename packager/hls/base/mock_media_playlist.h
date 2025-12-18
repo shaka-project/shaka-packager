@@ -7,6 +7,8 @@
 #ifndef PACKAGER_HLS_BASE_MOCK_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MOCK_MEDIA_PLAYLIST_H_
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 
 #include <packager/hls/base/media_playlist.h>

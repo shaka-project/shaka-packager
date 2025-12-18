@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_TRICK_PLAY_HANDLER_H_
 #define PACKAGER_MEDIA_BASE_TRICK_PLAY_HANDLER_H_
 
+#include <cstdint>
 #include <list>
 
 #include <packager/media/base/media_handler.h>

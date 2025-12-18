@@ -46,3 +46,13 @@ ABSL_FLAG(std::optional<double>,
           "beginning of the playlist. A negative number indicates a "
           "negative time offset from the end of the last media segment "
           "in the playlist.");
+ABSL_FLAG(bool,
+          create_session_keys,
+          false,
+          "Playback of Offline HLS assets shall use EXT-X-SESSION-KEY "
+          "to declare all eligible content keys in the master playlist.");
+ABSL_FLAG(bool,
+          add_program_date_time,
+          false,
+          "Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is "
+          "derived from the current wall clock time.");

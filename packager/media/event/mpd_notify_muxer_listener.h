@@ -9,6 +9,7 @@
 #ifndef PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -52,7 +53,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
   void OnNewSegment(const std::string& file_name,
                     int64_t start_time,
                     int64_t duration,
-                    uint64_t segment_file_size) override;
+                    uint64_t segment_file_size,
+                    int64_t segment_number) override;
   void OnCompletedSegment(int64_t duration,
                           uint64_t segment_file_size) override;
   void OnKeyFrame(int64_t timestamp,

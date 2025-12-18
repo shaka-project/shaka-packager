@@ -274,6 +274,9 @@ std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
 SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
     : HlsNotifier(hls_params),
       media_playlist_factory_(new MediaPlaylistFactory()) {
+  if (hls_params.add_program_date_time) {
+    reference_time_ = absl::Now();
+  }
   const auto master_playlist_path =
       std::filesystem::u8path(hls_params.master_playlist_output);
   master_playlist_dir_ = master_playlist_path.parent_path().string();
@@ -284,7 +287,8 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
           : hls_params.default_text_language;
   master_playlist_.reset(new MasterPlaylist(
       master_playlist_path.filename(), default_audio_langauge,
-      default_text_language, hls_params.is_independent_segments));
+      default_text_language, hls_params.is_independent_segments,
+      hls_params.create_session_keys));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}
@@ -313,6 +317,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
   }
+  media_playlist->SetReferenceTime(reference_time());
 
   MediaPlaylist::EncryptionMethod encryption_method =
       MediaPlaylist::EncryptionMethod::kNone;
@@ -457,6 +462,19 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   const std::vector<uint8_t> empty_key_id;
 
   if (IsCommonSystemId(system_id)) {
+    const MediaPlaylist::EncryptionMethod encryption_method_from_stream =
+        stream_iterator->second->encryption_method;
+
+    if (encryption_method_from_stream ==
+        MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
+      // We do NOT add the "identity" key format, because CENC must be managed
+      // by a specific DRM (like Widevine)
+      LOG(INFO) << "Skipping KEYFORMAT=\"identity\" for CENC content (stream "
+                << stream_id
+                << ") as it should be handled by a specific DRM system.";
+      return true;
+    }
+
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
