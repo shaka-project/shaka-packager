@@ -274,6 +274,9 @@ std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
 SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
     : HlsNotifier(hls_params),
       media_playlist_factory_(new MediaPlaylistFactory()) {
+  if (hls_params.add_program_date_time) {
+    reference_time_ = absl::Now();
+  }
   const auto master_playlist_path =
       std::filesystem::u8path(hls_params.master_playlist_output);
   master_playlist_dir_ = master_playlist_path.parent_path().string();
@@ -314,6 +317,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
   }
+  media_playlist->SetReferenceTime(reference_time());
 
   MediaPlaylist::EncryptionMethod encryption_method =
       MediaPlaylist::EncryptionMethod::kNone;

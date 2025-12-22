@@ -33,6 +33,7 @@ class HlsEntry {
     kExtKey,
     kExtDiscontinuity,
     kExtPlacementOpportunity,
+    kProgramDateTime,
   };
   virtual ~HlsEntry();
 
@@ -137,6 +138,10 @@ class MediaPlaylist {
                           int64_t duration,
                           uint64_t start_byte_offset,
                           uint64_t size);
+
+  /// Set the reference time for EXT-X-PROGRAM-DATE-TIME. This is the wall clock
+  /// time for when media timestamp is 0.
+  virtual void SetReferenceTime(const absl::Time& reference_time);
 
   /// Keyframes must be added in order. It is also called before the containing
   /// segment being called.
@@ -310,6 +315,9 @@ class MediaPlaylist {
   // Once a file is actually removed, it is removed from the list.
   std::list<std::string> segments_to_be_removed_;
 
+  // This is the wall clock time when media timestamp is 0.
+  absl::Time reference_time_;
+
   // Used by kVideoIFrameOnly playlists to track the i-frames (key frames).
   struct KeyFrameInfo {
     int64_t timestamp;
@@ -320,6 +328,19 @@ class MediaPlaylist {
   std::list<KeyFrameInfo> key_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
+};
+
+class ProgramDateTimeEntry : public HlsEntry {
+ public:
+  explicit ProgramDateTimeEntry(const absl::Time& program_time);
+
+  std::string ToString() override;
+
+ private:
+  ProgramDateTimeEntry(const ProgramDateTimeEntry&) = delete;
+  ProgramDateTimeEntry& operator=(const ProgramDateTimeEntry&) = delete;
+
+  const absl::Time program_time_;
 };
 
 class EncryptionInfoEntry : public HlsEntry {

@@ -544,6 +544,7 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_hls_media_sequence_number);
   hls_params.start_time_offset = absl::GetFlag(FLAGS_hls_start_time_offset);
   hls_params.create_session_keys = absl::GetFlag(FLAGS_create_session_keys);
+  hls_params.add_program_date_time = absl::GetFlag(FLAGS_add_program_date_time);
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);
