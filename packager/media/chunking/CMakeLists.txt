@@ -7,6 +7,7 @@
 add_library(media_chunking STATIC
     chunking_handler.cc
     cue_alignment_handler.cc
+    segment_coordinator.cc
     sync_point_queue.cc
     text_chunker.cc
 )
@@ -17,6 +18,7 @@ target_link_libraries(media_chunking
 add_executable(media_chunking_unittest
     chunking_handler_unittest.cc
     cue_alignment_handler_unittest.cc
+    segment_coordinator_unittest.cc
     text_chunker_unittest.cc
 )
 target_link_libraries(media_chunking_unittest

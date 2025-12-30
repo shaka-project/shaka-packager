@@ -311,6 +311,111 @@ TEST_F(Mp2tMediaParserTest, TeletextHeartbeatGeneration) {
   LOG(INFO) << "  TextHeartBeat: " << text_heartbeat_count;
 }
 
+TEST_F(Mp2tMediaParserTest, TeletextPtsWrapAround) {
+  // Test that the parser correctly handles PTS values near the 33-bit
+  // wrap-around point (2^33 = 8589934592 ticks, ~26.5 hours at 90kHz).
+  //
+  // test_teletext_live_wrap.ts contains:
+  // - Video/audio/teletext with PTS starting ~15 seconds before wrap
+  // - Content that spans across the wrap boundary
+  // - Same structure as test_teletext_live.ts but with offset timestamps
+  //
+  // Expected behavior:
+  // - Parser correctly unwraps PTS values to monotonically increasing timestamps
+  // - MediaHeartBeat samples generated with correct unwrapped timestamps
+  // - kCueStart/kCueEnd samples have correct timing relative to wrap
+
+  ASSERT_TRUE(ParseMpeg2TsFile("test_teletext_live_wrap.ts", 188));
+  EXPECT_TRUE(parser_->Flush());
+
+  // Verify we got samples
+  EXPECT_FALSE(text_samples_.empty()) << "Expected text samples from teletext";
+
+  // Separate samples by role and collect timestamps
+  int heartbeat_count = 0;
+  int cue_start_count = 0;
+  int cue_end_count = 0;
+
+  std::vector<int64_t> all_pts_values;
+
+  for (const auto& sample : text_samples_) {
+    all_pts_values.push_back(sample.start_time);
+
+    switch (sample.role) {
+      case TextSampleRole::kMediaHeartBeat:
+        heartbeat_count++;
+        break;
+      case TextSampleRole::kCueStart:
+        cue_start_count++;
+        break;
+      case TextSampleRole::kCueEnd:
+        cue_end_count++;
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Verify MediaHeartBeat samples were generated
+  EXPECT_GT(heartbeat_count, 100)
+      << "Expected MediaHeartBeat samples for wrap-around test";
+
+  // Verify subtitle cue samples (same structure as test_teletext_live.ts)
+  EXPECT_EQ(cue_start_count, 3)
+      << "Expected 3 kCueStart samples for 3 subtitle cues";
+  EXPECT_EQ(cue_end_count, 6)
+      << "Expected 6 kCueEnd samples";
+
+  // Key verification: Check that PTS values are near the wrap-around point
+  // The 33-bit wrap point is 8589934592
+  constexpr int64_t kPtsWrapAround = 1LL << 33;  // 8589934592
+
+  // Find min and max PTS to verify we're near wrap point
+  int64_t min_pts = *std::min_element(all_pts_values.begin(), all_pts_values.end());
+  int64_t max_pts = *std::max_element(all_pts_values.begin(), all_pts_values.end());
+
+  // Verify timestamps are near the wrap point (within ~30 seconds = 2.7M ticks)
+  constexpr int64_t kMaxDistanceFromWrap = 30 * 90000;  // 30 seconds
+  EXPECT_GT(min_pts, kPtsWrapAround - kMaxDistanceFromWrap)
+      << "Expected min PTS to be within 30s before wrap point";
+
+  // After unwrapping, max PTS should be greater than wrap point
+  // (content spans across the wrap boundary)
+  EXPECT_GT(max_pts, kPtsWrapAround)
+      << "Expected max PTS to be after wrap point (content spans wrap)";
+
+  // Verify monotonicity: all timestamps should be increasing (after unwrapping)
+  // This confirms the parser correctly handles the wrap-around
+  bool is_monotonic = true;
+  for (size_t i = 1; i < all_pts_values.size(); ++i) {
+    if (all_pts_values[i] < all_pts_values[i - 1]) {
+      // Allow small backwards jumps (up to 1 second) due to B-frames or
+      // interleaved streams, but not wrap-around sized jumps
+      int64_t diff = all_pts_values[i - 1] - all_pts_values[i];
+      if (diff > 90000) {  // More than 1 second backwards
+        is_monotonic = false;
+        LOG(ERROR) << "Non-monotonic PTS at index " << i
+                   << ": " << all_pts_values[i - 1] << " -> " << all_pts_values[i]
+                   << " (diff: " << diff << ")";
+        break;
+      }
+    }
+  }
+  EXPECT_TRUE(is_monotonic)
+      << "PTS values should be monotonically increasing after unwrapping";
+
+  // Log summary for debugging
+  LOG(INFO) << "Teletext wrap-around test summary:";
+  LOG(INFO) << "  Total text samples: " << text_samples_.size();
+  LOG(INFO) << "  MediaHeartBeat: " << heartbeat_count;
+  LOG(INFO) << "  kCueStart: " << cue_start_count;
+  LOG(INFO) << "  kCueEnd: " << cue_end_count;
+  LOG(INFO) << "  Min PTS: " << min_pts << " (wrap point: " << kPtsWrapAround << ")";
+  LOG(INFO) << "  Max PTS: " << max_pts;
+  LOG(INFO) << "  Distance from wrap: " << (kPtsWrapAround - min_pts) / 90000 << "s before, "
+            << (max_pts - kPtsWrapAround) / 90000 << "s after";
+}
+
 }  // namespace mp2t
 }  // namespace media
 }  // namespace shaka

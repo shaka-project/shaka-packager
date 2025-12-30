@@ -30,6 +30,7 @@
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/chunking/chunking_handler.h>
 #include <packager/media/chunking/cue_alignment_handler.h>
+#include <packager/media/chunking/segment_coordinator.h>
 #include <packager/media/chunking/text_chunker.h>
 #include <packager/media/crypto/encryption_handler.h>
 #include <packager/media/demuxer/demuxer.h>
@@ -519,12 +520,13 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
 }
 
 std::unique_ptr<MediaHandler> CreateTextChunker(
-    const ChunkingParams& chunking_params) {
+    const ChunkingParams& chunking_params,
+    bool use_segment_coordinator = false) {
   const float segment_length_in_seconds =
       chunking_params.segment_duration_in_seconds;
   return std::unique_ptr<MediaHandler>(new TextChunker(
       segment_length_in_seconds, chunking_params.start_segment_number,
-      chunking_params.ts_ttx_heartbeat_shift));
+      chunking_params.ts_ttx_heartbeat_shift, use_segment_coordinator));
 }
 
 Status CreateTtmlJobs(
@@ -606,6 +608,8 @@ Status CreateAudioVideoJobs(
   // order.
   std::map<std::string, std::shared_ptr<Demuxer>> sources;
   std::map<std::string, std::shared_ptr<MediaHandler>> cue_aligners;
+  std::map<std::string, std::shared_ptr<SegmentCoordinator>>
+      segment_coordinators;
 
   for (const StreamDescriptor& stream : streams) {
     bool seen_input_before = sources.find(stream.input) != sources.end();
@@ -618,6 +622,7 @@ Status CreateAudioVideoJobs(
     cue_aligners[stream.input] =
         sync_points ? std::make_shared<CueAlignmentHandler>(sync_points)
                     : nullptr;
+    segment_coordinators[stream.input] = std::make_shared<SegmentCoordinator>();
   }
 
   for (auto& source : sources) {
@@ -631,15 +636,21 @@ Status CreateAudioVideoJobs(
   std::string previous_input;
   std::string previous_selector;
 
+  // Track stream indices for each input to mark teletext streams
+  std::map<std::string, size_t> stream_counters;
+
   for (const StreamDescriptor& stream : streams) {
     // Get the demuxer for this stream.
     auto& demuxer = sources[stream.input];
     auto& cue_aligner = cue_aligners[stream.input];
+    auto& segment_coordinator = segment_coordinators[stream.input];
 
     const bool new_input_file = stream.input != previous_input;
     const bool new_stream =
         new_input_file || previous_selector != stream.stream_selector;
     const bool is_text = IsTextStream(stream);
+    const bool is_teletext = is_text && stream.cc_index >= 0;
+
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
 
@@ -670,11 +681,25 @@ Status CreateAudioVideoJobs(
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
       }
+
+      // Track stream index for SegmentCoordinator
+      size_t stream_index = stream_counters[stream.input]++;
+      if (is_teletext) {
+        segment_coordinator->MarkAsTeletextStream(stream_index);
+      }
+
       if (!is_text) {
+        // For video/audio: ChunkingHandler first, then SegmentCoordinator
+        // SegmentInfo from ChunkingHandler will reach the coordinator
         handlers.emplace_back(std::make_shared<ChunkingHandler>(
             packaging_params.chunking_params));
+        handlers.emplace_back(segment_coordinator);
         handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
                                                       encryption_key_source));
+      } else {
+        // For text: SegmentCoordinator before TextChunker
+        // So it can forward SegmentInfo from video/audio to TextChunker
+        handlers.emplace_back(segment_coordinator);
       }
 
       replicator = std::make_shared<Replicator>();
@@ -714,8 +739,10 @@ Status CreateAudioVideoJobs(
 
     if (is_text &&
         (!stream.segment_template.empty() || output_format == CONTAINER_MOV)) {
+      // Enable coordinator mode for teletext streams to align with video/audio
+      bool use_coordinator = is_teletext;
       handlers.emplace_back(
-          CreateTextChunker(packaging_params.chunking_params));
+          CreateTextChunker(packaging_params.chunking_params, use_coordinator));
     }
 
     if (is_text && output_format == CONTAINER_MOV) {

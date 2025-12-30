@@ -20,14 +20,25 @@ TextChunker::TextChunker(double segment_duration_in_seconds,
                          int64_t start_segment_number)
     : segment_duration_in_seconds_(segment_duration_in_seconds),
       segment_number_(start_segment_number),
-      ts_ttx_heartbeat_shift_(kDefaultTtxHeartbeatShift) {};
+      ts_ttx_heartbeat_shift_(kDefaultTtxHeartbeatShift),
+      use_segment_coordinator_(false) {};
 
 TextChunker::TextChunker(double segment_duration_in_seconds,
                          int64_t start_segment_number,
                          int64_t ts_ttx_heartbeat_shift)
     : segment_duration_in_seconds_(segment_duration_in_seconds),
       segment_number_(start_segment_number),
-      ts_ttx_heartbeat_shift_(ts_ttx_heartbeat_shift) {};
+      ts_ttx_heartbeat_shift_(ts_ttx_heartbeat_shift),
+      use_segment_coordinator_(false) {};
+
+TextChunker::TextChunker(double segment_duration_in_seconds,
+                         int64_t start_segment_number,
+                         int64_t ts_ttx_heartbeat_shift,
+                         bool use_segment_coordinator)
+    : segment_duration_in_seconds_(segment_duration_in_seconds),
+      segment_number_(start_segment_number),
+      ts_ttx_heartbeat_shift_(ts_ttx_heartbeat_shift),
+      use_segment_coordinator_(use_segment_coordinator) {};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {
@@ -37,6 +48,13 @@ Status TextChunker::Process(std::unique_ptr<StreamData> data) {
       return OnTextSample(data->text_sample);
     case StreamDataType::kCueEvent:
       return OnCueEvent(data->cue_event);
+    case StreamDataType::kSegmentInfo:
+      if (use_segment_coordinator_) {
+        return OnSegmentInfo(std::move(data->segment_info));
+      } else {
+        // Pass through for non-teletext streams
+        return DispatchSegmentInfo(kStreamIndex, std::move(data->segment_info));
+      }
     default:
       return Status(error::INTERNAL_ERROR,
                     "Invalid stream data type for this handler");
@@ -46,7 +64,17 @@ Status TextChunker::Process(std::unique_ptr<StreamData> data) {
 Status TextChunker::OnFlushRequest(size_t /*input_stream_index*/) {
   // Keep outputting segments until all the samples leave the system. Calling
   // |DispatchSegment| will remove samples over time.
+  //
+  // In coordinator mode, the final SegmentInfo from video/audio should have
+  // already triggered the last segment dispatch with the correct duration.
+  // This loop handles any remaining samples (edge cases or non-coordinator mode).
   while (samples_in_current_segment_.size()) {
+    if (segment_start_ < 0) {
+      // No segments were ever started - nothing to flush
+      break;
+    }
+    int64_t segment_end = segment_start_ + segment_duration_;
+    AddOngoingCuesToCurrentSegment(segment_end);
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
@@ -93,8 +121,9 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
            << " sub_stream_index=" << sample->sub_stream_index();
 
   // If we have not seen a sample yet, base all segments off the first sample's
-  // start time.
-  if (segment_start_ < 0) {
+  // start time. In coordinator mode, we wait for SegmentInfo to initialize
+  // segment_start_ so that we align with video/audio boundaries.
+  if (segment_start_ < 0 && !use_segment_coordinator_) {
     // Force the first segment to start at the segment that would have started
     // before the sample. This should allow segments from different streams to
     // align.
@@ -146,7 +175,8 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   }
 
   if (role != TextSampleRole::kMediaHeartBeat) {
-    if (sample_start < latest_media_heartbeat_time_) {
+    // Use SignedPtsDiff for wrap-safe comparison
+    if (PtsIsBefore(sample_start, latest_media_heartbeat_time_)) {
       LOG(WARNING) << "Potentially bad text segment: text pts=" << sample_start
                    << " before latest media pts="
                    << latest_media_heartbeat_time_;
@@ -168,25 +198,19 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   // sample started. For segment without end, we check if they have started
   // and if so, make cropped copy that goes to the end.
   // We also crop such a cue at the start if needed.
-
-  while (sample_start >= segment_start_ + segment_duration_) {
+  //
+  // In coordinator mode, we skip this entirely - segment dispatch is driven
+  // by OnSegmentInfo which receives actual video/audio segment boundaries.
+  // This ensures text segments align perfectly with video/audio segments.
+  if (!use_segment_coordinator_ && segment_start_ >= 0) {
     int64_t segment_end = segment_start_ + segment_duration_;
-    for (auto s : samples_without_end_) {
-      if (s->role() == TextSampleRole::kCueStart) {
-        if (s->start_time() < segment_end) {
-          // Make a new cue in current segment.
-          auto cue_start = s->start_time();
-          if (cue_start < segment_start_) {
-            cue_start = segment_start_;
-          }
-          auto nS = std::make_shared<TextSample>("", cue_start, segment_end,
-                                                 s->settings(), s->body());
-          samples_in_current_segment_.push_back(std::move(nS));
-        }
-      }
+    while (!PtsIsBefore(sample_start, segment_end)) {
+      // Add cropped copies of ongoing cues before dispatching
+      AddOngoingCuesToCurrentSegment(segment_end);
+      // |DispatchSegment| will advance |segment_start_|.
+      RETURN_IF_ERROR(DispatchSegment(segment_duration_));
+      segment_end = segment_start_ + segment_duration_;
     }
-    // |DispatchSegment| will advance |segment_start_|.
-    RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
   switch (role) {
@@ -206,16 +230,123 @@ Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   return Status::OK;
 }
 
+Status TextChunker::OnSegmentInfo(std::shared_ptr<const SegmentInfo> info) {
+  DCHECK(use_segment_coordinator_)
+      << "OnSegmentInfo should only be called when coordinator mode is enabled";
+
+  // Skip subsegments - only align on full segments
+  if (info->is_subsegment) {
+    DVLOG(3) << "TextChunker: Skipping subsegment SegmentInfo";
+    return Status::OK;
+  }
+
+  int64_t actual_boundary = info->start_timestamp;
+
+  DVLOG(2) << "TextChunker received SegmentInfo boundary: " << actual_boundary
+           << " (calculated would be: " << segment_start_ + segment_duration_
+           << ")";
+
+  // If this is the first segment info, initialize segment_start_
+  if (segment_start_ < 0) {
+    segment_start_ = actual_boundary;
+    DVLOG(2) << "TextChunker: Initialized segment_start_ from SegmentInfo: "
+             << segment_start_;
+    return Status::OK;
+  }
+
+  // Handle PTS wrap-around: if actual_boundary appears to be earlier than
+  // segment_start_ by more than half the 33-bit PTS range, it's likely
+  // wrapped around and is actually later.
+  // 33-bit PTS wraps at 2^33 = 8,589,934,592 ticks (~26.5 hours @ 90kHz)
+  // Half range = ~13 hours = 4,294,967,296 ticks
+  const int64_t kPtsWrapThreshold = 4294967296LL;  // Half of 2^33
+
+  if (actual_boundary < segment_start_) {
+    int64_t diff = segment_start_ - actual_boundary;
+    if (diff > kPtsWrapThreshold) {
+      // This looks like a wrap-around - the boundary has wrapped but our
+      // segment_start_ hasn't yet. Treat this boundary as being later.
+      DVLOG(2) << "TextChunker: Detected PTS wrap-around. Boundary "
+               << actual_boundary << " appears earlier than segment_start_ "
+               << segment_start_ << " by " << diff << " ticks, but is likely "
+               << "later due to wrap-around.";
+
+      // Dispatch one final segment before the wrap and align to the boundary
+      int64_t segment_end = segment_start_ + segment_duration_;
+      AddOngoingCuesToCurrentSegment(segment_end);
+      RETURN_IF_ERROR(DispatchSegment(segment_duration_));
+      segment_start_ = actual_boundary;
+      return Status::OK;
+    } else if (segment_number_ == 0) {
+      // We haven't dispatched any segments yet, and this boundary is earlier.
+      // This can happen when different streams (video/audio) have different
+      // starting timestamps. Reset to the earlier boundary.
+      DVLOG(2) << "TextChunker: Received earlier boundary " << actual_boundary
+               << " before any segments dispatched. Resetting segment_start_ "
+               << "from " << segment_start_ << " to " << actual_boundary;
+      segment_start_ = actual_boundary;
+      return Status::OK;
+    } else {
+      // Boundary is genuinely earlier - this shouldn't happen in normal flow
+      // but we'll log a warning and skip this boundary
+      LOG(WARNING) << "TextChunker: Received SegmentInfo boundary "
+                   << actual_boundary << " that is earlier than current "
+                   << "segment_start_ " << segment_start_ << " (diff: "
+                   << diff << "). Skipping this boundary.";
+      return Status::OK;
+    }
+  }
+
+  // Dispatch all pending segments up to this boundary
+  while (segment_start_ < actual_boundary) {
+    int64_t segment_end = segment_start_ + segment_duration_;
+
+    // If the next calculated segment would go past the actual boundary,
+    // dispatch a shorter segment to align with the actual boundary
+    if (segment_end > actual_boundary) {
+      int64_t adjusted_duration = actual_boundary - segment_start_;
+      if (adjusted_duration > 0) {
+        DVLOG(3) << "TextChunker: Dispatching adjusted segment to align with "
+                 << "actual boundary. Duration: " << adjusted_duration
+                 << " (normal: " << segment_duration_ << ")";
+        // Add ongoing cues before dispatching (use actual boundary as end)
+        AddOngoingCuesToCurrentSegment(actual_boundary);
+        RETURN_IF_ERROR(DispatchSegment(adjusted_duration));
+      }
+      break;
+    }
+
+    // Dispatch a full-duration segment
+    DVLOG(3) << "TextChunker: Dispatching full segment aligned to actual boundary";
+    // Add ongoing cues before dispatching
+    AddOngoingCuesToCurrentSegment(segment_end);
+    RETURN_IF_ERROR(DispatchSegment(segment_duration_));
+  }
+
+  // Align next segment to actual boundary
+  segment_start_ = actual_boundary;
+
+  return Status::OK;
+}
+
 Status TextChunker::DispatchSegment(int64_t duration) {
   DCHECK_GT(duration, 0) << "Segment duration should always be positive";
 
-  // Output all the samples that are part of the segment.
-  DVLOG(1) << "DispatchSegment, start=" << segment_start_
-           << " end=" << segment_start_ + duration;
+  int64_t segment_end = segment_start_ + duration;
+
+  // Output only the samples that actually belong in this segment.
+  // Use wrap-safe comparison since samples may have wrapped PTS.
+  DVLOG(1) << "DispatchSegment, start=" << segment_start_ << " end=" << segment_end;
   for (const auto& sample : samples_in_current_segment_) {
-    DVLOG(2) << "DispatchTextSample, pts=" << sample->start_time()
-             << " end=" << sample->EndTime();
-    RETURN_IF_ERROR(DispatchTextSample(kStreamIndex, sample));
+    // Only dispatch if sample starts before segment end
+    if (PtsIsBefore(sample->start_time(), segment_end)) {
+      DVLOG(2) << "DispatchTextSample, pts=" << sample->start_time()
+               << " end=" << sample->EndTime();
+      RETURN_IF_ERROR(DispatchTextSample(kStreamIndex, sample));
+    } else {
+      DVLOG(2) << "Skipping sample pts=" << sample->start_time()
+               << " (after segment_end=" << segment_end << ")";
+    }
   }
 
   // Output the segment info.
@@ -229,20 +360,13 @@ Status TextChunker::DispatchSegment(int64_t duration) {
   // Move onto the next segment.
   const int64_t new_segment_start = segment_start_ + duration;
   segment_start_ = new_segment_start;
-  // DVLOG(3) << "New segment start=" << segment_start_
-  //          << " end=" << segment_start_ + duration;
 
   // Remove all samples that end before the (new) current segment started.
+  // Use wrap-safe comparison.
   samples_in_current_segment_.remove_if(
       [new_segment_start](const std::shared_ptr<const TextSample>& sample) {
-        // For the sample to even be in this list, it should have started
-        // before the (new) current segment.
-        DCHECK_LT(sample->start_time(), new_segment_start);
-        // auto should_remove = sample->EndTime() <= new_segment_start;
-        // DVLOG(3) << "sample start=" << sample->start_time()
-        //          << " end=" << sample->EndTime()
-        //          << " remove=" << should_remove;
-        return sample->EndTime() <= new_segment_start;
+        // Remove if sample ends before or at new segment start (wrap-safe)
+        return PtsIsBeforeOrEqual(sample->EndTime(), new_segment_start);
       });
 
   return Status::OK;
@@ -251,6 +375,28 @@ Status TextChunker::DispatchSegment(int64_t duration) {
 int64_t TextChunker::ScaleTime(double seconds) const {
   DCHECK_GT(time_scale_, 0) << "Need positive time scale to scale time.";
   return static_cast<int64_t>(seconds * time_scale_);
+}
+
+void TextChunker::AddOngoingCuesToCurrentSegment(int64_t segment_end) {
+  // For each ongoing cue (started but no end time yet), create a cropped
+  // copy that ends at the segment boundary and add to current segment.
+  for (const auto& s : samples_without_end_) {
+    if (s->role() == TextSampleRole::kCueStart) {
+      // Only include if the cue started before this segment ends
+      if (PtsIsBefore(s->start_time(), segment_end)) {
+        // Crop the start time to segment_start_ if needed
+        auto cue_start = s->start_time();
+        if (PtsIsBefore(cue_start, segment_start_)) {
+          cue_start = segment_start_;
+        }
+        auto cropped_cue = std::make_shared<TextSample>(
+            "", cue_start, segment_end, s->settings(), s->body());
+        DVLOG(3) << "AddOngoingCuesToCurrentSegment: cropped cue start="
+                 << cue_start << " end=" << segment_end;
+        samples_in_current_segment_.push_back(std::move(cropped_cue));
+      }
+    }
+  }
 }
 }  // namespace media
 }  // namespace shaka
