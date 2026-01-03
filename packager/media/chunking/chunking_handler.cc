@@ -168,8 +168,8 @@ Status ChunkingHandler::EndSegmentIfStarted() {
   if (!segment_start_time_)
     return Status::OK;
 
-  // Unwrap timestamps to produce monotonically increasing SegmentInfo timestamps
-  // even when input PTS wraps around at 2^33
+  // Unwrap timestamps to produce monotonically increasing SegmentInfo
+  // timestamps even when input PTS wraps around at 2^33
   int64_t unwrapped_start = pts_unwrapper_.Unwrap(segment_start_time_.value());
   int64_t unwrapped_max = pts_unwrapper_.Unwrap(max_segment_time_);
 
@@ -179,7 +179,8 @@ Status ChunkingHandler::EndSegmentIfStarted() {
   segment_info->segment_number = segment_number_++;
 
   DVLOG(2) << "ChunkingHandler: Segment " << segment_info->segment_number
-           << " start=" << unwrapped_start << " duration=" << segment_info->duration
+           << " start=" << unwrapped_start
+           << " duration=" << segment_info->duration
            << " (wrapped: start=" << segment_start_time_.value()
            << " max=" << max_segment_time_ << ")";
 

@@ -68,8 +68,7 @@ class SegmentCoordinatorTest : public MediaHandlerTestBase {
     info->is_subsegment = false;
     info->is_encrypted = false;
 
-    auto data =
-        StreamData::FromSegmentInfo(kStreamIndex, std::move(info));
+    auto data = StreamData::FromSegmentInfo(kStreamIndex, std::move(info));
     return Input(input_index)->Dispatch(std::move(data));
   }
 
@@ -84,8 +83,7 @@ class SegmentCoordinatorTest : public MediaHandlerTestBase {
     info->is_subsegment = true;
     info->is_encrypted = false;
 
-    auto data =
-        StreamData::FromSegmentInfo(kStreamIndex, std::move(info));
+    auto data = StreamData::FromSegmentInfo(kStreamIndex, std::move(info));
     return Input(input_index)->Dispatch(std::move(data));
   }
 
@@ -162,8 +160,8 @@ TEST_F(SegmentCoordinatorTest, ReceivesAndBroadcastsSegmentInfoToTeletext) {
                                 kSegmentDuration, kSegmentNumber));
 
   // Flush all streams
-  ASSERT_OK(FlushAll({kVideoStreamIndex, kAudioStreamIndex,
-                      kTeletextStreamIndex}));
+  ASSERT_OK(
+      FlushAll({kVideoStreamIndex, kAudioStreamIndex, kTeletextStreamIndex}));
 }
 
 // Test 2: HandlesMultipleTeletextStreams
@@ -312,8 +310,8 @@ TEST_F(SegmentCoordinatorTest, OnlyBroadcastsToRegisteredStreams) {
   ASSERT_OK(DispatchSegmentInfo(kVideoStreamIndex, kSegmentStart,
                                 kSegmentDuration, kSegmentNumber));
 
-  ASSERT_OK(FlushAll({kVideoStreamIndex, kAudioStreamIndex,
-                      kTeletextStreamIndex}));
+  ASSERT_OK(
+      FlushAll({kVideoStreamIndex, kAudioStreamIndex, kTeletextStreamIndex}));
 }
 
 // Additional test: Verify subsegments are not replicated

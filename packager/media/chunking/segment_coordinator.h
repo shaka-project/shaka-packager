@@ -31,16 +31,18 @@ namespace media {
 /// - MPEG-TS timestamp wrap-around scenarios
 /// - Sources with offset keyframe timestamps
 ///
-/// The coordinator only replicates SegmentInfo to teletext streams (cc_index >= 0).
-/// Other text formats (WebVTT files, TTML) and video/audio streams pass through
-/// unchanged.
+/// The coordinator only replicates SegmentInfo to teletext streams (cc_index >=
+/// 0). Other text formats (WebVTT files, TTML) and video/audio streams pass
+/// through unchanged.
 ///
 /// Pipeline placement (all streams go through the same coordinator instance):
 ///   Video/Audio → CueAligner → SegmentCoordinator → ChunkingHandler → ...
-///   Teletext    → CueAligner → SegmentCoordinator → CcStreamFilter → TextChunker → ...
+///   Teletext    → CueAligner → SegmentCoordinator → CcStreamFilter →
+///   TextChunker → ...
 ///
-/// When ChunkingHandler emits SegmentInfo, it flows back through the coordinator,
-/// which then broadcasts it to all registered teletext stream indices.
+/// When ChunkingHandler emits SegmentInfo, it flows back through the
+/// coordinator, which then broadcasts it to all registered teletext stream
+/// indices.
 class SegmentCoordinator : public MediaHandler {
  public:
   SegmentCoordinator();
@@ -64,7 +66,8 @@ class SegmentCoordinator : public MediaHandler {
 
   /// Handle incoming SegmentInfo from video/audio streams and replicate to
   /// teletext streams.
-  /// @param input_stream_index The input stream index that sent the SegmentInfo.
+  /// @param input_stream_index The input stream index that sent the
+  /// SegmentInfo.
   /// @param info The segment information to process.
   /// @return Status of the operation.
   Status OnSegmentInfo(size_t input_stream_index,

@@ -94,9 +94,9 @@ class ChunkingHandler : public MediaHandler {
   // after cue points.
   int64_t cue_offset_ = 0;
 
-  // Unwraps 33-bit PTS/DTS timestamps to 64-bit monotonically increasing values,
-  // handling wrap-around at 2^33. This ensures SegmentInfo timestamps are always
-  // increasing even when input timestamps wrap around.
+  // Unwraps 33-bit PTS/DTS timestamps to 64-bit monotonically increasing
+  // values, handling wrap-around at 2^33. This ensures SegmentInfo timestamps
+  // are always increasing even when input timestamps wrap around.
   PtsUnwrapper pts_unwrapper_;
 };
 

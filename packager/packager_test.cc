@@ -303,8 +303,9 @@ std::vector<std::pair<int64_t, int64_t>> ExtractSegmentTimeline(
   std::vector<std::pair<int64_t, int64_t>> segments;
 
   // Find the AdaptationSet with the specified contentType
-  std::regex adaptation_regex(
-      "AdaptationSet[^>]*contentType=\"" + content_type + "\"[^>]*>([\\s\\S]*?)</AdaptationSet>");
+  std::regex adaptation_regex("AdaptationSet[^>]*contentType=\"" +
+                              content_type +
+                              "\"[^>]*>([\\s\\S]*?)</AdaptationSet>");
   std::smatch adaptation_match;
   if (!std::regex_search(mpd_content, adaptation_match, adaptation_regex)) {
     return segments;
@@ -320,9 +321,10 @@ std::vector<std::pair<int64_t, int64_t>> ExtractSegmentTimeline(
   std::string timeline_content = timeline_match[1].str();
 
   // Parse each <S> element: <S t="..." d="..." r="..."/>
-  std::regex s_regex("<S[^>]*t=\"([0-9]+)\"[^>]*d=\"([0-9]+)\"(?:[^>]*r=\"([0-9]+)\")?");
+  std::regex s_regex(
+      "<S[^>]*t=\"([0-9]+)\"[^>]*d=\"([0-9]+)\"(?:[^>]*r=\"([0-9]+)\")?");
   auto s_begin = std::sregex_iterator(timeline_content.begin(),
-                                       timeline_content.end(), s_regex);
+                                      timeline_content.end(), s_regex);
   auto s_end = std::sregex_iterator();
 
   int64_t current_time = 0;
@@ -348,8 +350,8 @@ std::vector<std::pair<int64_t, int64_t>> ExtractSegmentTimeline(
 std::vector<double> ExtractVttCueStartTimes(const std::string& vtt_content) {
   std::vector<double> start_times;
   std::regex cue_regex(R"((\d+):(\d+):(\d+)\.(\d+)\s*-->)");
-  auto cue_begin = std::sregex_iterator(vtt_content.begin(),
-                                         vtt_content.end(), cue_regex);
+  auto cue_begin =
+      std::sregex_iterator(vtt_content.begin(), vtt_content.end(), cue_regex);
   auto cue_end = std::sregex_iterator();
 
   for (std::sregex_iterator i = cue_begin; i != cue_end; ++i) {
@@ -358,8 +360,8 @@ std::vector<double> ExtractVttCueStartTimes(const std::string& vtt_content) {
     int minutes = std::stoi(match[2].str());
     int seconds = std::stoi(match[3].str());
     int millis = std::stoi(match[4].str());
-    double start_time = hours * 3600.0 + minutes * 60.0 + seconds +
-                        millis / 1000.0;
+    double start_time =
+        hours * 3600.0 + minutes * 60.0 + seconds + millis / 1000.0;
     start_times.push_back(start_time);
   }
   return start_times;
@@ -370,9 +372,9 @@ std::vector<double> ExtractVttCueStartTimes(const std::string& vtt_content) {
 class TeletextSegmentAlignmentTest : public ::testing::Test {
  public:
   void SetUp() override {
-    test_directory_ = std::string("memory://teletext_test/") +
-                      testing::UnitTest::GetInstance()->current_test_info()->name() +
-                      "/";
+    test_directory_ =
+        std::string("memory://teletext_test/") +
+        testing::UnitTest::GetInstance()->current_test_info()->name() + "/";
   }
 
   std::string GetFullPath(const std::string& file_name) {
@@ -422,10 +424,12 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAligned) {
   stream_descriptors.push_back(text_desc);
 
   Packager packager;
-  ASSERT_EQ(Status::OK, packager.Initialize(packaging_params, stream_descriptors));
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, stream_descriptors));
   ASSERT_EQ(Status::OK, packager.Run());
 
-  // Run second packager instance for plain VTT output (for cue timing verification)
+  // Run second packager instance for plain VTT output (for cue timing
+  // verification)
   {
     PackagingParams vtt_params;
     vtt_params.temp_dir = test_directory_;
@@ -462,11 +466,13 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAligned) {
   EXPECT_EQ(text_segments[0].first, kExpectedFirstVideoPts)
       << "First text segment should start at same PTS as video";
 
-  // Verify video and text segments have the same start times
-  size_t common_count = std::min(video_segments.size(), text_segments.size());
-  ASSERT_GT(common_count, 0u) << "Expected at least one common segment";
+  // Verify video and text have the same number of segments
+  ASSERT_EQ(video_segments.size(), text_segments.size())
+      << "Video and text segment count mismatch: "
+      << "video=" << video_segments.size() << " text=" << text_segments.size();
 
-  for (size_t i = 0; i < common_count; ++i) {
+  // Verify video and text segments have the same start times and durations
+  for (size_t i = 0; i < video_segments.size(); ++i) {
     EXPECT_EQ(video_segments[i].first, text_segments[i].first)
         << "Segment " << i << " start time mismatch: "
         << "video=" << video_segments[i].first
@@ -502,16 +508,18 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAligned) {
         (cue_start_times[i] - first_video_vtt_time) / kVttTimescale;
     EXPECT_NEAR(relative_cue_seconds, kExpectedCueStartTimes[i], 0.1)
         << "Cue " << i << " start time mismatch: "
-        << "got " << relative_cue_seconds << "s relative to video start, expected "
-        << kExpectedCueStartTimes[i] << "s";
+        << "got " << relative_cue_seconds
+        << "s relative to video start, expected " << kExpectedCueStartTimes[i]
+        << "s";
   }
 
-  LOG(INFO) << "Segment alignment test: " << common_count
+  LOG(INFO) << "Segment alignment test: " << video_segments.size()
             << " segments verified aligned, " << cue_start_times.size()
             << " cue times verified";
 }
 
-TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAlignedWithWrapAround) {
+TEST_F(TeletextSegmentAlignmentTest,
+       VideoAndTextSegmentsAlignedWithWrapAround) {
   // Test that video and teletext segments remain aligned even when PTS
   // timestamps cross the 33-bit wrap-around boundary.
   //
@@ -551,10 +559,12 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAlignedWithWrapAround) 
   stream_descriptors.push_back(text_desc);
 
   Packager packager;
-  ASSERT_EQ(Status::OK, packager.Initialize(packaging_params, stream_descriptors));
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, stream_descriptors));
   ASSERT_EQ(Status::OK, packager.Run());
 
-  // Run second packager instance for plain VTT output (for cue timing verification)
+  // Run second packager instance for plain VTT output (for cue timing
+  // verification)
   {
     PackagingParams vtt_params;
     vtt_params.temp_dir = test_directory_;
@@ -597,18 +607,22 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAlignedWithWrapAround) 
   bool has_post_wrap = false;
 
   for (const auto& seg : video_segments) {
-    if (seg.first < kPtsWrapAround) has_pre_wrap = true;
-    if (seg.first + seg.second > kPtsWrapAround) has_post_wrap = true;
+    if (seg.first < kPtsWrapAround)
+      has_pre_wrap = true;
+    if (seg.first + seg.second > kPtsWrapAround)
+      has_post_wrap = true;
   }
 
   EXPECT_TRUE(has_pre_wrap) << "Expected segments before wrap-around point";
   EXPECT_TRUE(has_post_wrap) << "Expected segments after wrap-around point";
 
-  // Verify video and text segments have the same start times
-  size_t common_count = std::min(video_segments.size(), text_segments.size());
-  ASSERT_GT(common_count, 0u) << "Expected at least one common segment";
+  // Verify video and text have the same number of segments
+  ASSERT_EQ(video_segments.size(), text_segments.size())
+      << "Video and text segment count mismatch (wrap-around test): "
+      << "video=" << video_segments.size() << " text=" << text_segments.size();
 
-  for (size_t i = 0; i < common_count; ++i) {
+  // Verify video and text segments have the same start times and durations
+  for (size_t i = 0; i < video_segments.size(); ++i) {
     EXPECT_EQ(video_segments[i].first, text_segments[i].first)
         << "Segment " << i << " start time mismatch (wrap-around test): "
         << "video=" << video_segments[i].first
@@ -644,11 +658,12 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAlignedWithWrapAround) 
         (cue_start_times[i] - first_video_vtt_time) / kVttTimescale;
     EXPECT_NEAR(relative_cue_seconds, kExpectedCueStartTimes[i], 0.1)
         << "Cue " << i << " start time mismatch (wrap-around): "
-        << "got " << relative_cue_seconds << "s relative to video start, expected "
-        << kExpectedCueStartTimes[i] << "s";
+        << "got " << relative_cue_seconds
+        << "s relative to video start, expected " << kExpectedCueStartTimes[i]
+        << "s";
   }
 
-  LOG(INFO) << "Wrap-around segment alignment test: " << common_count
+  LOG(INFO) << "Wrap-around segment alignment test: " << video_segments.size()
             << " segments verified aligned, " << cue_start_times.size()
             << " cue times verified across PTS wrap boundary";
 }
