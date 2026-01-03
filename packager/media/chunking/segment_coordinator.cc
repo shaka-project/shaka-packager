@@ -70,9 +70,10 @@ Status SegmentCoordinator::OnSegmentInfo(
     return Status::OK;
   }
 
-  // Set the sync source to the first non-teletext stream that sends SegmentInfo.
-  // This ensures we only use one stream (typically video) for alignment, avoiding
-  // issues when video and audio have different segment boundaries.
+  // Set the sync source to the first non-teletext stream that sends
+  // SegmentInfo. This ensures we only use one stream (typically video) for
+  // alignment, avoiding issues when video and audio have different segment
+  // boundaries.
   if (!sync_source_stream_index_.has_value()) {
     sync_source_stream_index_ = input_stream_index;
     DVLOG(2) << "SegmentCoordinator: Set sync source to stream "
@@ -90,10 +91,11 @@ Status SegmentCoordinator::OnSegmentInfo(
   // Update latest boundary for logging
   latest_segment_boundary_ = info->start_timestamp;
 
-  DVLOG(2) << "SegmentCoordinator: Received SegmentInfo from sync source stream "
-           << input_stream_index << " boundary=" << info->start_timestamp
-           << " duration=" << info->duration
-           << " segment_number=" << info->segment_number;
+  DVLOG(2)
+      << "SegmentCoordinator: Received SegmentInfo from sync source stream "
+      << input_stream_index << " boundary=" << info->start_timestamp
+      << " duration=" << info->duration
+      << " segment_number=" << info->segment_number;
 
   DVLOG(2) << "SegmentCoordinator: Replicating segment boundary "
            << info->start_timestamp << " to " << teletext_stream_indices_.size()

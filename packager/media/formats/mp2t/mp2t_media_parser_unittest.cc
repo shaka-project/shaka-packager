@@ -321,7 +321,8 @@ TEST_F(Mp2tMediaParserTest, TeletextPtsWrapAround) {
   // - Same structure as test_teletext_live.ts but with offset timestamps
   //
   // Expected behavior:
-  // - Parser correctly unwraps PTS values to monotonically increasing timestamps
+  // - Parser correctly unwraps PTS values to monotonically increasing
+  // timestamps
   // - MediaHeartBeat samples generated with correct unwrapped timestamps
   // - kCueStart/kCueEnd samples have correct timing relative to wrap
 
@@ -363,16 +364,17 @@ TEST_F(Mp2tMediaParserTest, TeletextPtsWrapAround) {
   // Verify subtitle cue samples (same structure as test_teletext_live.ts)
   EXPECT_EQ(cue_start_count, 3)
       << "Expected 3 kCueStart samples for 3 subtitle cues";
-  EXPECT_EQ(cue_end_count, 6)
-      << "Expected 6 kCueEnd samples";
+  EXPECT_EQ(cue_end_count, 6) << "Expected 6 kCueEnd samples";
 
   // Key verification: Check that PTS values are near the wrap-around point
   // The 33-bit wrap point is 8589934592
   constexpr int64_t kPtsWrapAround = 1LL << 33;  // 8589934592
 
   // Find min and max PTS to verify we're near wrap point
-  int64_t min_pts = *std::min_element(all_pts_values.begin(), all_pts_values.end());
-  int64_t max_pts = *std::max_element(all_pts_values.begin(), all_pts_values.end());
+  int64_t min_pts =
+      *std::min_element(all_pts_values.begin(), all_pts_values.end());
+  int64_t max_pts =
+      *std::max_element(all_pts_values.begin(), all_pts_values.end());
 
   // Verify timestamps are near the wrap point (within ~30 seconds = 2.7M ticks)
   constexpr int64_t kMaxDistanceFromWrap = 30 * 90000;  // 30 seconds
@@ -394,8 +396,8 @@ TEST_F(Mp2tMediaParserTest, TeletextPtsWrapAround) {
       int64_t diff = all_pts_values[i - 1] - all_pts_values[i];
       if (diff > 90000) {  // More than 1 second backwards
         is_monotonic = false;
-        LOG(ERROR) << "Non-monotonic PTS at index " << i
-                   << ": " << all_pts_values[i - 1] << " -> " << all_pts_values[i]
+        LOG(ERROR) << "Non-monotonic PTS at index " << i << ": "
+                   << all_pts_values[i - 1] << " -> " << all_pts_values[i]
                    << " (diff: " << diff << ")";
         break;
       }
@@ -410,10 +412,11 @@ TEST_F(Mp2tMediaParserTest, TeletextPtsWrapAround) {
   LOG(INFO) << "  MediaHeartBeat: " << heartbeat_count;
   LOG(INFO) << "  kCueStart: " << cue_start_count;
   LOG(INFO) << "  kCueEnd: " << cue_end_count;
-  LOG(INFO) << "  Min PTS: " << min_pts << " (wrap point: " << kPtsWrapAround << ")";
+  LOG(INFO) << "  Min PTS: " << min_pts << " (wrap point: " << kPtsWrapAround
+            << ")";
   LOG(INFO) << "  Max PTS: " << max_pts;
-  LOG(INFO) << "  Distance from wrap: " << (kPtsWrapAround - min_pts) / 90000 << "s before, "
-            << (max_pts - kPtsWrapAround) / 90000 << "s after";
+  LOG(INFO) << "  Distance from wrap: " << (kPtsWrapAround - min_pts) / 90000
+            << "s before, " << (max_pts - kPtsWrapAround) / 90000 << "s after";
 }
 
 }  // namespace mp2t

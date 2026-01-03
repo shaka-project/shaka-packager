@@ -67,7 +67,8 @@ Status TextChunker::OnFlushRequest(size_t /*input_stream_index*/) {
   //
   // In coordinator mode, the final SegmentInfo from video/audio should have
   // already triggered the last segment dispatch with the correct duration.
-  // This loop handles any remaining samples (edge cases or non-coordinator mode).
+  // This loop handles any remaining samples (edge cases or non-coordinator
+  // mode).
   while (samples_in_current_segment_.size()) {
     if (segment_start_ < 0) {
       // No segments were ever started - nothing to flush
@@ -240,91 +241,86 @@ Status TextChunker::OnSegmentInfo(std::shared_ptr<const SegmentInfo> info) {
     return Status::OK;
   }
 
-  int64_t actual_boundary = info->start_timestamp;
+  // Use start_timestamp + duration as the end boundary. This ensures we
+  // dispatch the segment that just completed, not wait for the next
+  // SegmentInfo. Without this, the final segment would never be dispatched
+  // since there's no subsequent SegmentInfo to trigger it.
+  int64_t segment_end_boundary = info->start_timestamp + info->duration;
 
-  DVLOG(2) << "TextChunker received SegmentInfo boundary: " << actual_boundary
-           << " (calculated would be: " << segment_start_ + segment_duration_
-           << ")";
+  DVLOG(2) << "TextChunker received SegmentInfo: start="
+           << info->start_timestamp << " duration=" << info->duration
+           << " end_boundary=" << segment_end_boundary
+           << " (current segment_start_=" << segment_start_ << ")";
 
   // If this is the first segment info, initialize segment_start_
   if (segment_start_ < 0) {
-    segment_start_ = actual_boundary;
+    segment_start_ = info->start_timestamp;
     DVLOG(2) << "TextChunker: Initialized segment_start_ from SegmentInfo: "
              << segment_start_;
-    return Status::OK;
   }
 
-  // Handle PTS wrap-around: if actual_boundary appears to be earlier than
+  // Handle PTS wrap-around: if segment_end_boundary appears to be earlier than
   // segment_start_ by more than half the 33-bit PTS range, it's likely
   // wrapped around and is actually later.
   // 33-bit PTS wraps at 2^33 = 8,589,934,592 ticks (~26.5 hours @ 90kHz)
   // Half range = ~13 hours = 4,294,967,296 ticks
   const int64_t kPtsWrapThreshold = 4294967296LL;  // Half of 2^33
 
-  if (actual_boundary < segment_start_) {
-    int64_t diff = segment_start_ - actual_boundary;
+  if (segment_end_boundary < segment_start_) {
+    int64_t diff = segment_start_ - segment_end_boundary;
     if (diff > kPtsWrapThreshold) {
       // This looks like a wrap-around - the boundary has wrapped but our
       // segment_start_ hasn't yet. Treat this boundary as being later.
-      DVLOG(2) << "TextChunker: Detected PTS wrap-around. Boundary "
-               << actual_boundary << " appears earlier than segment_start_ "
-               << segment_start_ << " by " << diff << " ticks, but is likely "
+      DVLOG(2) << "TextChunker: Detected PTS wrap-around. End boundary "
+               << segment_end_boundary
+               << " appears earlier than segment_start_ " << segment_start_
+               << " by " << diff << " ticks, but is likely "
                << "later due to wrap-around.";
 
       // Dispatch one final segment before the wrap and align to the boundary
       int64_t segment_end = segment_start_ + segment_duration_;
       AddOngoingCuesToCurrentSegment(segment_end);
       RETURN_IF_ERROR(DispatchSegment(segment_duration_));
-      segment_start_ = actual_boundary;
-      return Status::OK;
-    } else if (segment_number_ == 0) {
-      // We haven't dispatched any segments yet, and this boundary is earlier.
-      // This can happen when different streams (video/audio) have different
-      // starting timestamps. Reset to the earlier boundary.
-      DVLOG(2) << "TextChunker: Received earlier boundary " << actual_boundary
-               << " before any segments dispatched. Resetting segment_start_ "
-               << "from " << segment_start_ << " to " << actual_boundary;
-      segment_start_ = actual_boundary;
-      return Status::OK;
+      segment_start_ = info->start_timestamp;
     } else {
-      // Boundary is genuinely earlier - this shouldn't happen in normal flow
-      // but we'll log a warning and skip this boundary
-      LOG(WARNING) << "TextChunker: Received SegmentInfo boundary "
-                   << actual_boundary << " that is earlier than current "
-                   << "segment_start_ " << segment_start_ << " (diff: "
-                   << diff << "). Skipping this boundary.";
+      // End boundary is genuinely earlier - this shouldn't happen in normal
+      // flow but we'll log a warning and skip this boundary
+      LOG(WARNING) << "TextChunker: Received SegmentInfo end boundary "
+                   << segment_end_boundary << " that is earlier than current "
+                   << "segment_start_ " << segment_start_ << " (diff: " << diff
+                   << "). Skipping this SegmentInfo.";
       return Status::OK;
     }
   }
 
-  // Dispatch all pending segments up to this boundary
-  while (segment_start_ < actual_boundary) {
+  // Dispatch all pending segments up to the end boundary
+  while (segment_start_ < segment_end_boundary) {
     int64_t segment_end = segment_start_ + segment_duration_;
 
-    // If the next calculated segment would go past the actual boundary,
+    // If the next calculated segment would go past the end boundary,
     // dispatch a shorter segment to align with the actual boundary
-    if (segment_end > actual_boundary) {
-      int64_t adjusted_duration = actual_boundary - segment_start_;
+    if (segment_end > segment_end_boundary) {
+      int64_t adjusted_duration = segment_end_boundary - segment_start_;
       if (adjusted_duration > 0) {
         DVLOG(3) << "TextChunker: Dispatching adjusted segment to align with "
-                 << "actual boundary. Duration: " << adjusted_duration
+                 << "end boundary. Duration: " << adjusted_duration
                  << " (normal: " << segment_duration_ << ")";
-        // Add ongoing cues before dispatching (use actual boundary as end)
-        AddOngoingCuesToCurrentSegment(actual_boundary);
+        // Add ongoing cues before dispatching (use end boundary as end)
+        AddOngoingCuesToCurrentSegment(segment_end_boundary);
         RETURN_IF_ERROR(DispatchSegment(adjusted_duration));
       }
       break;
     }
 
     // Dispatch a full-duration segment
-    DVLOG(3) << "TextChunker: Dispatching full segment aligned to actual boundary";
+    DVLOG(3) << "TextChunker: Dispatching full segment aligned to end boundary";
     // Add ongoing cues before dispatching
     AddOngoingCuesToCurrentSegment(segment_end);
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
-  // Align next segment to actual boundary
-  segment_start_ = actual_boundary;
+  // Align next segment start to end boundary (start of next segment)
+  segment_start_ = segment_end_boundary;
 
   return Status::OK;
 }
@@ -336,7 +332,8 @@ Status TextChunker::DispatchSegment(int64_t duration) {
 
   // Output only the samples that actually belong in this segment.
   // Use wrap-safe comparison since samples may have wrapped PTS.
-  DVLOG(1) << "DispatchSegment, start=" << segment_start_ << " end=" << segment_end;
+  DVLOG(1) << "DispatchSegment, start=" << segment_start_
+           << " end=" << segment_end;
   for (const auto& sample : samples_in_current_segment_) {
     // Only dispatch if sample starts before segment end
     if (PtsIsBefore(sample->start_time(), segment_end)) {
