@@ -87,6 +87,10 @@ These are the available fields:
     CEA allows specifying up to 4 streams within a single video stream. If not
     specified, all subtitles will be merged together.
 
+    For DVB-Teletext, this is a 3-digit number where the first digit is the
+    magazine (1-8) and the last two digits are the page number (00-99).
+    For example, ``cc_index=888`` selects magazine 8, page 88.
+
 :forced_subtitle:
 
     Optional boolean value (0|1). If set to 1 indicates that this stream is a

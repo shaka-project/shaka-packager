@@ -129,3 +129,105 @@ Media handler data flow
     MediaHandler -> MediaHandler2 : MediaSample
     MediaHandler -> MediaHandler2 : SegmentInfo
     MediaHandler -> MediaHandler2 : ...
+
+Teletext processing pipeline
+----------------------------
+
+When processing MPEG-TS input with DVB-Teletext subtitles, a specialized pipeline
+ensures text segments align with video/audio segment boundaries:
+
+.. graphviz::
+
+    digraph teletext_pipeline {
+      label=<<u>Teletext Processing Pipeline</u>>
+      labelloc=t
+      rankdir=TB
+      compound=true
+
+      subgraph cluster_demuxer {
+        label=<<u>Demuxer</u>>
+        style=rounded
+
+        Mp2tMediaParser [shape=rectangle]
+        EsParserTeletext [shape=rectangle]
+        EsParserH264 [shape=rectangle label="EsParserH26x"]
+
+        Mp2tMediaParser -> EsParserH264 [label="video PID"]
+        Mp2tMediaParser -> EsParserTeletext [label="teletext PID"]
+        Mp2tMediaParser -> EsParserTeletext [label="heartbeat\n(video PTS)" style=dashed]
+      }
+
+      subgraph cluster_coordinator {
+        label=<<u>Segment Coordination</u>>
+        style=rounded
+
+        SegmentCoordinator [shape=rectangle]
+      }
+
+      subgraph cluster_chunking {
+        label=<<u>Chunking</u>>
+        style=rounded
+
+        ChunkingHandler [shape=rectangle]
+        TextChunker [shape=rectangle]
+      }
+
+      subgraph cluster_output {
+        label=<<u>Output</u>>
+        style=rounded
+
+        VideoMuxer [shape=rectangle label="Muxer\n(video)"]
+        TextMuxer [shape=rectangle label="Muxer\n(text)"]
+      }
+
+      EsParserH264 -> SegmentCoordinator [style=bold label="video stream"]
+      EsParserTeletext -> SegmentCoordinator [style=bold label="text stream"]
+
+      SegmentCoordinator -> ChunkingHandler [style=bold label="video/audio"]
+      SegmentCoordinator -> TextChunker [style=bold label="teletext"]
+
+      ChunkingHandler -> SegmentCoordinator [style=dashed label="SegmentInfo" constraint=false]
+      SegmentCoordinator -> TextChunker [style=dashed label="replicate\nSegmentInfo" constraint=false]
+
+      ChunkingHandler -> VideoMuxer [style=bold]
+      TextChunker -> TextMuxer [style=bold]
+    }
+
+The key components are:
+
+- **Mp2tMediaParser**: Sends periodic "heartbeat" signals (video PTS timestamps)
+  to the teletext parser to drive segment generation even when no subtitle data
+  is present.
+
+- **EsParserTeletext**: Parses DVB-Teletext PES packets and emits text samples
+  with special roles (CueStart, CueEnd, TextHeartBeat, MediaHeartBeat).
+
+- **SegmentCoordinator**: An N-to-N handler that passes all streams through
+  unchanged, but also replicates SegmentInfo from video/audio streams to
+  registered teletext streams. This ensures text segment boundaries match
+  video segment boundaries exactly.
+
+- **TextChunker**: In "coordinator mode", receives SegmentInfo events from the
+  SegmentCoordinator and uses them to determine segment boundaries instead of
+  calculating boundaries from text sample timestamps.
+
+.. uml::
+
+    participant "Mp2tMediaParser" as Parser
+    participant "EsParserTeletext" as TtxParser
+    participant "SegmentCoordinator" as Coord
+    participant "ChunkingHandler" as Chunking
+    participant "TextChunker" as TextChunk
+
+    Parser -> TtxParser : MediaHeartBeat(video_pts)
+    Parser -> Coord : video MediaSample
+    Parser -> Coord : text TextSample
+
+    Coord -> Chunking : video MediaSample
+    Coord -> TextChunk : text TextSample
+
+    Chunking -> Coord : SegmentInfo(boundary)
+    Coord -> Coord : pass through to video output
+    Coord -> TextChunk : replicate SegmentInfo
+
+    TextChunk -> TextChunk : dispatch text segment\n(aligned with video)
