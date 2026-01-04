@@ -577,8 +577,10 @@ bool MasterPlaylist::WriteMasterPlaylist(
     for (const auto& playlist : playlists) {
       for (const auto& entry : playlist->entries()) {
         if (entry->type() == HlsEntry::EntryType::kExtKey) {
-          auto encryption_entry = dynamic_cast<EncryptionInfoEntry*>(entry.get());
-          session_keys.emplace(encryption_entry->ToString("#EXT-X-SESSION-KEY"));
+          auto encryption_entry =
+              dynamic_cast<EncryptionInfoEntry*>(entry.get());
+          session_keys.emplace(
+              encryption_entry->ToString("#EXT-X-SESSION-KEY"));
         }
       }
     }
