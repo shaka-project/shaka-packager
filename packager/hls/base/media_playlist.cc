@@ -165,7 +165,6 @@ std::string CreatePlaylistHeader(
   return header;
 }
 
-
 }  // namespace
 
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
@@ -238,7 +237,6 @@ std::string SegmentInfoEntry::ToString() {
 
   return result;
 }
-
 
 class DiscontinuityEntry : public HlsEntry {
  public:
