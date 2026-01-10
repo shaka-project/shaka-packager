@@ -480,11 +480,11 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
   packaging_params.default_text_zero_bias_ms =
       absl::GetFlag(FLAGS_default_text_zero_bias_ms);
-
   packaging_params.output_media_info = absl::GetFlag(FLAGS_output_media_info);
 
   MpdParams& mpd_params = packaging_params.mpd_params;
   mpd_params.mpd_output = absl::GetFlag(FLAGS_mpd_output);
+  mpd_params.event_to_vod_on_end_of_stream = absl::GetFlag(FLAGS_event_to_vod_on_end_of_stream);
 
   std::vector<std::string> base_urls =
       SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_base_urls), ',');
@@ -530,6 +530,7 @@ std::optional<PackagingParams> GetPackagingParams() {
                           &hls_params.playlist_type)) {
     return std::nullopt;
   }
+  hls_params.event_to_vod_on_end_of_stream = absl::GetFlag(FLAGS_event_to_vod_on_end_of_stream);
   hls_params.master_playlist_output =
       absl::GetFlag(FLAGS_hls_master_playlist_output);
   hls_params.base_url = absl::GetFlag(FLAGS_hls_base_url);
@@ -544,7 +545,6 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_hls_media_sequence_number);
   hls_params.start_time_offset = absl::GetFlag(FLAGS_hls_start_time_offset);
   hls_params.create_session_keys = absl::GetFlag(FLAGS_create_session_keys);
-  hls_params.add_program_date_time = absl::GetFlag(FLAGS_add_program_date_time);
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);

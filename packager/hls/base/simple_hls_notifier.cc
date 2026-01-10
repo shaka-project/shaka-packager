@@ -249,13 +249,13 @@ bool HandleWidevineKeyFormats(
 }
 
 bool WriteMediaPlaylist(const std::string& output_dir,
-                        MediaPlaylist* playlist) {
+                        MediaPlaylist* playlist, const bool event_to_vod_on_end_of_stream, const bool end_stream) {
   auto file_path = std::filesystem::u8path(output_dir) / playlist->file_name();
-  if (!playlist->WriteToFile(file_path)) {
+  if (!playlist->WriteToFile(file_path, event_to_vod_on_end_of_stream, end_stream)) {
     LOG(ERROR) << "Failed to write playlist " << file_path.string();
     return false;
   }
-  return true;
+    return true;
 }
 
 }  // namespace
@@ -318,7 +318,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     return false;
   }
   media_playlist->SetReferenceTime(reference_time());
-
+  
   MediaPlaylist::EncryptionMethod encryption_method =
       MediaPlaylist::EncryptionMethod::kNone;
   if (media_info.protected_content().has_protection_scheme()) {
@@ -390,11 +390,11 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     if (target_duration_updated) {
       for (MediaPlaylist* playlist : media_playlists_) {
         playlist->SetTargetDuration(target_duration_);
-        if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
+        if (!WriteMediaPlaylist(master_playlist_dir_, playlist, hls_params().event_to_vod_on_end_of_stream, end_stream))
           return false;
       }
     } else {
-      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get()))
+      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get(), hls_params().event_to_vod_on_end_of_stream, end_stream))
         return false;
     }
     if (!master_playlist_->WriteMasterPlaylist(
@@ -524,11 +524,16 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   return true;
 }
 
+bool SimpleHlsNotifier::NotifyEndOfStream() {
+	end_stream = true;
+	return true;
+}
+
 bool SimpleHlsNotifier::Flush() {
   absl::MutexLock lock(&lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
     playlist->SetTargetDuration(target_duration_);
-    if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
+    if (!WriteMediaPlaylist(master_playlist_dir_, playlist, hls_params().event_to_vod_on_end_of_stream, end_stream))
       return false;
   }
   if (!master_playlist_->WriteMasterPlaylist(

@@ -25,6 +25,8 @@ enum class HlsPlaylistType {
 struct HlsParams {
   /// HLS playlist type. See HLS specification for details.
   HlsPlaylistType playlist_type = HlsPlaylistType::kVod;
+  /// Convert event stream to VOD once end of stream is detected
+  bool event_to_vod_on_end_of_stream = false;
   /// HLS master playlist output path.
   std::string master_playlist_output;
   /// The base URL for the Media Playlists and media files listed in the

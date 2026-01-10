@@ -202,6 +202,12 @@ bool SimpleMpdNotifier::NotifyEncryptionUpdate(
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyEndOfStream() {
+  absl::MutexLock lock(&lock_);
+  mpd_builder_->FinalizeDynamicMpd();
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifyMediaInfoUpdate(uint32_t container_id,
                                               const MediaInfo& media_info) {
   absl::MutexLock lock(&lock_);
