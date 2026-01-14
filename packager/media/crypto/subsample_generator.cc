@@ -120,8 +120,9 @@ class SubsampleOrganizer {
 
 }  // namespace
 
-SubsampleGenerator::SubsampleGenerator(bool vp9_subsample_encryption)
-    : vp9_subsample_encryption_(vp9_subsample_encryption) {}
+SubsampleGenerator::SubsampleGenerator(bool vp9_subsample_encryption,
+                                       bool cencv1)
+    : vp9_subsample_encryption_(vp9_subsample_encryption), cencv1_(cencv1) {}
 
 SubsampleGenerator::~SubsampleGenerator() {}
 
@@ -323,7 +324,12 @@ Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
 
     const size_t nalu_total_size = nalu.header_size() + nalu.payload_size();
     size_t clear_bytes = 0;
-    if (nalu.is_video_slice() && nalu_total_size >= min_protected_data_size_) {
+    if (cencv1_) {
+      // For CENCv1, only the NALU header is clear;  all other data for any NALU
+      // type is encrypted.
+      clear_bytes = nalu.header_size();
+    } else if (nalu.is_video_slice() &&
+               nalu_total_size >= min_protected_data_size_) {
       clear_bytes = leading_clear_bytes_size_;
       if (clear_bytes == 0) {
         // For video-slice NAL units, encrypt the video slice.  This skips
