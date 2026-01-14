@@ -84,19 +84,21 @@ class SubsampleOrganizer {
     DCHECK_LT(clear_bytes, std::numeric_limits<uint32_t>::max());
     DCHECK_LT(cipher_bytes, std::numeric_limits<uint32_t>::max());
 
+    size_t clear_at_end = 0;
     if (align_protected_data_ && cipher_bytes != 0) {
-      const size_t misalign_bytes = cipher_bytes % kAesBlockSize;
-      clear_bytes += misalign_bytes;
-      cipher_bytes -= misalign_bytes;
+      clear_at_end = cipher_bytes % kAesBlockSize;
+      cipher_bytes -= clear_at_end;
     }
 
     accumulated_clear_bytes_ += clear_bytes;
     // Accumulated clear bytes are handled later.
-    if (cipher_bytes == 0)
+    if (cipher_bytes == 0) {
+      accumulated_clear_bytes_ += clear_at_end;
       return;
+    }
 
     PushSubsample(accumulated_clear_bytes_, cipher_bytes);
-    accumulated_clear_bytes_ = 0;
+    accumulated_clear_bytes_ = clear_at_end;
   }
 
  private:
