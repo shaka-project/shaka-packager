@@ -381,74 +381,17 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   out->append("\n");
 }
 
-std::list<MediaTagslist> BuildMediaTags(
-    const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
-    const std::string& default_language,
-    const std::string& base_url) {
-  std::list<MediaTagslist> mediaTag_playlist;
-
-  for (const auto& group : groups) {
-    const std::string& group_id = group.first;
-    const auto& playlists = group.second;
-
-    // Tracks the language of the playlist in this group.
-    // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
-    // - A Group MUST NOT have more than one member with a DEFAULT attribute of
-    //   YES.
-    // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
-    //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
-    //   CHARACTERISTICS attributes that is distinct from those of other
-    //   AUTOSELECT=YES members of its Group.
-    // We tag the first rendition encountered with a particular language with
-    // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
-    // |default_language_|.
-    std::set<std::string> languages;
-
-    for (const auto& playlist : playlists) {
-      bool is_default = false;
-      bool is_autoselect = false;
-
-      if (playlist->is_dvs()) {
-        // According to HLS Authoring Specification for Apple Devices
-        // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
-        // section 2.13 If you provide DVS, the AUTOSELECT attribute MUST have
-        //              a value of "YES".
-        is_autoselect = true;
-      } else {
-        const std::string language = playlist->language();
-        if (languages.find(language) == languages.end()) {
-          is_default = !language.empty() && language == default_language;
-          is_autoselect = true;
-
-          languages.insert(language);
-        }
-      }
-
-      if (playlist->stream_type() ==
-              MediaPlaylist::MediaPlaylistStreamType::kSubtitle &&
-          playlist->forced_subtitle()) {
-        is_autoselect = true;
-      }
-
-      MediaTagslist mediaTagslist;
-      mediaTagslist.playlist = playlist;
-      mediaTagslist.group_id = group_id;
-      mediaTagslist.is_default = is_default;
-      mediaTagslist.is_autoselect = is_autoselect;
-      mediaTag_playlist.push_back(mediaTagslist);
-    }
-  }
-
-  return mediaTag_playlist;
-}
-
 bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
   return a->GetMediaInfo().index() < b->GetMediaInfo().index();
 }
 
-bool TagslistOrderFn(const MediaTagslist& a, const MediaTagslist& b) {
+bool TagslistOrderByIndexFn(const MediaTagslist& a, const MediaTagslist& b) {
   return a.playlist->GetMediaInfo().index() <
          b.playlist->GetMediaInfo().index();
+}
+
+bool TagslistOrderByGroupIdFn(const MediaTagslist& a, const MediaTagslist& b) {
+  return a.group_id < b.group_id;
 }
 
 void AppendPlaylists(const std::string& default_audio_language,
@@ -456,11 +399,24 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
-  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
-  std::map<std::string, std::list<const MediaPlaylist*>>
-      subtitle_playlist_groups;
+  std::list<MediaTagslist> audio_playlists;
+  std::list<MediaTagslist> subtitle_playlists;
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
+
+  // Track languages per group for is_default/is_autoselect determination.
+  // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
+  // - A Group MUST NOT have more than one member with a DEFAULT attribute of
+  //   YES.
+  // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
+  //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
+  //   CHARACTERISTICS attributes that is distinct from those of other
+  //   AUTOSELECT=YES members of its Group.
+  // We tag the first rendition encountered with a particular language with
+  // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
+  // the default language.
+  std::map<std::string, std::set<std::string>> audio_group_languages;
+  std::map<std::string, std::set<std::string>> subtitle_group_languages;
 
   bool has_index = true;
 
@@ -468,18 +424,57 @@ void AppendPlaylists(const std::string& default_audio_language,
     has_index = has_index && playlist->GetMediaInfo().has_index();
 
     switch (playlist->stream_type()) {
-      case MediaPlaylist::MediaPlaylistStreamType::kAudio:
-        audio_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
+      case MediaPlaylist::MediaPlaylistStreamType::kAudio: {
+        std::string group_id = GetGroupId(*playlist);
+        bool is_default = false;
+        bool is_autoselect = false;
+
+        if (playlist->is_dvs()) {
+          // According to HLS Authoring Specification for Apple Devices
+          // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
+          // section 2.13 If you provide DVS, the AUTOSELECT attribute MUST have
+          //              a value of "YES".
+          is_autoselect = true;
+        } else {
+          const std::string language = playlist->language();
+          auto& languages = audio_group_languages[group_id];
+          if (languages.find(language) == languages.end()) {
+            is_default =
+                !language.empty() && language == default_audio_language;
+            is_autoselect = true;
+            languages.insert(language);
+          }
+        }
+
+        audio_playlists.push_back({playlist, group_id, is_default, is_autoselect});
         break;
+      }
       case MediaPlaylist::MediaPlaylistStreamType::kVideo:
         video_playlists.push_back(playlist);
         break;
       case MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly:
         iframe_playlists.push_back(playlist);
         break;
-      case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
-        subtitle_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
+      case MediaPlaylist::MediaPlaylistStreamType::kSubtitle: {
+        std::string group_id = GetGroupId(*playlist);
+        bool is_default = false;
+        bool is_autoselect = false;
+
+        const std::string language = playlist->language();
+        auto& languages = subtitle_group_languages[group_id];
+        if (languages.find(language) == languages.end()) {
+          is_default = !language.empty() && language == default_text_language;
+          is_autoselect = true;
+          languages.insert(language);
+        }
+
+        if (playlist->forced_subtitle()) {
+          is_autoselect = true;
+        }
+
+        subtitle_playlists.push_back({playlist, group_id, is_default, is_autoselect});
         break;
+      }
       default:
         NOTIMPLEMENTED() << static_cast<int>(playlist->stream_type())
                          << " not handled.";
@@ -489,32 +484,40 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (has_index) {
     video_playlists.sort(PlaylistOrderFn);
     iframe_playlists.sort(PlaylistOrderFn);
+    audio_playlists.sort(TagslistOrderByIndexFn);
+    subtitle_playlists.sort(TagslistOrderByIndexFn);
+  } else {
+    // When there's no index, sort by group_id to maintain consistent ordering
+    // (matching the original behavior of using std::map which sorts by key).
+    audio_playlists.sort(TagslistOrderByGroupIdFn);
+    subtitle_playlists.sort(TagslistOrderByGroupIdFn);
   }
 
-  if (!audio_playlist_groups.empty()) {
+  if (!audio_playlists.empty()) {
     content->append("\n");
-    std::list<MediaTagslist> audio_playlists =
-        BuildMediaTags(audio_playlist_groups, default_audio_language, base_url);
-    if (has_index) {
-      audio_playlists.sort(TagslistOrderFn);
-    }
     for (const auto& pl : audio_playlists) {
       BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect,
                     base_url, content);
     }
   }
 
-  if (!subtitle_playlist_groups.empty()) {
+  if (!subtitle_playlists.empty()) {
     content->append("\n");
-    std::list<MediaTagslist> subtitle_playlists = BuildMediaTags(
-        subtitle_playlist_groups, default_text_language, base_url);
-    if (has_index) {
-      subtitle_playlists.sort(TagslistOrderFn);
-    }
     for (const auto& pl : subtitle_playlists) {
       BuildMediaTag(*pl.playlist, pl.group_id, pl.is_default, pl.is_autoselect,
                     base_url, content);
     }
+  }
+
+  // Build groups only for BuildVariants (deferred grouping).
+  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
+  std::map<std::string, std::list<const MediaPlaylist*>>
+      subtitle_playlist_groups;
+  for (const auto& pl : audio_playlists) {
+    audio_playlist_groups[pl.group_id].push_back(pl.playlist);
+  }
+  for (const auto& pl : subtitle_playlists) {
+    subtitle_playlist_groups[pl.group_id].push_back(pl.playlist);
   }
 
   std::list<Variant> variants =
