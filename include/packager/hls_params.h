@@ -72,6 +72,11 @@ struct HlsParams {
   std::optional<double> start_time_offset;
   /// Create EXT-X-SESSION-KEY in master playlist
   bool create_session_keys;
+  /// Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is derived
+  /// from the current wall clock.
+  bool add_program_date_time = false;
+  /// If true, TARGETDURATION will be calculated locally in MediaPlaylist.
+  bool per_playlist_target_duration = false;
 };
 
 }  // namespace shaka
