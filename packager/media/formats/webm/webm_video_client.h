@@ -45,7 +45,15 @@ class WebMVideoClient : public WebMParserClient {
   VPCodecConfigurationRecord GetVpCodecConfig(
       const std::vector<uint8_t>& codec_private);
 
+  /// Check if color information is available.
+  bool HasColorInfo() const;
+
+  /// Generate MP4 colr box data from color information.
+  std::vector<uint8_t> GenerateColrBoxData() const;
+
  private:
+  friend class WebMVideoClientTest;  // For testing
+
   // WebMParserClient implementation.
   WebMParserClient* OnListStart(int id) override;
   bool OnListEnd(int id) override;
