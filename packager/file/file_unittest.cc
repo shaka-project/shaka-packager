@@ -313,7 +313,8 @@ TEST_F(LocalFileTest, WriteInDirectory) {
   EXPECT_EQ(data_, read_data);
 
   // Wipe the folder.
-  std::filesystem::remove_all(std::filesystem::u8path(temp_folder));
+  std::error_code ec;
+  std::filesystem::remove_all(std::filesystem::u8path(temp_folder), ec);
 }
 
 class ParamLocalFileTest : public LocalFileTest,
