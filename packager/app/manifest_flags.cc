@@ -42,3 +42,8 @@ ABSL_FLAG(bool,
           true,
           "True forces the muxer to order streams in the order given "
           "on the command-line. False uses the previous unordered behavior.");
+ABSL_FLAG(
+    bool,
+    per_playlist_target_duration,
+    false,
+    "If true, TARGETDURATION will be calculated locally in MediaPlaylist.");
