@@ -16,7 +16,6 @@
 #include <packager/media/codecs/vpx_parser.h>
 #include <packager/status/status_test_util.h>
 
-
 namespace shaka {
 namespace media {
 namespace {
@@ -270,7 +269,7 @@ TEST_P(SubsampleGeneratorTest, VP9SubsampleEncryptionWithLargeSuperFrame) {
       // {2,0x440-2} block aligned.
       {2, 0x430},
       // Superframe index (+previous block align)
-      {(0x10-2)+6, 0},
+      {(0x10 - 2) + 6, 0},
   };
 
   std::vector<VPxFrameInfo> vpx_frame_info(3);
