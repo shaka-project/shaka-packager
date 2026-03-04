@@ -258,6 +258,24 @@ std::string DiscontinuityEntry::ToString() {
   return "#EXT-X-DISCONTINUITY";
 }
 
+ProgramDateTimeEntry::ProgramDateTimeEntry(const absl::Time& program_time)
+    : HlsEntry(HlsEntry::EntryType::kProgramDateTime),
+      program_time_(program_time) {}
+
+std::string ProgramDateTimeEntry::ToString() {
+  absl::CivilSecond cs =
+      absl::ToCivilSecond(program_time_, absl::UTCTimeZone());
+
+  int64_t total_ms = absl::ToUnixMillis(program_time_);
+  int ms = static_cast<int>(total_ms % 1000);
+  if (ms < 0)
+    ms += 1000;  // correction for possible negative times
+
+  return absl::StrFormat(
+      "#EXT-X-PROGRAM-DATE-TIME:%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", cs.year(),
+      cs.month(), cs.day(), cs.hour(), cs.minute(), cs.second(), ms);
+}
+
 class PlacementOpportunityEntry : public HlsEntry {
  public:
   PlacementOpportunityEntry();
@@ -338,11 +356,12 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
       file_name_(file_name),
       name_(name),
       group_id_(group_id),
-      media_sequence_number_(hls_params_.media_sequence_number) {
-        // When there's a forced media_sequence_number, start with discontinuity
-        if (media_sequence_number_ > 0)
-          entries_.emplace_back(new DiscontinuityEntry());
-      }
+      media_sequence_number_(hls_params_.media_sequence_number),
+      reference_time_(absl::InfinitePast()) {
+  // When there's a forced media_sequence_number, start with discontinuity
+  if (media_sequence_number_ > 0)
+    entries_.emplace_back(new DiscontinuityEntry());
+}
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -449,6 +468,10 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   }
   return AddSegmentInfoEntry(file_name, start_time, duration, start_byte_offset,
                              size);
+}
+
+void MediaPlaylist::SetReferenceTime(const absl::Time& reference_time) {
+  reference_time_ = reference_time;
 }
 
 void MediaPlaylist::AddKeyFrame(int64_t timestamp,
@@ -649,6 +672,40 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
           << segment_info->start_time() << " as the next segment starts at "
           << start_time << ".";
       entries_.emplace_back(new DiscontinuityEntry());
+    }
+  }
+
+  if (hls_params_.add_program_date_time &&
+      reference_time_ != absl::InfinitePast()) {
+    // See if we need to add a program date time tag. It is added before the
+    // first segment, and after every discontinuity.
+    bool is_first_segment = true;
+    bool is_discontinuity = false;
+    if (!entries_.empty()) {
+      for (auto it = entries_.rbegin(); it != entries_.rend(); ++it) {
+        if ((*it)->type() == HlsEntry::EntryType::kExtInf) {
+          is_first_segment = false;
+          break;
+        }
+      }
+
+      const auto& last = *entries_.back();
+      if (last.type() == HlsEntry::EntryType::kExtDiscontinuity) {
+        is_discontinuity = true;
+      } else if (entries_.size() >= 2) {
+        const auto& second_last = **std::prev(entries_.cend(), 2);
+        if (last.type() == HlsEntry::EntryType::kExtKey &&
+            second_last.type() == HlsEntry::EntryType::kExtDiscontinuity) {
+          is_discontinuity = true;
+        }
+      }
+    }
+
+    if (is_first_segment || is_discontinuity) {
+      const absl::Time program_time =
+          reference_time_ +
+          absl::Seconds(static_cast<double>(start_time) / time_scale_);
+      entries_.emplace_back(new ProgramDateTimeEntry(program_time));
     }
   }
 
