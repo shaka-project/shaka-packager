@@ -16,7 +16,6 @@
 #include <packager/media/codecs/vpx_parser.h>
 #include <packager/status/status_test_util.h>
 
-
 namespace shaka {
 namespace media {
 namespace {
