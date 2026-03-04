@@ -157,7 +157,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
     else {
       // Set mpd duration to |duration_seconds|, which is more
       // accurate than the duration coded in the original media header.
-	  media_info_->set_media_duration_seconds(duration_seconds);
+      media_info_->set_media_duration_seconds(duration_seconds);
       mpd_notifier_->NotifyEndOfStream();
     }
     return;
