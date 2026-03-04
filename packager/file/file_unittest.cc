@@ -288,12 +288,16 @@ TEST_F(LocalFileTest, UnicodePath) {
 }
 
 TEST_F(LocalFileTest, WriteInDirectory) {
-  // Adjust the file names to include a directory.
-  // It should be automatically created.
-  local_file_name_no_prefix_ = "some_dir/" + local_file_name_no_prefix_;
+  // Delete the temp file.
+  DeleteFile(local_file_name_no_prefix_);
+  // Treat that unique name as a temp folder which doesn't exist.
+  const std::string temp_folder = local_file_name_no_prefix_;
+  // Adjust the filename to include that folder.
+  local_file_name_no_prefix_ = temp_folder + "/foo.txt";
   RecomputeLocalFileName();
 
   // Write file using File API.
+  // The folder should be automatically created.
   File* file = File::Open(local_file_name_.c_str(), "w");
   ASSERT_TRUE(file != NULL);
   EXPECT_EQ(kDataSize, file->Write(&data_[0], kDataSize));
@@ -307,6 +311,9 @@ TEST_F(LocalFileTest, WriteInDirectory) {
 
   // Compare data written and read.
   EXPECT_EQ(data_, read_data);
+
+  // Wipe the folder.
+  std::filesystem::remove_all(std::filesystem::u8path(temp_folder));
 }
 
 class ParamLocalFileTest : public LocalFileTest,
