@@ -285,12 +285,14 @@ TEST_F(SimpleHlsNotifierTest, LocalTargetDuration) {
                   ElementsAre(mock_media_playlist1, mock_media_playlist2)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist1,
-              WriteToFile(Eq(
-                  (std::filesystem::u8path(kAnyOutputDir) / "playlist1.m3u8"))))
+              WriteToFile(Eq((std::filesystem::u8path(kAnyOutputDir) /
+                              "playlist1.m3u8")),
+                          Eq(false), Eq(false)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist2,
-              WriteToFile(Eq(
-                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8"))))
+              WriteToFile(Eq((std::filesystem::u8path(kAnyOutputDir) /
+                              "playlist2.m3u8")),
+                          Eq(false), Eq(false)))
       .WillOnce(Return(true));
   EXPECT_TRUE(notifier.Flush());
 }
