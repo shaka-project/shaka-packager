@@ -528,7 +528,8 @@ bool SimpleHlsNotifier::Flush() {
   absl::MutexLock lock(&lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
     if (hls_params().per_playlist_target_duration) {
-      playlist->SetTargetDuration(static_cast<int32_t>(ceil(playlist->GetLongestSegmentDuration())));
+      playlist->SetTargetDuration(
+          static_cast<int32_t>(ceil(playlist->GetLongestSegmentDuration())));
     } else {
       playlist->SetTargetDuration(target_duration_);
     }
