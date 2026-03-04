@@ -532,7 +532,12 @@ bool SimpleHlsNotifier::NotifyEndOfStream() {
 bool SimpleHlsNotifier::Flush() {
   absl::MutexLock lock(&lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
-    playlist->SetTargetDuration(target_duration_);
+    if (hls_params().per_playlist_target_duration) {
+      playlist->SetTargetDuration(
+          static_cast<int32_t>(ceil(playlist->GetLongestSegmentDuration())));
+    } else {
+      playlist->SetTargetDuration(target_duration_);
+    }
     if (!WriteMediaPlaylist(master_playlist_dir_, playlist, hls_params().event_to_vod_on_end_of_stream, end_stream))
       return false;
   }
