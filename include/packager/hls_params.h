@@ -89,6 +89,8 @@ struct HlsParams {
   /// Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is derived
   /// from the current wall clock.
   bool add_program_date_time = false;
+  /// If true, TARGETDURATION will be calculated locally in MediaPlaylist.
+  bool per_playlist_target_duration = false;
   /// CEA-608 / CEA-708 captions.
   std::vector<CeaCaption> closed_captions;
 };

@@ -173,6 +173,130 @@ TEST_F(SimpleHlsNotifierTest, Flush) {
   EXPECT_TRUE(notifier.Flush());
 }
 
+TEST_F(SimpleHlsNotifierTest, LocalTargetDuration) {
+  // Enable local target duration calculation
+  hls_params_.per_playlist_target_duration = true;
+
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
+
+  // Create two playlists with different segment durations to properly test
+  // that per_playlist_target_duration results in different target durations per
+  // playlist
+  MockMediaPlaylist* mock_media_playlist1 =
+      new MockMediaPlaylist("playlist1.m3u8", "", "");
+  MockMediaPlaylist* mock_media_playlist2 =
+      new MockMediaPlaylist("playlist2.m3u8", "", "");
+
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("playlist1.m3u8"), _, _))
+      .WillOnce(Return(mock_media_playlist1));
+  EXPECT_CALL(*mock_media_playlist1, SetMediaInfo(_)).WillOnce(Return(true));
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("playlist2.m3u8"), _, _))
+      .WillOnce(Return(mock_media_playlist2));
+  EXPECT_CALL(*mock_media_playlist2, SetMediaInfo(_)).WillOnce(Return(true));
+
+  // Playlist 1: shorter segments (max 5 seconds)
+  const int64_t kStartTime1_1 = 1000;
+  const int64_t kDuration1_1 = 3000;  // 3 seconds
+  const uint64_t kSize1_1 = 8000;
+  const int64_t kStartTime1_2 = 4000;
+  const int64_t kDuration1_2 = 5000;  // 5 seconds (longest in playlist1)
+  const uint64_t kSize1_2 = 10000;
+  const std::string segment_name1_1 = "segment1_1.ts";
+  const std::string segment_name1_2 = "segment1_2.ts";
+
+  // Playlist 2: longer segments (max 10 seconds)
+  const int64_t kStartTime2_1 = 1000;
+  const int64_t kDuration2_1 = 8000;  // 8 seconds
+  const uint64_t kSize2_1 = 15000;
+  const int64_t kStartTime2_2 = 9000;
+  const int64_t kDuration2_2 = 10000;  // 10 seconds (longest in playlist2)
+  const uint64_t kSize2_2 = 18000;
+  const std::string segment_name2_1 = "segment2_1.ts";
+  const std::string segment_name2_2 = "segment2_2.ts";
+
+  EXPECT_CALL(*mock_media_playlist1,
+              AddSegment(StrEq(kTestPrefix + segment_name1_1), kStartTime1_1,
+                         kDuration1_1, 203, kSize1_1));
+  EXPECT_CALL(*mock_media_playlist1,
+              AddSegment(StrEq(kTestPrefix + segment_name1_2), kStartTime1_2,
+                         kDuration1_2, 203, kSize1_2));
+  EXPECT_CALL(*mock_media_playlist2,
+              AddSegment(StrEq(kTestPrefix + segment_name2_1), kStartTime2_1,
+                         kDuration2_1, 203, kSize2_1));
+  EXPECT_CALL(*mock_media_playlist2,
+              AddSegment(StrEq(kTestPrefix + segment_name2_2), kStartTime2_2,
+                         kDuration2_2, 203, kSize2_2));
+
+  const double kLongestSegmentDuration1 = 5.0;
+  const double kLongestSegmentDuration2 = 10.0;
+  const int32_t kExpectedTargetDuration1 = 5;   // ceil(5.0)
+  const int32_t kExpectedTargetDuration2 = 10;  // ceil(10.0)
+
+  EXPECT_CALL(*mock_media_playlist1, GetLongestSegmentDuration())
+      .WillRepeatedly(Return(kLongestSegmentDuration1));
+  EXPECT_CALL(*mock_media_playlist2, GetLongestSegmentDuration())
+      .WillRepeatedly(Return(kLongestSegmentDuration2));
+
+  SimpleHlsNotifier notifier(hls_params_);
+  MockMasterPlaylist* mock_master_playlist_ptr = mock_master_playlist.get();
+  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &notifier);
+  EXPECT_TRUE(notifier.Init());
+
+  MediaInfo media_info;
+  uint32_t stream_id1;
+  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "playlist1.m3u8", "name",
+                                       "groupid", &stream_id1));
+  uint32_t stream_id2;
+  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "playlist2.m3u8", "name",
+                                       "groupid", &stream_id2));
+
+  EXPECT_TRUE(notifier.NotifyNewSegment(
+      stream_id1, segment_name1_1, kStartTime1_1, kDuration1_1, 203, kSize1_1));
+  EXPECT_TRUE(notifier.NotifyNewSegment(
+      stream_id1, segment_name1_2, kStartTime1_2, kDuration1_2, 203, kSize1_2));
+  EXPECT_TRUE(notifier.NotifyNewSegment(
+      stream_id2, segment_name2_1, kStartTime2_1, kDuration2_1, 203, kSize2_1));
+  EXPECT_TRUE(notifier.NotifyNewSegment(
+      stream_id2, segment_name2_2, kStartTime2_2, kDuration2_2, 203, kSize2_2));
+
+  Mock::VerifyAndClearExpectations(mock_master_playlist_ptr);
+  Mock::VerifyAndClearExpectations(mock_media_playlist1);
+  Mock::VerifyAndClearExpectations(mock_media_playlist2);
+
+  // When per_playlist_target_duration is enabled, each playlist should get its
+  // own target duration based on its longest segment, not the global maximum.
+  // Playlist1 should get 5 (based on its 5s segment)
+  // Playlist2 should get 10 (based on its 10s segment)
+  EXPECT_CALL(*mock_media_playlist1, GetLongestSegmentDuration())
+      .WillRepeatedly(Return(kLongestSegmentDuration1));
+  EXPECT_CALL(*mock_media_playlist1,
+              SetTargetDuration(kExpectedTargetDuration1))
+      .Times(1);
+  EXPECT_CALL(*mock_media_playlist2, GetLongestSegmentDuration())
+      .WillRepeatedly(Return(kLongestSegmentDuration2));
+  EXPECT_CALL(*mock_media_playlist2,
+              SetTargetDuration(kExpectedTargetDuration2))
+      .Times(1);
+  EXPECT_CALL(*mock_master_playlist_ptr,
+              WriteMasterPlaylist(
+                  StrEq(kTestPrefix), StrEq(kAnyOutputDir),
+                  ElementsAre(mock_media_playlist1, mock_media_playlist2)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist1,
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist1.m3u8"))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist2,
+              WriteToFile(Eq(
+                  (std::filesystem::u8path(kAnyOutputDir) / "playlist2.m3u8"))))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(notifier.Flush());
+}
+
 TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
