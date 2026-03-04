@@ -19,5 +19,6 @@ ABSL_DECLARE_FLAG(uint64_t, preserved_segments_outside_live_window);
 ABSL_DECLARE_FLAG(std::string, default_language);
 ABSL_DECLARE_FLAG(std::string, default_text_language);
 ABSL_DECLARE_FLAG(bool, force_cl_index);
+ABSL_DECLARE_FLAG(bool, per_playlist_target_duration);
 
 #endif  // PACKAGER_APP_MANIFEST_FLAGS_H_
