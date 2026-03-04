@@ -1,0 +1,7 @@
+#EXTM3U
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
+
+#EXT-X-INDEPENDENT-SEGMENTS
+
+#EXT-X-STREAM-INF:BANDWIDTH=170456,AVERAGE-BANDWIDTH=170400,CODECS="hvc1.2.4.L123.b0",SUPPLEMENTAL-CODECS="dvh1.08.03/db4h",RESOLUTION=1920x1080,FRAME-RATE=24.000,CLOSED-CAPTIONS=NONE
+stream_0.m3u8

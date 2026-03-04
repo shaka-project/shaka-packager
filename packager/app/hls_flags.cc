@@ -56,3 +56,10 @@ ABSL_FLAG(bool,
           false,
           "Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is "
           "derived from the current wall clock time.");
+ABSL_FLAG(bool,
+          strict_codecs_signaling,
+          false,
+          "Don't map codecs to a preferred codec value, but strictly "
+          "preserve the fourcc in the media. This may cause playback "
+          "issues on some Apple devices, but strictly complies with the "
+          "HLS specification.");

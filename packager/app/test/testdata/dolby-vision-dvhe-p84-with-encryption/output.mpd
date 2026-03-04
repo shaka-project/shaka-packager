@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT12S">
+  <Period id="0">
+    <AdaptationSet id="0" contentType="video" width="1920" height="1080" frameRate="24000/1000" subsegmentAlignment="true" par="16:9">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <Representation id="0" bandwidth="174892" codecs="hev1.2.4.L123.b0" mimeType="video/mp4" sar="1:1">
+        <BaseURL>color_pattern_24_dvhe_084_1920x1080-video.mp4</BaseURL>
+        <SegmentBase indexRange="1128-1231" timescale="24000">
+          <Initialization range="0-1127"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="video" width="1920" height="1080" frameRate="24000/1000" subsegmentAlignment="true" par="16:9">
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:TransferCharacteristics" value="16"/>
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <Representation id="0" bandwidth="174892" codecs="dvhe.08.03" mimeType="video/mp4" sar="1:1">
+        <BaseURL>color_pattern_24_dvhe_084_1920x1080-video.mp4</BaseURL>
+        <SegmentBase indexRange="1128-1231" timescale="24000">
+          <Initialization range="0-1127"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>

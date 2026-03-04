@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT10S">
+  <Period id="0">
+    <AdaptationSet id="0" contentType="video" width="1920" height="1080" frameRate="24000/1000" subsegmentAlignment="true" par="16:9">
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:MatrixCoefficients" value="9"/>
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:ColourPrimaries" value="9"/>
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:TransferCharacteristics" value="16"/>
+      <Representation id="0" bandwidth="159160" codecs="hvc1.2.4.L120.b0" mimeType="video/mp4" sar="1:1">
+        <BaseURL>color_pattern_24_dvh1_081_1920x1080-video.mp4</BaseURL>
+        <SegmentBase indexRange="963-1054" timescale="24000">
+          <Initialization range="0-962"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="video" width="1920" height="1080" frameRate="24000/1000" subsegmentAlignment="true" par="16:9">
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:MatrixCoefficients" value="9"/>
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:ColourPrimaries" value="9"/>
+      <SupplementalProperty schemeIdUri="urn:mpeg:mpegB:cicp:TransferCharacteristics" value="16"/>
+      <Representation id="0" bandwidth="159160" codecs="dvh1.08.03" mimeType="video/mp4" sar="1:1">
+        <BaseURL>color_pattern_24_dvh1_081_1920x1080-video.mp4</BaseURL>
+        <SegmentBase indexRange="963-1054" timescale="24000">
+          <Initialization range="0-962"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>

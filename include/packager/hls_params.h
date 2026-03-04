@@ -75,6 +75,8 @@ struct HlsParams {
   /// Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is derived
   /// from the current wall clock.
   bool add_program_date_time = false;
+  /// Don't map codecs to preferred codec value.
+  bool strict_codecs_signaling = false;
 };
 
 }  // namespace shaka
