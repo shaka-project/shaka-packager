@@ -45,6 +45,7 @@ add_executable(webm_unittest
     webm_content_encodings_client_unittest.cc
     webm_parser_unittest.cc
     webm_tracks_parser_unittest.cc
+    webm_video_client_unittest.cc
     webm_webvtt_parser_unittest.cc
 )
 target_link_libraries(webm_unittest
