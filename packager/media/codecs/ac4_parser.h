@@ -83,7 +83,6 @@ class AC4Parser {
     int n_bed_signals = 0;
     int n_bed_signals_minus1 = 0;
     int nonstd_bed_channel_assignment = 0;
-    // de-indent
     int b_oamd_common_data_present = 0;
     OamdCommonData oamd_common_data;
     int n_fullband_upmix_signals_minus1 = 0;
@@ -131,7 +130,6 @@ class AC4Parser {
     int b_multi_pid = 0;
     // indent for ac4_sgi_specifier
     int group_index[16] = {0};
-    //
     int n_substream_groups = 0;
     int n_substream_groups_minus2 = 0;
     int b_pre_virtualized = 0;

@@ -314,7 +314,7 @@ Status SubsampleGenerator::GenerateSubsamplesFromAC4Frame(
   if (ac4_frame.Parse(frame, frame_size)) {
     toc_size = ac4_frame.GetAc4TocSize();
   }
-  size_t clear_bytes = (toc_size + 8 * ((toc_size % 8 == 0) ? 0 : 1)) / 8;
+  size_t clear_bytes = ((toc_size + 7) / 8) * 8;
   size_t cipher_bytes = frame_size - clear_bytes;
   subsample_organizer.AddSubsample(clear_bytes, cipher_bytes);
   return Status::OK;
