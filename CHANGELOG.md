@@ -1,6 +1,29 @@
 # Changelog
 
 
+## [3.5.0](https://github.com/shaka-project/shaka-packager/compare/v3.4.2...v3.5.0) (2026-03-05)
+
+
+### Features
+
+* --local_targetduration ([#1519](https://github.com/shaka-project/shaka-packager/issues/1519)) ([4fad8d0](https://github.com/shaka-project/shaka-packager/commit/4fad8d01c0bdac3b927195ccd2aeaaf882c6a61a)), closes [#1510](https://github.com/shaka-project/shaka-packager/issues/1510)
+* Add CENC v1 support ([#1539](https://github.com/shaka-project/shaka-packager/issues/1539)) ([a792c56](https://github.com/shaka-project/shaka-packager/commit/a792c567c73d30bab52878375d129ac3344c09dc))
+* Add signaling for CEA-608/708 captions ([#1532](https://github.com/shaka-project/shaka-packager/issues/1532)) ([3aafed8](https://github.com/shaka-project/shaka-packager/commit/3aafed82b6ce8d47b028acafc547dcdf5030a749)), closes [#986](https://github.com/shaka-project/shaka-packager/issues/986)
+* Add support for EXT-X-PROGRAM-DATE-TIME tag ([#1521](https://github.com/shaka-project/shaka-packager/issues/1521)) ([73b4048](https://github.com/shaka-project/shaka-packager/commit/73b40484924108953f9e3318574d92af135f22ea)), closes [#365](https://github.com/shaka-project/shaka-packager/issues/365)
+* **ci:** Official multiarch docker images for x64 + arm64 ([#1490](https://github.com/shaka-project/shaka-packager/issues/1490)) ([9a6b2a5](https://github.com/shaka-project/shaka-packager/commit/9a6b2a50c07d61abf80e66478540948919d1ab2b))
+* MV-HEVC support for stereo video ([#1488](https://github.com/shaka-project/shaka-packager/issues/1488)) ([c22c379](https://github.com/shaka-project/shaka-packager/commit/c22c379123b683e8e4d231533d6ed24e134f6b61))
+
+
+### Bug Fixes
+
+* **ci:** Update release for trusted publishing to NPM ([#1544](https://github.com/shaka-project/shaka-packager/issues/1544)) ([4b3d1f9](https://github.com/shaka-project/shaka-packager/commit/4b3d1f98f9b62d3966385456b027c57e8ed0697d))
+* Fix color range info loss in WebM input to init mp4 packaging  ([#1517](https://github.com/shaka-project/shaka-packager/issues/1517)) ([8dd9a6d](https://github.com/shaka-project/shaka-packager/commit/8dd9a6d5882cb7c6d021442c09cc42463485b05f)), closes [#1515](https://github.com/shaka-project/shaka-packager/issues/1515)
+* Fix supplemental properties pointing to wrong AdaptationSet IDs ([#1520](https://github.com/shaka-project/shaka-packager/issues/1520)) ([5776b0b](https://github.com/shaka-project/shaka-packager/commit/5776b0b60d52c41732279e17fa2388d72d5a606d)), closes [#1500](https://github.com/shaka-project/shaka-packager/issues/1500)
+* handle EEXIST error in directory creation ([#1526](https://github.com/shaka-project/shaka-packager/issues/1526)) ([6144a49](https://github.com/shaka-project/shaka-packager/commit/6144a497016818b2042152eb96f248a8e0577f2b))
+* HLS identity key added inappropriately ([#1499](https://github.com/shaka-project/shaka-packager/issues/1499)) ([f6a1a35](https://github.com/shaka-project/shaka-packager/commit/f6a1a35e285d4edffa1a3f3cdb708aa85cfdfcab))
+* Move cipher block align to start of block ([#1540](https://github.com/shaka-project/shaka-packager/issues/1540)) ([e981da5](https://github.com/shaka-project/shaka-packager/commit/e981da5ad892f5008c71a85df5974714f76b3cc1))
+* Upgrade libpng to fix build on new macs ([#1507](https://github.com/shaka-project/shaka-packager/issues/1507)) ([7cd7e48](https://github.com/shaka-project/shaka-packager/commit/7cd7e48e9cfd008542c2f7c7c292bde15837a15e))
+
 ## [3.4.2](https://github.com/shaka-project/shaka-packager/compare/v3.4.1...v3.4.2) (2025-01-17)
 
 
