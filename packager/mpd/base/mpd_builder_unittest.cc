@@ -307,6 +307,8 @@ TEST_F(LiveMpdBuilderTest, DynamicConvertToVoDCheckMpdAttributes) {
        "http://foo.bar/my_body_is_the_current_date_and_time"},
       {"urn:mpeg:dash:utc:http-head:2014",
        "http://foo.bar/check_me_for_the_date_header"}};
+
+  mpd_.FinalizeDynamicMpd();
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));
   ASSERT_EQ(kExpectedOutput, mpd_doc);
 }
