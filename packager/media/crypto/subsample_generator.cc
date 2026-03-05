@@ -85,19 +85,21 @@ class SubsampleOrganizer {
     DCHECK_LT(clear_bytes, std::numeric_limits<uint32_t>::max());
     DCHECK_LT(cipher_bytes, std::numeric_limits<uint32_t>::max());
 
+    size_t clear_at_end = 0;
     if (align_protected_data_ && cipher_bytes != 0) {
-      const size_t misalign_bytes = cipher_bytes % kAesBlockSize;
-      clear_bytes += misalign_bytes;
-      cipher_bytes -= misalign_bytes;
+      clear_at_end = cipher_bytes % kAesBlockSize;
+      cipher_bytes -= clear_at_end;
     }
 
     accumulated_clear_bytes_ += clear_bytes;
     // Accumulated clear bytes are handled later.
-    if (cipher_bytes == 0)
+    if (cipher_bytes == 0) {
+      accumulated_clear_bytes_ += clear_at_end;
       return;
+    }
 
     PushSubsample(accumulated_clear_bytes_, cipher_bytes);
-    accumulated_clear_bytes_ = 0;
+    accumulated_clear_bytes_ = clear_at_end;
   }
 
  private:
@@ -121,8 +123,9 @@ class SubsampleOrganizer {
 
 }  // namespace
 
-SubsampleGenerator::SubsampleGenerator(bool vp9_subsample_encryption)
-    : vp9_subsample_encryption_(vp9_subsample_encryption) {}
+SubsampleGenerator::SubsampleGenerator(bool vp9_subsample_encryption,
+                                       bool cencv1)
+    : vp9_subsample_encryption_(vp9_subsample_encryption), cencv1_(cencv1) {}
 
 SubsampleGenerator::~SubsampleGenerator() {}
 
@@ -343,7 +346,12 @@ Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
 
     const size_t nalu_total_size = nalu.header_size() + nalu.payload_size();
     size_t clear_bytes = 0;
-    if (nalu.is_video_slice() && nalu_total_size >= min_protected_data_size_) {
+    if (cencv1_) {
+      // For CENCv1, only the NALU header is clear;  all other data for any NALU
+      // type is encrypted.
+      clear_bytes = nalu.header_size();
+    } else if (nalu.is_video_slice() &&
+               nalu_total_size >= min_protected_data_size_) {
       clear_bytes = leading_clear_bytes_size_;
       if (clear_bytes == 0) {
         // For video-slice NAL units, encrypt the video slice.  This skips

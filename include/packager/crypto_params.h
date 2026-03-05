@@ -181,6 +181,8 @@ struct EncryptionParams {
   double crypto_period_duration_in_seconds = kNoKeyRotation;
   /// Enable/disable subsample encryption for VP9.
   bool vp9_subsample_encryption = true;
+  /// If true, uses CENC v1 (2012) spec for encryption instead of v3 (2016+).
+  bool cencv1 = false;
 
   /// Encrypted stream information that is used to determine stream label.
   struct EncryptedStreamAttributes {

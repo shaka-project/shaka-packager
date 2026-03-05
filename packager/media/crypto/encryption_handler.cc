@@ -168,7 +168,8 @@ EncryptionHandler::EncryptionHandler(const EncryptionParams& encryption_params,
           static_cast<FourCC>(encryption_params.protection_scheme)),
       key_source_(key_source),
       subsample_generator_(
-          new SubsampleGenerator(encryption_params.vp9_subsample_encryption)),
+          new SubsampleGenerator(encryption_params.vp9_subsample_encryption,
+                                 encryption_params.cencv1)),
       encryptor_factory_(new AesEncryptorFactory) {}
 
 EncryptionHandler::~EncryptionHandler() = default;

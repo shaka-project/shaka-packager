@@ -83,10 +83,7 @@ class LocalFileTest : public testing::Test {
       data_[i] = i % 256;
 
     local_file_name_no_prefix_ = generate_unique_temp_path();
-
-    // Local file name with prefix for File API.
-    local_file_name_ = kLocalFilePrefix;
-    local_file_name_ += local_file_name_no_prefix_;
+    RecomputeLocalFileName();
 
     // Use LocalFile directly without ThreadedIoFile.
     backup_io_cache_size.reset(new FlagSaver<uint64_t>(&FLAGS_io_cache_size));
@@ -96,6 +93,12 @@ class LocalFileTest : public testing::Test {
   void TearDown() override {
     // Remove test file if created.
     DeleteFile(local_file_name_no_prefix_);
+  }
+
+  void RecomputeLocalFileName() {
+    // Local file name with prefix for File API.
+    local_file_name_ = kLocalFilePrefix;
+    local_file_name_ += local_file_name_no_prefix_;
   }
 
   std::unique_ptr<FlagSaver<uint64_t>> backup_io_cache_size;
@@ -255,8 +258,8 @@ TEST_F(LocalFileTest, UnicodePath) {
   // Modify the local file name for this test to include non-ASCII characters.
   // This is used in TearDown() to clean up the file we create in the test.
   const std::string unicode_suffix = "από.txt";
-  local_file_name_ += unicode_suffix;
   local_file_name_no_prefix_ += unicode_suffix;
+  RecomputeLocalFileName();
 
   // Write file using File API.
   File* file = File::Open(local_file_name_.c_str(), "w");
@@ -282,6 +285,36 @@ TEST_F(LocalFileTest, UnicodePath) {
 
   // Compare data written and read.
   EXPECT_EQ(data_, read_data);
+}
+
+TEST_F(LocalFileTest, WriteInDirectory) {
+  // Delete the temp file.
+  DeleteFile(local_file_name_no_prefix_);
+  // Treat that unique name as a temp folder which doesn't exist.
+  const std::string temp_folder = local_file_name_no_prefix_;
+  // Adjust the filename to include that folder.
+  local_file_name_no_prefix_ = temp_folder + "/foo.txt";
+  RecomputeLocalFileName();
+
+  // Write file using File API.
+  // The folder should be automatically created.
+  File* file = File::Open(local_file_name_.c_str(), "w");
+  ASSERT_TRUE(file != NULL);
+  EXPECT_EQ(kDataSize, file->Write(&data_[0], kDataSize));
+  EXPECT_EQ(kDataSize, file->Size());
+  EXPECT_TRUE(file->Close());
+
+  std::string read_data;
+  ASSERT_EQ(kDataSize, FileSize(local_file_name_no_prefix_));
+  ASSERT_EQ(kDataSize,
+            ReadFile(local_file_name_no_prefix_, &read_data, kDataSize));
+
+  // Compare data written and read.
+  EXPECT_EQ(data_, read_data);
+
+  // Wipe the folder.
+  std::error_code ec;
+  std::filesystem::remove_all(std::filesystem::u8path(temp_folder), ec);
 }
 
 class ParamLocalFileTest : public LocalFileTest,

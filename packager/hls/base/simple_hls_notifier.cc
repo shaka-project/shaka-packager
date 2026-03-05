@@ -17,6 +17,7 @@
 #include <absl/strings/numbers.h>
 
 #include <packager/file/file_util.h>
+#include <packager/hls/base/master_playlist.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/proto_json_util.h>
@@ -285,10 +286,17 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
       hls_params.default_text_language.empty()
           ? hls_params.default_language
           : hls_params.default_text_language;
+
+  std::vector<CeaCaption> closed_captions;
+  for (const auto& caption : hls_params.closed_captions) {
+    closed_captions.push_back({caption.name, caption.language, caption.channel,
+                               caption.is_default, caption.autoselect});
+  }
+
   master_playlist_.reset(new MasterPlaylist(
       master_playlist_path.filename(), default_audio_langauge,
-      default_text_language, hls_params.is_independent_segments,
-      hls_params.create_session_keys));
+      default_text_language, closed_captions,
+      hls_params.is_independent_segments, hls_params.create_session_keys));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}
@@ -527,7 +535,12 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
 bool SimpleHlsNotifier::Flush() {
   absl::MutexLock lock(&lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
-    playlist->SetTargetDuration(target_duration_);
+    if (hls_params().per_playlist_target_duration) {
+      playlist->SetTargetDuration(
+          static_cast<int32_t>(ceil(playlist->GetLongestSegmentDuration())));
+    } else {
+      playlist->SetTargetDuration(target_duration_);
+    }
     if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
       return false;
   }
