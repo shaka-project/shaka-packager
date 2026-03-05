@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <optional>
+#include <vector>
 
 #if defined(OS_WIN)
 #include <codecvt>

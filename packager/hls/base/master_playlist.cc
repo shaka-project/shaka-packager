@@ -9,6 +9,8 @@
 #include <algorithm>  // std::max
 #include <cstdint>
 #include <filesystem>
+#include <set>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>

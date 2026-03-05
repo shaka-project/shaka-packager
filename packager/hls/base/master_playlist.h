@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <list>
 #include <string>
+#include <vector>
 
 namespace shaka {
 namespace hls {
