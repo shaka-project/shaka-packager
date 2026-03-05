@@ -126,7 +126,10 @@ bool LocalFile::Open() {
     std::error_code ec;
     if (parent_path != "" && !std::filesystem::is_directory(parent_path, ec)) {
       if (!std::filesystem::create_directories(parent_path, ec)) {
-        return false;
+        if (ec) {  // Only fail if there's an actual error
+          return false;
+        }
+        // ec is empty means directory already exists - continue normally
       }
     }
   }
