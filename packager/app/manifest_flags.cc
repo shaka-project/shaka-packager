@@ -47,3 +47,15 @@ ABSL_FLAG(
     per_playlist_target_duration,
     false,
     "If true, TARGETDURATION will be calculated locally in MediaPlaylist.");
+ABSL_FLAG(
+    std::string,
+    closed_captions,
+    "",
+    "Specifies one or more CEA-608 closed caption channels. Multiple channels "
+    "can be provided in a single flag, separated by semicolons (;). Each "
+    "channel is defined as a comma-separated list of key-value pairs. "
+    "Supported keys: channel(CC1..CC4, SERVICE1..SERVICE63), name, lang, "
+    "default(yes|no), "
+    "autoselect(yes|no). Example: "
+    "--closed_captions "
+    "channel=CC1,name=English,lang=eng;channel=CC2,name=French,lang=fra");
