@@ -194,7 +194,8 @@ TEST_P(SubsampleGeneratorTest, VP9SubsampleEncryption) {
   // VP9 block align protected data for all protection schemes.
   const SubsampleEntry kExpectedSubsamples[] = {
       // {20,30} block aligned.
-      {34, 16},
+      {20, 16},
+      {14, 0},
   };
 
   std::vector<VPxFrameInfo> vpx_frame_info(1);
@@ -224,11 +225,11 @@ TEST_P(SubsampleGeneratorTest, VP9SubsampleEncryptionWithSuperFrame) {
   constexpr size_t kUncompressedHeaderSizes[] = {4, 1};
   // VP9 block align protected data for all protection schemes.
   const SubsampleEntry kExpectedSubsamples[] = {
-      // {4,6},{1,33} block aligned => {10,0},{2,32}
+      // {4,6},{1,33} block aligned => {4,0},{6,0},{1,32},{1,0}
       // Then merge consecutive clear-only subsamples.
-      {12, 32},
+      {11, 32},
       // Superframe index (50 - 10 - 34).
-      {6, 0},
+      {7, 0},
   };
 
   std::vector<VPxFrameInfo> vpx_frame_info(2);
@@ -266,9 +267,9 @@ TEST_P(SubsampleGeneratorTest, VP9SubsampleEncryptionWithLargeSuperFrame) {
       {0xffff, 0},
       {0x1012, 0x2000},
       // {2,0x440-2} block aligned.
-      {0x10, 0x430},
-      // Superframe index.
-      {6, 0},
+      {2, 0x430},
+      // Superframe index (+previous block align)
+      {(0x10 - 2) + 6, 0},
   };
 
   std::vector<VPxFrameInfo> vpx_frame_info(3);
@@ -346,10 +347,10 @@ TEST_P(SubsampleGeneratorTest, H264SubsampleEncryption) {
       {0x33, 0},
   };
   const SubsampleEntry kExpectedAlignedSubsamples[] = {
-      // {6,4},{7,0x21} block aligned => {10,0},{8,0x20}
+      // {6,4},{7,0x21} block aligned => {6,0},{4,0},{7,0x20},{1,0}
       // Then merge consecutive clear-only subsamples.
-      {18, 0x20},
-      {0x33, 0},
+      {17, 0x20},
+      {0x34, 0},
   };
 
   std::unique_ptr<MockVideoSliceHeaderParser> mock_video_slice_header_parser(
@@ -406,10 +407,12 @@ TEST_P(SubsampleGeneratorTest, H264SubsampleEncryptionV1) {
       {2, 0x31},
   };
   const SubsampleEntry kExpectedAlignedSubsamples[] = {
-      // {2,8},{2,0x26},{2,0x31} block aligned => {10,0},{8,0x20},{3,0x30}
+      // {2,8},{2,0x26},{2,0x31} block aligned =>
+      //   {2,0},{8,0}, {2,0x20},{6,0}, {2,0x30},{1,0}
       // Then merge consecutive clear-only subsamples.
-      {18, 0x20},
-      {3, 0x30},
+      {12, 0x20},
+      {8, 0x30},
+      {1, 0},
   };
 
   std::unique_ptr<MockVideoSliceHeaderParser> mock_video_slice_header_parser(
@@ -469,11 +472,11 @@ TEST_P(SubsampleGeneratorTest, AV1SubsampleEncryption) {
   };
   const SubsampleEntry kExpectedSubsamplesNonCbcs[] = {
       // {4,6},{11-4-6,33},{44-11-33,20},{70-44-20,0} block aligned =>
-      // {10,0},{2,32},{4,16},{6,0}.
+      //   {4,0},{6,0}, {1,32},{1,0}, {0,16},{4,0}, {6,0}.
       // Then merge consecutive clear-only subsamples.
-      {12, 32},
-      {4, 16},
-      {6, 0},
+      {11, 32},
+      {1, 16},
+      {10, 0},
   };
 
   std::vector<AV1Parser::Tile> tiles(kNumTiles);

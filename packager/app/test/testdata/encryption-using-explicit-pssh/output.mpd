@@ -20,7 +20,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAAIHBzc2gAAAAAEHfv7MCyTQKs4zweUuL7SwAAAAA=</cenc:pssh>
       </ContentProtection>
-      <Representation id="1" bandwidth="977743" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+      <Representation id="1" bandwidth="979373" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video.mp4</BaseURL>
         <SegmentBase indexRange="1118-1185" timescale="30000">
           <Initialization range="0-1117"/>
