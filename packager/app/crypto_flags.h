@@ -17,6 +17,7 @@ ABSL_DECLARE_FLAG(std::string, protection_scheme);
 ABSL_DECLARE_FLAG(int32_t, crypt_byte_block);
 ABSL_DECLARE_FLAG(int32_t, skip_byte_block);
 ABSL_DECLARE_FLAG(bool, vp9_subsample_encryption);
+ABSL_DECLARE_FLAG(bool, cencv1);
 ABSL_DECLARE_FLAG(std::string, playready_extra_header_data);
 
 namespace shaka {

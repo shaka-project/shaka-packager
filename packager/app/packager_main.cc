@@ -400,6 +400,7 @@ std::optional<PackagingParams> GetPackagingParams() {
         absl::GetFlag(FLAGS_crypto_period_duration);
     encryption_params.vp9_subsample_encryption =
         absl::GetFlag(FLAGS_vp9_subsample_encryption);
+    encryption_params.cencv1 = absl::GetFlag(FLAGS_cencv1);
     encryption_params.stream_label_func = std::bind(
         &Packager::DefaultStreamLabelFunction,
         absl::GetFlag(FLAGS_max_sd_pixels), absl::GetFlag(FLAGS_max_hd_pixels),
