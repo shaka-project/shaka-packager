@@ -14,6 +14,7 @@
 #include <packager/macros/compiler.h>
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/ac4_parser.h>
 #include <packager/media/codecs/av1_parser.h>
 #include <packager/media/codecs/video_slice_header_parser.h>
 #include <packager/media/codecs/vp8_parser.h>
@@ -84,21 +85,19 @@ class SubsampleOrganizer {
     DCHECK_LT(clear_bytes, std::numeric_limits<uint32_t>::max());
     DCHECK_LT(cipher_bytes, std::numeric_limits<uint32_t>::max());
 
-    size_t clear_at_end = 0;
     if (align_protected_data_ && cipher_bytes != 0) {
-      clear_at_end = cipher_bytes % kAesBlockSize;
-      cipher_bytes -= clear_at_end;
+      const size_t misalign_bytes = cipher_bytes % kAesBlockSize;
+      clear_bytes += misalign_bytes;
+      cipher_bytes -= misalign_bytes;
     }
 
     accumulated_clear_bytes_ += clear_bytes;
     // Accumulated clear bytes are handled later.
-    if (cipher_bytes == 0) {
-      accumulated_clear_bytes_ += clear_at_end;
+    if (cipher_bytes == 0)
       return;
-    }
 
     PushSubsample(accumulated_clear_bytes_, cipher_bytes);
-    accumulated_clear_bytes_ = clear_at_end;
+    accumulated_clear_bytes_ = 0;
   }
 
  private:
@@ -122,9 +121,8 @@ class SubsampleOrganizer {
 
 }  // namespace
 
-SubsampleGenerator::SubsampleGenerator(bool vp9_subsample_encryption,
-                                       bool cencv1)
-    : vp9_subsample_encryption_(vp9_subsample_encryption), cencv1_(cencv1) {}
+SubsampleGenerator::SubsampleGenerator(bool vp9_subsample_encryption)
+    : vp9_subsample_encryption_(vp9_subsample_encryption) {}
 
 SubsampleGenerator::~SubsampleGenerator() {}
 
@@ -224,6 +222,8 @@ Status SubsampleGenerator::GenerateSubsamples(
     std::vector<SubsampleEntry>* subsamples) {
   subsamples->clear();
   switch (codec_) {
+    case kCodecAC4:
+      return GenerateSubsamplesFromAC4Frame(frame, frame_size, subsamples);
     case kCodecAV1:
       return GenerateSubsamplesFromAV1Frame(frame, frame_size, subsamples);
     case kCodecH264:
@@ -300,6 +300,23 @@ Status SubsampleGenerator::GenerateSubsamplesFromVPxFrame(
   return Status::OK;
 }
 
+Status SubsampleGenerator::GenerateSubsamplesFromAC4Frame(
+    const uint8_t* frame,
+    size_t frame_size,
+    std::vector<SubsampleEntry>* subsamples) {
+  SubsampleOrganizer subsample_organizer(align_protected_data_,
+      subsamples);
+  size_t toc_size = 0;
+  AC4Parser ac4_frame;
+  if (ac4_frame.Parse(frame, frame_size)) {
+    toc_size = ac4_frame.GetAc4TocSize();
+  }
+  size_t clear_bytes = (toc_size + 8 * ((toc_size % 8 == 0) ? 0 : 1)) / 8;
+  size_t cipher_bytes = frame_size - clear_bytes;
+  subsample_organizer.AddSubsample(clear_bytes, cipher_bytes);
+  return Status::OK;
+}
+
 Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
     const uint8_t* frame,
     size_t frame_size,
@@ -326,12 +343,7 @@ Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
 
     const size_t nalu_total_size = nalu.header_size() + nalu.payload_size();
     size_t clear_bytes = 0;
-    if (cencv1_) {
-      // For CENCv1, only the NALU header is clear;  all other data for any NALU
-      // type is encrypted.
-      clear_bytes = nalu.header_size();
-    } else if (nalu.is_video_slice() &&
-               nalu_total_size >= min_protected_data_size_) {
+    if (nalu.is_video_slice() && nalu_total_size >= min_protected_data_size_) {
       clear_bytes = leading_clear_bytes_size_;
       if (clear_bytes == 0) {
         // For video-slice NAL units, encrypt the video slice.  This skips
