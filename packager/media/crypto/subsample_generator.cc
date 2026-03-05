@@ -307,8 +307,7 @@ Status SubsampleGenerator::GenerateSubsamplesFromAC4Frame(
     const uint8_t* frame,
     size_t frame_size,
     std::vector<SubsampleEntry>* subsamples) {
-  SubsampleOrganizer subsample_organizer(align_protected_data_,
-      subsamples);
+  SubsampleOrganizer subsample_organizer(align_protected_data_, subsamples);
   size_t toc_size = 0;
   AC4Parser ac4_frame;
   if (ac4_frame.Parse(frame, frame_size)) {

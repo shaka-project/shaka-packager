@@ -350,7 +350,8 @@ Status EncryptionHandler::ProcessMediaSample(
   return DispatchMediaSample(kStreamIndex, std::move(cipher_sample));
 }
 
-void EncryptionHandler::SetupProtectionPattern(StreamType stream_type, Codec codec) {
+void EncryptionHandler::SetupProtectionPattern(StreamType stream_type,
+                                               Codec codec) {
   if ((stream_type == kStreamVideo || codec == kCodecAC4) &&
       IsPatternEncryptionScheme(protection_scheme_)) {
     crypt_byte_block_ = encryption_params_.crypt_byte_block;

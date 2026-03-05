@@ -191,12 +191,11 @@ class AC4Parser {
     Ac4PresentationV1Info* presentation_v1_infos;
     Ac4SubstreamGroupInfo* substream_group_infos;
   };
-  
+
   AC4Parser();
   virtual ~AC4Parser();
 
-  virtual bool Parse(const uint8_t* data,
-                     size_t data_size);
+  virtual bool Parse(const uint8_t* data, size_t data_size);
   int GetAc4TocSize() { return toc_size; };
 
  private:
@@ -204,31 +203,33 @@ class AC4Parser {
   AC4Parser& operator=(const AC4Parser&) = delete;
 
   bool ParseAc4Toc(BitReader* reader);
-  bool ParseAc4PresentationV1Info(BitReader* reader,
-                                  Ac4PresentationV1Info& ac4_presentation_v1_info,
-                                  int& max_group_index);
+  bool ParseAc4PresentationV1Info(
+      BitReader* reader,
+      Ac4PresentationV1Info& ac4_presentation_v1_info,
+      int& max_group_index);
   bool ParseFrameRateMultiplyInfo(BitReader* reader);
   bool ParseFrameRateFractionsInfo(BitReader* reader);
   bool ParseEmdfInfo(BitReader* reader);
   bool ParseAc4PresentationSubstreamInfo(BitReader* reader);
   int ParseAc4SgiSpecifier(BitReader* reader);
   bool ParsePresentationConfigExtInfo(BitReader* reader);
-  bool ParseAc4SubstreamGroupInfo(BitReader* reader,
-                                  Ac4SubstreamGroupInfo& ac4_substream_group_info,
-                                  int substream_group_index);
+  bool ParseAc4SubstreamGroupInfo(
+      BitReader* reader,
+      Ac4SubstreamGroupInfo& ac4_substream_group_info,
+      int substream_group_index);
   bool ParseContentType(BitReader* reader,
                         Ac4SubstreamGroupInfo& ac4_substream_group_info);
   bool ParseOamdSubstreamInfo(BitReader* reader,
                               Ac4SubstreamGroupInfo& ac4_substream_group_info);
-  bool ParseAc4HsfExtSubstreamInfo(BitReader* reader,
-                                   Ac4SubstreamGroupInfo& ac4_substream_group_info);
+  bool ParseAc4HsfExtSubstreamInfo(
+      BitReader* reader,
+      Ac4SubstreamGroupInfo& ac4_substream_group_info);
   bool ParseAc4SubstreamInfoChan(BitReader* reader,
                                  int presentation_version,
                                  int fs_index,
                                  int frame_rate_factor,
                                  int b_substreams_present);
-  int ParseChannelMode(BitReader* reader,
-                                  int presentation_version);
+  int ParseChannelMode(BitReader* reader, int presentation_version);
   bool ParseAc4SubstreamInfoAjoc(BitReader* reader,
                                  int fs_index,
                                  int frame_rate_factor,
@@ -244,7 +245,7 @@ class AC4Parser {
   int GetPresentationIdx(int substream_group_index);
   int GetPresentationVersion(int substream_group_index);
   bool ByteAlignment(BitReader* reader);
-  
+
   int toc_size;
   Ac4Toc ac4_toc;
 };

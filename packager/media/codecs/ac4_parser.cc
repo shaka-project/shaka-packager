@@ -61,9 +61,7 @@ int ReadAc4VariableBits(BitReader* reader, int nBits) {
 AC4Parser::AC4Parser() = default;
 AC4Parser::~AC4Parser() = default;
 
-bool AC4Parser::Parse(const uint8_t* data,
-                      size_t data_size) {
-
+bool AC4Parser::Parse(const uint8_t* data, size_t data_size) {
   BitReader reader(data, data_size);
   if (!ParseAc4Toc(&reader))
     return false;
@@ -122,8 +120,8 @@ bool AC4Parser::ParseAc4Toc(BitReader* reader) {
       }
     }
     int max_group_index = 0;
-    ac4_toc.presentation_v1_infos = 
-      new Ac4PresentationV1Info[ac4_toc.n_presentations];
+    ac4_toc.presentation_v1_infos =
+        new Ac4PresentationV1Info[ac4_toc.n_presentations];
     for (int i = 0; i < ac4_toc.n_presentations; i++) {
       ParseAc4PresentationV1Info(reader, ac4_toc.presentation_v1_infos[i],
                                  max_group_index);
@@ -149,7 +147,7 @@ bool AC4Parser::ParseAc4Toc(BitReader* reader) {
     b_size_present = 1;
   }
   if (b_size_present) {
-    for (int s = 0; s < n_substreams; s ++) {
+    for (int s = 0; s < n_substreams; s++) {
       int b_more_bits = 0;
       RCHECK(reader->ReadBits(1, &b_more_bits));
       int substream_size = 0;
@@ -164,9 +162,10 @@ bool AC4Parser::ParseAc4Toc(BitReader* reader) {
   return true;
 }
 
-bool AC4Parser::ParseAc4PresentationV1Info(BitReader* reader,
-                                           Ac4PresentationV1Info& ac4_presentation_v1_info,
-                                           int& max_group_index) {
+bool AC4Parser::ParseAc4PresentationV1Info(
+    BitReader* reader,
+    Ac4PresentationV1Info& ac4_presentation_v1_info,
+    int& max_group_index) {
   int group_index = 0;
   RCHECK(
       reader->ReadBits(1, &ac4_presentation_v1_info.b_single_substream_group));
@@ -179,7 +178,7 @@ bool AC4Parser::ParseAc4PresentationV1Info(BitReader* reader,
   }
   if (ac4_toc.bitstream_version != 1) {
     // presentation_version();
-    //int presentation_version = 0;
+    // int presentation_version = 0;
     int more_bits;
     while (reader->ReadBits(1, &more_bits) && more_bits) {
       ac4_presentation_v1_info.presentation_version++;
@@ -201,15 +200,17 @@ bool AC4Parser::ParseAc4PresentationV1Info(BitReader* reader,
     ParseFrameRateFractionsInfo(reader);
     ParseEmdfInfo(reader);
 
-    RCHECK(reader->ReadBits(1, &ac4_presentation_v1_info.b_presentation_filter));
+    RCHECK(
+        reader->ReadBits(1, &ac4_presentation_v1_info.b_presentation_filter));
 
     if (ac4_presentation_v1_info.b_presentation_filter) {
-      RCHECK(reader->ReadBits(
-          1, &ac4_presentation_v1_info.b_enable_presentation));
+      RCHECK(
+          reader->ReadBits(1, &ac4_presentation_v1_info.b_enable_presentation));
     }
     if (ac4_presentation_v1_info.b_single_substream_group == 1) {
       group_index = ParseAc4SgiSpecifier(reader);
-      max_group_index = group_index > max_group_index ? group_index:max_group_index;
+      max_group_index =
+          group_index > max_group_index ? group_index : max_group_index;
       ac4_presentation_v1_info.n_substream_groups = 1;
     } else {
       reader->ReadBits(1, &ac4_presentation_v1_info.b_multi_pid);
@@ -287,16 +288,18 @@ bool AC4Parser::ParseAc4PresentationV1Info(BitReader* reader,
       }
     }
     RCHECK(reader->ReadBits(1, &ac4_presentation_v1_info.b_pre_virtualized));
-    RCHECK(reader->ReadBits(1, &ac4_presentation_v1_info.b_add_emdf_substreams));
+    RCHECK(
+        reader->ReadBits(1, &ac4_presentation_v1_info.b_add_emdf_substreams));
     ParseAc4PresentationSubstreamInfo(reader);
   }
   if (ac4_presentation_v1_info.b_add_emdf_substreams) {
-    RCHECK(reader->ReadBits(2, &ac4_presentation_v1_info.n_add_emdf_substreams));
+    RCHECK(
+        reader->ReadBits(2, &ac4_presentation_v1_info.n_add_emdf_substreams));
     if (ac4_presentation_v1_info.n_add_emdf_substreams == 0) {
       ac4_presentation_v1_info.n_add_emdf_substreams =
           ReadAc4VariableBits(reader, 2) + 4;
     }
-    for (int i = 0; i < ac4_presentation_v1_info.n_add_emdf_substreams; i ++) {
+    for (int i = 0; i < ac4_presentation_v1_info.n_add_emdf_substreams; i++) {
       ParseEmdfInfo(reader);
     }
   }
@@ -441,7 +444,7 @@ bool AC4Parser::ParsePresentationConfigExtInfo(BitReader* reader) {
   if (b_more_skip_bytes) {
     n_skip_bytes += ReadAc4VariableBits(reader, 2) << 5;
   }
-  for (int i = 0; i < n_skip_bytes; i ++) {
+  for (int i = 0; i < n_skip_bytes; i++) {
     reader->SkipBytes(8);
   }
   return true;
@@ -449,7 +452,8 @@ bool AC4Parser::ParsePresentationConfigExtInfo(BitReader* reader) {
 
 int AC4Parser::GetPresentationIdx(int substream_group_index) {
   for (int idx = 0; idx < ac4_toc.n_presentations; idx++) {
-    for (int sg = 0; sg < ac4_toc.presentation_v1_infos[idx].n_substream_groups; sg++) {
+    for (int sg = 0; sg < ac4_toc.presentation_v1_infos[idx].n_substream_groups;
+         sg++) {
       if (substream_group_index ==
           ac4_toc.presentation_v1_infos[idx].group_index[sg]) {
         return idx;
@@ -472,20 +476,23 @@ int AC4Parser::GetPresentationVersion(int substream_group_index) {
   return 0;
 }
 
-bool AC4Parser::ParseAc4SubstreamGroupInfo(BitReader* reader,
-                                           Ac4SubstreamGroupInfo& ac4_substream_group_info,
-                                           int substream_group_index) {
+bool AC4Parser::ParseAc4SubstreamGroupInfo(
+    BitReader* reader,
+    Ac4SubstreamGroupInfo& ac4_substream_group_info,
+    int substream_group_index) {
   RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_substreams_present));
   RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_hsf_ext));
   RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_single_substream));
   if (ac4_substream_group_info.b_single_substream) {
     ac4_substream_group_info.n_lf_substreams = 1;
   } else {
-    RCHECK(reader->ReadBits(2, &ac4_substream_group_info.n_lf_substreams_minus2));
+    RCHECK(
+        reader->ReadBits(2, &ac4_substream_group_info.n_lf_substreams_minus2));
     ac4_substream_group_info.n_lf_substreams =
         ac4_substream_group_info.n_lf_substreams_minus2 + 2;
     if (ac4_substream_group_info.n_lf_substreams == 5) {
-      ac4_substream_group_info.n_lf_substreams += ReadAc4VariableBits(reader, 2);
+      ac4_substream_group_info.n_lf_substreams +=
+          ReadAc4VariableBits(reader, 2);
     }
   }
   RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_channel_coded));
@@ -499,13 +506,14 @@ bool AC4Parser::ParseAc4SubstreamGroupInfo(BitReader* reader,
                  .frame_rate_multiply_info.dsi_frame_rate_multiply_info *
              2);
   if (ac4_substream_group_info.b_channel_coded) {
-    for (int sus = 0; sus < ac4_substream_group_info.n_lf_substreams; sus ++) {
+    for (int sus = 0; sus < ac4_substream_group_info.n_lf_substreams; sus++) {
       if (ac4_toc.bitstream_version == 1) {
         // RCHECK(reader->ReadBits(1, &ac4_substream_group_info.sus_ver)));
       } else {
         ac4_substream_group_info.sus_ver = 1;
       }
-      ParseAc4SubstreamInfoChan(reader, GetPresentationVersion(substream_group_index),
+      ParseAc4SubstreamInfoChan(reader,
+                                GetPresentationVersion(substream_group_index),
                                 ac4_toc.fs_index, frame_rate_factor,
                                 ac4_substream_group_info.b_substreams_present);
       if (ac4_substream_group_info.b_hsf_ext) {
@@ -520,14 +528,15 @@ bool AC4Parser::ParseAc4SubstreamGroupInfo(BitReader* reader,
     for (int sus = 0; sus < ac4_substream_group_info.n_lf_substreams; sus++) {
       RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_ajoc));
       if (ac4_substream_group_info.b_ajoc) {
-        ParseAc4SubstreamInfoAjoc(reader, ac4_toc.fs_index, frame_rate_factor,
-                                  ac4_substream_group_info.b_substreams_present);
+        ParseAc4SubstreamInfoAjoc(
+            reader, ac4_toc.fs_index, frame_rate_factor,
+            ac4_substream_group_info.b_substreams_present);
         if (ac4_substream_group_info.b_hsf_ext) {
-            ParseAc4HsfExtSubstreamInfo(reader, ac4_substream_group_info);
+          ParseAc4HsfExtSubstreamInfo(reader, ac4_substream_group_info);
         }
       } else {
         ParseAc4SubstreamInfoObj(reader, ac4_toc.fs_index, frame_rate_factor,
-                               ac4_substream_group_info.b_substreams_present);
+                                 ac4_substream_group_info.b_substreams_present);
         if (ac4_substream_group_info.b_hsf_ext) {
           ParseAc4HsfExtSubstreamInfo(reader, ac4_substream_group_info);
         }
@@ -541,8 +550,9 @@ bool AC4Parser::ParseAc4SubstreamGroupInfo(BitReader* reader,
   return true;
 }
 
-bool AC4Parser::ParseContentType(BitReader* reader,
-                                 Ac4SubstreamGroupInfo& ac4_substream_group_info) {
+bool AC4Parser::ParseContentType(
+    BitReader* reader,
+    Ac4SubstreamGroupInfo& ac4_substream_group_info) {
   RCHECK(reader->ReadBits(3, &ac4_substream_group_info.content_classifier));
   RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_language_indicator));
   if (ac4_substream_group_info.b_language_indicator) {
@@ -550,10 +560,12 @@ bool AC4Parser::ParseContentType(BitReader* reader,
         1, &ac4_substream_group_info.b_serialized_language_tag));
     if (ac4_substream_group_info.b_serialized_language_tag) {
       RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_start_tag));
-      RCHECK(reader->ReadBits(16, &ac4_substream_group_info.language_tag_chunk));
+      RCHECK(
+          reader->ReadBits(16, &ac4_substream_group_info.language_tag_chunk));
     } else {
-      RCHECK(reader->ReadBits(6, &ac4_substream_group_info.n_language_tag_bytes));
-      for (int i = 0; i < ac4_substream_group_info.n_language_tag_bytes; i ++) {
+      RCHECK(
+          reader->ReadBits(6, &ac4_substream_group_info.n_language_tag_bytes));
+      for (int i = 0; i < ac4_substream_group_info.n_language_tag_bytes; i++) {
         RCHECK(reader->ReadBits(
             8, &ac4_substream_group_info.language_tag_bytes[i]));
       }
@@ -562,26 +574,28 @@ bool AC4Parser::ParseContentType(BitReader* reader,
   return true;
 }
 
-bool AC4Parser::ParseOamdSubstreamInfo(BitReader* reader,
-                                       Ac4SubstreamGroupInfo& ac4_substream_group_info) {
+bool AC4Parser::ParseOamdSubstreamInfo(
+    BitReader* reader,
+    Ac4SubstreamGroupInfo& ac4_substream_group_info) {
   RCHECK(reader->ReadBits(1, &ac4_substream_group_info.b_oamd_ndot));
   if (ac4_substream_group_info.b_substreams_present == 1) {
     RCHECK(reader->ReadBits(2, &ac4_substream_group_info.substream_index));
     if (ac4_substream_group_info.substream_index == 3) {
-        ac4_substream_group_info.substream_index +=
-            ReadAc4VariableBits(reader, 2);
+      ac4_substream_group_info.substream_index +=
+          ReadAc4VariableBits(reader, 2);
     }
   }
   return true;
 }
 
-bool AC4Parser::ParseAc4HsfExtSubstreamInfo(BitReader* reader,
-                                            Ac4SubstreamGroupInfo& ac4_substream_group_info) {
+bool AC4Parser::ParseAc4HsfExtSubstreamInfo(
+    BitReader* reader,
+    Ac4SubstreamGroupInfo& ac4_substream_group_info) {
   if (ac4_substream_group_info.b_substreams_present == 1) {
     RCHECK(reader->ReadBits(2, &ac4_substream_group_info.substream_index));
     if (ac4_substream_group_info.substream_index == 3) {
-        ac4_substream_group_info.substream_index +=
-            ReadAc4VariableBits(reader, 2);
+      ac4_substream_group_info.substream_index +=
+          ReadAc4VariableBits(reader, 2);
     }
   }
   return true;
@@ -593,13 +607,15 @@ bool AC4Parser::ParseAc4SubstreamInfoChan(BitReader* reader,
                                           int frame_rate_factor,
                                           int b_substreams_present) {
   Ac4SubstreamInfoChan ac4_substream_info_chan;
-  ac4_substream_info_chan.channel_mode = ParseChannelMode(reader, presentation_version);
+  ac4_substream_info_chan.channel_mode =
+      ParseChannelMode(reader, presentation_version);
   if (ac4_substream_info_chan.channel_mode == 0b111111111) {
     ac4_substream_info_chan.channel_mode += ReadAc4VariableBits(reader, 2);
   }
   if ((ac4_substream_info_chan.channel_mode >= CH_MODE_7_0_4) &&
       (ac4_substream_info_chan.channel_mode <= CH_MODE_9_1_4)) {
-    RCHECK(reader->ReadBits(1, &ac4_substream_info_chan.b_4_back_channels_present));
+    RCHECK(reader->ReadBits(
+        1, &ac4_substream_info_chan.b_4_back_channels_present));
     RCHECK(reader->ReadBits(1, &ac4_substream_info_chan.b_centre_present));
     RCHECK(reader->ReadBits(2, &ac4_substream_info_chan.top_channels_present));
   }
@@ -623,7 +639,7 @@ bool AC4Parser::ParseAc4SubstreamInfoChan(BitReader* reader,
       ac4_substream_info_chan.channel_mode <= CH_MODE_71_322) {
     RCHECK(reader->ReadBits(1, &ac4_substream_info_chan.add_ch_base));
   }
-  for (int i = 0; i < frame_rate_factor; i ++) {
+  for (int i = 0; i < frame_rate_factor; i++) {
     RCHECK(reader->ReadBits(1, &ac4_substream_info_chan.b_audio_ndot));
   }
   if (b_substreams_present == 1) {
@@ -645,25 +661,28 @@ bool AC4Parser::ParseAc4SubstreamInfoAjoc(BitReader* reader,
   if (ac4_substream_info_ajoc.b_static_dmx) {
     ac4_substream_info_ajoc.n_fullband_dmx_signals = 5;
   } else {
-    RCHECK(reader->ReadBits(4, &ac4_substream_info_ajoc.n_fullband_dmx_signals_minus1));
+    RCHECK(reader->ReadBits(
+        4, &ac4_substream_info_ajoc.n_fullband_dmx_signals_minus1));
     ac4_substream_info_ajoc.n_fullband_dmx_signals =
         ac4_substream_info_ajoc.n_fullband_dmx_signals_minus1 + 1;
     ParseBedDynObjAssignment(reader,
                              ac4_substream_info_ajoc.n_fullband_dmx_signals,
                              ac4_substream_info_ajoc);
   }
-  RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_oamd_common_data_present));
+  RCHECK(
+      reader->ReadBits(1, &ac4_substream_info_ajoc.b_oamd_common_data_present));
   if (ac4_substream_info_ajoc.b_oamd_common_data_present) {
     ParseOamdCommonData(reader);
   }
-  RCHECK(reader->ReadBits(4, &ac4_substream_info_ajoc.n_fullband_upmix_signals_minus1));
+  RCHECK(reader->ReadBits(
+      4, &ac4_substream_info_ajoc.n_fullband_upmix_signals_minus1));
   if (ac4_substream_info_ajoc.n_fullband_upmix_signals_minus1 + 1 == 16) {
     ac4_substream_info_ajoc.n_fullband_upmix_signals_minus1 +=
         ReadAc4VariableBits(reader, 3);
   }
-  ParseBedDynObjAssignment(reader,
-                           ac4_substream_info_ajoc.n_fullband_upmix_signals_minus1 + 1,
-                           ac4_substream_info_ajoc);
+  ParseBedDynObjAssignment(
+      reader, ac4_substream_info_ajoc.n_fullband_upmix_signals_minus1 + 1,
+      ac4_substream_info_ajoc);
   if (fs_index == 1) {
     RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_sf_multiplier));
     if (ac4_substream_info_ajoc.b_sf_multiplier) {
@@ -680,7 +699,7 @@ bool AC4Parser::ParseAc4SubstreamInfoAjoc(BitReader* reader,
           (ac4_substream_info_ajoc.bitrate_indicator << 2) + more_bits;
     }
   }
-  for (int i = 0; i < frame_rate_factor; i ++) {
+  for (int i = 0; i < frame_rate_factor; i++) {
     RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_audio_ndot));
   }
   if (b_substreams_present == 1) {
@@ -693,9 +712,10 @@ bool AC4Parser::ParseAc4SubstreamInfoAjoc(BitReader* reader,
   return true;
 }
 
-bool AC4Parser::ParseBedDynObjAssignment(BitReader* reader,
-                                         int n_signals,
-                                         Ac4SubstreamInfoAjoc& ac4_substream_info_ajoc) {
+bool AC4Parser::ParseBedDynObjAssignment(
+    BitReader* reader,
+    int n_signals,
+    Ac4SubstreamInfoAjoc& ac4_substream_info_ajoc) {
   RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_dyn_objects_only));
   if (ac4_substream_info_ajoc.b_dyn_objects_only == 0) {
     RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_isf));
@@ -704,28 +724,35 @@ bool AC4Parser::ParseBedDynObjAssignment(BitReader* reader,
     } else {
       RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_ch_assign_code));
       if (ac4_substream_info_ajoc.b_ch_assign_code) {
-        RCHECK(reader->ReadBits(3, &ac4_substream_info_ajoc.bed_chan_assign_code));
+        RCHECK(
+            reader->ReadBits(3, &ac4_substream_info_ajoc.bed_chan_assign_code));
       } else {
-        RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_chan_assign_mask));
+        RCHECK(
+            reader->ReadBits(1, &ac4_substream_info_ajoc.b_chan_assign_mask));
         if (ac4_substream_info_ajoc.b_chan_assign_mask) {
-          RCHECK(reader->ReadBits(1, &ac4_substream_info_ajoc.b_nonstd_bed_channel_assignment));
+          RCHECK(reader->ReadBits(
+              1, &ac4_substream_info_ajoc.b_nonstd_bed_channel_assignment));
           if (ac4_substream_info_ajoc.b_nonstd_bed_channel_assignment) {
-            RCHECK(reader->ReadBits(17, &ac4_substream_info_ajoc.nonstd_bed_channel_assignment_mask));
+            RCHECK(reader->ReadBits(
+                17,
+                &ac4_substream_info_ajoc.nonstd_bed_channel_assignment_mask));
           } else {
-            RCHECK(reader->ReadBits(10, &ac4_substream_info_ajoc.std_bed_channel_assignment_mask));
+            RCHECK(reader->ReadBits(
+                10, &ac4_substream_info_ajoc.std_bed_channel_assignment_mask));
           }
-        }
-        else {
+        } else {
           if (n_signals > 1) {
             int bed_ch_bits = (int)ceil(log((float)n_signals) / log((float)2));
-            RCHECK(reader->ReadBits(bed_ch_bits, &ac4_substream_info_ajoc.n_bed_signals_minus1));
+            RCHECK(reader->ReadBits(
+                bed_ch_bits, &ac4_substream_info_ajoc.n_bed_signals_minus1));
             ac4_substream_info_ajoc.n_bed_signals =
                 ac4_substream_info_ajoc.n_bed_signals_minus1 + 1;
           } else {
             ac4_substream_info_ajoc.n_bed_signals = 1;
           }
-          for (int b = 0; b < ac4_substream_info_ajoc.n_bed_signals; b ++) {
-            RCHECK(reader->ReadBits(4, &ac4_substream_info_ajoc.nonstd_bed_channel_assignment));
+          for (int b = 0; b < ac4_substream_info_ajoc.n_bed_signals; b++) {
+            RCHECK(reader->ReadBits(
+                4, &ac4_substream_info_ajoc.nonstd_bed_channel_assignment));
           }
         }
       }
@@ -738,7 +765,8 @@ bool AC4Parser::ParseOamdCommonData(BitReader* reader) {
   OamdCommonData oamd_common_data;
   RCHECK(reader->ReadBits(1, &oamd_common_data.b_default_screen_size_ratio));
   if (oamd_common_data.b_default_screen_size_ratio == 0) {
-    RCHECK(reader->ReadBits(5, &oamd_common_data.master_screen_size_ratio_code));
+    RCHECK(
+        reader->ReadBits(5, &oamd_common_data.master_screen_size_ratio_code));
   }
   RCHECK(reader->ReadBits(1, &oamd_common_data.b_bed_object_chan_distribute));
   RCHECK(reader->ReadBits(1, &oamd_common_data.b_additional_data));
@@ -770,13 +798,18 @@ bool AC4Parser::ParseAc4SubstreamInfoObj(BitReader* reader,
       if (ac4_substream_info_obj.b_bed_start) {
         RCHECK(reader->ReadBits(1, &ac4_substream_info_obj.b_ch_assign_code));
         if (ac4_substream_info_obj.b_ch_assign_code) {
-          RCHECK(reader->ReadBits(3, &ac4_substream_info_obj.bed_chan_assign_code));
+          RCHECK(reader->ReadBits(
+              3, &ac4_substream_info_obj.bed_chan_assign_code));
         } else {
-          RCHECK(reader->ReadBits(1, &ac4_substream_info_obj.b_nonstd_bed_channel_assignment));
+          RCHECK(reader->ReadBits(
+              1, &ac4_substream_info_obj.b_nonstd_bed_channel_assignment));
           if (ac4_substream_info_obj.b_nonstd_bed_channel_assignment) {
-            RCHECK(reader->ReadBits(17, &ac4_substream_info_obj.nonstd_bed_channel_assignment_mask));
+            RCHECK(reader->ReadBits(
+                17,
+                &ac4_substream_info_obj.nonstd_bed_channel_assignment_mask));
           } else {
-            RCHECK(reader->ReadBits(10, &ac4_substream_info_obj.std_bed_channel_assignment_mask));
+            RCHECK(reader->ReadBits(
+                10, &ac4_substream_info_obj.std_bed_channel_assignment_mask));
           }
         }
       }
@@ -848,15 +881,15 @@ int AC4Parser::ParseChannelMode(BitReader* reader, int presentation_version) {
   RCHECK(reader->ReadBits(3, &read_more));
   channel_mode_code = (channel_mode_code << 3) | read_more;
   switch (channel_mode_code) {
-    case 120:                          // 0b1111000
+    case 120:                           // 0b1111000
       if (presentation_version == 2) {  // IMS (all content)
         return CH_MODE_STEREO;
       } else {  // 7.0: 3/4/0
         return CH_MODE_70_34;
       }
-    case 121:                          // 0b1111001
+    case 121:                           // 0b1111001
       if (presentation_version == 2) {  // IMS (Atmos content)
-        //dolby_atmos_indicator |= 1;
+        // dolby_atmos_indicator |= 1;
         return CH_MODE_STEREO;
       } else {  // 7.1: 3/4/0.1
         return CH_MODE_71_34;
