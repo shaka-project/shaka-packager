@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <optional>
+#include <vector>
 
 #if defined(OS_WIN)
 #include <codecvt>
@@ -336,6 +337,39 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
   return true;
 }
 
+bool ParseClosedCaptions(const std::string& captions_str,
+                         std::vector<CeaCaption>* captions) {
+  std::vector<std::string> captions_list =
+      SplitAndTrimSkipEmpty(captions_str, ';');
+  for (const std::string& caption_str : captions_list) {
+    CeaCaption caption;
+    std::vector<KVPair> caption_parts =
+        SplitStringIntoKeyValuePairs(caption_str, '=', ',');
+    for (const auto& part : caption_parts) {
+      if (part.first == "channel") {
+        caption.channel = part.second;
+      } else if (part.first == "lang") {
+        caption.language = part.second;
+      } else if (part.first == "name") {
+        caption.name = part.second;
+      } else if (part.first == "default") {
+        caption.is_default = (part.second == "yes");
+      } else if (part.first == "autoselect") {
+        caption.autoselect = (part.second == "yes");
+      }
+    }
+    if (caption.channel.empty()) {
+      LOG(ERROR) << "Missing channel in CEA caption: " << caption_str;
+      return false;
+    }
+    if (caption.name.empty()) {
+      caption.name = caption.channel;
+    }
+    captions->push_back(caption);
+  }
+  return true;
+}
+
 std::optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
@@ -548,6 +582,13 @@ std::optional<PackagingParams> GetPackagingParams() {
   hls_params.add_program_date_time = absl::GetFlag(FLAGS_add_program_date_time);
   hls_params.per_playlist_target_duration =
       absl::GetFlag(FLAGS_per_playlist_target_duration);
+
+  if (!ParseClosedCaptions(absl::GetFlag(FLAGS_closed_captions),
+                           &hls_params.closed_captions)) {
+    LOG(ERROR) << "Failed to parse --closed_captions "
+               << absl::GetFlag(FLAGS_closed_captions);
+    return std::nullopt;
+  }
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);

@@ -53,6 +53,8 @@ class MockMasterPlaylist : public MasterPlaylist {
       : MasterPlaylist(kMasterPlaylistName,
                        kDefaultAudioLanguage,
                        kDefaultTextLanguage,
+                       {},
+                       {},
                        kIsIndependentSegments) {}
 
   MOCK_METHOD3(WriteMasterPlaylist,
