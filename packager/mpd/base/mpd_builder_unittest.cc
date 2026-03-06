@@ -280,33 +280,20 @@ TEST_F(LiveMpdBuilderTest, DynamicCheckMpdAttributes) {
 
 TEST_F(LiveMpdBuilderTest, DynamicConvertToVoDCheckMpdAttributes) {
   static const char kExpectedOutput[] =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<!--Generated with https://github.com/shaka-project/shaka-packager"
-      " version <tag>-<hash>-<test>-->\n"
-      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
-      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
-      " minBufferTime=\"PT2S\""
-      " type=\"static\""
-      " publishTime=\"2016-01-11T15:10:24Z\""
-      " availabilityStartTime=\"2011-12-25T12:30:00\""
-      " minimumUpdatePeriod=\"PT2S\">\n"
-      "  <UTCTiming schemeIdUri=\"urn:mpeg:dash:utc:http-xsdate:2014\" "
-      "value=\"http://foo.bar/my_body_is_the_current_date_and_time\"/>\n"
-      "  <UTCTiming schemeIdUri=\"urn:mpeg:dash:utc:http-head:2014\" "
-      "value=\"http://foo.bar/check_me_for_the_date_header\"/>\n"
-      "</MPD>\n";
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<!--Generated with https://github.com/shaka-project/shaka-packager"
+    " version <tag>-<hash>-<test>-->\n"
+    "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
+    " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+    " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
+    " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+    " minBufferTime=\"PT2S\""
+    " type=\"static\" mediaPresentationDuration=\"PT0S\"/>\n";
 
   std::string mpd_doc;
   mutable_mpd_options()->mpd_type = MpdType::kDynamic;
   mutable_mpd_options()->mpd_params.minimum_update_period = 2;
   mutable_mpd_options()->mpd_params.event_to_vod_on_end_of_stream = true;
-  mutable_mpd_options()->mpd_params.utc_timings = {
-      {"urn:mpeg:dash:utc:http-xsdate:2014",
-       "http://foo.bar/my_body_is_the_current_date_and_time"},
-      {"urn:mpeg:dash:utc:http-head:2014",
-       "http://foo.bar/check_me_for_the_date_header"}};
 
   mpd_.FinalizeDynamicMpd();
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));
