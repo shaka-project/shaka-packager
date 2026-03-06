@@ -157,11 +157,14 @@ std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
   }
 
   // Iterate thru AdaptationSets and add them to one big Period element.
-  // Also force AdaptationSets Id to incremental order, which might not
-  // be the case if force_cl_index is used.
+  // We only assign IDs to AdaptationSets that don't have one yet.
+  // This is important for multi-period MPDs where AdaptationSets should
+  // have consistent IDs across periods, and SimpleMpdNotifier already
+  // manages these IDs.
   int idx = 0;
   for (auto& adaptation_set : adaptation_sets_) {
-    adaptation_set->set_id(idx++);
+    if (!adaptation_set->has_id())
+      adaptation_set->set_id(idx++);
   }
 
   for (const auto& adaptation_set : adaptation_sets_) {

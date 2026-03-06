@@ -436,4 +436,50 @@ TEST_F(SimpleMpdNotifierTest, MultipleMediaInfo) {
       notifier.NotifyNewContainer(valid_media_info3_, &unused_container_id));
 }
 
+// Reproduce the reported issue: multiple AdaptationSets, multiple periods,
+// intermediate flush. This ensures AdaptationSet IDs remain consistent
+// across periods even if periods are build incrementally and flushed.
+TEST_F(SimpleMpdNotifierTest, RegressionInconsistentAdaptationSetIdsAcrossPeriods) {
+  MpdOptions options = empty_mpd_option_;
+  // Need to use real MpdBuilder/Period to test ID reassignment.
+  SimpleMpdNotifier notifier(options);
+
+  // Stream 1: AdaptationSet A, index 0.
+  MediaInfo info1 = valid_media_info1_;
+  info1.set_dash_label("L1");
+  info1.set_index(0);
+
+  // Stream 2: AdaptationSet B, index 1.
+  MediaInfo info2 = valid_media_info1_;
+  info2.set_dash_label("L2");
+  info2.set_index(1);
+
+  // Stream 3: AdaptationSet B, index 2.
+  MediaInfo info3 = valid_media_info1_;
+  info3.set_dash_label("L2");
+  info3.set_index(2);
+
+  uint32_t id1, id2, id3;
+  EXPECT_TRUE(notifier.NotifyNewContainer(info1, &id1));
+  EXPECT_TRUE(notifier.NotifyNewContainer(info2, &id2));
+  EXPECT_TRUE(notifier.NotifyNewContainer(info3, &id3));
+
+  const int64_t kCueTimestamp = 100 * kDefaultTimeScale;
+
+  // Notify cue for Stream 2 (AS B).
+  EXPECT_TRUE(notifier.NotifyCueEvent(id2, kCueTimestamp));
+
+  // Intermediate Flush.
+  // This causes Period::GetXml to reassign IDs.
+  // Period 1 will have AS A (ID 0) and AS B (ID 1).
+  // Period 2 will have ONLY AS B (ID 0).
+  EXPECT_TRUE(notifier.Flush());
+
+  // Notify cue for Stream 3 (AS B).
+  // This will match AS B in Period 2.
+  // But SimpleMpdNotifier expects its ID to be the same as in Period 1 (which is 1).
+  // Since Period 2 reassigned it to 0, this will trigger the DCHECK failure.
+  EXPECT_TRUE(notifier.NotifyCueEvent(id3, kCueTimestamp));
+}
+
 }  // namespace shaka
