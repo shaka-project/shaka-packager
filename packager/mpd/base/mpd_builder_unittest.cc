@@ -280,15 +280,15 @@ TEST_F(LiveMpdBuilderTest, DynamicCheckMpdAttributes) {
 
 TEST_F(LiveMpdBuilderTest, DynamicConvertToVoDCheckMpdAttributes) {
   static const char kExpectedOutput[] =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    "<!--Generated with https://github.com/shaka-project/shaka-packager"
-    " version <tag>-<hash>-<test>-->\n"
-    "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
-    " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-    " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-    " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
-    " minBufferTime=\"PT2S\""
-    " type=\"static\" mediaPresentationDuration=\"PT0S\"/>\n";
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<!--Generated with https://github.com/shaka-project/shaka-packager"
+      " version <tag>-<hash>-<test>-->\n"
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\""
+      " type=\"static\" mediaPresentationDuration=\"PT0S\"/>\n";
 
   std::string mpd_doc;
   mutable_mpd_options()->mpd_type = MpdType::kDynamic;
