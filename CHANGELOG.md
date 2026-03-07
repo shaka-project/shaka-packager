@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [3.6.0](https://github.com/shaka-project/shaka-packager/compare/v3.5.0...v3.6.0) (2026-03-07)
+
+
+### Features
+
+* Switch VOD to live stream when event/live streams end ([#1541](https://github.com/shaka-project/shaka-packager/issues/1541)) ([ef8ed34](https://github.com/shaka-project/shaka-packager/commit/ef8ed345dee03fdad37e5b67958b2f5ccb984314)), closes [#321](https://github.com/shaka-project/shaka-packager/issues/321)
+
+
+### Bug Fixes
+
+* AdaptationSet ID inconsistency across periods ([#1547](https://github.com/shaka-project/shaka-packager/issues/1547)) ([6c7fb18](https://github.com/shaka-project/shaka-packager/commit/6c7fb18d3bd87a680034675fae60392ff56a8008))
+
 ## [3.5.0](https://github.com/shaka-project/shaka-packager/compare/v3.4.2...v3.5.0) (2026-03-05)
 
 
