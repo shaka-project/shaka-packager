@@ -151,10 +151,15 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     DCHECK(event_info_.empty());
-    // TODO(kqyang): Set mpd duration to |duration_seconds|, which is more
-    // accurate than the duration coded in the original media header.
+
     if (mpd_notifier_->mpd_type() == MpdType::kStatic)
       mpd_notifier_->Flush();
+    else {
+      // Set mpd duration to |duration_seconds|, which is more
+      // accurate than the duration coded in the original media header.
+      media_info_->set_media_duration_seconds(duration_seconds);
+      mpd_notifier_->NotifyEndOfStream();
+    }
     return;
   }
 

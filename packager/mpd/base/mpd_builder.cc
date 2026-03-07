@@ -330,6 +330,13 @@ float MpdBuilder::GetStaticMpdDuration() {
   return total_duration;
 }
 
+void MpdBuilder::FinalizeDynamicMpd() {
+  if (mpd_options_.mpd_params.event_to_vod_on_end_of_stream) {
+    mpd_options_.dash_profile = DashProfile::kOnDemand;
+    mpd_options_.mpd_type = MpdType::kStatic;
+  }
+}
+
 bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
   DCHECK(!periods_.empty());

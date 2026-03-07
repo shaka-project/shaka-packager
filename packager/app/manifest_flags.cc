@@ -11,6 +11,11 @@ ABSL_FLAG(double,
           1800.0,
           "Guaranteed duration of the time shifting buffer for HLS LIVE "
           "playlists and DASH dynamic media presentations, in seconds.");
+ABSL_FLAG(bool,
+          event_to_vod_on_end_of_stream,
+          false,
+          "Set to true to convert an event stream to VOD in place "
+          "once end of stream is detected");
 ABSL_FLAG(
     uint64_t,
     preserved_segments_outside_live_window,

@@ -70,6 +70,9 @@ class SimpleHlsNotifier : public HlsNotifier {
       const std::vector<uint8_t>& system_id,
       const std::vector<uint8_t>& iv,
       const std::vector<uint8_t>& protection_system_specific_data) override;
+
+  bool NotifyEndOfStream() override;
+
   bool Flush() override;
   /// }@
 
@@ -86,6 +89,7 @@ class SimpleHlsNotifier : public HlsNotifier {
 
   std::string master_playlist_dir_;
   int32_t target_duration_ = 0;
+  bool end_stream = false;
 
   std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;
   std::unique_ptr<MasterPlaylist> master_playlist_;

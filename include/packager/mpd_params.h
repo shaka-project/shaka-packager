@@ -16,6 +16,8 @@ namespace shaka {
 struct MpdParams {
   /// MPD output file path.
   std::string mpd_output;
+  /// Convert event stream to VOD once end of stream is detected
+  bool event_to_vod_on_end_of_stream = false;
   /// BaseURLs for the MPD. The values will be added as <BaseURL> element(s)
   /// under the <MPD> element.
   std::vector<std::string> base_urls;
