@@ -439,7 +439,8 @@ TEST_F(SimpleMpdNotifierTest, MultipleMediaInfo) {
 // Reproduce the reported issue: multiple AdaptationSets, multiple periods,
 // intermediate flush. This ensures AdaptationSet IDs remain consistent
 // across periods even if periods are build incrementally and flushed.
-TEST_F(SimpleMpdNotifierTest, RegressionInconsistentAdaptationSetIdsAcrossPeriods) {
+TEST_F(SimpleMpdNotifierTest,
+       RegressionInconsistentAdaptationSetIdsAcrossPeriods) {
   MpdOptions options = empty_mpd_option_;
   // Need to use real MpdBuilder/Period to test ID reassignment.
   SimpleMpdNotifier notifier(options);
@@ -477,8 +478,9 @@ TEST_F(SimpleMpdNotifierTest, RegressionInconsistentAdaptationSetIdsAcrossPeriod
 
   // Notify cue for Stream 3 (AS B).
   // This will match AS B in Period 2.
-  // But SimpleMpdNotifier expects its ID to be the same as in Period 1 (which is 1).
-  // Since Period 2 reassigned it to 0, this will trigger the DCHECK failure.
+  // But SimpleMpdNotifier expects its ID to be the same as in Period 1 (which
+  // is 1). Since Period 2 reassigned it to 0, this will trigger the DCHECK
+  // failure.
   EXPECT_TRUE(notifier.NotifyCueEvent(id3, kCueTimestamp));
 }
 
