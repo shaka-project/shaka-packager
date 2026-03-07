@@ -14,6 +14,7 @@
 #include <packager/macros/compiler.h>
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/ac4_parser.h>
 #include <packager/media/codecs/av1_parser.h>
 #include <packager/media/codecs/video_slice_header_parser.h>
 #include <packager/media/codecs/vp8_parser.h>
@@ -224,6 +225,8 @@ Status SubsampleGenerator::GenerateSubsamples(
     std::vector<SubsampleEntry>* subsamples) {
   subsamples->clear();
   switch (codec_) {
+    case kCodecAC4:
+      return GenerateSubsamplesFromAC4Frame(frame, frame_size, subsamples);
     case kCodecAV1:
       return GenerateSubsamplesFromAV1Frame(frame, frame_size, subsamples);
     case kCodecH264:
@@ -297,6 +300,23 @@ Status SubsampleGenerator::GenerateSubsamplesFromVPxFrame(
   } else {
     DCHECK_EQ(total_size, frame_size);
   }
+  return Status::OK;
+}
+
+Status SubsampleGenerator::GenerateSubsamplesFromAC4Frame(
+    const uint8_t* frame,
+    size_t frame_size,
+    std::vector<SubsampleEntry>* subsamples) {
+  SubsampleOrganizer subsample_organizer(align_protected_data_, subsamples);
+  size_t toc_size = 0;
+  AC4Parser ac4_frame;
+  if (ac4_frame.Parse(frame, frame_size)) {
+    toc_size = ac4_frame.GetAc4TocSize();
+  }
+  // clear_bytes is toc_size rounded up to the nearest multiple of 8.
+  size_t clear_bytes = ((toc_size + 7) / 8) * 8;
+  size_t cipher_bytes = frame_size - clear_bytes;
+  subsample_organizer.AddSubsample(clear_bytes, cipher_bytes);
   return Status::OK;
 }
 

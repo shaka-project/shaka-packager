@@ -237,7 +237,7 @@ Status EncryptionHandler::ProcessStreamInfo(const StreamInfo& clear_info) {
   stream_label_ = GetStreamLabelForEncryption(
       *stream_info, encryption_params_.stream_label_func);
 
-  SetupProtectionPattern(stream_info->stream_type());
+  SetupProtectionPattern(stream_info->stream_type(), stream_info->codec());
 
   EncryptionKey encryption_key;
   const bool key_rotation_enabled = crypto_period_duration_ != 0;
@@ -350,8 +350,9 @@ Status EncryptionHandler::ProcessMediaSample(
   return DispatchMediaSample(kStreamIndex, std::move(cipher_sample));
 }
 
-void EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
-  if (stream_type == kStreamVideo &&
+void EncryptionHandler::SetupProtectionPattern(StreamType stream_type,
+                                               Codec codec) {
+  if ((stream_type == kStreamVideo || codec == kCodecAC4) &&
       IsPatternEncryptionScheme(protection_scheme_)) {
     crypt_byte_block_ = encryption_params_.crypt_byte_block;
     skip_byte_block_ = encryption_params_.skip_byte_block;
