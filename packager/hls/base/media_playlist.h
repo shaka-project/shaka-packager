@@ -190,8 +190,8 @@ class MediaPlaylist {
   /// we will write to the file
   /// @return true on success, false otherwise.
   virtual bool WriteToFile(const std::filesystem::path& file_path,
-                           const bool event_to_vod_on_end_of_stream,
-                           const bool end_stream);
+                           bool event_to_vod_on_end_of_stream,
+                           bool end_stream);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.

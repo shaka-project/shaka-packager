@@ -511,8 +511,8 @@ void MediaPlaylist::AddPlacementOpportunity() {
 }
 
 bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path,
-                                const bool event_to_vod_on_end_of_stream,
-                                const bool end_stream) {
+                                bool event_to_vod_on_end_of_stream,
+                                bool end_stream) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
