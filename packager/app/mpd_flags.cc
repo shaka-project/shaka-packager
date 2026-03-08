@@ -98,3 +98,9 @@ ABSL_FLAG(
     "https://shaka-project.github.io/shaka-packager/html/tutorials/low_latency.html "
     // clang-format on
     "for more information.");
+ABSL_FLAG(
+    bool,
+    use_colorimetry_essential_property,
+    false,
+    "If enabled, use EssentialProperty instead of SupplementalProperty "
+    "for video colorimetry descriptors.");

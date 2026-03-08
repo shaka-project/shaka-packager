@@ -104,6 +104,9 @@ struct MpdParams {
   /// and is greatly influnced by the player.
   /// This parameter is required by DASH-IF Low Latency standards.
   double target_latency_seconds = 1;
+  // If enabled, use EssentialProperty instead of SupplementalProperty
+  // for video colorimetry descriptors.
+  bool use_colorimetry_essential_property = false;
 };
 
 }  // namespace shaka
