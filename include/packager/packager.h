@@ -15,8 +15,8 @@
 
 #include <packager/ad_cue_generator_params.h>
 #include <packager/buffer_callback_params.h>
-#include <packager/chunking_params.h>
 #include <packager/cea_caption.h>
+#include <packager/chunking_params.h>
 #include <packager/crypto_params.h>
 #include <packager/export.h>
 #include <packager/file.h>
