@@ -16,6 +16,7 @@
 #include <packager/ad_cue_generator_params.h>
 #include <packager/buffer_callback_params.h>
 #include <packager/chunking_params.h>
+#include <packager/cea_caption.h>
 #include <packager/crypto_params.h>
 #include <packager/export.h>
 #include <packager/file.h>
@@ -76,6 +77,9 @@ struct PackagingParams {
 
   /// Buffer callback params.
   BufferCallbackParams buffer_callback_params;
+
+  /// CEA-608 / CEA-708 captions.
+  std::vector<CeaCaption> closed_captions;
 
   // Parameters for testing. Do not use in production.
   TestParams test_params;

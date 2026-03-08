@@ -584,7 +584,7 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_per_playlist_target_duration);
 
   if (!ParseClosedCaptions(absl::GetFlag(FLAGS_closed_captions),
-                           &hls_params.closed_captions)) {
+                           &packaging_params.closed_captions)) {
     LOG(ERROR) << "Failed to parse --closed_captions "
                << absl::GetFlag(FLAGS_closed_captions);
     return std::nullopt;

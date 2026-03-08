@@ -8,6 +8,7 @@
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/strings/match.h>
 
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/mpd_options.h>
@@ -313,6 +314,22 @@ bool Period::SetNewAdaptationSetAttributes(
       media_info.has_protected_content()) {
     new_adaptation_set->set_protected_content(media_info);
     AddContentProtectionElements(media_info, new_adaptation_set);
+  }
+
+  if (media_info.has_video_info() &&
+      !media_info.video_info().has_playback_rate()) {
+    for (const auto& caption : mpd_options_.mpd_params.closed_captions) {
+      if (absl::StartsWith(caption.channel, "CC")) {
+        new_adaptation_set->AddAccessibility(
+            "urn:scte:dash:cc:cea-608:2015",
+            caption.channel + "=" + caption.language);
+      } else if (absl::StartsWith(caption.channel, "SERVICE")) {
+        std::string service_number = caption.channel.substr(7);
+        new_adaptation_set->AddAccessibility(
+            "urn:scte:dash:cc:cea-708:2015",
+            service_number + "=lang:" + caption.language);
+      }
+    }
   }
 
   return true;

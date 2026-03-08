@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <packager/cea_caption.h>
+
 namespace shaka {
 
 /// DASH MPD related parameters.
@@ -102,6 +104,8 @@ struct MpdParams {
   /// and is greatly influnced by the player.
   /// This parameter is required by DASH-IF Low Latency standards.
   double target_latency_seconds = 1;
+  /// CEA-608 / CEA-708 captions.
+  std::vector<CeaCaption> closed_captions;
 };
 
 }  // namespace shaka
