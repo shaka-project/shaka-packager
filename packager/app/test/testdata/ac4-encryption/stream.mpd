@@ -7,7 +7,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAEQERITFBUWFxgZICEiIyQlAAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="74038" codecs="ac-4.02.01.00" mimeType="audio/mp4" audioSamplingRate="48000">
+      <Representation id="0" bandwidth="75669" codecs="ac-4.02.01.00" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:mpegB:cicp:ChannelConfiguration" value="2"/>
         <BaseURL>ac4_enc.mp4</BaseURL>
         <SegmentBase indexRange="895-1310" timescale="240000">
