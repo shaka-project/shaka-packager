@@ -959,7 +959,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     # Skips if AC-4 sample test asset is not available locally.
     # AC-4 sample is separate from golden directory to avoid false failures
     ac4_sample = os.path.join(
-      test_env.SRC_DIR, 'packager', 'app', 'test', 'testdata', 'ac4-sample', 'ac4.mp4')
+      test_env.SRC_DIR, 'packager', 'app', 'test', 
+      'testdata', 'ac4-sample', 'ac4.mp4')
     if not os.path.exists(ac4_sample):
       self.skipTest('AC-4 sample not found: ' + ac4_sample)
     print(f'Using AC-4 sample: {ac4_sample}')
@@ -970,7 +971,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     init_seg = os.path.join(output_dir, 'init.mp4')
     seg_tmpl = os.path.join(output_dir, 'ac4_$Number$.m4s')
     streams = [
-      'input={infile},stream=audio,output=output,stream=audio,init_segment={init},segment_template={tmpl},drm_label=audio'.format(
+      'input={infile},stream=audio,output=output,stream=audio,'
+      'init_segment={init},segment_template={tmpl},drm_label=audio'.format(
         infile=ac4_sample, init=init_seg, tmpl=seg_tmpl)
     ]
     audio_key_id = '10111213141516171819202122232425'
@@ -990,16 +992,18 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     # Verify outputs against goldens under testdata/ac4-segment-encryption.
     self._CheckTestResults('ac4-segment-encryption', verify_decryption=False)
-  
+
   def testAc4CencDash(self):
-    # End-to-end test for AC-4 with CENC encryption producing single-file DASH output.
+    # End-to-end test for 
+    # AC-4 with CENC encryption producing single-file DASH output.
     # Skips if AC-4 sample test asset is not available locally.
     # AC-4 sample is separate from golden directory to avoid false failures
     ac4_sample = os.path.join(
-      test_env.SRC_DIR, 'packager', 'app', 'test', 'testdata', 'ac4-sample', 'ac4.mp4')
+      test_env.SRC_DIR, 'packager', 'app', 'test', 
+      'testdata', 'ac4-sample', 'ac4.mp4')
     if not os.path.exists(ac4_sample):
       self.skipTest('AC-4 sample not found: ' + ac4_sample)
-    
+
     # Single-file output for simpler golden comparison
     output_file = os.path.join(self.tmp_dir, 'ac4_enc.mp4')
     streams = [
