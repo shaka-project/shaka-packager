@@ -959,7 +959,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     # Skips if AC-4 sample test asset is not available locally.
     # AC-4 sample is separate from golden directory to avoid false failures
     ac4_sample = os.path.join(
-      test_env.SRC_DIR, 'packager', 'app', 'test', 
+      test_env.SRC_DIR, 'packager', 'app', 'test',
       'testdata', 'ac4-sample', 'ac4.mp4')
     if not os.path.exists(ac4_sample):
       self.skipTest('AC-4 sample not found: ' + ac4_sample)
@@ -994,12 +994,12 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('ac4-segment-encryption', verify_decryption=False)
 
   def testAc4CencDash(self):
-    # End-to-end test for 
+    # End-to-end test for
     # AC-4 with CENC encryption producing single-file DASH output.
     # Skips if AC-4 sample test asset is not available locally.
     # AC-4 sample is separate from golden directory to avoid false failures
     ac4_sample = os.path.join(
-      test_env.SRC_DIR, 'packager', 'app', 'test', 
+      test_env.SRC_DIR, 'packager', 'app', 'test',
       'testdata', 'ac4-sample', 'ac4.mp4')
     if not os.path.exists(ac4_sample):
       self.skipTest('AC-4 sample not found: ' + ac4_sample)
