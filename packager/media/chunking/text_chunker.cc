@@ -21,7 +21,7 @@ TextChunker::TextChunker(double segment_duration_in_seconds,
     : segment_duration_in_seconds_(segment_duration_in_seconds),
       segment_number_(start_segment_number),
       ts_ttx_heartbeat_shift_(kDefaultTtxHeartbeatShift),
-      use_segment_coordinator_(false) {};
+      use_segment_coordinator_(false){};
 
 TextChunker::TextChunker(double segment_duration_in_seconds,
                          int64_t start_segment_number,
@@ -29,7 +29,7 @@ TextChunker::TextChunker(double segment_duration_in_seconds,
     : segment_duration_in_seconds_(segment_duration_in_seconds),
       segment_number_(start_segment_number),
       ts_ttx_heartbeat_shift_(ts_ttx_heartbeat_shift),
-      use_segment_coordinator_(false) {};
+      use_segment_coordinator_(false){};
 
 TextChunker::TextChunker(double segment_duration_in_seconds,
                          int64_t start_segment_number,
@@ -38,7 +38,7 @@ TextChunker::TextChunker(double segment_duration_in_seconds,
     : segment_duration_in_seconds_(segment_duration_in_seconds),
       segment_number_(start_segment_number),
       ts_ttx_heartbeat_shift_(ts_ttx_heartbeat_shift),
-      use_segment_coordinator_(use_segment_coordinator) {};
+      use_segment_coordinator_(use_segment_coordinator){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {

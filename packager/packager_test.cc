@@ -468,18 +468,18 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAligned) {
 
   // Verify video and text have the same number of segments
   ASSERT_EQ(video_segments.size(), text_segments.size())
-      << "Video and text segment count mismatch: "
-      << "video=" << video_segments.size() << " text=" << text_segments.size();
+      << "Video and text segment count mismatch: " << "video="
+      << video_segments.size() << " text=" << text_segments.size();
 
   // Verify video and text segments have the same start times and durations
   for (size_t i = 0; i < video_segments.size(); ++i) {
     EXPECT_EQ(video_segments[i].first, text_segments[i].first)
-        << "Segment " << i << " start time mismatch: "
-        << "video=" << video_segments[i].first
+        << "Segment " << i
+        << " start time mismatch: " << "video=" << video_segments[i].first
         << " text=" << text_segments[i].first;
     EXPECT_EQ(video_segments[i].second, text_segments[i].second)
-        << "Segment " << i << " duration mismatch: "
-        << "video=" << video_segments[i].second
+        << "Segment " << i
+        << " duration mismatch: " << "video=" << video_segments[i].second
         << " text=" << text_segments[i].second;
   }
 
@@ -507,10 +507,9 @@ TEST_F(TeletextSegmentAlignmentTest, VideoAndTextSegmentsAligned) {
     double relative_cue_seconds =
         (cue_start_times[i] - first_video_vtt_time) / kVttTimescale;
     EXPECT_NEAR(relative_cue_seconds, kExpectedCueStartTimes[i], 0.1)
-        << "Cue " << i << " start time mismatch: "
-        << "got " << relative_cue_seconds
-        << "s relative to video start, expected " << kExpectedCueStartTimes[i]
-        << "s";
+        << "Cue " << i << " start time mismatch: " << "got "
+        << relative_cue_seconds << "s relative to video start, expected "
+        << kExpectedCueStartTimes[i] << "s";
   }
 
   LOG(INFO) << "Segment alignment test: " << video_segments.size()
@@ -657,10 +656,9 @@ TEST_F(TeletextSegmentAlignmentTest,
     double relative_cue_seconds =
         (cue_start_times[i] - first_video_vtt_time) / kVttTimescale;
     EXPECT_NEAR(relative_cue_seconds, kExpectedCueStartTimes[i], 0.1)
-        << "Cue " << i << " start time mismatch (wrap-around): "
-        << "got " << relative_cue_seconds
-        << "s relative to video start, expected " << kExpectedCueStartTimes[i]
-        << "s";
+        << "Cue " << i << " start time mismatch (wrap-around): " << "got "
+        << relative_cue_seconds << "s relative to video start, expected "
+        << kExpectedCueStartTimes[i] << "s";
   }
 
   LOG(INFO) << "Wrap-around segment alignment test: " << video_segments.size()
