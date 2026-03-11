@@ -287,13 +287,16 @@ TEST_F(EsParserTeletextTest, pes_283413_line_emitted_on_next_pes) {
       es_parser_teletext->Parse(PES_407876, sizeof(PES_407876), 407876, 0);
   EXPECT_TRUE(parse_result);
 
-  EXPECT_NE(nullptr, text_sample_.get());
-  EXPECT_EQ(283413, text_sample_->start_time());
-  EXPECT_EQ(407876, text_sample_->EndTime());
-  EXPECT_EQ("Bon dia!", text_sample_->body().body);
-  EXPECT_EQ("black", text_sample_->body().style.backgroundColor);
-  EXPECT_EQ("white", text_sample_->body().style.color);
-  TextSettings settings = text_sample_->settings();
+  EXPECT_EQ(3, text_samples_.size());
+  EXPECT_EQ(TextSampleRole::kCueEnd, text_samples_[0]->role());
+  EXPECT_EQ(TextSampleRole::kCueStart, text_samples_[1]->role());
+  EXPECT_EQ(TextSampleRole::kCueEnd, text_samples_[2]->role());
+  EXPECT_EQ(283413, text_samples_[1]->start_time());
+  EXPECT_EQ(407876, text_samples_[2]->EndTime());
+  EXPECT_EQ("Bon dia!", text_samples_[1]->body().body);
+  EXPECT_EQ("black", text_samples_[1]->body().style.backgroundColor);
+  EXPECT_EQ("white", text_samples_[1]->body().style.color);
+  TextSettings settings = text_samples_[1]->settings();
   EXPECT_EQ(TextAlignment::kCenter, settings.text_alignment);
   EXPECT_TRUE(settings.line.has_value());
   EXPECT_EQ(11, settings.line.value().value);
@@ -321,17 +324,19 @@ TEST_F(EsParserTeletextTest, multiple_lines_with_same_pts) {
       es_parser_teletext->Parse(PES_8937764, sizeof(PES_8937764), 8937764, 0);
   EXPECT_TRUE(parse_result);
 
-  EXPECT_NE(nullptr, text_sample_.get());
-  EXPECT_EQ(8768632, text_sample_->start_time());
-  EXPECT_EQ(8937764, text_sample_->EndTime());
-  EXPECT_EQ(3, text_sample_->body().sub_fragments.size());
-  EXPECT_EQ("-Sí?", text_sample_->body().sub_fragments[0].body);
-  EXPECT_TRUE(text_sample_->body().sub_fragments[1].newline);
-  EXPECT_EQ("-Sí.", text_sample_->body().sub_fragments[2].body);
-  TextSettings settings = text_sample_->settings();
+  EXPECT_EQ(3, text_samples_.size());
+  EXPECT_EQ(TextSampleRole::kCueEnd, text_samples_[0]->role());
+  EXPECT_EQ(TextSampleRole::kCueStart, text_samples_[1]->role());
+  EXPECT_EQ(TextSampleRole::kCueEnd, text_samples_[2]->role());
+  EXPECT_EQ(8773087, text_samples_[1]->start_time());
+  EXPECT_EQ(8937764, text_samples_[2]->EndTime());
+  EXPECT_EQ(3, text_samples_[1]->body().sub_fragments.size());
+  EXPECT_EQ("-Sí?", text_samples_[1]->body().sub_fragments[0].body);
+  EXPECT_TRUE(text_samples_[1]->body().sub_fragments[1].newline);
+  EXPECT_EQ("-Sí.", text_samples_[1]->body().sub_fragments[2].body);
+  TextSettings settings = text_samples_[1]->settings();
   EXPECT_EQ(10, settings.line.value().value);
   EXPECT_EQ("ttx_10", settings.region);
-  EXPECT_EQ(1, text_samples_.size());
 }
 
 // separate_lines_with_slightly_different_pts has the original lines
@@ -359,23 +364,24 @@ TEST_F(EsParserTeletextTest, separate_lines_with_slightly_different_pts) {
   EXPECT_TRUE(parse_result);
 
   EXPECT_NE(nullptr, text_sample_.get());
-  EXPECT_EQ(2, text_samples_.size());
+  EXPECT_EQ(4, text_samples_.size());
+  EXPECT_EQ(TextSampleRole::kCueEnd, text_samples_[0]->role());
+  EXPECT_EQ(TextSampleRole::kCueStart, text_samples_[1]->role());
+  EXPECT_EQ(TextSampleRole::kCueStart, text_samples_[2]->role());
+  EXPECT_EQ(TextSampleRole::kCueEnd, text_samples_[3]->role());
   // The subtitles should get the same start and end time
-  EXPECT_EQ(867681, text_samples_[0]->start_time());
+  EXPECT_EQ(867681, text_samples_[0]->EndTime());
   EXPECT_EQ(867681, text_samples_[1]->start_time());
-  EXPECT_EQ(1011695, text_samples_[0]->EndTime());
-  EXPECT_EQ(1011695, text_samples_[0]->EndTime());
-  EXPECT_EQ(1, text_samples_[0]->body().sub_fragments.size());
-  EXPECT_EQ(1, text_samples_[1]->body().sub_fragments.size());
-  EXPECT_EQ("-Luke !", text_samples_[0]->body().sub_fragments[0].body);
-  EXPECT_EQ("ttx_9", text_samples_[0]->settings().region);
-  EXPECT_EQ(TextAlignment::kLeft, text_samples_[0]->settings().text_alignment);
-  EXPECT_EQ("-Je vais aux cours d'été.",
-            text_samples_[1]->body().sub_fragments[0].body);
-  EXPECT_EQ(11, text_samples_[1]->settings().line.value().value);
-  EXPECT_EQ("ttx_11", text_samples_[1]->settings().region);
+  EXPECT_EQ(871281, text_samples_[2]->start_time());
+  EXPECT_EQ(1011695, text_samples_[3]->EndTime());
+  EXPECT_EQ("-Luke !", text_samples_[1]->body().body);
+  EXPECT_EQ("ttx_9", text_samples_[1]->settings().region);
+  EXPECT_EQ(TextAlignment::kLeft, text_samples_[1]->settings().text_alignment);
+  EXPECT_EQ("-Je vais aux cours d'été.", text_samples_[2]->body().body);
+  EXPECT_EQ(11, text_samples_[2]->settings().line.value().value);
+  EXPECT_EQ("ttx_11", text_samples_[2]->settings().region);
   EXPECT_EQ(TextAlignment::kCenter,
-            text_samples_[1]->settings().text_alignment);
+            text_samples_[2]->settings().text_alignment);
 }
 
 // consecutive_lines_with_slightly_different_pts has the original lines
@@ -403,23 +409,212 @@ TEST_F(EsParserTeletextTest, consecutive_lines_with_slightly_different_pts) {
   EXPECT_TRUE(parse_result);
 
   EXPECT_NE(nullptr, text_sample_.get());
-  EXPECT_EQ(1, text_samples_.size());
-  // The subtitles should get the same start and end time
-  EXPECT_EQ(1033297, text_sample_->start_time());
-  EXPECT_EQ(1173713, text_sample_->EndTime());
-  EXPECT_EQ(3, text_sample_->body().sub_fragments.size());
-  TextSettings settings = text_sample_->settings();
+  EXPECT_EQ(4, text_samples_.size());
+  // The cues get the same start time, and get erased at same time,
+  EXPECT_EQ(1033297, text_samples_[0]->EndTime());
+  EXPECT_EQ(1033297, text_samples_[1]->start_time());
+  EXPECT_EQ(1036900, text_samples_[2]->start_time());
+  EXPECT_EQ(1173713, text_samples_[3]->EndTime());
+  TextSettings settings = text_samples_[1]->settings();
   EXPECT_EQ(10, settings.line.value().value);
   EXPECT_EQ("ttx_10", settings.region);
   EXPECT_EQ(TextAlignment::kCenter, settings.text_alignment);
-  EXPECT_EQ("J'ai loupé", text_sample_->body().sub_fragments[0].body);
-  EXPECT_EQ("yellow", text_sample_->body().sub_fragments[0].style.color);
-  EXPECT_TRUE(text_sample_->body().sub_fragments[1].newline);
-  EXPECT_EQ("l'initiation à l'algèbre.",
-            text_sample_->body().sub_fragments[2].body);
-  EXPECT_EQ("yellow",
-            text_sample_->body().sub_fragments[2].style.backgroundColor);
-  EXPECT_EQ("blue", text_sample_->body().sub_fragments[2].style.color);
+  EXPECT_EQ("J'ai loupé", text_samples_[1]->body().body);
+  EXPECT_EQ("yellow", text_samples_[1]->body().style.color);
+  EXPECT_EQ("l'initiation à l'algèbre.", text_samples_[2]->body().body);
+  EXPECT_EQ("yellow", text_samples_[2]->body().style.backgroundColor);
+  EXPECT_EQ("blue", text_samples_[2]->body().style.color);
+}
+
+// Heartbeat Feature Tests
+
+// PES packet with non-subtitle data unit - should be skipped, resulting in
+// empty rows This simulates a PES with no teletext subtitle data that should
+// emit kTextHeartBeat Structure: data_identifier (0x10), data_unit_id (0x02 -
+// NOT subtitle), length (44), data (44 bytes) data_unit_id=0x02 gets skipped
+// (only 0x03 is processed per es_parser_teletext.cc:178)
+const uint8_t PES_NO_SUBTITLE_100000[] = {
+    0x10,        // Data identifier
+    0x02, 0x2c,  // Data unit: 0x02 (not subtitle), length 44
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,  // 44 bytes stuffing
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
+
+TEST_F(EsParserTeletextTest, EmptyPESEmitsTextHeartBeat) {
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 kPesPid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                kPesPid, std::placeholders::_1);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  // First PES to establish last_pts_
+  auto parse_result =
+      es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
+  EXPECT_TRUE(parse_result);
+
+  // PES with no valid teletext subtitle data should emit kTextHeartBeat
+  parse_result = es_parser_teletext->Parse(
+      PES_NO_SUBTITLE_100000, sizeof(PES_NO_SUBTITLE_100000), 100000, 0);
+  EXPECT_TRUE(parse_result);
+
+  // Verify kTextHeartBeat was emitted
+  bool found_heartbeat = false;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kTextHeartBeat) {
+      found_heartbeat = true;
+      EXPECT_EQ(100000, sample->start_time());
+      EXPECT_EQ(100000, sample->EndTime());
+      EXPECT_EQ("", sample->body().body);  // Empty body for heartbeat
+    }
+  }
+  EXPECT_TRUE(found_heartbeat);
+}
+
+TEST_F(EsParserTeletextTest, PacketZeroEraseBitEmitsCueEnd) {
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 kPesPid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                kPesPid, std::placeholders::_1);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  // Send initial PES to establish page context
+  auto parse_result =
+      es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
+  EXPECT_TRUE(parse_result);
+
+  // Verify kCueEnd was emitted from packet 0 with erase bit
+  bool found_cue_end = false;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kCueEnd &&
+        sample->EndTime() == 283413) {
+      found_cue_end = true;
+    }
+  }
+  EXPECT_TRUE(found_cue_end);
+}
+
+TEST_F(EsParserTeletextTest, CueStartHasPlaceholderDuration) {
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 kPesPid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                kPesPid, std::placeholders::_1);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  // Send PES with displayable content
+  auto parse_result =
+      es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
+  EXPECT_TRUE(parse_result);
+
+  // Find kCueStart and verify placeholder duration (30s = 30*90000 = 2700000)
+  bool found_cue_start = false;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kCueStart) {
+      found_cue_start = true;
+      EXPECT_EQ(TextSampleRole::kCueStart, sample->role());
+      int64_t duration = sample->EndTime() - sample->start_time();
+      EXPECT_EQ(2700000, duration);  // 30s * 90000
+    }
+  }
+  EXPECT_TRUE(found_cue_start);
+}
+
+// PES with same PTS as previous - for duplicate heartbeat test
+const uint8_t PES_NO_SUBTITLE_100000_DUP[] = {
+    0x10,        // Data identifier
+    0x02, 0x2c,  // Data unit: 0x02 (not subtitle), length 44
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,  // 44 bytes stuffing
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+    0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
+
+TEST_F(EsParserTeletextTest, NoDuplicateHeartBeats) {
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 kPesPid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                kPesPid, std::placeholders::_1);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  // First PES to establish last_pts_
+  auto parse_result =
+      es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
+  EXPECT_TRUE(parse_result);
+
+  // Empty PES at pts=100000 - should emit kTextHeartBeat
+  parse_result = es_parser_teletext->Parse(
+      PES_NO_SUBTITLE_100000, sizeof(PES_NO_SUBTITLE_100000), 100000, 0);
+  EXPECT_TRUE(parse_result);
+
+  size_t heartbeat_count_before = 0;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kTextHeartBeat) {
+      heartbeat_count_before++;
+    }
+  }
+
+  // Same PTS again - should NOT emit another kTextHeartBeat
+  parse_result =
+      es_parser_teletext->Parse(PES_NO_SUBTITLE_100000_DUP,
+                                sizeof(PES_NO_SUBTITLE_100000_DUP), 100000, 0);
+  EXPECT_TRUE(parse_result);
+
+  size_t heartbeat_count_after = 0;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kTextHeartBeat) {
+      heartbeat_count_after++;
+    }
+  }
+
+  // Verify no new heartbeat was added
+  EXPECT_EQ(heartbeat_count_before, heartbeat_count_after);
+  EXPECT_EQ(1, heartbeat_count_after);  // Only one heartbeat for pts=100000
+}
+
+TEST_F(EsParserTeletextTest, CueEndNoDuplicates) {
+  auto on_new_stream = std::bind(&EsParserTeletextTest::OnNewStreamInfo, this,
+                                 kPesPid, std::placeholders::_1);
+  auto on_emit_text = std::bind(&EsParserTeletextTest::OnEmitTextSample, this,
+                                kPesPid, std::placeholders::_1);
+
+  std::unique_ptr<EsParserTeletext> es_parser_teletext(new EsParserTeletext(
+      kPesPid, on_new_stream, on_emit_text, DESCRIPTOR, 12));
+
+  // First PES with erase bit - emits kCueEnd
+  auto parse_result =
+      es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
+  EXPECT_TRUE(parse_result);
+
+  size_t cue_end_count_before = 0;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kCueEnd &&
+        sample->EndTime() == 283413) {
+      cue_end_count_before++;
+    }
+  }
+
+  // Same PES again with same PTS - should NOT emit another kCueEnd
+  parse_result =
+      es_parser_teletext->Parse(PES_283413, sizeof(PES_283413), 283413, 0);
+  EXPECT_TRUE(parse_result);
+
+  size_t cue_end_count_after = 0;
+  for (const auto& sample : text_samples_) {
+    if (sample->role() == TextSampleRole::kCueEnd &&
+        sample->EndTime() == 283413) {
+      cue_end_count_after++;
+    }
+  }
+
+  // Verify no new kCueEnd was added for same PTS
+  EXPECT_EQ(cue_end_count_before, cue_end_count_after);
 }
 
 }  // namespace mp2t
