@@ -876,6 +876,16 @@ Status Packager::Initialize(
   hls_params.is_independent_segments =
       packaging_params.chunking_params.segment_sap_aligned;
 
+  for (const auto& caption : packaging_params.closed_captions) {
+    CeaCaption dash_caption = caption;
+    dash_caption.language = LanguageToISO_639_2(caption.language);
+    mpd_params.closed_captions.push_back(dash_caption);
+
+    CeaCaption hls_caption = caption;
+    hls_caption.language = LanguageToShortestForm(caption.language);
+    hls_params.closed_captions.push_back(hls_caption);
+  }
+
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();
