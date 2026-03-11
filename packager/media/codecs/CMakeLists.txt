@@ -15,6 +15,7 @@ add_library(media_codecs STATIC
     dts_audio_specific_config.cc
     ec3_audio_util.cc
     ac4_audio_util.cc
+    ac4_parser.cc
     es_descriptor.cc
     h264_byte_to_unit_stream_converter.cc
     h264_parser.cc
@@ -45,6 +46,7 @@ add_executable(media_codecs_unittest
     dovi_decoder_configuration_record_unittest.cc
     ec3_audio_util_unittest.cc
     ac4_audio_util_unittest.cc
+    ac4_parser_unittest.cc
     es_descriptor_unittest.cc
     h264_byte_to_unit_stream_converter_unittest.cc
     h264_parser_unittest.cc

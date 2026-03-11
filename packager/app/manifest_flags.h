@@ -15,9 +15,12 @@
 #include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(double, time_shift_buffer_depth);
+ABSL_DECLARE_FLAG(bool, event_to_vod_on_end_of_stream);
 ABSL_DECLARE_FLAG(uint64_t, preserved_segments_outside_live_window);
 ABSL_DECLARE_FLAG(std::string, default_language);
 ABSL_DECLARE_FLAG(std::string, default_text_language);
 ABSL_DECLARE_FLAG(bool, force_cl_index);
+ABSL_DECLARE_FLAG(bool, per_playlist_target_duration);
+ABSL_DECLARE_FLAG(std::string, closed_captions);
 
 #endif  // PACKAGER_APP_MANIFEST_FLAGS_H_

@@ -74,7 +74,7 @@ class MockKeySource : public RawKeySource {
 
 class MockSubsampleGenerator : public SubsampleGenerator {
  public:
-  MockSubsampleGenerator() : SubsampleGenerator(true) {}
+  MockSubsampleGenerator() : SubsampleGenerator(true, false) {}
 
   MOCK_METHOD2(Initialize,
                Status(FourCC protection_scheme, const StreamInfo& stream_info));

@@ -282,7 +282,7 @@ jobs:
           fi
 
       - name: Upload static release build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: matrix.build_type == 'Release' && matrix.lib_type == 'static'
         with:
           name: artifacts-${{ matrix.os_name }}-${{ matrix.target_arch }}
