@@ -591,8 +591,8 @@ std::optional<PackagingParams> GetPackagingParams() {
   if (!ParseClosedCaptions(absl::GetFlag(FLAGS_closed_captions),
                            &hls_params.closed_captions)) {
     LOG(ERROR) << "Failed to parse --closed_captions "
-    return std::nullopt;
                << absl::GetFlag(FLAGS_closed_captions);
+    return std::nullopt;
   }
 
   TestParams& test_params = packaging_params.test_params;
