@@ -332,7 +332,8 @@ std::vector<std::pair<int64_t, int64_t>> ExtractSegmentTimeline(
     std::smatch match = *i;
     int64_t t = std::stoll(match[1].str());
     int64_t d = std::stoll(match[2].str());
-    int repeat = match[3].matched ? std::stoi(match[3].str()) : 0;
+    int repeat =
+        (match.size() > 3 && match[3].matched) ? std::stoi(match[3].str()) : 0;
 
     current_time = t;
     // Add segment and any repeats

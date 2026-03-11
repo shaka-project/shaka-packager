@@ -7,6 +7,8 @@
 #ifndef PACKAGER_PUBLIC_CHUNKING_PARAMS_H_
 #define PACKAGER_PUBLIC_CHUNKING_PARAMS_H_
 
+#include <cstdint>
+
 namespace shaka {
 
 /// Default heartbeat shift for DVB-Teletext: 1 second at 90kHz timescale.
