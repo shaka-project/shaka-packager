@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [3.6.0](https://github.com/shaka-project/shaka-packager/compare/v3.5.0...v3.6.0) (2026-03-11)
+
+
+### Features
+
+* add subsample encryption support for Dolby AC-4 ([#1522](https://github.com/shaka-project/shaka-packager/issues/1522)) ([3e854f4](https://github.com/shaka-project/shaka-packager/commit/3e854f4c907fdd4d0a5491304d9ad616f1a935bd))
+* DASH - Add signaling for CEA-608/708 captions ([#1549](https://github.com/shaka-project/shaka-packager/issues/1549)) ([51e25b5](https://github.com/shaka-project/shaka-packager/commit/51e25b56ee7ed3cf1302293045b249e4d25d76fe))
+* Switch VOD to live stream when event/live streams end ([#1541](https://github.com/shaka-project/shaka-packager/issues/1541)) ([ef8ed34](https://github.com/shaka-project/shaka-packager/commit/ef8ed345dee03fdad37e5b67958b2f5ccb984314)), closes [#321](https://github.com/shaka-project/shaka-packager/issues/321)
+
+
+### Bug Fixes
+
+* AdaptationSet ID inconsistency across periods ([#1547](https://github.com/shaka-project/shaka-packager/issues/1547)) ([6c7fb18](https://github.com/shaka-project/shaka-packager/commit/6c7fb18d3bd87a680034675fae60392ff56a8008))
+
 ## [3.5.0](https://github.com/shaka-project/shaka-packager/compare/v3.4.2...v3.5.0) (2026-03-05)
 
 
