@@ -49,6 +49,8 @@ else()
   # Several warning suppression flags are required on one compiler version and
   # not understood by another.  Do not treat these as errors.
   add_compile_options(-Wno-unknown-warning-option)
+  # Disable warnings about pre-C++17 compatibility.  We require C++17.
+  add_compile_options(-Wno-pre-c++17-compat)
 endif()
 
 # Global include paths.
