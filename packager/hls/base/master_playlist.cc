@@ -248,8 +248,8 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
   uint32_t height;
 
   const bool is_iframe_playlist =
-        playlist.stream_type() ==
-        MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
+      playlist.stream_type() ==
+      MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
 
   if (playlist.GetDisplayResolution(&width, &height)) {
     tag.AddNumberPair("RESOLUTION", width, 'x', height);
