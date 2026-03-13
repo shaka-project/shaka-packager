@@ -160,11 +160,7 @@ VPCodecConfigurationRecord WebMVideoClient::GetVpCodecConfig(
     vp_config.SetChromaLocation(chroma_siting_horz_, chroma_siting_vert_);
   }
   if (color_range_ != -1) {
-    if (color_range_ == 0)
-      vp_config.set_video_full_range_flag(false);
-    else if (color_range_ == 1)
-      vp_config.set_video_full_range_flag(true);
-    // Ignore for other values.
+    vp_config.set_video_full_range_flag(color_range_ == 2);
   }
   if (transfer_characteristics_ != -1) {
     vp_config.set_transfer_characteristics(transfer_characteristics_);
@@ -307,10 +303,10 @@ std::vector<uint8_t> WebMVideoClient::GenerateColrBoxData() const {
   writer.AppendInt(transfer);
   writer.AppendInt(matrix);
 
-  // WebM color_range: 0 = limited range, 1 = full range
+  // WebM color_range: 0=unspecified, 1=broadcast/limited, 2=full range.
   uint8_t full_range_flag = 0;
   if (color_range_ != -1) {
-    full_range_flag = (color_range_ == 1) ? 1 : 0;
+    full_range_flag = (color_range_ == 2) ? 1 : 0;
   }
   writer.AppendInt(full_range_flag);
 
