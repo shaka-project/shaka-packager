@@ -4,6 +4,8 @@
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
 
+# If no external version string is declared, try to derive it from git
+if(NOT DEFINED PACKAGER_VERSION)
 execute_process(
     COMMAND "${Python3_EXECUTABLE}" generate_version_string.py
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -13,6 +15,7 @@ execute_process(
     ENCODING UTF8)
 if(NOT STATUS EQUAL 0)
   message(FATAL_ERROR "Failed to generate Packager version")
+endif()
 endif()
 
 add_library(version STATIC version.cc)
