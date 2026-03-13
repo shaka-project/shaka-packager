@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [3.6.1](https://github.com/shaka-project/shaka-packager/compare/v3.6.0...v3.6.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* DVB-Teletext: heartbeat mechanism and segment alignment with video/audio ([#1535](https://github.com/shaka-project/shaka-packager/issues/1535)) ([19dbd20](https://github.com/shaka-project/shaka-packager/commit/19dbd203b01bfecf646384e89f8a6da1ea343d35)), closes [#1428](https://github.com/shaka-project/shaka-packager/issues/1428) [#1401](https://github.com/shaka-project/shaka-packager/issues/1401) [#1355](https://github.com/shaka-project/shaka-packager/issues/1355) [#1430](https://github.com/shaka-project/shaka-packager/issues/1430)
+* HLS - remove CLOSED-CAPTIONS from EXT-X-I-FRAME-STREAM-INF ([#1551](https://github.com/shaka-project/shaka-packager/issues/1551)) ([16a2462](https://github.com/shaka-project/shaka-packager/commit/16a2462dd8a00fbcaec06e1aaf86b732ba0111eb))
+* Upgrade deps that are meant for older versions of CMake ([#1508](https://github.com/shaka-project/shaka-packager/issues/1508)) ([e46b759](https://github.com/shaka-project/shaka-packager/commit/e46b7591e1e4ff3444e306061746aa42589c84d7))
+
 ## [3.6.0](https://github.com/shaka-project/shaka-packager/compare/v3.5.0...v3.6.0) (2026-03-11)
 
 
