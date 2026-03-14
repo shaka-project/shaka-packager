@@ -13,19 +13,24 @@ namespace shaka {
 namespace media {
 
 static const uint8_t kClusterHeader[] = {
+    // clang-format off
     0x1F, 0x43, 0xB6, 0x75,                          // CLUSTER ID
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // cluster(size = 0)
     0xE7,                                            // Timecode ID
     0x88,                                            // timecode(size=8)
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // timecode value
+    // clang-format on
 };
 
 static const uint8_t kSimpleBlockHeader[] = {
+    // clang-format off
     0xA3,                                            // SimpleBlock ID
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // SimpleBlock(size = 0)
+    // clang-format on
 };
 
 static const uint8_t kBlockGroupHeader[] = {
+    // clang-format off
     0xA0,                                            // BlockGroup ID
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // BlockGroup(size = 0)
     0x9B,                                            // BlockDuration ID
@@ -33,18 +38,23 @@ static const uint8_t kBlockGroupHeader[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // duration
     0xA1,                                            // Block ID
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // Block(size = 0)
+    // clang-format on
 };
 
 static const uint8_t kBlockGroupHeaderWithoutBlockDuration[] = {
+    // clang-format off
     0xA0,                                            // BlockGroup ID
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // BlockGroup(size = 0)
     0xA1,                                            // Block ID
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // Block(size = 0)
+    // clang-format on
 };
 
 static const uint8_t kBlockGroupReferenceBlock[] = {
+    // clang-format off
     0xFB,        // ReferenceBlock ID
     0x81, 0x00,  // ReferenceBlock (size=1, value=0)
+    // clang-format on
 };
 
 enum {

@@ -85,7 +85,6 @@ ACTION(WriteTwoPmts) {
 
 class TsWriterTest : public ::testing::Test {
  protected:
-  
   // Checks whether |actual|'s prefix matches with |prefix| and the suffix
   // matches with |suffix|. If there is padding, then padding_length specifies
   // how long the padding is between prefix and suffix.
@@ -137,6 +136,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
   };
   const int kExpectedPatPrefixSize = std::size(kExpectedPatPrefix);
   const uint8_t kExpectedPatPayload[] = {
+      // clang-format off
       0x00,  // pointer field
       0x00,
       0xB0,        // The last 2 '00' assumes that this PAT is not very long.
@@ -151,6 +151,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       0x20,        // PMT PID.
       // CRC32.
       0xf9, 0x62, 0xf5, 0x8b,
+      // clang-format on
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
@@ -167,7 +168,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteOnePmt());
 
   BufferWriter buffer_writer;
-  
+
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
 
@@ -189,7 +190,7 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
   BufferWriter buffer_writer;
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
-  
+
   ASSERT_EQ(564u, buffer_writer.Size());
 
   EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
@@ -256,7 +257,7 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
   BufferWriter buffer_writer;
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
-  
+
   ASSERT_EQ(564u, buffer_writer.Size());
 
   EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
@@ -276,12 +277,12 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
   BufferWriter buffer_writer;
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
-  
+
   buffer_writer.Clear();
   // Overwrite the file but as encrypted segment.
   ts_writer.SignalEncrypted();
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
-  
+
   ASSERT_EQ(376u, buffer_writer.Size());
 
   EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
@@ -305,9 +306,9 @@ TEST_F(TsWriterTest, AddPesPacket) {
   pes->mutable_data()->assign(kAnyData, kAnyData + std::size(kAnyData));
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes), &buffer_writer));
-  
+
   // 3 TS Packets. PAT, PMT, and PES.
-  
+
   ASSERT_EQ(564u, buffer_writer.Size());
 
   const int kPesStartPosition = 376;
@@ -353,7 +354,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
 TEST_F(TsWriterTest, BigPesPacket) {
   TsWriter ts_writer(std::unique_ptr<ProgramMapTableWriter>(
       new VideoProgramMapTableWriter(kCodecForTesting)));
-  
+
   BufferWriter buffer_writer;
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
 
@@ -385,7 +386,7 @@ TEST_F(TsWriterTest, BigPesPacket) {
 TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   TsWriter ts_writer(std::unique_ptr<ProgramMapTableWriter>(
       new VideoProgramMapTableWriter(kCodecForTesting)));
-  
+
   BufferWriter buffer_writer;
   EXPECT_TRUE(ts_writer.NewSegment(&buffer_writer));
 

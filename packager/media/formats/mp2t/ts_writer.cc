@@ -29,6 +29,7 @@ const uint8_t kProgramAssociationTableId = 0x00;
 
 // This PAT can be used for both encrypted and clear.
 const uint8_t kPat[] = {
+    // clang-format off
     0x00,  // pointer field
     kProgramAssociationTableId,
     0xB0,        // The last 2 '00' assumes that this PAT is not very long.
@@ -43,6 +44,7 @@ const uint8_t kPat[] = {
     ProgramMapTableWriter::kPmtPid,
     // CRC32.
     0xF9, 0x62, 0xF5, 0x8B,
+    // clang-format on
 };
 
 const bool kHasPcr = true;

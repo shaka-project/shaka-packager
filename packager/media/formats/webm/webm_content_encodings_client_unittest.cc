@@ -32,7 +32,9 @@ class WebMContentEncodingsClientTest : public testing::Test {
 
 TEST_F(WebMContentEncodingsClientTest, EmptyContentEncodings) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x80,  // ContentEncodings (size = 0)
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);
@@ -40,8 +42,10 @@ TEST_F(WebMContentEncodingsClientTest, EmptyContentEncodings) {
 
 TEST_F(WebMContentEncodingsClientTest, EmptyContentEncoding) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x83,  // ContentEncodings (size = 3)
       0x63, 0x40, 0x80,  //   ContentEncoding (size = 0)
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);
@@ -49,6 +53,7 @@ TEST_F(WebMContentEncodingsClientTest, EmptyContentEncoding) {
 
 TEST_F(WebMContentEncodingsClientTest, SingleContentEncoding) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0xA1,        // ContentEncodings (size = 33)
       0x62, 0x40, 0x9e,        //   ContentEncoding (size = 30)
       0x50, 0x31, 0x81, 0x00,  //     ContentEncodingOrder (size = 1)
@@ -58,6 +63,7 @@ TEST_F(WebMContentEncodingsClientTest, SingleContentEncoding) {
       0x47, 0xE1, 0x81, 0x05,  //       ContentEncAlgo (size = 1)
       0x47, 0xE2, 0x88,        //       ContentEncKeyID (size = 8)
       0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
 
@@ -78,6 +84,7 @@ TEST_F(WebMContentEncodingsClientTest, SingleContentEncoding) {
 
 TEST_F(WebMContentEncodingsClientTest, MultipleContentEncoding) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0xC2,        // ContentEncodings (size = 66)
       0x62, 0x40, 0x9e,        //   ContentEncoding (size = 30)
       0x50, 0x31, 0x81, 0x00,  //     ContentEncodingOrder (size = 1)
@@ -95,6 +102,7 @@ TEST_F(WebMContentEncodingsClientTest, MultipleContentEncoding) {
       0x47, 0xE1, 0x81, 0x01,  //       ContentEncAlgo (size = 1)
       0x47, 0xE2, 0x88,        //       ContentEncKeyID (size = 8)
       0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB,
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
 
@@ -118,6 +126,7 @@ TEST_F(WebMContentEncodingsClientTest, MultipleContentEncoding) {
 
 TEST_F(WebMContentEncodingsClientTest, DefaultValues) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x8A,        // ContentEncodings (size = 10)
       0x62, 0x40, 0x87,        //   ContentEncoding (size = 7)
                                //     ContentEncodingOrder missing
@@ -125,6 +134,7 @@ TEST_F(WebMContentEncodingsClientTest, DefaultValues) {
       0x50, 0x33, 0x81, 0x01,  //     ContentEncodingType (size = 1)
       0x50, 0x35, 0x80,        //     ContentEncryption (size = 0)
                                //     ContentEncAlgo missing
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
 
@@ -145,6 +155,7 @@ TEST_F(WebMContentEncodingsClientTest, DefaultValues) {
 
 TEST_F(WebMContentEncodingsClientTest, ContentEncodingsClientReuse) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0xA1,        // ContentEncodings (size = 33)
       0x62, 0x40, 0x9e,        //   ContentEncoding (size = 30)
       0x50, 0x31, 0x81, 0x00,  //     ContentEncodingOrder (size = 1)
@@ -154,6 +165,7 @@ TEST_F(WebMContentEncodingsClientTest, ContentEncodingsClientReuse) {
       0x47, 0xE1, 0x81, 0x05,  //       ContentEncAlgo (size = 1)
       0x47, 0xE2, 0x88,        //       ContentEncKeyID (size = 8)
       0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
 
@@ -180,11 +192,13 @@ TEST_F(WebMContentEncodingsClientTest, ContentEncodingsClientReuse) {
 
 TEST_F(WebMContentEncodingsClientTest, InvalidContentEncodingOrder) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x8E,        // ContentEncodings (size = 14)
       0x62, 0x40, 0x8B,        //   ContentEncoding (size = 11)
       0x50, 0x31, 0x81, 0xEE,  //     ContentEncodingOrder (size = 1), invalid
       0x50, 0x33, 0x81, 0x01,  //     ContentEncodingType (size = 1)
       0x50, 0x35, 0x80,        //     ContentEncryption (size = 0)
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);
@@ -192,11 +206,13 @@ TEST_F(WebMContentEncodingsClientTest, InvalidContentEncodingOrder) {
 
 TEST_F(WebMContentEncodingsClientTest, InvalidContentEncodingScope) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x8E,        // ContentEncodings (size = 14)
       0x62, 0x40, 0x8B,        //   ContentEncoding (size = 11)
       0x50, 0x32, 0x81, 0xEE,  //     ContentEncodingScope (size = 1), invalid
       0x50, 0x33, 0x81, 0x01,  //     ContentEncodingType (size = 1)
       0x50, 0x35, 0x80,        //     ContentEncryption (size = 0)
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);
@@ -204,10 +220,12 @@ TEST_F(WebMContentEncodingsClientTest, InvalidContentEncodingScope) {
 
 TEST_F(WebMContentEncodingsClientTest, InvalidContentEncodingType) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x8E,        // ContentEncodings (size = 14)
       0x62, 0x40, 0x8B,        //   ContentEncoding (size = 11)
       0x50, 0x33, 0x81, 0x00,  //     ContentEncodingType (size = 1), invalid
       0x50, 0x35, 0x80,        //     ContentEncryption (size = 0)
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);
@@ -216,10 +234,12 @@ TEST_F(WebMContentEncodingsClientTest, InvalidContentEncodingType) {
 // ContentEncodingType is encryption but no ContentEncryption present.
 TEST_F(WebMContentEncodingsClientTest, MissingContentEncryption) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x87,        // ContentEncodings (size = 7)
       0x62, 0x40, 0x84,        //   ContentEncoding (size = 4)
       0x50, 0x33, 0x81, 0x01,  //     ContentEncodingType (size = 1)
                                //     ContentEncryption missing
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);
@@ -227,6 +247,7 @@ TEST_F(WebMContentEncodingsClientTest, MissingContentEncryption) {
 
 TEST_F(WebMContentEncodingsClientTest, InvalidContentEncAlgo) {
   const uint8_t kContentEncodings[] = {
+      // clang-format off
       0x6D, 0x80, 0x99,        // ContentEncodings (size = 25)
       0x62, 0x40, 0x96,        //   ContentEncoding (size = 22)
       0x50, 0x33, 0x81, 0x01,  //     ContentEncodingType (size = 1)
@@ -234,6 +255,7 @@ TEST_F(WebMContentEncodingsClientTest, InvalidContentEncAlgo) {
       0x47, 0xE1, 0x81, 0xEE,  //       ContentEncAlgo (size = 1), invalid
       0x47, 0xE2, 0x88,        //       ContentEncKeyID (size = 8)
       0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+      // clang-format on
   };
   int size = sizeof(kContentEncodings);
   ParseAndExpectToFail(kContentEncodings, size);

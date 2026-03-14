@@ -72,7 +72,7 @@ static void CreateClusterExpectations(int block_count,
 
 TEST_F(WebMParserTest, EmptyCluster) {
   const uint8_t kEmptyCluster[] = {
-      0x1F, 0x43, 0xB6, 0x75, 0x80  // CLUSTER (size = 0)
+      0x1F, 0x43, 0xB6, 0x75, 0x80,  // CLUSTER (size = 0)
   };
   int size = sizeof(kEmptyCluster);
 
@@ -123,8 +123,8 @@ TEST_F(WebMParserTest, ChildNonListLargerThanParent) {
 // that is beyond the end of the parent.
 TEST_F(WebMParserTest, ChildListLargerThanParent) {
   const uint8_t kBuffer[] = {
-      0x18, 0x53, 0x80, 0x67, 0x85,       // SEGMENT (size = 5)
-      0x1F, 0x43, 0xB6, 0x75, 0x81, 0x11  // CLUSTER (size = 1)
+      0x18, 0x53, 0x80, 0x67, 0x85,        // SEGMENT (size = 5)
+      0x1F, 0x43, 0xB6, 0x75, 0x81, 0x11,  // CLUSTER (size = 1)
   };
 
   InSequence s;
@@ -383,11 +383,11 @@ TEST_F(WebMParserTest, ReservedSizes) {
 
 TEST_F(WebMParserTest, ZeroPaddedStrings) {
   const uint8_t kBuffer[] = {
-      0x1A, 0x45, 0xDF, 0xA3, 0x91,       // EBMLHEADER (size = 17)
-      0x42, 0x82, 0x80,                   // DocType (size = 0)
-      0x42, 0x82, 0x81, 0x00,             // DocType (size = 1) ""
-      0x42, 0x82, 0x81, 'a',              // DocType (size = 1) "a"
-      0x42, 0x82, 0x83, 'a',  0x00, 0x00  // DocType (size = 3) "a"
+      0x1A, 0x45, 0xDF, 0xA3, 0x91,        // EBMLHEADER (size = 17)
+      0x42, 0x82, 0x80,                    // DocType (size = 0)
+      0x42, 0x82, 0x81, 0x00,              // DocType (size = 1) ""
+      0x42, 0x82, 0x81, 'a',               // DocType (size = 1) "a"
+      0x42, 0x82, 0x83, 'a',  0x00, 0x00,  // DocType (size = 3) "a"
   };
   int size = sizeof(kBuffer);
 

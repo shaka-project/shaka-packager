@@ -264,7 +264,7 @@ TEST_F(WebMVideoClientTest, GetVideoStreamInfo_AV1WithColorInfo) {
       0x81,  // marker and version
       0x08,  // profile and level
       0x00,  // tier, bitdepth, monochrome, chroma subsampling
-      0x00   // initial presentation delay
+      0x00,  // initial presentation delay
   };
 
   auto video_info = client_.GetVideoStreamInfo(1,        // track_num
