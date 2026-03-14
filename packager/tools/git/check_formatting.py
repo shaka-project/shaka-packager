@@ -33,7 +33,7 @@ Mac:
     brew install clang-format
 
 1. Download git-clang-format from
-   https://github.com/llvm-mirror/clang/blob/master/tools/clang-format/git-clang-format
+   https://raw.githubusercontent.com/llvm-mirror/clang/master/tools/clang-format/git-clang-format
 
 2. Move the script somewhere in your path, e.g.
    sudo mv git-clang-format /usr/bin/
@@ -52,7 +52,7 @@ import sys
 if __name__ == '__main__':
   is_pre_commit_hook = len(sys.argv) == 1
 
-  command = ['git', 'clang-format', '--style', 'Chromium']
+  command = ['git', 'clang-format']
 
   if is_pre_commit_hook:
     # As a pre-commit, just run the command and fail if it fails.
@@ -63,10 +63,11 @@ if __name__ == '__main__':
   command += sys.argv[1:]
   output = subprocess.check_output(command + ['--diff'])
 
-  if output in [
-      b'no modified files to format\n',
-      b'clang-format did not modify any files\n'
-  ]:
+  SUCCESS_MESSAGES = [
+    b'no modified files to format\n',
+    b'clang-format did not modify any files\n',
+  ]
+  if output in SUCCESS_MESSAGES:
     sys.exit(0)
 
   print(output.decode('utf-8'))
