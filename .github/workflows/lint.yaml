@@ -44,6 +44,9 @@ jobs:
 
           python3 -m pip install --upgrade pylint==3.3.3
 
+          # Debug clang-format version for clarity.
+          clang-format --version
+
           # NOTE: Must use base.sha instead of base.ref, since we don't have
           # access to the branch name that base.ref would give us.
           # NOTE: Must also use fetch-depth: 2 in actions/checkout to have
