@@ -31,8 +31,8 @@ const uint8_t kBogusDefaultKeyId[] = {0x5f, 0x64, 0x65, 0x66, 0x61, 0x75,
                                       0x5f, 0x69, 0x64, 0x5f};
 
 const uint8_t kBogusIv[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
 };
 
 const bool kInitialEncryptionInfo = true;
@@ -75,15 +75,12 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_, false));
   }
 
-  void SetSegmentListFlag() {
-    listener_->set_use_segment_list(true);
-  }
+  void SetSegmentListFlag() { listener_->set_use_segment_list(true); }
 
   void TearDown() override { delete_file(temp_file_path_); }
 
-  void FireOnMediaStartWithDefaultMuxerOptions(
-      const StreamInfo& stream_info,
-      bool enable_encryption) {
+  void FireOnMediaStartWithDefaultMuxerOptions(const StreamInfo& stream_info,
+                                               bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptions(&muxer_options);
     const int32_t kReferenceTimeScale = 1000;
@@ -287,7 +284,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
 // Equivalent tests with segment list flag on which writes subsegment ranges
 // to media info files
 
-TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal_SegmentList) {
+TEST_F(VodMediaInfoDumpMuxerListenerTest,
+       UnencryptedStream_Normal_SegmentList) {
   SetSegmentListFlag();
   std::shared_ptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());

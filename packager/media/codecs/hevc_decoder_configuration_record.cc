@@ -42,7 +42,8 @@ std::string GeneralProfileSpaceAsString(uint8_t general_profile_space) {
 std::string TrimLeadingZeros(const std::string& str) {
   DCHECK_GT(str.size(), 0u);
   for (size_t i = 0; i < str.size(); ++i) {
-    if (str[i] == '0') continue;
+    if (str[i] == '0')
+      continue;
     return str.substr(i);
   }
   return "0";
@@ -187,7 +188,8 @@ std::string HEVCDecoderConfigurationRecord::GetCodecString(
   std::vector<uint8_t> constraints = general_constraint_indicator_flags_;
   size_t size = constraints.size();
   for (; size > 0; --size) {
-    if (constraints[size - 1] != 0) break;
+    if (constraints[size - 1] != 0)
+      break;
   }
   constraints.resize(size);
   for (uint8_t constraint : constraints)

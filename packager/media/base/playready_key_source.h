@@ -41,7 +41,8 @@ class PlayReadyKeySource : public KeySource {
                             const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}
-  virtual Status FetchKeysWithProgramIdentifier(const std::string& program_identifier);
+  virtual Status FetchKeysWithProgramIdentifier(
+      const std::string& program_identifier);
 
   /// Creates a new PlayReadyKeySource from the given data.
   /// Returns null if the strings are invalid.

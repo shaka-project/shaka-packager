@@ -73,9 +73,9 @@ bool IsPlayReadySystemId(const std::vector<uint8_t>& system_id) {
 
 std::string Base64EncodeData(const std::string& prefix,
                              const std::string& data) {
-    std::string data_base64;
-    absl::Base64Escape(data, &data_base64);
-    return prefix + data_base64;
+  std::string data_base64;
+  absl::Base64Escape(data, &data_base64);
+  return prefix + data_base64;
 }
 
 std::string VectorToString(const std::vector<uint8_t>& v) {
@@ -210,10 +210,8 @@ void NotifyEncryptionToMediaPlaylist(
                                key_id.size()));
   }
 
-  media_playlist->AddEncryptionInfo(
-      encryption_method,
-      uri, key_id_string, iv_string,
-      key_format, key_format_version);
+  media_playlist->AddEncryptionInfo(encryption_method, uri, key_id_string,
+                                    iv_string, key_format, key_format_version);
 }
 
 // Creates JSON format and the format similar to MPD.
@@ -468,8 +466,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   LOG_IF(WARNING, encryption_method == MediaPlaylist::EncryptionMethod::kNone)
       << "Got encryption notification but the encryption method is NONE";
   if (IsWidevineSystemId(system_id)) {
-    return HandleWidevineKeyFormats(encryption_method,
-                                    key_id, iv, protection_system_specific_data,
+    return HandleWidevineKeyFormats(encryption_method, key_id, iv,
+                                    protection_system_specific_data,
                                     media_playlist.get());
   }
 

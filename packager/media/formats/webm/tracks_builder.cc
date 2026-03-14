@@ -152,8 +152,7 @@ static void WriteStringElement(uint8_t** buf_ptr,
 
 TracksBuilder::TracksBuilder(bool allow_invalid_values)
     : allow_invalid_values_(allow_invalid_values) {}
-TracksBuilder::TracksBuilder()
-    : allow_invalid_values_(false) {}
+TracksBuilder::TracksBuilder() : allow_invalid_values_(false) {}
 TracksBuilder::~TracksBuilder() {}
 
 void TracksBuilder::AddVideoTrack(int track_num,
@@ -226,8 +225,8 @@ int TracksBuilder::GetTracksSize() const {
 int TracksBuilder::GetTracksPayloadSize() const {
   int payload_size = 0;
 
-  for (TrackList::const_iterator itr = tracks_.begin();
-       itr != tracks_.end(); ++itr) {
+  for (TrackList::const_iterator itr = tracks_.begin(); itr != tracks_.end();
+       ++itr) {
     payload_size += itr->GetSize();
   }
 
@@ -237,8 +236,8 @@ int TracksBuilder::GetTracksPayloadSize() const {
 void TracksBuilder::WriteTracks(uint8_t* buf, int buf_size) const {
   WriteMasterElement(&buf, &buf_size, kWebMIdTracks, GetTracksPayloadSize());
 
-  for (TrackList::const_iterator itr = tracks_.begin();
-       itr != tracks_.end(); ++itr) {
+  for (TrackList::const_iterator itr = tracks_.begin(); itr != tracks_.end();
+       ++itr) {
     itr->Write(&buf, &buf_size);
   }
 }
@@ -389,7 +388,7 @@ void TracksBuilder::Track::Write(uint8_t** buf, int* buf_size) const {
 
     if (audio_sampling_frequency_ >= 0) {
       WriteDoubleElement(buf, buf_size, kWebMIdSamplingFrequency,
-          audio_sampling_frequency_);
+                         audio_sampling_frequency_);
     }
   }
 }

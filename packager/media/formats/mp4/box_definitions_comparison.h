@@ -185,8 +185,7 @@ inline bool operator==(const SampleToGroupEntry& lhs,
          lhs.group_description_index == rhs.group_description_index;
 }
 
-inline bool operator==(const SampleToGroup& lhs,
-                       const SampleToGroup& rhs) {
+inline bool operator==(const SampleToGroup& lhs, const SampleToGroup& rhs) {
   return lhs.grouping_type == rhs.grouping_type &&
          lhs.grouping_type_parameter == rhs.grouping_type_parameter &&
          lhs.entries == rhs.entries;
@@ -224,8 +223,7 @@ inline bool operator==(const HandlerReference& lhs,
   return lhs.handler_type == rhs.handler_type;
 }
 
-inline bool operator==(const Language& lhs,
-                       const Language& rhs) {
+inline bool operator==(const Language& lhs, const Language& rhs) {
   return lhs.code == rhs.code;
 }
 
@@ -463,28 +461,23 @@ inline bool operator==(const SegmentIndex& lhs, const SegmentIndex& rhs) {
          lhs.references == rhs.references;
 }
 
-inline bool operator==(const CueSourceIDBox& lhs,
-                       const CueSourceIDBox& rhs) {
+inline bool operator==(const CueSourceIDBox& lhs, const CueSourceIDBox& rhs) {
   return lhs.source_id == rhs.source_id;
 }
 
-inline bool operator==(const CueTimeBox& lhs,
-                       const CueTimeBox& rhs) {
+inline bool operator==(const CueTimeBox& lhs, const CueTimeBox& rhs) {
   return lhs.cue_current_time == rhs.cue_current_time;
 }
 
-inline bool operator==(const CueIDBox& lhs,
-                       const CueIDBox& rhs) {
+inline bool operator==(const CueIDBox& lhs, const CueIDBox& rhs) {
   return lhs.cue_id == rhs.cue_id;
 }
 
-inline bool operator==(const CueSettingsBox& lhs,
-                       const CueSettingsBox& rhs) {
+inline bool operator==(const CueSettingsBox& lhs, const CueSettingsBox& rhs) {
   return lhs.settings == rhs.settings;
 }
 
-inline bool operator==(const CuePayloadBox& lhs,
-                       const CuePayloadBox& rhs) {
+inline bool operator==(const CuePayloadBox& lhs, const CuePayloadBox& rhs) {
   return lhs.cue_text == rhs.cue_text;
 }
 
@@ -498,8 +491,7 @@ inline bool operator==(const VTTAdditionalTextBox& lhs,
   return lhs.cue_additional_text == rhs.cue_additional_text;
 }
 
-inline bool operator==(const VTTCueBox& lhs,
-                       const VTTCueBox& rhs) {
+inline bool operator==(const VTTCueBox& lhs, const VTTCueBox& rhs) {
   return lhs.cue_source_id == rhs.cue_source_id && lhs.cue_id == rhs.cue_id &&
          lhs.cue_time == rhs.cue_time && lhs.cue_settings == rhs.cue_settings &&
          lhs.cue_payload == rhs.cue_payload;

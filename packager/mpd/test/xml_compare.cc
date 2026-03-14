@@ -56,8 +56,8 @@ bool MapCompareFunc(std::pair<std::string, std::string> a,
   }
 
   if (a.second != b.second) {
-    DLOG(INFO) << "Value mismatch for " << a.first << std::endl << "Values are "
-               << a.second << " and " << b.second;
+    DLOG(INFO) << "Value mismatch for " << a.first << std::endl
+               << "Values are " << a.second << " and " << b.second;
     return false;
   }
   return true;
@@ -101,14 +101,18 @@ bool CompareContents(xmlNodePtr node1, xmlNodePtr node2) {
 
   DVLOG(2) << "Comparing contents of "
            << reinterpret_cast<const char*>(node1->name) << "\n"
-           << "First node's content:\n" << node1_content << "\n"
-           << "Second node's content:\n" << node2_content;
+           << "First node's content:\n"
+           << node1_content << "\n"
+           << "Second node's content:\n"
+           << node2_content;
   const bool same_content = node1_content == node2_content;
   LOG_IF(ERROR, !same_content)
       << "Contents of " << reinterpret_cast<const char*>(node1->name)
       << " do not match.\n"
-      << "First node's content:\n" << node1_content << "\n"
-      << "Second node's content:\n" << node2_content;
+      << "First node's content:\n"
+      << node1_content << "\n"
+      << "Second node's content:\n"
+      << node2_content;
   return same_content;
 }
 

@@ -190,8 +190,8 @@ Status EncryptionHandler::Process(std::unique_ptr<StreamData> stream_data) {
     case StreamDataType::kStreamInfo:
       return ProcessStreamInfo(*stream_data->stream_info);
     case StreamDataType::kSegmentInfo: {
-      std::shared_ptr<SegmentInfo> segment_info(new SegmentInfo(
-          *stream_data->segment_info));
+      std::shared_ptr<SegmentInfo> segment_info(
+          new SegmentInfo(*stream_data->segment_info));
 
       segment_info->is_encrypted = remaining_clear_lead_ <= 0;
 

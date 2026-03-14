@@ -111,10 +111,9 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
     return false;
   }
 
-  bool status = section_parser_->Parse(
-      ts_packet.payload_unit_start_indicator(),
-      ts_packet.payload(),
-      ts_packet.payload_size());
+  bool status =
+      section_parser_->Parse(ts_packet.payload_unit_start_indicator(),
+                             ts_packet.payload(), ts_packet.payload_size());
 
   // At the minimum, when parsing failed, auto reset the section parser.
   // Components that use the Mp2tMediaParser can take further action if needed.
@@ -154,9 +153,7 @@ void PidState::ResetState() {
 }
 
 Mp2tMediaParser::Mp2tMediaParser()
-    : sbr_in_mimetype_(false),
-      is_initialized_(false) {
-}
+    : sbr_in_mimetype_(false), is_initialized_(false) {}
 
 Mp2tMediaParser::~Mp2tMediaParser() {}
 
@@ -230,8 +227,7 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
                         << ts_packet->continuity_counter();
     // Parse the section.
     auto it = pids_.find(ts_packet->pid());
-    if (it == pids_.end() &&
-        ts_packet->pid() == TsSection::kPidPat) {
+    if (it == pids_.end() && ts_packet->pid() == TsSection::kPidPat) {
       // Create the PAT state here if needed.
       std::unique_ptr<TsSection> pat_section_parser(new TsSectionPat(
           std::bind(&Mp2tMediaParser::RegisterPmt, this, std::placeholders::_1,
@@ -258,8 +254,7 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
 
 void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   DVLOG(1) << "RegisterPmt:"
-           << " program_number=" << program_number
-           << " pmt_pid=" << pmt_pid;
+           << " program_number=" << program_number << " pmt_pid=" << pmt_pid;
 
   // Only one TS program is allowed. Ignore the incoming program map table,
   // if there is already one registered.
@@ -479,8 +474,8 @@ void Mp2tMediaParser::OnEmitTextSample(uint32_t pes_pid,
   // Add the sample to the appropriate PID sample queue.
   auto pid_state = pids_.find(pes_pid);
   if (pid_state == pids_.end()) {
-    LOG(ERROR) << "PID State for new sample not found (pid = "
-               << pes_pid << ").";
+    LOG(ERROR) << "PID State for new sample not found (pid = " << pes_pid
+               << ").";
     return;
   }
 

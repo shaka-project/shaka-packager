@@ -20,8 +20,8 @@ namespace {
 const uint8_t kTestMediaSampleData[] = {0xde, 0xad, 0xbe, 0xef, 0x00};
 const uint8_t kTestMediaSampleSideData[] = {
     // First 8 bytes of side_data is the BlockAddID element in big endian.
-    0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x00, 0x00,
-    0x73, 0x69, 0x64, 0x65, 0x00};
+    0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x00,
+    0x00, 0x73, 0x69, 0x64, 0x65, 0x00};
 
 const int kTrackId = 1;
 const int64_t kDurationInSeconds = 8;
@@ -124,7 +124,7 @@ void SegmentTestBase::ClusterParser::PopulateFromCluster(
 }
 
 void SegmentTestBase::ClusterParser::PopulateFromSegment(
-        const std::string& file_name) {
+    const std::string& file_name) {
   frame_timecodes_.clear();
   std::string file_contents;
   ASSERT_TRUE(File::ReadFileToString(file_name.c_str(), &file_contents));

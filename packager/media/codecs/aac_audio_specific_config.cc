@@ -210,13 +210,13 @@ uint8_t AACAudioSpecificConfig::GetNumChannels() const {
 
 bool AACAudioSpecificConfig::ParseAudioObjectType(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(5, &audio_object_type_));
-  
+
   if (audio_object_type_ == AOT_ESCAPE) {
     uint8_t audioObjectTypeExt;
     RCHECK(bit_reader->ReadBits(6, &audioObjectTypeExt));
     audio_object_type_ = static_cast<AudioObjectType>(32 + audioObjectTypeExt);
   }
-  
+
   return true;
 }
 
@@ -290,7 +290,7 @@ bool AACAudioSpecificConfig::ParseGASpecificConfig(BitReader* bit_reader) {
 
   if (extension_flag) {
     if (audio_object_type_ == 22) {
-      RCHECK(bit_reader->ReadBits(5, &dummy));  // numOfSubFrame
+      RCHECK(bit_reader->ReadBits(5, &dummy));   // numOfSubFrame
       RCHECK(bit_reader->ReadBits(11, &dummy));  // layer_length
     }
 

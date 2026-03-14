@@ -39,9 +39,7 @@ namespace {
 
 // Sets the range start and end value from offset and size.
 // |start| and |end| are for byte-range-spec specified in RFC2616.
-void SetStartAndEndFromOffsetAndSize(size_t offset,
-                                     size_t size,
-                                     Range* range) {
+void SetStartAndEndFromOffsetAndSize(size_t offset, size_t size, Range* range) {
   DCHECK(range);
   range->start = static_cast<uint32_t>(offset);
   // Note that ranges are inclusive. So we need - 1.
@@ -299,8 +297,8 @@ Status MP4Muxer::DelayInitializeMuxer() {
             static_cast<const AudioStreamInfo*>(stream), &trak);
         break;
       case kStreamText:
-        generate_trak_result = GenerateTextTrak(
-            static_cast<const TextStreamInfo*>(stream), &trak);
+        generate_trak_result =
+            GenerateTextTrak(static_cast<const TextStreamInfo*>(stream), &trak);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
@@ -504,7 +502,7 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   AudioSampleEntry audio;
   audio.format =
       CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
-  switch(audio_info->codec()){
+  switch (audio_info->codec()) {
     case kCodecAAC: {
       DecoderConfigDescriptor* decoder_config =
           audio.esds.es_descriptor.mutable_decoder_config_descriptor();
@@ -583,10 +581,10 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     audio.channelcount = 2;
     audio.samplesize = 16;
   } else if (audio_info->codec() == kCodecAC4) {
-    //ETSI TS 103 190-2, E.4.5 channelcount should be set to the total number of
-    //audio outputchannels of the default audio presentation of that track
+    // ETSI TS 103 190-2, E.4.5 channelcount should be set to the total number
+    // of audio outputchannels of the default audio presentation of that track
     audio.channelcount = audio_info->num_channels();
-    //ETSI TS 103 190-2, E.4.6 samplesize shall be set to 16.
+    // ETSI TS 103 190-2, E.4.6 samplesize shall be set to 16.
     audio.samplesize = 16;
   } else if (audio_info->codec() == kCodecIAMF) {
     // IAMF sets channelcount to 0
@@ -632,8 +630,7 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   return true;
 }
 
-bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
-                                Track* trak) {
+bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info, Track* trak) {
   InitializeTrak(text_info, trak);
 
   if (text_info->codec_string() == "wvtt") {

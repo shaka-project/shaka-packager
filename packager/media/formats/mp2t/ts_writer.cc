@@ -54,8 +54,7 @@ const bool kPayloadUnitStartIndicator = true;
 // without adaptation field or the payload.
 const int kTsPacketHeaderSize = 4;
 const int kTsPacketSize = 188;
-const int kTsPacketMaximumPayloadSize =
-    kTsPacketSize - kTsPacketHeaderSize;
+const int kTsPacketMaximumPayloadSize = kTsPacketSize - kTsPacketHeaderSize;
 
 const size_t kMaxPesPacketLengthValue = 0xFFFF;
 

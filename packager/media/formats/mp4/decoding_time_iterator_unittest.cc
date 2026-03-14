@@ -16,8 +16,11 @@ namespace shaka {
 namespace media {
 namespace mp4 {
 
-const DecodingTime kDecodingTimes[] =
-    {{10, 8}, {9, 5}, {25, 7}, {48, 63}, {8, 2}};
+const DecodingTime kDecodingTimes[] = {{10, 8},
+                                       {9, 5},
+                                       {25, 7},
+                                       {48, 63},
+                                       {8, 2}};
 
 class DecodingTimeIteratorTest : public testing::Test {
  public:
