@@ -32,9 +32,8 @@ TEST(H264ByteToUnitStreamConverter, StripParameterSetsNalu) {
   H264ByteToUnitStreamConverter converter(
       H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus);
   std::vector<uint8_t> output_frame;
-  ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
-                                                         input_frame.size(),
-                                                         &output_frame));
+  ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(
+      input_frame.data(), input_frame.size(), &output_frame));
   EXPECT_EQ(expected_output_frame, output_frame);
 
   auto expected_decoder_config_str =
@@ -59,9 +58,8 @@ TEST(H264ByteToUnitStreamConverter, KeepParameterSetsNalu) {
   H264ByteToUnitStreamConverter converter(
       H26xStreamFormat::kNalUnitStreamWithParameterSetNalus);
   std::vector<uint8_t> output_frame;
-  ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
-                                                         input_frame.size(),
-                                                         &output_frame));
+  ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(
+      input_frame.data(), input_frame.size(), &output_frame));
   EXPECT_EQ(expected_output_frame, output_frame);
 }
 
@@ -71,12 +69,10 @@ TEST(H264ByteToUnitStreamConverter, ConversionFailure) {
   H264ByteToUnitStreamConverter converter(
       H26xStreamFormat::kNalUnitStreamWithParameterSetNalus);
   std::vector<uint8_t> output_frame;
-  EXPECT_FALSE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
-                                                          0,
+  EXPECT_FALSE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(), 0,
                                                           &output_frame));
-  EXPECT_FALSE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
-                                                          input_frame.size(),
-                                                          &output_frame));
+  EXPECT_FALSE(converter.ConvertByteStreamToNalUnitStream(
+      input_frame.data(), input_frame.size(), &output_frame));
   std::vector<uint8_t> decoder_config;
   EXPECT_FALSE(converter.GetDecoderConfigurationRecord(&decoder_config));
 }

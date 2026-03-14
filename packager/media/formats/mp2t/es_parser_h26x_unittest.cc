@@ -289,9 +289,8 @@ void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
 
 TEST_F(EsParserH26xTest, H265BasicSupport) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265Aud, kH265Sps, kH265VclKeyFrame,
-    kSeparator, kH265Aud, kH265Vcl,
-    kSeparator, kH265Aud, kH265Vcl,
+      kSeparator, kH265Aud, kH265Sps,   kH265VclKeyFrame, kSeparator,
+      kH265Aud,   kH265Vcl, kSeparator, kH265Aud,         kH265Vcl,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -301,10 +300,8 @@ TEST_F(EsParserH26xTest, H265BasicSupport) {
 
 TEST_F(EsParserH26xTest, H265DeterminesAccessUnitsWithoutAUD) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265Sps, kH265VclKeyFrame,
-    kSeparator, kH265Vcl,
-    kSeparator, kH265Vcl,
-    kSeparator, kH265Sei, kH265Vcl,
+      kSeparator, kH265Sps, kH265VclKeyFrame, kSeparator, kH265Vcl,
+      kSeparator, kH265Vcl, kSeparator,       kH265Sei,   kH265Vcl,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -314,9 +311,8 @@ TEST_F(EsParserH26xTest, H265DeterminesAccessUnitsWithoutAUD) {
 
 TEST_F(EsParserH26xTest, H265DoesNotStartOnRsv) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265Sps, kH265VclKeyFrame, kH265Rsv,
-    kSeparator, kH265Aud, kH265Vcl,
-    kSeparator, kH265Sei, kH265Vcl,
+      kSeparator, kH265Sps, kH265VclKeyFrame, kH265Rsv, kSeparator,
+      kH265Aud,   kH265Vcl, kSeparator,       kH265Sei, kH265Vcl,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -326,11 +322,10 @@ TEST_F(EsParserH26xTest, H265DoesNotStartOnRsv) {
 
 TEST_F(EsParserH26xTest, H265SupportsNonZeroNuhLayerId) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265Sps, kH265VclKeyFrame,
-    kSeparator, kH265Aud, kH265Vcl, kH265Sei, kH265VclWithNuhLayer, kH265Rsv,
-    kSeparator, kH265Sei, kH265Vcl,
-    kSeparator, kH265Aud, kH265Vcl, kH265Sps, kH265Rsv, kH265VclWithNuhLayer,
-    kSeparator, kH265Vcl,
+      kSeparator, kH265Sps, kH265VclKeyFrame,     kSeparator, kH265Aud,
+      kH265Vcl,   kH265Sei, kH265VclWithNuhLayer, kH265Rsv,   kSeparator,
+      kH265Sei,   kH265Vcl, kSeparator,           kH265Aud,   kH265Vcl,
+      kH265Sps,   kH265Rsv, kH265VclWithNuhLayer, kSeparator, kH265Vcl,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -340,11 +335,9 @@ TEST_F(EsParserH26xTest, H265SupportsNonZeroNuhLayerId) {
 
 TEST_F(EsParserH26xTest, H265WaitsForKeyFrame) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265Vcl,
-    kSeparator, kH265Vcl,
-    kSeparator, kH265Sps, kH265VclKeyFrame,
-    kSeparator, kH265Vcl,
-    kSeparator, kH265Vcl,
+      kSeparator, kH265Vcl,   kSeparator,       kH265Vcl,
+      kSeparator, kH265Sps,   kH265VclKeyFrame, kSeparator,
+      kH265Vcl,   kSeparator, kH265Vcl,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -354,9 +347,8 @@ TEST_F(EsParserH26xTest, H265WaitsForKeyFrame) {
 
 TEST_F(EsParserH26xTest, H265EmitsFramesWithNoStreamInfo) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265VclKeyFrame,
-    kSeparator, kH265Vcl, kH265Rsv,
-    kSeparator, kH265Sei, kH265Vcl,
+      kSeparator, kH265VclKeyFrame, kSeparator, kH265Vcl,
+      kH265Rsv,   kSeparator,       kH265Sei,   kH265Vcl,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -366,9 +358,8 @@ TEST_F(EsParserH26xTest, H265EmitsFramesWithNoStreamInfo) {
 
 TEST_F(EsParserH26xTest, H265EmitsLastFrameWithNuhLayerId) {
   const H26xNaluType kData[] = {
-    kSeparator, kH265VclKeyFrame,
-    kSeparator, kH265Vcl,
-    kSeparator, kH265Vcl, kH265Sei, kH265VclWithNuhLayer, kH265Rsv,
+      kSeparator, kH265VclKeyFrame, kSeparator,           kH265Vcl, kSeparator,
+      kH265Vcl,   kH265Sei,         kH265VclWithNuhLayer, kH265Rsv,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));
@@ -378,9 +369,8 @@ TEST_F(EsParserH26xTest, H265EmitsLastFrameWithNuhLayerId) {
 
 TEST_F(EsParserH26xTest, H264BasicSupport) {
   const H26xNaluType kData[] = {
-    kSeparator, kH264Aud, kH264Sps, kH264VclKeyFrame,
-    kSeparator, kH264Aud, kH264Vcl,
-    kSeparator, kH264Aud, kH264Vcl,
+      kSeparator, kH264Aud, kH264Sps,   kH264VclKeyFrame, kSeparator,
+      kH264Aud,   kH264Vcl, kSeparator, kH264Aud,         kH264Vcl,
   };
 
   RunTest(Nalu::kH264, kData, std::size(kData));
@@ -443,10 +433,10 @@ TEST_F(EsParserH26xTest, H264AudInAccessUnit) {
 
 TEST_F(EsParserH26xTest, H264DeterminesAccessUnitsWithoutAUD) {
   const H26xNaluType kData[] = {
-    kSeparator, kH264Sps, kH264VclKeyFrame,
-    kSeparator, kH264VclFrame1, kH264VclFrame1,
-    kSeparator, kH264VclFrame2, kH264VclFrame2, kH264VclFrame2,
-    kSeparator, kH264Sei, kH264VclFrame3,
+      kSeparator,     kH264Sps,       kH264VclKeyFrame, kSeparator,
+      kH264VclFrame1, kH264VclFrame1, kSeparator,       kH264VclFrame2,
+      kH264VclFrame2, kH264VclFrame2, kSeparator,       kH264Sei,
+      kH264VclFrame3,
   };
 
   RunTest(Nalu::kH264, kData, std::size(kData));
@@ -456,9 +446,8 @@ TEST_F(EsParserH26xTest, H264DeterminesAccessUnitsWithoutAUD) {
 
 TEST_F(EsParserH26xTest, H264DoesNotStartOnRsv) {
   const H26xNaluType kData[] = {
-    kSeparator, kH264Sps, kH264VclKeyFrame, kH264Rsv,
-    kSeparator, kH264Aud, kH264VclFrame1,
-    kSeparator, kH264Sei, kH264VclFrame2,
+      kSeparator, kH264Sps,       kH264VclKeyFrame, kH264Rsv, kSeparator,
+      kH264Aud,   kH264VclFrame1, kSeparator,       kH264Sei, kH264VclFrame2,
   };
 
   RunTest(Nalu::kH264, kData, std::size(kData));
@@ -483,7 +472,10 @@ TEST_F(EsParserH26xTest, H264ContainsOnlyOneFrame) {
 
 TEST_F(EsParserH26xTest, H265ContainsOnlyOneFrame) {
   const H26xNaluType kData[] = {
-      kSeparator, kH265Aud, kH265Sps, kH265VclKeyFrame,
+      kSeparator,
+      kH265Aud,
+      kH265Sps,
+      kH265VclKeyFrame,
   };
 
   RunTest(Nalu::kH265, kData, std::size(kData));

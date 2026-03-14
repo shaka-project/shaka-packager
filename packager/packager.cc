@@ -350,9 +350,10 @@ Status ValidateParams(const PackagingParams& packaging_params,
       !packaging_params.mpd_params.mpd_output.empty() &&
       !packaging_params.mp4_output_params.generate_sidx_in_media_segments &&
       !packaging_params.mpd_params.use_segment_list) {
-    return Status(error::UNIMPLEMENTED,
-                  "--generate_sidx_in_media_segments is required for DASH "
-                  "on-demand profile (not using segment_template or segment list).");
+    return Status(
+        error::UNIMPLEMENTED,
+        "--generate_sidx_in_media_segments is required for DASH "
+        "on-demand profile (not using segment_template or segment list).");
   }
 
   if (packaging_params.chunking_params.low_latency_dash_mode &&

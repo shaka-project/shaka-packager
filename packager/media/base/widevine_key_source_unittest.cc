@@ -434,8 +434,7 @@ TEST_P(WidevineKeySourceParameterizedTest, HttpFetchFailure) {
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(std::move(mock_request_signer_));
-  ASSERT_EQ(kMockStatus,
-            widevine_key_source_->FetchKeys(content_id_, kPolicy));
+  ASSERT_EQ(kMockStatus, widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencOK) {
@@ -459,8 +458,7 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencMalformedResponse) {
 
   CreateWidevineKeySource();
   ASSERT_EQ(error::SERVER_ERROR,
-            widevine_key_source_->FetchKeys(content_id_, kPolicy)
-            .error_code());
+            widevine_key_source_->FetchKeys(content_id_, kPolicy).error_code());
 }
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithPsshBoxOK) {
@@ -575,8 +573,7 @@ std::string GenerateMockKeyRotationLicenseResponse(
   const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
   std::string tracks;
   for (uint32_t index = initial_crypto_period_index;
-       index < initial_crypto_period_index + crypto_period_count;
-       ++index) {
+       index < initial_crypto_period_index + crypto_period_count; ++index) {
     for (const std::string& track_type : kTrackTypes) {
       if (!tracks.empty())
         tracks += ",";

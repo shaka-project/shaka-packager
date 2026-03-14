@@ -53,8 +53,8 @@ void SetDefaultLiveMuxerOptions(media::MuxerOptions* muxer_options) {
 }
 
 const uint8_t kBogusIv[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
 };
 
 }  // namespace
@@ -63,7 +63,6 @@ namespace media {
 
 class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
  public:
-
   void SetupForVod() {
     MpdOptions mpd_options;
     mpd_options.dash_profile = DashProfile::kOnDemand;
@@ -71,10 +70,8 @@ class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
     mpd_options.mpd_type = MpdType::kStatic;
     mpd_options.mpd_params.use_segment_list = false;
     notifier_.reset(new MockMpdNotifier(mpd_options));
-    listener_.reset(
-        new MpdNotifyMuxerListener(notifier_.get()));
+    listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
   }
-
 
   void SetupForVodSegmentList() {
     MpdOptions mpd_options;
@@ -83,8 +80,7 @@ class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
     mpd_options.mpd_type = MpdType::kStatic;
     mpd_options.mpd_params.use_segment_list = true;
     notifier_.reset(new MockMpdNotifier(mpd_options));
-    listener_.reset(
-        new MpdNotifyMuxerListener(notifier_.get()));
+    listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
   }
 
   void SetupForLive() {
@@ -149,7 +145,6 @@ TEST_F(MpdNotifyMuxerListenerTest, VodClearContent) {
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
-
 TEST_F(MpdNotifyMuxerListenerTest, VodClearContentSegmentList) {
   SetupForVodSegmentList();
   MuxerOptions muxer_options;
@@ -164,8 +159,10 @@ TEST_F(MpdNotifyMuxerListenerTest, VodClearContentSegmentList) {
                           MuxerListener::kContainerMp4);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
-  EXPECT_CALL(*notifier_, NotifyNewContainer(
-      ExpectMediaInfoEq(kExpectedDefaultMediaInfoSubsegmentRange), _))
+  EXPECT_CALL(
+      *notifier_,
+      NotifyNewContainer(
+          ExpectMediaInfoEq(kExpectedDefaultMediaInfoSubsegmentRange), _))
       .WillOnce(Return(true));
   EXPECT_CALL(*notifier_, Flush());
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
@@ -213,7 +210,9 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       "  protection_scheme: 'cenc'\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
+      "    pssh: '" +
+      std::string(kExpectedDefaultPsshBox) +
+      "'\n"
       "  }\n"
       "  default_key_id: 'defaultkeyid'\n"
       "  include_mspr_pro: 1\n"
@@ -238,7 +237,6 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
-
 TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContentSegmentList) {
   SetupForVodSegmentList();
   MuxerOptions muxer_options;
@@ -256,11 +254,13 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContentSegmentList) {
       "  protection_scheme: 'cenc'\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
-                                                             "  }\n"
-                                                             "  default_key_id: 'defaultkeyid'\n"
-                                                             "  include_mspr_pro: 1\n"
-                                                             "}\n";
+      "    pssh: '" +
+      std::string(kExpectedDefaultPsshBox) +
+      "'\n"
+      "  }\n"
+      "  default_key_id: 'defaultkeyid'\n"
+      "  include_mspr_pro: 1\n"
+      "}\n";
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
 
@@ -332,7 +332,6 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
   EXPECT_CALL(*notifier_, Flush());
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
-
 
 TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReadySegmentList) {
   SetupForVodSegmentList();
@@ -460,8 +459,10 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegmentSegmentList) {
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
   InSequence s;
-  EXPECT_CALL(*notifier_, NotifyNewContainer(
-      ExpectMediaInfoEq(kExpectedDefaultMediaInfoSubsegmentRange), _))
+  EXPECT_CALL(
+      *notifier_,
+      NotifyNewContainer(
+          ExpectMediaInfoEq(kExpectedDefaultMediaInfoSubsegmentRange), _))
       .WillOnce(Return(true));
   EXPECT_CALL(*notifier_, NotifyNewSegment(_, kStartTime1, kDuration1,
                                            kSegmentFileSize1, kSegmentNumber1));

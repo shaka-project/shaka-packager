@@ -126,10 +126,9 @@ TEST_F(Ac3HeaderTest, ParseMultiChannelSuccess) {
   const uint8_t kExpectedAudioSpecificConfig[] = {0x50, 0x3D, 0xE0};
 
   Ac3Header ac3_header;
-  EXPECT_EQ(
-      kExpectedFrameSize,
-      ac3_header.GetFrameSizeWithoutParsing(ac3_frame_six_channels_.data(),
-                                            ac3_frame_six_channels_.size()));
+  EXPECT_EQ(kExpectedFrameSize, ac3_header.GetFrameSizeWithoutParsing(
+                                    ac3_frame_six_channels_.data(),
+                                    ac3_frame_six_channels_.size()));
   ASSERT_TRUE(ac3_header.Parse(ac3_frame_six_channels_.data(),
                                ac3_frame_six_channels_.size()));
   EXPECT_EQ(kExpectedFrameSize, ac3_header.GetFrameSize());

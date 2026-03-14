@@ -79,7 +79,7 @@ OnMediaEndParameters GetDefaultOnMediaEndParams() {
   Range index_range;
   index_range.start = kIndexRangeStart;
   index_range.end = kIndexRangeEnd;
-  media_ranges.index_range =index_range;
+  media_ranges.index_range = index_range;
 
   Range media_segment_range;
   media_segment_range.start = kMediaSegmentRangeStart;

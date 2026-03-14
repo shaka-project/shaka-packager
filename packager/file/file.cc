@@ -46,7 +46,6 @@ const char* kUdpFilePrefix = "udp://";
 const char* kHttpFilePrefix = "http://";
 const char* kHttpsFilePrefix = "https://";
 
-
 namespace {
 
 typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);
@@ -242,10 +241,9 @@ bool File::Delete(const char* file_name) {
   } else {
     if (!logged) {
       logged = true;
-      LOG(WARNING) << "File::Delete: file type for "
-            << file_name
-            << " ('" << file_type->type << "') "
-            << "has no 'delete' function.";
+      LOG(WARNING) << "File::Delete: file type for " << file_name << " ('"
+                   << file_type->type << "') "
+                   << "has no 'delete' function.";
     }
     return true;
   }
@@ -321,9 +319,9 @@ bool File::WriteFileAtomically(const char* file_name,
   // Skip the warning message for memory files, which is meant for testing
   // anyway..
   // Also check for http files, as they can't do atomic writes.
-  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0
-      && strncmp(file_name, kHttpFilePrefix, strlen(kHttpFilePrefix)) != 0
-      && strncmp(file_name, kHttpsFilePrefix, strlen(kHttpsFilePrefix)) != 0) {
+  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0 &&
+      strncmp(file_name, kHttpFilePrefix, strlen(kHttpFilePrefix)) != 0 &&
+      strncmp(file_name, kHttpsFilePrefix, strlen(kHttpsFilePrefix)) != 0) {
     LOG(WARNING) << "Writing to " << file_name
                  << " is not guaranteed to be atomic.";
   }

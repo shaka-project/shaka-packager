@@ -145,7 +145,8 @@ class WebMListParser {
 };
 
 /// Parses an element header & returns the ID and element size.
-/// @param[out] id contains the element ID on success and is undefined otherwise.
+/// @param[out] id contains the element ID on success and is undefined
+/// otherwise.
 /// @param[out] element_size contains the element size on success and is
 ///             undefined otherwise.
 /// @return < 0 if the parse fails.

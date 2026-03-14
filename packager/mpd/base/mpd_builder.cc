@@ -193,8 +193,7 @@ std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
 
   static const char kOnDemandProfile[] =
       "urn:mpeg:dash:profile:isoff-on-demand:2011";
-  static const char kLiveProfile[] =
-      "urn:mpeg:dash:profile:isoff-live:2011";
+  static const char kLiveProfile[] = "urn:mpeg:dash:profile:isoff-live:2011";
   switch (mpd_options_.dash_profile) {
     case DashProfile::kOnDemand:
       if (!mpd.SetStringAttribute("profiles", kOnDemandProfile))

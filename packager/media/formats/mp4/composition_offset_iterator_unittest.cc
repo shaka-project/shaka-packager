@@ -16,8 +16,11 @@ namespace shaka {
 namespace media {
 namespace mp4 {
 
-const CompositionOffset kCompositionOffsets[] =
-    {{10, -8}, {9, 5}, {25, 7}, {48, 63}, {8, 2}};
+const CompositionOffset kCompositionOffsets[] = {{10, -8},
+                                                 {9, 5},
+                                                 {25, 7},
+                                                 {48, 63},
+                                                 {8, 2}};
 
 class CompositionOffsetIteratorTest : public testing::Test {
  public:
@@ -76,7 +79,7 @@ TEST_F(CompositionOffsetIteratorTest, SampleOffset) {
   for (uint32_t sample = 0; sample < composition_offset_table_.size();
        ++sample) {
     ASSERT_EQ(composition_offset_table_[sample],
-              composition_offset_iterator_->SampleOffset(sample+1));
+              composition_offset_iterator_->SampleOffset(sample + 1));
   }
 }
 

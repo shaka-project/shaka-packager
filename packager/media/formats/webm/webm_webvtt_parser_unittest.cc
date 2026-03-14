@@ -26,8 +26,8 @@ static void DecodeCue(const Cue& cue,
                       std::string* id,
                       std::string* settings,
                       std::string* content) {
-  WebMWebVTTParser::Parse(&cue[0], static_cast<int>(cue.size()),
-                          id, settings, content);
+  WebMWebVTTParser::Parse(&cue[0], static_cast<int>(cue.size()), id, settings,
+                          content);
 }
 
 class WebMWebVTTParserTest : public testing::Test {
@@ -51,7 +51,7 @@ TEST_F(WebMWebVTTParserTest, Id) {
   InSequence s;
 
   for (int i = 1; i <= 9; ++i) {
-    const std::string idsrc(1, '0'+i);
+    const std::string idsrc(1, '0' + i);
     const Cue cue = EncodeCue(idsrc, "", "Subtitle");
     std::string id, settings, content;
 
@@ -67,10 +67,8 @@ TEST_F(WebMWebVTTParserTest, Settings) {
 
   enum { kSettingsCount = 4 };
   const char* const settings_str[kSettingsCount] = {
-    "vertical:lr",
-    "line:50%",
-    "position:42%",
-    "vertical:rl line:42% position:100%" };
+      "vertical:lr", "line:50%", "position:42%",
+      "vertical:rl line:42% position:100%"};
 
   for (int i = 0; i < kSettingsCount; ++i) {
     const Cue cue = EncodeCue("", settings_str[i], "Subtitle");
@@ -88,10 +86,8 @@ TEST_F(WebMWebVTTParserTest, Content) {
 
   enum { kContentCount = 4 };
   const char* const content_str[kContentCount] = {
-    "Subtitle",
-    "Another Subtitle",
-    "Yet Another Subtitle",
-    "Another Subtitle\nSplit Across Two Lines" };
+      "Subtitle", "Another Subtitle", "Yet Another Subtitle",
+      "Another Subtitle\nSplit Across Two Lines"};
 
   for (int i = 0; i < kContentCount; ++i) {
     const Cue cue = EncodeCue("", "", content_str[i]);

@@ -18,9 +18,9 @@
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
 #include <filesystem>
 
+using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Return;
-using ::testing::_;
 
 namespace shaka {
 namespace media {
@@ -109,7 +109,6 @@ class TsWriterTest : public ::testing::Test {
     EXPECT_EQ(std::vector<uint8_t>(suffix, suffix + suffix_size),
               actual_suffix);
   }
-
 };
 
 // Verify that PAT and PMT are correct for clear segment.
@@ -158,8 +157,8 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       kExpectedPatPrefix, kExpectedPatPrefixSize, 165, kExpectedPatPayload,
       std::size(kExpectedPatPayload), buffer_writer.Buffer()));
 
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
-                      kTsPacketSize));
+  EXPECT_EQ(0, memcmp(kMockPmtWriterData,
+                      buffer_writer.Buffer() + kTsPacketSize, kTsPacketSize));
 }
 
 TEST_F(TsWriterTest, ClearAacPmt) {
@@ -175,8 +174,8 @@ TEST_F(TsWriterTest, ClearAacPmt) {
   // 2 TS Packets. PAT, PMT.
   ASSERT_EQ(376u, buffer_writer.Size());
 
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
-                      kTsPacketSize));
+  EXPECT_EQ(0, memcmp(kMockPmtWriterData,
+                      buffer_writer.Buffer() + kTsPacketSize, kTsPacketSize));
 }
 
 // The stream is flaged with will_be_encrypted. Verify that 2 PMTs are created.
@@ -184,8 +183,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
 TEST_F(TsWriterTest, ClearLeadH264Pmt) {
   std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
-  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
-      .WillOnce(WriteTwoPmts());
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteTwoPmts());
 
   BufferWriter buffer_writer;
   TsWriter ts_writer(std::move(mock_pmt_writer));
@@ -193,10 +191,11 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
 
   ASSERT_EQ(564u, buffer_writer.Size());
 
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
-                      kTsPacketSize));
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + 2 * kTsPacketSize,
-                      kTsPacketSize));
+  EXPECT_EQ(0, memcmp(kMockPmtWriterData,
+                      buffer_writer.Buffer() + kTsPacketSize, kTsPacketSize));
+  EXPECT_EQ(
+      0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + 2 * kTsPacketSize,
+                kTsPacketSize));
 }
 
 TEST_F(TsWriterTest, ClearSegmentPmtFailure) {
@@ -228,8 +227,8 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
 
   ASSERT_EQ(376u, buffer_writer.Size());
 
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
-                      kTsPacketSize));
+  EXPECT_EQ(0, memcmp(kMockPmtWriterData,
+                      buffer_writer.Buffer() + kTsPacketSize, kTsPacketSize));
 }
 
 TEST_F(TsWriterTest, EncryptedSegmentPmtFailure) {
@@ -251,8 +250,7 @@ TEST_F(TsWriterTest, EncryptedSegmentPmtFailure) {
 TEST_F(TsWriterTest, ClearLeadAacPmt) {
   std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
-  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
-      .WillOnce(WriteTwoPmts());
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteTwoPmts());
 
   BufferWriter buffer_writer;
   TsWriter ts_writer(std::move(mock_pmt_writer));
@@ -260,10 +258,11 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
 
   ASSERT_EQ(564u, buffer_writer.Size());
 
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
-                      kTsPacketSize));
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + 2 * kTsPacketSize,
-                      kTsPacketSize));
+  EXPECT_EQ(0, memcmp(kMockPmtWriterData,
+                      buffer_writer.Buffer() + kTsPacketSize, kTsPacketSize));
+  EXPECT_EQ(
+      0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + 2 * kTsPacketSize,
+                kTsPacketSize));
 }
 
 // Same as EncryptedSegmentsH264Pmt but for AAC.
@@ -285,10 +284,9 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
 
   ASSERT_EQ(376u, buffer_writer.Size());
 
-  EXPECT_EQ(0, memcmp(kMockPmtWriterData, buffer_writer.Buffer() + kTsPacketSize,
-                      kTsPacketSize));
+  EXPECT_EQ(0, memcmp(kMockPmtWriterData,
+                      buffer_writer.Buffer() + kTsPacketSize, kTsPacketSize));
 }
-
 
 TEST_F(TsWriterTest, AddPesPacket) {
   TsWriter ts_writer(std::unique_ptr<ProgramMapTableWriter>(
@@ -301,7 +299,10 @@ TEST_F(TsWriterTest, AddPesPacket) {
   pes->set_pts(0x900);
   pes->set_dts(0x900);
   const uint8_t kAnyData[] = {
-      0x12, 0x88, 0x4f, 0x4a,
+      0x12,
+      0x88,
+      0x4f,
+      0x4a,
   };
   pes->mutable_data()->assign(kAnyData, kAnyData + std::size(kAnyData));
 
@@ -394,7 +395,10 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   pes->set_stream_id(0xE0);
   pes->set_pts(0x0);
   const uint8_t kAnyData[] = {
-      0x12, 0x88, 0x4F, 0x4A,
+      0x12,
+      0x88,
+      0x4F,
+      0x4A,
   };
   pes->mutable_data()->assign(kAnyData, kAnyData + std::size(kAnyData));
 
@@ -472,8 +476,9 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
   ASSERT_EQ(752u, buffer_writer.Size());
 
   const int kPesStartPosition = 564;
-  std::vector<uint8_t> actual_prefix(buffer_writer.Buffer() + kPesStartPosition,
-                                buffer_writer.Buffer() + kPesStartPosition + 5);
+  std::vector<uint8_t> actual_prefix(
+      buffer_writer.Buffer() + kPesStartPosition,
+      buffer_writer.Buffer() + kPesStartPosition + 5);
   EXPECT_EQ(
       std::vector<uint8_t>(kExpectedOutputPrefix, kExpectedOutputPrefix + 5),
       actual_prefix);

@@ -63,4 +63,4 @@ TEST(BandwidthEstimatorTest, ExcludeShortBlocksMore) {
   EXPECT_EQ(kExpectedMax, be.Max());
 }
 
-} // namespace shaka
+}  // namespace shaka

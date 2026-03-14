@@ -322,7 +322,8 @@ bool EsParserTeletext::ParseDataBlock(const int64_t pts,
 }
 
 void EsParserTeletext::UpdateCharset() {
-  memcpy(current_charset_, TELETEXT_CHARSET_G0_LATIN, sizeof(TELETEXT_CHARSET_G0_LATIN));
+  memcpy(current_charset_, TELETEXT_CHARSET_G0_LATIN,
+         sizeof(TELETEXT_CHARSET_G0_LATIN));
   DVLOG(2) << "update charset: " << int(charset_code_);
   if (charset_code_ > 7) {
     return;
@@ -584,7 +585,7 @@ EsParserTeletext::TextRow EsParserTeletext::BuildRow(const uint8_t* data_block,
         case 0xb:  // Start Box, typically twice due to double height
           start_pos = i + 1;
           continue;  // Do not propagate as a space
-        case 0xc:  // Normal size
+        case 0xc:    // Normal size
           break;
         case 0xd:  // Double height, typically always used
           double_height = true;

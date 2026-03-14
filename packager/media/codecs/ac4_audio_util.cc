@@ -40,25 +40,25 @@ namespace {
 // 17,       Left wide/Right wide pair
 // 18,       Vertical height left/Vertical height right pair
 enum kAC4AudioChannelGroupIndex {
-    kLRPair = 0x1,
-    kCentre = 0x2,
-    kLsRsPair = 0x4,
-    kLbRbPair = 0x8,
-    kTflTfrPair = 0x10,
-    kTblTbrPair = 0x20,
-    kLFE = 0x40,
-    kTlTrPair = 0x80,
-    kTslTsrPair = 0x100,
-    kTopfrontCentre = 0x200,
-    kTopbackCentre = 0x400,
-    kTopCentre = 0x800,
-    kLFE2 = 0x1000,
-    kBflBfrPair = 0x2000,
-    kBottomFrontCentre = 0x4000,
-    kBackCentre = 0x8000,
-    kLscrRscrPair = 0x10000,
-    kLwRw = 0x20000,
-    kVhlVhrPair = 0x40000,
+  kLRPair = 0x1,
+  kCentre = 0x2,
+  kLsRsPair = 0x4,
+  kLbRbPair = 0x8,
+  kTflTfrPair = 0x10,
+  kTblTbrPair = 0x20,
+  kLFE = 0x40,
+  kTlTrPair = 0x80,
+  kTslTsrPair = 0x100,
+  kTopfrontCentre = 0x200,
+  kTopbackCentre = 0x400,
+  kTopCentre = 0x800,
+  kLFE2 = 0x1000,
+  kBflBfrPair = 0x2000,
+  kBottomFrontCentre = 0x4000,
+  kBackCentre = 0x8000,
+  kLscrRscrPair = 0x10000,
+  kLwRw = 0x20000,
+  kVhlVhrPair = 0x40000,
 };
 
 // Mapping of channel configurations to the MPEG audio value based on ETSI TS
@@ -102,11 +102,11 @@ uint32_t AC4ChannelMasktoMPEGValue(uint32_t channel_mask) {
       ret = 12;
       break;
     case kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair | kLFE2 |
-         kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair | kLFE |
-         kTblTbrPair | kTflTfrPair | kLbRbPair | kLsRsPair | kCentre | kLRPair:
-    case kVhlVhrPair | kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair|
-         kLFE2 | kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair |
-         kLFE | kTblTbrPair | kLbRbPair | kLsRsPair | kCentre | kLRPair:
+        kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair | kLFE |
+        kTblTbrPair | kTflTfrPair | kLbRbPair | kLsRsPair | kCentre | kLRPair:
+    case kVhlVhrPair | kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair |
+        kLFE2 | kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair |
+        kLFE | kTblTbrPair | kLbRbPair | kLsRsPair | kCentre | kLRPair:
       ret = 13;
       break;
     case kLFE | kTflTfrPair | kLsRsPair | kCentre | kLRPair:
@@ -114,9 +114,9 @@ uint32_t AC4ChannelMasktoMPEGValue(uint32_t channel_mask) {
       ret = 14;
       break;
     case kLFE2 | kTopbackCentre | kLFE | kTflTfrPair | kCentre | kLRPair |
-         kLsRsPair | kLbRbPair:
+        kLsRsPair | kLbRbPair:
     case kVhlVhrPair | kLFE2 | kTopbackCentre | kLFE | kCentre | kLRPair |
-         kLsRsPair | kLbRbPair:
+        kLsRsPair | kLbRbPair:
       ret = 15;
       break;
     case kLFE | kTblTbrPair | kTflTfrPair | kLsRsPair | kCentre | kLRPair:
@@ -124,27 +124,27 @@ uint32_t AC4ChannelMasktoMPEGValue(uint32_t channel_mask) {
       ret = 16;
       break;
     case kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair | kTflTfrPair |
-         kLsRsPair | kCentre | kLRPair:
+        kLsRsPair | kCentre | kLRPair:
     case kVhlVhrPair | kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair |
-         kLsRsPair | kCentre | kLRPair:
+        kLsRsPair | kCentre | kLRPair:
       ret = 17;
       break;
     case kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair | kTflTfrPair |
-         kCentre | kLRPair | kLsRsPair | kLbRbPair:
+        kCentre | kLRPair | kLsRsPair | kLbRbPair:
     case kVhlVhrPair | kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair |
-         kCentre | kLRPair | kLsRsPair | kLbRbPair:
+        kCentre | kLRPair | kLsRsPair | kLbRbPair:
       ret = 18;
       break;
     case kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRPair | kLsRsPair |
-         kLbRbPair:
+        kLbRbPair:
     case kVhlVhrPair | kLFE | kTblTbrPair | kCentre | kLRPair | kLsRsPair |
-         kLbRbPair:
+        kLbRbPair:
       ret = 19;
       break;
     case kLscrRscrPair | kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRPair |
-         kLsRsPair | kLbRbPair:
+        kLsRsPair | kLbRbPair:
     case kVhlVhrPair | kLscrRscrPair | kLFE | kTblTbrPair | kCentre | kLRPair |
-         kLsRsPair | kLbRbPair:
+        kLsRsPair | kLbRbPair:
       ret = 20;
       break;
     default:
@@ -270,8 +270,7 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
       ret &= ParseAC4SubStreamGroupDsi(bit_reader);
     } else {
       RCHECK(bit_reader.SkipBits(1));
-      if (presentation_config_v1 == 0 ||
-          presentation_config_v1 == 1 ||
+      if (presentation_config_v1 == 0 || presentation_config_v1 == 1 ||
           presentation_config_v1 == 2) {
         ret &= ParseAC4SubStreamGroupDsi(bit_reader);
         ret &= ParseAC4SubStreamGroupDsi(bit_reader);
@@ -382,7 +381,7 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
     RCHECK(bit_reader.ReadBits(8, presentation_version));
     // *presentation_version == 2 means IMS presentation.
     if ((*presentation_version == 2 && n_presentation > 2) ||
-        (*presentation_version == 1 && n_presentation > 1) ) {
+        (*presentation_version == 1 && n_presentation > 1)) {
       LOG(WARNING) << "Seeing multiple presentations, only single presentation "
                    << "(including IMS presentation) is supported";
       return false;
@@ -411,10 +410,9 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
         // No final decision about how to use it in OTT.
         // Parse it for the future usage.
         uint8_t dolby_atmos_indicator;
-        if (!ParseAC4PresentationV1Dsi(bit_reader, pres_bytes, mdcompat,
-                                       presentation_channel_mask_v1,
-                                       dolby_cbi_indicator,
-                                       &dolby_atmos_indicator)) {
+        if (!ParseAC4PresentationV1Dsi(
+                bit_reader, pres_bytes, mdcompat, presentation_channel_mask_v1,
+                dolby_cbi_indicator, &dolby_atmos_indicator)) {
           return false;
         }
         const size_t presentation_end = bit_reader.bit_position();
@@ -505,8 +503,7 @@ bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
   // If that, AudioStreamInfo::GetCodecString need to be changed accordingly.
   // bitstream_version (3bits) + presentation_version (2bits) + mdcompat (3bits)
   *ac4_codec_info = ((bitstream_version << 5) |
-                     ((presentation_version << 3) & 0x1F) |
-                      (mdcompat & 0x7));
+                     ((presentation_version << 3) & 0x1F) | (mdcompat & 0x7));
   return true;
 }
 

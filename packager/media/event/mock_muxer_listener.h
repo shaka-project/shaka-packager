@@ -55,8 +55,7 @@ class MockMuxerListener : public MuxerListener {
 
   // Windows 32 bit cannot mock MediaRanges because it has Optionals that use
   // memory alignment of 8 bytes. The compiler fails if it is mocked.
-  void OnMediaEnd(const MediaRanges& range,
-                  float duration_seconds) override;
+  void OnMediaEnd(const MediaRanges& range, float duration_seconds) override;
 
   MOCK_METHOD5(OnNewSegment,
                void(const std::string& segment_name,

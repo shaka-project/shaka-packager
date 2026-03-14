@@ -20,8 +20,7 @@ WebMAudioClient::WebMAudioClient() {
   Reset();
 }
 
-WebMAudioClient::~WebMAudioClient() {
-}
+WebMAudioClient::~WebMAudioClient() {}
 
 void WebMAudioClient::Reset() {
   channels_ = -1;

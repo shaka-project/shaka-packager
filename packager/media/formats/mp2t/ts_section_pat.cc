@@ -17,12 +17,9 @@ namespace media {
 namespace mp2t {
 
 TsSectionPat::TsSectionPat(const RegisterPmtCb& register_pmt_cb)
-    : register_pmt_cb_(register_pmt_cb),
-      version_number_(-1) {
-}
+    : register_pmt_cb_(register_pmt_cb), version_number_(-1) {}
 
-TsSectionPat::~TsSectionPat() {
-}
+TsSectionPat::~TsSectionPat() {}
 
 bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   // Read the fixed section length.
@@ -130,4 +127,3 @@ void TsSectionPat::ResetPsiSection() {
 }  // namespace mp2t
 }  // namespace media
 }  // namespace shaka
-

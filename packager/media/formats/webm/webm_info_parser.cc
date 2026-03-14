@@ -18,10 +18,7 @@ namespace media {
 // not specified in the INFO element.
 static const int kWebMDefaultTimecodeScale = 1000000;
 
-WebMInfoParser::WebMInfoParser()
-    : timecode_scale_(-1),
-      duration_(-1) {
-}
+WebMInfoParser::WebMInfoParser() : timecode_scale_(-1), duration_(-1) {}
 
 WebMInfoParser::~WebMInfoParser() {}
 

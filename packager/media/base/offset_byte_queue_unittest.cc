@@ -43,7 +43,7 @@ TEST_F(OffsetByteQueueTest, SetUp) {
   queue_->Peek(&buf, &size);
   EXPECT_EQ(128, size);
   EXPECT_EQ(128, buf[0]);
-  EXPECT_EQ(255, buf[size-1]);
+  EXPECT_EQ(255, buf[size - 1]);
 }
 
 TEST_F(OffsetByteQueueTest, PeekAt) {
