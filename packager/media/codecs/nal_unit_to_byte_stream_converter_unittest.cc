@@ -296,7 +296,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithSPSExtension) 
       kIsKeyFrame, &output));
   EXPECT_EQ(std::vector<uint8_t>(std::begin(kByteStreamWithSpsExtension),
                                  std::end(kByteStreamWithSpsExtension)),
-                                 output);
+            output);
 }
 
 // Verify that if it is not a key frame then SPS and PPS from decoder

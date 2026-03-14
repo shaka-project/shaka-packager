@@ -85,7 +85,6 @@ ACTION(WriteTwoPmts) {
 
 class TsWriterTest : public ::testing::Test {
  protected:
-
   // Checks whether |actual|'s prefix matches with |prefix| and the suffix
   // matches with |suffix|. If there is padding, then padding_length specifies
   // how long the padding is between prefix and suffix.
