@@ -34,6 +34,20 @@ of your first [pull request][].
 [CONTRIBUTORS]: CONTRIBUTORS
 
 
+## Code style ##
+
+C++ code is formatted with `clang-format`. The project standardizes on
+clang-format 18; versions 18 through 22 are known to produce identical output
+as of the date this message was written and are all acceptable. Older versions
+(e.g. 14, 16) produce different output in some cases and should not be used.
+
+See `packager/tools/git/check_formatting.py` for installation instructions.
+You can install it as a pre-commit hook so formatting is checked automatically
+before each commit:
+
+    cp packager/tools/git/check_formatting.py .git/hooks/pre-commit
+
+
 ## Submitting a patch ##
 
   1. It's generally best to start by opening a new issue describing the bug or
