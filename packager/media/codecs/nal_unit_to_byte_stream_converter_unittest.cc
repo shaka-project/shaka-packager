@@ -222,7 +222,8 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
 }
 
 // Expect a valid AVCDecoderConfigurationRecord with SPSExtension to pass.
-TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithSPSExtension) {
+TEST(NalUnitToByteStreamConverterTest,
+     ConvertUnitToByteStreamWithSPSExtension) {
   NalUnitToByteStreamConverter converter;
   const uint8_t kDecoderConfigWithSpsExt[] = {
       // clang-format off
@@ -1019,9 +1020,8 @@ TEST(NalUnitToByteStreamConverterTest,
   };
 
   // The 2nd (partially) and 3rd subsamples belong to the 2nd input NALU.
-  std::vector<SubsampleEntry> subsamples{ SubsampleEntry(6, 0),
-                                          SubsampleEntry(13, 5),
-                                          SubsampleEntry(6, 4)};
+  std::vector<SubsampleEntry> subsamples{
+      SubsampleEntry(6, 0), SubsampleEntry(13, 5), SubsampleEntry(6, 4)};
 
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(
@@ -1113,10 +1113,9 @@ TEST(NalUnitToByteStreamConverterTest,
       std::begin(kUnitStreamLikeMediaSamplePart3),
       std::end(kUnitStreamLikeMediaSamplePart3));
 
-  std::vector<SubsampleEntry> subsamples{ SubsampleEntry(5, 9),
-                                          SubsampleEntry(65535, 0),
-                                          SubsampleEntry(5, 5),
-                                          SubsampleEntry(6, 4)};
+  std::vector<SubsampleEntry> subsamples{
+      SubsampleEntry(5, 9), SubsampleEntry(65535, 0), SubsampleEntry(5, 5),
+      SubsampleEntry(6, 4)};
 
   NalUnitToByteStreamConverter converter;
   EXPECT_TRUE(

@@ -37,4 +37,3 @@ class KeyFetcher {
 }  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_KEY_FETCHER_H_
-

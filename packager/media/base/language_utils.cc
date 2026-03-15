@@ -64,7 +64,8 @@ const LanguageMapPairType kLanguageMap[] = {
 };
 
 void SplitLanguageTag(const std::string& tag,
-                      std::string* main_language, std::string* subtag) {
+                      std::string* main_language,
+                      std::string* subtag) {
   // Split the main language from its subtag (if any).
   *main_language = tag;
   subtag->clear();

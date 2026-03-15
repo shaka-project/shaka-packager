@@ -50,8 +50,7 @@ class TsPacket {
   // Parse an Mpeg2 TS header.
   // The buffer size should be at least |kPacketSize|
   bool ParseHeader(const uint8_t* buf);
-  bool ParseAdaptationField(BitReader* bit_reader,
-                            int adaptation_field_length);
+  bool ParseAdaptationField(BitReader* bit_reader, int adaptation_field_length);
 
   // Size of the payload.
   const uint8_t* payload_;
@@ -74,4 +73,3 @@ class TsPacket {
 }  // namespace shaka
 
 #endif
-

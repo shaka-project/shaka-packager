@@ -66,8 +66,8 @@ TEST(EC3AudioUtilTest, ChannelTest3) {
 TEST(EC3AudioUtilTest, ChannelTest4) {
   // audio_coding_mode is 7, which is Left, Center, Right, Left surround and
   // Right surround. LFE channel on.
-  const std::vector<uint8_t> ec3_data = {0x14, 0x00, 0x20, 0x0f, 0x00, 0x01,
-                                         0x10};
+  const std::vector<uint8_t> ec3_data = {0x14, 0x00, 0x20, 0x0f,
+                                         0x00, 0x01, 0x10};
 
   uint32_t channel_map;
   uint32_t ec3_channel_mpeg_value;

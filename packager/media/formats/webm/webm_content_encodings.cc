@@ -15,8 +15,7 @@ ContentEncoding::ContentEncoding()
       scope_(kScopeInvalid),
       type_(kTypeInvalid),
       encryption_algo_(kEncAlgoInvalid),
-      cipher_mode_(kCipherModeInvalid) {
-}
+      cipher_mode_(kCipherModeInvalid) {}
 
 ContentEncoding::~ContentEncoding() {}
 

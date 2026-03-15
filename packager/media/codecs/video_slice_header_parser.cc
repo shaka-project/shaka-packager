@@ -139,4 +139,3 @@ int64_t H265VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {
 
 }  // namespace media
 }  // namespace shaka
-

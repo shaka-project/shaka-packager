@@ -75,7 +75,9 @@ Cluster::Cluster(std::unique_ptr<uint8_t[]> data, int size)
     : data_(std::move(data)), size_(size) {}
 Cluster::~Cluster() {}
 
-ClusterBuilder::ClusterBuilder() { Reset(); }
+ClusterBuilder::ClusterBuilder() {
+  Reset();
+}
 ClusterBuilder::~ClusterBuilder() {}
 
 void ClusterBuilder::SetClusterTimecode(int64_t cluster_timecode) {

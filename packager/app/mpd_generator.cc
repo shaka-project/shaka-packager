@@ -147,7 +147,7 @@ int MpdMain(int argc, char** argv) {
 #if defined(OS_WIN)
 // Windows wmain, which converts wide character arguments to UTF-8.
 int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
-  std::unique_ptr<char* [], std::function<void(char**)>> utf8_argv(
+  std::unique_ptr<char*[], std::function<void(char**)>> utf8_argv(
       new char*[argc], [argc](char** utf8_args) {
         // TODO(tinskip): This leaks, but if this code is enabled, it crashes.
         // Figure out why. I suspect gflags does something funny with the

@@ -7,25 +7,17 @@
 namespace shaka {
 namespace media {
 
-TextTrackConfig::TextTrackConfig()
-    : kind_(kTextNone) {
-}
+TextTrackConfig::TextTrackConfig() : kind_(kTextNone) {}
 
 TextTrackConfig::TextTrackConfig(TextKind kind,
                                  const std::string& label,
                                  const std::string& language,
                                  const std::string& id)
-    : kind_(kind),
-      label_(label),
-      language_(language),
-      id_(id) {
-}
+    : kind_(kind), label_(label), language_(language), id_(id) {}
 
 bool TextTrackConfig::Matches(const TextTrackConfig& config) const {
-  return config.kind() == kind_ &&
-         config.label() == label_ &&
-         config.language() == language_ &&
-         config.id() == id_;
+  return config.kind() == kind_ && config.label() == label_ &&
+         config.language() == language_ && config.id() == id_;
 }
 
 }  // namespace media

@@ -14,7 +14,7 @@ message MediaInfo {
   enum ContainerType {
     CONTAINER_UNKNOWN = 0;
     CONTAINER_MP4 = 1;
-    CONTAINER_MPEG2_TS= 2;
+    CONTAINER_MPEG2_TS = 2;
     CONTAINER_WEBM = 3;
     CONTAINER_TEXT = 4;
     CONTAINER_PACKED_AUDIO = 5;

@@ -52,7 +52,7 @@ class Version {
 
 static Version g_packager_version;
 
-std::string GetPackagerProjectUrl(){
+std::string GetPackagerProjectUrl() {
   return kPackagerGithubUrl;
 }
 

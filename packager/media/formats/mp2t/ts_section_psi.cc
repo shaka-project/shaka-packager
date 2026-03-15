@@ -44,12 +44,9 @@ namespace media {
 namespace mp2t {
 
 TsSectionPsi::TsSectionPsi()
-    : wait_for_pusi_(true),
-      leading_bytes_to_discard_(0) {
-}
+    : wait_for_pusi_(true), leading_bytes_to_discard_(0) {}
 
-TsSectionPsi::~TsSectionPsi() {
-}
+TsSectionPsi::~TsSectionPsi() {}
 
 bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
                          const uint8_t* buf,
@@ -91,8 +88,8 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
   if (raw_psi_size < 3)
     return true;
   int section_length =
-      ((static_cast<int>(raw_psi[1]) << 8) |
-       (static_cast<int>(raw_psi[2]))) & 0xfff;
+      ((static_cast<int>(raw_psi[1]) << 8) | (static_cast<int>(raw_psi[2]))) &
+      0xfff;
   if (section_length >= 1021)
     return false;
   int psi_length = section_length + 3;

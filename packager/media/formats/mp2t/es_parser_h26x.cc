@@ -103,7 +103,8 @@ bool EsParserH26x::Flush() {
   if (pending_sample_) {
     // Flush pending sample.
     if (!pending_sample_duration_) {
-      pending_sample_duration_ = CalculateSampleDuration(pending_sample_pps_id_);
+      pending_sample_duration_ =
+          CalculateSampleDuration(pending_sample_pps_id_);
     }
     pending_sample_->set_duration(pending_sample_duration_);
     emit_sample_cb_(std::move(pending_sample_));
@@ -305,8 +306,8 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
 
   // Convert frame to unit stream format.
   std::vector<uint8_t> converted_frame;
-  if (!stream_converter_->ConvertByteStreamToNalUnitStream(
-          es, access_unit_size, &converted_frame)) {
+  if (!stream_converter_->ConvertByteStreamToNalUnitStream(es, access_unit_size,
+                                                           &converted_frame)) {
     DLOG(ERROR) << "Failure to convert video frame to unit stream format.";
     return false;
   }

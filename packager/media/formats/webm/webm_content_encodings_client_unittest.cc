@@ -115,7 +115,7 @@ TEST_F(WebMContentEncodingsClientTest, MultipleContentEncoding) {
     ASSERT_TRUE(content_encodings[i]);
     EXPECT_EQ(i, content_encodings[i]->order());
     EXPECT_EQ(ContentEncoding::kScopeAllFrameContents |
-              ContentEncoding::kScopeTrackPrivateData,
+                  ContentEncoding::kScopeTrackPrivateData,
               content_encodings[i]->scope());
     EXPECT_EQ(ContentEncoding::kTypeEncryption, content_encodings[i]->type());
     EXPECT_EQ(!i ? ContentEncoding::kEncAlgoAes : ContentEncoding::kEncAlgoDes,
