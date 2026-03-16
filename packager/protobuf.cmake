@@ -78,6 +78,8 @@ function(add_proto_library NAME)
     target_compile_options(${NAME} PUBLIC /wd4244 /wd4267)
     # Unused parameter warnings
     target_compile_options(${NAME} PUBLIC /wd4100)
+    # Declaration of 'identifier' hides class member warning
+    target_compile_options(${NAME} PUBLIC /wd4458)
   else()
     target_compile_options(${NAME} PUBLIC -Wno-shorten-64-to-32)
     target_compile_options(${NAME} PUBLIC -Wno-unused-parameter)
