@@ -37,7 +37,7 @@ else()
 endif()
 
 # These all use EXCLUDE_FROM_ALL so that only the referenced targets get built.
-add_subdirectory(abseil-cpp EXCLUDE_FROM_ALL)
+add_subdirectory(abseil-cpp EXCLUDE_FROM_ALL SYSTEM)
 add_subdirectory(c-ares EXCLUDE_FROM_ALL)
 add_subdirectory(curl EXCLUDE_FROM_ALL)
 add_subdirectory(googletest EXCLUDE_FROM_ALL)
