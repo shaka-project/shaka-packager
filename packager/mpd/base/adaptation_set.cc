@@ -382,37 +382,33 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   }
 
   if (IsVideo()) {
-
     auto add_property =
         mpd_options_.mpd_params.use_colorimetry_essential_property
             ? &xml::AdaptationSetXmlNode::AddEssentialProperty
             : &xml::AdaptationSetXmlNode::AddSupplementalProperty;
 
-    const char kMatrixUri[]    = "urn:mpeg:mpegB:cicp:MatrixCoefficients";
+    const char kMatrixUri[] = "urn:mpeg:mpegB:cicp:MatrixCoefficients";
     const char kPrimariesUri[] = "urn:mpeg:mpegB:cicp:ColourPrimaries";
-    const char kTransferUri[]  = "urn:mpeg:mpegB:cicp:TransferCharacteristics";
+    const char kTransferUri[] = "urn:mpeg:mpegB:cicp:TransferCharacteristics";
 
     // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
     if (matrix_coefficients_ > 0) {
-      if (!(adaptation_set.*add_property)(
-          kMatrixUri,
-          std::to_string(matrix_coefficients_)))
+      if (!(adaptation_set.*add_property)(kMatrixUri,
+                                          std::to_string(matrix_coefficients_)))
         return std::nullopt;
     }
 
     // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
     if (color_primaries_ > 0) {
-      if (!(adaptation_set.*add_property)(
-          kPrimariesUri,
-          std::to_string(color_primaries_)))
+      if (!(adaptation_set.*add_property)(kPrimariesUri,
+                                          std::to_string(color_primaries_)))
         return std::nullopt;
     }
 
     // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
     if (transfer_characteristics_ > 0) {
       if (!(adaptation_set.*add_property)(
-          kTransferUri,
-          std::to_string(transfer_characteristics_)))
+              kTransferUri, std::to_string(transfer_characteristics_)))
         return std::nullopt;
     }
   }
