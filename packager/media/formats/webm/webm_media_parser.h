@@ -32,12 +32,7 @@ class WebMMediaParser : public MediaParser {
   /// @}
 
  private:
-  enum State {
-    kWaitingForInit,
-    kParsingHeaders,
-    kParsingClusters,
-    kError
-  };
+  enum State { kWaitingForInit, kParsingHeaders, kParsingClusters, kError };
 
   void ChangeState(State new_state);
 

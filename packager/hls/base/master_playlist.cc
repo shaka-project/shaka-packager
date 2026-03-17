@@ -49,7 +49,7 @@ struct Variant {
   std::set<std::string> text_codecs;
   const std::string* audio_group_id = nullptr;
   const std::string* text_group_id = nullptr;
-  bool have_instream_closed_cation = false;
+  bool have_instream_closed_caption = false;
   // The bitrates should be the sum of audio bitrate and text bitrate.
   // However, given the constraints and assumptions, it makes sense to exclude
   // text bitrate out of the calculation:
@@ -191,7 +191,7 @@ std::list<Variant> BuildVariants(
       base_variant.text_group_id = subtitle_variant.text_group_id;
       base_variant.max_audio_bitrate = audio_variant.max_audio_bitrate;
       base_variant.avg_audio_bitrate = audio_variant.avg_audio_bitrate;
-      base_variant.have_instream_closed_cation = have_instream_closed_caption;
+      base_variant.have_instream_closed_caption = have_instream_closed_caption;
       merged.push_back(base_variant);
     }
   }
@@ -246,14 +246,16 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
   uint32_t width;
   uint32_t height;
+
+  const bool is_iframe_playlist =
+      playlist.stream_type() ==
+      MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
+
   if (playlist.GetDisplayResolution(&width, &height)) {
     tag.AddNumberPair("RESOLUTION", width, 'x', height);
 
     // Right now the frame-rate returned may not be accurate in some scenarios.
     // TODO(kqyang): Fix frame-rate computation.
-    const bool is_iframe_playlist =
-        playlist.stream_type() ==
-        MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
     if (!is_iframe_playlist) {
       const double frame_rate = playlist.GetFrameRate();
       if (frame_rate > 0)
@@ -265,22 +267,23 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
       tag.AddString("VIDEO-RANGE", video_range);
   }
 
-  if (variant.audio_group_id) {
-    tag.AddQuotedString("AUDIO", *variant.audio_group_id);
+  if (!is_iframe_playlist) {
+    if (variant.audio_group_id) {
+      tag.AddQuotedString("AUDIO", *variant.audio_group_id);
+    }
+
+    if (variant.text_group_id) {
+      tag.AddQuotedString("SUBTITLES", *variant.text_group_id);
+    }
+
+    if (variant.have_instream_closed_caption) {
+      tag.AddQuotedString("CLOSED-CAPTIONS", "CC");
+    } else {
+      tag.AddString("CLOSED-CAPTIONS", "NONE");
+    }
   }
 
-  if (variant.text_group_id) {
-    tag.AddQuotedString("SUBTITLES", *variant.text_group_id);
-  }
-
-  if (variant.have_instream_closed_cation) {
-    tag.AddQuotedString("CLOSED-CAPTIONS", "CC");
-  } else {
-    tag.AddString("CLOSED-CAPTIONS", "NONE");
-  }
-
-  if (playlist.stream_type() ==
-      MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
+  if (is_iframe_playlist) {
     tag.AddQuotedString("URI", base_url + playlist.file_name());
     out->append("\n");
   } else {
@@ -356,14 +359,14 @@ void BuildMediaTag(const MediaPlaylist& playlist,
       // to handle Dolby Digital Plus JOC content.
       // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
       std::string channel_string =
-        std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
+          std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
       // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
       // CBI without object-based audio) for Dolby internal use only. IMSA is
       // not included in any publicly-available specifications as of June, 2020.
       std::string channel_string =
-        std::to_string(playlist.GetNumChannels()) + "/IMSA";
+          std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else {
       // According to HLS spec:
@@ -614,8 +617,10 @@ bool MasterPlaylist::WriteMasterPlaylist(
     for (const auto& playlist : playlists) {
       for (const auto& entry : playlist->entries()) {
         if (entry->type() == HlsEntry::EntryType::kExtKey) {
-          auto encryption_entry = dynamic_cast<EncryptionInfoEntry*>(entry.get());
-          session_keys.emplace(encryption_entry->ToString("#EXT-X-SESSION-KEY"));
+          auto encryption_entry =
+              dynamic_cast<EncryptionInfoEntry*>(entry.get());
+          session_keys.emplace(
+              encryption_entry->ToString("#EXT-X-SESSION-KEY"));
         }
       }
     }

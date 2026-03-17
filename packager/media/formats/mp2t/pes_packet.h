@@ -35,16 +35,12 @@ class PesPacket {
   /// @return dts.
   int64_t dts() const { return dts_; }
   /// @param dts is the dts for this PES packet.
-  void set_dts(int64_t dts) {
-    dts_ = dts;
-  }
+  void set_dts(int64_t dts) { dts_ = dts; }
 
   /// @return pts.
   int64_t pts() const { return pts_; }
   /// @param pts is the pts for this PES packet.
-  void set_pts(int64_t pts) {
-    pts_ = pts;
-  }
+  void set_pts(int64_t pts) { pts_ = pts; }
 
   /// @return whether it is a key frame.
   bool is_key_frame() const { return is_key_frame_; }

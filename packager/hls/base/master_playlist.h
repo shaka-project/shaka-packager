@@ -12,18 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "packager/cea_caption.h"
+
 namespace shaka {
 namespace hls {
 
 class MediaPlaylist;
-
-struct CeaCaption {
-  std::string name;
-  std::string language;
-  std::string channel;
-  bool is_default = false;
-  bool autoselect = true;
-};
 
 /// Class to generate HLS Master Playlist.
 /// Methods are virtual for mocking.

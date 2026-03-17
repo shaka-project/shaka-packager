@@ -410,6 +410,66 @@ TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
   ASSERT_TRUE(!testable_period_.trickplay_cache().empty());
 }
 
+TEST_F(PeriodTest, ClosedCaptions) {
+  mpd_options_.mpd_params.closed_captions.push_back(
+      {"name1", "eng", "CC1", true, true});
+  mpd_options_.mpd_params.closed_captions.push_back(
+      {"name2", "fra", "SERVICE1", false, true});
+
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+
+  EXPECT_CALL(*default_adaptation_set_ptr_,
+              AddAccessibility("urn:scte:dash:cc:cea-608:2015", "CC1=eng"));
+  EXPECT_CALL(*default_adaptation_set_ptr_,
+              AddAccessibility("urn:scte:dash:cc:cea-708:2015", "1=lang:fra"));
+
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVideoMediaInfo),
+                content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, NoClosedCaptionsForTrickPlay) {
+  mpd_options_.mpd_params.closed_captions.push_back(
+      {"name1", "eng", "CC1", true, true});
+
+  const char kTrickPlayMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "  playback_rate: 10\n"
+      "}\n"
+      "container_type: 1\n";
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+
+  EXPECT_CALL(*default_adaptation_set_ptr_, AddAccessibility(_, _)).Times(0);
+
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kTrickPlayMediaInfo),
+                content_protection_in_adaptation_set_));
+}
+
 // Don't put different audio languages or codecs in the same AdaptationSet.
 TEST_F(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
   const char kAacEnglishAudioContent[] =

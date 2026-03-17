@@ -21,9 +21,9 @@
 #include <packager/media/codecs/es_descriptor.h>
 #include <packager/media/formats/mp2t/adts_header.h>
 
-#define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
-         && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
-         && (x != 0xFF))
+#define HAS_HEADER_EXTENSION(x)                                               \
+  ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) && (x != 0xF0) && (x != 0xF2) && \
+   (x != 0xF8) && (x != 0xFF))
 
 namespace {
 const uint32_t kMpeg2ClockRate = 90000;
@@ -230,8 +230,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         continue;
       case PesStreamId:
         pes_stream_id_ = *read_ptr;
-        if (!metadata_is_complete_ &&
-            (pes_stream_id_ != kPsmStreamId) &&
+        if (!metadata_is_complete_ && (pes_stream_id_ != kPsmStreamId) &&
             (pes_stream_id_ != kIndexStreamId) &&
             (pes_stream_id_ != kEcmStreamId) &&
             (pes_stream_id_ != kV2MetadataStreamId) &&
@@ -331,7 +330,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         break;
       case Dts3:
         timestamp_ <<= 7;
-        timestamp_ |= *read_ptr  >> 1;
+        timestamp_ |= *read_ptr >> 1;
         --pes_header_data_bytes_;
         --pes_packet_bytes_;
         parse_state_ = Dts4;
@@ -412,7 +411,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         }
         if ((pes_packet_bytes_ == 0) && !ecm_.empty()) {
           if (!ProcessEcm()) {
-            return(false);
+            return (false);
           }
         }
         read_ptr += num_bytes;
@@ -445,7 +444,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
           parse_state_ = StartCode1;
         }
         pes_packet_bytes_ -= num_bytes;
-        if (pes_stream_id_ !=  kV2MetadataStreamId) {
+        if (pes_stream_id_ != kV2MetadataStreamId) {
           sample_data_.resize(sample_data_.size() + num_bytes);
           memcpy(&sample_data_[sample_data_.size() - num_bytes], read_ptr,
                  num_bytes);
@@ -506,8 +505,7 @@ bool WvmMediaParser::EmitPendingSamples() {
         media_sample_queue_.front();
     if (!EmitSample(demux_stream_media_sample.parsed_audio_or_video_stream_id,
                     demux_stream_media_sample.demux_stream_id,
-                    demux_stream_media_sample.media_sample,
-                    false)) {
+                    demux_stream_media_sample.media_sample, false)) {
       return false;
     }
     media_sample_queue_.pop_front();
@@ -712,8 +710,8 @@ bool WvmMediaParser::ParseIndexEntry() {
         case Audio_EsDescriptor: {
           ESDescriptor descriptor;
           if (!descriptor.Parse(binary_data)) {
-            LOG(ERROR) <<
-                "Could not extract AudioSpecificConfig from ES_Descriptor";
+            LOG(ERROR)
+                << "Could not extract AudioSpecificConfig from ES_Descriptor";
             return false;
           }
           audio_codec_config = descriptor.decoder_config_descriptor()
@@ -903,7 +901,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
         }
       }
     } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
-        kPesStreamIdAudio) {
+               kPesStreamIdAudio) {
       // Set data on the audio stream.
       mp2t::AdtsHeader adts_header;
       const uint8_t* frame_ptr = sample_data_.data();
@@ -929,8 +927,8 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
               adts_header.GetAudioSpecificConfig(&audio_specific_config);
               audio_stream_info->set_codec_config(audio_specific_config);
               audio_stream_info->set_codec_string(
-                  AudioStreamInfo::GetCodecString(
-                      kCodecAAC, adts_header.GetObjectType()));
+                  AudioStreamInfo::GetCodecString(kCodecAAC,
+                                                  adts_header.GetObjectType()));
             } else {
               // Set AudioStreamInfo fields using information from the
               // AACAudioSpecificConfig record.
@@ -1136,8 +1134,7 @@ bool WvmMediaParser::ProcessEcm() {
                               content_key_buffer.data(), &output_size));
 
   std::vector<uint8_t> decrypted_content_key_vec(
-      content_key_buffer.begin() + 4,
-      content_key_buffer.begin() + 20);
+      content_key_buffer.begin() + 4, content_key_buffer.begin() + 20);
   std::unique_ptr<AesCbcDecryptor> content_decryptor(
       new AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));
   if (!content_decryptor->InitializeWithIv(decrypted_content_key_vec,
@@ -1150,9 +1147,8 @@ bool WvmMediaParser::ProcessEcm() {
   return true;
 }
 
-DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :
-  demux_stream_id(0),
-  parsed_audio_or_video_stream_id(0) {}
+DemuxStreamIdMediaSample::DemuxStreamIdMediaSample()
+    : demux_stream_id(0), parsed_audio_or_video_stream_id(0) {}
 
 DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}
 

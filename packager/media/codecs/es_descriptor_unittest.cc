@@ -56,7 +56,7 @@ TEST(ESDescriptorTest, SingleByteLengthTest) {
   EXPECT_THAT(
       std::vector<uint8_t>(writer.Buffer(), writer.Buffer() + writer.Size()),
       ElementsAreArray(kBuffer));
-  
+
   EXPECT_EQ(0u, es_desc.esid());
   const size_t kEsIdOffset = 3;
   const uint8_t kEsId = 5;

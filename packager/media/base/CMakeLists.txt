@@ -50,6 +50,7 @@ add_library(media_base STATIC
     text_sample.cc
     text_stream_info.cc
     text_track_config.cc
+    timestamp_util.cc
     video_stream_info.cc
     video_util.cc
     widevine_key_source.cc

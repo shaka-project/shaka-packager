@@ -150,7 +150,7 @@ VPCodecConfigurationRecord::VPCodecConfigurationRecord(
       matrix_coefficients_(matrix_coefficients),
       codec_initialization_data_(codec_initialization_data) {}
 
-VPCodecConfigurationRecord::~VPCodecConfigurationRecord(){};
+VPCodecConfigurationRecord::~VPCodecConfigurationRecord() {};
 
 // https://www.webmproject.org/vp9/mp4/
 bool VPCodecConfigurationRecord::ParseMP4(const std::vector<uint8_t>& data) {
@@ -257,7 +257,7 @@ void VPCodecConfigurationRecord::WriteMP4(std::vector<uint8_t>* data) const {
   writer.AppendInt(transfer_characteristics());
   writer.AppendInt(matrix_coefficients());
   uint16_t codec_initialization_data_size =
-    static_cast<uint16_t>(codec_initialization_data_.size());
+      static_cast<uint16_t>(codec_initialization_data_.size());
   writer.AppendInt(codec_initialization_data_size);
   writer.AppendVector(codec_initialization_data_);
   writer.SwapBuffer(data);
@@ -274,13 +274,13 @@ void VPCodecConfigurationRecord::WriteWebM(std::vector<uint8_t>* data) const {
 
   if (level_) {
     writer.AppendInt(static_cast<uint8_t>(kFeatureLevel));  // ID = 2
-    writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(1));              // Length = 1
     writer.AppendInt(*level_);
   }
 
   if (bit_depth_) {
     writer.AppendInt(static_cast<uint8_t>(kFeatureBitDepth));  // ID = 3
-    writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(1));                 // Length = 1
     writer.AppendInt(*bit_depth_);
   }
 

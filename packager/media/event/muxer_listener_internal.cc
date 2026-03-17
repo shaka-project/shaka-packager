@@ -138,9 +138,9 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     codec_data->set_channel_mask(ec3_channel_map);
     uint32_t ec3_channel_mpeg_value;
     if (!CalculateEC3ChannelMPEGValue(codec_config, &ec3_channel_mpeg_value)) {
-        LOG(ERROR) << "Failed to calculate EC3 channel configuration "
-                   << "descriptor value with MPEG scheme.";
-        return;
+      LOG(ERROR) << "Failed to calculate EC3 channel configuration "
+                 << "descriptor value with MPEG scheme.";
+      return;
     }
     codec_data->set_channel_mpeg_value(ec3_channel_mpeg_value);
     uint32_t ec3_joc_complexity = 0;

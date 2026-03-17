@@ -1,6 +1,29 @@
 # Changelog
 
 
+## [3.6.1](https://github.com/shaka-project/shaka-packager/compare/v3.6.0...v3.6.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* DVB-Teletext: heartbeat mechanism and segment alignment with video/audio ([#1535](https://github.com/shaka-project/shaka-packager/issues/1535)) ([19dbd20](https://github.com/shaka-project/shaka-packager/commit/19dbd203b01bfecf646384e89f8a6da1ea343d35)), closes [#1428](https://github.com/shaka-project/shaka-packager/issues/1428) [#1401](https://github.com/shaka-project/shaka-packager/issues/1401) [#1355](https://github.com/shaka-project/shaka-packager/issues/1355) [#1430](https://github.com/shaka-project/shaka-packager/issues/1430)
+* HLS - remove CLOSED-CAPTIONS from EXT-X-I-FRAME-STREAM-INF ([#1551](https://github.com/shaka-project/shaka-packager/issues/1551)) ([16a2462](https://github.com/shaka-project/shaka-packager/commit/16a2462dd8a00fbcaec06e1aaf86b732ba0111eb))
+* Upgrade deps that are meant for older versions of CMake ([#1508](https://github.com/shaka-project/shaka-packager/issues/1508)) ([e46b759](https://github.com/shaka-project/shaka-packager/commit/e46b7591e1e4ff3444e306061746aa42589c84d7))
+
+## [3.6.0](https://github.com/shaka-project/shaka-packager/compare/v3.5.0...v3.6.0) (2026-03-11)
+
+
+### Features
+
+* add subsample encryption support for Dolby AC-4 ([#1522](https://github.com/shaka-project/shaka-packager/issues/1522)) ([3e854f4](https://github.com/shaka-project/shaka-packager/commit/3e854f4c907fdd4d0a5491304d9ad616f1a935bd))
+* DASH - Add signaling for CEA-608/708 captions ([#1549](https://github.com/shaka-project/shaka-packager/issues/1549)) ([51e25b5](https://github.com/shaka-project/shaka-packager/commit/51e25b56ee7ed3cf1302293045b249e4d25d76fe))
+* Switch VOD to live stream when event/live streams end ([#1541](https://github.com/shaka-project/shaka-packager/issues/1541)) ([ef8ed34](https://github.com/shaka-project/shaka-packager/commit/ef8ed345dee03fdad37e5b67958b2f5ccb984314)), closes [#321](https://github.com/shaka-project/shaka-packager/issues/321)
+
+
+### Bug Fixes
+
+* AdaptationSet ID inconsistency across periods ([#1547](https://github.com/shaka-project/shaka-packager/issues/1547)) ([6c7fb18](https://github.com/shaka-project/shaka-packager/commit/6c7fb18d3bd87a680034675fae60392ff56a8008))
+
 ## [3.5.0](https://github.com/shaka-project/shaka-packager/compare/v3.4.2...v3.5.0) (2026-03-05)
 
 

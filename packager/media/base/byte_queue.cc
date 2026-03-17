@@ -17,8 +17,7 @@ ByteQueue::ByteQueue()
     : buffer_(new uint8_t[kDefaultQueueSize]),
       size_(kDefaultQueueSize),
       offset_(0),
-      used_(0) {
-}
+      used_(0) {}
 
 ByteQueue::~ByteQueue() {}
 

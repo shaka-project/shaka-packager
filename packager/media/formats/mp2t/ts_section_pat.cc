@@ -17,12 +17,9 @@ namespace media {
 namespace mp2t {
 
 TsSectionPat::TsSectionPat(const RegisterPmtCb& register_pmt_cb)
-    : register_pmt_cb_(register_pmt_cb),
-      version_number_(-1) {
-}
+    : register_pmt_cb_(register_pmt_cb), version_number_(-1) {}
 
-TsSectionPat::~TsSectionPat() {
-}
+TsSectionPat::~TsSectionPat() {}
 
 bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   // Read the fixed section length.
@@ -86,8 +83,15 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
     return true;
 
   // Both the MSE and the HLS spec specifies that TS streams should convey
-  // exactly one program.
-  if (pmt_pid_count > 1) {
+  // exactly one program. A real program has program number != 0
+  int nr_programs = 0;
+  for (int k = 0; k < pmt_pid_count; k++) {
+    if (program_number_array[k] != 0) {
+      nr_programs++;
+    }
+  }
+
+  if (nr_programs > 1) {
     LOG(ERROR) << "Multiple programs detected in the Mpeg2 TS stream";
     return false;
   }
@@ -123,4 +127,3 @@ void TsSectionPat::ResetPsiSection() {
 }  // namespace mp2t
 }  // namespace media
 }  // namespace shaka
-

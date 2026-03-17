@@ -8,6 +8,8 @@
 
 #include <packager/app/muxer_flags.h>
 
+#include <packager/chunking_params.h>
+
 ABSL_FLAG(double,
           clear_lead,
           5.0f,
@@ -73,6 +75,17 @@ ABSL_FLAG(
     "If the first sample comes after default_text_zero_bias_ms then the start "
     "of the stream will not be padded as we cannot assume the start time of "
     "the stream.");
+
+ABSL_FLAG(
+    int64_t,
+    ts_ttx_heartbeat_shift,
+    shaka::kDefaultTtxHeartbeatShift,
+    "For DVB-Teletext in MPEG-2 TS: timing offset (in 90kHz ticks) between "
+    "video PTS timestamps and text segment generation. This compensates for "
+    "the pipeline delay where video is processed ahead of teletext. "
+    "Default is 90000 (1 second). If the value is too large, heartbeat-"
+    "triggered text segments are generated later than video segments. "
+    "If too small, some text cues may be absent in the output.");
 
 ABSL_FLAG(int64_t,
           start_segment_number,

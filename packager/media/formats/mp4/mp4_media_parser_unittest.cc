@@ -67,8 +67,8 @@ class MP4MediaParserTest : public testing::Test {
     const uint8_t* start = data;
     const uint8_t* end = data + length;
     while (start < end) {
-      size_t append_size = std::min(piece_size,
-                                    static_cast<size_t>(end - start));
+      size_t append_size =
+          std::min(piece_size, static_cast<size_t>(end - start));
       if (!AppendData(start, append_size))
         return false;
       start += append_size;
@@ -86,8 +86,7 @@ class MP4MediaParserTest : public testing::Test {
   }
 
   bool NewSampleF(uint32_t track_id, std::shared_ptr<MediaSample> sample) {
-    DVLOG(2) << "Track Id: " << track_id << " "
-             << sample->ToString();
+    DVLOG(2) << "Track Id: " << track_id << " " << sample->ToString();
     ++num_samples_;
     return true;
   }
@@ -244,8 +243,8 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
   EXPECT_TRUE(parser_->Flush());
 
   const int kFirstMoofOffset = 1308;
-  EXPECT_TRUE(AppendDataInPieces(
-      buffer.data() + kFirstMoofOffset, buffer.size() - kFirstMoofOffset, 512));
+  EXPECT_TRUE(AppendDataInPieces(buffer.data() + kFirstMoofOffset,
+                                 buffer.size() - kFirstMoofOffset, 512));
 }
 
 TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
@@ -261,7 +260,8 @@ TEST_F(MP4MediaParserTest, CencWithoutDecryptionSource) {
   const int kVideoTrackId = 1;
   EXPECT_NE(0u,
             reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
-                ->eme_init_data().size());
+                ->eme_init_data()
+                .size());
 }
 
 TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {

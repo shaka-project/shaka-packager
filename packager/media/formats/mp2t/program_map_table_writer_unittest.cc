@@ -67,6 +67,7 @@ TEST_F(ProgramMapTableWriterTest, ClearH264) {
   };
   const int kExpectedPmtPrefixSize = std::size(kExpectedPmtPrefix);
   const uint8_t kPmtH264[] = {
+      // clang-format off
       0x00,  // pointer field
       0x02,
       0xB0,  // assumes length is <= 256 bytes.
@@ -83,6 +84,7 @@ TEST_F(ProgramMapTableWriterTest, ClearH264) {
       0xF0, 0x00,        // Es_info_length is 0.
       // CRC32.
       0x43, 0x49, 0x97, 0xbe,
+      // clang-format on
   };
 
   ASSERT_EQ(kTsPacketSize, buffer.Size());
@@ -111,6 +113,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadH264) {
   };
 
   const uint8_t kPmtEncryptedH264[] = {
+      // clang-format off
       0x00,              // pointer field
       0x02,              // Table id.
       0xB0,              // The first 4 bits must be '1011'.
@@ -130,6 +133,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadH264) {
       0x7A, 0x61, 0x76, 0x63,  // 'zavc'.
       // CRC32.
       0xAF, 0xCC, 0x24, 0x21,
+      // clang-format on
   };
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
       kPmtEncryptedH264Prefix, std::size(kPmtEncryptedH264Prefix), 154,
@@ -154,6 +158,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsH264Pmt) {
   };
 
   const uint8_t kPmtEncryptedH264[] = {
+      // clang-format off
       0x00,              // pointer field
       0x02,              // Table id.
       0xB0,              // The first 4 bits must be '1011'.
@@ -173,6 +178,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsH264Pmt) {
       0x7A, 0x61, 0x76, 0x63,  // 'zavc'.
       // CRC32.
       0xA9, 0xC2, 0x95, 0x7C,
+      // clang-format on
   };
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
       kPmtEncryptedH264Prefix, std::size(kPmtEncryptedH264Prefix), 154,
@@ -196,6 +202,7 @@ TEST_F(ProgramMapTableWriterTest, ClearAac) {
       0x00,  // All adaptation field flags 0.
   };
   const uint8_t kPmtAac[] = {
+      // clang-format off
       0x00,                    // pointer field
       0x02,                    // table id must be 0x02.
       0xB0,                    // assumes length is <= 256 bytes.
@@ -211,6 +218,7 @@ TEST_F(ProgramMapTableWriterTest, ClearAac) {
       0x0F, 0xE0, 0x50,        // stream_type -> PID.
       0xF0, 0x00,              // Es_info_length is 0.
       0xE0, 0x6F, 0x1A, 0x31,  // CRC32.
+      // clang-format on
   };
   EXPECT_NO_FATAL_FAILURE(
       ExpectTsPacketEqual(kExpectedPmtPrefix, std::size(kExpectedPmtPrefix),
@@ -233,6 +241,7 @@ TEST_F(ProgramMapTableWriterTest, ClearAc3) {
       0x00,  // All adaptation field flags 0.
   };
   const uint8_t kPmtAc3[] = {
+      // clang-format off
       0x00,                    // pointer field
       0x02,                    // table id must be 0x02.
       0xB0,                    // assumes length is <= 256 bytes.
@@ -248,6 +257,7 @@ TEST_F(ProgramMapTableWriterTest, ClearAc3) {
       0x81, 0xE0, 0x50,        // stream_type -> PID.
       0xF0, 0x00,              // Es_info_length is 0.
       0x1E, 0xFC, 0x57, 0x12,  // CRC32.
+      // clang-format on
   };
 
   EXPECT_NO_FATAL_FAILURE(
@@ -278,6 +288,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadAac) {
       0x00,  // All adaptation field flags 0.
   };
   const uint8_t kPmtEncryptedAac[] = {
+      // clang-format off
       0x00,                    // pointer field
       0x02,                    // table id.
       0xB0,                    // The first 4 bits must be '1011'.
@@ -306,6 +317,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadAac) {
       0x02,                    // setup_data_length == extra data length
       0x12, 0x10,              // setup_data == extra data.
       0xC6, 0xB3, 0x31, 0x3A,  // CRC32.
+      // clang-format on
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
@@ -334,6 +346,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAacPmt) {
       0x00,  // All adaptation field flags 0.
   };
   const uint8_t kPmtEncryptedAac[] = {
+      // clang-format off
       0x00,              // pointer field
       0x02,              // table id.
       0xB0,              // The first 4 bits must be '1011'.
@@ -362,6 +375,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAacPmt) {
       0x02,                    // setup_data_length == extra data length
       0x12, 0x10,              // setup_data == extra data.
       0xF7, 0xD5, 0x2A, 0x53,  // CRC32.
+      // clang-format on
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
@@ -388,6 +402,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAc3Pmt) {
       0x00,  // All adaptation field flags 0.
   };
   const uint8_t kPmtEncryptedAc3[] = {
+      // clang-format off
       0x00,              // pointer field
       0x02,              // table id.
       0xB0,              // The first 4 bits must be '1011'.
@@ -416,6 +431,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAc3Pmt) {
       0x0A,                    // setup_data_length
       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,  // setup_data
       0xCE, 0xB6, 0x52, 0x5C,                                      // CRC32.
+      // clang-format on
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(

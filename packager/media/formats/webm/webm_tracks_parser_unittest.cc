@@ -12,11 +12,11 @@
 #include <packager/media/formats/webm/tracks_builder.h>
 #include <packager/media/formats/webm/webm_constants.h>
 
+using ::testing::_;
 using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::StrictMock;
-using ::testing::_;
 
 namespace shaka {
 namespace media {

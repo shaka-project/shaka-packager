@@ -27,7 +27,8 @@ namespace media {
 
 class KeyFetcher;
 class RequestSigner;
-template <class T> class ProducerConsumerQueue;
+template <class T>
+class ProducerConsumerQueue;
 
 /// WidevineKeySource talks to the Widevine encryption service to
 /// acquire the encryption keys.

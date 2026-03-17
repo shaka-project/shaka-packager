@@ -14,6 +14,7 @@
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/timestamp_util.h>
 #include <packager/media/formats/mp4/box_buffer.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/webvtt/webvtt_utils.h>
@@ -40,14 +41,17 @@ std::multimap<int64_t, DisplayAction> CreateActionList(
     DCHECK(sample);
 
     // The add action should occur either in this segment or in a previous
-    // segment.
-    DCHECK_LT(sample->start_time(), segment_end);
+    // segment. Use wrap-safe comparison since sample PTS may be wrapped
+    // but segment_end is unwrapped.
+    DCHECK(PtsIsBefore(sample->start_time(), segment_end))
+        << "Sample start " << sample->start_time()
+        << " should be before segment end " << segment_end;
     actions.insert(
         {sample->start_time(), {DisplayActionType::ADD, sample.get()}});
 
     // If the remove happens in a later segment, then we don't want to include
-    // that action.
-    if (sample->EndTime() < segment_end) {
+    // that action. Use wrap-safe comparison.
+    if (PtsIsBefore(sample->EndTime(), segment_end)) {
       actions.insert(
           {sample->EndTime(), {DisplayActionType::REMOVE, sample.get()}});
     }
@@ -200,7 +204,7 @@ Status WebVttToMp4Handler::DispatchCurrentSegment(int64_t segment_start,
 
   // Move through the segment, jumping between each change to the current state.
   // A change is defined as a group of one or more DisplayActions.
-  int section_start = segment_start;
+  int64_t section_start = segment_start;
 
   // |actions| is a map of [time] -> [action].
   auto actions = CreateActionList(segment_start, segment_end, current_segment_);

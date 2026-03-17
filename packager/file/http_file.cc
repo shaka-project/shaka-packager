@@ -141,13 +141,9 @@ int CurlDebugCallback(CURL* /* handle */,
 
 class LibCurlInitializer {
  public:
-  LibCurlInitializer() {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-  }
+  LibCurlInitializer() { curl_global_init(CURL_GLOBAL_DEFAULT); }
 
-  ~LibCurlInitializer() {
-    curl_global_cleanup();
-  }
+  ~LibCurlInitializer() { curl_global_cleanup(); }
 
   LibCurlInitializer(const LibCurlInitializer&) = delete;
   LibCurlInitializer& operator=(const LibCurlInitializer&) = delete;

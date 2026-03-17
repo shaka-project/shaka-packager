@@ -27,11 +27,9 @@ const int kSubtitlingDescriptor = 0x59;
 }  // namespace
 
 TsSectionPmt::TsSectionPmt(const RegisterPesCb& register_pes_cb)
-    : register_pes_cb_(register_pes_cb) {
-}
+    : register_pes_cb_(register_pes_cb) {}
 
-TsSectionPmt::~TsSectionPmt() {
-}
+TsSectionPmt::~TsSectionPmt() {}
 
 bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // Read up to |last_section_number|.
@@ -188,8 +186,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   return true;
 }
 
-void TsSectionPmt::ResetPsiSection() {
-}
+void TsSectionPmt::ResetPsiSection() {}
 
 }  // namespace mp2t
 }  // namespace media

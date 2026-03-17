@@ -54,8 +54,7 @@ class ChunkInfoIterator {
 
   /// @return The last first_chunk in chunk_info_table.
   uint32_t LastFirstChunk() const {
-    return chunk_info_table_.empty() ? 0
-                                     : chunk_info_table_.back().first_chunk;
+    return chunk_info_table_.empty() ? 0 : chunk_info_table_.back().first_chunk;
   }
 
  private:

@@ -51,7 +51,8 @@ void OffsetByteQueue::PeekAt(int64_t offset, const uint8_t** buf, int* size) {
 }
 
 bool OffsetByteQueue::Trim(int64_t max_offset) {
-  if (max_offset < head_) return true;
+  if (max_offset < head_)
+    return true;
   if (max_offset > tail()) {
     Pop(size_);
     return false;

@@ -126,12 +126,20 @@ TEST_F(WebMVideoClientTest, GenerateColrBoxData_LimitedColorRange) {
   EXPECT_EQ(0x00, colr_data[18]);
 }
 
-TEST_F(WebMVideoClientTest, GenerateColrBoxData_FullColorRange) {
-  SetColorRange(1);  // 1 = full range in WebM
+TEST_F(WebMVideoClientTest, GenerateColrBoxData_BroadcastColorRange) {
+  SetColorRange(1);  // broadcast/limited
 
   std::vector<uint8_t> colr_data = client_.GenerateColrBoxData();
 
-  // Check full_range_flag is 1 (full range)
+  ASSERT_EQ(19u, colr_data.size());
+  EXPECT_EQ(0x00, colr_data[18]);
+}
+
+TEST_F(WebMVideoClientTest, GenerateColrBoxData_FullColorRange) {
+  SetColorRange(2);  // full range
+
+  std::vector<uint8_t> colr_data = client_.GenerateColrBoxData();
+
   ASSERT_EQ(19u, colr_data.size());
   EXPECT_EQ(0x01, colr_data[18]);
 }
@@ -204,7 +212,7 @@ TEST_F(WebMVideoClientTest, GetVideoStreamInfo_VP8WithColorInfo) {
   SetPixelDimensions(1280, 720);
 
   // Set color information
-  SetColorRange(1);  // Full range
+  SetColorRange(1);  // broadcast/limited range
 
   std::vector<uint8_t> codec_private;
   auto video_info = client_.GetVideoStreamInfo(1,        // track_num
@@ -220,9 +228,8 @@ TEST_F(WebMVideoClientTest, GetVideoStreamInfo_VP8WithColorInfo) {
   const std::vector<uint8_t>& colr_data = video_info->colr_data();
   EXPECT_FALSE(colr_data.empty());
 
-  // Verify full_range_flag is 1 (full range)
   ASSERT_EQ(19u, colr_data.size());
-  EXPECT_EQ(0x01, colr_data[18]);
+  EXPECT_EQ(0x00, colr_data[18]);
 }
 
 TEST_F(WebMVideoClientTest, GetVideoStreamInfo_VP9NoColorInfo) {
@@ -257,7 +264,7 @@ TEST_F(WebMVideoClientTest, GetVideoStreamInfo_AV1WithColorInfo) {
       0x81,  // marker and version
       0x08,  // profile and level
       0x00,  // tier, bitdepth, monochrome, chroma subsampling
-      0x00   // initial presentation delay
+      0x00,  // initial presentation delay
   };
 
   auto video_info = client_.GetVideoStreamInfo(1,        // track_num
@@ -278,21 +285,22 @@ TEST_F(WebMVideoClientTest, GetVideoStreamInfo_AV1WithColorInfo) {
 TEST_F(WebMVideoClientTest, GetVpCodecConfig_ColorRange) {
   std::vector<uint8_t> codec_private;
 
-  // Test limited range
-  SetColorRange(0);
+  SetColorRange(0);  // unspecified
   VPCodecConfigurationRecord config = client_.GetVpCodecConfig(codec_private);
   EXPECT_FALSE(config.video_full_range_flag());
 
-  // Reset and test full range
   Reset();
-  SetColorRange(1);
+  SetColorRange(1);  // broadcast/limited
+  config = client_.GetVpCodecConfig(codec_private);
+  EXPECT_FALSE(config.video_full_range_flag());
+
+  Reset();
+  SetColorRange(2);  // full range
   config = client_.GetVpCodecConfig(codec_private);
   EXPECT_TRUE(config.video_full_range_flag());
 
-  // Reset and test unset (should not affect the config)
   Reset();
   config = client_.GetVpCodecConfig(codec_private);
-  // Default value in VPCodecConfigurationRecord
   EXPECT_FALSE(config.video_full_range_flag());
 }
 
@@ -302,7 +310,7 @@ TEST_F(WebMVideoClientTest, GetVpCodecConfig_AllColorParameters) {
   SetColorPrimaries(9);            // BT.2020
   SetTransferCharacteristics(16);  // ST 2084 (PQ)
   SetMatrixCoefficients(9);        // BT.2020
-  SetColorRange(1);                // Full range
+  SetColorRange(2);                // full range
 
   VPCodecConfigurationRecord config = client_.GetVpCodecConfig(codec_private);
 

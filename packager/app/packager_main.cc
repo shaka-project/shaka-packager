@@ -396,6 +396,8 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_fragment_sap_aligned);
   chunking_params.start_segment_number =
       absl::GetFlag(FLAGS_start_segment_number);
+  chunking_params.ts_ttx_heartbeat_shift =
+      absl::GetFlag(FLAGS_ts_ttx_heartbeat_shift);
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
@@ -589,7 +591,7 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_strict_codecs_signaling);
 
   if (!ParseClosedCaptions(absl::GetFlag(FLAGS_closed_captions),
-                           &hls_params.closed_captions)) {
+                           &packaging_params.closed_captions)) {
     LOG(ERROR) << "Failed to parse --closed_captions "
                << absl::GetFlag(FLAGS_closed_captions);
     return std::nullopt;

@@ -26,10 +26,9 @@ struct ProtectionSystemSpecificInfo {
   /// Parses multiple PSSH boxes from @a data.  These boxes should be
   /// concatenated together.  Any non-PSSH box is an error.
   /// @return true on success; false on failure.
-  static bool ParseBoxes(
-      const uint8_t* data,
-      size_t data_size,
-      std::vector<ProtectionSystemSpecificInfo>* pssh_boxes);
+  static bool ParseBoxes(const uint8_t* data,
+                         size_t data_size,
+                         std::vector<ProtectionSystemSpecificInfo>* pssh_boxes);
 };
 
 class PsshBoxBuilder {

@@ -26,7 +26,7 @@ std::vector<uint8_t> GenerateWebMCounterBlock(const uint8_t* iv, int iv_size) {
   return counter_block;
 }
 
-}  // namespace anonymous
+}  // namespace
 
 // TODO(tinskip): Add unit test for this function.
 bool WebMCreateDecryptConfig(const uint8_t* data,
@@ -85,7 +85,8 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
         } else {
           clear_size = partition_offset - subsample_offset;
           if (partition_idx == (num_partitions - 1)) {
-            encrypted_size = data_size - header_size - subsample_offset - clear_size;
+            encrypted_size =
+                data_size - header_size - subsample_offset - clear_size;
             subsamples.push_back(SubsampleEntry(clear_size, encrypted_size));
           }
         }
