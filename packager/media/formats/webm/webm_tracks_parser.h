@@ -66,9 +66,7 @@ class WebMTracksParser : public WebMParserClient {
 
   typedef std::map<int, TextTrackConfig> TextTracks;
 
-  const TextTracks& text_tracks() const {
-    return text_tracks_;
-  }
+  const TextTracks& text_tracks() const { return text_tracks_; }
 
   const VPCodecConfigurationRecord& vp_config() const { return vp_config_; }
 

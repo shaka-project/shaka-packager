@@ -37,8 +37,8 @@ bool SyncSampleIterator::IsSyncSample(uint32_t sample) const {
   // If the sync sample box is not present, every sample is a sync sample.
   if (is_empty_)
     return true;
-  return std::binary_search(
-      sync_sample_vector_.begin(), sync_sample_vector_.end(), sample);
+  return std::binary_search(sync_sample_vector_.begin(),
+                            sync_sample_vector_.end(), sample);
 }
 
 }  // namespace mp4

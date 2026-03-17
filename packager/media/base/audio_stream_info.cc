@@ -215,7 +215,7 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       //   and ISO/IEC 23008-3 clause 21 [7].
       // The value consists of the following two parts separated by a dot:
       //  - the sample entry 4CC code ('mha1', 'mha2', 'mhm1', 'mhm2')
-      //  - ‘0x’ followed by the hex value of the profile-levelid, as defined 
+      //  - ‘0x’ followed by the hex value of the profile-levelid, as defined
       //      in in ISO/IEC 23008-3 [7]
       return absl::StrFormat("%s.0x%02x",
                              FourCCToString(CodecToFourCC(codec)).c_str(),

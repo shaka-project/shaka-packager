@@ -143,12 +143,14 @@ const BlockInfo kDefaultBlockInfo[] = {
 };
 
 const uint8_t kEncryptedFrame[] = {
+    // clang-format off
     // Block is encrypted
     0x01,
     // IV
     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
     // Some dummy encrypted data
     0x01,
+    // clang-format on
 };
 const uint8_t kMockKey[] = {
     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
@@ -159,13 +161,17 @@ const uint8_t kExpectedDecryptedFrame[] = {
 };
 
 const uint8_t kClearFrameInEncryptedTrack[] = {
+    // clang-format off
     // Block is not encrypted
     0x00,
     // Some dummy frame data
     0x01, 0x02, 0x03,
+    // clang-format on
 };
 const uint8_t kExpectedClearFrame[] = {
-    0x01, 0x02, 0x03,
+    0x01,
+    0x02,
+    0x03,
 };
 
 const uint8_t kVP8Frame[] = {
@@ -405,12 +411,15 @@ class WebMClusterParserTest : public testing::Test {
 
   // Helper that hard-codes some non-varying constructor parameters.
   WebMClusterParser* CreateParserHelper(
-      int64_t audio_default_duration, int64_t video_default_duration,
+      int64_t audio_default_duration,
+      int64_t video_default_duration,
       const WebMTracksParser::TextTracks& text_tracks,
       const std::set<int64_t>& ignored_tracks,
       const std::string& audio_encryption_key_id,
-      const std::string& video_encryption_key_id, const Codec audio_codec,
-      const Codec video_codec, const MediaParser::InitCB& init_cb) {
+      const std::string& video_encryption_key_id,
+      const Codec audio_codec,
+      const Codec video_codec,
+      const MediaParser::InitCB& init_cb) {
     using namespace std::placeholders;
     audio_stream_info_->set_codec(audio_codec);
     video_stream_info_->set_codec(video_codec);
@@ -453,7 +462,8 @@ class WebMClusterParserTest : public testing::Test {
   // Create a parser for test with custom encryption key ids and audio codec.
   WebMClusterParser* CreateParserWithKeyIdsAndCodec(
       const std::string& audio_encryption_key_id,
-      const std::string& video_encryption_key_id, const Codec audio_codec) {
+      const std::string& video_encryption_key_id,
+      const Codec audio_codec) {
     return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
                               std::set<int64_t>(), audio_encryption_key_id,
                               video_encryption_key_id, audio_codec, kCodecVP8,
@@ -499,9 +509,9 @@ TEST_F(WebMClusterParserTest, TracksWithSampleMissingDuration) {
   // Reset the parser to have 3 tracks: text, video (no default frame duration),
   // and audio (with a default frame duration).
   TextTracks text_tracks;
-  text_tracks.insert(std::make_pair(TextTracks::key_type(kTextTrackNum),
-                                    TextTrackConfig(kTextSubtitles, "", "",
-                                                    "")));
+  text_tracks.insert(
+      std::make_pair(TextTracks::key_type(kTextTrackNum),
+                     TextTrackConfig(kTextSubtitles, "", "", "")));
   int64_t default_audio_duration = kTestAudioFrameDefaultDurationInMs;
   ASSERT_GE(default_audio_duration, 0);
   ASSERT_NE(kNoTimestamp, default_audio_duration);
@@ -539,15 +549,15 @@ TEST_F(WebMClusterParserTest, TracksWithSampleMissingDuration) {
       {kVideoTrackNum, 66, kExpectedVideoEstimationInMs, true, NULL, 0, false},
   };
   const int kExpectedBuffersOnPartialCluster[] = {
-    0,  // Video simple block without duration should be held back
-    1,  // 1st audio buffer ready
-    2,  // Text buffer ready
-    2,  // Audio simple block without duration should be held back
-    3,  // 1st video emitted, 2nd video held back with no duration
-    4,  // 2rd audio ready, 3rd audio held back with no duration
-    5,  // 2nd video emitted, 3rd video held back with no duration
-    6,  // 3th audio ready, 4th audio held back with no duration
-    7,  // 4th audio ready, 5th audio held back with no duration
+      0,  // Video simple block without duration should be held back
+      1,  // 1st audio buffer ready
+      2,  // Text buffer ready
+      2,  // Audio simple block without duration should be held back
+      3,  // 1st video emitted, 2nd video held back with no duration
+      4,  // 2rd audio ready, 3rd audio held back with no duration
+      5,  // 2nd video emitted, 3rd video held back with no duration
+      6,  // 3th audio ready, 4th audio held back with no duration
+      7,  // 4th audio ready, 5th audio held back with no duration
   };
 
   ASSERT_EQ(std::size(kBlockInfo), std::size(kExpectedBuffersOnPartialCluster));
@@ -656,16 +666,18 @@ TEST_F(WebMClusterParserTest, ParseBlockGroup) {
   int block_count = std::size(kBlockInfo);
 
   const uint8_t kClusterData[] = {
-    0x1F, 0x43, 0xB6, 0x75, 0x9B,  // Cluster(size=27)
-    0xE7, 0x81, 0x00,  // Timecode(size=1, value=0)
-    // BlockGroup with BlockDuration before Block.
-    0xA0, 0x8A,  // BlockGroup(size=10)
-    0x9B, 0x81, 0x17,  // BlockDuration(size=1, value=23)
-    0xA1, 0x85, 0x81, 0x00, 0x00, 0x00, 0xaa,  // Block(size=5, track=1, ts=0)
-    // BlockGroup with BlockDuration after Block.
-    0xA0, 0x8A,  // BlockGroup(size=10)
-    0xA1, 0x85, 0x82, 0x00, 0x21, 0x00, 0x55,  // Block(size=5, track=2, ts=33)
-    0x9B, 0x81, 0x22,  // BlockDuration(size=1, value=34)
+      // clang-format off
+      0x1F, 0x43, 0xB6, 0x75, 0x9B,  // Cluster(size=27)
+      0xE7, 0x81, 0x00,  // Timecode(size=1, value=0)
+      // BlockGroup with BlockDuration before Block.
+      0xA0, 0x8A,  // BlockGroup(size=10)
+      0x9B, 0x81, 0x17,  // BlockDuration(size=1, value=23)
+      0xA1, 0x85, 0x81, 0x00, 0x00, 0x00, 0xaa,  // Block(size=5, track=1, ts=0)
+      // BlockGroup with BlockDuration after Block.
+      0xA0, 0x8A,  // BlockGroup(size=10)
+      0xA1, 0x85, 0x82, 0x00, 0x21, 0x00, 0x55,  // Block(size=5, track=2, ts=33)
+      0x9B, 0x81, 0x22,  // BlockDuration(size=1, value=34)
+      // clang-format on
   };
   const int kClusterSize = std::size(kClusterData);
 
@@ -727,9 +739,9 @@ TEST_F(WebMClusterParserTest, IgnoredTracks) {
 TEST_F(WebMClusterParserTest, ParseTextTracks) {
   TextTracks text_tracks;
 
-  text_tracks.insert(std::make_pair(TextTracks::key_type(kTextTrackNum),
-                                    TextTrackConfig(kTextSubtitles, "", "",
-                                                    "")));
+  text_tracks.insert(
+      std::make_pair(TextTracks::key_type(kTextTrackNum),
+                     TextTrackConfig(kTextSubtitles, "", "", "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
       kNoTimestamp, kNoTimestamp, text_tracks));
@@ -757,9 +769,9 @@ TEST_F(WebMClusterParserTest, ParseTextTracks) {
 TEST_F(WebMClusterParserTest, TextTracksSimpleBlock) {
   TextTracks text_tracks;
 
-  text_tracks.insert(std::make_pair(TextTracks::key_type(kTextTrackNum),
-                                    TextTrackConfig(kTextSubtitles, "", "",
-                                                    "")));
+  text_tracks.insert(
+      std::make_pair(TextTracks::key_type(kTextTrackNum),
+                     TextTrackConfig(kTextSubtitles, "", "", "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
       kNoTimestamp, kNoTimestamp, text_tracks));
@@ -782,13 +794,13 @@ TEST_F(WebMClusterParserTest, ParseMultipleTextTracks) {
   const int kSubtitleTextTrackNum = kTextTrackNum;
   const int kCaptionTextTrackNum = kTextTrackNum + 1;
 
-  text_tracks.insert(std::make_pair(TextTracks::key_type(kSubtitleTextTrackNum),
-                                    TextTrackConfig(kTextSubtitles, "", "",
-                                                    "")));
+  text_tracks.insert(
+      std::make_pair(TextTracks::key_type(kSubtitleTextTrackNum),
+                     TextTrackConfig(kTextSubtitles, "", "", "")));
 
-  text_tracks.insert(std::make_pair(TextTracks::key_type(kCaptionTextTrackNum),
-                                    TextTrackConfig(kTextCaptions, "", "",
-                                                    "")));
+  text_tracks.insert(
+      std::make_pair(TextTracks::key_type(kCaptionTextTrackNum),
+                     TextTrackConfig(kTextCaptions, "", "", "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
       kNoTimestamp, kNoTimestamp, text_tracks));
@@ -813,8 +825,7 @@ TEST_F(WebMClusterParserTest, ParseMultipleTextTracks) {
 
   for (TextBufferQueueMap::const_iterator itr = text_buffers_map_.begin();
        itr != text_buffers_map_.end(); ++itr) {
-    const TextTracks::const_iterator find_result =
-        text_tracks.find(itr->first);
+    const TextTracks::const_iterator find_result = text_tracks.find(itr->first);
     ASSERT_TRUE(find_result != text_tracks.end());
     ASSERT_TRUE(VerifyTextBuffers(kInputBlockInfo, input_block_count,
                                   itr->first, itr->second));
@@ -921,7 +932,9 @@ TEST_F(WebMClusterParserTest, ParseClearFrameInEncryptedTrack) {
 
 TEST_F(WebMClusterParserTest, ParseInvalidZeroSizedCluster) {
   const uint8_t kBuffer[] = {
-    0x1F, 0x43, 0xB6, 0x75, 0x80,  // CLUSTER (size = 0)
+      // clang-format off
+      0x1F, 0x43, 0xB6, 0x75, 0x80,  // CLUSTER (size = 0)
+      // clang-format on
   };
 
   EXPECT_EQ(-1, parser_->Parse(kBuffer, std::size(kBuffer)));
@@ -931,8 +944,10 @@ TEST_F(WebMClusterParserTest, ParseInvalidZeroSizedCluster) {
 
 TEST_F(WebMClusterParserTest, ParseInvalidUnknownButActuallyZeroSizedCluster) {
   const uint8_t kBuffer[] = {
-    0x1F, 0x43, 0xB6, 0x75, 0xFF,  // CLUSTER (size = "unknown")
-    0x1F, 0x43, 0xB6, 0x75, 0x85,  // CLUSTER (size = 5)
+      // clang-format off
+      0x1F, 0x43, 0xB6, 0x75, 0xFF,  // CLUSTER (size = "unknown")
+      0x1F, 0x43, 0xB6, 0x75, 0x85,  // CLUSTER (size = 5)
+      // clang-format on
   };
 
   EXPECT_EQ(-1, parser_->Parse(kBuffer, std::size(kBuffer)));
@@ -942,9 +957,9 @@ TEST_F(WebMClusterParserTest, ParseInvalidTextBlockGroupWithoutDuration) {
   // Text track frames must have explicitly specified BlockGroup BlockDurations.
   TextTracks text_tracks;
 
-  text_tracks.insert(std::make_pair(TextTracks::key_type(kTextTrackNum),
-                                    TextTrackConfig(kTextSubtitles, "", "",
-                                                    "")));
+  text_tracks.insert(
+      std::make_pair(TextTracks::key_type(kTextTrackNum),
+                     TextTrackConfig(kTextSubtitles, "", "", "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
       kNoTimestamp, kNoTimestamp, text_tracks));

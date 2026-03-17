@@ -193,8 +193,7 @@ std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
 
   static const char kOnDemandProfile[] =
       "urn:mpeg:dash:profile:isoff-on-demand:2011";
-  static const char kLiveProfile[] =
-      "urn:mpeg:dash:profile:isoff-live:2011";
+  static const char kLiveProfile[] = "urn:mpeg:dash:profile:isoff-live:2011";
   switch (mpd_options_.dash_profile) {
     case DashProfile::kOnDemand:
       if (!mpd.SetStringAttribute("profiles", kOnDemandProfile))
@@ -328,6 +327,13 @@ float MpdBuilder::GetStaticMpdDuration() {
     total_duration += period->duration_seconds();
   }
   return total_duration;
+}
+
+void MpdBuilder::FinalizeDynamicMpd() {
+  if (mpd_options_.mpd_params.event_to_vod_on_end_of_stream) {
+    mpd_options_.dash_profile = DashProfile::kOnDemand;
+    mpd_options_.mpd_type = MpdType::kStatic;
+  }
 }
 
 bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {

@@ -7,7 +7,12 @@
 #ifndef PACKAGER_PUBLIC_CHUNKING_PARAMS_H_
 #define PACKAGER_PUBLIC_CHUNKING_PARAMS_H_
 
+#include <cstdint>
+
 namespace shaka {
+
+/// Default heartbeat shift for DVB-Teletext: 1 second at 90kHz timescale.
+constexpr int64_t kDefaultTtxHeartbeatShift = 90000;
 
 /// Chunking (segmentation) related parameters.
 struct ChunkingParams {
@@ -34,6 +39,14 @@ struct ChunkingParams {
 
   /// Indicates the startNumber in DASH SegmentTemplate and HLS segment name.
   int64_t start_segment_number = 1;
+
+  // For DVB-Teletext in MPEG-2 TS: timing offset (in 90kHz ticks) between
+  // video PTS timestamps and text segment generation. This compensates for
+  // the pipeline delay where video is processed ahead of teletext.
+  // Default is 90000 (1 second). If the value is too large, heartbeat-
+  // triggered text segments are generated later than video segments.
+  // If too small, some text cues may be absent in the output.
+  int64_t ts_ttx_heartbeat_shift = kDefaultTtxHeartbeatShift;
 };
 
 }  // namespace shaka

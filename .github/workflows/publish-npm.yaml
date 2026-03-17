@@ -19,8 +19,6 @@ on:
         required: true
         type: boolean
     secrets:
-      NPM_CI_TOKEN:
-        required: true
       NPM_PACKAGE_NAME:
         required: true
   # For manual debugging:
@@ -39,62 +37,88 @@ jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
+
+    permissions:
+      # Required for OIDC ("trusted publishing")
+      id-token: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.tag }}
           persist-credentials: false
+          # Needed to view all tags and correctly compute the latest tag:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # NOTE: OIDC fails with node less than 24.
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Compute tags
+      # NOTE: OIDC fails with npm less than 11.5.1.
+      - name: Update npm
+        run: sudo npm install -g npm@11.7
+
+      - name: Compute NPM tags
         run: |
           # NPM publish always sets a tag.  If you don't provide an explicit
           # tag, you get the "latest" tag by default, but we want "latest" to
           # always point to the highest version number.  So we set an explicit
-          # tag on every "publish" command, then follow up with a command to
-          # set "latest" only if this release was the highest version yet.
+          # tag on every "publish" command, either "latest" for the latest, or
+          # a dummy tag otherwise.
 
-          # The explicit tag is based on the branch.  If the git tag is v4.4.1,
-          # the branch was v4.4.x, and the explicit NPM tag should be
-          # v4.4-latest.
+          # We only tag the NPM package as "latest" if this release is the
+          # highest version to date.
           GIT_TAG_NAME=${{ inputs.tag }}
-          NPM_TAG=$(echo "$GIT_TAG_NAME" | cut -f 1-2 -d .)-latest
-          echo "NPM_TAG=$NPM_TAG" >> $GITHUB_ENV
+          RELEASE_TAGS=$(git tag | grep ^v[0-9])
+          LATEST_RELEASE=$(echo "$RELEASE_TAGS" | sort --version-sort | tail -1)
 
           # Since we also set the package version on-the-fly during publication,
           # compute that here.  It's the tag without the leading "v".
           NPM_VERSION=$(echo "$GIT_TAG_NAME" | sed -e 's/^v//')
           echo "NPM_VERSION=$NPM_VERSION" >> $GITHUB_ENV
 
+          if [[ "$GIT_TAG_NAME" == "$LATEST_RELEASE" ]]; then
+            NPM_LATEST=true
+          else
+            NPM_LATEST=false
+          fi
+          echo NPM_LATEST=$NPM_LATEST >> $GITHUB_ENV
+
           # Debug the decisions made here.
+          echo "Latest release: $LATEST_RELEASE"
           echo "This release: $GIT_TAG_NAME"
-          echo "NPM tag: $NPM_TAG"
+          echo "NPM latest: $NPM_LATEST"
           echo "NPM version: $NPM_VERSION"
 
-      - name: Set package name and version
+      - name: Set package name, version, and URL
         run: |
-          # These substitutions use | because the package name could contain
-          # both / and @, but | should not appear in package names.
-          sed npm/package.json -i \
-              -e 's|"name": ""|"name": "${{ secrets.NPM_PACKAGE_NAME }}"|' \
-              -e 's|"version": ""|"version": "${{ env.NPM_VERSION }}"|'
+          cd npm
+
+          # NOTE: OIDC fails if the repository URL doesn't match package.json.
+          npm pkg set repository.url=https://github.com/${{ github.repository }}
+          npm pkg set name="${{ secrets.NPM_PACKAGE_NAME }}"
+          npm pkg set version="${{ env.NPM_VERSION }}"
 
       - name: Publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_CI_TOKEN }}
         run: |
           cd npm
 
           # Publish with an explicit tag.
-          # Also publish with explicit public access, to allow scoped packages.
-          npm publish --tag "$NPM_TAG" --access=public
-
-          # Add the "latest" tag if needed.
-          if [[ "${{ inputs.latest }}" == "true" ]]; then
-            npm dist-tag add "${{ secrets.NPM_PACKAGE_NAME }}@$NPM_VERSION" latest
+          # NOTE: --access public is required for scoped forks.
+          if [[ "$NPM_LATEST" == "true" ]]; then
+            # The "latest" tag is implied and automatic.
+            npm publish --access public
+          else
+            # You can't **not** have a tag.  So if we don't want to overwrite
+            # "latest" (implied default), we have to overwrite something else.
+            # Even with NPM 11, if you don't do this, instead of overwriting
+            # "latest", it will detect that it's inappropriate, and **fail**.
+            # See https://github.com/npm/npm/issues/10625
+            # and https://github.com/npm/cli/issues/7553
+            # See also https://github.com/npm/cli/issues/8547, which killed our
+            # system of branch-specific tags.
+            npm publish --access public --tag tag-required-see-npm-bug-10625
           fi

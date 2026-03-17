@@ -25,7 +25,8 @@ namespace shaka {
 namespace media {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
-    const std::string& output_file_path, bool use_segment_list)
+    const std::string& output_file_path,
+    bool use_segment_list)
     : output_file_name_(output_file_path),
       use_segment_list_(use_segment_list) {}
 
@@ -54,11 +55,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
     ContainerType container_type) {
   DCHECK(muxer_options.segment_template.empty());
   media_info_.reset(new MediaInfo());
-  if (!internal::GenerateMediaInfo(muxer_options,
-                                   stream_info,
-                                   time_scale,
-                                   container_type,
-                                   media_info_.get())) {
+  if (!internal::GenerateMediaInfo(muxer_options, stream_info, time_scale,
+                                   container_type, media_info_.get())) {
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }

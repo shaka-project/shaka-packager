@@ -30,6 +30,7 @@
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/chunking/chunking_handler.h>
 #include <packager/media/chunking/cue_alignment_handler.h>
+#include <packager/media/chunking/segment_coordinator.h>
 #include <packager/media/chunking/text_chunker.h>
 #include <packager/media/crypto/encryption_handler.h>
 #include <packager/media/demuxer/demuxer.h>
@@ -349,9 +350,10 @@ Status ValidateParams(const PackagingParams& packaging_params,
       !packaging_params.mpd_params.mpd_output.empty() &&
       !packaging_params.mp4_output_params.generate_sidx_in_media_segments &&
       !packaging_params.mpd_params.use_segment_list) {
-    return Status(error::UNIMPLEMENTED,
-                  "--generate_sidx_in_media_segments is required for DASH "
-                  "on-demand profile (not using segment_template or segment list).");
+    return Status(
+        error::UNIMPLEMENTED,
+        "--generate_sidx_in_media_segments is required for DASH "
+        "on-demand profile (not using segment_template or segment list).");
   }
 
   if (packaging_params.chunking_params.low_latency_dash_mode &&
@@ -519,11 +521,13 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
 }
 
 std::unique_ptr<MediaHandler> CreateTextChunker(
-    const ChunkingParams& chunking_params) {
+    const ChunkingParams& chunking_params,
+    bool use_segment_coordinator = false) {
   const float segment_length_in_seconds =
       chunking_params.segment_duration_in_seconds;
   return std::unique_ptr<MediaHandler>(new TextChunker(
-      segment_length_in_seconds, chunking_params.start_segment_number));
+      segment_length_in_seconds, chunking_params.start_segment_number,
+      chunking_params.ts_ttx_heartbeat_shift, use_segment_coordinator));
 }
 
 Status CreateTtmlJobs(
@@ -605,6 +609,8 @@ Status CreateAudioVideoJobs(
   // order.
   std::map<std::string, std::shared_ptr<Demuxer>> sources;
   std::map<std::string, std::shared_ptr<MediaHandler>> cue_aligners;
+  std::map<std::string, std::shared_ptr<SegmentCoordinator>>
+      segment_coordinators;
 
   for (const StreamDescriptor& stream : streams) {
     bool seen_input_before = sources.find(stream.input) != sources.end();
@@ -617,6 +623,7 @@ Status CreateAudioVideoJobs(
     cue_aligners[stream.input] =
         sync_points ? std::make_shared<CueAlignmentHandler>(sync_points)
                     : nullptr;
+    segment_coordinators[stream.input] = std::make_shared<SegmentCoordinator>();
   }
 
   for (auto& source : sources) {
@@ -630,15 +637,21 @@ Status CreateAudioVideoJobs(
   std::string previous_input;
   std::string previous_selector;
 
+  // Track stream indices for each input to mark teletext streams
+  std::map<std::string, size_t> stream_counters;
+
   for (const StreamDescriptor& stream : streams) {
     // Get the demuxer for this stream.
     auto& demuxer = sources[stream.input];
     auto& cue_aligner = cue_aligners[stream.input];
+    auto& segment_coordinator = segment_coordinators[stream.input];
 
     const bool new_input_file = stream.input != previous_input;
     const bool new_stream =
         new_input_file || previous_selector != stream.stream_selector;
     const bool is_text = IsTextStream(stream);
+    const bool is_teletext = is_text && stream.cc_index >= 0;
+
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
 
@@ -657,18 +670,37 @@ Status CreateAudioVideoJobs(
       }
 
       std::vector<std::shared_ptr<MediaHandler>> handlers;
-      if (is_text) {
+      // Enable TextPadder for non-teletext text streams only.
+      // Teletext streams (cc_index >= 0) are used for live and
+      // must generate segments at the same time as video even
+      // if there is no text data, so a heart-beat mechanism
+      // is used instead of TextPadder at the next text event.
+      if (is_text && stream.cc_index < 0) {
         handlers.emplace_back(std::make_shared<TextPadder>(
             packaging_params.default_text_zero_bias_ms));
       }
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
       }
+
+      // Track stream index for SegmentCoordinator
+      size_t stream_index = stream_counters[stream.input]++;
+      if (is_teletext) {
+        segment_coordinator->MarkAsTeletextStream(stream_index);
+      }
+
       if (!is_text) {
+        // For video/audio: ChunkingHandler first, then SegmentCoordinator
+        // SegmentInfo from ChunkingHandler will reach the coordinator
         handlers.emplace_back(std::make_shared<ChunkingHandler>(
             packaging_params.chunking_params));
+        handlers.emplace_back(segment_coordinator);
         handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
                                                       encryption_key_source));
+      } else {
+        // For text: SegmentCoordinator before TextChunker
+        // So it can forward SegmentInfo from video/audio to TextChunker
+        handlers.emplace_back(segment_coordinator);
       }
 
       replicator = std::make_shared<Replicator>();
@@ -708,8 +740,10 @@ Status CreateAudioVideoJobs(
 
     if (is_text &&
         (!stream.segment_template.empty() || output_format == CONTAINER_MOV)) {
+      // Enable coordinator mode for teletext streams to align with video/audio
+      bool use_coordinator = is_teletext;
       handlers.emplace_back(
-          CreateTextChunker(packaging_params.chunking_params));
+          CreateTextChunker(packaging_params.chunking_params, use_coordinator));
     }
 
     if (is_text && output_format == CONTAINER_MOV) {
@@ -875,6 +909,16 @@ Status Packager::Initialize(
       LanguageToShortestForm(hls_params.default_text_language);
   hls_params.is_independent_segments =
       packaging_params.chunking_params.segment_sap_aligned;
+
+  for (const auto& caption : packaging_params.closed_captions) {
+    CeaCaption dash_caption = caption;
+    dash_caption.language = LanguageToISO_639_2(caption.language);
+    mpd_params.closed_captions.push_back(dash_caption);
+
+    CeaCaption hls_caption = caption;
+    hls_caption.language = LanguageToShortestForm(caption.language);
+    hls_params.closed_captions.push_back(hls_caption);
+  }
 
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =

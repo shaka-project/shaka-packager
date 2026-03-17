@@ -23,6 +23,10 @@ option(BUILD_SHARED_LIBS "Build libpackager as a shared library" OFF)
 # against mimalloc to replace the standard allocator in musl, which is slow.
 option(FULLY_STATIC "Attempt fully static linking of all CLI apps" OFF)
 
+# Whether to look for third-party dependencies on the system through
+# `find_package` instead of building them from git submodules.
+option(USE_SYSTEM_DEPENDENCIES "Search for dependencies on the system" OFF)
+
 # Enable CMake's test infrastructure.
 enable_testing()
 

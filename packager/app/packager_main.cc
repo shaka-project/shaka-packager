@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <optional>
+#include <vector>
 
 #if defined(OS_WIN)
 #include <codecvt>
@@ -336,6 +337,39 @@ bool ParseProtectionSystems(const std::string& protection_systems_str,
   return true;
 }
 
+bool ParseClosedCaptions(const std::string& captions_str,
+                         std::vector<CeaCaption>* captions) {
+  std::vector<std::string> captions_list =
+      SplitAndTrimSkipEmpty(captions_str, ';');
+  for (const std::string& caption_str : captions_list) {
+    CeaCaption caption;
+    std::vector<KVPair> caption_parts =
+        SplitStringIntoKeyValuePairs(caption_str, '=', ',');
+    for (const auto& part : caption_parts) {
+      if (part.first == "channel") {
+        caption.channel = part.second;
+      } else if (part.first == "lang") {
+        caption.language = part.second;
+      } else if (part.first == "name") {
+        caption.name = part.second;
+      } else if (part.first == "default") {
+        caption.is_default = (part.second == "yes");
+      } else if (part.first == "autoselect") {
+        caption.autoselect = (part.second == "yes");
+      }
+    }
+    if (caption.channel.empty()) {
+      LOG(ERROR) << "Missing channel in CEA caption: " << caption_str;
+      return false;
+    }
+    if (caption.name.empty()) {
+      caption.name = caption.channel;
+    }
+    captions->push_back(caption);
+  }
+  return true;
+}
+
 std::optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
@@ -362,6 +396,8 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_fragment_sap_aligned);
   chunking_params.start_segment_number =
       absl::GetFlag(FLAGS_start_segment_number);
+  chunking_params.ts_ttx_heartbeat_shift =
+      absl::GetFlag(FLAGS_ts_ttx_heartbeat_shift);
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
@@ -400,6 +436,7 @@ std::optional<PackagingParams> GetPackagingParams() {
         absl::GetFlag(FLAGS_crypto_period_duration);
     encryption_params.vp9_subsample_encryption =
         absl::GetFlag(FLAGS_vp9_subsample_encryption);
+    encryption_params.cencv1 = absl::GetFlag(FLAGS_cencv1);
     encryption_params.stream_label_func = std::bind(
         &Packager::DefaultStreamLabelFunction,
         absl::GetFlag(FLAGS_max_sd_pixels), absl::GetFlag(FLAGS_max_hd_pixels),
@@ -480,11 +517,12 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
   packaging_params.default_text_zero_bias_ms =
       absl::GetFlag(FLAGS_default_text_zero_bias_ms);
-
   packaging_params.output_media_info = absl::GetFlag(FLAGS_output_media_info);
 
   MpdParams& mpd_params = packaging_params.mpd_params;
   mpd_params.mpd_output = absl::GetFlag(FLAGS_mpd_output);
+  mpd_params.event_to_vod_on_end_of_stream =
+      absl::GetFlag(FLAGS_event_to_vod_on_end_of_stream);
 
   std::vector<std::string> base_urls =
       SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_base_urls), ',');
@@ -531,6 +569,8 @@ std::optional<PackagingParams> GetPackagingParams() {
                           &hls_params.playlist_type)) {
     return std::nullopt;
   }
+  hls_params.event_to_vod_on_end_of_stream =
+      absl::GetFlag(FLAGS_event_to_vod_on_end_of_stream);
   hls_params.master_playlist_output =
       absl::GetFlag(FLAGS_hls_master_playlist_output);
   hls_params.base_url = absl::GetFlag(FLAGS_hls_base_url);
@@ -546,6 +586,15 @@ std::optional<PackagingParams> GetPackagingParams() {
   hls_params.start_time_offset = absl::GetFlag(FLAGS_hls_start_time_offset);
   hls_params.create_session_keys = absl::GetFlag(FLAGS_create_session_keys);
   hls_params.add_program_date_time = absl::GetFlag(FLAGS_add_program_date_time);
+  hls_params.per_playlist_target_duration =
+      absl::GetFlag(FLAGS_per_playlist_target_duration);
+
+  if (!ParseClosedCaptions(absl::GetFlag(FLAGS_closed_captions),
+                           &packaging_params.closed_captions)) {
+    LOG(ERROR) << "Failed to parse --closed_captions "
+               << absl::GetFlag(FLAGS_closed_captions);
+    return std::nullopt;
+  }
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = absl::GetFlag(FLAGS_dump_stream_info);

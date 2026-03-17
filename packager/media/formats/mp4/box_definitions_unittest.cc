@@ -151,9 +151,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     pssh->raw_box.assign(kPsshBox, kPsshBox + std::size(kPsshBox));
   }
 
-  void Modify(ProtectionSystemSpecificHeader* pssh) {
-    pssh->raw_box[32] *= 3;
-  }
+  void Modify(ProtectionSystemSpecificHeader* pssh) { pssh->raw_box[32] *= 3; }
 
   void Fill(SampleAuxiliaryInformationOffset* saio) {
     saio->offsets.assign(kData32, kData32 + std::size(kData32));
@@ -323,9 +321,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     Fill(&metadata->id3v2);
   }
 
-  void Modify(Metadata* metadata) {
-    Modify(&metadata->id3v2);
-  }
+  void Modify(Metadata* metadata) { Modify(&metadata->id3v2); }
 
   void Fill(ColorParameters* colr) {
     colr->color_parameter_type = FOURCC_nclc;
@@ -413,9 +409,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
                             kDdtsExtraData + std::size(kDdtsExtraData));
   }
 
-  void Modify(DTSSpecific* ddts) {
-    ddts->pcm_sample_depth = 24;
-  }
+  void Modify(DTSSpecific* ddts) { ddts->pcm_sample_depth = 24; }
 
   void Fill(UDTSSpecific* udts) {
     const uint8_t kUdtsData[] = {0x01, 0x20, 0x00, 0x00, 0x0, 0x3F, 0x80, 0x00};
@@ -484,18 +478,15 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(AudioSampleEntry* enca) { enca->channelcount = 2; }
 
-  void Fill(WebVTTConfigurationBox* vttc) {
-    vttc->config = "WEBVTT";
-  }
+  void Fill(WebVTTConfigurationBox* vttc) { vttc->config = "WEBVTT"; }
 
   void Modify(WebVTTConfigurationBox* vttc) {
-    vttc->config = "WEBVTT\n"
-                   "Region: id=someting width=40% lines=3";
+    vttc->config =
+        "WEBVTT\n"
+        "Region: id=someting width=40% lines=3";
   }
 
-  void Fill(WebVTTSourceLabelBox* vlab) {
-    vlab->source_label = "some_label";
-  }
+  void Fill(WebVTTSourceLabelBox* vlab) { vlab->source_label = "some_label"; }
 
   void Modify(WebVTTSourceLabelBox* vlab) {
     vlab->source_label = "another_label";
@@ -922,45 +913,25 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sidx->version = 1;
   }
 
-  void Fill(CueSourceIDBox* vsid) {
-    vsid->source_id = 5;
-  }
+  void Fill(CueSourceIDBox* vsid) { vsid->source_id = 5; }
 
-  void Modify(CueSourceIDBox* vsid) {
-    vsid->source_id = 100;
-  }
+  void Modify(CueSourceIDBox* vsid) { vsid->source_id = 100; }
 
-  void Fill(CueTimeBox* ctim) {
-    ctim->cue_current_time = "00:19:00.000";
-  }
+  void Fill(CueTimeBox* ctim) { ctim->cue_current_time = "00:19:00.000"; }
 
-  void Modify(CueTimeBox* ctim) {
-    ctim->cue_current_time = "00:20:01.291";
-  }
+  void Modify(CueTimeBox* ctim) { ctim->cue_current_time = "00:20:01.291"; }
 
-  void Fill(CueIDBox* iden) {
-    iden->cue_id = "some_id";
-  }
+  void Fill(CueIDBox* iden) { iden->cue_id = "some_id"; }
 
-  void Modify(CueIDBox* iden) {
-    iden->cue_id = "another_id";
-  }
+  void Modify(CueIDBox* iden) { iden->cue_id = "another_id"; }
 
-  void Fill(CueSettingsBox* sttg) {
-    sttg->settings = "align:left";
-  }
+  void Fill(CueSettingsBox* sttg) { sttg->settings = "align:left"; }
 
-  void Modify(CueSettingsBox* sttg) {
-    sttg->settings = "align:right";
-  }
+  void Modify(CueSettingsBox* sttg) { sttg->settings = "align:right"; }
 
-  void Fill(CuePayloadBox* payl) {
-    payl->cue_text = "hello";
-  }
+  void Fill(CuePayloadBox* payl) { payl->cue_text = "hello"; }
 
-  void Modify(CuePayloadBox* payl) {
-    payl->cue_text = "hi";
-  }
+  void Modify(CuePayloadBox* payl) { payl->cue_text = "hi"; }
 
   void Fill(VTTEmptyCueBox* vtte) {}
   void Modify(VTTEmptyCueBox* vtte) {}
@@ -1017,8 +988,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const CueIDBox* box) { return true; }
   bool IsOptional(const CueTimeBox* box) { return true; }
   bool IsOptional(const CueSettingsBox* box) { return true; }
-  bool IsOptional(const DTSSpecific* box) {return true; }
-  bool IsOptional(const OpusSpecific* box) {return true; }
+  bool IsOptional(const DTSSpecific* box) { return true; }
+  bool IsOptional(const OpusSpecific* box) { return true; }
 
  protected:
   std::unique_ptr<BufferWriter> buffer_;

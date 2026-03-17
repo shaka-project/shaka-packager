@@ -66,11 +66,8 @@ void MpdNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                           int32_t time_scale,
                                           ContainerType container_type) {
   std::unique_ptr<MediaInfo> media_info(new MediaInfo());
-  if (!internal::GenerateMediaInfo(muxer_options,
-                                   stream_info,
-                                   time_scale,
-                                   container_type,
-                                   media_info.get())) {
+  if (!internal::GenerateMediaInfo(muxer_options, stream_info, time_scale,
+                                   container_type, media_info.get())) {
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
@@ -94,7 +91,8 @@ void MpdNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   if (is_encrypted_) {
     internal::SetContentProtectionFields(protection_scheme_, default_key_id_,
                                          key_system_info_, media_info.get());
-    media_info->mutable_protected_content()->set_include_mspr_pro(mpd_notifier_->include_mspr_pro());
+    media_info->mutable_protected_content()->set_include_mspr_pro(
+        mpd_notifier_->include_mspr_pro());
   }
 
   // The content may be splitted into multiple files, but their MediaInfo
@@ -151,10 +149,15 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     DCHECK(event_info_.empty());
-    // TODO(kqyang): Set mpd duration to |duration_seconds|, which is more
-    // accurate than the duration coded in the original media header.
+
     if (mpd_notifier_->mpd_type() == MpdType::kStatic)
       mpd_notifier_->Flush();
+    else {
+      // Set mpd duration to |duration_seconds|, which is more
+      // accurate than the duration coded in the original media header.
+      media_info_->set_media_duration_seconds(duration_seconds);
+      mpd_notifier_->NotifyEndOfStream();
+    }
     return;
   }
 

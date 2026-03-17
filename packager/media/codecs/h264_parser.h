@@ -78,8 +78,8 @@ struct H264Sps {
   int frame_crop_bottom_offset;
 
   bool vui_parameters_present_flag;
-  int sar_width;    // Set to 0 when not specified.
-  int sar_height;   // Set to 0 when not specified.
+  int sar_width;   // Set to 0 when not specified.
+  int sar_height;  // Set to 0 when not specified.
   int transfer_characteristics;
   int color_primaries;
   int matrix_coefficients;
@@ -147,10 +147,7 @@ struct H264DecRefPicMarking {
 };
 
 struct H264SliceHeader {
-  enum {
-    kRefListSize = 32,
-    kRefListModSize = kRefListSize
-  };
+  enum { kRefListSize = 32, kRefListModSize = kRefListSize };
 
   enum Type {
     kPSlice = 0,
@@ -166,8 +163,8 @@ struct H264SliceHeader {
   bool IsSPSlice() const;
   bool IsSISlice() const;
 
-  bool idr_pic_flag;       // from NAL header
-  int nal_ref_idc;         // from NAL header
+  bool idr_pic_flag;  // from NAL header
+  int nal_ref_idc;    // from NAL header
   // Points to the beginning of the nal unit.
   const uint8_t* nalu_data;
 

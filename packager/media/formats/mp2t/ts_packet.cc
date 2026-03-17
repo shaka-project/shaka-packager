@@ -30,9 +30,8 @@ int TsPacket::Sync(const uint8_t* buf, int size) {
       if (idx >= size)
         break;
       if (buf[idx] != kTsHeaderSyncword) {
-        DVLOG(LOG_LEVEL_TS)
-            << "ByteSync" << idx << ": "
-            << std::hex << static_cast<int>(buf[idx]) << std::dec;
+        DVLOG(LOG_LEVEL_TS) << "ByteSync" << idx << ": " << std::hex
+                            << static_cast<int>(buf[idx]) << std::dec;
         is_header = false;
         break;
       }
@@ -58,8 +57,7 @@ TsPacket* TsPacket::Parse(const uint8_t* buf, int size) {
   DCHECK_EQ(buf[0], kTsHeaderSyncword);
   if (buf[0] != kTsHeaderSyncword) {
     DVLOG(1) << "Not on a TS syncword:"
-             << " buf[0]="
-             << std::hex << static_cast<int>(buf[0]) << std::dec;
+             << " buf[0]=" << std::hex << static_cast<int>(buf[0]) << std::dec;
     return NULL;
   }
 
@@ -72,11 +70,9 @@ TsPacket* TsPacket::Parse(const uint8_t* buf, int size) {
   return ts_packet.release();
 }
 
-TsPacket::TsPacket() {
-}
+TsPacket::TsPacket() {}
 
-TsPacket::~TsPacket() {
-}
+TsPacket::~TsPacket() {}
 
 bool TsPacket::ParseHeader(const uint8_t* buf) {
   BitReader bit_reader(buf, kPacketSize);
@@ -116,13 +112,11 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
   DVLOG(LOG_LEVEL_TS) << "adaptation_field_length=" << adaptation_field_length;
   payload_ += 1;
   payload_size_ -= 1;
-  if ((adaptation_field_control & 0x1) == 0 &&
-       adaptation_field_length != 183) {
+  if ((adaptation_field_control & 0x1) == 0 && adaptation_field_length != 183) {
     DVLOG(1) << "adaptation_field_length=" << adaptation_field_length;
     return false;
   }
-  if ((adaptation_field_control & 0x1) == 1 &&
-       adaptation_field_length > 182) {
+  if ((adaptation_field_control & 0x1) == 1 && adaptation_field_length > 182) {
     DVLOG(1) << "adaptation_field_length=" << adaptation_field_length;
     // This is not allowed by the spec.
     // However, some badly encoded streams are using

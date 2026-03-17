@@ -145,7 +145,6 @@ Status TsSegmenter::WritePesPackets() {
       return status;
 
     if (listener_ && IsVideoCodec(codec_) && pes_packet->is_key_frame()) {
-
       uint64_t start_pos = segment_buffer_.Size();
       const int64_t timestamp = pes_packet->pts();
       if (!ts_writer_->AddPesPacket(std::move(pes_packet), &segment_buffer_))

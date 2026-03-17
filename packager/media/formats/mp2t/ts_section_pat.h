@@ -40,4 +40,3 @@ class TsSectionPat : public TsSectionPsi {
 }  // namespace shaka
 
 #endif
-

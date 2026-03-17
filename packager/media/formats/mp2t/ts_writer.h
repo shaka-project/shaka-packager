@@ -46,7 +46,8 @@ class TsWriter {
   /// @param pes_packet gets added to the writer.
   /// @param buffer to write pes packet.
   /// @return true on success, false otherwise.
-  virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet, BufferWriter* buffer);
+  virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet,
+                            BufferWriter* buffer);
 
  private:
   TsWriter(const TsWriter&) = delete;

@@ -34,7 +34,7 @@ const uint32_t kMpeg1SampleRateTable[][3] = {
     {44100, 22050, 11025},
     {48000, 24000, 12000},
     {32000, 16000, 8000}};
-    // clang-format on
+// clang-format on
 const size_t kMpeg1SampleRateTableSize = std::size(kMpeg1SampleRateTable);
 
 static inline uint32_t Mpeg1SampleRate(uint8_t sr_idx, uint8_t version) {
@@ -62,7 +62,7 @@ const uint32_t kMpeg1BitrateTable[][5] = {
     {     384,  256,   224,   192,   128},
     {     416,  320,   256,   224,   144},
     {     448,  384,   320,   256,   160}};
-    // clang-format on
+// clang-format on
 const size_t kMpeg1BitrateTableSize = std::size(kMpeg1BitrateTable);
 
 static inline uint32_t Mpeg1BitRate(uint8_t btr_idx,

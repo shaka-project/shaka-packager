@@ -13,11 +13,13 @@ namespace media {
 
 TEST(NaluReaderTest, StartCodeSearch) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       0x01, 0x00, 0x00, 0x04, 0x23, 0x56,
       // First NALU
       0x00, 0x00, 0x01, 0x14, 0x34, 0x56, 0x78,
       // Second NALU
       0x00, 0x00, 0x00, 0x01, 0x67, 0xbb, 0xcc, 0xdd,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
@@ -43,6 +45,7 @@ TEST(NaluReaderTest, StartCodeSearch) {
 
 TEST(NaluReaderTest, StartCodeSearchWithStartCodeInsideNalUnit) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       0x01, 0x00, 0x00, 0x04, 0x23, 0x56,
       // First NALU
       0x00, 0x00, 0x01, 0x14, 0x34, 0x56, 0x78,
@@ -52,6 +55,7 @@ TEST(NaluReaderTest, StartCodeSearchWithStartCodeInsideNalUnit) {
       0x00, 0x00, 0x01, 0x67, 0x03, 0x04,
       // This is part of the second NALU.
       0x00, 0x00, 0x01,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
@@ -77,10 +81,12 @@ TEST(NaluReaderTest, StartCodeSearchWithStartCodeInsideNalUnit) {
 
 TEST(NaluReaderTest, OneByteNaluLength) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // First NALU
       0x05, 0x06, 0x01, 0x02, 0x03, 0x04,
       // Second NALU
       0x06, 0x67, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData));
@@ -105,10 +111,12 @@ TEST(NaluReaderTest, OneByteNaluLength) {
 
 TEST(NaluReaderTest, FourByteNaluLength) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // First NALU
       0x00, 0x00, 0x00, 0x07, 0x06, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
       // Second NALU
       0x00, 0x00, 0x00, 0x03, 0x67, 0x0a, 0x0b,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, 4, kNaluData, std::size(kNaluData));
@@ -133,8 +141,10 @@ TEST(NaluReaderTest, FourByteNaluLength) {
 
 TEST(NaluReaderTest, ErrorForNotEnoughForNaluLength) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // First NALU
       0x00,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, 3, kNaluData, std::size(kNaluData));
@@ -145,8 +155,10 @@ TEST(NaluReaderTest, ErrorForNotEnoughForNaluLength) {
 
 TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // First NALU
       0xFF, 0x08, 0x00,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData));
@@ -156,8 +168,10 @@ TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
 
   // Another test for off by one.
   const uint8_t kNaluData2[] = {
+      // clang-format off
       // First NALU
       0x04, 0x08, 0x00, 0x00,
+      // clang-format on
   };
 
   NaluReader reader2(Nalu::kH264, 1, kNaluData2, std::size(kNaluData2));
@@ -166,8 +180,10 @@ TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
 
 TEST(NaluReaderTest, ErrorForForbiddenBitSet) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // First NALU
       0x03, 0x80, 0x00, 0x00,
+      // clang-format on
   };
 
   NaluReader reader(Nalu::kH264, 1, kNaluData, std::size(kNaluData));
@@ -178,8 +194,10 @@ TEST(NaluReaderTest, ErrorForForbiddenBitSet) {
 
 TEST(NaluReaderTest, ErrorForZeroSize) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // First NALU
       0x03, 0x80, 0x00, 0x00,
+      // clang-format on
   };
 
   Nalu nalu;
@@ -189,12 +207,14 @@ TEST(NaluReaderTest, ErrorForZeroSize) {
 
 TEST(NaluReaderTest, SubsamplesAnnexB) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // This array contains 1 nalu starting with a NALU start code.
       // what looks like NALU start codes below are "encrypted" portion.
       0x00, 0x00, 0x01, 0x14,
       // This is in the encrypted portion and none of the following sequence
       // should be recognized as a NALU start code.
       0x00, 0x00, 0x01, 0x65, 0x00, 0x00, 0x00, 0x01, 0x67,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(4, 9));
@@ -212,6 +232,7 @@ TEST(NaluReaderTest, SubsamplesAnnexB) {
 
 TEST(NaluReaderTest, MultiSubsamplesAnnexB) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // Clear
       0x00,
       // Encrypted. Should not recognize this as a NALU start code.
@@ -220,6 +241,7 @@ TEST(NaluReaderTest, MultiSubsamplesAnnexB) {
       0x00, 0x00, 0x01, 0x65,
       // Encrypted.
       0x00, 0x00, 0x00, 0x01, 0x67,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(1, 3));
@@ -239,6 +261,7 @@ TEST(NaluReaderTest, MultiSubsamplesAnnexB) {
 // Verify that data outside subsamples is treated as clear data.
 TEST(NaluReaderTest, BufferBiggerThanSubsamplesAnnexB) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // This array contains 1 nalu starting with a NALU start code.
       // what looks like NALU start codes below are "encrypted" portion.
       0x00, 0x00, 0x01, 0x14,
@@ -247,6 +270,7 @@ TEST(NaluReaderTest, BufferBiggerThanSubsamplesAnnexB) {
       0x00, 0x00, 0x01, 0x65, 0x00, 0x00, 0x00, 0x01, 0x67,
       // Start of second NALU not specified by subsamples.
       0x00, 0x00, 0x00, 0x01, 0x67, 0xbb, 0xcc, 0xdd,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(4, 9));
@@ -272,6 +296,7 @@ TEST(NaluReaderTest, BufferBiggerThanSubsamplesAnnexB) {
 // Finds a NALU start code + header in the clear section but is an invalid NALU.
 TEST(NaluReaderTest, SubsamplesWithInvalidNalu) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // Start with a valid NALU.
       // Clear.
       0x00, 0x00, 0x01, 0x14,
@@ -291,6 +316,7 @@ TEST(NaluReaderTest, SubsamplesWithInvalidNalu) {
       0x00, 0x00, 0x01, 0x65,
       // Encrypted.
       0xEE, 0xCE, 0x12, 0x44,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(4, 2));
@@ -313,10 +339,12 @@ TEST(NaluReaderTest, SubsamplesWithInvalidNalu) {
 // not specified by subsamples.
 TEST(NaluReaderTest, FindStartCodeInClearRangeNoNalu) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // Any sequence not NALU start code in the subsample region.
       0xFF, 0xFE, 0xFD, 0xFC,
       // End of subsample specified region. No NALU start code.
       0x00, 0x04, 0x03, 0x14, 0x34, 0x56, 0x78,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(2, 2));
@@ -334,8 +362,10 @@ TEST(NaluReaderTest, FindStartCodeInClearRangeNoNalu) {
 // less than or equal to the size of the data as documented in the header.
 TEST(NaluReaderTest, FindStartCodeInClearRangeSubsamplesBiggerThanBuffer) {
   const uint8_t kNaluData[] = {
-    // The data in here doesn't really matter.
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      // clang-format off
+      // The data in here doesn't really matter.
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(1, 14));
@@ -350,11 +380,13 @@ TEST(NaluReaderTest, FindStartCodeInClearRangeSubsamplesBiggerThanBuffer) {
 // Verify that it doesn't affect the Nalu stream mode too much.
 TEST(NaluReaderTest, SubsamplesNaluStream) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // This array contains 1 nalu starting with a 1 byte NALU length size.
       0x0A, 0x14,
       // This is in the encrypted portion and none of the following sequence
       // should be recognized as a NALU start code.
       0x00, 0x00, 0x01, 0x65, 0x00, 0x00, 0x00, 0x01, 0x67,
+      // clang-format on
   };
   std::vector<SubsampleEntry> subsamples;
   subsamples.emplace_back(SubsampleEntry(2, 9));
@@ -373,6 +405,7 @@ TEST(NaluReaderTest, SubsamplesNaluStream) {
 // Verify that if NALU length is encrypted, NALUs cannot be parsed.
 TEST(NaluReaderTest, EncryptedNaluLengthNaluStream) {
   const uint8_t kNaluData[] = {
+      // clang-format off
       // This array contains 1 nalu starting with a 1 byte NALU length size.
       0x00, 0x0A, 0x14,
       // This is in the encrypted portion and none of the following sequence
@@ -381,6 +414,7 @@ TEST(NaluReaderTest, EncryptedNaluLengthNaluStream) {
       // Second NALU is supposed to start here but the second byte of the length
       // is encrypted.
       0x00, 0xFF, 0xFF,
+      // clang-format on
   };
 
   std::vector<SubsampleEntry> subsamples;
