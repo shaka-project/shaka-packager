@@ -12,6 +12,7 @@ set(protobuf_BUILD_TESTS OFF)
 set(protobuf_BUILD_CONFORMANCE OFF)
 set(protobuf_BUILD_EXAMPLES OFF)
 set(protobuf_BUILD_LIBPROTOC OFF)
+set(protobuf_BUILD_LIBUPB OFF)
 set(protobuf_BUILD_SHARED_LIBS OFF)
 set(protobuf_WITH_ZLIB OFF)
 
