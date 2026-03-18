@@ -12,12 +12,12 @@ set(protobuf_BUILD_TESTS OFF)
 set(protobuf_BUILD_CONFORMANCE OFF)
 set(protobuf_BUILD_EXAMPLES OFF)
 set(protobuf_BUILD_LIBPROTOC OFF)
-set(protobuf_BUILD_LIBUPB OFF)
 set(protobuf_BUILD_SHARED_LIBS OFF)
 set(protobuf_WITH_ZLIB OFF)
 
 # Turn these features on.
 set(protobuf_BUILD_PROTOC_BINARIES ON)
+set(protobuf_BUILD_LIBUPB ON)
 set(protobuf_DISABLE_RTTI ON)
 
 # The latest version of protobuf requires a path to ABSL.
