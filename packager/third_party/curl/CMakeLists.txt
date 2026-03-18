@@ -13,6 +13,7 @@ set(BUILD_SHARED_LIBS OFF)
 set(USE_LIBIDN2 OFF)
 set(USE_LIBRTMP OFF)
 set(CURL_USE_LIBSSH2 OFF)
+set(CURL_USE_LIBPSL OFF)
 set(CURL_ZLIB OFF CACHE STRING "Force curl not to search for system zlib")
 set(BUILD_CURL_EXE OFF)
 
@@ -33,7 +34,7 @@ else()
   # Force libcurl to use our local mbedtls instead of searching for OpenSSL on
   # the system.
   set(CURL_USE_MBEDTLS ON)
-  set(MBEDTLS_INCLUDE_DIRS ../mbedtls/source/include)
+  set(MBEDTLS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../mbedtls/source/include)
   set(MBEDTLS_LIBRARY mbedtls)
   set(MBEDX509_LIBRARY mbedx509)
   set(MBEDCRYPTO_LIBRARY mbedcrypto)
