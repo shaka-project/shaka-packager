@@ -97,7 +97,7 @@ bool SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
 class LibXmlInitializer {
  public:
   LibXmlInitializer() : initialized_(false) {
-    absl::MutexLock lock(&lock_);
+    absl::MutexLock lock(lock_);
     if (!initialized_) {
       xmlInitParser();
       initialized_ = true;
@@ -105,7 +105,7 @@ class LibXmlInitializer {
   }
 
   ~LibXmlInitializer() {
-    absl::MutexLock lock(&lock_);
+    absl::MutexLock lock(lock_);
     if (initialized_) {
       xmlCleanupParser();
       initialized_ = false;

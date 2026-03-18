@@ -32,7 +32,7 @@ class FileSystem {
   }
 
   void Delete(const std::string& file_name) {
-    absl::MutexLock auto_lock(&mutex_);
+    absl::MutexLock auto_lock(mutex_);
 
     if (open_files_.find(file_name) != open_files_.end()) {
       LOG(ERROR) << "File '" << file_name
@@ -45,7 +45,7 @@ class FileSystem {
   }
 
   void DeleteAll() {
-    absl::MutexLock auto_lock(&mutex_);
+    absl::MutexLock auto_lock(mutex_);
     if (!open_files_.empty()) {
       LOG(ERROR) << "There are still files open. Deleting an open MemoryFile "
                     "is not allowed. Exit without deleting the file.";
@@ -56,7 +56,7 @@ class FileSystem {
 
   std::vector<uint8_t>* Open(const std::string& file_name,
                              const std::string& mode) {
-    absl::MutexLock auto_lock(&mutex_);
+    absl::MutexLock auto_lock(mutex_);
 
     if (open_files_.find(file_name) != open_files_.end()) {
       NOTIMPLEMENTED() << "File '" << file_name
@@ -83,7 +83,7 @@ class FileSystem {
   }
 
   bool Close(const std::string& file_name) {
-    absl::MutexLock auto_lock(&mutex_);
+    absl::MutexLock auto_lock(mutex_);
 
     auto iter = open_files_.find(file_name);
     if (iter == open_files_.end()) {

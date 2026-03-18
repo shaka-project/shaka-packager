@@ -437,8 +437,9 @@ TEST_F(AesCbcTest, Aes128CbcPkcs5) {
   iv_.assign(kIv.begin(), kIv.end());
 
   const std::vector<uint8_t> plaintext(kPlaintext.begin(), kPlaintext.end());
-  std::string expected_ciphertext_string =
-      absl::HexStringToBytes(kExpectedCiphertextHex);
+  std::string expected_ciphertext_string;
+  ASSERT_TRUE(absl::HexStringToBytes(kExpectedCiphertextHex,
+                                     &expected_ciphertext_string));
   std::vector<uint8_t> expected_ciphertext(expected_ciphertext_string.begin(),
                                            expected_ciphertext_string.end());
   TestEncryptDecrypt(plaintext, expected_ciphertext);
@@ -454,8 +455,9 @@ TEST_F(AesCbcTest, Aes192CbcPkcs5) {
   iv_.assign(kIv.begin(), kIv.end());
 
   const std::vector<uint8_t> plaintext(kPlaintext.begin(), kPlaintext.end());
-  std::string expected_ciphertext_string =
-      absl::HexStringToBytes(kExpectedCiphertextHex);
+  std::string expected_ciphertext_string;
+  ASSERT_TRUE(absl::HexStringToBytes(kExpectedCiphertextHex,
+                                     &expected_ciphertext_string));
   std::vector<uint8_t> expected_ciphertext(expected_ciphertext_string.begin(),
                                            expected_ciphertext_string.end());
   TestEncryptDecrypt(plaintext, expected_ciphertext);
@@ -630,15 +632,17 @@ TEST_P(AesCbcCryptorVerificationTest, EncryptDecryptTest) {
   std::vector<uint8_t> plaintext;
   std::string plaintext_hex(GetParam().plaintext_hex);
   if (!plaintext_hex.empty()) {
-    std::string plaintext_string = absl::HexStringToBytes(plaintext_hex);
+    std::string plaintext_string;
+    ASSERT_TRUE(absl::HexStringToBytes(plaintext_hex, &plaintext_string));
     plaintext.assign(plaintext_string.begin(), plaintext_string.end());
   }
 
   std::vector<uint8_t> expected_ciphertext;
   std::string expected_ciphertext_hex(GetParam().expected_ciphertext_hex);
   if (!expected_ciphertext_hex.empty()) {
-    std::string expected_ciphertext_string =
-        absl::HexStringToBytes(expected_ciphertext_hex);
+    std::string expected_ciphertext_string;
+    ASSERT_TRUE(absl::HexStringToBytes(expected_ciphertext_hex,
+                                       &expected_ciphertext_string));
     expected_ciphertext.assign(expected_ciphertext_string.begin(),
                                expected_ciphertext_string.end());
   }

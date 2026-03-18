@@ -12,12 +12,13 @@
 
 #include <packager/status/status_test_util.h>
 
-#define EXPECT_HEX_EQ(expected_hex, actual)                          \
-  {                                                                  \
-    std::string expected_str = absl::HexStringToBytes(expected_hex); \
-    std::vector<uint8_t> expected_vector(expected_str.begin(),       \
-                                         expected_str.end());        \
-    EXPECT_EQ(expected_vector, (actual));                            \
+#define EXPECT_HEX_EQ(expected_hex, actual)                           \
+  {                                                                   \
+    std::string expected_str;                                         \
+    ASSERT_TRUE(absl::HexStringToBytes(expected_hex, &expected_str)); \
+    std::vector<uint8_t> expected_vector(expected_str.begin(),        \
+                                         expected_str.end());         \
+    EXPECT_EQ(expected_vector, (actual));                             \
   }
 
 namespace shaka {
@@ -48,7 +49,8 @@ const char kAnotherDrmLabel[] = "AnotherDrmLabel";
 const char kEmptyDrmLabel[] = "";
 
 std::vector<uint8_t> HexStringToVector(const std::string& hex_str) {
-  std::string raw_str = absl::HexStringToBytes(hex_str);
+  std::string raw_str;
+  (void)absl::HexStringToBytes(hex_str, &raw_str);
   return std::vector<uint8_t>(raw_str.begin(), raw_str.end());
 }
 }  // namespace
