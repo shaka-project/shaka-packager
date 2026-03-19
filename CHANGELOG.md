@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [3.7.0](https://github.com/shaka-project/shaka-packager/compare/v3.6.1...v3.7.0) (2026-03-19)
+
+
+### Features
+
+* **cmake:** allow external declaration of version string ([#1552](https://github.com/shaka-project/shaka-packager/issues/1552)) ([8431c33](https://github.com/shaka-project/shaka-packager/commit/8431c336c29883479ee773f03871492038494ae5))
+* **cmake:** allow using system dependencies ([#1562](https://github.com/shaka-project/shaka-packager/issues/1562)) ([2c6790a](https://github.com/shaka-project/shaka-packager/commit/2c6790a8cb17677b9c9a64d1ab0f5d5c21a305a9))
+
+
+### Bug Fixes
+
+* correct WebM color range value mapping for vpcC and colr boxes ([#1554](https://github.com/shaka-project/shaka-packager/issues/1554)) ([34352c1](https://github.com/shaka-project/shaka-packager/commit/34352c16d3c068038ba7733af84e63abafcde864))
+* **deps:** update abseil-cpp to 20260107.1, protobuf to 33.5 ([#1553](https://github.com/shaka-project/shaka-packager/issues/1553)) ([27a1d71](https://github.com/shaka-project/shaka-packager/commit/27a1d71e3d31bea4893bd365b3aabe1031326bad))
+* **deps:** update to curl v8.19.0, mbedtls v3.6.5, libxml2 v2.15.2 ([#1563](https://github.com/shaka-project/shaka-packager/issues/1563)) ([1e5fa9a](https://github.com/shaka-project/shaka-packager/commit/1e5fa9ab283789fa5d741cf74b2039d97c4f883d))
+
 ## [3.6.1](https://github.com/shaka-project/shaka-packager/compare/v3.6.0...v3.6.1) (2026-03-12)
 
 
