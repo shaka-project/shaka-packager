@@ -17,6 +17,7 @@ set(protobuf_WITH_ZLIB OFF)
 
 # Turn these features on.
 set(protobuf_BUILD_PROTOC_BINARIES ON)
+set(protobuf_BUILD_LIBUPB ON)
 set(protobuf_DISABLE_RTTI ON)
 
 # The latest version of protobuf requires a path to ABSL.

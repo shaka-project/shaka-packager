@@ -4,7 +4,7 @@
 
 #include <packager/media/base/container_names.h>
 
-#include <iterator>
+#include <cstring>
 
 #include <gtest/gtest.h>
 
@@ -168,7 +168,7 @@ TEST(ContainerNamesTest, Ttml) {
 
   EXPECT_EQ(CONTAINER_TTML,
             DetermineContainer(reinterpret_cast<const uint8_t*>(kTtml),
-                               std::size(kTtml)));
+                               strlen(kTtml)));
 }
 
 TEST(ContainerNamesTest, WebVtt) {
@@ -179,7 +179,7 @@ TEST(ContainerNamesTest, WebVtt) {
       "Subtitle";
   EXPECT_EQ(CONTAINER_WEBVTT,
             DetermineContainer(reinterpret_cast<const uint8_t*>(kWebVtt),
-                               std::size(kWebVtt)));
+                               strlen(kWebVtt)));
 
   const uint8_t kUtf8ByteOrderMark[] = {0xef, 0xbb, 0xbf};
   std::vector<uint8_t> webvtt_with_utf8_byte_order_mark(
