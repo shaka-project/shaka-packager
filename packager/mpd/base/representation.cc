@@ -532,9 +532,16 @@ void Representation::RemoveOldSegment(SegmentInfo* segment_info) {
                             start_number, media_info_.bandwidth()));
   while (segments_to_be_removed_.size() >
          mpd_options_.mpd_params.preserved_segments_outside_live_window) {
-    VLOG(2) << "Deleting " << segments_to_be_removed_.front();
-    if (!File::Delete(segments_to_be_removed_.front().c_str())) {
-      LOG(WARNING) << "Failed to delete " << segments_to_be_removed_.front()
+    const std::string& file_name = segments_to_be_removed_.front();
+    VLOG(2) << "Deleting " << file_name;
+    // DASH and HLS outputs could both be tracking the same files and are in a
+    // race to delete them. Delete() returns false if the file does not exist,
+    // but we only want to retry if the file does exist (indicating a failure
+    // to delete, rather than the file already being gone). GetFileSize()
+    // returns >= 0 if the file exists, and < 0 if it does not.
+    if (!File::Delete(file_name.c_str()) &&
+        File::GetFileSize(file_name.c_str()) >= 0) {
+      LOG(WARNING) << "Failed to delete " << file_name
                    << "; Will retry later.";
       break;
     }
