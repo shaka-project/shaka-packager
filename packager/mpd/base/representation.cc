@@ -541,8 +541,7 @@ void Representation::RemoveOldSegment(SegmentInfo* segment_info) {
     // returns >= 0 if the file exists, and < 0 if it does not.
     if (!File::Delete(file_name.c_str()) &&
         File::GetFileSize(file_name.c_str()) >= 0) {
-      LOG(WARNING) << "Failed to delete " << file_name
-                   << "; Will retry later.";
+      LOG(WARNING) << "Failed to delete " << file_name << "; Will retry later.";
       break;
     }
     segments_to_be_removed_.pop_front();
