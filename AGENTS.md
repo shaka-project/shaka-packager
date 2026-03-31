@@ -61,6 +61,11 @@ C++ is formatted with `clang-format` using Chromium style. Linter failures
 are a common CI failure mode -- always run the check before considering a
 change complete.
 
+The project standardizes on clang-format 18; versions 18 through 22 are known
+to produce identical output as of the date this message was written and are all
+acceptable. Older versions (e.g. 14, 16) produce different output in some cases
+and should not be used.
+
 **Check formatting** (C++ via clang-format, Python via pylint):
 ```shell
 python3 packager/tools/git/check_formatting.py main
@@ -75,6 +80,13 @@ git clang-format --style Chromium main
 ```
 
 Same baseline ref semantics as above.
+
+**Pre-commit hook:**
+
+You can install `check_formatting.py` as a pre-commit hook so formatting is
+checked automatically before each commit:
+
+`cp packager/tools/git/check_formatting.py .git/hooks/pre-commit`
 
 ## Testing
 
