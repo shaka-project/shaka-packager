@@ -90,6 +90,22 @@ There are several ways you can get Shaka Packager.
 - Built from source, see
   [Build Instructions](https://github.com/shaka-project/shaka-packager/blob/main/docs/source/build_instructions.md)
   for details.
+- Install via [Homebrew](https://brew.sh/) on macOS/Linux, using the
+  [langtutheky/langtutheky](https://github.com/langtutheky/homebrew-langtutheky) tap
+  (formula originally authored by [@jhelgert](https://github.com/jhelgert)):
+```sh
+  brew tap langtutheky/langtutheky
+```
+
+  Then install the formula (builds from source):
+```sh
+  brew install shaka-packager
+```
+
+  Or install the cask (prebuilt binary, automatically selects x64 or arm64):
+```sh
+  brew install --cask shaka-packager
+```
 
 # Useful Links
 
