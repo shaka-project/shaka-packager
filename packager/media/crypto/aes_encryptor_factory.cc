@@ -42,6 +42,12 @@ std::unique_ptr<AesCryptor> AesEncryptorFactory::CreateEncryptor(
           AesCryptor::kUseConstantIv,
           std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
       break;
+    case kAes128ProtectionScheme:
+      // HLS AES-128: whole-segment CBC, kNoPadding because TS streams are
+      // already aligned to 16-byte boundaries via TS null-packet padding.
+      encryptor.reset(
+          new AesCbcEncryptor(kNoPadding, AesCryptor::kUseConstantIv));
+      break;
     case kAppleSampleAesProtectionScheme:
       if (crypt_byte_block == 0 && skip_byte_block == 0) {
         if (codec == kCodecEAC3) {

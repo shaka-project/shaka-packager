@@ -9,6 +9,8 @@
 #include <absl/log/check.h>
 
 #include <packager/macros/status.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_util.h>
 
 namespace shaka {
@@ -38,6 +40,14 @@ Status TsMuxer::InitializeMuxer() {
 
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
   Status status = segmenter_->Initialize(*streams()[0]);
+
+  // Capture AES-128 encryption config once so FinalizeSegment can encrypt.
+  const auto& stream = *streams()[0];
+  if (stream.is_encrypted() &&
+      stream.encryption_config().protection_scheme == kAes128ProtectionScheme) {
+    aes128_encryption_config_ = stream.encryption_config();
+  }
+
   FireOnMediaStartEvent();
   return status;
 }
@@ -86,6 +96,8 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
 
   const int64_t file_size = segmenter_->segment_buffer()->Size();
 
+  EncryptSegmentIfNeeded(segmenter_->segment_buffer());
+
   RETURN_IF_ERROR(WriteSegment(segment_path, segmenter_->segment_buffer()));
 
   total_duration_ += segment_info.duration;
@@ -102,6 +114,29 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
   segmenter_->set_segment_started(false);
 
   return Status::OK;
+}
+
+void TsMuxer::EncryptSegmentIfNeeded(BufferWriter* segment_buffer) {
+  if (aes128_encryption_config_.protection_scheme != kAes128ProtectionScheme)
+    return;
+  if (segment_buffer->Size() == 0)
+    return;
+
+  // AES-128 HLS: encrypt the entire TS segment as one CBC stream.
+  // kNoPadding is used because TS null-packet padding keeps the segment size
+  // aligned to AES_BLOCK_SIZE (16 bytes). kUseConstantIv resets the IV to the
+  // configured value at the start of each Crypt() call, giving per-segment IV.
+  AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kUseConstantIv);
+  if (!encryptor.InitializeWithIv(aes128_encryption_config_.key,
+                                  aes128_encryption_config_.constant_iv)) {
+    LOG(ERROR) << "AES-128: failed to initialize encryptor for segment.";
+    return;
+  }
+
+  // Encrypt in-place. Buffer() returns const uint8_t* but the underlying
+  // vector is writable — cast is safe here since we own the buffer.
+  uint8_t* data = const_cast<uint8_t*>(segment_buffer->Buffer());
+  encryptor.Crypt(data, segment_buffer->Size(), data);
 }
 
 Status TsMuxer::WriteSegment(const std::string& segment_path,

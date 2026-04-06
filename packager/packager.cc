@@ -491,15 +491,19 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   // Make a copy so that we can modify it for this specific stream.
   EncryptionParams encryption_params = packaging_params.encryption_params;
 
-  // Use Sample AES in MPEG2TS.
+  // Use Sample AES in MPEG2TS, unless the user explicitly chose AES-128
+  // full-segment encryption which handles TS at the segment level.
   // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
   // will support CENC in TS in the future.
   if (GetOutputFormat(stream) == CONTAINER_MPEG2TS ||
       GetOutputFormat(stream) == CONTAINER_AAC ||
       GetOutputFormat(stream) == CONTAINER_AC3 ||
       GetOutputFormat(stream) == CONTAINER_EAC3) {
-    VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
-    encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+    if (encryption_params.protection_scheme !=
+        EncryptionParams::kProtectionSchemeAes128) {
+      VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
+      encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+    }
   }
 
   if (!stream.drm_label.empty()) {

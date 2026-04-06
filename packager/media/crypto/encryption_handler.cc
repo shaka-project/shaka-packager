@@ -267,6 +267,13 @@ Status EncryptionHandler::ProcessMediaSample(
     std::shared_ptr<const MediaSample> clear_sample) {
   DCHECK(clear_sample);
 
+  // AES-128 encrypts full TS segments in TsWriter, not individual samples.
+  // Pass samples through as clear so TsWriter can build the unencrypted
+  // transport stream buffer which is then encrypted as a whole unit.
+  if (protection_scheme_ == kAes128ProtectionScheme) {
+    return DispatchMediaSample(kStreamIndex, std::move(clear_sample));
+  }
+
   // Process the frame even if the frame is not encrypted as the next
   // (encrypted) frame may be dependent on this clear frame.
   std::vector<SubsampleEntry> subsamples;
@@ -387,6 +394,12 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   }
 
   encryption_config_->key_id = encryption_key.key_id;
+
+  // For HLS AES-128, store the raw key so TsWriter can encrypt full segments.
+  if (protection_scheme_ == kAes128ProtectionScheme) {
+    encryption_config_->key = encryption_key.key;
+  }
+
   const auto status = FillProtectionSystemInfo(
       encryption_params_, encryption_key, encryption_config_.get());
   return status.ok();

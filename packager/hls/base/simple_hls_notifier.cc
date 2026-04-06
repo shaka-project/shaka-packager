@@ -186,6 +186,10 @@ std::optional<MediaPlaylist::EncryptionMethod> StringToEncryptionMethod(
     // cbca is a place holder for sample aes.
     return MediaPlaylist::EncryptionMethod::kSampleAes;
   }
+  if (method == "aes8") {
+    // aes8 is the internal FourCC for HLS AES-128 full-segment encryption.
+    return MediaPlaylist::EncryptionMethod::kAes128;
+  }
   return std::nullopt;
 }
 
@@ -465,6 +469,25 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
       stream_iterator->second->encryption_method;
   LOG_IF(WARNING, encryption_method == MediaPlaylist::EncryptionMethod::kNone)
       << "Got encryption notification but the encryption method is NONE";
+
+  // AES-128 full-segment encryption: no DRM system, no KEYFORMAT attribute.
+  // The key URI is the raw 16-byte key file; players use it directly.
+  if (encryption_method == MediaPlaylist::EncryptionMethod::kAes128) {
+    const std::string key_uri = hls_params().key_uri;
+    if (key_uri.empty()) {
+      LOG(ERROR) << "AES-128 encryption requires --hls_key_uri to be set.";
+      return false;
+    }
+    // Pass empty key_id, empty key_format and key_format_versions so the
+    // EXT-X-KEY tag has only METHOD=AES-128, URI, and IV — as required by
+    // RFC 8216. KEYFORMAT defaults to "identity" when omitted.
+    const std::vector<uint8_t> empty_key_id;
+    NotifyEncryptionToMediaPlaylist(
+        encryption_method, key_uri, empty_key_id, iv, /*key_format=*/"",
+        /*key_format_versions=*/"", media_playlist.get());
+    return true;
+  }
+
   if (IsWidevineSystemId(system_id)) {
     return HandleWidevineKeyFormats(encryption_method, key_id, iv,
                                     protection_system_specific_data,
