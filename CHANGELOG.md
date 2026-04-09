@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.7.2](https://github.com/shaka-project/shaka-packager/compare/v3.7.1...v3.7.2) (2026-04-09)
+
+
+### Bug Fixes
+
+* Ignore already-deleted files when removing old segments ([#1566](https://github.com/shaka-project/shaka-packager/issues/1566)) ([8cc64e2](https://github.com/shaka-project/shaka-packager/commit/8cc64e22e2f2fd3c89b39e05a3277b4e4c636dcf))
+
 ## [3.7.1](https://github.com/shaka-project/shaka-packager/compare/v3.7.0...v3.7.1) (2026-03-31)
 
 
