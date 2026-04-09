@@ -142,8 +142,7 @@ File* CreateMemoryFile(const char* file_name, const char* mode) {
 }
 
 bool DeleteMemoryFile(const char* file_name) {
-  MemoryFile::Delete(file_name);
-  return true;
+  return MemoryFile::Delete(file_name);
 }
 
 static const FileTypeInfo kFileTypeInfo[] = {
