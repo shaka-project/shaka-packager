@@ -108,6 +108,9 @@ struct MpdParams {
   double target_latency_seconds = 1;
   /// CEA-608 / CEA-708 captions.
   std::vector<CeaCaption> closed_captions;
+  // If enabled, use EssentialProperty instead of SupplementalProperty
+  // for video colorimetry descriptors.
+  bool use_colorimetry_essential_property = false;
 };
 
 }  // namespace shaka

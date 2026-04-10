@@ -537,6 +537,8 @@ std::optional<PackagingParams> GetPackagingParams() {
   mpd_params.preserved_segments_outside_live_window =
       absl::GetFlag(FLAGS_preserved_segments_outside_live_window);
   mpd_params.use_segment_list = absl::GetFlag(FLAGS_dash_force_segment_list);
+  mpd_params.use_colorimetry_essential_property =
+      absl::GetFlag(FLAGS_use_colorimetry_essential_property);
 
   if (!absl::GetFlag(FLAGS_utc_timings).empty()) {
     std::vector<KVPair> pairs = SplitStringIntoKeyValuePairs(

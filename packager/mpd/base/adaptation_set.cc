@@ -381,28 +381,36 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
-  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
-  if (IsVideo() && matrix_coefficients_ > 0 &&
-      !adaptation_set.AddSupplementalProperty(
-          "urn:mpeg:mpegB:cicp:MatrixCoefficients",
-          std::to_string(matrix_coefficients_))) {
-    return std::nullopt;
-  }
+  if (IsVideo()) {
+    auto add_property =
+        mpd_options_.mpd_params.use_colorimetry_essential_property
+            ? &xml::AdaptationSetXmlNode::AddEssentialProperty
+            : &xml::AdaptationSetXmlNode::AddSupplementalProperty;
 
-  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
-  if (IsVideo() && color_primaries_ > 0 &&
-      !adaptation_set.AddSupplementalProperty(
-          "urn:mpeg:mpegB:cicp:ColourPrimaries",
-          std::to_string(color_primaries_))) {
-    return std::nullopt;
-  }
+    const char kMatrixUri[] = "urn:mpeg:mpegB:cicp:MatrixCoefficients";
+    const char kPrimariesUri[] = "urn:mpeg:mpegB:cicp:ColourPrimaries";
+    const char kTransferUri[] = "urn:mpeg:mpegB:cicp:TransferCharacteristics";
 
-  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
-  if (IsVideo() && transfer_characteristics_ > 0 &&
-      !adaptation_set.AddSupplementalProperty(
-          "urn:mpeg:mpegB:cicp:TransferCharacteristics",
-          std::to_string(transfer_characteristics_))) {
-    return std::nullopt;
+    // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+    if (matrix_coefficients_ > 0) {
+      if (!(adaptation_set.*add_property)(kMatrixUri,
+                                          std::to_string(matrix_coefficients_)))
+        return std::nullopt;
+    }
+
+    // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+    if (color_primaries_ > 0) {
+      if (!(adaptation_set.*add_property)(kPrimariesUri,
+                                          std::to_string(color_primaries_)))
+        return std::nullopt;
+    }
+
+    // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+    if (transfer_characteristics_ > 0) {
+      if (!(adaptation_set.*add_property)(
+              kTransferUri, std::to_string(transfer_characteristics_)))
+        return std::nullopt;
+    }
   }
 
   // Note: must be checked before checking segments_aligned_ (below). So that
