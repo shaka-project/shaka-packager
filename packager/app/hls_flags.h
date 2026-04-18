@@ -18,5 +18,6 @@ ABSL_DECLARE_FLAG(int32_t, hls_media_sequence_number);
 ABSL_DECLARE_FLAG(std::optional<double>, hls_start_time_offset);
 ABSL_DECLARE_FLAG(bool, create_session_keys);
 ABSL_DECLARE_FLAG(bool, add_program_date_time);
+ABSL_DECLARE_FLAG(bool, strict_codecs_signaling);
 
 #endif  // PACKAGER_APP_HLS_FLAGS_H_

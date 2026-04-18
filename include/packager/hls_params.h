@@ -84,6 +84,8 @@ struct HlsParams {
   bool per_playlist_target_duration = false;
   /// CEA-608 / CEA-708 captions.
   std::vector<CeaCaption> closed_captions;
+  /// Don't map codecs to preferred codec value.
+  bool strict_codecs_signaling = false;
 };
 
 }  // namespace shaka

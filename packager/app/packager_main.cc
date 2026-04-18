@@ -587,6 +587,8 @@ std::optional<PackagingParams> GetPackagingParams() {
   hls_params.add_program_date_time = absl::GetFlag(FLAGS_add_program_date_time);
   hls_params.per_playlist_target_duration =
       absl::GetFlag(FLAGS_per_playlist_target_duration);
+  hls_params.strict_codecs_signaling =
+      absl::GetFlag(FLAGS_strict_codecs_signaling);
 
   if (!ParseClosedCaptions(absl::GetFlag(FLAGS_closed_captions),
                            &packaging_params.closed_captions)) {

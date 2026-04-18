@@ -489,7 +489,8 @@ class PackagerAppTest(unittest.TestCase):
                 dash_force_segment_list=False,
                 force_cl_index=None,
                 start_segment_number=None,
-                use_dovi_supplemental_codecs=None):
+                use_dovi_supplemental_codecs=None,
+                strict_codecs_signaling=None):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -549,6 +550,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if use_dovi_supplemental_codecs:
       flags.append('--use_dovi_supplemental_codecs')
+
+    if strict_codecs_signaling:
+      flags.append('--strict_codecs_signaling')
 
     if output_media_info:
       flags.append('--output_media_info')
@@ -1609,6 +1613,176 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-10-supplemental-codecs')
+
+  def testDolbyVisionDvh1P81(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p81')
+
+  def testDolbyVisionDvh1P84(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p84')
+
+  def testDolbyVisionDvheP81(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p81')
+
+  def testDolbyVisionDvheP84(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p84')
+
+  def testDolbyVisionDvh1P81UsingSupplementalCodecs(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p81-with-supplemental-codecs')
+
+  def testDolbyVisionDvh1P84UsingSupplementalCodecs(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p84-with-supplemental-codecs')
+
+  def testDolbyVisionDvheP81UsingSupplementalCodecs(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p81-with-supplemental-codecs')
+
+  def testDolbyVisionDvheP84UsingSupplementalCodecs(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p84-with-supplemental-codecs')
+
+
+  def testDolbyVisionDvh1P81WithEncryption(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p81-with-encryption')
+
+  def testDolbyVisionDvh1P84WithEncryption(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p84-with-encryption')
+
+  def testDolbyVisionDvheP81WithEncryption(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+    ]
+
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p81-with-encryption')
+
+  def testDolbyVisionDvheP84WithEncryption(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p84-with-encryption')
+
+  def testDolbyVisionDvh1P81WithStrictCodecsSignaling(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p81-with-strict-codecs-signaling')
+
+  def testDolbyVisionDvh1P84WithStrictCodecsSignaling(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvh1-p84-with-strict-codecs-signaling')
+
+  def testDolbyVisionDvheP81WithStrictCodecsSignaling(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p81-with-strict-codecs-signaling')
+
+  def testDolbyVisionDvheP84WithStrictCodecsSignaling(self):
+    streams = [
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+    ]
+    flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-dvhe-p84-with-strict-codecs-signaling')
 
   def testVp8Mp4WithEncryption(self):
     streams = [

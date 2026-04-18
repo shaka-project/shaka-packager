@@ -1,0 +1,25 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="color_pattern_24_dvh1_084_1920x1080-video.mp4",BYTERANGE="1358@0"
+#EXTINF:2.000,
+#EXT-X-BYTERANGE:42476@1462
+color_pattern_24_dvh1_084_1920x1080-video.mp4
+#EXTINF:2.000,
+#EXT-X-BYTERANGE:43613
+color_pattern_24_dvh1_084_1920x1080-video.mp4
+#EXTINF:2.000,
+#EXT-X-BYTERANGE:43585
+color_pattern_24_dvh1_084_1920x1080-video.mp4
+#EXTINF:2.000,
+#EXT-X-BYTERANGE:43613
+color_pattern_24_dvh1_084_1920x1080-video.mp4
+#EXTINF:2.000,
+#EXT-X-BYTERANGE:43585
+color_pattern_24_dvh1_084_1920x1080-video.mp4
+#EXTINF:2.000,
+#EXT-X-BYTERANGE:43613
+color_pattern_24_dvh1_084_1920x1080-video.mp4
+#EXT-X-ENDLIST
