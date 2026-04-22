@@ -16,7 +16,9 @@
 #include <packager/file/file_closer.h>
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/event/muxer_listener.h>
@@ -130,16 +132,30 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
   DCHECK_NE(segment_size, 0u);
 
-  RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
-  if (muxer_listener()) {
-    for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
-      muxer_listener()->OnKeyFrame(
-          key_frame_info.timestamp,
-          segment_header_size + key_frame_info.start_byte_offset,
-          key_frame_info.size);
+  if (aes128_encryption_config().protection_scheme == kAes128ProtectionScheme) {
+    // Encrypt the whole segment (header + fragment) as one CBC stream.
+    buffer->AppendBuffer(*fragment_buffer());
+    AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kUseConstantIv);
+    if (!encryptor.InitializeWithIv(aes128_encryption_config().key,
+                                    aes128_encryption_config().constant_iv)) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "AES-128: failed to initialize encryptor for MP4 segment.");
     }
+    uint8_t* data = const_cast<uint8_t*>(buffer->Buffer());
+    encryptor.Crypt(data, buffer->Size(), data);
+    RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
+  } else {
+    RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
+    if (muxer_listener()) {
+      for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
+        muxer_listener()->OnKeyFrame(
+            key_frame_info.timestamp,
+            segment_header_size + key_frame_info.start_byte_offset,
+            key_frame_info.size);
+      }
+    }
+    RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
   }
-  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
   // Close the file, which also does flushing, to make sure the file is written
   // before manifest is updated.

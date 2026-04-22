@@ -1502,6 +1502,19 @@ class PackagerFunctionalTest(PackagerAppTest):
         flags)
     self._CheckTestResults('avc-ts-with-aes128-encryption')
 
+  def testFmp4HlsWithAes128Encryption(self):
+    # AES-128 whole-segment encryption for fMP4/CMAF HLS. No sinf/encv/pssh.
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        flags)
+    self._CheckTestResults('fmp4-hls-with-aes128-encryption')
+
   def testAvcAc3TsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
