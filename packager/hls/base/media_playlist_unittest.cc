@@ -1200,6 +1200,30 @@ TEST_P(MediaPlaylistDeleteSegmentsTest, ManySegments) {
   EXPECT_TRUE(SegmentDeleted(GetSegmentName(last_available_segment_index - 1)));
 }
 
+// Verify that if a segment is already deleted (e.g. by a racing DASH packager),
+// the deletion of subsequent segments is not blocked.
+TEST_P(MediaPlaylistDeleteSegmentsTest, FileAlreadyDeleted) {
+  for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
+    media_playlist_->AddSegment(kIgnoredSegmentName, GetTime(i), kDuration,
+                                kZeroByteOffset, kMBytes);
+  }
+
+  // Manually delete the first segment to simulate a race condition.
+  File::Delete(GetSegmentName(0).c_str());
+
+  // Add more segments to trigger the deletion of the first two segments.
+  media_playlist_->AddSegment(kIgnoredSegmentName,
+                              GetTime(kMaxNumSegmentsAvailable), kDuration,
+                              kZeroByteOffset, kMBytes);
+  media_playlist_->AddSegment(kIgnoredSegmentName,
+                              GetTime(kMaxNumSegmentsAvailable + 1), kDuration,
+                              kZeroByteOffset, kMBytes);
+
+  // The second segment should still be deleted successfully, even though the
+  // first segment was already deleted before the packager tried to delete it.
+  EXPECT_TRUE(SegmentDeleted(GetSegmentName(1)));
+}
+
 INSTANTIATE_TEST_CASE_P(
     TimeOrNumber,
     MediaPlaylistDeleteSegmentsTest,
