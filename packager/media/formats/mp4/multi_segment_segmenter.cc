@@ -7,6 +7,7 @@
 #include <packager/media/formats/mp4/multi_segment_segmenter.h>
 
 #include <algorithm>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/strings/numbers.h>
@@ -134,15 +135,23 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
 
   if (aes128_encryption_config().protection_scheme == kAes128ProtectionScheme) {
     // Encrypt the whole segment (header + fragment) as one CBC stream.
+    // Per RFC 8216 §5.2, PKCS7 padding is required.
     buffer->AppendBuffer(*fragment_buffer());
-    AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kUseConstantIv);
+    AesCbcEncryptor encryptor(kPkcs5Padding, AesCryptor::kUseConstantIv);
     if (!encryptor.InitializeWithIv(aes128_encryption_config().key,
                                     aes128_encryption_config().constant_iv)) {
       return Status(error::ENCRYPTION_FAILURE,
                     "AES-128: failed to initialize encryptor for MP4 segment.");
     }
-    uint8_t* data = const_cast<uint8_t*>(buffer->Buffer());
-    encryptor.Crypt(data, buffer->Size(), data);
+    std::vector<uint8_t> plaintext(buffer->Buffer(),
+                                   buffer->Buffer() + buffer->Size());
+    std::vector<uint8_t> ciphertext;
+    if (!encryptor.Crypt(plaintext, &ciphertext)) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "AES-128: segment encryption failed.");
+    }
+    buffer->Clear();
+    buffer->AppendVector(ciphertext);
     RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
   } else {
     RETURN_IF_ERROR(buffer->WriteToFile(file.get()));

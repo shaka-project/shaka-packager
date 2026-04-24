@@ -6,6 +6,8 @@
 
 #include <packager/media/formats/mp2t/ts_muxer.h>
 
+#include <vector>
+
 #include <absl/log/check.h>
 
 #include <packager/macros/status.h>
@@ -123,20 +125,24 @@ void TsMuxer::EncryptSegmentIfNeeded(BufferWriter* segment_buffer) {
     return;
 
   // AES-128 HLS: encrypt the entire TS segment as one CBC stream.
-  // kNoPadding is used because TS null-packet padding keeps the segment size
-  // aligned to AES_BLOCK_SIZE (16 bytes). kUseConstantIv resets the IV to the
-  // configured value at the start of each Crypt() call, giving per-segment IV.
-  AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kUseConstantIv);
+  // Per RFC 8216 §5.2, PKCS7 padding is required; TS packet size (188 bytes)
+  // is not a multiple of 16, so segments are not guaranteed to be block-aligned.
+  AesCbcEncryptor encryptor(kPkcs5Padding, AesCryptor::kUseConstantIv);
   if (!encryptor.InitializeWithIv(aes128_encryption_config_.key,
                                   aes128_encryption_config_.constant_iv)) {
     LOG(ERROR) << "AES-128: failed to initialize encryptor for segment.";
     return;
   }
 
-  // Encrypt in-place. Buffer() returns const uint8_t* but the underlying
-  // vector is writable — cast is safe here since we own the buffer.
-  uint8_t* data = const_cast<uint8_t*>(segment_buffer->Buffer());
-  encryptor.Crypt(data, segment_buffer->Size(), data);
+  std::vector<uint8_t> plaintext(segment_buffer->Buffer(),
+                                 segment_buffer->Buffer() + segment_buffer->Size());
+  std::vector<uint8_t> ciphertext;
+  if (!encryptor.Crypt(plaintext, &ciphertext)) {
+    LOG(ERROR) << "AES-128: encryption failed for segment.";
+    return;
+  }
+  segment_buffer->Clear();
+  segment_buffer->AppendVector(ciphertext);
 }
 
 Status TsMuxer::WriteSegment(const std::string& segment_path,
