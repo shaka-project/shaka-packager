@@ -404,79 +404,35 @@ void AppendPlaylists(const std::string& default_audio_language,
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
 
-  // Track languages per group for is_default/is_autoselect determination.
-  // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
-  // - A Group MUST NOT have more than one member with a DEFAULT attribute of
-  //   YES.
-  // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
-  //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
-  //   CHARACTERISTICS attributes that is distinct from those of other
-  //   AUTOSELECT=YES members of its Group.
-  // We tag the first rendition encountered with a particular language with
-  // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
-  // the default language.
-  std::map<std::string, std::set<std::string>> audio_group_languages;
-  std::map<std::string, std::set<std::string>> subtitle_group_languages;
-
   bool has_index = true;
 
+  // First pass: classify playlists and capture their group ids. The
+  // is_default/is_autoselect flags are left at their default values here and
+  // assigned in a second pass below, after sorting, so that "first rendition
+  // encountered per (group, language)" always refers to the first rendition
+  // in the final output order rather than the arbitrary arrival order of the
+  // input list (which, with --force_cl_index on by default, is typically
+  // different from the output order).
   for (const MediaPlaylist* playlist : playlists) {
     has_index = has_index && playlist->GetMediaInfo().has_index();
 
     switch (playlist->stream_type()) {
-      case MediaPlaylist::MediaPlaylistStreamType::kAudio: {
-        std::string group_id = GetGroupId(*playlist);
-        bool is_default = false;
-        bool is_autoselect = false;
-
-        if (playlist->is_dvs()) {
-          // According to HLS Authoring Specification for Apple Devices
-          // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
-          // section 2.13 If you provide DVS, the AUTOSELECT attribute MUST have
-          //              a value of "YES".
-          is_autoselect = true;
-        } else {
-          const std::string language = playlist->language();
-          auto& languages = audio_group_languages[group_id];
-          if (languages.find(language) == languages.end()) {
-            is_default =
-                !language.empty() && language == default_audio_language;
-            is_autoselect = true;
-            languages.insert(language);
-          }
-        }
-
+      case MediaPlaylist::MediaPlaylistStreamType::kAudio:
         audio_playlists.push_back(
-            {playlist, group_id, is_default, is_autoselect});
+            {playlist, GetGroupId(*playlist), /*is_default=*/false,
+             /*is_autoselect=*/false});
         break;
-      }
       case MediaPlaylist::MediaPlaylistStreamType::kVideo:
         video_playlists.push_back(playlist);
         break;
       case MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly:
         iframe_playlists.push_back(playlist);
         break;
-      case MediaPlaylist::MediaPlaylistStreamType::kSubtitle: {
-        std::string group_id = GetGroupId(*playlist);
-        bool is_default = false;
-        bool is_autoselect = false;
-
-        const std::string language = playlist->language();
-        auto& languages = subtitle_group_languages[group_id];
-        if (languages.find(language) == languages.end()) {
-          is_default = !language.empty() && language == default_text_language;
-          is_autoselect = true;
-          languages.insert(language);
-        }
-
-        if (playlist->forced_subtitle()) {
-          is_autoselect = true;
-        }
-
+      case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
         subtitle_playlists.push_back(
-            {playlist, group_id, is_default, is_autoselect});
+            {playlist, GetGroupId(*playlist), /*is_default=*/false,
+             /*is_autoselect=*/false});
         break;
-      }
       default:
         NOTIMPLEMENTED() << static_cast<int>(playlist->stream_type())
                          << " not handled.";
@@ -493,6 +449,52 @@ void AppendPlaylists(const std::string& default_audio_language,
     // (matching the original behavior of using std::map which sorts by key).
     audio_playlists.sort(TagslistOrderByGroupIdFn);
     subtitle_playlists.sort(TagslistOrderByGroupIdFn);
+  }
+
+  // Second pass: now that the audio and subtitle lists are in their final
+  // output order, assign the is_default/is_autoselect flags.
+  //
+  // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
+  // - A Group MUST NOT have more than one member with a DEFAULT attribute of
+  //   YES.
+  // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
+  //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
+  //   CHARACTERISTICS attributes that is distinct from those of other
+  //   AUTOSELECT=YES members of its Group.
+  // We tag the first rendition in a group with a particular language with
+  // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
+  // the default language.
+  std::map<std::string, std::set<std::string>> audio_group_languages;
+  for (auto& pl : audio_playlists) {
+    if (pl.playlist->is_dvs()) {
+      // According to HLS Authoring Specification for Apple Devices
+      // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices#overview
+      // section 2.13 If you provide DVS, the AUTOSELECT attribute MUST have
+      //              a value of "YES".
+      pl.is_autoselect = true;
+      continue;
+    }
+    const std::string language = pl.playlist->language();
+    auto& languages = audio_group_languages[pl.group_id];
+    if (languages.find(language) == languages.end()) {
+      pl.is_default = !language.empty() && language == default_audio_language;
+      pl.is_autoselect = true;
+      languages.insert(language);
+    }
+  }
+
+  std::map<std::string, std::set<std::string>> subtitle_group_languages;
+  for (auto& pl : subtitle_playlists) {
+    const std::string language = pl.playlist->language();
+    auto& languages = subtitle_group_languages[pl.group_id];
+    if (languages.find(language) == languages.end()) {
+      pl.is_default = !language.empty() && language == default_text_language;
+      pl.is_autoselect = true;
+      languages.insert(language);
+    }
+    if (pl.playlist->forced_subtitle()) {
+      pl.is_autoselect = true;
+    }
   }
 
   if (!audio_playlists.empty()) {
