@@ -126,7 +126,8 @@ void TsMuxer::EncryptSegmentIfNeeded(BufferWriter* segment_buffer) {
 
   // AES-128 HLS: encrypt the entire TS segment as one CBC stream.
   // Per RFC 8216 §5.2, PKCS7 padding is required; TS packet size (188 bytes)
-  // is not a multiple of 16, so segments are not guaranteed to be block-aligned.
+  // is not a multiple of 16, so segments are not guaranteed to be
+  // block-aligned.
   AesCbcEncryptor encryptor(kPkcs5Padding, AesCryptor::kUseConstantIv);
   if (!encryptor.InitializeWithIv(aes128_encryption_config_.key,
                                   aes128_encryption_config_.constant_iv)) {
@@ -134,8 +135,9 @@ void TsMuxer::EncryptSegmentIfNeeded(BufferWriter* segment_buffer) {
     return;
   }
 
-  std::vector<uint8_t> plaintext(segment_buffer->Buffer(),
-                                 segment_buffer->Buffer() + segment_buffer->Size());
+  std::vector<uint8_t> plaintext(
+      segment_buffer->Buffer(),
+      segment_buffer->Buffer() + segment_buffer->Size());
   std::vector<uint8_t> ciphertext;
   if (!encryptor.Crypt(plaintext, &ciphertext)) {
     LOG(ERROR) << "AES-128: encryption failed for segment.";
