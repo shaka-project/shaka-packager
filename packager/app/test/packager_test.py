@@ -1488,6 +1488,33 @@ class PackagerFunctionalTest(PackagerAppTest):
             encryption=True, protection_systems='FairPlay', output_hls=True))
     self._CheckTestResults('avc-ts-with-encryption-and-fairplay')
 
+  def testAvcTsWithAes128Encryption(self):
+    # AES-128 encrypts entire TS segments with AES-128-CBC; the HLS playlist
+    # uses METHOD=AES-128 with no KEYFORMAT (identity, per RFC 8216).
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         segmented=True,
+                         hls=True,
+                         test_files=['bear-640x360.ts']),
+        flags)
+    self._CheckTestResults('avc-ts-with-aes128-encryption')
+
+  def testFmp4HlsWithAes128Encryption(self):
+    # AES-128 whole-segment encryption for fMP4/CMAF HLS. No sinf/encv/pssh.
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        flags)
+    self._CheckTestResults('fmp4-hls-with-aes128-encryption')
+
   def testAvcAc3TsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(

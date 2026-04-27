@@ -23,6 +23,9 @@ struct EncryptionConfig {
   std::vector<uint8_t> constant_iv;
   std::vector<uint8_t> key_id;
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
+  // Only populated for HLS AES-128 (kAes128ProtectionScheme). Holds the raw
+  // encryption key so TsWriter can perform segment-level CBC encryption.
+  std::vector<uint8_t> key;
 };
 
 }  // namespace media
