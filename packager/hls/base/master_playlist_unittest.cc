@@ -449,6 +449,96 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   ASSERT_EQ(expected, actual);
 }
 
+TEST_F(MasterPlaylistTest,
+       WriteMasterPlaylistSameAudioGroupSameLanguageOutOfOrderInput) {
+  std::unique_ptr<MockMediaPlaylist> video_playlist =
+      CreateVideoPlaylist("video.m3u8", "videocodec", 300000, 200000);
+  video_playlist->SetIndexForTesting(0);
+
+  // Input order is [lo, hi] but index order is [hi, lo].
+  std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
+      "eng_lo.m3u8", "english", "audio", "audiocodec", "en", 1, 50000, 40000,
+      kEC3JocComplexityZero, !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
+  eng_lo_playlist->SetIndexForTesting(2);
+
+  std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
+      "eng_hi.m3u8", "english", "audio", "audiocodec", "en", 8, 100000, 80000,
+      kEC3JocComplexityZero, !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
+  eng_hi_playlist->SetIndexForTesting(1);
+
+  const char kBaseUrl[] = "http://anydomain.com/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_hi.m3u8\","
+      "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"8\"\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_lo.m3u8\","
+      "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=NO,"
+      "CHANNELS=\"1\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=280000,"
+      "CODECS=\"videocodec,audiocodec\",RESOLUTION=800x600,AUDIO=\"audio\","
+      "CLOSED-CAPTIONS=NONE\n"
+      "http://anydomain.com/video.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest,
+       WriteMasterPlaylistTextsMultipleLanguagesOutOfOrderInput) {
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+  video->SetIndexForTesting(0);
+
+  // Input order is [en, fr] but index order is [fr, en].
+  std::unique_ptr<MockMediaPlaylist> text_en =
+      CreateTextPlaylist("en.m3u8", "english", "textgroup", "textcodec", "en");
+  text_en->SetIndexForTesting(2);
+
+  std::unique_ptr<MockMediaPlaylist> text_fr =
+      CreateTextPlaylist("fr.m3u8", "french", "textgroup", "textcodec", "fr");
+  text_fr->SetIndexForTesting(1);
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video.get(), text_en.get(), text_fr.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\","
+      "DEFAULT=YES,AUTOSELECT=YES\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/en.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\","
+      "DEFAULT=NO,AUTOSELECT=YES\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video1 =

@@ -381,6 +381,10 @@ void MediaPlaylist::SetCharacteristicsForTesting(
   characteristics_ = characteristics;
 }
 
+void MediaPlaylist::SetIndexForTesting(uint32_t index) {
+  media_info_.set_index(index);
+}
+
 void MediaPlaylist::SetForcedSubtitleForTesting(const bool forced_subtitle) {
   forced_subtitle_ = forced_subtitle;
 }
