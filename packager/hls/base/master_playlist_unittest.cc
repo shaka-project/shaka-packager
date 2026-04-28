@@ -512,8 +512,7 @@ TEST_F(MasterPlaylistTest,
 
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
-      kBaseUrl, test_output_dir_,
-      {video.get(), text_en.get(), text_fr.get()}));
+      kBaseUrl, test_output_dir_, {video.get(), text_en.get(), text_fr.get()}));
 
   std::string actual;
   ASSERT_TRUE(

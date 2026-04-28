@@ -105,7 +105,7 @@ class MediaPlaylist {
   void SetCharacteristicsForTesting(
       const std::vector<std::string>& characteristics);
 
-  /// For testing only. Sets the stream index so that GetMediaInfo().has_index() 
+  /// For testing only. Sets the stream index so that GetMediaInfo().has_index()
   /// and GetMediaInfo().index() return the expected values.
   void SetIndexForTesting(uint32_t index);
 
