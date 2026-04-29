@@ -476,7 +476,8 @@ void AppendPlaylists(const std::string& default_audio_language,
           }
         }
 
-        audio_playlists.push_back({playlist, group_id, is_default, is_autoselect});
+        audio_playlists.push_back(
+            {playlist, group_id, is_default, is_autoselect});
         break;
       }
       case MediaPlaylist::MediaPlaylistStreamType::kVideo:
@@ -502,7 +503,8 @@ void AppendPlaylists(const std::string& default_audio_language,
           is_autoselect = true;
         }
 
-        subtitle_playlists.push_back({playlist, group_id, is_default, is_autoselect});
+        subtitle_playlists.push_back(
+            {playlist, group_id, is_default, is_autoselect});
         break;
       }
       default:
