@@ -184,8 +184,14 @@ class MediaPlaylist {
   /// generate an invalid playlist.
   /// @param file_path is the output file path accepted by the File
   ///        implementation.
+  /// @param event_to_vod_on_end_of_stream whether the playlist should be
+  /// converted to a vod stream once the event/live stream has ended
+  /// @param end_stream whether the stream has ended and this is the final time
+  /// we will write to the file
   /// @return true on success, false otherwise.
-  virtual bool WriteToFile(const std::filesystem::path& file_path);
+  virtual bool WriteToFile(const std::filesystem::path& file_path,
+                           bool event_to_vod_on_end_of_stream,
+                           bool end_stream);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.

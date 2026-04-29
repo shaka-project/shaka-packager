@@ -54,6 +54,10 @@ class MpdBuilder {
   ///         return a new Period.
   virtual Period* GetOrCreatePeriod(double start_time_in_seconds);
 
+  /// Convert the stream from a dynamic Live/EVENT to a static VOD stream.
+  /// This is a no-op for VOD streams.
+  void FinalizeDynamicMpd();
+
   /// Writes the MPD to the given string.
   /// @param[out] output is an output string where the MPD gets written.
   /// @return true on success, false otherwise.

@@ -45,6 +45,7 @@ class MockMpdNotifier : public MpdNotifier {
                     const std::vector<uint8_t>& new_pssh));
   MOCK_METHOD2(NotifyMediaInfoUpdate,
                bool(uint32_t container_id, const MediaInfo& media_info));
+  MOCK_METHOD0(NotifyEndOfStream, bool());
   MOCK_METHOD0(Flush, bool());
 };
 

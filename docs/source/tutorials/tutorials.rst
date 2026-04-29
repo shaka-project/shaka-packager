@@ -6,6 +6,7 @@ Tutorials
 
    basic_usage.rst
    dash.rst
+   debugging.rst
    hls.rst
    live.rst
    drm.rst

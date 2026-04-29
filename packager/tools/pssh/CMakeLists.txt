@@ -12,6 +12,14 @@ set(PSSH_BOX_OUTPUTS
     ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/widevine_common_encryption_pb2.py
     ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/widevine_pssh_data_pb2.py)
 
+if(NOT USE_SYSTEM_DEPENDENCIES)
+  set(PROTO_COPY_EXTRAS
+      COMMAND
+          ${CMAKE_COMMAND} -E copy_directory
+          ${CMAKE_BINARY_DIR}/packager/third_party/protobuf/py/google
+          ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/google)
+endif()
+
 add_custom_command(
     DEPENDS
         protobuf_py
@@ -27,13 +35,10 @@ add_custom_command(
         ${CMAKE_BINARY_DIR}/packager/media/base/widevine_pssh_data_pb2.py
         ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/
     COMMAND
-        ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_BINARY_DIR}/packager/third_party/protobuf/py/google
-        ${CMAKE_BINARY_DIR}/packager/pssh-box-protos/google
-    COMMAND
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/pssh-box.py
-        ${CMAKE_BINARY_DIR}/packager/)
+        ${CMAKE_BINARY_DIR}/packager
+    ${PROTO_COPY_EXTRAS})
 
 add_custom_target(pssh_box_py ALL DEPENDS ${PSSH_BOX_OUTPUTS})
 

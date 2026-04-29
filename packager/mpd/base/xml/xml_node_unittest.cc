@@ -60,7 +60,6 @@ TEST(XmlNodeTest, MetaTestXmlElementsEqual) {
       "  <C />\n"
       "</A>";
 
-
   // This is same as kXml1 but the attributes are reordered. Note that the
   // children are not reordered.
   static const char kXml1AttributeReorder[] =
@@ -137,9 +136,8 @@ TEST(XmlNodeTest, MetaTestXmlElementsEqual) {
 // But if it is run on <B> for the first XML, it will return "content1", but
 // for second XML will return "c".
 TEST(XmlNodeTest, MetaTestXmlEqualDifferentContent) {
-  ASSERT_FALSE(XmlEqual(
-      "<A><B>content1</B><B>content2</B></A>",
-      "<A><B>c</B><B>ontent1content2</B></A>"));
+  ASSERT_FALSE(XmlEqual("<A><B>content1</B><B>content2</B></A>",
+                        "<A><B>c</B><B>ontent1content2</B></A>"));
 }
 
 TEST(XmlNodeTest, ExtractReferencedNamespaces) {
@@ -219,8 +217,7 @@ TEST(XmlNodeTest, AddEC3AudioInfo) {
   audio_info.set_codec("ec-3");
   audio_info.set_sampling_frequency(48000);
   audio_info.mutable_codec_specific_data()->set_channel_mask(0xF801);
-  audio_info.mutable_codec_specific_data()->set_channel_mpeg_value(
-      0xFFFFFFFF);
+  audio_info.mutable_codec_specific_data()->set_channel_mpeg_value(0xFFFFFFFF);
 
   RepresentationXmlNode representation;
   ASSERT_TRUE(representation.AddAudioInfo(audio_info));
@@ -563,8 +560,7 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
 }
 
 // Creating a separate Test Suite for RepresentationXmlNode::AddVODOnlyInfo
-class OnDemandVODSegmentTest : public ::testing::Test {
-};
+class OnDemandVODSegmentTest : public ::testing::Test {};
 
 TEST_F(OnDemandVODSegmentTest, SegmentBase) {
   const char kTestMediaInfo[] =

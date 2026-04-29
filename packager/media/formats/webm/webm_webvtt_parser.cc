@@ -53,10 +53,7 @@ void WebMWebVTTParser::ParseLine(std::string* line) {
   // The spec is here:
   //  http://wiki.webmproject.org/webm-metadata/temporal-metadata/webvtt-in-webm
 
-  enum {
-    kLF = '\x0A',
-    kCR = '\x0D'
-  };
+  enum { kLF = '\x0A', kCR = '\x0D' };
 
   for (;;) {
     uint8_t byte;

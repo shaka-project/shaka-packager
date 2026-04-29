@@ -4,7 +4,7 @@
 
 #include <packager/media/base/container_names.h>
 
-#include <iterator>
+#include <cstring>
 
 #include <gtest/gtest.h>
 
@@ -16,10 +16,9 @@ namespace media {
 // Using a macros to simplify tests. Since EXPECT_EQ outputs the second argument
 // as a string when it fails, this lets the output identify what item actually
 // failed.
-#define VERIFY(buffer, name)                                             \
-  EXPECT_EQ(name,                                                        \
-            DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), \
-                               sizeof(buffer)))
+#define VERIFY(buffer, name)                                                   \
+  EXPECT_EQ(name, DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), \
+                                     sizeof(buffer)))
 
 // Test that small buffers are handled correctly.
 TEST(ContainerNamesTest, CheckSmallBuffer) {
@@ -39,9 +38,10 @@ TEST(ContainerNamesTest, CheckSmallBuffer) {
   VERIFY(buffer1, CONTAINER_SRT);
 
   // HLS has it's own loop.
-  char buffer2[] = "#EXTM3U"
-                   "some other random stuff"
-                   "#EXT-X-MEDIA-SEQUENCE:";
+  char buffer2[] =
+      "#EXTM3U"
+      "some other random stuff"
+      "#EXT-X-MEDIA-SEQUENCE:";
   VERIFY(buffer2, CONTAINER_HLS);
 
   // Try a large buffer all zeros.
@@ -168,7 +168,7 @@ TEST(ContainerNamesTest, Ttml) {
 
   EXPECT_EQ(CONTAINER_TTML,
             DetermineContainer(reinterpret_cast<const uint8_t*>(kTtml),
-                               std::size(kTtml)));
+                               strlen(kTtml)));
 }
 
 TEST(ContainerNamesTest, WebVtt) {
@@ -179,7 +179,7 @@ TEST(ContainerNamesTest, WebVtt) {
       "Subtitle";
   EXPECT_EQ(CONTAINER_WEBVTT,
             DetermineContainer(reinterpret_cast<const uint8_t*>(kWebVtt),
-                               std::size(kWebVtt)));
+                               strlen(kWebVtt)));
 
   const uint8_t kUtf8ByteOrderMark[] = {0xef, 0xbb, 0xbf};
   std::vector<uint8_t> webvtt_with_utf8_byte_order_mark(

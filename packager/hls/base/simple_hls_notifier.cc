@@ -17,6 +17,7 @@
 #include <absl/strings/numbers.h>
 
 #include <packager/file/file_util.h>
+#include <packager/hls/base/master_playlist.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/proto_json_util.h>
@@ -72,9 +73,9 @@ bool IsPlayReadySystemId(const std::vector<uint8_t>& system_id) {
 
 std::string Base64EncodeData(const std::string& prefix,
                              const std::string& data) {
-    std::string data_base64;
-    absl::Base64Escape(data, &data_base64);
-    return prefix + data_base64;
+  std::string data_base64;
+  absl::Base64Escape(data, &data_base64);
+  return prefix + data_base64;
 }
 
 std::string VectorToString(const std::vector<uint8_t>& v) {
@@ -209,10 +210,8 @@ void NotifyEncryptionToMediaPlaylist(
                                key_id.size()));
   }
 
-  media_playlist->AddEncryptionInfo(
-      encryption_method,
-      uri, key_id_string, iv_string,
-      key_format, key_format_version);
+  media_playlist->AddEncryptionInfo(encryption_method, uri, key_id_string,
+                                    iv_string, key_format, key_format_version);
 }
 
 // Creates JSON format and the format similar to MPD.
@@ -249,9 +248,12 @@ bool HandleWidevineKeyFormats(
 }
 
 bool WriteMediaPlaylist(const std::string& output_dir,
-                        MediaPlaylist* playlist) {
+                        MediaPlaylist* playlist,
+                        const bool event_to_vod_on_end_of_stream,
+                        const bool end_stream) {
   auto file_path = std::filesystem::u8path(output_dir) / playlist->file_name();
-  if (!playlist->WriteToFile(file_path)) {
+  if (!playlist->WriteToFile(file_path, event_to_vod_on_end_of_stream,
+                             end_stream)) {
     LOG(ERROR) << "Failed to write playlist " << file_path.string();
     return false;
   }
@@ -285,10 +287,17 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
       hls_params.default_text_language.empty()
           ? hls_params.default_language
           : hls_params.default_text_language;
+
+  std::vector<CeaCaption> closed_captions;
+  for (const auto& caption : hls_params.closed_captions) {
+    closed_captions.push_back({caption.name, caption.language, caption.channel,
+                               caption.is_default, caption.autoselect});
+  }
+
   master_playlist_.reset(new MasterPlaylist(
       master_playlist_path.filename(), default_audio_langauge,
-      default_text_language, hls_params.is_independent_segments,
-      hls_params.create_session_keys));
+      default_text_language, closed_captions,
+      hls_params.is_independent_segments, hls_params.create_session_keys));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}
@@ -334,7 +343,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     encryption_method = enc_method.value();
   }
 
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   *stream_id = sequence_number_++;
   media_playlists_.push_back(media_playlist.get());
   stream_map_[*stream_id].reset(
@@ -344,7 +353,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
 
 bool SimpleHlsNotifier::NotifySampleDuration(uint32_t stream_id,
                                              int32_t sample_duration) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -361,7 +370,7 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          int64_t duration,
                                          uint64_t start_byte_offset,
                                          uint64_t size) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -390,11 +399,15 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     if (target_duration_updated) {
       for (MediaPlaylist* playlist : media_playlists_) {
         playlist->SetTargetDuration(target_duration_);
-        if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
+        if (!WriteMediaPlaylist(master_playlist_dir_, playlist,
+                                hls_params().event_to_vod_on_end_of_stream,
+                                end_stream))
           return false;
       }
     } else {
-      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get()))
+      if (!WriteMediaPlaylist(master_playlist_dir_, media_playlist.get(),
+                              hls_params().event_to_vod_on_end_of_stream,
+                              end_stream))
         return false;
     }
     if (!master_playlist_->WriteMasterPlaylist(
@@ -410,7 +423,7 @@ bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
                                        int64_t timestamp,
                                        uint64_t start_byte_offset,
                                        uint64_t size) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -422,7 +435,7 @@ bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
 }
 
 bool SimpleHlsNotifier::NotifyCueEvent(uint32_t stream_id, int64_t timestamp) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -439,7 +452,7 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     const std::vector<uint8_t>& system_id,
     const std::vector<uint8_t>& iv,
     const std::vector<uint8_t>& protection_system_specific_data) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -453,8 +466,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   LOG_IF(WARNING, encryption_method == MediaPlaylist::EncryptionMethod::kNone)
       << "Got encryption notification but the encryption method is NONE";
   if (IsWidevineSystemId(system_id)) {
-    return HandleWidevineKeyFormats(encryption_method,
-                                    key_id, iv, protection_system_specific_data,
+    return HandleWidevineKeyFormats(encryption_method, key_id, iv,
+                                    protection_system_specific_data,
                                     media_playlist.get());
   }
 
@@ -524,11 +537,23 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   return true;
 }
 
+bool SimpleHlsNotifier::NotifyEndOfStream() {
+  end_stream = true;
+  return true;
+}
+
 bool SimpleHlsNotifier::Flush() {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
-    playlist->SetTargetDuration(target_duration_);
-    if (!WriteMediaPlaylist(master_playlist_dir_, playlist))
+    if (hls_params().per_playlist_target_duration) {
+      playlist->SetTargetDuration(
+          static_cast<int32_t>(ceil(playlist->GetLongestSegmentDuration())));
+    } else {
+      playlist->SetTargetDuration(target_duration_);
+    }
+    if (!WriteMediaPlaylist(master_playlist_dir_, playlist,
+                            hls_params().event_to_vod_on_end_of_stream,
+                            end_stream))
       return false;
   }
   if (!master_playlist_->WriteMasterPlaylist(

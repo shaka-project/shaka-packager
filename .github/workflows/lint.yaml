@@ -42,14 +42,30 @@ jobs:
           sudo install -m 755 git-clang-format /usr/local/bin/git-clang-format
           rm git-clang-format
 
+          # Somehow, GitHub's pre-installed clang-format 18 is untrustworthy
+          # and responds differently than upstream clang-format 18.  So install
+          # the upstream version now, explicitly.
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key \
+              | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc >/dev/null
+          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" \
+              | sudo tee /etc/apt/sources.list.d/llvm-18.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install clang-format-18
+          sudo update-alternatives --install /usr/bin/clang-format \
+              clang-format /usr/bin/clang-format-18 18
+          sudo update-alternatives --set clang-format \
+              /usr/bin/clang-format-18
+
           python3 -m pip install --upgrade pylint==3.3.3
+
+          # Debug clang-format version for clarity.
+          clang-format --version
 
           # NOTE: Must use base.sha instead of base.ref, since we don't have
           # access to the branch name that base.ref would give us.
           # NOTE: Must also use fetch-depth: 2 in actions/checkout to have
           # access to the base ref for comparison.
           packager/tools/git/check_formatting.py \
-              --binary /usr/bin/clang-format \
               ${{ github.event.pull_request.base.sha || 'HEAD^' }}
 
           packager/tools/git/check_pylint.py

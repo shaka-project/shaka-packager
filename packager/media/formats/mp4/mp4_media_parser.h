@@ -55,12 +55,7 @@ class MP4MediaParser : public MediaParser {
   bool LoadMoov(const std::string& file_path);
 
  private:
-  enum State {
-    kWaitingForInit,
-    kParsingBoxes,
-    kEmittingSamples,
-    kError
-  };
+  enum State { kWaitingForInit, kParsingBoxes, kEmittingSamples, kError };
 
   bool ParseBox(bool* err);
   bool ParseMoov(mp4::BoxReader* reader);

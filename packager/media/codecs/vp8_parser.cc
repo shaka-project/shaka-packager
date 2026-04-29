@@ -44,7 +44,7 @@ bool ReadSegmentation(BitReader* reader) {
     for (uint32_t i = 0; i < MAX_MB_SEGMENTS; ++i)
       for (uint32_t j = 0; j < MB_LVL_MAX; ++j) {
         RCHECK(reader->SkipBitsConditional(true, MB_FEATURE_DATA_BITS[j] + 1));
-    }
+      }
   }
   if (update_map) {
     for (uint32_t i = 0; i < MB_FEATURE_TREE_PROBS; ++i)

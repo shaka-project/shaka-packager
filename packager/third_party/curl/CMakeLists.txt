@@ -9,12 +9,22 @@
 # Don't build a shared libcurl.
 set(BUILD_SHARED_LIBS OFF)
 
-# Don't build with libdn, librtmp, libssh2, or zlib.
+# Don't build with libdn, libssh2, nghttp2, zlib, brotli, or zstd.
 set(USE_LIBIDN2 OFF)
-set(USE_LIBRTMP OFF)
 set(CURL_USE_LIBSSH2 OFF)
+set(CURL_USE_LIBPSL OFF)
+set(USE_NGHTTP2 OFF)
+set(CURL_BROTLI OFF CACHE STRING "Force curl not to search for system brotli")
 set(CURL_ZLIB OFF CACHE STRING "Force curl not to search for system zlib")
+set(CURL_ZSTD OFF CACHE STRING "Force curl not to search for system zstd")
+
+# Don't build executable, tests, examples, or docs.
 set(BUILD_CURL_EXE OFF)
+set(BUILD_TESTING OFF)
+set(BUILD_EXAMPLES OFF)
+set(BUILD_LIBCURL_DOCS OFF)
+set(BUILD_MISC_DOCS OFF)
+set(ENABLE_CURL_MANUAL OFF)
 
 if(UNIX AND NOT APPLE)
   # Use c-ares to fix static linking on Linux.  Set USE_ARES directly, not the
@@ -33,7 +43,7 @@ else()
   # Force libcurl to use our local mbedtls instead of searching for OpenSSL on
   # the system.
   set(CURL_USE_MBEDTLS ON)
-  set(MBEDTLS_INCLUDE_DIRS ../mbedtls/source/include)
+  set(MBEDTLS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../mbedtls/source/include)
   set(MBEDTLS_LIBRARY mbedtls)
   set(MBEDX509_LIBRARY mbedx509)
   set(MBEDCRYPTO_LIBRARY mbedcrypto)

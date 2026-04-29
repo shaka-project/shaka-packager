@@ -10,12 +10,16 @@
 #include <string>
 #include <vector>
 
+#include <packager/cea_caption.h>
+
 namespace shaka {
 
 /// DASH MPD related parameters.
 struct MpdParams {
   /// MPD output file path.
   std::string mpd_output;
+  /// Convert event stream to VOD once end of stream is detected
+  bool event_to_vod_on_end_of_stream = false;
   /// BaseURLs for the MPD. The values will be added as <BaseURL> element(s)
   /// under the <MPD> element.
   std::vector<std::string> base_urls;
@@ -102,6 +106,8 @@ struct MpdParams {
   /// and is greatly influnced by the player.
   /// This parameter is required by DASH-IF Low Latency standards.
   double target_latency_seconds = 1;
+  /// CEA-608 / CEA-708 captions.
+  std::vector<CeaCaption> closed_captions;
 };
 
 }  // namespace shaka

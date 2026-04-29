@@ -415,12 +415,10 @@ Element GenerateCencPsshElement(const std::string& pssh) {
 // and encode it in base64.
 Element GenerateMsprProElement(const std::string& pssh) {
   std::unique_ptr<media::PsshBoxBuilder> b =
-    media::PsshBoxBuilder::ParseFromBox(
-        reinterpret_cast<const uint8_t*>(pssh.data()),
-        pssh.size()
-    );
+      media::PsshBoxBuilder::ParseFromBox(
+          reinterpret_cast<const uint8_t*>(pssh.data()), pssh.size());
 
-  const std::vector<uint8_t> *p_pssh = &b->pssh_data();
+  const std::vector<uint8_t>* p_pssh = &b->pssh_data();
   std::string base64_encoded_mspr;
   absl::Base64Escape(
       std::string_view(reinterpret_cast<const char*>(p_pssh->data()),
@@ -497,7 +495,8 @@ void AddContentProtectionElementsHelperTemplated(
       if (!entry.pssh().empty()) {
         drm_content_protection.subelements.push_back(
             GenerateCencPsshElement(entry.pssh()));
-        if(entry.uuid() == kPlayReadyUUID && protected_content.include_mspr_pro()) {
+        if (entry.uuid() == kPlayReadyUUID &&
+            protected_content.include_mspr_pro()) {
           drm_content_protection.subelements.push_back(
               GenerateMsprProElement(entry.pssh()));
           drm_content_protection.value = kContentProtectionValueMSPR20;

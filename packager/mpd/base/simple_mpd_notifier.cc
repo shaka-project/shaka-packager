@@ -45,7 +45,7 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   MediaInfo adjusted_media_info(media_info);
   MpdBuilder::MakePathsRelativeToMpd(output_path_, &adjusted_media_info);
 
-  absl::MutexLock auto_lock(&lock_);
+  absl::MutexLock auto_lock(lock_);
   const double kPeriodStartTimeSeconds = 0.0;
   Period* period = mpd_builder_->GetOrCreatePeriod(kPeriodStartTimeSeconds);
   DCHECK(period);
@@ -73,7 +73,7 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
 }
 
 bool SimpleMpdNotifier::NotifyAvailabilityTimeOffset(uint32_t container_id) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -85,7 +85,7 @@ bool SimpleMpdNotifier::NotifyAvailabilityTimeOffset(uint32_t container_id) {
 
 bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
                                              int32_t sample_duration) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -96,7 +96,7 @@ bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
 }
 
 bool SimpleMpdNotifier::NotifySegmentDuration(uint32_t container_id) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -111,7 +111,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
                                          int64_t duration,
                                          uint64_t size,
                                          int64_t segment_number) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -124,7 +124,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
 bool SimpleMpdNotifier::NotifyCompletedSegment(uint32_t container_id,
                                                int64_t duration,
                                                uint64_t size) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -136,7 +136,7 @@ bool SimpleMpdNotifier::NotifyCompletedSegment(uint32_t container_id,
 
 bool SimpleMpdNotifier::NotifyCueEvent(uint32_t container_id,
                                        int64_t timestamp) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -183,7 +183,7 @@ bool SimpleMpdNotifier::NotifyEncryptionUpdate(
     const std::string& drm_uuid,
     const std::vector<uint8_t>& new_key_id,
     const std::vector<uint8_t>& new_pssh) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -202,9 +202,15 @@ bool SimpleMpdNotifier::NotifyEncryptionUpdate(
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyEndOfStream() {
+  absl::MutexLock lock(lock_);
+  mpd_builder_->FinalizeDynamicMpd();
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifyMediaInfoUpdate(uint32_t container_id,
                                               const MediaInfo& media_info) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
@@ -219,7 +225,7 @@ bool SimpleMpdNotifier::NotifyMediaInfoUpdate(uint32_t container_id,
 }
 
 bool SimpleMpdNotifier::Flush() {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 

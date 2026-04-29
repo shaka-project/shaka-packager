@@ -30,7 +30,7 @@ ThreadPool::~ThreadPool() {
 }
 
 void ThreadPool::PostTask(const std::function<void()>& task) {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
 
   DCHECK(!terminated_) << "Should not call PostTask after Terminate!";
 
@@ -59,7 +59,7 @@ void ThreadPool::PostTask(const std::function<void()>& task) {
 
 void ThreadPool::Terminate() {
   {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     terminated_ = true;
     while (!tasks_.empty()) {
       tasks_.pop();
@@ -69,7 +69,7 @@ void ThreadPool::Terminate() {
 }
 
 ThreadPool::Task ThreadPool::WaitForTask() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   if (terminated_) {
     // The pool is terminated.  Terminate this thread.
     return Task();

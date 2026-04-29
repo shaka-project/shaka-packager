@@ -10,6 +10,7 @@
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/log/vlog_is_on.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>
@@ -141,13 +142,9 @@ int CurlDebugCallback(CURL* /* handle */,
 
 class LibCurlInitializer {
  public:
-  LibCurlInitializer() {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-  }
+  LibCurlInitializer() { curl_global_init(CURL_GLOBAL_DEFAULT); }
 
-  ~LibCurlInitializer() {
-    curl_global_cleanup();
-  }
+  ~LibCurlInitializer() { curl_global_cleanup(); }
 
   LibCurlInitializer(const LibCurlInitializer&) = delete;
   LibCurlInitializer& operator=(const LibCurlInitializer&) = delete;

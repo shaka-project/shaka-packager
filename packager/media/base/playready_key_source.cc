@@ -64,7 +64,7 @@ bool Base64StringToBytes(const std::string& base64_string,
   bytes->assign(str.begin(), str.end());
   return true;
 }
-}
+}  // namespace
 
 PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url,
                                        ProtectionSystem protection_systems)
@@ -86,14 +86,12 @@ Status RetrieveTextInXMLElement(const std::string& element,
   std::string end_tag = "</" + element + ">";
   std::size_t start_pos = xml.find(start_tag);
   if (start_pos == std::string::npos) {
-    return Status(error::SERVER_ERROR,
-                  "Unable to find tag: " + start_tag);
+    return Status(error::SERVER_ERROR, "Unable to find tag: " + start_tag);
   }
   start_pos += start_tag.size();
   std::size_t end_pos = xml.find(end_tag);
   if (end_pos == std::string::npos) {
-    return Status(error::SERVER_ERROR,
-                  "Unable to find tag: " + end_tag);
+    return Status(error::SERVER_ERROR, "Unable to find tag: " + end_tag);
   }
   if (start_pos > end_pos) {
     return Status(error::SERVER_ERROR, "Invalid positions");
@@ -113,8 +111,8 @@ Status SetKeyInformationFromServerResponse(
   // key_id/keys.
   std::string key_id_hex;
   RETURN_IF_ERROR(RetrieveTextInXMLElement("KeyId", response, &key_id_hex));
-  key_id_hex.erase(
-      std::remove(key_id_hex.begin(), key_id_hex.end(), '-'), key_id_hex.end());
+  key_id_hex.erase(std::remove(key_id_hex.begin(), key_id_hex.end(), '-'),
+                   key_id_hex.end());
 
   std::string key_id_raw;
   if (!ValidHexStringToBytes(key_id_hex, &key_id_raw)) {

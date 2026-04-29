@@ -10,6 +10,9 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
+
+#include <packager/cea_caption.h>
 
 namespace shaka {
 
@@ -25,6 +28,8 @@ enum class HlsPlaylistType {
 struct HlsParams {
   /// HLS playlist type. See HLS specification for details.
   HlsPlaylistType playlist_type = HlsPlaylistType::kVod;
+  /// Convert event stream to VOD once end of stream is detected
+  bool event_to_vod_on_end_of_stream = false;
   /// HLS master playlist output path.
   std::string master_playlist_output;
   /// The base URL for the Media Playlists and media files listed in the
@@ -75,6 +80,10 @@ struct HlsParams {
   /// Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is derived
   /// from the current wall clock.
   bool add_program_date_time = false;
+  /// If true, TARGETDURATION will be calculated locally in MediaPlaylist.
+  bool per_playlist_target_duration = false;
+  /// CEA-608 / CEA-708 captions.
+  std::vector<CeaCaption> closed_captions;
 };
 
 }  // namespace shaka

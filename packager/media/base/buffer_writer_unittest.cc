@@ -80,13 +80,27 @@ class BufferWriterTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(BufferWriterTest);
 };
 
-TEST_F(BufferWriterTest, Append1) { Verify(kuint8); }
-TEST_F(BufferWriterTest, Append2) { Verify(kuint16); }
-TEST_F(BufferWriterTest, Append2s) { Verify(kint16); }
-TEST_F(BufferWriterTest, Append4) { Verify(kuint32); }
-TEST_F(BufferWriterTest, Append4s) { Verify(kint32); }
-TEST_F(BufferWriterTest, Append8) { Verify(kuint64); }
-TEST_F(BufferWriterTest, Append8s) { Verify(kint64); }
+TEST_F(BufferWriterTest, Append1) {
+  Verify(kuint8);
+}
+TEST_F(BufferWriterTest, Append2) {
+  Verify(kuint16);
+}
+TEST_F(BufferWriterTest, Append2s) {
+  Verify(kint16);
+}
+TEST_F(BufferWriterTest, Append4) {
+  Verify(kuint32);
+}
+TEST_F(BufferWriterTest, Append4s) {
+  Verify(kint32);
+}
+TEST_F(BufferWriterTest, Append8) {
+  Verify(kuint64);
+}
+TEST_F(BufferWriterTest, Append8s) {
+  Verify(kint64);
+}
 
 TEST_F(BufferWriterTest, AppendNBytes) {
   // Write the least significant four bytes and verify the result.

@@ -37,7 +37,7 @@ else()
 endif()
 
 # These all use EXCLUDE_FROM_ALL so that only the referenced targets get built.
-add_subdirectory(abseil-cpp EXCLUDE_FROM_ALL)
+add_subdirectory(abseil-cpp EXCLUDE_FROM_ALL SYSTEM)
 add_subdirectory(c-ares EXCLUDE_FROM_ALL)
 add_subdirectory(curl EXCLUDE_FROM_ALL)
 add_subdirectory(googletest EXCLUDE_FROM_ALL)
@@ -50,4 +50,8 @@ add_subdirectory(libxml2 EXCLUDE_FROM_ALL)
 add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
 add_subdirectory(mimalloc EXCLUDE_FROM_ALL)
 add_subdirectory(mongoose EXCLUDE_FROM_ALL)
-add_subdirectory(protobuf EXCLUDE_FROM_ALL)
+# Marking protobuf as SYSTEM enables "external headers" mode in code analysis
+# for the protobuf-internal headers included by files generated through protoc.
+# This is equivalent to how dependencies added through `find_package` are
+# treated.
+add_subdirectory(protobuf EXCLUDE_FROM_ALL SYSTEM)

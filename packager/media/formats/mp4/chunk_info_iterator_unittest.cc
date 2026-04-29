@@ -26,8 +26,11 @@ namespace media {
 namespace mp4 {
 
 const uint32_t kNumChunks = 100;
-const ChunkInfo kChunkInfos[] = {
-    {1, 8, 1}, {9, 5, 1}, {25, 7, 2}, {48, 63, 2}, {80, 2, 1}};
+const ChunkInfo kChunkInfos[] = {{1, 8, 1},
+                                 {9, 5, 1},
+                                 {25, 7, 2},
+                                 {48, 63, 2},
+                                 {80, 2, 1}};
 
 class ChunkInfoIteratorTest : public testing::Test {
  public:

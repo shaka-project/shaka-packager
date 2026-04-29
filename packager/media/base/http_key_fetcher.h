@@ -53,8 +53,10 @@ class HttpKeyFetcher : public KeyFetcher {
                       std::string* response);
 
  private:
-  Status FetchInternal(HttpMethod method, const std::string& url,
-                       const std::string& data, std::string* response);
+  Status FetchInternal(HttpMethod method,
+                       const std::string& url,
+                       const std::string& data,
+                       std::string* response);
 
   const int32_t timeout_in_seconds_;
 

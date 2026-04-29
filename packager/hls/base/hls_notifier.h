@@ -97,6 +97,8 @@ class HlsNotifier {
       const std::vector<uint8_t>& iv,
       const std::vector<uint8_t>& protection_system_specific_data) = 0;
 
+  virtual bool NotifyEndOfStream() = 0;
+
   /// Process any current buffered states/resources.
   /// @return true on success, false otherwise.
   virtual bool Flush() = 0;

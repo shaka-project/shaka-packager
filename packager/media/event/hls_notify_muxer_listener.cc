@@ -169,6 +169,7 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   // before all Media Playlists are read. Which could cause problems
   // setting the correct EXT-X-TARGETDURATION.
   if (media_info_->has_segment_template()) {
+    hls_notifier_->NotifyEndOfStream();
     return;
   }
   if (media_ranges.init_range) {
@@ -239,6 +240,8 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
     }
   }
   event_info_.clear();
+
+  hls_notifier_->NotifyEndOfStream();
 }
 
 void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,

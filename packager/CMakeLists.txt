@@ -19,8 +19,6 @@ endif()
 if(MSVC)
   # Warning level 4 and all warnings as errors.
   add_compile_options(/W4 /WX)
-  # Silence a warning from an absl header about alignment in boolean flags.
-  add_compile_options(/wd4324)
   # Silence a warning about STL types in exported classes.
   add_compile_options(/wd4251)
   # Silence a warning about constant conditional expressions.
@@ -49,6 +47,8 @@ else()
   # Several warning suppression flags are required on one compiler version and
   # not understood by another.  Do not treat these as errors.
   add_compile_options(-Wno-unknown-warning-option)
+  # Disable warnings about pre-C++17 compatibility.  We require C++17.
+  add_compile_options(-Wno-pre-c++17-compat)
 endif()
 
 # Global include paths.
@@ -71,6 +71,47 @@ if(NOT Python3_EXECUTABLE)
   find_package(Python3 COMPONENTS Interpreter REQUIRED)
 endif()
 
+if(USE_SYSTEM_DEPENDENCIES)
+  # find_package results cannot be propagated to parent directories, so we have to
+  # define them here and not in the third_party subdirectory.
+  find_package(absl REQUIRED)
+  find_package(MbedTLS REQUIRED)
+  find_package(GTest REQUIRED)
+  find_package(CURL REQUIRED)
+  find_package(LibXml2 REQUIRED)
+  find_package(PNG REQUIRED)
+  find_package(nlohmann_json REQUIRED)
+  find_package(Protobuf CONFIG REQUIRED)
+  find_package(webm REQUIRED)
+
+  # Alias to same names as vendored dependencies
+  add_library(mbedtls ALIAS MbedTLS::mbedtls)
+  add_library(gmock ALIAS GTest::gmock)
+  add_library(gtest ALIAS GTest::gtest)
+  add_library(gtest_main ALIAS GTest::gtest_main)
+  add_library(libcurl ALIAS CURL::libcurl)
+  add_library(LibXml2 ALIAS LibXml2::LibXml2)
+  add_library(png_static ALIAS PNG::PNG) # not static but the expected library name
+  add_library(libprotobuf ALIAS protobuf::libprotobuf)
+  add_executable(protoc ALIAS protobuf::protoc)
+  add_library(webm ALIAS webm::webm)
+
+  # Verify that the Python protobuf module is installed
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  execute_process(
+      COMMAND "${Python3_EXECUTABLE}" -c "import google.protobuf"
+      RESULT_VARIABLE PYTHON_PROTOBUF_STATUS
+      OUTPUT_QUIET
+  )
+  if(NOT PYTHON_PROTOBUF_STATUS EQUAL 0)
+    message(FATAL_ERROR "Python module google.protobuf is unavailable")
+  endif()
+  # Dummy target for tools/pssh
+  add_custom_target(protobuf_py)
+else()
+  add_subdirectory(third_party)
+endif()
+
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
 add_subdirectory(file)
 add_subdirectory(kv_pairs)
@@ -78,7 +119,6 @@ add_subdirectory(media)
 add_subdirectory(hls)
 add_subdirectory(mpd)
 add_subdirectory(status)
-add_subdirectory(third_party)
 add_subdirectory(tools)
 add_subdirectory(utils)
 add_subdirectory(version)

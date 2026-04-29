@@ -60,9 +60,9 @@ std::vector<Packet> GetAccessUnits(const uint8_t* stream, size_t stream_size) {
     // Find the next start code.
     uint64_t relative_offset = 0;
     uint8_t start_code_size = 0;
-    bool success = NaluReader::FindStartCode(
-        &stream[offset], stream_size - offset,
-        &relative_offset, &start_code_size);
+    bool success =
+        NaluReader::FindStartCode(&stream[offset], stream_size - offset,
+                                  &relative_offset, &start_code_size);
     if (!success)
       break;
     offset += relative_offset;
@@ -110,8 +110,8 @@ void AppendAUD(const uint8_t* stream,
     memcpy(&stream_with_aud[offset], aud, sizeof(aud));
     offset += sizeof(aud);
 
-    memcpy(&stream_with_aud[offset],
-           &stream[access_units[k].offset], access_units[k].size);
+    memcpy(&stream_with_aud[offset], &stream[access_units[k].offset],
+           access_units[k].size);
     offset += access_units[k].size;
   }
 }
@@ -120,9 +120,7 @@ void AppendAUD(const uint8_t* stream,
 
 class EsParserH264Test : public testing::Test {
  public:
-  EsParserH264Test()
-      : sample_count_(0),
-        first_frame_is_key_frame_(false) {}
+  EsParserH264Test() : sample_count_(0), first_frame_is_key_frame_(false) {}
 
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
@@ -229,8 +227,8 @@ TEST_F(EsParserH264Test, NonAlignedPesPacket) {
     // access unit and some bytes of the current access unit
     // (487 bytes in this unit test but no more than the current access unit
     // size).
-    cur_pes_packet.offset = access_units_[k].offset +
-        std::min<size_t>(487u, access_units_[k].size);
+    cur_pes_packet.offset =
+        access_units_[k].offset + std::min<size_t>(487u, access_units_[k].size);
   }
   ComputePacketSize(pes_packets, stream_.size());
 

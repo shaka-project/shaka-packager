@@ -60,14 +60,16 @@ TEST_P(AesPatternCryptorVerificationTest, PatternTest) {
   std::vector<uint8_t> text;
   std::string text_hex(GetParam().text_hex);
   if (!text_hex.empty()) {
-    std::string text_string = absl::HexStringToBytes(text_hex);
+    std::string text_string;
+    ASSERT_TRUE(absl::HexStringToBytes(text_hex, &text_string));
     text.assign(text_string.begin(), text_string.end());
   }
   std::vector<uint8_t> expected_crypt_text;
   std::string expected_crypt_text_hex(GetParam().expected_crypt_text_hex);
   if (!expected_crypt_text_hex.empty()) {
-    std::string expected_crypt_text_string =
-        absl::HexStringToBytes(expected_crypt_text_hex);
+    std::string expected_crypt_text_string;
+    ASSERT_TRUE(absl::HexStringToBytes(expected_crypt_text_hex,
+                                       &expected_crypt_text_string));
     expected_crypt_text.assign(expected_crypt_text_string.begin(),
                                expected_crypt_text_string.end());
   }

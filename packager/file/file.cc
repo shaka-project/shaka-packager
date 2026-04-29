@@ -46,7 +46,6 @@ const char* kUdpFilePrefix = "udp://";
 const char* kHttpFilePrefix = "http://";
 const char* kHttpsFilePrefix = "https://";
 
-
 namespace {
 
 typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);
@@ -75,7 +74,19 @@ bool DeleteLocalFile(const char* file_name) {
 
 bool WriteLocalFileAtomically(const char* file_name,
                               const std::string& contents) {
-  const auto file_path = std::filesystem::u8path(file_name);
+  std::error_code ec;
+  // To atomically move the temporary file to the target location after write,
+  // they must be on the same device. For relative paths without a directory
+  // part, the parent path is empty, which fails TempFilePath's empty directory
+  // path check, thus falling back to /tmp that is on a potentially different
+  // device. We prevent this by resolving the absolute file path.
+  const auto file_path =
+      std::filesystem::absolute(std::filesystem::u8path(file_name), ec);
+  if (ec) {
+    LOG(ERROR) << "Failed to resolve file path '" << file_name
+               << "', error: " << ec;
+    return false;
+  }
   const auto dir_path = file_path.parent_path();
 
   std::string temp_file_name;
@@ -84,7 +95,6 @@ bool WriteLocalFileAtomically(const char* file_name,
   if (!File::WriteStringToFile(temp_file_name.c_str(), contents))
     return false;
 
-  std::error_code ec;
   auto temp_file_path = std::filesystem::u8path(temp_file_name);
   std::filesystem::rename(temp_file_path, file_name, ec);
   if (ec) {
@@ -132,8 +142,7 @@ File* CreateMemoryFile(const char* file_name, const char* mode) {
 }
 
 bool DeleteMemoryFile(const char* file_name) {
-  MemoryFile::Delete(file_name);
-  return true;
+  return MemoryFile::Delete(file_name);
 }
 
 static const FileTypeInfo kFileTypeInfo[] = {
@@ -242,10 +251,9 @@ bool File::Delete(const char* file_name) {
   } else {
     if (!logged) {
       logged = true;
-      LOG(WARNING) << "File::Delete: file type for "
-            << file_name
-            << " ('" << file_type->type << "') "
-            << "has no 'delete' function.";
+      LOG(WARNING) << "File::Delete: file type for " << file_name << " ('"
+                   << file_type->type << "') "
+                   << "has no 'delete' function.";
     }
     return true;
   }
@@ -321,9 +329,9 @@ bool File::WriteFileAtomically(const char* file_name,
   // Skip the warning message for memory files, which is meant for testing
   // anyway..
   // Also check for http files, as they can't do atomic writes.
-  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0
-      && strncmp(file_name, kHttpFilePrefix, strlen(kHttpFilePrefix)) != 0
-      && strncmp(file_name, kHttpsFilePrefix, strlen(kHttpsFilePrefix)) != 0) {
+  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0 &&
+      strncmp(file_name, kHttpFilePrefix, strlen(kHttpFilePrefix)) != 0 &&
+      strncmp(file_name, kHttpsFilePrefix, strlen(kHttpsFilePrefix)) != 0) {
     LOG(WARNING) << "Writing to " << file_name
                  << " is not guaranteed to be atomic.";
   }

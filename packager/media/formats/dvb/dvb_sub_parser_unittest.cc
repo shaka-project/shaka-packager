@@ -122,11 +122,14 @@ TEST_F(DvbSubParserTest, TestHelper) {
 TEST_F(DvbSubParserTest, BasicFlow) {
   // Note up to segment_length is handled by caller.
   constexpr const uint8_t kDisplayDefinitionSegment[] = {
+      // clang-format off
       0x00,      // dds_version_number(4) | display_window_flag(1) | reserved(3)
       0x00, 99,  // display_width
       0x00, 99,  // display_height
+      // clang-format on
   };
   constexpr const uint8_t kPageCompositionSegment[] = {
+      // clang-format off
       0x02,  // page_time_out
       0x04,  // page_version_number(4) | page_state(2) | reserved(2)
       // First region
@@ -134,8 +137,10 @@ TEST_F(DvbSubParserTest, BasicFlow) {
       0x00,        // reserved
       0x00, 0x11,  // region_horizontal_address
       0x00, 0x12,  // region_vertical_address
+      // clang-format on
   };
   constexpr const uint8_t kRegionCompositionSegment[] = {
+      // clang-format off
       kRegionId,  // region_id
       0x08,       // region_version_number(4) | region_fill_flag(1) |
                   //   reserved(3)
@@ -159,6 +164,7 @@ TEST_F(DvbSubParserTest, BasicFlow) {
       0x00, 0x09,        // object_type(2) | object_provider_flag(2) |
                          //   object_horizontal_position(12)
       0x00, 0x0c,        // reserved(4) | object_vertical_position(12)
+      // clang-format on
   };
   constexpr const uint8_t kClutDefinitionSegment[] = {
       // clang-format off
@@ -215,6 +221,7 @@ TEST_F(DvbSubParserTest, BasicFlow) {
   // 0 0 1 0
   // 1 0 0 0
   const uint8_t kObjectData2[] = {
+      // clang-format off
       0x00, kObjectId2, 0x00,
 
       0x00, 0x0f,  // top-rows length
@@ -224,6 +231,7 @@ TEST_F(DvbSubParserTest, BasicFlow) {
       0x12, 0x01,       0x00, 0x03, 0x00, 0x00, 0xf0,        // row 2
 
       0x12, 0x00,       0x02, 0x01, 0x00, 0x01, 0x00, 0x00, 0xf0,  // row 1
+      // clang-format on
   };
   constexpr const uint8_t kEndOfDisplaySegment[] = {0x00};
   auto check_image_data = [&](DvbSubParser* parser, uint8_t object_id,

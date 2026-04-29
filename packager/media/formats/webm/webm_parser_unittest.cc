@@ -10,12 +10,12 @@
 #include <packager/media/formats/webm/cluster_builder.h>
 #include <packager/media/formats/webm/webm_constants.h>
 
+using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::ReturnNull;
 using ::testing::StrEq;
 using ::testing::StrictMock;
-using ::testing::_;
 
 namespace shaka {
 namespace media {
@@ -55,11 +55,9 @@ static std::unique_ptr<Cluster> CreateCluster(int block_count) {
 static void CreateClusterExpectations(int block_count,
                                       bool is_complete_cluster,
                                       MockWebMParserClient* client) {
-
   InSequence s;
   EXPECT_CALL(*client, OnListStart(kWebMIdCluster)).WillOnce(Return(client));
-  EXPECT_CALL(*client, OnUInt(kWebMIdTimecode, 0))
-      .WillOnce(Return(true));
+  EXPECT_CALL(*client, OnUInt(kWebMIdTimecode, 0)).WillOnce(Return(true));
 
   for (int i = 0; i < block_count; i++) {
     EXPECT_CALL(*client, OnBinary(kWebMIdSimpleBlock, _, _))
@@ -72,7 +70,7 @@ static void CreateClusterExpectations(int block_count,
 
 TEST_F(WebMParserTest, EmptyCluster) {
   const uint8_t kEmptyCluster[] = {
-      0x1F, 0x43, 0xB6, 0x75, 0x80  // CLUSTER (size = 0)
+      0x1F, 0x43, 0xB6, 0x75, 0x80,  // CLUSTER (size = 0)
   };
   int size = sizeof(kEmptyCluster);
 
@@ -123,8 +121,8 @@ TEST_F(WebMParserTest, ChildNonListLargerThanParent) {
 // that is beyond the end of the parent.
 TEST_F(WebMParserTest, ChildListLargerThanParent) {
   const uint8_t kBuffer[] = {
-      0x18, 0x53, 0x80, 0x67, 0x85,       // SEGMENT (size = 5)
-      0x1F, 0x43, 0xB6, 0x75, 0x81, 0x11  // CLUSTER (size = 1)
+      0x18, 0x53, 0x80, 0x67, 0x85,        // SEGMENT (size = 5)
+      0x1F, 0x43, 0xB6, 0x75, 0x81, 0x11,  // CLUSTER (size = 1)
   };
 
   InSequence s;
@@ -217,7 +215,6 @@ TEST_F(WebMParserTest, VoidAndCRC32InList) {
   EXPECT_EQ(size, parser.Parse(kBuffer, size));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
-
 
 TEST_F(WebMParserTest, ParseListElementWithSingleCall) {
   std::unique_ptr<Cluster> cluster(CreateCluster(kBlockCount));
@@ -346,8 +343,8 @@ TEST_F(WebMParserTest, ReservedIds) {
     int id;
     int64_t element_size;
     int buffer_size = 2 + static_cast<int>(i);
-    EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size,
-                                                  &id, &element_size));
+    EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size, &id,
+                                                  &element_size));
     EXPECT_EQ(id, kWebMReservedId);
     EXPECT_EQ(element_size, 1);
   }
@@ -374,8 +371,8 @@ TEST_F(WebMParserTest, ReservedSizes) {
     int id;
     int64_t element_size;
     int buffer_size = 2 + static_cast<int>(i);
-    EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size,
-                                                  &id, &element_size));
+    EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size, &id,
+                                                  &element_size));
     EXPECT_EQ(id, 0xA3);
     EXPECT_EQ(element_size, kWebMUnknownSize);
   }
@@ -383,11 +380,11 @@ TEST_F(WebMParserTest, ReservedSizes) {
 
 TEST_F(WebMParserTest, ZeroPaddedStrings) {
   const uint8_t kBuffer[] = {
-      0x1A, 0x45, 0xDF, 0xA3, 0x91,       // EBMLHEADER (size = 17)
-      0x42, 0x82, 0x80,                   // DocType (size = 0)
-      0x42, 0x82, 0x81, 0x00,             // DocType (size = 1) ""
-      0x42, 0x82, 0x81, 'a',              // DocType (size = 1) "a"
-      0x42, 0x82, 0x83, 'a',  0x00, 0x00  // DocType (size = 3) "a"
+      0x1A, 0x45, 0xDF, 0xA3, 0x91,        // EBMLHEADER (size = 17)
+      0x42, 0x82, 0x80,                    // DocType (size = 0)
+      0x42, 0x82, 0x81, 0x00,              // DocType (size = 1) ""
+      0x42, 0x82, 0x81, 'a',               // DocType (size = 1) "a"
+      0x42, 0x82, 0x83, 'a',  0x00, 0x00,  // DocType (size = 3) "a"
   };
   int size = sizeof(kBuffer);
 

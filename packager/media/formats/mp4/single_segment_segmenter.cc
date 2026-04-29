@@ -81,10 +81,9 @@ Status SingleSegmentSegmenter::DoInitialize() {
   if (!TempFilePath(options().temp_dir, &temp_file_name_))
     return Status(error::FILE_FAILURE, "Unable to create temporary file.");
   temp_file_.reset(File::Open(temp_file_name_.c_str(), "w"));
-  return temp_file_
-             ? Status::OK
-             : Status(error::FILE_FAILURE,
-                      "Cannot open file to write " + temp_file_name_);
+  return temp_file_ ? Status::OK
+                    : Status(error::FILE_FAILURE,
+                             "Cannot open file to write " + temp_file_name_);
 }
 
 Status SingleSegmentSegmenter::DoFinalize() {
@@ -219,7 +218,8 @@ Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_number) {
   // Append fragment buffer to temp file.
   size_t segment_size = fragment_buffer()->Size();
   Status status = fragment_buffer()->WriteToFile(temp_file_.get());
-  if (!status.ok()) return status;
+  if (!status.ok())
+    return status;
 
   UpdateProgress(vod_ref.subsegment_duration);
   if (muxer_listener()) {

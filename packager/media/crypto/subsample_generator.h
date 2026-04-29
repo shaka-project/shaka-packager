@@ -21,6 +21,7 @@ namespace media {
 class AV1Parser;
 class VideoSliceHeaderParser;
 class VPxParser;
+class AC4Parser;
 struct SubsampleEntry;
 
 /// Parsing and generating encryption subsamples from bitstreams. Note that the
@@ -36,7 +37,8 @@ class SubsampleGenerator {
  public:
   /// @param vp9_subsample_encryption determines if subsample encryption or full
   ///        sample encryption is used for VP9. Only relevant for VP9 codec.
-  explicit SubsampleGenerator(bool vp9_subsample_encryption);
+  /// @param cencv1 whether to use CENC v1 instead of v3 for H26x content.
+  explicit SubsampleGenerator(bool vp9_subsample_encryption, bool cencv1);
 
   virtual ~SubsampleGenerator();
 
@@ -75,6 +77,10 @@ class SubsampleGenerator {
       const uint8_t* frame,
       size_t frame_size,
       std::vector<SubsampleEntry>* subsamples);
+  Status GenerateSubsamplesFromAC4Frame(
+      const uint8_t* frame,
+      size_t frame_size,
+      std::vector<SubsampleEntry>* subsamples);
   Status GenerateSubsamplesFromH26xFrame(
       const uint8_t* frame,
       size_t frame_size,
@@ -85,6 +91,7 @@ class SubsampleGenerator {
       std::vector<SubsampleEntry>* subsamples);
 
   const bool vp9_subsample_encryption_ = false;
+  const bool cencv1_ = false;
   // Whether the protected portion should be AES block (16 bytes) aligned.
   bool align_protected_data_ = false;
   Codec codec_ = kUnknownCodec;

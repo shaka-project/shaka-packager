@@ -35,6 +35,10 @@ ABSL_FLAG(bool,
           vp9_subsample_encryption,
           true,
           "Enable VP9 subsample encryption.");
+ABSL_FLAG(bool,
+          cencv1,
+          false,
+          "Use CENC v1 (2012) instead of v3 (2016+) for encryption.");
 ABSL_FLAG(std::string,
           playready_extra_header_data,
           "",
@@ -66,6 +70,13 @@ bool ValueIsXml(const char* flagname, const std::string& value) {
 namespace shaka {
 bool ValidateCryptoFlags() {
   bool success = true;
+
+  auto cencv1 = absl::GetFlag(FLAGS_cencv1);
+  auto scheme = absl::GetFlag(FLAGS_protection_scheme);
+  if (cencv1 && scheme != "cenc") {
+    fprintf(stderr, "ERROR: CENC v1 only supports 'cenc' scheme.\n");
+    success = false;
+  }
 
   auto crypt_byte_block = absl::GetFlag(FLAGS_crypt_byte_block);
   if (!ValueNotGreaterThanTen("crypt_byte_block", crypt_byte_block)) {

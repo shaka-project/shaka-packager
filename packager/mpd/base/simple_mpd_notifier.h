@@ -57,6 +57,9 @@ class SimpleMpdNotifier : public MpdNotifier {
                               const std::vector<uint8_t>& new_pssh) override;
   bool NotifyMediaInfoUpdate(uint32_t container_id,
                              const MediaInfo& media_info) override;
+
+  bool NotifyEndOfStream() override;
+
   bool Flush() override;
   /// @}
 

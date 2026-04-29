@@ -46,7 +46,7 @@ class EncryptionHandler : public MediaHandler {
   // Processes media sample and encrypts it if needed.
   Status ProcessMediaSample(std::shared_ptr<const MediaSample> clear_sample);
 
-  void SetupProtectionPattern(StreamType stream_type);
+  void SetupProtectionPattern(StreamType stream_type, Codec codec);
   bool CreateEncryptor(const EncryptionKey& encryption_key);
   // Encrypt an E-AC3 frame with size |source_size| according to SAMPLE-AES
   // specification. |dest| should have at least |source_size| bytes.

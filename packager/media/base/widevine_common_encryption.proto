@@ -11,7 +11,9 @@ syntax = "proto2";
 
 package shaka;
 
-enum ModularDrmType { WIDEVINE = 0; }
+enum ModularDrmType {
+  WIDEVINE = 0;
+}
 
 message CommonEncryptionRequest {
   enum ProtectionScheme {
@@ -30,7 +32,9 @@ message CommonEncryptionRequest {
   optional string policy = 2;
 
   // A list of tracks whose PSSHes and keys should be returned.
-  message Track { optional string type = 1; }
+  message Track {
+    optional string type = 1;
+  }
   repeated Track tracks = 3;
 
   // Indicates the drm system types whose PSSH should be generated. An empty

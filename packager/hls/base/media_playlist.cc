@@ -165,7 +165,6 @@ std::string CreatePlaylistHeader(
   return header;
 }
 
-
 }  // namespace
 
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
@@ -238,7 +237,6 @@ std::string SegmentInfoEntry::ToString() {
 
   return result;
 }
-
 
 class DiscontinuityEntry : public HlsEntry {
  public:
@@ -510,20 +508,28 @@ void MediaPlaylist::AddPlacementOpportunity() {
   entries_.emplace_back(new PlacementOpportunityEntry());
 }
 
-bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path) {
+bool MediaPlaylist::WriteToFile(const std::filesystem::path& file_path,
+                                bool event_to_vod_on_end_of_stream,
+                                bool end_stream) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
+  HlsPlaylistType playlist_type = hls_params_.playlist_type;
+  if (event_to_vod_on_end_of_stream && end_stream &&
+      playlist_type == HlsPlaylistType::kEvent) {
+    playlist_type = HlsPlaylistType::kVod;
+  }
+
   std::string content = CreatePlaylistHeader(
-      media_info_, target_duration_, hls_params_.playlist_type, stream_type_,
+      media_info_, target_duration_, playlist_type, stream_type_,
       media_sequence_number_, discontinuity_sequence_number_,
       hls_params_.start_time_offset);
 
   for (const auto& entry : entries_)
     absl::StrAppendFormat(&content, "%s\n", entry->ToString().c_str());
 
-  if (hls_params_.playlist_type == HlsPlaylistType::kVod) {
+  if (playlist_type == HlsPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";
   }
 
@@ -815,10 +821,16 @@ void MediaPlaylist::RemoveOldSegment(int64_t start_time) {
       media_info_.bandwidth()));
   while (segments_to_be_removed_.size() >
          hls_params_.preserved_segments_outside_live_window) {
-    VLOG(2) << "Deleting " << segments_to_be_removed_.front();
-    if (!File::Delete(segments_to_be_removed_.front().c_str())) {
-      LOG(WARNING) << "Failed to delete " << segments_to_be_removed_.front()
-                   << "; Will retry later.";
+    const std::string& file_name = segments_to_be_removed_.front();
+    VLOG(2) << "Deleting " << file_name;
+    // DASH and HLS outputs could both be tracking the same files and are in a
+    // race to delete them. Delete() returns false if the file does not exist,
+    // but we only want to retry if the file does exist (indicating a failure
+    // to delete, rather than the file already being gone). GetFileSize()
+    // returns >= 0 if the file exists, and < 0 if it does not.
+    if (!File::Delete(file_name.c_str()) &&
+        File::GetFileSize(file_name.c_str()) >= 0) {
+      LOG(WARNING) << "Failed to delete " << file_name << "; Will retry later.";
       break;
     }
     segments_to_be_removed_.pop_front();

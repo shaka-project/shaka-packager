@@ -149,8 +149,8 @@ class NaluReader {
  public:
   enum Result {
     kOk,
-    kInvalidStream,      // error in stream
-    kEOStream,           // end of stream
+    kInvalidStream,  // error in stream
+    kEOStream,       // end of stream
   };
 
   /// @param nalu_length_size should be set to 0 for AnnexB byte streams;
@@ -218,10 +218,7 @@ class NaluReader {
   bool StartsWithStartCode();
 
  private:
-  enum Format {
-    kAnnexbByteStreamFormat,
-    kNalUnitStreamFormat
-  };
+  enum Format { kAnnexbByteStreamFormat, kNalUnitStreamFormat };
 
   // Move the stream pointer to the beginning of the next NALU,
   // i.e. pointing at the next start code.

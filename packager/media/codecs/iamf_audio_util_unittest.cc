@@ -20,11 +20,14 @@ const int kSimpleProfile = 0;
 const int kBaseProfile = 1;
 
 const std::vector<uint8_t> kIacbBase = {
+    // clang-format off
     0x01,  // configurationVersion
-    0x20   // configOBUs_size
+    0x20,  // configOBUs_size
+    // clang-format on
 };
 
 const std::vector<uint8_t> kSimpleIaSequenceObu = {
+    // clang-format off
     // OBU header
     0xf8,  // obu_type (5 bits), obu_redundant_copy (1 bit),
            // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
@@ -32,10 +35,12 @@ const std::vector<uint8_t> kSimpleIaSequenceObu = {
     // IASequenceHeaderOBU
     0x69, 0x61, 0x6d, 0x66,  // ia_code
     0x00,                    // primary_profile = simple
-    0x00                     // additional_profile = simple
+    0x00,                    // additional_profile = simple
+    // clang-format on
 };
 
 const std::vector<uint8_t> kOpusCodecConfigObu = {
+    // clang-format off
     // OBU header
     0x00,  // obu_type (5 bits), obu_redundant_copy (1 bit),
            // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
@@ -43,24 +48,31 @@ const std::vector<uint8_t> kOpusCodecConfigObu = {
     // CodecConfigOBU
     0xc8, 0x01,              // codec_config_id
     0x4f, 0x70, 0x75, 0x73,  // codec_id = 'Opus'
-    0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
+    0x46, 0x41, 0x4B, 0x45,  // 'F''A''K''E' remainder codec config OBU
+    // clang-format on
 };
 
 const std::vector<uint8_t> kFakeAudioElementObu = {
+    // clang-format off
     // OBU header
     0x08,  // obu_type (5 bits), obu_redundant_copy (1 bit),
            // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
     0x04,  // obu_size
     // 'F''A''K''E' AudioElementOBU
-    0x46, 0x41, 0x4B, 0x45};
+    0x46, 0x41, 0x4B, 0x45,
+    // clang-format on
+};
 
 const std::vector<uint8_t> kFakeMixPresentationObu = {
+    // clang-format off
     // OBU header
     0x10,  // obu_type (5 bits), obu_redundant_copy (1 bit),
            // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
     0x04,  // obu_size
     // 'F''A''K''E' MixPresentationOBU
-    0x46, 0x41, 0x4B, 0x45};
+    0x46, 0x41, 0x4B, 0x45,
+    // clang-format on
+};
 
 }  // namespace
 
@@ -88,6 +100,7 @@ TEST(IamfAudioUtilTest, GetCodecStringInfoWithSimpleProfiles) {
 
 TEST(IamfAudioUtilTest, CodecStringInfoTestWithBaseProfiles) {
   const std::vector<uint8_t> base_ia_sequence_obu = {
+      // clang-format off
       // OBU header
       0xf8,  // obu_type (5 bits), obu_redundant_copy (1 bit),
              // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
@@ -95,7 +108,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoTestWithBaseProfiles) {
       // IASequenceHeaderOBU
       0x69, 0x61, 0x6d, 0x66,  // ia_code
       0x01,                    // primary_profile = base
-      0x01                     // additional_profile = base
+      0x01,                    // additional_profile = base
+      // clang-format on
   };
 
   std::vector<uint8_t> iacb;
@@ -121,6 +135,7 @@ TEST(IamfAudioUtilTest, CodecStringInfoTestWithBaseProfiles) {
 
 TEST(IamfAudioUtilTest, CodecStringInfoWithPcm) {
   const std::vector<uint8_t> pcm_codec_config_obu = {
+      // clang-format off
       // OBU header
       0x00,  // obu_type (5 bits), obu_redundant_copy (1 bit),
              // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
@@ -128,7 +143,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithPcm) {
       // CodecConfigOBU
       0xc8, 0x01,              // codec_config_id
       0x69, 0x70, 0x63, 0x6d,  // codec_id = 'ipcm'
-      0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
+      0x46, 0x41, 0x4B, 0x45,  // 'F''A''K''E' remainder codec config OBU
+      // clang-format on
   };
 
   std::vector<uint8_t> iacb;
@@ -154,6 +170,7 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithPcm) {
 
 TEST(IamfAudioUtilTest, CodecStringInfoWithMp4a) {
   const std::vector<uint8_t> mp4a_codec_config_obu = {
+      // clang-format off
       // OBU header
       0x00,  // obu_type (5 bits), obu_redundant_copy (1 bit),
              // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
@@ -161,7 +178,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithMp4a) {
       // CodecConfigOBU
       0xc8, 0x01,              // codec_config_id
       0x6d, 0x70, 0x34, 0x61,  // codec_id = 'mp4a'
-      0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
+      0x46, 0x41, 0x4B, 0x45,  // 'F''A''K''E' remainder codec config OBU
+      // clang-format on
   };
 
   std::vector<uint8_t> iacb;
@@ -187,6 +205,7 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithMp4a) {
 
 TEST(IamfAudioUtilTest, CodecStringInfoWithFlac) {
   const std::vector<uint8_t> flac_codec_config_obu = {
+      // clang-format off
       // OBU header
       0x00,  // obu_type (5 bits), obu_redundant_copy (1 bit),
              // obu_trimming_status_flag (1 bit), obu_extension_flag (1 bit)
@@ -194,7 +213,8 @@ TEST(IamfAudioUtilTest, CodecStringInfoWithFlac) {
       // CodecConfigOBU
       0xc8, 0x01,              // codec_config_id
       0x66, 0x4C, 0x61, 0x43,  // codec_id = 'fLaC'
-      0x46, 0x41, 0x4B, 0x45   // 'F''A''K''E' remainder codec config OBU
+      0x46, 0x41, 0x4B, 0x45,  // 'F''A''K''E' remainder codec config OBU
+      // clang-format on
   };
 
   std::vector<uint8_t> iacb;
