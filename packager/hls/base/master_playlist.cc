@@ -448,9 +448,9 @@ void AppendPlaylists(const std::string& default_audio_language,
 
     switch (playlist->stream_type()) {
       case MediaPlaylist::MediaPlaylistStreamType::kAudio:
-        audio_playlists.push_back(
-            {playlist, GetGroupId(*playlist), /*is_default=*/false,
-             /*is_autoselect=*/false});
+        audio_playlists.push_back({playlist, GetGroupId(*playlist),
+                                   /*is_default=*/false,
+                                   /*is_autoselect=*/false});
         break;
       case MediaPlaylist::MediaPlaylistStreamType::kVideo:
         video_playlists.push_back(playlist);
@@ -459,9 +459,9 @@ void AppendPlaylists(const std::string& default_audio_language,
         iframe_playlists.push_back(playlist);
         break;
       case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
-        subtitle_playlists.push_back(
-            {playlist, GetGroupId(*playlist), /*is_default=*/false,
-             /*is_autoselect=*/false});
+        subtitle_playlists.push_back({playlist, GetGroupId(*playlist),
+                                      /*is_default=*/false,
+                                      /*is_autoselect=*/false});
         break;
       default:
         NOTIMPLEMENTED() << static_cast<int>(playlist->stream_type())
