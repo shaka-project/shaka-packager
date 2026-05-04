@@ -62,7 +62,7 @@ struct Variant {
 };
 
 // This structure is used to store the playlist and its tags.
-struct MediaTagslist {
+struct MediaTags {
   const MediaPlaylist* playlist;
   std::string group_id;
   bool is_default;
@@ -394,12 +394,12 @@ bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
   return a->GetMediaInfo().index() < b->GetMediaInfo().index();
 }
 
-bool TagslistOrderByIndexFn(const MediaTagslist& a, const MediaTagslist& b) {
+bool TagslistOrderByIndexFn(const MediaTags& a, const MediaTags& b) {
   return a.playlist->GetMediaInfo().index() <
          b.playlist->GetMediaInfo().index();
 }
 
-bool TagslistOrderByGroupIdFn(const MediaTagslist& a, const MediaTagslist& b) {
+bool TagslistOrderByGroupIdFn(const MediaTags& a, const MediaTags& b) {
   return a.group_id < b.group_id;
 }
 
@@ -429,8 +429,8 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
-  std::list<MediaTagslist> audio_playlists;
-  std::list<MediaTagslist> subtitle_playlists;
+  std::list<MediaTags> audio_playlists;
+  std::list<MediaTags> subtitle_playlists;
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
 
