@@ -228,6 +228,82 @@ TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
                 " timescale=\"1000\" presentationTimeOffset=\"1500\">"));
 }
 
+// Regression test for https://github.com/shaka-project/shaka-packager/issues/1433.
+//
+// In a multi-period on-demand manifest, text tracks must use a consistent
+// segment structure across ALL periods. Period 0 has presentationTimeOffset=0
+// (field never set by SetPresentationTimeOffset), so it emits just <BaseURL>.
+// Period 1+ have PTO > 0 and must emit <BaseURL> + <SegmentBase
+// presentationTimeOffset="...">, NOT <SegmentList> + <SegmentURL media="...">.
+//
+// Mixing SegmentBase (period 0) and SegmentList (period 1+) violates the DASH
+// spec and causes Google DAI ingestion to reject the manifest.
+TEST_F(OnDemandMpdBuilderTest, MultiPeriodTextTracksUseConsistentSegmentStructure) {
+  // Two ad-break periods driven by video segments at known timestamps.
+  // Period 0: video starts at t=0, duration=3s
+  // Period 1: video starts at t=5.5s, duration=10.5s
+  const double kPeriod1StartSeconds = 0.0;
+  const double kPeriod2StartSeconds = 3.1;
+
+  const double kPeriod1VideoStartSeconds = 0.0;
+  const double kPeriod1VideoDurationSeconds = 3.0;
+  const double kPeriod2VideoStartSeconds = 5.5;
+  const double kPeriod2VideoDurationSeconds = 10.5;
+
+  // VTT subtitle — a single file referenced by both periods (same URL, different
+  // presentationTimeOffset tells the player where to seek within it).
+  // reference_time_scale must be set: without it SetPresentationTimeOffset()
+  // computes pto = seconds * 0 = 0 and silently skips setting the proto field,
+  // so the bug would never trigger. With it set to 1000, period 1's pto = 5500.
+  const char kVttMediaInfo[] =
+      "text_info {\n"
+      "  codec: 'wvtt'\n"
+      "  language: 'en-US'\n"
+      "  type: SUBTITLE\n"
+      "}\n"
+      "media_duration_seconds: 1800\n"
+      "bandwidth: 0\n"
+      "media_file_url: 'en-US.vtt'\n"
+      "container_type: CONTAINER_TEXT\n"
+      "reference_time_scale: 1000\n";
+  const MediaInfo vtt_media_info = ConvertToMediaInfo(kVttMediaInfo);
+
+  // Build period 0: video + text.
+  Period* period1 = mpd_.GetOrCreatePeriod(kPeriod1StartSeconds);
+  AddSegmentToPeriod(kPeriod1VideoStartSeconds, kPeriod1VideoDurationSeconds,
+                     period1);
+  AdaptationSet* text_as1 =
+      period1->GetOrCreateAdaptationSet(vtt_media_info, false);
+  ASSERT_TRUE(text_as1);
+  ASSERT_TRUE(text_as1->AddRepresentation(vtt_media_info));
+
+  // Build period 1: video + text.
+  Period* period2 = mpd_.GetOrCreatePeriod(kPeriod2StartSeconds);
+  AddSegmentToPeriod(kPeriod2VideoStartSeconds, kPeriod2VideoDurationSeconds,
+                     period2);
+  AdaptationSet* text_as2 =
+      period2->GetOrCreateAdaptationSet(vtt_media_info, false);
+  ASSERT_TRUE(text_as2);
+  ASSERT_TRUE(text_as2->AddRepresentation(vtt_media_info));
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+
+  // Both periods must reference the VTT file via BaseURL, not via a SegmentURL
+  // inside a SegmentList (which would be the wrong, inconsistent form).
+  EXPECT_THAT(mpd_doc, HasSubstr("<BaseURL>en-US.vtt</BaseURL>"));
+
+  // Period 0: video PTO=0, text PTO=0 — field never set by
+  // SetPresentationTimeOffset — so text emits just <BaseURL>, no SegmentBase.
+  // Period 1: video PTO=5500 and text PTO=5500 — text emits
+  // <BaseURL> + <SegmentBase timescale="1000" presentationTimeOffset="5500"/>.
+  // The key check: text track in period 1 uses SegmentBase, not SegmentList.
+  EXPECT_THAT(mpd_doc,
+              HasSubstr("<SegmentBase timescale=\"1000\" "
+                        "presentationTimeOffset=\"5500\""));
+  EXPECT_THAT(mpd_doc, ::testing::Not(HasSubstr("<SegmentList")));
+}
+
 TEST_F(LiveMpdBuilderTest, MultiplePeriodCheckXmlTest) {
   const double kPeriod1StartTimeSeconds = 0.0;
   const double kPeriod2StartTimeSeconds = 3.1;

@@ -416,29 +416,27 @@ bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
                                            bool use_segment_list,
                                            double target_segment_duration) {
-  const bool use_single_segment_url_with_media =
-      media_info.has_text_info() && media_info.has_presentation_time_offset();
-
-  if (media_info.has_media_file_url() && !use_single_segment_url_with_media) {
+  if (media_info.has_media_file_url()) {
     XmlNode base_url("BaseURL");
     base_url.SetUrlEncodedContent(media_info.media_file_url());
 
     RCHECK(AddChild(std::move(base_url)));
   }
 
+  // For single-file text tracks with a presentationTimeOffset we still need a
+  // SegmentBase element to carry the offset — SegmentBase is correct here
+  // because the track is a single segment, not a segmented stream.
   const bool need_segment_base_or_list =
       use_segment_list || media_info.has_index_range() ||
       media_info.has_init_range() ||
       (media_info.has_reference_time_scale() && !media_info.has_text_info()) ||
-      use_single_segment_url_with_media;
+      (media_info.has_text_info() && media_info.has_presentation_time_offset());
 
   if (!need_segment_base_or_list) {
     return true;
   }
 
-  XmlNode child(use_segment_list || use_single_segment_url_with_media
-                    ? "SegmentList"
-                    : "SegmentBase");
+  XmlNode child(use_segment_list ? "SegmentList" : "SegmentBase");
 
   // Forcing SegmentList for longer audio causes sidx atom to not be
   // generated, therefore indexRange is not added to MPD if flag is set.
@@ -451,7 +449,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
     RCHECK(child.SetIntegerAttribute("timescale",
                                      media_info.reference_time_scale()));
 
-    if (use_segment_list && !use_single_segment_url_with_media) {
+    if (use_segment_list) {
       const auto duration_seconds = static_cast<int64_t>(
           floor(target_segment_duration * media_info.reference_time_scale()));
       RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
@@ -469,13 +467,6 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
         "range", RangeToString(media_info.init_range())));
 
     RCHECK(child.AddChild(std::move(initialization)));
-  }
-
-  if (use_single_segment_url_with_media) {
-    XmlNode media_url("SegmentURL");
-    RCHECK(media_url.SetStringAttribute(
-        "media", urlEncode(media_info.media_file_url())));
-    RCHECK(child.AddChild(std::move(media_url)));
   }
 
   // Since the SegmentURLs here do not have a @media element,
