@@ -643,8 +643,9 @@ TEST_F(OnDemandVODSegmentTest, TextInfoWithPresentationOffset) {
                            "</Representation>"));
 }
 
-// Regression test for https://github.com/shaka-project/shaka-packager/issues/1433.
-// A VTT text track (the exact codec reported in the issue) with a non-zero
+// Regression test for
+// https://github.com/shaka-project/shaka-packager/issues/1433. A VTT text track
+// (the exact codec reported in the issue) with a non-zero
 // presentationTimeOffset — i.e. any period after the first — must produce
 // BaseURL + SegmentBase, NOT SegmentList.
 TEST_F(OnDemandVODSegmentTest, TextInfoVttWithPresentationOffset) {

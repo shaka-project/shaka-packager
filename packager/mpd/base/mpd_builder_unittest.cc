@@ -228,7 +228,8 @@ TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
                 " timescale=\"1000\" presentationTimeOffset=\"1500\">"));
 }
 
-// Regression test for https://github.com/shaka-project/shaka-packager/issues/1433.
+// Regression test for
+// https://github.com/shaka-project/shaka-packager/issues/1433.
 //
 // In a multi-period on-demand manifest, text tracks must use a consistent
 // segment structure across ALL periods. Period 0 has presentationTimeOffset=0
@@ -238,7 +239,8 @@ TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
 //
 // Mixing SegmentBase (period 0) and SegmentList (period 1+) violates the DASH
 // spec and causes Google DAI ingestion to reject the manifest.
-TEST_F(OnDemandMpdBuilderTest, MultiPeriodTextTracksUseConsistentSegmentStructure) {
+TEST_F(OnDemandMpdBuilderTest,
+       MultiPeriodTextTracksUseConsistentSegmentStructure) {
   // Two ad-break periods driven by video segments at known timestamps.
   // Period 0: video starts at t=0, duration=3s
   // Period 1: video starts at t=5.5s, duration=10.5s
@@ -250,8 +252,8 @@ TEST_F(OnDemandMpdBuilderTest, MultiPeriodTextTracksUseConsistentSegmentStructur
   const double kPeriod2VideoStartSeconds = 5.5;
   const double kPeriod2VideoDurationSeconds = 10.5;
 
-  // VTT subtitle — a single file referenced by both periods (same URL, different
-  // presentationTimeOffset tells the player where to seek within it).
+  // VTT subtitle — a single file referenced by both periods (same URL,
+  // different presentationTimeOffset tells the player where to seek within it).
   // reference_time_scale must be set: without it SetPresentationTimeOffset()
   // computes pto = seconds * 0 = 0 and silently skips setting the proto field,
   // so the bug would never trigger. With it set to 1000, period 1's pto = 5500.
@@ -298,9 +300,8 @@ TEST_F(OnDemandMpdBuilderTest, MultiPeriodTextTracksUseConsistentSegmentStructur
   // Period 1: video PTO=5500 and text PTO=5500 — text emits
   // <BaseURL> + <SegmentBase timescale="1000" presentationTimeOffset="5500"/>.
   // The key check: text track in period 1 uses SegmentBase, not SegmentList.
-  EXPECT_THAT(mpd_doc,
-              HasSubstr("<SegmentBase timescale=\"1000\" "
-                        "presentationTimeOffset=\"5500\""));
+  EXPECT_THAT(mpd_doc, HasSubstr("<SegmentBase timescale=\"1000\" "
+                                 "presentationTimeOffset=\"5500\""));
   EXPECT_THAT(mpd_doc, ::testing::Not(HasSubstr("<SegmentList")));
 }
 
