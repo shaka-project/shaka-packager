@@ -398,8 +398,28 @@ void MpdBuilder::UpdatePeriodDurationAndPresentationTimestamp() {
       }
     }
 
-    if (!earliest_start_time)
-      return;
+    if (!earliest_start_time) {
+      // No segment timestamps were found for this period. This happens for
+      // periods 1+ in multi-period on-demand DASH when representations are
+      // created via CopyRepresentation() in SimpleMpdNotifier::NotifyCueEvent()
+      // — the copy constructor does not copy segment_infos_, so
+      // GetStartAndEndTimestamps() returns false for all copied
+      // representations.
+      //
+      // Fall back to the period's own start time (set from the cue event
+      // timestamp that triggered the period boundary) as the
+      // presentationTimeOffset for every representation in this period, so that
+      // players know which byte-offset within the shared single-file asset to
+      // begin reading from.
+      const double period_start_time = period->start_time_in_seconds();
+      for (const auto& adaptation_set : period->GetAdaptationSets()) {
+        for (const auto& representation :
+             adaptation_set->GetRepresentations()) {
+          representation->SetPresentationTimeOffset(period_start_time);
+        }
+      }
+      continue;
+    }
 
     period->set_duration_seconds(*latest_end_time - *earliest_start_time);
 

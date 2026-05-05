@@ -1431,6 +1431,35 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
 
+  def testDashOnDemandMultiPeriodVttInMp4(self):
+    # Regression test for https://github.com/shaka-project/shaka-packager/issues/1493
+    # On-demand DASH multi-period with VTT-in-MP4 text track: period 1 must
+    # have presentationTimeOffset on SegmentBase so players seek to the right
+    # position within the shared single-file MP4 text asset.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('text', test_file='bear-english.vtt',
+                        output_format='mp4'),
+    ]
+    flags = self._GetFlags(output_dash=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-ondemand-multiperiod-vtt-in-mp4')
+
+  def testDashOnDemandMultiPeriodPlainVtt(self):
+    # Regression test for https://github.com/shaka-project/shaka-packager/issues/1493
+    # On-demand DASH multi-period with a plain WebVTT sidecar text track:
+    # period 1 must have presentationTimeOffset on SegmentBase so players know
+    # which portion of the shared .vtt file belongs to that period.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('text', test_file='bear-english.vtt'),
+    ]
+    flags = self._GetFlags(output_dash=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-ondemand-multiperiod-plain-vtt')
+
   def testWebmSubsampleEncryption(self):
     streams = [
         self._GetStream('video', test_file='bear-320x180-vp9-altref.webm')

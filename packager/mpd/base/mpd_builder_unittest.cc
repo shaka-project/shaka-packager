@@ -305,6 +305,73 @@ TEST_F(OnDemandMpdBuilderTest,
   EXPECT_THAT(mpd_doc, ::testing::Not(HasSubstr("<SegmentList")));
 }
 
+// Regression test for issue #1493: multi-period on-demand DASH with
+// text-in-MP4 tracks.
+//
+// In the real pipeline, when SimpleMpdNotifier::NotifyCueEvent creates
+// representations for periods 1+, it uses CopyRepresentation() which does NOT
+// copy segment_infos_. As a result UpdatePeriodDurationAndPresentationTimestamp
+// previously found no segment timestamps for period 1+ and returned early
+// (using 'return' instead of 'continue'), leaving all periods 1+ without a
+// presentationTimeOffset. The fix uses the period's own start_time_in_seconds()
+// as the PTO fallback and 'continue's to process subsequent periods.
+TEST_F(OnDemandMpdBuilderTest, MultiPeriodTextMp4UsesCorrectPto) {
+  const double kPeriod1StartTimeSeconds = 0.0;
+  const double kPeriod2StartTimeSeconds = 5.5;
+
+  // Period 0: add a video representation with a segment so that
+  // UpdatePeriodDurationAndPresentationTimestamp can compute timestamps
+  // for period 0.
+  Period* period1 = mpd_.GetOrCreatePeriod(kPeriod1StartTimeSeconds);
+  AddSegmentToPeriod(0.0 /*segment_start*/, 5.5 /*duration*/, period1);
+
+  // Period 1: add a text-in-MP4 representation WITHOUT adding any segments.
+  // This simulates the CopyRepresentation() path in NotifyCueEvent() where the
+  // copied representation has empty segment_infos_.
+  Period* period2 = mpd_.GetOrCreatePeriod(kPeriod2StartTimeSeconds);
+  ASSERT_TRUE(period2);
+
+  // Construct a text media info that mirrors a real wvtt-in-MP4 output.
+  const char kWvttMp4MediaInfo[] =
+      "text_info {\n"
+      "  codec: 'wvtt'\n"
+      "  language: 'en-US'\n"
+      "  type: SUBTITLE\n"
+      "}\n"
+      "media_duration_seconds: 1800\n"
+      "bandwidth: 0\n"
+      "media_file_url: 'en-US.mp4'\n"
+      "container_type: CONTAINER_MP4\n"
+      "reference_time_scale: 1000\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 734\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 735\n"
+      "  end: 5710\n"
+      "}\n";
+
+  const MediaInfo text_media_info = ConvertToMediaInfo(kWvttMp4MediaInfo);
+  AdaptationSet* adaptation_set =
+      period2->GetOrCreateAdaptationSet(text_media_info, false);
+  ASSERT_TRUE(adaptation_set);
+  Representation* rep = adaptation_set->AddRepresentation(text_media_info);
+  ASSERT_TRUE(rep);
+  // Intentionally do NOT call rep->AddNewSegment() — segment_infos_ is empty,
+  // exactly as when the representation was created via CopyRepresentation().
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+
+  // Period 1 (start=5.5s) should have presentationTimeOffset = 5.5 * 1000 =
+  // 5500.
+  EXPECT_THAT(mpd_doc, HasSubstr("<BaseURL>en-US.mp4</BaseURL>"));
+  EXPECT_THAT(mpd_doc, HasSubstr("presentationTimeOffset=\"5500\""));
+  // SegmentBase (not SegmentList) must be used for single-file text tracks.
+  EXPECT_THAT(mpd_doc, ::testing::Not(HasSubstr("<SegmentList")));
+}
+
 TEST_F(LiveMpdBuilderTest, MultiplePeriodCheckXmlTest) {
   const double kPeriod1StartTimeSeconds = 0.0;
   const double kPeriod2StartTimeSeconds = 3.1;
