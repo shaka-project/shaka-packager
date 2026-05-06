@@ -108,7 +108,7 @@ bool ThreadedIoFile::Flush() {
     return false;
 
   {
-    absl::MutexLock lock(&flush_mutex_);
+    absl::MutexLock lock(flush_mutex_);
     flushing_ = true;
     flush_complete_ = false;
   }
@@ -160,7 +160,7 @@ bool ThreadedIoFile::Tell(uint64_t* position) {
 
 void ThreadedIoFile::TaskHandler() {
   {
-    absl::MutexLock lock(&task_exited_mutex_);
+    absl::MutexLock lock(task_exited_mutex_);
     task_exited_ = false;
   }
 
@@ -170,7 +170,7 @@ void ThreadedIoFile::TaskHandler() {
     RunInOutputMode();
 
   {
-    absl::MutexLock lock(&task_exited_mutex_);
+    absl::MutexLock lock(task_exited_mutex_);
     task_exited_ = true;
   }
 }
@@ -201,7 +201,7 @@ void ThreadedIoFile::RunInOutputMode() {
   while (true) {
     uint64_t write_bytes = cache_.Read(&io_buffer_[0], io_buffer_.size());
     if (write_bytes == 0) {
-      absl::MutexLock lock(&flush_mutex_);
+      absl::MutexLock lock(flush_mutex_);
       if (flushing_) {
         cache_.Reopen();
         flushing_ = false;
@@ -218,7 +218,7 @@ void ThreadedIoFile::RunInOutputMode() {
           internal_file_error_.store(write_result, std::memory_order_relaxed);
           cache_.Close();
 
-          absl::MutexLock lock(&flush_mutex_);
+          absl::MutexLock lock(flush_mutex_);
           if (flushing_) {
             flushing_ = false;
             flush_complete_ = true;
@@ -239,7 +239,7 @@ void ThreadedIoFile::WaitForSignal(absl::Mutex* mutex, bool* condition) {
   mutex->LockWhen(absl::Condition(condition));
 
   // LockWhen leaves the mutex locked.  Return after unlocking the mutex again.
-  mutex->Unlock();
+  mutex->unlock();
 }
 
 }  // namespace shaka

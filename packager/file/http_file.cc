@@ -10,6 +10,7 @@
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/log/vlog_is_on.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>

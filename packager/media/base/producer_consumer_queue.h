@@ -81,7 +81,7 @@ class ProducerConsumerQueue {
   /// Also terminate all waiting and future Push requests immediately.
   /// Stop cannot stall.
   void Stop() {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     stop_requested_ = true;
     not_empty_cv_.SignalAll();
     not_full_cv_.SignalAll();
@@ -90,34 +90,34 @@ class ProducerConsumerQueue {
 
   /// @return true if there are no elements in the queue.
   bool Empty() const {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     return q_.empty();
   }
 
   /// @return The number of elements in the queue.
   size_t Size() const {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     return q_.size();
   }
 
   /// @return The position of the head element in the queue. Note that the
   ///         returned value may be meaningless if the queue is empty.
   size_t HeadPos() const {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     return head_pos_;
   }
 
   /// @return The position of the tail element in the queue. Note that the
   ///         returned value may be meaningless if the queue is empty.
   size_t TailPos() const {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     return head_pos_ + q_.size() - 1;
   }
 
   /// @return true if the queue has been stopped using Stop(). This allows
   ///         producers to check if they can add new elements to the queue.
   bool Stopped() const {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     return stop_requested_;
   }
 
@@ -155,7 +155,7 @@ ProducerConsumerQueue<T>::~ProducerConsumerQueue() {}
 
 template <class T>
 Status ProducerConsumerQueue<T>::Push(const T& element, int64_t timeout_ms) {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   bool woken = false;
 
   // Check for queue shutdown.
@@ -205,7 +205,7 @@ Status ProducerConsumerQueue<T>::Push(const T& element, int64_t timeout_ms) {
 
 template <class T>
 Status ProducerConsumerQueue<T>::Pop(T* element, int64_t timeout_ms) {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   bool woken = false;
 
   auto start = std::chrono::steady_clock::now();
@@ -250,7 +250,7 @@ template <class T>
 Status ProducerConsumerQueue<T>::Peek(size_t pos,
                                       T* element,
                                       int64_t timeout_ms) {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   if (pos < head_pos_) {
     return Status(error::INVALID_ARGUMENT,
                   absl::StrFormat("pos (%zu) is too small; head is at %zu.",

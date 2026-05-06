@@ -1,72 +1,37 @@
-# How to contribute #
+# How to Contribute
 
-We'd love to accept your patches and contributions to this project.  There are
-just a few small guidelines you need to follow.
-
-
-## Contributor License Agreement ##
-
-Contributions to any Google project must be accompanied by a Contributor
-License Agreement.  This is not a copyright **assignment**, it simply gives
-Google permission to use and redistribute your contributions as part of the
-project.
-
-  * If you are an individual writing original source code and you're sure you
-    own the intellectual property, then you'll need to sign an [individual
-    CLA][].
-
-  * If you work for a company that wants to allow you to contribute your work,
-    then you'll need to sign a [corporate CLA][].
-
-You generally only need to submit a CLA once, so if you've already submitted
-one (even if it was for a different project), you probably don't need to do it
-again.
-
-[individual CLA]: https://developers.google.com/open-source/cla/individual
-[corporate CLA]: https://developers.google.com/open-source/cla/corporate
-
-Once your CLA is submitted (or if you already submitted one for
-another Google project), make a commit adding yourself to the
-[AUTHORS][] and [CONTRIBUTORS][] files. This commit can be part
-of your first [pull request][].
-
-[AUTHORS]: AUTHORS
-[CONTRIBUTORS]: CONTRIBUTORS
+We'd love to accept your patches and contributions to this project. There are just a few guidelines to follow.
 
 
-## Code style ##
+## Filing Issues
 
-C++ code is formatted with `clang-format`. The project standardizes on
-clang-format 18; versions 18 through 22 are known to produce identical output
-as of the date this message was written and are all acceptable. Older versions
-(e.g. 14, 16) produce different output in some cases and should not be used.
-
-See `packager/tools/git/check_formatting.py` for installation instructions.
-You can install it as a pre-commit hook so formatting is checked automatically
-before each commit:
-
-    cp packager/tools/git/check_formatting.py .git/hooks/pre-commit
+Before starting work on a significant change, we recommend filing or finding an issue first. This lets us discuss the approach and avoid duplicated effort. For small bug fixes, jumping straight to a PR is fine.
 
 
-## Submitting a patch ##
+## Submitting a Pull Request
 
-  1. It's generally best to start by opening a new issue describing the bug or
-     feature you're intending to fix.  Even if you think it's relatively minor,
-     it's helpful to know what people are working on.  Mention in the initial
-     issue that you are planning to work on that bug or feature so that it can
-     be assigned to you.
+All submissions, including submissions by project members, require review via GitHub pull request.
 
-  1. Follow the normal process of [forking][] the project, and setup a new
-     branch to work in.  It's important that each group of changes be done in
-     separate branches in order to ensure that a pull request only includes the
-     commits related to that bug or feature.
 
-  1. Do your best to have [well-formed commit messages][] for each change.
-     This provides consistency throughout the project, and ensures that commit
-     messages are able to be formatted properly by various git tools.
+## Commit Messages
 
-  1. Finally, push the commits to your fork and submit a [pull request][].
+This project follows [Conventional Commits](https://www.conventionalcommits.org/). Commit messages and PR titles should use a type prefix such as `fix:`, `feat:`, `chore:`, etc. These feed directly into automated changelog generation and semantic versioning, so the message should describe the user-visible impact, not the implementation detail.
 
-[forking]: https://help.github.com/articles/fork-a-repo
-[well-formed commit messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
-[pull request]: https://help.github.com/articles/creating-a-pull-request
+Because the PR title generates the changelog entry, your PR title should reflect what a user needs to know about the change.  So we would prefer `fix: Avoid uncaught exceptions when loading encrypted content` (says what was wrong from a user perspective) over `fix: Refactor internal error handling in FooLoader` (describes the internal changes, not the observable changes).
+
+
+## Code Style and Tests
+
+Before submitting a pull request, make sure your changes pass the project's linter and test suite. Details on how to run these can be found in the project's README, `AGENTS.md`, or via standard commands like `npm run lint` and `npm test`.
+
+
+## AI-Assisted Contributions
+
+Contributions written or assisted by AI coding agents are welcome. Any commit that involved AI assistance must include attribution in the commit message. See [`AGENT-ATTRIBUTION.md`](AGENT-ATTRIBUTION.md) for the required format.
+
+**Why this matters:** Attribution helps reviewers calibrate their review effort, gives the project an honest record of how the code was produced, and ensures the human submitting the PR has reviewed and takes responsibility for the changes.
+
+
+## Code of Conduct
+
+This project follows our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold it.

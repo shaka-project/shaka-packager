@@ -79,7 +79,7 @@ TestWebServer::TestWebServer() : status_(kNew), stopped_(false) {}
 
 TestWebServer::~TestWebServer() {
   {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     stop_.Signal();
     stopped_ = true;
   }
@@ -92,7 +92,7 @@ TestWebServer::~TestWebServer() {
 bool TestWebServer::Start() {
   thread_.reset(new std::thread(&TestWebServer::ThreadCallback, this));
 
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   while (status_ == kNew) {
     started_.Wait(&mutex_);
   }
@@ -134,7 +134,7 @@ void TestWebServer::ThreadCallback() {
   }
 
   {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     if (!ok) {
       // Failed to find a port to listen on.  Mongoose has already printed an
       // error message.
@@ -154,7 +154,7 @@ void TestWebServer::ThreadCallback() {
 
     // Check for a stop signal from the test.
     {
-      absl::MutexLock lock(&mutex_);
+      absl::MutexLock lock(mutex_);
       stopped = stopped_;
       if (stopped)
         status_ = kStopped;

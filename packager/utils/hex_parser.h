@@ -13,8 +13,6 @@
 
 namespace shaka {
 
-void HexStringToBytes(const std::string& hex, std::vector<uint8_t>* bytes);
-
 // If you use absl::HexStringToBytes directly, any invalid byte sequence will
 // be converted into NUL characters silently.  This function will validate the
 // input.

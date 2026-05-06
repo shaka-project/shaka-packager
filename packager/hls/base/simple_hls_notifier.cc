@@ -343,7 +343,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     encryption_method = enc_method.value();
   }
 
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   *stream_id = sequence_number_++;
   media_playlists_.push_back(media_playlist.get());
   stream_map_[*stream_id].reset(
@@ -353,7 +353,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
 
 bool SimpleHlsNotifier::NotifySampleDuration(uint32_t stream_id,
                                              int32_t sample_duration) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -370,7 +370,7 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          int64_t duration,
                                          uint64_t start_byte_offset,
                                          uint64_t size) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -423,7 +423,7 @@ bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
                                        int64_t timestamp,
                                        uint64_t start_byte_offset,
                                        uint64_t size) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -435,7 +435,7 @@ bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
 }
 
 bool SimpleHlsNotifier::NotifyCueEvent(uint32_t stream_id, int64_t timestamp) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -452,7 +452,7 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     const std::vector<uint8_t>& system_id,
     const std::vector<uint8_t>& iv,
     const std::vector<uint8_t>& protection_system_specific_data) {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
   if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
@@ -543,7 +543,7 @@ bool SimpleHlsNotifier::NotifyEndOfStream() {
 }
 
 bool SimpleHlsNotifier::Flush() {
-  absl::MutexLock lock(&lock_);
+  absl::MutexLock lock(lock_);
   for (MediaPlaylist* playlist : media_playlists_) {
     if (hls_params().per_playlist_target_duration) {
       playlist->SetTargetDuration(

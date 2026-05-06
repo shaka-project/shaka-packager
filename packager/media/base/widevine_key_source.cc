@@ -115,7 +115,7 @@ WidevineKeySource::~WidevineKeySource() {
 
 Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
                                     const std::string& policy) {
-  absl::MutexLock scoped_lock(&mutex_);
+  absl::MutexLock scoped_lock(mutex_);
   common_encryption_request_.reset(new CommonEncryptionRequest);
   common_encryption_request_->set_content_id(content_id.data(),
                                              content_id.size());
@@ -179,7 +179,7 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
   }
   const bool widevine_classic =
       init_data_type == EmeInitDataType::WIDEVINE_CLASSIC;
-  absl::MutexLock scoped_lock(&mutex_);
+  absl::MutexLock scoped_lock(mutex_);
   common_encryption_request_.reset(new CommonEncryptionRequest);
   if (widevine_classic) {
     common_encryption_request_->set_asset_id(asset_id);
@@ -220,7 +220,7 @@ Status WidevineKeySource::GetCryptoPeriodKey(
     EncryptionKey* key) {
   // TODO(kqyang): This is not elegant. Consider refactoring later.
   {
-    absl::MutexLock scoped_lock(&mutex_);
+    absl::MutexLock scoped_lock(mutex_);
     if (!key_production_started_) {
       crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
       // Another client may have a slightly smaller starting crypto period

@@ -33,7 +33,7 @@ IoCache::~IoCache() {
 uint64_t IoCache::Read(void* buffer, uint64_t size) {
   DCHECK(buffer);
 
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   while (!closed_ && (BytesCachedInternal() == 0)) {
     write_event_.Wait(&mutex_);
   }
@@ -63,7 +63,7 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
   const uint8_t* r_ptr(static_cast<const uint8_t*>(buffer));
   uint64_t bytes_left(size);
   while (bytes_left) {
-    absl::MutexLock lock(&mutex_);
+    absl::MutexLock lock(mutex_);
     while (!closed_ && (BytesFreeInternal() == 0)) {
       VLOG(1) << "Circular buffer is full, which can happen if data arrives "
                  "faster than being consumed by packager. Ignore if it is not "
@@ -96,33 +96,33 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
 }
 
 void IoCache::Clear() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   r_ptr_ = w_ptr_ = circular_buffer_.data();
   // Let any writers know that there is room in the cache.
   read_event_.Signal();
 }
 
 void IoCache::Close() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   closed_ = true;
   read_event_.Signal();
   write_event_.Signal();
 }
 
 void IoCache::Reopen() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   CHECK(closed_);
   r_ptr_ = w_ptr_ = circular_buffer_.data();
   closed_ = false;
 }
 
 uint64_t IoCache::BytesCached() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   return BytesCachedInternal();
 }
 
 uint64_t IoCache::BytesFree() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   return BytesFreeInternal();
 }
 
@@ -137,7 +137,7 @@ uint64_t IoCache::BytesFreeInternal() {
 }
 
 void IoCache::WaitUntilEmptyOrClosed() {
-  absl::MutexLock lock(&mutex_);
+  absl::MutexLock lock(mutex_);
   while (!closed_ && BytesCachedInternal()) {
     read_event_.Wait(&mutex_);
   }

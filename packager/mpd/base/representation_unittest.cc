@@ -1403,4 +1403,25 @@ TEST_F(RepresentationDeleteSegmentsTest, ManyRepeatingSegments) {
       absl::StrFormat(kStringPrintTemplate, last_available_segment_index - 1)));
 }
 
+// Verify that if a segment is already deleted (e.g. by a racing HLS packager),
+// the deletion of subsequent segments is not blocked.
+TEST_F(RepresentationDeleteSegmentsTest, FileAlreadyDeleted) {
+  for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
+    AddSegments(kInitialStartTime + i * kDuration, kDuration, kSize, kNoRepeat);
+  }
+
+  // Manually delete the first segment to simulate a race condition.
+  File::Delete(absl::StrFormat(kStringPrintTemplate, 1).c_str());
+
+  // Add more segments to trigger the deletion of the first two segments.
+  AddSegments(kInitialStartTime + kMaxNumSegmentsAvailable * kDuration,
+              kDuration, kSize, kNoRepeat);
+  AddSegments(kInitialStartTime + (kMaxNumSegmentsAvailable + 1) * kDuration,
+              kDuration, kSize, kNoRepeat);
+
+  // The second segment should still be deleted successfully, even though the
+  // first segment was already deleted before the packager tried to delete it.
+  EXPECT_TRUE(SegmentDeleted(absl::StrFormat(kStringPrintTemplate, 2)));
+}
+
 }  // namespace shaka

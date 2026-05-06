@@ -40,7 +40,7 @@ class MemoryFile : public File {
   static void DeleteAll();
   /// Deletes the memory file data with the given file_name.  Any objects open
   /// with that file name will be in an undefined state.
-  static void Delete(const std::string& file_name);
+  static bool Delete(const std::string& file_name);
 
  protected:
   ~MemoryFile() override;

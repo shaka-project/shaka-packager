@@ -19,8 +19,6 @@ endif()
 if(MSVC)
   # Warning level 4 and all warnings as errors.
   add_compile_options(/W4 /WX)
-  # Silence a warning from an absl header about alignment in boolean flags.
-  add_compile_options(/wd4324)
   # Silence a warning about STL types in exported classes.
   add_compile_options(/wd4251)
   # Silence a warning about constant conditional expressions.
