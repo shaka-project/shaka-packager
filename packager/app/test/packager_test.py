@@ -1432,10 +1432,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
 
   def testDashOnDemandMultiPeriodVttInMp4(self):
-    # Regression test for https://github.com/shaka-project/shaka-packager/issues/1493
-    # On-demand DASH multi-period with VTT-in-MP4 text track: period 1 must
-    # have presentationTimeOffset on SegmentBase so players seek to the right
-    # position within the shared single-file MP4 text asset.
+    # Regression test for issue #1493: on-demand DASH multi-period with
+    # VTT-in-MP4 must have presentationTimeOffset on period 1+ SegmentBase.
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
@@ -1447,10 +1445,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('dash-ondemand-multiperiod-vtt-in-mp4')
 
   def testDashOnDemandMultiPeriodPlainVtt(self):
-    # Regression test for https://github.com/shaka-project/shaka-packager/issues/1493
-    # On-demand DASH multi-period with a plain WebVTT sidecar text track:
-    # period 1 must have presentationTimeOffset on SegmentBase so players know
-    # which portion of the shared .vtt file belongs to that period.
+    # Regression test for issue #1493: on-demand DASH multi-period with
+    # plain VTT must have presentationTimeOffset on period 1+ SegmentBase.
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
