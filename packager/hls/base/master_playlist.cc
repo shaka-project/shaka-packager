@@ -436,7 +436,7 @@ void AppendPlaylists(const std::string& default_audio_language,
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
 
-bool has_index = true;
+  bool has_index = true;
 
   // First pass: classify playlists and capture their group ids. The
   // is_default/is_autoselect flags are left at their default values here and
