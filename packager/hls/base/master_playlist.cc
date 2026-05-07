@@ -61,7 +61,9 @@ struct Variant {
   uint64_t avg_audio_bitrate = 0;
 };
 
-// This structure is used to store the playlist and its tags.
+// Pairs a media playlist with the EXT-X-MEDIA tag attributes computed for it.
+// Resolving the attributes (group id, default/autoselect) up front lets us
+// emit tags in input order without re-grouping by GROUP-ID first.
 struct MediaTags {
   const MediaPlaylist* playlist;
   std::string group_id;
@@ -541,7 +543,10 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
-  // Build groups only for BuildVariants (deferred grouping).
+  // BuildVariants() (and the audio-only fallback below) still need playlists
+  // bucketed by GROUP-ID, so rebuild those groups here from the already-emitted
+  // tag list. The tag emission above intentionally ignored grouping in order
+  // to honor input order.
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
   std::map<std::string, std::list<const MediaPlaylist*>>
       subtitle_playlist_groups;
