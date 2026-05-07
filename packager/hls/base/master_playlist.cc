@@ -61,8 +61,10 @@ struct Variant {
   uint64_t avg_audio_bitrate = 0;
 };
 
-// This structure is used to store the playlist and its tags.
-struct MediaTagslist {
+// Pairs a media playlist with the EXT-X-MEDIA tag attributes computed for it.
+// Resolving the attributes (group id, default/autoselect) up front lets us
+// emit tags in input order without re-grouping by GROUP-ID first.
+struct MediaTags {
   const MediaPlaylist* playlist;
   std::string group_id;
   bool is_default;
@@ -394,12 +396,12 @@ bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
   return a->GetMediaInfo().index() < b->GetMediaInfo().index();
 }
 
-bool TagslistOrderByIndexFn(const MediaTagslist& a, const MediaTagslist& b) {
+bool MediaTagsOrderByIndexFn(const MediaTags& a, const MediaTags& b) {
   return a.playlist->GetMediaInfo().index() <
          b.playlist->GetMediaInfo().index();
 }
 
-bool TagslistOrderByGroupIdFn(const MediaTagslist& a, const MediaTagslist& b) {
+bool MediaTagsOrderByGroupIdFn(const MediaTags& a, const MediaTags& b) {
   return a.group_id < b.group_id;
 }
 
@@ -429,12 +431,12 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
-  std::list<MediaTagslist> audio_playlists;
-  std::list<MediaTagslist> subtitle_playlists;
+  std::list<MediaTags> audio_playlists;
+  std::list<MediaTags> subtitle_playlists;
   std::list<const MediaPlaylist*> video_playlists;
   std::list<const MediaPlaylist*> iframe_playlists;
 
-  bool has_index = true;
+bool has_index = true;
 
   // First pass: classify playlists and capture their group ids. The
   // is_default/is_autoselect flags are left at their default values here and
@@ -466,19 +468,20 @@ void AppendPlaylists(const std::string& default_audio_language,
       default:
         NOTIMPLEMENTED() << static_cast<int>(playlist->stream_type())
                          << " not handled.";
+        break;
     }
   }
 
   if (has_index) {
     video_playlists.sort(PlaylistOrderFn);
     iframe_playlists.sort(PlaylistOrderFn);
-    audio_playlists.sort(TagslistOrderByIndexFn);
-    subtitle_playlists.sort(TagslistOrderByIndexFn);
+    audio_playlists.sort(MediaTagsOrderByIndexFn);
+    subtitle_playlists.sort(MediaTagsOrderByIndexFn);
   } else {
     // When there's no index, sort by group_id to maintain consistent ordering
     // (matching the original behavior of using std::map which sorts by key).
-    audio_playlists.sort(TagslistOrderByGroupIdFn);
-    subtitle_playlists.sort(TagslistOrderByGroupIdFn);
+    audio_playlists.sort(MediaTagsOrderByGroupIdFn);
+    subtitle_playlists.sort(MediaTagsOrderByGroupIdFn);
   }
 
   // Second pass: now that the audio and subtitle lists are in their final
@@ -543,7 +546,10 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
-  // Build groups only for BuildVariants (deferred grouping).
+  // BuildVariants() (and the audio-only fallback below) still need playlists
+  // bucketed by GROUP-ID, so rebuild those groups here from the already-emitted
+  // tag list. The tag emission above intentionally ignored grouping in order
+  // to honor input order.
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
   std::map<std::string, std::list<const MediaPlaylist*>>
       subtitle_playlist_groups;
