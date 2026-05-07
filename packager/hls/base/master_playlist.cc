@@ -396,12 +396,12 @@ bool PlaylistOrderFn(const MediaPlaylist*& a, const MediaPlaylist*& b) {
   return a->GetMediaInfo().index() < b->GetMediaInfo().index();
 }
 
-bool TagslistOrderByIndexFn(const MediaTags& a, const MediaTags& b) {
+bool MediaTagsOrderByIndexFn(const MediaTags& a, const MediaTags& b) {
   return a.playlist->GetMediaInfo().index() <
          b.playlist->GetMediaInfo().index();
 }
 
-bool TagslistOrderByGroupIdFn(const MediaTags& a, const MediaTags& b) {
+bool MediaTagsOrderByGroupIdFn(const MediaTags& a, const MediaTags& b) {
   return a.group_id < b.group_id;
 }
 
@@ -518,13 +518,13 @@ void AppendPlaylists(const std::string& default_audio_language,
   if (has_index) {
     video_playlists.sort(PlaylistOrderFn);
     iframe_playlists.sort(PlaylistOrderFn);
-    audio_playlists.sort(TagslistOrderByIndexFn);
-    subtitle_playlists.sort(TagslistOrderByIndexFn);
+    audio_playlists.sort(MediaTagsOrderByIndexFn);
+    subtitle_playlists.sort(MediaTagsOrderByIndexFn);
   } else {
     // When there's no index, sort by group_id to maintain consistent ordering
     // (matching the original behavior of using std::map which sorts by key).
-    audio_playlists.sort(TagslistOrderByGroupIdFn);
-    subtitle_playlists.sort(TagslistOrderByGroupIdFn);
+    audio_playlists.sort(MediaTagsOrderByGroupIdFn);
+    subtitle_playlists.sort(MediaTagsOrderByGroupIdFn);
   }
 
   if (!audio_playlists.empty()) {
