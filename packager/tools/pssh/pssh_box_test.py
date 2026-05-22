@@ -31,10 +31,14 @@ PLAYREADY_SYSTEM_ID = '9A04F07998404286AB92E65BE0885F95'
 
 
 def run(*args):
-  result = subprocess.run([sys.executable, PSSH_BOX, *args],
+  # Use stdout/stderr=PIPE and universal_newlines instead of capture_output
+  # and text, which were only added in Python 3.7. Some supported distros
+  # (e.g. OpenSUSE Leap 15) still ship Python 3.6.
+  result = subprocess.run([sys.executable, PSSH_BOX] + list(args),
                           cwd=SCRIPT_DIR,
-                          capture_output=True,
-                          text=True,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE,
+                          universal_newlines=True,
                           check=True)
   return result.stdout.strip()
 
