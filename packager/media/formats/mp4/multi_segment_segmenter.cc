@@ -87,7 +87,8 @@ Status MultiSegmentSegmenter::WriteInitSegment() {
   std::unique_ptr<BufferWriter> buffer(new BufferWriter);
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
-  if (options().mp4_params.signal_ac4_de_preselection && meta() && meta()->ComputeSize() > 0) {
+  if (options().mp4_params.signal_ac4_de_preselection && meta() &&
+      meta()->ComputeSize() > 0) {
     meta()->Write(buffer.get());
   }
   return buffer->WriteToFile(file.get());

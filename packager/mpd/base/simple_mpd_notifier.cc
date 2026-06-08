@@ -14,8 +14,8 @@
 #include <packager/mpd/base/mpd_notifier_util.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/period.h>
-#include <packager/mpd/base/representation.h>
 #include <packager/mpd/base/preselection.h>
+#include <packager/mpd/base/representation.h>
 
 namespace shaka {
 

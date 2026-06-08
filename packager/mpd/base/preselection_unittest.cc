@@ -99,7 +99,9 @@ TEST(PreselectionTest, GetXmlWithLabels) {
   const char kExpectedXml[] =
       "<Preselection id=\"1000\" preselectionComponents=\"1\" lang=\"en\" "
       "tag=\"1\" selectionPriority=\"3\">"
-       "  <SupplementalProperty schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" value=\"0.0\"/>"
+      "  <SupplementalProperty "
+      "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
+      "value=\"0.0\"/>"
       "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
       "  <SupplementalProperty "
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
@@ -120,7 +122,9 @@ TEST(PreselectionTest, GetXmlWithRoles) {
   const char kExpectedXml[] =
       "<Preselection id=\"1000\" preselectionComponents=\"1\" lang=\"en\" "
       "tag=\"1\" selectionPriority=\"3\">"
-       "  <SupplementalProperty schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" value=\"0.0\"/>"
+      "  <SupplementalProperty "
+      "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
+      "value=\"0.0\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"
       "  <SupplementalProperty "
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
@@ -189,7 +193,7 @@ TEST(PreselectionTest, GetXmlComplete) {
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
       "value=\"4.0\"/>"
       "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
-       "  <Accessibility schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+      "  <Accessibility schemeIdUri=\"urn:mpeg:dash:role:2011\" "
       "value=\"enhanced-audio-intelligibility\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"
       "</Preselection>";
@@ -211,7 +215,9 @@ TEST(PreselectionTest, GetXmlWithMultipleLabelsAndRoles) {
   const char kExpectedXml[] =
       "<Preselection id=\"1000\" preselectionComponents=\"1\" lang=\"en\" "
       "tag=\"1\" selectionPriority=\"3\">"
-      "  <SupplementalProperty schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" value=\"0.0\"/>"
+      "  <SupplementalProperty "
+      "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
+      "value=\"0.0\"/>"
       "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
       "  <Label lang=\"de\" value=\"Dialog +4dB\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"

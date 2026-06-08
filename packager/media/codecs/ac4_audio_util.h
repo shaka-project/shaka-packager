@@ -37,7 +37,8 @@ bool CalculateAC4ChannelMPEGValue(const std::vector<uint8_t>& ac4_data,
 /// Part 2: Immersive and personalized E.13.
 /// @return false if there are parsing errors.
 bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
-                     uint8_t* ac4_codec_info, uint8_t* channel_count);
+                     uint8_t* ac4_codec_info,
+                     uint8_t* channel_count);
 
 /// Parse data from AC4Specific box and obtain AC4 Immersive stereo (IMS) flag
 /// and Channel-base audio (CBI) flag.

@@ -1187,28 +1187,26 @@ TEST_F(AdaptationSetTest, AddPreselectionLabelNoLanguage) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
   ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("", "No Language"));
 
-  EXPECT_THAT(adaptation_set_xml,
-              XmlNodeEqual("<AdaptationSet>"
-                           "  <Label>No Language</Label>"
-                           "</AdaptationSet>"));
+  EXPECT_THAT(adaptation_set_xml, XmlNodeEqual("<AdaptationSet>"
+                                               "  <Label>No Language</Label>"
+                                               "</AdaptationSet>"));
 }
 
 // Test AddPreselectionRole with scheme and value.
 TEST_F(AdaptationSetTest, AddPreselectionRole) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole(
-      "urn:mpeg:dash:role:2011", "main"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole(
-      "urn:mpeg:dash:role:2011", "alternate"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011",
+                                                     "main"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011",
+                                                     "alternate"));
 
-  EXPECT_THAT(
-      adaptation_set_xml,
-      XmlNodeEqual("<AdaptationSet>"
-                   "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
-                   "value=\"main\"/>"
-                   "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
-                   "value=\"alternate\"/>"
-                   "</AdaptationSet>"));
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"main\"/>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"alternate\"/>"
+                           "</AdaptationSet>"));
 }
 
 // Test AddPreselectionRole with empty value.
@@ -1228,35 +1226,30 @@ TEST_F(AdaptationSetTest, AddPreselectionLabelAndRole) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
   ASSERT_TRUE(
       adaptation_set_xml.AddPreselectionLabel("en", "Dialog Enhancement"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole(
-      "urn:mpeg:dash:role:2011", "main"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011",
+                                                     "main"));
 
-  EXPECT_THAT(
-      adaptation_set_xml,
-      XmlNodeEqual("<AdaptationSet>"
-                   "  <Label lang=\"en\">Dialog Enhancement</Label>"
-                   "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
-                   "value=\"main\"/>"
-                   "</AdaptationSet>"));
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Dialog Enhancement</Label>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"main\"/>"
+                           "</AdaptationSet>"));
 }
 
 // Test multiple labels with different languages for AC-4 preselection.
 TEST_F(AdaptationSetTest, AddPreselectionMultipleLabels) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(
-      adaptation_set_xml.AddPreselectionLabel("en", "Enhanced Audio"));
-  ASSERT_TRUE(
-      adaptation_set_xml.AddPreselectionLabel("es", "Audio Mejorado"));
-  ASSERT_TRUE(
-      adaptation_set_xml.AddPreselectionLabel("fr", "Audio Amélioré"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("en", "Enhanced Audio"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("es", "Audio Mejorado"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("fr", "Audio Amélioré"));
 
-  EXPECT_THAT(
-      adaptation_set_xml,
-      XmlNodeEqual("<AdaptationSet>"
-                   "  <Label lang=\"en\">Enhanced Audio</Label>"
-                   "  <Label lang=\"es\">Audio Mejorado</Label>"
-                   "  <Label lang=\"fr\">Audio Amélioré</Label>"
-                   "</AdaptationSet>"));
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Enhanced Audio</Label>"
+                           "  <Label lang=\"es\">Audio Mejorado</Label>"
+                           "  <Label lang=\"fr\">Audio Amélioré</Label>"
+                           "</AdaptationSet>"));
 }
 
 }  // namespace shaka

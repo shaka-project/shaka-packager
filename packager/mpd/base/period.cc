@@ -176,8 +176,7 @@ std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
 
   for (const auto& preselection : preselection_list_) {
     auto preselection_xml = preselection->GetXml();
-    if (!preselection_xml ||
-        !period.AddChild(std::move(*preselection_xml))) {
+    if (!preselection_xml || !period.AddChild(std::move(*preselection_xml))) {
       return std::nullopt;
     }
   }
@@ -321,8 +320,8 @@ bool Period::SetNewAdaptationSetAttributes(
             nullptr;
         uint32_t max_selection_priority = 0;
         for (const auto& preselection : media_info.audio_info()
-                                             .codec_specific_data()
-                                             .ac4_preselections()) {
+                                            .codec_specific_data()
+                                            .ac4_preselections()) {
           if (preselection.has_selection_priority() &&
               preselection.selection_priority() > max_selection_priority) {
             max_selection_priority = preselection.selection_priority();
@@ -330,14 +329,14 @@ bool Period::SetNewAdaptationSetAttributes(
           }
         }
         if (ac4_preselection_with_max_priority) {
-          for (auto& label: ac4_preselection_with_max_priority->labels()) {
+          for (auto& label : ac4_preselection_with_max_priority->labels()) {
             new_adaptation_set->AddPreselectionLabel(label.lang(),
-                                                        label.value());
+                                                     label.value());
           }
           for (const auto& role_pair :
                ac4_preselection_with_max_priority->roles()) {
             new_adaptation_set->AddPreselectionRole(role_pair.scheme(),
-                                                       role_pair.value());
+                                                    role_pair.value());
           }
         }
       }

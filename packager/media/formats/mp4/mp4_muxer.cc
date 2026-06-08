@@ -332,24 +332,24 @@ Status MP4Muxer::DelayInitializeMuxer() {
     }
     if (stream->codec() == kCodecAC4 &&
         options().mp4_params.signal_ac4_de_preselection) {
-        if (!meta) {
-          meta = std::make_unique<Meta>();
-          meta->handler.handler_type = FOURCC_meta;
-        }
+      if (!meta) {
+        meta = std::make_unique<Meta>();
         meta->handler.handler_type = FOURCC_meta;
-        meta->raw_box = stream->meta_box_data();
+      }
+      meta->handler.handler_type = FOURCC_meta;
+      meta->raw_box = stream->meta_box_data();
     }
   }
 
   if (options().segment_template.empty()) {
-    segmenter_.reset(new SingleSegmentSegmenter(options(), std::move(ftyp),
-                                                std::move(moov), std::move(meta)));
+    segmenter_.reset(new SingleSegmentSegmenter(
+        options(), std::move(ftyp), std::move(moov), std::move(meta)));
   } else if (options().mp4_params.low_latency_dash_mode) {
-    segmenter_.reset(new LowLatencySegmentSegmenter(options(), std::move(ftyp),
-                                                    std::move(moov), std::move(meta)));
+    segmenter_.reset(new LowLatencySegmentSegmenter(
+        options(), std::move(ftyp), std::move(moov), std::move(meta)));
   } else {
-    segmenter_.reset(
-        new MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov), std::move(meta)));
+    segmenter_.reset(new MultiSegmentSegmenter(
+        options(), std::move(ftyp), std::move(moov), std::move(meta)));
   }
 
   const Status segmenter_initialized =
@@ -587,7 +587,8 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       return false;
   }
 
-  if (audio_info->codec() == kCodecAC3 || audio_info->codec() == kCodecEAC3 || audio_info->codec() == kCodecAC4) {
+  if (audio_info->codec() == kCodecAC3 || audio_info->codec() == kCodecEAC3 ||
+      audio_info->codec() == kCodecAC4) {
     // AC3, EC3 and AC4 does not fill in actual channel count and sample size in
     // sample description entry. Instead, two constants are used.
     audio.channelcount = 2;

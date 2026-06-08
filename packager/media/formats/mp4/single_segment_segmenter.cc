@@ -60,8 +60,10 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
 
 std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
   std::vector<Range> ranges;
-  uint64_t meta_size = (meta() && meta()->ComputeSize() > 0) ? meta()->ComputeSize() : 0;
-  uint64_t next_offset = ftyp()->ComputeSize() + moov()->ComputeSize() + meta_size +
+  uint64_t meta_size =
+      (meta() && meta()->ComputeSize() > 0) ? meta()->ComputeSize() : 0;
+  uint64_t next_offset = ftyp()->ComputeSize() + moov()->ComputeSize() +
+                         meta_size +
                          (options().mp4_params.generate_sidx_in_media_segments
                               ? vod_sidx_->ComputeSize()
                               : 0) +
@@ -122,7 +124,8 @@ Status SingleSegmentSegmenter::DoFinalize() {
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
-  if (options().mp4_params.signal_ac4_de_preselection && meta() && meta()->ComputeSize() > 0) {
+  if (options().mp4_params.signal_ac4_de_preselection && meta() &&
+      meta()->ComputeSize() > 0) {
     meta()->Write(buffer.get());
   }
 

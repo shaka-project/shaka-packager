@@ -407,8 +407,8 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
 
   // Add supplemental property for AC4 preselection
   if (codec_ == "ac-4" && mpd_options_.mpd_params.signal_ac4_de_preselection &&
-      !adaptation_set.AddSupplementalProperty(
-          "urn:mpeg:dash:preselection:2016", "")) {
+      !adaptation_set.AddSupplementalProperty("urn:mpeg:dash:preselection:2016",
+                                              "")) {
     return std::nullopt;
   }
 
@@ -483,7 +483,7 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
 
   if (codec_ == "ac-4" && mpd_options_.mpd_params.signal_ac4_de_preselection) {
     // add Role in AC4 preselection
-    for (auto& role: ac4_preselection_roles_) {
+    for (auto& role : ac4_preselection_roles_) {
       if (!adaptation_set.AddPreselectionRole(role.first, role.second))
         return std::nullopt;
     }
@@ -491,10 +491,10 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
 
   if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
     return std::nullopt;
-  
+
   if (codec_ == "ac-4" && mpd_options_.mpd_params.signal_ac4_de_preselection) {
     // add Label in AC4 preselection
-    for (auto& label: ac4_preselection_labels_) {
+    for (auto& label : ac4_preselection_labels_) {
       if (label.second.empty()) {
         continue;
       }

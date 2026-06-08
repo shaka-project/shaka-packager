@@ -184,9 +184,8 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     if (!meta_box_data.empty()) {
       // Parse meta box to extract Preselection boxes.
       bool err = false;
-      std::unique_ptr<mp4::BoxReader> reader(
-          mp4::BoxReader::ReadBox(meta_box_data.data(), meta_box_data.size(),
-                                  &err));
+      std::unique_ptr<mp4::BoxReader> reader(mp4::BoxReader::ReadBox(
+          meta_box_data.data(), meta_box_data.size(), &err));
 
       if (!err && reader) {
         mp4::Meta meta;

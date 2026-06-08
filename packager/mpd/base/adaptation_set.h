@@ -426,7 +426,6 @@ class AdaptationSet {
 
   // The Role of AC4 preselection of this AdaptationSet.
   std::vector<std::pair<std::string, std::string>> ac4_preselection_roles_;
-
 };
 
 }  // namespace shaka

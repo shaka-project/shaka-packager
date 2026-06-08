@@ -367,9 +367,8 @@ bool AdaptationSetXmlNode::AddLabelElement(const std::string& value) {
   return AddChild(std::move(descriptor));
 }
 
-bool AdaptationSetXmlNode::AddPreselectionLabel(
-    const std::string& language,
-    const std::string& label) {
+bool AdaptationSetXmlNode::AddPreselectionLabel(const std::string& language,
+                                                const std::string& label) {
   XmlNode label_node("Label");
   if (!language.empty()) {
     RCHECK(label_node.SetStringAttribute("lang", language));

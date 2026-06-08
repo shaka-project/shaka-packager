@@ -469,12 +469,12 @@ bool MP4MediaParser::ParseMeta(BoxReader* reader) {
     return true;  // Already parsed the 'meta' box.
 
   // Save the raw box data before parsing
-  std::vector<uint8_t> raw_meta_data(reader->data(), reader->data() + reader->size());
+  std::vector<uint8_t> raw_meta_data(reader->data(),
+                                     reader->data() + reader->size());
 
   std::unique_ptr<Meta> meta(new Meta);
   if (!meta->Parse(reader)) {
-    LOG(WARNING)
-        << "Failed to parse 'meta' box. The box will be skipped.";
+    LOG(WARNING) << "Failed to parse 'meta' box. The box will be skipped.";
     return true;
   }
 
@@ -616,7 +616,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           // Stop the process if have errors when parsing AC-4 dac4 box,
           // bitstream version 0 (has beed deprecated) and contains multiple
           // presentations in single AC-4 stream (only used for broadcast).
-          if (!GetAc4CodecInfo(codec_config, &audio_object_type, &num_channels)) {
+          if (!GetAc4CodecInfo(codec_config, &audio_object_type,
+                               &num_channels)) {
             LOG(ERROR) << "Failed to parse dac4.";
             return false;
           }
@@ -701,13 +702,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           num_channels, sampling_frequency, seek_preroll_ns, codec_delay_ns,
           max_bitrate, avg_bitrate, track->media.header.language.code,
           is_encrypted));
-      
+
       // Set meta box for AC4 tracks if available
       if (actual_format == FOURCC_ac_4 && meta_ && !meta_->raw_box.empty()) {
         // Use the raw_box data directly (already serialized during parsing)
         audio_stream_info->set_meta_box_data(meta_->raw_box);
       }
-      
+
       streams.push_back(audio_stream_info);
     }
 

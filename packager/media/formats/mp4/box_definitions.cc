@@ -2925,24 +2925,24 @@ FourCC Meta::BoxType() const {
 }
 
 bool Meta::ReadWriteInternal(BoxBuffer* buffer) {
-    if (buffer->Reading()) {
-        RCHECK(ReadWriteHeaderInternal(buffer));
-        RCHECK(buffer->PrepareChildren());
-        RCHECK(buffer->ReadWriteChild(&handler));
-        RCHECK(buffer->TryReadWriteChild(&grpl));
+  if (buffer->Reading()) {
+    RCHECK(ReadWriteHeaderInternal(buffer));
+    RCHECK(buffer->PrepareChildren());
+    RCHECK(buffer->ReadWriteChild(&handler));
+    RCHECK(buffer->TryReadWriteChild(&grpl));
+  } else {
+    if (!raw_box.empty()) {
+      DCHECK(!raw_box.empty());
+      buffer->writer()->AppendVector(raw_box);
     } else {
-        if (!raw_box.empty()) {
-            DCHECK(!raw_box.empty());
-            buffer->writer()->AppendVector(raw_box);
-        } else {
-            RCHECK(ReadWriteHeaderInternal(buffer));
-            RCHECK(buffer->PrepareChildren());
-            RCHECK(buffer->ReadWriteChild(&handler));
-            RCHECK(buffer->TryReadWriteChild(&grpl));
-        }
+      RCHECK(ReadWriteHeaderInternal(buffer));
+      RCHECK(buffer->PrepareChildren());
+      RCHECK(buffer->ReadWriteChild(&handler));
+      RCHECK(buffer->TryReadWriteChild(&grpl));
     }
+  }
 
-    return true;
+  return true;
 }
 
 size_t Meta::ComputeSizeInternal() {
@@ -2964,38 +2964,38 @@ bool Preselection::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
   RCHECK(buffer->ReadWriteUInt32(&group_id) &&
          buffer->ReadWriteUInt32(&num_entities_in_group));
-  
+
   if (buffer->Reading()) {
     entity_ids.resize(num_entities_in_group);
   } else {
     RCHECK(num_entities_in_group == entity_ids.size());
   }
-  
+
   for (uint32_t i = 0; i < num_entities_in_group; ++i) {
     RCHECK(buffer->ReadWriteUInt32(&entity_ids[i]));
   }
-  
+
   // Read/write preselection_tag if flag is set
   if (flags & kPreselectionTagPresentMask) {
     RCHECK(buffer->ReadWriteCString(&preselection_tag));
   } else if (buffer->Reading()) {
     preselection_tag.clear();
   }
-  
+
   // Read/write selection_priority if flag is set
   if (flags & kSelectionPriorityPresentMask) {
     RCHECK(buffer->ReadWriteUInt8(&selection_priority));
   } else if (buffer->Reading()) {
     selection_priority = 0;
   }
-  
+
   // Read/write interleaving_tag if flag is set
   if (flags & kInterleavingTagPresentMask) {
     RCHECK(buffer->ReadWriteCString(&interleaving_tag));
   } else if (buffer->Reading()) {
     interleaving_tag.clear();
   }
-  
+
   // Prepare to read child boxes
   RCHECK(buffer->PrepareChildren());
   if (buffer->Reading()) {
@@ -3019,27 +3019,28 @@ bool Preselection::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&audio_rendering_indications[i]));
     RCHECK(buffer->TryReadWriteChild(&udta));
   }
-  
+
   return true;
 }
 
 size_t Preselection::ComputeSizeInternal() {
-  size_t box_size = HeaderSize() + sizeof(group_id) + sizeof(num_entities_in_group);
+  size_t box_size =
+      HeaderSize() + sizeof(group_id) + sizeof(num_entities_in_group);
   box_size += sizeof(uint32_t) * entity_ids.size();
-  
+
   // Add null-terminated string sizes (including null terminator)
   if (flags & kPreselectionTagPresentMask) {
     box_size += preselection_tag.size() + 1;  // +1 for null terminator
   }
-  
+
   if (flags & kSelectionPriorityPresentMask) {
     box_size += sizeof(selection_priority);
   }
-  
+
   if (flags & kInterleavingTagPresentMask) {
     box_size += interleaving_tag.size() + 1;  // +1 for null terminator
   }
-  
+
   // Add size of child boxes
   for (uint32_t i = 0; i < labels.size(); ++i)
     box_size += labels[i].ComputeSize();
@@ -3050,7 +3051,7 @@ size_t Preselection::ComputeSizeInternal() {
   for (uint32_t i = 0; i < audio_rendering_indications.size(); ++i)
     box_size += audio_rendering_indications[i].ComputeSize();
   box_size += udta.ComputeSize();
-  
+
   return box_size;
 }
 
@@ -3091,8 +3092,7 @@ FourCC Label::BoxType() const {
 }
 
 bool Label::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->ReadWriteUInt16(&labl_id));
+  RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt16(&labl_id));
   std::string lang_value;
   if (buffer->Reading()) {
     RCHECK(buffer->ReadWriteString(&lang_value, buffer->BytesLeft()));
@@ -3113,8 +3113,8 @@ bool Label::ReadWriteInternal(BoxBuffer* buffer) {
 }
 
 size_t Label::ComputeSizeInternal() {
-  return HeaderSize() + sizeof(labl_id) + language.size() + 1 +
-         label.size() + 1;
+  return HeaderSize() + sizeof(labl_id) + language.size() + 1 + label.size() +
+         1;
 }
 
 // Kind box implementation
@@ -3159,8 +3159,9 @@ FourCC ExtendedLanguage::BoxType() const {
 
 bool ExtendedLanguage::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
-  RCHECK(buffer->ReadWriteString(&extended_language, 
-         buffer->Reading() ? buffer->BytesLeft() : extended_language.size()));
+  RCHECK(buffer->ReadWriteString(
+      &extended_language,
+      buffer->Reading() ? buffer->BytesLeft() : extended_language.size()));
   return true;
 }
 
@@ -3194,8 +3195,7 @@ FourCC DialogProcessing::BoxType() const {
 }
 
 bool DialogProcessing::ReadWriteInternal(BoxBuffer* buffer) {
-  return ReadWriteHeaderInternal(buffer) &&
-         buffer->ReadWriteInt8(&dialog_gain);
+  return ReadWriteHeaderInternal(buffer) && buffer->ReadWriteInt8(&dialog_gain);
 }
 
 size_t DialogProcessing::ComputeSizeInternal() {
@@ -3239,7 +3239,6 @@ size_t Userdata::ComputeSizeInternal() {
     return 0;
   return HeaderSize() + dialog_album_peaks.ComputeSize();
 }
-
 
 bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&

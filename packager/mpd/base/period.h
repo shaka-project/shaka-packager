@@ -16,8 +16,8 @@
 
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/media_info.pb.h>
-#include <packager/mpd/base/xml/xml_node.h>
 #include <packager/mpd/base/preselection.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 
