@@ -512,6 +512,7 @@ std::optional<PackagingParams> GetPackagingParams() {
   mp4_params.include_pssh_in_stream =
       absl::GetFlag(FLAGS_mp4_include_pssh_in_stream);
   mp4_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
+  mp4_params.signal_ac4_de_preselection = absl::GetFlag(FLAGS_signal_ac4_de_preselection);
 
   packaging_params.transport_stream_timestamp_offset_ms =
       absl::GetFlag(FLAGS_transport_stream_timestamp_offset_ms);
@@ -562,7 +563,8 @@ std::optional<PackagingParams> GetPackagingParams() {
   mpd_params.include_mspr_pro =
       absl::GetFlag(FLAGS_include_mspr_pro_for_playready);
   mpd_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
-
+  mpd_params.signal_ac4_de_preselection = absl::GetFlag(FLAGS_signal_ac4_de_preselection);
+  
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(absl::GetFlag(FLAGS_hls_playlist_type),
                           &hls_params.playlist_type)) {

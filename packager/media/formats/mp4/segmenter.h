@@ -47,7 +47,8 @@ class Segmenter {
  public:
   Segmenter(const MuxerOptions& options,
             std::unique_ptr<FileType> ftyp,
-            std::unique_ptr<Movie> moov);
+            std::unique_ptr<Movie> moov,
+            std::unique_ptr<Meta> meta = nullptr);
   virtual ~Segmenter();
 
   /// Initialize the segmenter.
@@ -113,6 +114,7 @@ class Segmenter {
   const MuxerOptions& options() const { return options_; }
   FileType* ftyp() { return ftyp_.get(); }
   Movie* moov() { return moov_.get(); }
+  Meta* meta() { return meta_.get(); }
   BufferWriter* fragment_buffer() { return fragment_buffer_.get(); }
   SegmentIndex* sidx() { return sidx_.get(); }
   MuxerListener* muxer_listener() { return muxer_listener_; }
@@ -141,6 +143,7 @@ class Segmenter {
   const MuxerOptions& options_;
   std::unique_ptr<FileType> ftyp_;
   std::unique_ptr<Movie> moov_;
+  std::unique_ptr<Meta> meta_;
   std::unique_ptr<MovieFragment> moof_;
   std::unique_ptr<BufferWriter> fragment_buffer_;
   std::unique_ptr<SegmentIndex> sidx_;

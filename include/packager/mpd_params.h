@@ -108,6 +108,8 @@ struct MpdParams {
   double target_latency_seconds = 1;
   /// CEA-608 / CEA-708 captions.
   std::vector<CeaCaption> closed_captions;
+  /// Indicates whether to signal AC-4 DE preselections in the mpd and initialization segment.
+  bool signal_ac4_de_preselection = false;
 };
 
 }  // namespace shaka

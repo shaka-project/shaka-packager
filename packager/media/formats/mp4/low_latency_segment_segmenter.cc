@@ -30,8 +30,9 @@ namespace mp4 {
 LowLatencySegmentSegmenter::LowLatencySegmentSegmenter(
     const MuxerOptions& options,
     std::unique_ptr<FileType> ftyp,
-    std::unique_ptr<Movie> moov)
-    : Segmenter(options, std::move(ftyp), std::move(moov)),
+    std::unique_ptr<Movie> moov,
+    std::unique_ptr<Meta> meta)
+    : Segmenter(options, std::move(ftyp), std::move(moov), std::move(meta)),
       styp_(new SegmentType),
       num_segments_(0) {
   // Use the same brands for styp as ftyp.
@@ -95,6 +96,9 @@ Status LowLatencySegmentSegmenter::WriteInitSegment() {
   std::unique_ptr<BufferWriter> buffer(new BufferWriter);
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
+  if (options().mp4_params.signal_ac4_de_preselection && meta() && meta()->ComputeSize() > 0) {
+    meta()->Write(buffer.get());
+  }
   return buffer->WriteToFile(file.get());
 }
 

@@ -40,10 +40,12 @@ int64_t Rescale(int64_t time_in_old_scale,
 
 Segmenter::Segmenter(const MuxerOptions& options,
                      std::unique_ptr<FileType> ftyp,
-                     std::unique_ptr<Movie> moov)
+                     std::unique_ptr<Movie> moov,
+                     std::unique_ptr<Meta> meta)
     : options_(options),
       ftyp_(std::move(ftyp)),
       moov_(std::move(moov)),
+      meta_(std::move(meta)),
       moof_(new MovieFragment()),
       fragment_buffer_(new BufferWriter()),
       sidx_(new SegmentIndex()) {}

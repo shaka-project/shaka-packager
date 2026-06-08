@@ -98,3 +98,8 @@ ABSL_FLAG(
     "https://shaka-project.github.io/shaka-packager/html/tutorials/low_latency.html "
     // clang-format on
     "for more information.");
+ABSL_FLAG(bool,
+          signal_ac4_de_preselection,
+          false,
+          "Indicates whether to signal AC-4 DE preselections in the manifest and "
+          "meta box in the initialization segment for AC-4 tracks.");

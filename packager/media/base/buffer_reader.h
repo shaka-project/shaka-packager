@@ -34,6 +34,7 @@ class BufferReader {
   /// @return false if there are not enough bytes in the buffer.
   /// @{
   [[nodiscard]] bool Read1(uint8_t* v);
+  [[nodiscard]] bool Read1s(int8_t* v);
   [[nodiscard]] bool Read2(uint16_t* v);
   [[nodiscard]] bool Read2s(int16_t* v);
   [[nodiscard]] bool Read4(uint32_t* v);

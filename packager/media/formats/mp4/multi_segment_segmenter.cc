@@ -29,8 +29,9 @@ namespace mp4 {
 
 MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
                                              std::unique_ptr<FileType> ftyp,
-                                             std::unique_ptr<Movie> moov)
-    : Segmenter(options, std::move(ftyp), std::move(moov)),
+                                             std::unique_ptr<Movie> moov,
+                                             std::unique_ptr<Meta> meta)
+    : Segmenter(options, std::move(ftyp), std::move(moov), std::move(meta)),
       styp_(new SegmentType) {
   // Use the same brands for styp as ftyp.
   styp_->major_brand = Segmenter::ftyp()->major_brand;
@@ -86,6 +87,9 @@ Status MultiSegmentSegmenter::WriteInitSegment() {
   std::unique_ptr<BufferWriter> buffer(new BufferWriter);
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
+  if (options().mp4_params.signal_ac4_de_preselection && meta() && meta()->ComputeSize() > 0) {
+    meta()->Write(buffer.get());
+  }
   return buffer->WriteToFile(file.get());
 }
 

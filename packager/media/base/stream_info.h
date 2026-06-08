@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <packager/media/base/encryption_config.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {
@@ -136,6 +137,10 @@ class StreamInfo {
   void set_encryption_config(const EncryptionConfig& encryption_config) {
     encryption_config_ = encryption_config;
   }
+  void set_meta_box_data(const std::vector<uint8_t>& meta_data) {
+    meta_box_data_ = meta_data;
+  }
+  const std::vector<uint8_t>& meta_box_data() const { return meta_box_data_; }
 
  private:
   // Whether the stream is Audio or Video.
@@ -161,6 +166,8 @@ class StreamInfo {
   // Optional byte data required for some layered video decoders such as
   // MV-HEVC.
   std::vector<uint8_t> layered_codec_config_;
+  // Serialized meta box data copied from source content.
+  std::vector<uint8_t> meta_box_data_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

@@ -20,6 +20,14 @@ bool BufferReader::Read1(uint8_t* v) {
   return true;
 }
 
+bool BufferReader::Read1s(int8_t* v) {
+  DCHECK(v != NULL);
+  if (!HasBytes(1))
+    return false;
+  *v = static_cast<int8_t>(buf_[pos_++]);
+  return true;
+}
+
 bool BufferReader::Read2(uint16_t* v) {
   return Read(v);
 }

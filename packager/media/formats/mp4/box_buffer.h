@@ -94,6 +94,12 @@ class BoxBuffer {
     writer_->AppendInt(*v);
     return true;
   }
+  bool ReadWriteInt8(int8_t* v) {
+    if (reader_)
+      return reader_->Read1s(v);
+    writer_->AppendInt(*v);
+    return true;
+  }
   bool ReadWriteInt16(int16_t* v) {
     if (reader_)
       return reader_->Read2s(v);

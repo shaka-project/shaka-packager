@@ -15,6 +15,7 @@
 
 #include <packager/macros/logging.h>
 #include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/text_stream_info.h>
@@ -22,6 +23,8 @@
 #include <packager/media/codecs/ac4_audio_util.h>
 #include <packager/media/codecs/dts_audio_specific_config.h>
 #include <packager/media/codecs/ec3_audio_util.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_reader.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/utils/bytes_to_string_view.h>
 
@@ -174,6 +177,50 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     }
     codec_data->set_ac4_ims_flag(ac4_ims_flag);
     codec_data->set_ac4_cbi_flag(ac4_cbi_flag);
+
+    // Store AC-4 Preselection boxes from meta box data if available.
+    const std::vector<uint8_t>& meta_box_data =
+        audio_stream_info->meta_box_data();
+    if (!meta_box_data.empty()) {
+      // Parse meta box to extract Preselection boxes.
+      bool err = false;
+      std::unique_ptr<mp4::BoxReader> reader(
+          mp4::BoxReader::ReadBox(meta_box_data.data(), meta_box_data.size(),
+                                  &err));
+
+      if (!err && reader) {
+        mp4::Meta meta;
+        if (meta.Parse(reader.get())) {
+          for (auto& preselection : meta.grpl.Preselections) {
+            MediaInfo::Ac4Preselection* proto_preselection =
+                audio_info->mutable_codec_specific_data()
+                    ->add_ac4_preselections();
+            proto_preselection->set_group_id(
+                std::to_string(preselection.group_id));
+            proto_preselection->set_selection_priority(
+                preselection.selection_priority);
+            for (auto& kind : preselection.kinds) {
+              auto* proto_role = proto_preselection->add_roles();
+              proto_role->set_scheme(kind.scheme_uri);
+              proto_role->set_value(kind.value);
+            }
+            proto_preselection->set_dialog_gain(
+                preselection.udta.dialog_album_peaks.dialog_gain);
+            for (const auto& label : preselection.labels) {
+              auto* proto_label = proto_preselection->add_labels();
+              proto_label->set_lang(label.language);
+              proto_label->set_value(label.label);
+            }
+            if (!preselection.extended_languages.empty()) {
+              proto_preselection->set_lang(
+                  preselection.extended_languages[0].extended_language);
+            }
+            proto_preselection->set_preselection_tag(
+                preselection.preselection_tag);
+          }
+        }
+      }
+    }
   }
 
   if (audio_stream_info->codec() == kCodecDTSX) {
