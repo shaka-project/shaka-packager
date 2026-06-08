@@ -26,6 +26,15 @@ std::unique_ptr<xml::XmlNode> Preselection::GetXml() const {
   if (!node->SetStringAttribute("selectionPriority",
                                 std::to_string(selection_priority_)))
     return nullptr;
+  for (const auto& sp : supplemental_properties_) {
+    xml::XmlNode supp_node("SupplementalProperty");
+    if (!supp_node.SetStringAttribute("schemeIdUri", sp.scheme_id_uri))
+      return nullptr;
+    if (!supp_node.SetStringAttribute("value", sp.value))
+      return nullptr;
+    if (!node->AddChild(std::move(supp_node)))
+      return nullptr;
+  }
   for (const auto& l : labels_) {
     xml::XmlNode label_node("Label");
     if (!label_node.SetStringAttribute("lang", l.lang))
@@ -33,15 +42,6 @@ std::unique_ptr<xml::XmlNode> Preselection::GetXml() const {
     if (!label_node.SetStringAttribute("value", l.value))
       return nullptr;
     if (!node->AddChild(std::move(label_node)))
-      return nullptr;
-  }
-  for (const auto& r : roles_) {
-    xml::XmlNode role_node("Role");
-    if (!role_node.SetStringAttribute("schemeIdUri", r.scheme_id_uri))
-      return nullptr;
-    if (!role_node.SetStringAttribute("value", r.value))
-      return nullptr;
-    if (!node->AddChild(std::move(role_node)))
       return nullptr;
   }
   for (const auto& a : accessibilities_) {
@@ -53,13 +53,13 @@ std::unique_ptr<xml::XmlNode> Preselection::GetXml() const {
     if (!node->AddChild(std::move(acc_node)))
       return nullptr;
   }
-  for (const auto& sp : supplemental_properties_) {
-    xml::XmlNode supp_node("SupplementalProperty");
-    if (!supp_node.SetStringAttribute("schemeIdUri", sp.scheme_id_uri))
+  for (const auto& r : roles_) {
+    xml::XmlNode role_node("Role");
+    if (!role_node.SetStringAttribute("schemeIdUri", r.scheme_id_uri))
       return nullptr;
-    if (!supp_node.SetStringAttribute("value", sp.value))
+    if (!role_node.SetStringAttribute("value", r.value))
       return nullptr;
-    if (!node->AddChild(std::move(supp_node)))
+    if (!node->AddChild(std::move(role_node)))
       return nullptr;
   }
   return node;

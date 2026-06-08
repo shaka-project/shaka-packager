@@ -103,9 +103,6 @@ TEST(PreselectionTest, GetXmlWithLabels) {
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
       "value=\"0.0\"/>"
       "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
-      "  <SupplementalProperty "
-      "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
-      "value=\"0.0\"/>"
       "</Preselection>";
 
   EXPECT_THAT(*xml_node, XmlNodeEqual(kExpectedXml));
@@ -126,9 +123,6 @@ TEST(PreselectionTest, GetXmlWithRoles) {
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
       "value=\"0.0\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"
-      "  <SupplementalProperty "
-      "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
-      "value=\"0.0\"/>"
       "</Preselection>";
 
   EXPECT_THAT(*xml_node, XmlNodeEqual(kExpectedXml));
@@ -222,9 +216,6 @@ TEST(PreselectionTest, GetXmlWithMultipleLabelsAndRoles) {
       "  <Label lang=\"de\" value=\"Dialog +4dB\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"alternate\"/>"
-      "  <SupplementalProperty "
-      "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
-      "value=\"0.0\"/>"
       "</Preselection>";
 
   EXPECT_THAT(*xml_node, XmlNodeEqual(kExpectedXml));
