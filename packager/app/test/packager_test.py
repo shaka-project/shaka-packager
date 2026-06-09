@@ -1028,6 +1028,34 @@ class PackagerFunctionalTest(PackagerAppTest):
     # Verify outputs against goldens under testdata/ac4-encryption.
     self._CheckTestResults('ac4-encryption', verify_decryption=False)
 
+  def testAc4PbdeDash(self):
+    # End-to-end test for
+    # AC-4 with dialog enhancement producing single-file DASH output.
+    # Skips if AC-4 sample test asset is not available locally.
+    # AC-4 sample is separate from golden directory to avoid false failures
+    ac4_sample = os.path.join(
+      test_env.SRC_DIR, 'packager', 'app', 'test',
+      'testdata', 'ac4-sample', 'ac4-de.mp4')
+    if not os.path.exists(ac4_sample):
+      self.skipTest('AC-4 sample not found: ' + ac4_sample)
+
+    # Single-file output for simpler golden comparison
+    output_file = os.path.join(self.tmp_dir, 'shaka_out.mp4')
+    streams = [
+      'input={infile},stream=audio,out={output}'.format(
+        infile=ac4_sample, output=output_file)
+    ]
+    # Build flags per AC-4 dialog enhancement params
+    flags = self._GetFlags(output_dash=True)
+    flags += [
+      '--signal_ac4_de_preselection',
+      '--mpd_output', os.path.join(self.tmp_dir, 'output.mpd')
+    ]
+
+    self.assertPackageSuccess(streams, flags)
+    # Verify outputs against goldens under testdata/ac4-de.
+    self._CheckTestResults('ac4-de', verify_decryption=False)
+
   def testVideoAudioWebVTT(self):
     audio_video_streams = self._GetStreams(['audio', 'video'])
     text_stream = self._GetStreams(['text'], test_files=['bear-english.vtt'])
