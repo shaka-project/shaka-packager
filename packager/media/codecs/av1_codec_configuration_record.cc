@@ -101,7 +101,8 @@ std::string AV1CodecConfigurationRecord::GetCodecString(
       "av01.%d.%02d%c.%02d.%d.%d%d%d.%02d.%02d.%02d.%d", profile_, level_,
       tier_ ? 'H' : 'M', bit_depth_, mono_chrome_, chroma_subsampling_x_,
       chroma_subsampling_y_, chroma_sample_position_, color_primaries,
-      transfer_characteristics, matrix_coefficients, video_full_range_flag);
+      transfer_characteristics, matrix_coefficients,
+      video_full_range_flag ? 1 : 0);
 }
 
 }  // namespace media

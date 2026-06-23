@@ -53,6 +53,19 @@ TEST(AV1CodecConfigurationRecordTest, Success2) {
             "av01.1.21H.12.1.010.01.01.01.0");
 }
 
+TEST(AV1CodecConfigurationRecordTest, FullRangeNormalization) {
+  AV1CodecConfigurationRecord av1_config;
+  const uint8_t kAV1CodecConfigurationData[] = {
+      0x81, 0x04, 0x4E, 0x00,
+  };
+  ASSERT_TRUE(av1_config.Parse(
+      std::vector<uint8_t>(std::begin(kAV1CodecConfigurationData),
+                           std::end(kAV1CodecConfigurationData))));
+
+  EXPECT_EQ(av1_config.GetCodecString(9, 18, 9, 128),
+            "av01.0.04M.10.0.112.09.18.09.1");
+}
+
 TEST(AV1CodecConfigurationRecordTest, InsufficientData) {
   const uint8_t kAV1CodecConfigurationData[] = {
       0x81,
