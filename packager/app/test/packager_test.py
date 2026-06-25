@@ -1431,6 +1431,31 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
 
+  def testDashOnDemandMultiPeriodVttInMp4(self):
+    # Regression test for issue #1493: on-demand DASH multi-period with
+    # VTT-in-MP4 must have presentationTimeOffset on period 1+ SegmentBase.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('text', test_file='bear-english.vtt',
+                        output_format='mp4'),
+    ]
+    flags = self._GetFlags(output_dash=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-ondemand-multiperiod-vtt-in-mp4')
+
+  def testDashOnDemandMultiPeriodPlainVtt(self):
+    # Regression test for issue #1493: on-demand DASH multi-period with
+    # plain VTT must have presentationTimeOffset on period 1+ SegmentBase.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('text', test_file='bear-english.vtt'),
+    ]
+    flags = self._GetFlags(output_dash=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-ondemand-multiperiod-plain-vtt')
+
   def testWebmSubsampleEncryption(self):
     streams = [
         self._GetStream('video', test_file='bear-320x180-vp9-altref.webm')
