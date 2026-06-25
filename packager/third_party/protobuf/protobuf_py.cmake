@@ -58,6 +58,53 @@ foreach (filename ${protobuf_py_filenames})
             ${proto_path})
 endforeach ()
 
+# Generate google/protobuf/internal/python_edition_defaults.py. Upstream
+# protobuf only ships the .py.template; the real .py is produced by Bazel
+# rules (compile_edition_defaults + embed_edition_defaults). We replicate that
+# here so descriptor_pool.py can import python_edition_defaults at runtime.
+# Without this, `import google.protobuf.descriptor_pool` fails with
+# ImportError once the runtime is embedded into pssh-box-protos/ (see
+# https://github.com/shaka-project/shaka-packager/issues/1571).
+set(protobuf_py_edition_defaults_binpb
+    ${protobuf_py_output_path}/google/protobuf/internal/descriptor_defaults.binpb)
+set(protobuf_py_edition_defaults_py
+    ${protobuf_py_output_path}/google/protobuf/internal/python_edition_defaults.py)
+set(protobuf_py_edition_defaults_template
+    ${protobuf_py_library_path}/google/protobuf/internal/python_edition_defaults.py.template)
+
+add_custom_command(
+    DEPENDS
+        protoc
+        ${protobuf_py_proto_path}/google/protobuf/descriptor.proto
+        ${protobuf_py_output_path}/google
+    OUTPUT
+        ${protobuf_py_edition_defaults_binpb}
+    COMMAND
+        protoc
+    ARGS
+        -I${protobuf_py_proto_path}
+        --edition_defaults_out=${protobuf_py_edition_defaults_binpb}
+        --edition_defaults_minimum=PROTO2
+        --edition_defaults_maximum=2024
+        ${protobuf_py_proto_path}/google/protobuf/descriptor.proto)
+
+add_custom_command(
+    DEPENDS
+        ${protobuf_py_edition_defaults_binpb}
+        ${protobuf_py_edition_defaults_template}
+        ${CMAKE_CURRENT_SOURCE_DIR}/embed_python_edition_defaults.cmake
+    OUTPUT
+        ${protobuf_py_edition_defaults_py}
+    COMMAND
+        ${CMAKE_COMMAND}
+        -DDEFAULTS_PATH=${protobuf_py_edition_defaults_binpb}
+        -DTEMPLATE_PATH=${protobuf_py_edition_defaults_template}
+        -DOUTPUT_PATH=${protobuf_py_edition_defaults_py}
+        -DPLACEHOLDER=DEFAULTS_VALUE
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/embed_python_edition_defaults.cmake)
+
+list(APPEND protobuf_py_outputs ${protobuf_py_edition_defaults_py})
+
 # The entire python protobuf library (repo source and generated) to the output
 # folder.
 add_custom_target(protobuf_py ALL DEPENDS ${protobuf_py_outputs})
