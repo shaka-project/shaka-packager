@@ -90,6 +90,7 @@ const uint64_t kAnySize = 2000;
 
 const char kCencProtectionScheme[] = "cenc";
 const char kSampleAesProtectionScheme[] = "cbca";
+const char kAes128ProtectionScheme[] = "aes8";
 
 }  // namespace
 
@@ -453,6 +454,48 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairPlay) {
   EXPECT_TRUE(
       notifier.NotifyEncryptionUpdate(stream_id, key_id, fairplay_system_id_,
                                       std::vector<uint8_t>(), dummy_pssh_data));
+}
+
+// Verify AES-128 encryption info is generated correctly with a key URI.
+TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateAes128WithKeyUri) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist("playlist.m3u8", "", "");
+  hls_params_.key_uri = "https://keys.example.com/stream.key";
+  SimpleHlsNotifier notifier(hls_params_);
+  const uint32_t stream_id =
+      SetupStream(kAes128ProtectionScheme, mock_media_playlist, &notifier);
+
+  const std::vector<uint8_t> key_id(16, 0x23);
+  const std::vector<uint8_t> iv(16, 0x45);
+  const std::vector<uint8_t> dummy_pssh_data(10, 'p');
+
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kAes128,
+                        StrEq("https://keys.example.com/stream.key"), StrEq(""),
+                        StrEq("0x45454545454545454545454545454545"), StrEq(""),
+                        StrEq("")));
+  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
+      stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
+}
+
+// Verify AES-128 encryption update fails when no key URI is configured.
+TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateAes128NoKeyUri) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist("playlist.m3u8", "", "");
+  // hls_params_.key_uri is intentionally left as kEmptyKeyUri.
+  SimpleHlsNotifier notifier(hls_params_);
+  const uint32_t stream_id =
+      SetupStream(kAes128ProtectionScheme, mock_media_playlist, &notifier);
+
+  const std::vector<uint8_t> key_id(16, 0x23);
+  const std::vector<uint8_t> iv(16, 0x45);
+  const std::vector<uint8_t> dummy_pssh_data(10, 'p');
+
+  EXPECT_FALSE(notifier.NotifyEncryptionUpdate(
+      stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {

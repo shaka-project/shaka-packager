@@ -14,7 +14,8 @@ ABSL_FLAG(std::string,
           protection_scheme,
           "cenc",
           "Specify a protection scheme, 'cenc' or 'cbc1' or pattern-based "
-          "protection schemes 'cens' or 'cbcs'.");
+          "protection schemes 'cens' or 'cbcs', or 'aes128' for HLS AES-128 "
+          "full-segment CBC encryption (TS/HLS only, no DRM system required).");
 ABSL_FLAG(
     int32_t,
     crypt_byte_block,
