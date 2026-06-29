@@ -1,6 +1,22 @@
 # Changelog
 
 
+## [3.8.0](https://github.com/shaka-project/shaka-packager/compare/v3.7.2...v3.8.0) (2026-06-29)
+
+
+### Features
+
+* add HLS AES-128 clear-key encryption for TS + MP4 ([#1572](https://github.com/shaka-project/shaka-packager/issues/1572)) ([9d96f9c](https://github.com/shaka-project/shaka-packager/commit/9d96f9c29a3ce246bac37af4b5e1138232457762))
+
+
+### Bug Fixes
+
+* DASH ondemand mpd - use SegmentBase for single-file text tracks in multi period manifest ([#1579](https://github.com/shaka-project/shaka-packager/issues/1579)) ([b35c3cc](https://github.com/shaka-project/shaka-packager/commit/b35c3ccab639c55dcac7c758c23e264fb42343a9))
+* hls default yes ([#1578](https://github.com/shaka-project/shaka-packager/issues/1578)) ([49f9d8e](https://github.com/shaka-project/shaka-packager/commit/49f9d8e27eb98ffd579e8ba0f855dcf0f0a48c8c))
+* **hls:** emit EXT-X-MEDIA tags in command-line order, not by GROUP-ID ([#1374](https://github.com/shaka-project/shaka-packager/issues/1374)) ([b1580dd](https://github.com/shaka-project/shaka-packager/commit/b1580dd18b804a5d082d50558da38bca4acdef6a))
+* normalize video_full_range_flag to 0 or 1 in av1 codec string ([#1586](https://github.com/shaka-project/shaka-packager/issues/1586)) ([f2fb7ef](https://github.com/shaka-project/shaka-packager/commit/f2fb7ef2a7af6c0eadc7e136939469586a2bdb4d))
+* pssh-box tool missing python_edition_defaults ([#1581](https://github.com/shaka-project/shaka-packager/issues/1581)) ([a528a6f](https://github.com/shaka-project/shaka-packager/commit/a528a6fc589d762eef0837622770b2f6d075cade))
+
 ## [3.7.2](https://github.com/shaka-project/shaka-packager/compare/v3.7.1...v3.7.2) (2026-04-09)
 
 
