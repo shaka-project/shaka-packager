@@ -97,11 +97,12 @@ std::string AV1CodecConfigurationRecord::GetCodecString(
     uint16_t transfer_characteristics,
     uint16_t matrix_coefficients,
     uint8_t video_full_range_flag) const {
-  return absl::StrFormat(
-      "av01.%d.%02d%c.%02d.%d.%d%d%d.%02d.%02d.%02d.%d", profile_, level_,
-      tier_ ? 'H' : 'M', bit_depth_, mono_chrome_, chroma_subsampling_x_,
-      chroma_subsampling_y_, chroma_sample_position_, color_primaries,
-      transfer_characteristics, matrix_coefficients, video_full_range_flag);
+  return absl::StrFormat("av01.%d.%02d%c.%02d.%d.%d%d%d.%02d.%02d.%02d.%d",
+                         profile_, level_, tier_ ? 'H' : 'M', bit_depth_,
+                         mono_chrome_, chroma_subsampling_x_,
+                         chroma_subsampling_y_, chroma_sample_position_,
+                         color_primaries, transfer_characteristics,
+                         matrix_coefficients, video_full_range_flag ? 1 : 0);
 }
 
 }  // namespace media
