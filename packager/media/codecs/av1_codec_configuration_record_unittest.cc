@@ -56,7 +56,10 @@ TEST(AV1CodecConfigurationRecordTest, Success2) {
 TEST(AV1CodecConfigurationRecordTest, FullRangeNormalization) {
   AV1CodecConfigurationRecord av1_config;
   const uint8_t kAV1CodecConfigurationData[] = {
-      0x81, 0x04, 0x4E, 0x00,
+      0x81,
+      0x04,
+      0x4E,
+      0x00,
   };
   ASSERT_TRUE(av1_config.Parse(
       std::vector<uint8_t>(std::begin(kAV1CodecConfigurationData),
