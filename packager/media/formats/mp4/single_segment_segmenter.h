@@ -30,7 +30,8 @@ class SingleSegmentSegmenter : public Segmenter {
  public:
   SingleSegmentSegmenter(const MuxerOptions& options,
                          std::unique_ptr<FileType> ftyp,
-                         std::unique_ptr<Movie> moov);
+                         std::unique_ptr<Movie> moov,
+                         std::unique_ptr<Meta> meta = nullptr);
   ~SingleSegmentSegmenter() override;
 
   /// @name Segmenter implementation overrides.

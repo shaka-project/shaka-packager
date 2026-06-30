@@ -255,6 +255,14 @@ class AdaptationSet {
   /// @return true if AdaptationSets are switchable.
   bool SwitchableAdaptationSet(const AdaptationSet& adaptation_set);
 
+  void AddPreselectionLabel(std::string language, std::string label) {
+    ac4_preselection_labels_.emplace_back(language, label);
+  }
+
+  void AddPreselectionRole(std::string scheme, std::string value) {
+    ac4_preselection_roles_.emplace_back(scheme, value);
+  }
+
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
@@ -412,6 +420,12 @@ class AdaptationSet {
 
   // ProtectedContent of this AdaptationSet.
   MediaInfo::ProtectedContent* protected_content_;
+
+  // The label of AC4 preselection of this AdaptationSet.
+  std::vector<std::pair<std::string, std::string>> ac4_preselection_labels_;
+
+  // The Role of AC4 preselection of this AdaptationSet.
+  std::vector<std::pair<std::string, std::string>> ac4_preselection_roles_;
 };
 
 }  // namespace shaka

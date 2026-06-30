@@ -32,7 +32,8 @@ class LowLatencySegmentSegmenter : public Segmenter {
  public:
   LowLatencySegmentSegmenter(const MuxerOptions& options,
                              std::unique_ptr<FileType> ftyp,
-                             std::unique_ptr<Movie> moov);
+                             std::unique_ptr<Movie> moov,
+                             std::unique_ptr<Meta> meta = nullptr);
   ~LowLatencySegmentSegmenter() override;
 
   /// @name Segmenter implementation overrides.

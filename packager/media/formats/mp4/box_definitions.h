@@ -254,6 +254,94 @@ struct Metadata : FullBox {
   ID3v2 id3v2;
 };
 
+// Label box structure
+struct Label : FullBox {
+  DECLARE_BOX_METHODS(Label);
+
+  uint16_t labl_id = 0;
+  std::string language;
+  std::string label;
+};
+
+// Kind box structure
+struct Kind : FullBox {
+  DECLARE_BOX_METHODS(Kind);
+
+  std::string scheme_uri;
+  std::string value;
+};
+
+// Extended language box structure
+struct ExtendedLanguage : FullBox {
+  DECLARE_BOX_METHODS(ExtendedLanguage);
+
+  std::string extended_language;
+};
+
+// Audio rendering indication box structure
+struct AudioRenderingIndication : FullBox {
+  DECLARE_BOX_METHODS(AudioRenderingIndication);
+
+  uint8_t audio_rendering_indication = 0;
+};
+
+// Dialog processing box structure
+struct DialogProcessing : FullBox {
+  DECLARE_BOX_METHODS(DialogProcessing);
+
+  int8_t dialog_gain = 0;
+};
+
+// Userdata box structure
+struct Userdata : Box {
+  DECLARE_BOX_METHODS(Userdata);
+
+  // Keep original bytes to preserve unknown user-data child boxes.
+  std::vector<uint8_t> raw_box;
+  bool has_dialog_album_peaks = false;
+  DialogProcessing dialog_album_peaks;
+};
+
+// PRSL box structure for Preselection information
+struct Preselection : FullBox {
+  DECLARE_BOX_METHODS(Preselection);
+
+  // Flags for conditional fields (bit positions in 24-bit flags field)
+  static constexpr uint32_t kPreselectionTagPresentMask = 0x001000;    // bit 12
+  static constexpr uint32_t kSelectionPriorityPresentMask = 0x002000;  // bit 13
+  static constexpr uint32_t kInterleavingTagPresentMask = 0x004000;    // bit 14
+
+  uint32_t group_id = 0;
+  uint32_t num_entities_in_group = 0;
+  std::vector<uint32_t> entity_ids;
+  std::string preselection_tag;
+  uint8_t selection_priority = 0;
+  std::string interleaving_tag;
+  std::vector<Label> labels;
+  std::vector<Kind> kinds;
+  std::vector<ExtendedLanguage> extended_languages;
+  std::vector<AudioRenderingIndication> audio_rendering_indications;
+  Userdata udta;
+};
+
+// GRPL box structure for grouping information
+struct GroupList : Box {
+  DECLARE_BOX_METHODS(GroupList);
+
+  std::vector<Preselection> Preselections;
+};
+
+// Meta box structure
+struct Meta : FullBox {
+  DECLARE_BOX_METHODS(Meta);
+
+  HandlerReference handler;
+  GroupList grpl;
+  // Raw meta box data copied from source content. If present, it takes
+  // precedence when writing.
+  std::vector<uint8_t> raw_box;
+};
+
 // This defines a common structure for various CodecConfiguration boxes:
 // AVCConfiguration, HEVCConfiguration and VPCodecConfiguration.
 // Note that unlike the other two CodecConfiguration boxes, VPCodecConfiguration

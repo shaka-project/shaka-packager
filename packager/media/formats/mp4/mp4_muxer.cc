@@ -26,7 +26,9 @@
 #include <packager/media/codecs/es_descriptor.h>
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/low_latency_segment_segmenter.h>
+#include <packager/media/formats/mp4/mp4_media_parser.h>
 #include <packager/media/formats/mp4/multi_segment_segmenter.h>
 #include <packager/media/formats/mp4/single_segment_segmenter.h>
 #include <packager/media/formats/ttml/ttml_generator.h>
@@ -219,6 +221,7 @@ Status MP4Muxer::DelayInitializeMuxer() {
 
   std::unique_ptr<FileType> ftyp(new FileType);
   std::unique_ptr<Movie> moov(new Movie);
+  std::unique_ptr<Meta> meta;
 
   ftyp->major_brand = FOURCC_mp41;
   ftyp->compatible_brands.push_back(FOURCC_iso8);
@@ -332,17 +335,26 @@ Status MP4Muxer::DelayInitializeMuxer() {
         }
       }
     }
+    if (stream->codec() == kCodecAC4 &&
+        options().mp4_params.signal_ac4_de_preselection) {
+      if (!meta) {
+        meta = std::make_unique<Meta>();
+        meta->handler.handler_type = FOURCC_meta;
+      }
+      meta->handler.handler_type = FOURCC_meta;
+      meta->raw_box = stream->meta_box_data();
+    }
   }
 
   if (options().segment_template.empty()) {
-    segmenter_.reset(new SingleSegmentSegmenter(options(), std::move(ftyp),
-                                                std::move(moov)));
+    segmenter_.reset(new SingleSegmentSegmenter(
+        options(), std::move(ftyp), std::move(moov), std::move(meta)));
   } else if (options().mp4_params.low_latency_dash_mode) {
-    segmenter_.reset(new LowLatencySegmentSegmenter(options(), std::move(ftyp),
-                                                    std::move(moov)));
+    segmenter_.reset(new LowLatencySegmentSegmenter(
+        options(), std::move(ftyp), std::move(moov), std::move(meta)));
   } else {
-    segmenter_.reset(
-        new MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov)));
+    segmenter_.reset(new MultiSegmentSegmenter(
+        options(), std::move(ftyp), std::move(moov), std::move(meta)));
   }
 
   const Status segmenter_initialized =
@@ -595,16 +607,11 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       return false;
   }
 
-  if (audio_info->codec() == kCodecAC3 || audio_info->codec() == kCodecEAC3) {
-    // AC3 and EC3 does not fill in actual channel count and sample size in
+  if (audio_info->codec() == kCodecAC3 || audio_info->codec() == kCodecEAC3 ||
+      audio_info->codec() == kCodecAC4) {
+    // AC3, EC3 and AC4 does not fill in actual channel count and sample size in
     // sample description entry. Instead, two constants are used.
     audio.channelcount = 2;
-    audio.samplesize = 16;
-  } else if (audio_info->codec() == kCodecAC4) {
-    // ETSI TS 103 190-2, E.4.5 channelcount should be set to the total number
-    // of audio outputchannels of the default audio presentation of that track
-    audio.channelcount = audio_info->num_channels();
-    // ETSI TS 103 190-2, E.4.6 samplesize shall be set to 16.
     audio.samplesize = 16;
   } else if (audio_info->codec() == kCodecIAMF) {
     // IAMF sets channelcount to 0

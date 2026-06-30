@@ -879,5 +879,87 @@ TEST(XmlNodeTest, AddDTSXAudioInfo) {
                    "</Representation>\n"));
 }
 
+// Test AddPreselectionLabel with language and label.
+TEST(XmlNodeTest, AddPreselectionLabel) {
+  AdaptationSetXmlNode adaptation_set;
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("en", "Dialog +4dB"));
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("de", "Dialog +4dB"));
+
+  EXPECT_THAT(adaptation_set,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Dialog +4dB</Label>"
+                           "  <Label lang=\"de\">Dialog +4dB</Label>"
+                           "</AdaptationSet>"));
+}
+
+// Test AddPreselectionLabel with empty language.
+TEST(XmlNodeTest, AddPreselectionLabelNoLanguage) {
+  AdaptationSetXmlNode adaptation_set;
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("", "No Language Label"));
+
+  EXPECT_THAT(adaptation_set, XmlNodeEqual("<AdaptationSet>"
+                                           "  <Label>No Language Label</Label>"
+                                           "</AdaptationSet>"));
+}
+
+// Test AddPreselectionRole with scheme and value.
+TEST(XmlNodeTest, AddPreselectionRole) {
+  AdaptationSetXmlNode adaptation_set;
+  ASSERT_TRUE(
+      adaptation_set.AddPreselectionRole("urn:mpeg:dash:role:2011", "main"));
+  ASSERT_TRUE(adaptation_set.AddPreselectionRole("urn:mpeg:dash:role:2011",
+                                                 "alternate"));
+
+  EXPECT_THAT(adaptation_set,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"main\"/>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"alternate\"/>"
+                           "</AdaptationSet>"));
+}
+
+// Test AddPreselectionRole with empty value.
+TEST(XmlNodeTest, AddPreselectionRoleNoValue) {
+  AdaptationSetXmlNode adaptation_set;
+  ASSERT_TRUE(
+      adaptation_set.AddPreselectionRole("urn:mpeg:dash:role:2011", ""));
+
+  EXPECT_THAT(adaptation_set,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\"/>"
+                           "</AdaptationSet>"));
+}
+
+// Test combination of AddPreselectionLabel and AddPreselectionRole.
+TEST(XmlNodeTest, AddPreselectionLabelAndRole) {
+  AdaptationSetXmlNode adaptation_set;
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("en", "Dialog Enhancement"));
+  ASSERT_TRUE(
+      adaptation_set.AddPreselectionRole("urn:mpeg:dash:role:2011", "main"));
+
+  EXPECT_THAT(adaptation_set,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Dialog Enhancement</Label>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"main\"/>"
+                           "</AdaptationSet>"));
+}
+
+// Test multiple labels with different languages.
+TEST(XmlNodeTest, AddPreselectionMultipleLabels) {
+  AdaptationSetXmlNode adaptation_set;
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("en", "Enhanced Audio"));
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("es", "Audio Mejorado"));
+  ASSERT_TRUE(adaptation_set.AddPreselectionLabel("fr", "Audio Amélioré"));
+
+  EXPECT_THAT(adaptation_set,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Enhanced Audio</Label>"
+                           "  <Label lang=\"es\">Audio Mejorado</Label>"
+                           "  <Label lang=\"fr\">Audio Amélioré</Label>"
+                           "</AdaptationSet>"));
+}
+
 }  // namespace xml
 }  // namespace shaka

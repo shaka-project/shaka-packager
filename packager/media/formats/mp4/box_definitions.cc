@@ -38,6 +38,7 @@ const char kVideoHandlerName[] = "VideoHandler";
 const char kAudioHandlerName[] = "SoundHandler";
 const char kTextHandlerName[] = "TextHandler";
 const char kSubtitleHandlerName[] = "SubtitleHandler";
+const char kMetaHandlerName[] = "NULL Handler";
 
 // Default values for VideoSampleEntry box.
 const uint32_t kVideoResolution = 0x00480000;  // 72 dpi.
@@ -1311,6 +1312,10 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
         break;
       case FOURCC_ID32:
         break;
+      case FOURCC_meta:
+        handler_name.assign(kMetaHandlerName,
+                            kMetaHandlerName + std::size(kMetaHandlerName));
+        break;
       default:
         NOTIMPLEMENTED();
         return false;
@@ -1342,6 +1347,9 @@ size_t HandlerReference::ComputeSizeInternal() {
       box_size += sizeof(kSubtitleHandlerName);
       break;
     case FOURCC_ID32:
+      break;
+    case FOURCC_meta:
+      box_size += sizeof(kMetaHandlerName);
       break;
     default:
       NOTIMPLEMENTED();
@@ -2906,6 +2914,330 @@ SegmentIndex::~SegmentIndex() = default;
 
 FourCC SegmentIndex::BoxType() const {
   return FOURCC_sidx;
+}
+
+// Meta box implementation
+Meta::Meta() = default;
+Meta::~Meta() = default;
+
+FourCC Meta::BoxType() const {
+  return FOURCC_meta;
+}
+
+bool Meta::ReadWriteInternal(BoxBuffer* buffer) {
+  if (buffer->Reading()) {
+    RCHECK(ReadWriteHeaderInternal(buffer));
+    RCHECK(buffer->PrepareChildren());
+    RCHECK(buffer->ReadWriteChild(&handler));
+    RCHECK(buffer->TryReadWriteChild(&grpl));
+  } else {
+    if (!raw_box.empty()) {
+      DCHECK(!raw_box.empty());
+      buffer->writer()->AppendVector(raw_box);
+    } else {
+      RCHECK(ReadWriteHeaderInternal(buffer));
+      RCHECK(buffer->PrepareChildren());
+      RCHECK(buffer->ReadWriteChild(&handler));
+      RCHECK(buffer->TryReadWriteChild(&grpl));
+    }
+  }
+
+  return true;
+}
+
+size_t Meta::ComputeSizeInternal() {
+  if (!raw_box.empty())
+    return raw_box.size();
+  size_t grpl_size = grpl.ComputeSize();
+  return grpl_size == 0 ? 0 : HeaderSize() + handler.ComputeSize() + grpl_size;
+}
+
+// Preselection box implementation
+Preselection::Preselection() = default;
+Preselection::~Preselection() = default;
+
+FourCC Preselection::BoxType() const {
+  return FOURCC_prsl;
+}
+
+bool Preselection::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  RCHECK(buffer->ReadWriteUInt32(&group_id) &&
+         buffer->ReadWriteUInt32(&num_entities_in_group));
+
+  if (buffer->Reading()) {
+    entity_ids.resize(num_entities_in_group);
+  } else {
+    RCHECK(num_entities_in_group == entity_ids.size());
+  }
+
+  for (uint32_t i = 0; i < num_entities_in_group; ++i) {
+    RCHECK(buffer->ReadWriteUInt32(&entity_ids[i]));
+  }
+
+  // Read/write preselection_tag if flag is set
+  if (flags & kPreselectionTagPresentMask) {
+    RCHECK(buffer->ReadWriteCString(&preselection_tag));
+  } else if (buffer->Reading()) {
+    preselection_tag.clear();
+  }
+
+  // Read/write selection_priority if flag is set
+  if (flags & kSelectionPriorityPresentMask) {
+    RCHECK(buffer->ReadWriteUInt8(&selection_priority));
+  } else if (buffer->Reading()) {
+    selection_priority = 0;
+  }
+
+  // Read/write interleaving_tag if flag is set
+  if (flags & kInterleavingTagPresentMask) {
+    RCHECK(buffer->ReadWriteCString(&interleaving_tag));
+  } else if (buffer->Reading()) {
+    interleaving_tag.clear();
+  }
+
+  // Prepare to read child boxes
+  RCHECK(buffer->PrepareChildren());
+  if (buffer->Reading()) {
+    BoxReader* reader = buffer->reader();
+    DCHECK(reader);
+    // Read child boxes
+    RCHECK(reader->TryReadChildren(&labels) &&
+           reader->TryReadChildren(&kinds) &&
+           reader->TryReadChildren(&extended_languages) &&
+           reader->TryReadChildren(&audio_rendering_indications) &&
+           reader->TryReadChild(&udta));
+  } else {
+    // Write child boxes
+    for (uint32_t i = 0; i < labels.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&labels[i]));
+    for (uint32_t i = 0; i < kinds.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&kinds[i]));
+    for (uint32_t i = 0; i < extended_languages.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&extended_languages[i]));
+    for (uint32_t i = 0; i < audio_rendering_indications.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&audio_rendering_indications[i]));
+    RCHECK(buffer->TryReadWriteChild(&udta));
+  }
+
+  return true;
+}
+
+size_t Preselection::ComputeSizeInternal() {
+  size_t box_size =
+      HeaderSize() + sizeof(group_id) + sizeof(num_entities_in_group);
+  box_size += sizeof(uint32_t) * entity_ids.size();
+
+  // Add null-terminated string sizes (including null terminator)
+  if (flags & kPreselectionTagPresentMask) {
+    box_size += preselection_tag.size() + 1;  // +1 for null terminator
+  }
+
+  if (flags & kSelectionPriorityPresentMask) {
+    box_size += sizeof(selection_priority);
+  }
+
+  if (flags & kInterleavingTagPresentMask) {
+    box_size += interleaving_tag.size() + 1;  // +1 for null terminator
+  }
+
+  // Add size of child boxes
+  for (uint32_t i = 0; i < labels.size(); ++i)
+    box_size += labels[i].ComputeSize();
+  for (uint32_t i = 0; i < kinds.size(); ++i)
+    box_size += kinds[i].ComputeSize();
+  for (uint32_t i = 0; i < extended_languages.size(); ++i)
+    box_size += extended_languages[i].ComputeSize();
+  for (uint32_t i = 0; i < audio_rendering_indications.size(); ++i)
+    box_size += audio_rendering_indications[i].ComputeSize();
+  box_size += udta.ComputeSize();
+
+  return box_size;
+}
+
+// GroupList box implementation
+GroupList::GroupList() = default;
+GroupList::~GroupList() = default;
+
+FourCC GroupList::BoxType() const {
+  return FOURCC_grpl;
+}
+
+bool GroupList::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) && buffer->PrepareChildren());
+  if (buffer->Reading()) {
+    BoxReader* reader = buffer->reader();
+    DCHECK(reader);
+    RCHECK(reader->ReadChildren(&Preselections));
+  } else {
+    for (uint32_t i = 0; i < Preselections.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&Preselections[i]));
+  }
+  return true;
+}
+
+size_t GroupList::ComputeSizeInternal() {
+  size_t box_size = HeaderSize();
+  for (uint32_t i = 0; i < Preselections.size(); ++i)
+    box_size += Preselections[i].ComputeSize();
+  return box_size;
+}
+
+// Label box implementation
+Label::Label() = default;
+Label::~Label() = default;
+
+FourCC Label::BoxType() const {
+  return FOURCC_labl;
+}
+
+bool Label::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt16(&labl_id));
+  std::string lang_value;
+  if (buffer->Reading()) {
+    RCHECK(buffer->ReadWriteString(&lang_value, buffer->BytesLeft()));
+    size_t delimiter_pos = lang_value.find_first_of('\0');
+    if (delimiter_pos != std::string::npos) {
+      language = lang_value.substr(0, delimiter_pos);
+      label = lang_value.substr(delimiter_pos + 1);
+    } else {
+      LOG(WARNING) << "Label box missing null delimiter, using entire string";
+      language = "";
+      label = "";
+    }
+  } else {
+    RCHECK(buffer->ReadWriteCString(&language));
+    RCHECK(buffer->ReadWriteCString(&label));
+  }
+  return true;
+}
+
+size_t Label::ComputeSizeInternal() {
+  return HeaderSize() + sizeof(labl_id) + language.size() + 1 + label.size() +
+         1;
+}
+
+// Kind box implementation
+Kind::Kind() = default;
+Kind::~Kind() = default;
+
+FourCC Kind::BoxType() const {
+  return FOURCC_kind;
+}
+
+bool Kind::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  std::string uri_value;
+  if (buffer->Reading()) {
+    RCHECK(buffer->ReadWriteString(&uri_value, buffer->BytesLeft()));
+    size_t delimiter_pos = uri_value.find_first_of('\0');
+    if (delimiter_pos != std::string::npos) {
+      scheme_uri = uri_value.substr(0, delimiter_pos);
+      value = uri_value.substr(delimiter_pos + 1);
+    } else {
+      scheme_uri = "";
+      value = "";
+    }
+  } else {
+    RCHECK(buffer->ReadWriteCString(&scheme_uri));
+    RCHECK(buffer->ReadWriteCString(&value));
+  }
+  return true;
+}
+
+size_t Kind::ComputeSizeInternal() {
+  return HeaderSize() + scheme_uri.size() + 1 + value.size() + 1;
+}
+
+// Extended language box implementation
+ExtendedLanguage::ExtendedLanguage() = default;
+ExtendedLanguage::~ExtendedLanguage() = default;
+
+FourCC ExtendedLanguage::BoxType() const {
+  return FOURCC_elng;
+}
+
+bool ExtendedLanguage::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  RCHECK(buffer->ReadWriteString(
+      &extended_language,
+      buffer->Reading() ? buffer->BytesLeft() : extended_language.size()));
+  return true;
+}
+
+size_t ExtendedLanguage::ComputeSizeInternal() {
+  return HeaderSize() + extended_language.size();
+}
+
+// Audio rendering indication box implementation
+AudioRenderingIndication::AudioRenderingIndication() = default;
+AudioRenderingIndication::~AudioRenderingIndication() = default;
+
+FourCC AudioRenderingIndication::BoxType() const {
+  return FOURCC_ardi;
+}
+
+bool AudioRenderingIndication::ReadWriteInternal(BoxBuffer* buffer) {
+  return ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteUInt8(&audio_rendering_indication);
+}
+
+size_t AudioRenderingIndication::ComputeSizeInternal() {
+  return HeaderSize() + sizeof(audio_rendering_indication);
+}
+
+// Dialog processing box implementation
+DialogProcessing::DialogProcessing() = default;
+DialogProcessing::~DialogProcessing() = default;
+
+FourCC DialogProcessing::BoxType() const {
+  return FOURCC_diap;
+}
+
+bool DialogProcessing::ReadWriteInternal(BoxBuffer* buffer) {
+  return ReadWriteHeaderInternal(buffer) && buffer->ReadWriteInt8(&dialog_gain);
+}
+
+size_t DialogProcessing::ComputeSizeInternal() {
+  return HeaderSize() + sizeof(dialog_gain);
+}
+
+// Userdata box implementation
+Userdata::Userdata() = default;
+Userdata::~Userdata() = default;
+
+FourCC Userdata::BoxType() const {
+  return FOURCC_udta;
+}
+
+bool Userdata::ReadWriteInternal(BoxBuffer* buffer) {
+  if (buffer->Reading()) {
+    BoxReader* reader = buffer->reader();
+    DCHECK(reader);
+    raw_box.assign(reader->data(), reader->data() + reader->size());
+
+    RCHECK(ReadWriteHeaderInternal(buffer) && buffer->PrepareChildren());
+    has_dialog_album_peaks = reader->ChildExist(&dialog_album_peaks);
+    RCHECK(reader->TryReadChild(&dialog_album_peaks));
+  } else {
+    if (!raw_box.empty()) {
+      buffer->writer()->AppendVector(raw_box);
+      return true;
+    }
+
+    RCHECK(ReadWriteHeaderInternal(buffer) && buffer->PrepareChildren());
+    if (has_dialog_album_peaks)
+      RCHECK(buffer->ReadWriteChild(&dialog_album_peaks));
+  }
+  return true;
+}
+
+size_t Userdata::ComputeSizeInternal() {
+  if (!raw_box.empty())
+    return raw_box.size();
+  if (!has_dialog_album_peaks)
+    return 0;
+  return HeaderSize() + dialog_album_peaks.ComputeSize();
 }
 
 bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {

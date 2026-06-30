@@ -19,6 +19,7 @@
 #include <packager/media/base/decryptor_source.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/offset_byte_queue.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 ABSL_DECLARE_FLAG(bool, use_dovi_supplemental_codecs);
 
@@ -54,11 +55,16 @@ class MP4MediaParser : public MediaParser {
   /// @return true if successful, false otherwise.
   bool LoadMoov(const std::string& file_path);
 
+  /// Get the parsed meta box, if any.
+  /// @return pointer to the meta box, or nullptr if not found.
+  const Meta* GetMeta() const { return meta_.get(); }
+
  private:
   enum State { kWaitingForInit, kParsingBoxes, kEmittingSamples, kError };
 
   bool ParseBox(bool* err);
   bool ParseMoov(mp4::BoxReader* reader);
+  bool ParseMeta(mp4::BoxReader* reader);
   bool ParseMoof(mp4::BoxReader* reader);
 
   bool FetchKeysIfNecessary(
@@ -99,6 +105,7 @@ class MP4MediaParser : public MediaParser {
   int64_t mdat_tail_;
 
   std::unique_ptr<Movie> moov_;
+  std::unique_ptr<Meta> meta_;
   std::unique_ptr<TrackRunIterator> runs_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);

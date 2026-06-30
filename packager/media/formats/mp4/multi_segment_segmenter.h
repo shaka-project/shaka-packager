@@ -25,7 +25,8 @@ class MultiSegmentSegmenter : public Segmenter {
  public:
   MultiSegmentSegmenter(const MuxerOptions& options,
                         std::unique_ptr<FileType> ftyp,
-                        std::unique_ptr<Movie> moov);
+                        std::unique_ptr<Movie> moov,
+                        std::unique_ptr<Meta> meta = nullptr);
   ~MultiSegmentSegmenter() override;
 
   /// @name Segmenter implementation overrides.

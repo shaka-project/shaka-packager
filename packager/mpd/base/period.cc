@@ -174,6 +174,13 @@ std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
       return std::nullopt;
   }
 
+  for (const auto& preselection : preselection_list_) {
+    auto preselection_xml = preselection->GetXml();
+    if (!preselection_xml || !period.AddChild(std::move(*preselection_xml))) {
+      return std::nullopt;
+    }
+  }
+
   if (output_period_duration) {
     if (!period.SetStringAttribute("duration",
                                    SecondsToXmlDuration(duration_seconds_))) {
@@ -304,6 +311,34 @@ bool Period::SetNewAdaptationSetAttributes(
         new_adaptation_set->ForceStartwithSAP(1);
       } else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
         new_adaptation_set->ForceSubsegmentStartswithSAP(1);
+      }
+      if (codec == "ac-4" &&
+          mpd_options_.mpd_params.signal_ac4_de_preselection) {
+        // Find preselection with the highest selection_priority among all
+        // AC-4 preselections. Set labels and roles accordingly.
+        const MediaInfo::Ac4Preselection* ac4_preselection_with_max_priority =
+            nullptr;
+        uint32_t max_selection_priority = 0;
+        for (const auto& preselection : media_info.audio_info()
+                                            .codec_specific_data()
+                                            .ac4_preselections()) {
+          if (preselection.has_selection_priority() &&
+              preselection.selection_priority() > max_selection_priority) {
+            max_selection_priority = preselection.selection_priority();
+            ac4_preselection_with_max_priority = &preselection;
+          }
+        }
+        if (ac4_preselection_with_max_priority) {
+          for (auto& label : ac4_preselection_with_max_priority->labels()) {
+            new_adaptation_set->AddPreselectionLabel(label.lang(),
+                                                     label.value());
+          }
+          for (const auto& role_pair :
+               ac4_preselection_with_max_priority->roles()) {
+            new_adaptation_set->AddPreselectionRole(role_pair.scheme(),
+                                                    role_pair.value());
+          }
+        }
       }
     }
   } else if (media_info.has_text_info()) {

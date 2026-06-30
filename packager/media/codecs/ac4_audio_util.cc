@@ -61,6 +61,57 @@ enum kAC4AudioChannelGroupIndex {
   kVhlVhrPair = 0x40000,
 };
 
+// Calculate the channel count from channel mask
+uint32_t Ac4ChannelCountFromMask(uint32_t channel_mask) {
+  uint32_t channel_count = 0;
+
+  if (channel_mask & 0x1)  // 0: L,R
+    channel_count += 2;
+  if (channel_mask & 0x2)  // 1: C
+    channel_count += 1;
+  if (channel_mask & 0x4)  // 2: Ls,Rs
+    channel_count += 2;
+  if (channel_mask & 0x8)  // 3: Lb,Rb
+    channel_count += 2;
+  if (channel_mask & 0x10)  // 4: Tfl,Tfr
+    channel_count += 2;
+  if (channel_mask & 0x20)  // 5: Tbl,Tbr
+    channel_count += 2;
+  if (channel_mask & 0x40)  // 6: LFE
+    channel_count += 1;
+  if (channel_mask & 0x80)  // 7: TL,TR
+    channel_count += 2;
+  if (channel_mask & 0x100)  // 8: Tsl,Tsr
+    channel_count += 2;
+  if (channel_mask & 0x200)  // 9: Tfc
+    channel_count += 1;
+  if (channel_mask & 0x400)  // 10: Tbc
+    channel_count += 1;
+  if (channel_mask & 0x800)  // 11: Tc
+    channel_count += 1;
+  if (channel_mask & 0x1000)  // 12: LFE2
+    channel_count += 1;
+  if (channel_mask & 0x2000)  // 13: Bfl,Bfr
+    channel_count += 2;
+  if (channel_mask & 0x4000)  // 14: Bfc
+    channel_count += 1;
+  if (channel_mask & 0x8000)  // 15: Cb
+    channel_count += 1;
+  if (channel_mask & 0x10000)  // 16: Lscr,Rscr
+    channel_count += 2;
+  if (channel_mask & 0x20000)  // 17: Lw,Rw
+    channel_count += 2;
+  if (channel_mask & 0x40000)  // 18: Vhl,Vhr
+    channel_count += 2;
+
+  // Special case: if only L/R and C are present and count is 3, return 2
+  if ((channel_mask & 0x1) && (channel_mask & 0x2) && channel_count == 3) {
+    channel_count = 2;
+  }
+
+  return channel_count;
+}
+
 // Mapping of channel configurations to the MPEG audio value based on ETSI TS
 // 103 192-2 V1.2.1 Digital Audio Compression (AC-4) Standard;
 // Part 2: Immersive and personalized Table G.1
@@ -205,6 +256,8 @@ bool ParseAC4SubStreamGroupDsi(BitReader& bit_reader) {
 // Parse AC-4 Presentation V1 based on ETSI TS 103 192-2 V1.2.1 Digital Audio
 // Compression (AC-4) Standard;Part 2: Immersive and personalized E.10.
 bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
+                               bool* b_presentation_id,
+                               uint8_t* presentation_id,
                                uint32_t pres_bytes,
                                uint8_t* mdcompat,
                                uint32_t* presentation_channel_mask_v1,
@@ -225,10 +278,9 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
     b_add_emdf_substreams = 1;
   } else {
     RCHECK(bit_reader.ReadBits(3, mdcompat));
-    bool b_presentation_id;
-    RCHECK(bit_reader.ReadBits(1, &b_presentation_id));
-    if (b_presentation_id) {
-      RCHECK(bit_reader.SkipBits(5));
+    RCHECK(bit_reader.ReadBits(1, b_presentation_id));
+    if (*b_presentation_id) {
+      RCHECK(bit_reader.ReadBits(5, presentation_id));
     }
     RCHECK(bit_reader.SkipBits(19));
     bool b_presentation_channel_coded;
@@ -376,16 +428,15 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
   // So it can be considered as AC4 stream with single presentation. And IMS
   // presentation must be prior to legacy presentation.
   // In other word, only the 1st presentation in AC4 stream need to be parsed.
-  const uint8_t ott_n_presentation = 1;
-  for (uint8_t i = 0; i < ott_n_presentation; i++) {
-    RCHECK(bit_reader.ReadBits(8, presentation_version));
-    // *presentation_version == 2 means IMS presentation.
-    if ((*presentation_version == 2 && n_presentation > 2) ||
-        (*presentation_version == 1 && n_presentation > 1)) {
-      LOG(WARNING) << "Seeing multiple presentations, only single presentation "
-                   << "(including IMS presentation) is supported";
-      return false;
-    }
+  // 2025-11-21 update: AC4 DE stream is allowed to carry multiple
+  // presentations. Initialize mdcompat to maximum value to find minimum
+  // Initialize presentation_version to minimum value to find maximum
+  uint8_t min_mdcompat = 0xFF;
+  uint8_t min_presentation_id = 0xFF;
+  *dolby_ims_indicator = false;
+  for (uint8_t i = 0; i < n_presentation; i++) {
+    uint8_t current_presentation_version;
+    RCHECK(bit_reader.ReadBits(8, &current_presentation_version));
     uint32_t pres_bytes;
     RCHECK(bit_reader.ReadBits(8, &pres_bytes));
     if (pres_bytes == 255) {
@@ -395,13 +446,18 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
     }
 
     size_t presentation_bits = 0;
-    *dolby_ims_indicator = false;
-    if (*presentation_version == 0) {
+    bool current_dolby_ims_indicator = false;
+    if (current_presentation_version == 0) {
       LOG(WARNING) << "Presentation version 0 is not supported";
       return false;
     } else {
-      if (*presentation_version == 1 || *presentation_version == 2) {
-        if (*presentation_version == 2) {
+      if (current_presentation_version == 1 ||
+          current_presentation_version == 2) {
+        if (current_presentation_version == 2) {
+          current_dolby_ims_indicator = true;
+        }
+        // Set dolby_ims_indicator to true if any presentation has it set
+        if (current_dolby_ims_indicator) {
           *dolby_ims_indicator = true;
         }
         const size_t presentation_start = bit_reader.bit_position();
@@ -409,11 +465,37 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
         // It indicates whether the source content before encoding is Atmos.
         // No final decision about how to use it in OTT.
         // Parse it for the future usage.
+        uint8_t current_mdcompat = 0xFF;
+        uint32_t current_channel_mask_v1 = 0;
+        uint8_t current_presentation_id = 0;
+        bool b_presentation_id = false;
         uint8_t dolby_atmos_indicator;
         if (!ParseAC4PresentationV1Dsi(
-                bit_reader, pres_bytes, mdcompat, presentation_channel_mask_v1,
+                bit_reader, &b_presentation_id, &current_presentation_id,
+                pres_bytes, &current_mdcompat, &current_channel_mask_v1,
                 dolby_cbi_indicator, &dolby_atmos_indicator)) {
           return false;
+        }
+        // For AC4 stream with multiple presentations, find the presentation
+        // with minimum presentation_id, and use its channel mask and
+        // presentation version as the output. If presentation_id is not
+        // present, use the 1st presentation's information as the output.
+        if (b_presentation_id) {
+          if (current_presentation_id < min_presentation_id) {
+            *presentation_channel_mask_v1 = current_channel_mask_v1;
+            *presentation_version = current_presentation_version;
+            min_presentation_id = current_presentation_id;
+          }
+        } else {
+          if (i == 0) {
+            *presentation_channel_mask_v1 = current_channel_mask_v1;
+            *presentation_version = current_presentation_version;
+          }
+        }
+
+        // For multiple presentations, find the minimum mdcompat value
+        if (current_mdcompat < min_mdcompat) {
+          min_mdcompat = current_mdcompat;
         }
         const size_t presentation_end = bit_reader.bit_position();
         presentation_bits = presentation_end - presentation_start;
@@ -425,6 +507,8 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
     size_t skip_bits = pres_bytes * 8 - presentation_bits;
     RCHECK(bit_reader.SkipBits(skip_bits));
   }
+  // Store the minimum mdcompat value and maximum presentation_version
+  *mdcompat = min_mdcompat;
   return true;
 }
 }  // namespace
@@ -478,7 +562,8 @@ bool CalculateAC4ChannelMPEGValue(const std::vector<uint8_t>& ac4_data,
 }
 
 bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
-                     uint8_t* ac4_codec_info) {
+                     uint8_t* ac4_codec_info,
+                     uint8_t* channel_count) {
   uint8_t bitstream_version;
   uint8_t presentation_version;
   uint8_t mdcompat;
@@ -504,6 +589,7 @@ bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
   // bitstream_version (3bits) + presentation_version (2bits) + mdcompat (3bits)
   *ac4_codec_info = ((bitstream_version << 5) |
                      ((presentation_version << 3) & 0x1F) | (mdcompat & 0x7));
+  *channel_count = Ac4ChannelCountFromMask(pre_channel_mask);
   return true;
 }
 

@@ -14,6 +14,7 @@
 #include <packager/mpd/base/mpd_notifier_util.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/period.h>
+#include <packager/mpd/base/preselection.h>
 #include <packager/mpd/base/representation.h>
 
 namespace shaka {
@@ -58,7 +59,25 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
       adaptation_set->AddRepresentation(adjusted_media_info);
   if (!representation)
     return false;
-
+  if (adaptation_set->codec() == "ac-4" &&
+      period->mpd_options().mpd_params.signal_ac4_de_preselection) {
+    // Add AC-4 preselections.
+    if (adjusted_media_info.has_audio_info() &&
+        adjusted_media_info.audio_info()
+                .codec_specific_data()
+                .ac4_preselections_size() > 0) {
+      for (int i = 0; i < adjusted_media_info.audio_info()
+                              .codec_specific_data()
+                              .ac4_preselections_size();
+           ++i) {
+        period->AddPreselection(Preselection::CreateFromAc4Preselection(
+            adjusted_media_info.audio_info()
+                .codec_specific_data()
+                .ac4_preselections(i),
+            adaptation_set->id()));
+      }
+    }
+  }
   *container_id = representation->id();
   if (content_protection_in_adaptation_set_) {
     // ContentProtection elements are already added to AdaptationSet above.

@@ -16,6 +16,7 @@
 
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/preselection.h>
 #include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
@@ -67,6 +68,12 @@ class Period {
   const std::map<std::string, std::list<AdaptationSet*>>& trickplay_cache()
       const {
     return trickplay_cache_;
+  }
+
+  const MpdOptions& mpd_options() const { return mpd_options_; }
+
+  void AddPreselection(std::unique_ptr<Preselection> preselection) {
+    preselection_list_.push_back(std::move(preselection));
   }
 
  protected:
@@ -124,6 +131,7 @@ class Period {
   const MpdOptions& mpd_options_;
   uint32_t* const representation_counter_;
   std::list<std::unique_ptr<AdaptationSet>> adaptation_sets_;
+  std::list<std::unique_ptr<Preselection>> preselection_list_;
   // AdaptationSets grouped by a specific adaptation set grouping key.
   // AdaptationSets with the same key contain identical parameters except
   // ContentProtection parameters. A single AdaptationSet would be created
