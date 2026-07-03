@@ -12,7 +12,6 @@
 #include <vector>
 
 #include <absl/log/check.h>
-#include <absl/strings/ascii.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <libxml/parser.h>
@@ -73,13 +72,10 @@ Status ParseUuid(const std::string& uuid,
 Status ParseBase64(const std::string& base64,
                    const std::string& error_context,
                    std::vector<uint8_t>* bytes) {
-  std::string stripped;
-  for (char c : base64) {
-    if (!absl::ascii_isspace(c))
-      stripped.push_back(c);
-  }
+  // absl::Base64Unescape skips whitespace, so pretty-printed documents with
+  // line breaks inside the value are handled.
   std::string decoded;
-  if (!absl::Base64Unescape(stripped, &decoded)) {
+  if (!absl::Base64Unescape(base64, &decoded)) {
     return Status(error::INVALID_ARGUMENT,
                   error_context + " is not valid base64: " + base64);
   }

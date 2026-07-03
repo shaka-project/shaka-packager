@@ -64,7 +64,8 @@ const char kFullDocument[] = R"(<?xml version="1.0" encoding="UTF-8"?>
     <cpix:ContentKey kid="11111213-1518-0d15-2237-5990e9000000">
       <cpix:Data>
         <pskc:Secret>
-          <pskc:PlainValue>ECAREDADAFAIATAhA0BVAA==</pskc:PlainValue>
+          <pskc:PlainValue>ECAREDADAFAIATAh
+              A0BVAA==</pskc:PlainValue>
         </pskc:Secret>
       </cpix:Data>
     </cpix:ContentKey>
