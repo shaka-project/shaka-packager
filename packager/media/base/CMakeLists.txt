@@ -23,6 +23,8 @@ add_library(media_base STATIC
     cc_stream_filter.cc
     common_pssh_generator.cc
     container_names.cc
+    cpix_key_source.cc
+    cpix_parser.cc
     decrypt_config.cc
     decryptor_source.cc
     http_key_fetcher.cc
@@ -87,6 +89,8 @@ add_executable(media_base_unittest
     bit_writer_unittest.cc
     buffer_writer_unittest.cc
     container_names_unittest.cc
+    cpix_key_source_unittest.cc
+    cpix_parser_unittest.cc
     decryptor_source_unittest.cc
     http_key_fetcher_unittest.cc
     id3_tag_unittest.cc

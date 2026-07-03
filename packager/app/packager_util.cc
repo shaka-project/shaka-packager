@@ -9,6 +9,7 @@
 #include <absl/log/log.h>
 
 #include <packager/file.h>
+#include <packager/media/base/cpix_key_source.h>
 #include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/playready_key_source.h>
@@ -112,6 +113,11 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         LOG(ERROR) << "Error creating PlayReady key source.";
         return nullptr;
       }
+      break;
+    }
+    case KeyProvider::kCpix: {
+      encryption_key_source =
+          CpixKeySource::Create(encryption_params.cpix, protection_scheme);
       break;
     }
     default:

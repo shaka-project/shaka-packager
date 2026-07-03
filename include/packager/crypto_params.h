@@ -22,6 +22,7 @@ enum class KeyProvider {
   kRawKey,
   kWidevine,
   kPlayReady,
+  kCpix,
 };
 
 /// Protection systems that handle decryption during playback.  This affects the
@@ -141,16 +142,25 @@ struct RawKeyParams {
   std::map<StreamLabel, KeyInfo> key_map;
 };
 
+/// CPIX (DASH-IF Content Protection Information Exchange) encryption
+/// parameters. Content keys, DRM signaling (PSSH) and key to stream mapping
+/// are read from a CPIX document.
+struct CpixEncryptionParams {
+  /// Path or URL to the CPIX document.
+  std::string document_source;
+};
+
 /// Encryption parameters.
 struct EncryptionParams {
   /// Specifies the key provider, which determines which key provider is used
   /// and which encryption params is valid. 'kNone' means not to encrypt the
   /// streams.
   KeyProvider key_provider = KeyProvider::kNone;
-  // Only one of the three fields is valid.
+  // Only one of the four fields is valid.
   WidevineEncryptionParams widevine;
   PlayReadyEncryptionParams playready;
   RawKeyParams raw_key;
+  CpixEncryptionParams cpix;
 
   /// The protection systems to generate, multiple can be OR'd together.
   ProtectionSystem protection_systems = ProtectionSystem::kNone;

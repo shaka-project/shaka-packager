@@ -106,9 +106,13 @@ void FillPsshGenerators(
                                   std::end(kMarlinSystemId));
   }
 
+  // The DRM signaling in a CPIX document is authoritative, so no default
+  // PSSH is generated for the CPIX key provider; --protection_systems can
+  // still be used to generate signaling for additional systems.
   if (pssh_generators->empty() && no_pssh_systems->empty() &&
       (encryption_params.key_provider != KeyProvider::kRawKey ||
-       encryption_params.raw_key.pssh.empty())) {
+       encryption_params.raw_key.pssh.empty()) &&
+      encryption_params.key_provider != KeyProvider::kCpix) {
     pssh_generators->emplace_back(new CommonPsshGenerator());
   }
 }
