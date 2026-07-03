@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_BASE_HTTP_KEY_FETCHER_H_
 
 #include <string>
+#include <vector>
 
 #include <packager/file/http_file.h>
 #include <packager/macros/classes.h>
@@ -52,6 +53,17 @@ class HttpKeyFetcher : public KeyFetcher {
                       const std::string& data,
                       std::string* response);
 
+  /// Sets the request content type. If not set, the content type is derived
+  /// from the request body (XML for SOAP requests, JSON otherwise).
+  void set_content_type(const std::string& content_type) {
+    content_type_ = content_type;
+  }
+
+  /// Sets extra HTTP headers, in "Name: value" form, to send with requests.
+  void set_extra_headers(const std::vector<std::string>& extra_headers) {
+    extra_headers_ = extra_headers;
+  }
+
  private:
   Status FetchInternal(HttpMethod method,
                        const std::string& url,
@@ -59,6 +71,8 @@ class HttpKeyFetcher : public KeyFetcher {
                        std::string* response);
 
   const int32_t timeout_in_seconds_;
+  std::string content_type_;
+  std::vector<std::string> extra_headers_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpKeyFetcher);
 };

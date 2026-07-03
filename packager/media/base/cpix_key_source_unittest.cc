@@ -17,17 +17,9 @@
 #include <packager/file.h>
 #include <packager/file/memory_file.h>
 #include <packager/media/base/rsa_key.h>
+#include <packager/media/base/test/hex_test_util.h>
 #include <packager/media/base/test/rsa_test_data.h>
 #include <packager/status/status_test_util.h>
-
-#define EXPECT_HEX_EQ(expected_hex, actual)                           \
-  {                                                                   \
-    std::string expected_str;                                         \
-    ASSERT_TRUE(absl::HexStringToBytes(expected_hex, &expected_str)); \
-    std::vector<uint8_t> expected_vector(expected_str.begin(),        \
-                                         expected_str.end());         \
-    EXPECT_EQ(expected_vector, (actual));                             \
-  }
 
 namespace shaka {
 namespace media {
@@ -181,6 +173,29 @@ TEST_F(CpixKeySourceTest, MultipleKeysWithoutUsageRulesFails) {
       ContentKeyElement(kKeyId2Uuid, kKey2Base64, "") +
       "</ContentKeyList></CPIX>";
   EXPECT_EQ(nullptr, CreateFromDocument(document_text));
+}
+
+TEST_F(CpixKeySourceTest, CreateForDecryptionLooksUpKeysByKeyId) {
+  // No usage rules and a commonEncryptionScheme binding; both are ignored
+  // for decryption.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64,
+                        "commonEncryptionScheme=\"cbcs\"") +
+      ContentKeyElement(kKeyId2Uuid, kKey2Base64, "") +
+      "</ContentKeyList></CPIX>";
+  ASSERT_TRUE(File::WriteStringToFile(kDocumentPath, document_text));
+  CpixEncryptionParams params;
+  params.document_source = kDocumentPath;
+  std::unique_ptr<CpixKeySource> key_source =
+      CpixKeySource::CreateForDecryption(params);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey(HexStringToVector(kKeyId1Hex), &key));
+  EXPECT_HEX_EQ(kKey1Hex, key.key);
+  ASSERT_OK(key_source->GetKey(HexStringToVector(kKeyId2Hex), &key));
+  EXPECT_HEX_EQ(kKeyId2Hex, key.key_id);
 }
 
 TEST_F(CpixKeySourceTest, SameKeyForMultipleTrackTypes) {

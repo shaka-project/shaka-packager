@@ -19,6 +19,11 @@ ABSL_FLAG(bool,
           "signaling comes from the document's DRMSystemList; "
           "--protection_systems may be used to generate signaling for "
           "additional protection systems.");
+ABSL_FLAG(bool,
+          enable_cpix_decryption,
+          false,
+          "Enable decryption with keys from a CPIX document. Keys are looked "
+          "up by key ID, so the document's usage rules are not used.");
 ABSL_FLAG(std::string, cpix, "", "Path or URL to the CPIX document.");
 ABSL_FLAG(std::string,
           cpix_request_file,
@@ -44,24 +49,27 @@ namespace shaka {
 bool ValidateCpixCryptoFlags() {
   bool success = true;
 
-  const bool cpix_crypto = absl::GetFlag(FLAGS_enable_cpix_encryption);
+  const bool cpix_crypto = absl::GetFlag(FLAGS_enable_cpix_encryption) ||
+                           absl::GetFlag(FLAGS_enable_cpix_decryption);
   if (!ValidateFlag("cpix", absl::GetFlag(FLAGS_cpix), cpix_crypto,
-                    /* optional= */ false, "--enable_cpix_encryption")) {
+                    /* optional= */ false,
+                    "--enable_cpix_encryption/decryption")) {
     success = false;
   }
   if (!ValidateFlag("cpix_request_file", absl::GetFlag(FLAGS_cpix_request_file),
                     cpix_crypto,
-                    /* optional= */ true, "--enable_cpix_encryption")) {
+                    /* optional= */ true,
+                    "--enable_cpix_encryption/decryption")) {
     success = false;
   }
   if (!ValidateFlag("cpix_headers", absl::GetFlag(FLAGS_cpix_headers),
                     cpix_crypto, /* optional= */ true,
-                    "--enable_cpix_encryption")) {
+                    "--enable_cpix_encryption/decryption")) {
     success = false;
   }
   if (!ValidateFlag("cpix_private_key", absl::GetFlag(FLAGS_cpix_private_key),
                     cpix_crypto, /* optional= */ true,
-                    "--enable_cpix_encryption")) {
+                    "--enable_cpix_encryption/decryption")) {
     success = false;
   }
   return success;

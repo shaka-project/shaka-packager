@@ -10,18 +10,13 @@
 #include <string>
 #include <vector>
 
-#include <absl/strings/escaping.h>
 #include <gtest/gtest.h>
+
+#include <packager/media/base/test/hex_test_util.h>
 
 namespace shaka {
 namespace media {
 namespace {
-
-std::vector<uint8_t> HexStringToVector(const std::string& hex_str) {
-  std::string raw_str;
-  EXPECT_TRUE(absl::HexStringToBytes(hex_str, &raw_str));
-  return std::vector<uint8_t>(raw_str.begin(), raw_str.end());
-}
 
 // Test vectors from RFC 3394 section 4.
 // Section 4.1: 128 bits of key data with a 128-bit KEK.

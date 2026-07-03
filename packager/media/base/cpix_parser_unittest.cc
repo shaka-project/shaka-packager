@@ -11,19 +11,10 @@
 #include <string>
 #include <vector>
 
-#include <absl/strings/escaping.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/test/hex_test_util.h>
 #include <packager/status/status_test_util.h>
-
-#define EXPECT_HEX_EQ(expected_hex, actual)                           \
-  {                                                                   \
-    std::string expected_str;                                         \
-    ASSERT_TRUE(absl::HexStringToBytes(expected_hex, &expected_str)); \
-    std::vector<uint8_t> expected_vector(expected_str.begin(),        \
-                                         expected_str.end());         \
-    EXPECT_EQ(expected_vector, (actual));                             \
-  }
 
 namespace shaka {
 namespace media {

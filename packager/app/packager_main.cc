@@ -506,9 +506,14 @@ std::optional<PackagingParams> GetPackagingParams() {
     decryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
+  if (absl::GetFlag(FLAGS_enable_cpix_decryption)) {
+    decryption_params.key_provider = KeyProvider::kCpix;
+    ++num_key_providers;
+  }
   if (num_key_providers > 1) {
     LOG(ERROR) << "Only one of --enable_widevine_decryption, "
-                  "--enable_raw_key_decryption can be enabled.";
+                  "--enable_raw_key_decryption, --enable_cpix_decryption can "
+                  "be enabled.";
     return std::nullopt;
   }
   switch (decryption_params.key_provider) {
@@ -524,8 +529,16 @@ std::optional<PackagingParams> GetPackagingParams() {
         return std::nullopt;
       break;
     }
+    case KeyProvider::kCpix: {
+      CpixEncryptionParams& cpix = decryption_params.cpix;
+      cpix.document_source = absl::GetFlag(FLAGS_cpix);
+      cpix.request_document_source = absl::GetFlag(FLAGS_cpix_request_file);
+      cpix.headers =
+          SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_cpix_headers), ';');
+      cpix.private_key_source = absl::GetFlag(FLAGS_cpix_private_key);
+      break;
+    }
     case KeyProvider::kPlayReady:
-    case KeyProvider::kCpix:
     case KeyProvider::kNone:
       break;
   }

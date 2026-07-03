@@ -156,6 +156,11 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       decryption_key_source = RawKeySource::Create(decryption_params.raw_key);
       break;
     }
+    case KeyProvider::kCpix: {
+      decryption_key_source =
+          CpixKeySource::CreateForDecryption(decryption_params.cpix);
+      break;
+    }
     default:
       break;
   }

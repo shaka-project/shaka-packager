@@ -468,6 +468,8 @@ class PackagerAppTest(unittest.TestCase):
                 skip_byte_block=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
+                cpix_encryption=False,
+                cpix_decryption=False,
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
@@ -520,6 +522,12 @@ class PackagerAppTest(unittest.TestCase):
           fairplay_key_uri = ('skd://www.license.com/getkey?'
                               'KeyId=31323334-3536-3738-3930-313233343536')
           flags += ['--hls_key_uri=' + fairplay_key_uri]
+    elif cpix_encryption:
+      flags += [
+          '--enable_cpix_encryption',
+          '--cpix=' + os.path.join(self.golden_file_dir, 'cpix.xml'),
+          '--clear_lead={0}'.format(self.clear_lead)
+      ]
 
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
@@ -536,6 +544,11 @@ class PackagerAppTest(unittest.TestCase):
           '--enable_raw_key_decryption',
           '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
                                                     self.encryption_key)
+      ]
+    elif cpix_decryption:
+      flags += [
+          '--enable_cpix_decryption',
+          '--cpix=' + os.path.join(self.golden_file_dir, 'cpix.xml'),
       ]
 
     if key_rotation:
@@ -609,12 +622,15 @@ class PackagerAppTest(unittest.TestCase):
     self.assertIn('Found 1 stream(s).', stream_info)
     self.assertIn(info, stream_info)
 
-  def _Decrypt(self, file_path):
+  def _Decrypt(self, file_path, cpix=False):
     streams = [
         self._GetStream(
             '0', output_file_prefix='decrypted', test_file=file_path)
     ]
-    self.assertPackageSuccess(streams, self._GetFlags(decryption=True))
+    flags = (
+        self._GetFlags(cpix_decryption=True)
+        if cpix else self._GetFlags(decryption=True))
+    self.assertPackageSuccess(streams, flags)
 
   def _CheckTestResults(self,
                         test_dir,
@@ -1223,6 +1239,22 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('encryption', verify_decryption=True)
+
+  def testCpixEncryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(cpix_encryption=True, output_dash=True))
+    self._CheckTestResults('encryption-cpix', verify_decryption=True)
+
+  def testCpixDecryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(cpix_encryption=True, output_dash=True))
+    for file_name in os.listdir(self.tmp_dir):
+      extension = os.path.splitext(file_name)[1][1:]
+      if extension not in ['mpd', 'm3u8', 'media_info']:
+        self._Decrypt(os.path.join(self.tmp_dir, file_name), cpix=True)
+    self._CheckTestResults('encryption-cpix')
 
   def testEncryptionWithMultiDrms(self):
     self.assertPackageSuccess(

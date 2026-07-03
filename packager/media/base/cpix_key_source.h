@@ -74,6 +74,14 @@ class CpixKeySource : public KeySource {
       FourCC protection_scheme,
       CpixFetcher* fetcher);
 
+  /// Creates a new CpixKeySource for decryption. Keys are looked up by key
+  /// ID, so the document's usage rules and `commonEncryptionScheme` binding
+  /// are ignored. Returns null if the document cannot be read or fetched, or
+  /// is malformed.
+  /// @param cpix_params contains parameters to setup the key source.
+  static std::unique_ptr<CpixKeySource> CreateForDecryption(
+      const CpixEncryptionParams& cpix_params);
+
  private:
   explicit CpixKeySource(EncryptionKeyMap&& encryption_key_map);
   CpixKeySource(const CpixKeySource&) = delete;

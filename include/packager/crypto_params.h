@@ -264,9 +264,12 @@ struct DecryptionParams {
   /// and which encryption params is valid. 'kNone' means not to decrypt the
   /// streams.
   KeyProvider key_provider = KeyProvider::kNone;
-  // Only one of the two fields is valid.
+  // Only one of the three fields is valid.
   WidevineDecryptionParams widevine;
   RawKeyParams raw_key;
+  /// For decryption, keys are looked up by key ID; the key to stream mapping
+  /// fields of the params are not used.
+  CpixEncryptionParams cpix;
 };
 
 }  // namespace shaka

@@ -22,8 +22,6 @@
 #include <mbedtls/md.h>
 
 #include <packager/file.h>
-#include <packager/file/file_closer.h>
-#include <packager/file/http_file.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/aes_decryptor.h>
@@ -31,6 +29,7 @@
 #include <packager/media/base/aes_key_wrap.h>
 #include <packager/media/base/cpix_parser.h>
 #include <packager/media/base/fourccs.h>
+#include <packager/media/base/http_key_fetcher.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/rsa_key.h>
 #include <packager/utils/bytes_to_string_view.h>
@@ -44,7 +43,6 @@ namespace media {
 namespace {
 
 const char kXmlContentType[] = "application/xml";
-constexpr size_t kFetchBufferSize = 64 * 1024;
 
 std::string KeyIdToString(const std::vector<uint8_t>& key_id) {
   return absl::BytesToHexString(byte_vector_to_string_view(key_id));
@@ -55,36 +53,18 @@ bool IsHttpUrl(const std::string& source) {
          absl::StartsWith(source, "https://");
 }
 
-// Fetches CPIX documents with libcurl via HttpFile.
+// Fetches CPIX documents over HTTP(S) via HttpKeyFetcher.
 class HttpCpixFetcher : public CpixFetcher {
  public:
   Status Fetch(const std::string& url,
                const std::string& request_body,
                const std::vector<std::string>& headers,
                std::string* response) override {
-    const HttpMethod method =
-        request_body.empty() ? HttpMethod::kGet : HttpMethod::kPost;
-    std::unique_ptr<HttpFile, FileCloser> file(
-        new HttpFile(method, url, kXmlContentType, headers,
-                     /* timeout_in_seconds= */ 0));
-    if (!file->Open()) {
-      return Status(error::HTTP_FAILURE,
-                    "Cannot open CPIX document URL " + url + ".");
-    }
-    if (!request_body.empty()) {
-      file->Write(request_body.data(), request_body.size());
-      file->Flush();
-    }
-    file->CloseForWriting();
-
-    while (true) {
-      char buffer[kFetchBufferSize];
-      const int64_t bytes_read = file->Read(buffer, kFetchBufferSize);
-      if (bytes_read <= 0)
-        break;
-      response->append(buffer, bytes_read);
-    }
-    return file.release()->CloseWithStatus();
+    HttpKeyFetcher fetcher;
+    fetcher.set_content_type(kXmlContentType);
+    fetcher.set_extra_headers(headers);
+    return request_body.empty() ? fetcher.Get(url, response)
+                                : fetcher.Post(url, request_body, response);
   }
 };
 
@@ -393,7 +373,8 @@ Status ValidateContentKey(const CpixContentKey& content_key,
                       KeyIdToString(content_key.key_id) +
                       ", must be 8 or 16 bytes.");
   }
-  if (!content_key.common_encryption_scheme.empty() &&
+  if (protection_scheme != FOURCC_NULL &&
+      !content_key.common_encryption_scheme.empty() &&
       content_key.common_encryption_scheme !=
           FourCCToString(protection_scheme)) {
     return Status(error::INVALID_ARGUMENT,
@@ -451,6 +432,7 @@ Status GetKeySystemInfo(
 Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
                              FourCC protection_scheme,
                              CpixFetcher* fetcher,
+                             bool for_decryption,
                              EncryptionKeyMap* encryption_key_map) {
   if (cpix_params.document_source.empty()) {
     return Status(error::INVALID_ARGUMENT,
@@ -512,8 +494,13 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
                                      &encryption_key->key_system_info));
 
     std::set<std::string> labels;
+    if (for_decryption) {
+      // Decryption looks up keys by key ID only; a synthetic unique label
+      // keeps every key in the map without requiring usage rules.
+      labels.insert(KeyIdToString(content_key.key_id));
+    }
     for (const CpixUsageRule& usage_rule : document.usage_rules) {
-      if (usage_rule.key_id == content_key.key_id)
+      if (!for_decryption && usage_rule.key_id == content_key.key_id)
         RETURN_IF_ERROR(RuleToLabels(usage_rule, cpix_params, &labels));
     }
     if (labels.empty()) {
@@ -612,8 +599,24 @@ std::unique_ptr<CpixKeySource> CpixKeySource::CreateWithFetcher(
     CpixFetcher* fetcher) {
   DCHECK(fetcher);
   EncryptionKeyMap encryption_key_map;
-  Status status = BuildEncryptionKeyMap(cpix_params, protection_scheme, fetcher,
-                                        &encryption_key_map);
+  Status status =
+      BuildEncryptionKeyMap(cpix_params, protection_scheme, fetcher,
+                            /* for_decryption= */ false, &encryption_key_map);
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();
+    return nullptr;
+  }
+  return std::unique_ptr<CpixKeySource>(
+      new CpixKeySource(std::move(encryption_key_map)));
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::CreateForDecryption(
+    const CpixEncryptionParams& cpix_params) {
+  HttpCpixFetcher fetcher;
+  EncryptionKeyMap encryption_key_map;
+  Status status =
+      BuildEncryptionKeyMap(cpix_params, FOURCC_NULL, &fetcher,
+                            /* for_decryption= */ true, &encryption_key_map);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();
     return nullptr;
