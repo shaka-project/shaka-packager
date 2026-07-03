@@ -18,6 +18,7 @@ ABSL_DECLARE_FLAG(bool, enable_cpix_encryption);
 ABSL_DECLARE_FLAG(std::string, cpix);
 ABSL_DECLARE_FLAG(std::string, cpix_request_file);
 ABSL_DECLARE_FLAG(std::string, cpix_headers);
+ABSL_DECLARE_FLAG(std::string, cpix_private_key);
 
 namespace shaka {
 

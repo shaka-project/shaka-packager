@@ -486,6 +486,7 @@ std::optional<PackagingParams> GetPackagingParams() {
       cpix.request_document_source = absl::GetFlag(FLAGS_cpix_request_file);
       cpix.headers =
           SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_cpix_headers), ';');
+      cpix.private_key_source = absl::GetFlag(FLAGS_cpix_private_key);
       cpix.max_sd_pixels = absl::GetFlag(FLAGS_max_sd_pixels);
       cpix.max_hd_pixels = absl::GetFlag(FLAGS_max_hd_pixels);
       cpix.max_uhd1_pixels = absl::GetFlag(FLAGS_max_uhd1_pixels);

@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <absl/log/check.h>
@@ -83,6 +84,26 @@ Status ParseBase64(const std::string& base64,
   return Status::OK;
 }
 
+Status ParseEncryptedValue(xmlNodePtr node,
+                           const std::string& error_context,
+                           CpixEncryptedValue* encrypted_value) {
+  xmlNodePtr method = FindChildElement(node, "EncryptionMethod");
+  if (method)
+    encrypted_value->algorithm = GetAttribute(method, "Algorithm").value_or("");
+
+  xmlNodePtr cipher_data = FindChildElement(node, "CipherData");
+  xmlNodePtr cipher_value =
+      cipher_data ? FindChildElement(cipher_data, "CipherValue") : nullptr;
+  if (!cipher_value) {
+    return Status(error::INVALID_ARGUMENT,
+                  "EncryptedValue of " + error_context +
+                      " has no CipherData/CipherValue.");
+  }
+  return ParseBase64(GetContent(cipher_value),
+                     "CipherValue of " + error_context,
+                     &encrypted_value->cipher_value);
+}
+
 Status ParseContentKey(xmlNodePtr node, CpixContentKey* content_key) {
   std::optional<std::string> kid = GetAttribute(node, "kid");
   if (!kid) {
@@ -106,20 +127,70 @@ Status ParseContentKey(xmlNodePtr node, CpixContentKey* content_key) {
     return Status(error::INVALID_ARGUMENT,
                   "ContentKey " + *kid + " has no Data/Secret element.");
   }
-  if (FindChildElement(secret, "EncryptedValue")) {
-    return Status(error::UNIMPLEMENTED,
-                  "ContentKey " + *kid +
-                      " has an encrypted key value. Encrypted CPIX documents "
-                      "are not supported yet.");
-  }
   xmlNodePtr plain_value = FindChildElement(secret, "PlainValue");
+  xmlNodePtr encrypted_value = FindChildElement(secret, "EncryptedValue");
+  if (plain_value && encrypted_value) {
+    return Status(
+        error::INVALID_ARGUMENT,
+        "ContentKey " + *kid + " has both a PlainValue and an EncryptedValue.");
+  }
+  if (encrypted_value) {
+    CpixEncryptedValue value;
+    RETURN_IF_ERROR(
+        ParseEncryptedValue(encrypted_value, "ContentKey " + *kid, &value));
+    xmlNodePtr value_mac = FindChildElement(secret, "ValueMAC");
+    if (value_mac) {
+      RETURN_IF_ERROR(ParseBase64(GetContent(value_mac),
+                                  "ValueMAC of ContentKey " + *kid,
+                                  &value.value_mac));
+    }
+    content_key->encrypted_key = std::move(value);
+    return Status::OK;
+  }
   if (!plain_value) {
     return Status(error::INVALID_ARGUMENT,
-                  "ContentKey " + *kid + " has no Data/Secret/PlainValue.");
+                  "ContentKey " + *kid +
+                      " has no Data/Secret/PlainValue or EncryptedValue.");
   }
   RETURN_IF_ERROR(ParseBase64(GetContent(plain_value),
                               "PlainValue of ContentKey " + *kid,
                               &content_key->key));
+  return Status::OK;
+}
+
+Status ParseDeliveryData(xmlNodePtr node, CpixDeliveryData* delivery_data) {
+  xmlNodePtr document_key = FindChildElement(node, "DocumentKey");
+  xmlNodePtr data =
+      document_key ? FindChildElement(document_key, "Data") : nullptr;
+  xmlNodePtr secret = data ? FindChildElement(data, "Secret") : nullptr;
+  xmlNodePtr encrypted_value =
+      secret ? FindChildElement(secret, "EncryptedValue") : nullptr;
+  if (!encrypted_value) {
+    return Status(error::INVALID_ARGUMENT,
+                  "DeliveryData has no "
+                  "DocumentKey/Data/Secret/EncryptedValue.");
+  }
+  RETURN_IF_ERROR(ParseEncryptedValue(encrypted_value, "DocumentKey",
+                                      &delivery_data->document_key));
+
+  xmlNodePtr mac_method = FindChildElement(node, "MACMethod");
+  if (mac_method) {
+    delivery_data->mac_algorithm =
+        GetAttribute(mac_method, "Algorithm").value_or("");
+    if (delivery_data->mac_algorithm.empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "MACMethod is missing the 'Algorithm' attribute.");
+    }
+    xmlNodePtr key = FindChildElement(mac_method, "Key");
+    xmlNodePtr key_encrypted_value =
+        key ? FindChildElement(key, "EncryptedValue") : nullptr;
+    if (!key_encrypted_value) {
+      return Status(error::INVALID_ARGUMENT,
+                    "MACMethod has no Key/EncryptedValue.");
+    }
+    RETURN_IF_ERROR(ParseEncryptedValue(key_encrypted_value, "MACMethod key",
+                                        &delivery_data->mac_key));
+  }
   return Status::OK;
 }
 
@@ -281,9 +352,17 @@ Status ParseCpixDocument(const std::string& xml, CpixDocument* document) {
         RETURN_IF_ERROR(ParseUsageRule(node, &usage_rule));
         document->usage_rules.push_back(std::move(usage_rule));
       }
+    } else if (IsElement(list, "DeliveryDataList")) {
+      for (xmlNodePtr node = list->children; node; node = node->next) {
+        if (!IsElement(node, "DeliveryData"))
+          continue;
+        CpixDeliveryData delivery_data;
+        RETURN_IF_ERROR(ParseDeliveryData(node, &delivery_data));
+        document->delivery_data.push_back(std::move(delivery_data));
+      }
     }
-    // Other lists (DeliveryDataList, ContentKeyPeriodList, UpdateHistory,
-    // Signature, ...) are not needed for packaging and are ignored.
+    // Other lists (ContentKeyPeriodList, UpdateHistory, Signature, ...) are
+    // not needed for packaging and are ignored.
   }
 
   if (document->content_keys.empty()) {

@@ -158,6 +158,10 @@ struct CpixEncryptionParams {
   /// Optional HTTP headers, e.g. for authentication, in "Name: value" form.
   /// Only used when `document_source` is an HTTP(S) URL.
   std::vector<std::string> headers;
+  /// Path to the recipient RSA private key (PEM or DER), used to decrypt
+  /// encrypted CPIX documents. Required when the document's content keys
+  /// are encrypted (DeliveryData).
+  std::string private_key_source;
   /// Pixel thresholds used to translate the document's video filter based
   /// usage rules (VideoFilter@minPixels/@maxPixels) into the SD/HD/UHD1/UHD2
   /// stream labels. Filter boundaries must align with these thresholds. The

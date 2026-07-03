@@ -12,6 +12,7 @@ add_library(media_base STATIC
     aes_cryptor.cc
     aes_decryptor.cc
     aes_encryptor.cc
+    aes_key_wrap.cc
     aes_pattern_cryptor.cc
     audio_stream_info.cc
     audio_timestamp_helper.cc
@@ -82,6 +83,7 @@ target_link_libraries(media_handler_test_base
 
 add_executable(media_base_unittest
     aes_cryptor_unittest.cc
+    aes_key_wrap_unittest.cc
     aes_pattern_cryptor_unittest.cc
     audio_stream_info_unittest.cc
     audio_timestamp_helper_unittest.cc

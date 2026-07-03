@@ -19,15 +19,20 @@
 #include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/match.h>
+#include <mbedtls/md.h>
 
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/file/http_file.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/aes_key_wrap.h>
 #include <packager/media/base/cpix_parser.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/rsa_key.h>
 #include <packager/utils/bytes_to_string_view.h>
 
 namespace {
@@ -155,6 +160,215 @@ Status RuleToLabels(const CpixUsageRule& usage_rule,
   return Status::OK;
 }
 
+const char kAlgorithmRsaOaep[] =
+    "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p";
+const char kAlgorithmAes256Cbc[] =
+    "http://www.w3.org/2001/04/xmlenc#aes256-cbc";
+const char kAlgorithmKwAes256[] = "http://www.w3.org/2001/04/xmlenc#kw-aes256";
+const char kAlgorithmHmacSha512[] =
+    "http://www.w3.org/2001/04/xmldsig-more#hmac-sha512";
+
+Status RsaOaepDecrypt(RsaPrivateKey* private_key,
+                      const CpixEncryptedValue& encrypted_value,
+                      const std::string& error_context,
+                      std::vector<uint8_t>* plaintext) {
+  if (!encrypted_value.algorithm.empty() &&
+      encrypted_value.algorithm != kAlgorithmRsaOaep) {
+    return Status(error::UNIMPLEMENTED,
+                  "Unsupported encryption algorithm '" +
+                      encrypted_value.algorithm + "' for " + error_context +
+                      ". Only " + kAlgorithmRsaOaep + " is supported.");
+  }
+  const std::string ciphertext(encrypted_value.cipher_value.begin(),
+                               encrypted_value.cipher_value.end());
+  std::string decrypted;
+  if (!private_key->Decrypt(ciphertext, &decrypted)) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Failed to decrypt " + error_context +
+                      ". The CPIX document may be intended for a different "
+                      "recipient.");
+  }
+  plaintext->assign(decrypted.begin(), decrypted.end());
+  return Status::OK;
+}
+
+std::vector<uint8_t> HmacSha512(const std::vector<uint8_t>& key,
+                                const std::vector<uint8_t>& data) {
+  const mbedtls_md_info_t* md_info =
+      mbedtls_md_info_from_type(MBEDTLS_MD_SHA512);
+  DCHECK(md_info);
+  std::vector<uint8_t> mac(mbedtls_md_get_size(md_info));
+  CHECK_EQ(0, mbedtls_md_hmac(md_info, key.data(), key.size(), data.data(),
+                              data.size(), mac.data()));
+  return mac;
+}
+
+Status DecryptContentKeyValue(const std::vector<uint8_t>& document_key,
+                              const CpixEncryptedValue& encrypted_value,
+                              const std::string& key_id_string,
+                              std::vector<uint8_t>* key) {
+  if (encrypted_value.algorithm == kAlgorithmAes256Cbc) {
+    if (encrypted_value.cipher_value.size() < 32 ||
+        encrypted_value.cipher_value.size() % 16 != 0) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Invalid AES-CBC ciphertext size " +
+                        std::to_string(encrypted_value.cipher_value.size()) +
+                        " for key " + key_id_string + ".");
+    }
+    const std::vector<uint8_t> iv(encrypted_value.cipher_value.begin(),
+                                  encrypted_value.cipher_value.begin() + 16);
+    const std::vector<uint8_t> ciphertext(
+        encrypted_value.cipher_value.begin() + 16,
+        encrypted_value.cipher_value.end());
+    AesCbcDecryptor decryptor(kNoPadding);
+    if (!decryptor.InitializeWithIv(document_key, iv)) {
+      return Status(error::INTERNAL_ERROR,
+                    "Failed to initialize the AES-CBC decryptor.");
+    }
+    std::vector<uint8_t> padded;
+    if (!decryptor.Crypt(ciphertext, &padded)) {
+      return Status(
+          error::INVALID_ARGUMENT,
+          "Failed to decrypt the value of key " + key_id_string + ".");
+    }
+    // Strip XML Encryption block padding: the last byte holds the padding
+    // length; the padding byte values themselves are arbitrary.
+    const uint8_t padding_size = padded.back();
+    if (padding_size < 1 || padding_size > 16 ||
+        padding_size >= padded.size()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Invalid padding in the encrypted value of key " +
+                        key_id_string + ". The document key may be incorrect.");
+    }
+    key->assign(padded.begin(), padded.end() - padding_size);
+    return Status::OK;
+  }
+  if (encrypted_value.algorithm == kAlgorithmKwAes256) {
+    if (!AesKeyUnwrap(document_key, encrypted_value.cipher_value, key)) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Failed to unwrap the value of key " + key_id_string +
+                        ". The document may be corrupted.");
+    }
+    return Status::OK;
+  }
+  return Status(error::UNIMPLEMENTED,
+                "Unsupported encryption algorithm '" +
+                    encrypted_value.algorithm + "' for key " + key_id_string +
+                    ". Only " + kAlgorithmAes256Cbc + " and " +
+                    kAlgorithmKwAes256 + " are supported.");
+}
+
+// Decrypts encrypted content key values in |document| in place, after
+// unwrapping the document key (and MAC key) from the DeliveryData matching
+// the recipient private key and verifying each value's MAC.
+Status DecryptDocument(const CpixEncryptionParams& cpix_params,
+                       CpixDocument* document) {
+  bool any_encrypted = false;
+  for (const CpixContentKey& content_key : document->content_keys) {
+    if (content_key.encrypted_key)
+      any_encrypted = true;
+  }
+  if (!any_encrypted) {
+    if (!cpix_params.private_key_source.empty()) {
+      LOG(WARNING) << "--cpix_private_key is set, but the CPIX document is "
+                      "not encrypted.";
+    }
+    return Status::OK;
+  }
+  if (cpix_params.private_key_source.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "The CPIX document contains encrypted content keys. "
+                  "Provide the recipient private key to decrypt them.");
+  }
+  if (document->delivery_data.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "The CPIX document contains encrypted content keys but no "
+                  "DeliveryData with a document key.");
+  }
+
+  std::string private_key_data;
+  if (!File::ReadFileToString(cpix_params.private_key_source.c_str(),
+                              &private_key_data)) {
+    return Status(error::FILE_FAILURE,
+                  "Failed to read the CPIX private key from '" +
+                      cpix_params.private_key_source + "'.");
+  }
+  // mbedtls requires PEM input to include the terminating NUL.
+  if (private_key_data.find("-----BEGIN") != std::string::npos)
+    private_key_data.push_back('\0');
+  std::unique_ptr<RsaPrivateKey> private_key(
+      RsaPrivateKey::Create(private_key_data));
+  if (!private_key) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Failed to load the RSA private key from '" +
+                      cpix_params.private_key_source + "'.");
+  }
+
+  // Multiple DeliveryData elements address multiple recipients; find the one
+  // our private key can decrypt.
+  std::vector<uint8_t> document_key;
+  std::vector<uint8_t> mac_key;
+  std::string mac_algorithm;
+  Status last_error = Status::OK;
+  bool document_key_decrypted = false;
+  for (const CpixDeliveryData& delivery_data : document->delivery_data) {
+    std::vector<uint8_t> candidate_key;
+    Status status =
+        RsaOaepDecrypt(private_key.get(), delivery_data.document_key,
+                       "the document key", &candidate_key);
+    if (!status.ok()) {
+      last_error = status;
+      continue;
+    }
+    document_key = std::move(candidate_key);
+    mac_algorithm = delivery_data.mac_algorithm;
+    if (!mac_algorithm.empty()) {
+      RETURN_IF_ERROR(RsaOaepDecrypt(private_key.get(), delivery_data.mac_key,
+                                     "the MAC key", &mac_key));
+    }
+    document_key_decrypted = true;
+    break;
+  }
+  if (!document_key_decrypted)
+    return last_error;
+
+  if (document_key.size() != 32) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Invalid CPIX document key size " +
+                      std::to_string(document_key.size()) +
+                      ", must be 32 bytes.");
+  }
+  if (!mac_algorithm.empty() && mac_algorithm != kAlgorithmHmacSha512) {
+    return Status(error::UNIMPLEMENTED,
+                  "Unsupported MAC algorithm '" + mac_algorithm + "'. Only " +
+                      kAlgorithmHmacSha512 + " is supported.");
+  }
+
+  for (CpixContentKey& content_key : document->content_keys) {
+    if (!content_key.encrypted_key)
+      continue;
+    const CpixEncryptedValue& encrypted_value = *content_key.encrypted_key;
+    const std::string key_id_string = KeyIdToString(content_key.key_id);
+    if (!mac_algorithm.empty()) {
+      if (encrypted_value.value_mac.empty()) {
+        return Status(error::INVALID_ARGUMENT,
+                      "The document declares a MACMethod, but key " +
+                          key_id_string + " has no ValueMAC.");
+      }
+      if (HmacSha512(mac_key, encrypted_value.cipher_value) !=
+          encrypted_value.value_mac) {
+        return Status(error::INVALID_ARGUMENT,
+                      "ValueMAC verification failed for key " + key_id_string +
+                          ". The document may be corrupted or tampered "
+                          "with.");
+      }
+    }
+    RETURN_IF_ERROR(DecryptContentKeyValue(document_key, encrypted_value,
+                                           key_id_string, &content_key.key));
+  }
+  return Status::OK;
+}
+
 Status ValidateContentKey(const CpixContentKey& content_key,
                           FourCC protection_scheme) {
   if (content_key.key_id.size() != 16) {
@@ -270,6 +484,7 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
 
   CpixDocument document;
   RETURN_IF_ERROR(ParseCpixDocument(xml, &document));
+  RETURN_IF_ERROR(DecryptDocument(cpix_params, &document));
 
   std::vector<std::vector<uint8_t>> key_ids;
   for (const CpixContentKey& content_key : document.content_keys)

@@ -190,21 +190,79 @@ TEST(CpixParserTest, RejectsInvalidBase64KeyValue) {
   EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
-TEST(CpixParserTest, RejectsEncryptedContentKey) {
+TEST(CpixParserTest, ParsesEncryptedContentKeyAndDeliveryData) {
   const std::string document_text = std::string(R"(<CPIX>
+    <DeliveryDataList><DeliveryData>
+      <DeliveryKey><X509Data/></DeliveryKey>
+      <DocumentKey Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc">
+        <Data><Secret><EncryptedValue>
+          <EncryptionMethod
+              Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"/>
+          <CipherData><CipherValue>ZG9jLWtleQ==</CipherValue></CipherData>
+        </EncryptedValue></Secret></Data>
+      </DocumentKey>
+      <MACMethod
+          Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha512">
+        <Key><EncryptedValue>
+          <EncryptionMethod
+              Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"/>
+          <CipherData><CipherValue>bWFjLWtleQ==</CipherValue></CipherData>
+        </EncryptedValue></Key>
+      </MACMethod>
+    </DeliveryData></DeliveryDataList>
     <ContentKeyList><ContentKey kid=")") +
                                     kKeyId1Uuid + R"(">
       <Data><Secret>
         <EncryptedValue>
+          <EncryptionMethod
+              Algorithm="http://www.w3.org/2001/04/xmlenc#kw-aes256"/>
           <CipherData><CipherValue>)" +
                                     kKey1Base64 +
                                     R"(</CipherValue></CipherData>
         </EncryptedValue>
+        <ValueMAC>bWFj</ValueMAC>
       </Secret></Data>
     </ContentKey></ContentKeyList></CPIX>)";
   CpixDocument document;
+  ASSERT_OK(ParseCpixDocument(document_text, &document));
+
+  ASSERT_EQ(1u, document.delivery_data.size());
+  const CpixDeliveryData& delivery_data = document.delivery_data[0];
+  EXPECT_EQ("http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p",
+            delivery_data.document_key.algorithm);
+  const std::string doc_key_cipher(
+      delivery_data.document_key.cipher_value.begin(),
+      delivery_data.document_key.cipher_value.end());
+  EXPECT_EQ("doc-key", doc_key_cipher);
+  EXPECT_EQ("http://www.w3.org/2001/04/xmldsig-more#hmac-sha512",
+            delivery_data.mac_algorithm);
+  const std::string mac_key_cipher(delivery_data.mac_key.cipher_value.begin(),
+                                   delivery_data.mac_key.cipher_value.end());
+  EXPECT_EQ("mac-key", mac_key_cipher);
+
+  ASSERT_EQ(1u, document.content_keys.size());
+  const CpixContentKey& content_key = document.content_keys[0];
+  EXPECT_TRUE(content_key.key.empty());
+  ASSERT_TRUE(content_key.encrypted_key.has_value());
+  EXPECT_EQ("http://www.w3.org/2001/04/xmlenc#kw-aes256",
+            content_key.encrypted_key->algorithm);
+  EXPECT_HEX_EQ(kKey1Hex, content_key.encrypted_key->cipher_value);
+  const std::string value_mac(content_key.encrypted_key->value_mac.begin(),
+                              content_key.encrypted_key->value_mac.end());
+  EXPECT_EQ("mac", value_mac);
+}
+
+TEST(CpixParserTest, RejectsDeliveryDataWithoutDocumentKey) {
+  const std::string document_text = std::string(R"(<CPIX>
+    <DeliveryDataList><DeliveryData/></DeliveryDataList>
+    <ContentKeyList><ContentKey kid=")") +
+                                    kKeyId1Uuid + R"(">
+      <Data><Secret><PlainValue>)" + kKey1Base64 +
+                                    R"(</PlainValue></Secret></Data>
+    </ContentKey></ContentKeyList></CPIX>)";
+  CpixDocument document;
   Status status = ParseCpixDocument(document_text, &document);
-  EXPECT_EQ(error::UNIMPLEMENTED, status.error_code());
+  EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
 TEST(CpixParserTest, RejectsDuplicateKeyIds) {
@@ -348,7 +406,7 @@ TEST(CpixParserTest, RejectsRuleWithBothAudioAndVideoFilters) {
 
 TEST(CpixParserTest, IgnoresUnknownElements) {
   const std::string document_text = std::string(R"(<CPIX>
-    <DeliveryDataList><DeliveryData/></DeliveryDataList>
+    <ContentKeyPeriodList/>
     <ContentKeyList><ContentKey kid=")") +
                                     kKeyId1Uuid + R"(">
       <Data><Secret><PlainValue>)" + kKey1Base64 +

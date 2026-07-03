@@ -32,6 +32,12 @@ ABSL_FLAG(std::string,
           "Optional semicolon separated list of HTTP headers in 'Name: "
           "value' form to send when fetching the CPIX document, e.g. for "
           "authentication.");
+ABSL_FLAG(std::string,
+          cpix_private_key,
+          "",
+          "Optional path to the recipient RSA private key (PEM or DER), "
+          "used to decrypt encrypted CPIX documents. Required when the "
+          "document's content keys are encrypted.");
 
 namespace shaka {
 
@@ -49,6 +55,11 @@ bool ValidateCpixCryptoFlags() {
     success = false;
   }
   if (!ValidateFlag("cpix_headers", absl::GetFlag(FLAGS_cpix_headers),
+                    cpix_crypto, /* optional= */ true,
+                    "--enable_cpix_encryption")) {
+    success = false;
+  }
+  if (!ValidateFlag("cpix_private_key", absl::GetFlag(FLAGS_cpix_private_key),
                     cpix_crypto, /* optional= */ true,
                     "--enable_cpix_encryption")) {
     success = false;

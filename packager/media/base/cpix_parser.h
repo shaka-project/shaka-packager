@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,12 +18,30 @@
 namespace shaka {
 namespace media {
 
+/// An encrypted value (`pskc:EncryptedValue`, optionally with a sibling
+/// `pskc:ValueMAC`).
+struct CpixEncryptedValue {
+  /// XML Encryption algorithm URI from `EncryptionMethod@Algorithm`. Empty
+  /// if not present.
+  std::string algorithm;
+  /// Ciphertext, from `CipherData/CipherValue`.
+  std::vector<uint8_t> cipher_value;
+  /// Optional MAC over the ciphertext, from the sibling `ValueMAC` element.
+  /// Empty if not present.
+  std::vector<uint8_t> value_mac;
+};
+
 /// A content key from a CPIX ContentKeyList.
 struct CpixContentKey {
   /// 16-byte CENC key ID, from the `kid` attribute.
   std::vector<uint8_t> key_id;
-  /// Clear key value, from `Data/Secret/PlainValue`.
+  /// Clear key value, from `Data/Secret/PlainValue`. Empty if the key is
+  /// encrypted (see `encrypted_key`).
   std::vector<uint8_t> key;
+  /// Set when `Data/Secret` contains an `EncryptedValue` instead of a
+  /// `PlainValue`. The key must then be decrypted with the document key
+  /// before use.
+  std::optional<CpixEncryptedValue> encrypted_key;
   /// Optional IV, from the `explicitIV` attribute. Empty if not present.
   std::vector<uint8_t> iv;
   /// Optional `commonEncryptionScheme` attribute, e.g. "cenc" or "cbcs".
@@ -67,20 +86,35 @@ struct CpixUsageRule {
   std::vector<CpixVideoFilter> video_filters;
 };
 
+/// Delivery data for one document recipient, from a CPIX DeliveryDataList.
+/// Carries the document key (encrypting the content key values) and the MAC
+/// key, both encrypted to the recipient.
+struct CpixDeliveryData {
+  /// Encrypted document key, from `DocumentKey/Data/Secret/EncryptedValue`.
+  CpixEncryptedValue document_key;
+  /// MAC algorithm URI from `MACMethod@Algorithm`. Empty if the document has
+  /// no MACMethod.
+  std::string mac_algorithm;
+  /// Encrypted MAC key, from `MACMethod/Key/EncryptedValue`. Only valid if
+  /// `mac_algorithm` is non-empty.
+  CpixEncryptedValue mac_key;
+};
+
 /// In-memory representation of the parts of a CPIX 2.3 document
 /// (https://dashif.org/docs/CPIX2.3/HTML/Index.html) needed for packaging.
 struct CpixDocument {
   std::vector<CpixContentKey> content_keys;
   std::vector<CpixDrmSystem> drm_systems;
   std::vector<CpixUsageRule> usage_rules;
+  std::vector<CpixDeliveryData> delivery_data;
 };
 
-/// Parses a CPIX document.
+/// Parses a CPIX document. Encrypted content key values are parsed into
+/// `CpixContentKey::encrypted_key` but not decrypted; decryption is the
+/// caller's responsibility.
 /// @param xml contains the CPIX document text.
 /// @param document is a pointer to the parsed document. Should not be NULL.
-/// @return OK on success, an error status otherwise. Encrypted documents
-///         (encrypted content key values) are not supported and result in an
-///         error.
+/// @return OK on success, an error status otherwise.
 Status ParseCpixDocument(const std::string& xml, CpixDocument* document);
 
 }  // namespace media
