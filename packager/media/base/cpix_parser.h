@@ -101,7 +101,7 @@ struct CpixDeliveryData {
 };
 
 /// In-memory representation of the parts of a CPIX 2.3 document
-/// (https://dashif.org/docs/CPIX2.3/HTML/Index.html) needed for packaging.
+/// (https://dashif.org/CPIX/) needed for packaging.
 struct CpixDocument {
   std::vector<CpixContentKey> content_keys;
   std::vector<CpixDrmSystem> drm_systems;

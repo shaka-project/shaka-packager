@@ -116,22 +116,47 @@ Status VideoFilterToLabels(const CpixVideoFilter& video_filter,
   return Status::OK;
 }
 
-// Resolves the stream labels a usage rule applies to. Filters take
-// precedence over 'intendedTrackType' since they narrow the rule further; a
-// rule with neither applies to all streams (the default label).
+Status ApplyIntendedTrackType(const CpixUsageRule& usage_rule,
+                              const std::string& key_id_string,
+                              std::set<std::string>* labels) {
+  if (usage_rule.intended_track_type.empty())
+    return Status::OK;
+
+  if (labels->find(usage_rule.intended_track_type) == labels->end()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "ContentKeyUsageRule for key " + key_id_string +
+                      " has intendedTrackType '" +
+                      usage_rule.intended_track_type +
+                      "' that does not match its filters.");
+  }
+  labels->clear();
+  labels->insert(usage_rule.intended_track_type);
+  return Status::OK;
+}
+
+// Resolves the stream labels a usage rule applies to. Filters narrow the rule;
+// if 'intendedTrackType' is also present, it must match the filtered labels.
+// A rule with neither applies to all streams (the default label).
 Status RuleToLabels(const CpixUsageRule& usage_rule,
                     const CpixEncryptionParams& cpix_params,
                     std::set<std::string>* labels) {
   const std::string key_id_string = KeyIdToString(usage_rule.key_id);
+  std::set<std::string> rule_labels;
   if (usage_rule.has_audio_filter) {
-    labels->insert("AUDIO");
+    rule_labels.insert("AUDIO");
+    RETURN_IF_ERROR(
+        ApplyIntendedTrackType(usage_rule, key_id_string, &rule_labels));
+    labels->insert(rule_labels.begin(), rule_labels.end());
     return Status::OK;
   }
   if (!usage_rule.video_filters.empty()) {
     for (const CpixVideoFilter& video_filter : usage_rule.video_filters) {
       RETURN_IF_ERROR(VideoFilterToLabels(video_filter, cpix_params,
-                                          key_id_string, labels));
+                                          key_id_string, &rule_labels));
     }
+    RETURN_IF_ERROR(
+        ApplyIntendedTrackType(usage_rule, key_id_string, &rule_labels));
+    labels->insert(rule_labels.begin(), rule_labels.end());
     return Status::OK;
   }
   labels->insert(usage_rule.intended_track_type.empty()

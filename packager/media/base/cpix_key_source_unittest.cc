@@ -412,6 +412,40 @@ TEST_F(CpixKeySourceTest, VideoFilterMapsToPixelBuckets) {
   EXPECT_EQ(error::NOT_FOUND, status.error_code());
 }
 
+TEST_F(CpixKeySourceTest, IntendedTrackTypeNarrowsVideoFilter) {
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId1Uuid +
+      "\" intendedTrackType=\"HD\"><VideoFilter minPixels=\"442369\"/>"
+      "</ContentKeyUsageRule>"
+      "</ContentKeyUsageRuleList></CPIX>";
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("HD", &key));
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_id);
+
+  Status status = key_source->GetKey("UHD1", &key);
+  EXPECT_EQ(error::NOT_FOUND, status.error_code());
+}
+
+TEST_F(CpixKeySourceTest, IntendedTrackTypeMustMatchFilter) {
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId1Uuid +
+      "\" intendedTrackType=\"AUDIO\"><VideoFilter minPixels=\"442369\"/>"
+      "</ContentKeyUsageRule>"
+      "</ContentKeyUsageRuleList></CPIX>";
+  EXPECT_EQ(nullptr, CreateFromDocument(document_text));
+}
+
 TEST_F(CpixKeySourceTest, AudioFilterMapsToAudioLabel) {
   const std::string document_text =
       std::string("<CPIX><ContentKeyList>") +
