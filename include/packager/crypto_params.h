@@ -146,8 +146,25 @@ struct RawKeyParams {
 /// parameters. Content keys, DRM signaling (PSSH) and key to stream mapping
 /// are read from a CPIX document.
 struct CpixEncryptionParams {
-  /// Path or URL to the CPIX document.
+  /// Path or HTTP(S) URL to the CPIX document. URLs are fetched with GET,
+  /// unless `request_document_source` is also set, in which case the request
+  /// document is sent with POST and the response is used as the CPIX
+  /// document.
   std::string document_source;
+  /// Optional path to a CPIX request document. If set, `document_source`
+  /// must be an HTTP(S) URL; the request document is POSTed to it (SPEKE
+  /// style request/response exchange).
+  std::string request_document_source;
+  /// Optional HTTP headers, e.g. for authentication, in "Name: value" form.
+  /// Only used when `document_source` is an HTTP(S) URL.
+  std::vector<std::string> headers;
+  /// Pixel thresholds used to translate the document's video filter based
+  /// usage rules (VideoFilter@minPixels/@maxPixels) into the SD/HD/UHD1/UHD2
+  /// stream labels. Filter boundaries must align with these thresholds. The
+  /// defaults match the packager's default stream label function.
+  int max_sd_pixels = 768 * 576;
+  int max_hd_pixels = 1920 * 1080;
+  int max_uhd1_pixels = 4096 * 2160;
 };
 
 /// Encryption parameters.

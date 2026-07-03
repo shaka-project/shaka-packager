@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <limits>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,8 +18,11 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <absl/strings/escaping.h>
+#include <absl/strings/match.h>
 
 #include <packager/file.h>
+#include <packager/file/file_closer.h>
+#include <packager/file/http_file.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/cpix_parser.h>
@@ -33,8 +38,121 @@ namespace shaka {
 namespace media {
 namespace {
 
+const char kXmlContentType[] = "application/xml";
+constexpr size_t kFetchBufferSize = 64 * 1024;
+
 std::string KeyIdToString(const std::vector<uint8_t>& key_id) {
   return absl::BytesToHexString(byte_vector_to_string_view(key_id));
+}
+
+bool IsHttpUrl(const std::string& source) {
+  return absl::StartsWith(source, "http://") ||
+         absl::StartsWith(source, "https://");
+}
+
+// Fetches CPIX documents with libcurl via HttpFile.
+class HttpCpixFetcher : public CpixFetcher {
+ public:
+  Status Fetch(const std::string& url,
+               const std::string& request_body,
+               const std::vector<std::string>& headers,
+               std::string* response) override {
+    const HttpMethod method =
+        request_body.empty() ? HttpMethod::kGet : HttpMethod::kPost;
+    std::unique_ptr<HttpFile, FileCloser> file(
+        new HttpFile(method, url, kXmlContentType, headers,
+                     /* timeout_in_seconds= */ 0));
+    if (!file->Open()) {
+      return Status(error::HTTP_FAILURE,
+                    "Cannot open CPIX document URL " + url + ".");
+    }
+    if (!request_body.empty()) {
+      file->Write(request_body.data(), request_body.size());
+      file->Flush();
+    }
+    file->CloseForWriting();
+
+    while (true) {
+      char buffer[kFetchBufferSize];
+      const int64_t bytes_read = file->Read(buffer, kFetchBufferSize);
+      if (bytes_read <= 0)
+        break;
+      response->append(buffer, bytes_read);
+    }
+    return file.release()->CloseWithStatus();
+  }
+};
+
+// Maps a video filter's pixel range to the video stream labels (SD, HD,
+// UHD1, UHD2) it covers. The filter must fully cover every label bucket it
+// touches; otherwise the mapping would be ambiguous.
+Status VideoFilterToLabels(const CpixVideoFilter& video_filter,
+                           const CpixEncryptionParams& cpix_params,
+                           const std::string& key_id_string,
+                           std::set<std::string>* labels) {
+  const int64_t kUnbounded = std::numeric_limits<int64_t>::max();
+  const struct {
+    const char* label;
+    int64_t min_pixels;
+    int64_t max_pixels;
+  } kBuckets[] = {
+      {"SD", 0, cpix_params.max_sd_pixels},
+      {"HD", int64_t{cpix_params.max_sd_pixels} + 1, cpix_params.max_hd_pixels},
+      {"UHD1", int64_t{cpix_params.max_hd_pixels} + 1,
+       cpix_params.max_uhd1_pixels},
+      {"UHD2", int64_t{cpix_params.max_uhd1_pixels} + 1, kUnbounded},
+  };
+
+  bool matched = false;
+  for (const auto& bucket : kBuckets) {
+    const bool overlaps = video_filter.min_pixels <= bucket.max_pixels &&
+                          video_filter.max_pixels >= bucket.min_pixels;
+    if (!overlaps)
+      continue;
+    const bool covers = video_filter.min_pixels <= bucket.min_pixels &&
+                        video_filter.max_pixels >= bucket.max_pixels;
+    if (!covers) {
+      return Status(
+          error::INVALID_ARGUMENT,
+          "The VideoFilter pixel range of the usage rule for key " +
+              key_id_string +
+              " does not align with the SD/HD/UHD pixel thresholds. Adjust "
+              "--max_sd_pixels, --max_hd_pixels and --max_uhd1_pixels to "
+              "match the ranges in the CPIX document.");
+    }
+    labels->insert(bucket.label);
+    matched = true;
+  }
+  if (!matched) {
+    return Status(error::INVALID_ARGUMENT,
+                  "The VideoFilter of the usage rule for key " + key_id_string +
+                      " matches no pixel range.");
+  }
+  return Status::OK;
+}
+
+// Resolves the stream labels a usage rule applies to. Filters take
+// precedence over 'intendedTrackType' since they narrow the rule further; a
+// rule with neither applies to all streams (the default label).
+Status RuleToLabels(const CpixUsageRule& usage_rule,
+                    const CpixEncryptionParams& cpix_params,
+                    std::set<std::string>* labels) {
+  const std::string key_id_string = KeyIdToString(usage_rule.key_id);
+  if (usage_rule.has_audio_filter) {
+    labels->insert("AUDIO");
+    return Status::OK;
+  }
+  if (!usage_rule.video_filters.empty()) {
+    for (const CpixVideoFilter& video_filter : usage_rule.video_filters) {
+      RETURN_IF_ERROR(VideoFilterToLabels(video_filter, cpix_params,
+                                          key_id_string, labels));
+    }
+    return Status::OK;
+  }
+  labels->insert(usage_rule.intended_track_type.empty()
+                     ? kEmptyDrmLabel
+                     : usage_rule.intended_track_type);
+  return Status::OK;
 }
 
 Status ValidateContentKey(const CpixContentKey& content_key,
@@ -118,6 +236,7 @@ Status GetKeySystemInfo(
 
 Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
                              FourCC protection_scheme,
+                             CpixFetcher* fetcher,
                              EncryptionKeyMap* encryption_key_map) {
   if (cpix_params.document_source.empty()) {
     return Status(error::INVALID_ARGUMENT,
@@ -125,9 +244,28 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
   }
 
   std::string xml;
-  if (!File::ReadFileToString(cpix_params.document_source.c_str(), &xml)) {
-    return Status(error::FILE_FAILURE, "Failed to read CPIX document from '" +
-                                           cpix_params.document_source + "'.");
+  if (IsHttpUrl(cpix_params.document_source)) {
+    std::string request_body;
+    if (!cpix_params.request_document_source.empty() &&
+        !File::ReadFileToString(cpix_params.request_document_source.c_str(),
+                                &request_body)) {
+      return Status(error::FILE_FAILURE,
+                    "Failed to read CPIX request document from '" +
+                        cpix_params.request_document_source + "'.");
+    }
+    RETURN_IF_ERROR(fetcher->Fetch(cpix_params.document_source, request_body,
+                                   cpix_params.headers, &xml));
+  } else {
+    if (!cpix_params.request_document_source.empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "A CPIX request document requires the CPIX document "
+                    "source to be an HTTP(S) URL to POST it to.");
+    }
+    if (!File::ReadFileToString(cpix_params.document_source.c_str(), &xml)) {
+      return Status(error::FILE_FAILURE, "Failed to read CPIX document from '" +
+                                             cpix_params.document_source +
+                                             "'.");
+    }
   }
 
   CpixDocument document;
@@ -158,15 +296,15 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
     RETURN_IF_ERROR(GetKeySystemInfo(document, content_key,
                                      &encryption_key->key_system_info));
 
-    std::vector<std::string> labels;
+    std::set<std::string> labels;
     for (const CpixUsageRule& usage_rule : document.usage_rules) {
       if (usage_rule.key_id == content_key.key_id)
-        labels.push_back(usage_rule.intended_track_type);
+        RETURN_IF_ERROR(RuleToLabels(usage_rule, cpix_params, &labels));
     }
     if (labels.empty()) {
       if (document.usage_rules.empty() && document.content_keys.size() == 1) {
         // A single key without usage rules applies to all streams.
-        labels.push_back(kEmptyDrmLabel);
+        labels.insert(kEmptyDrmLabel);
       } else {
         return Status(error::INVALID_ARGUMENT,
                       "Key " + KeyIdToString(content_key.key_id) +
@@ -179,7 +317,7 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
       if (encryption_key_map->find(label) != encryption_key_map->end()) {
         return Status(
             error::INVALID_ARGUMENT,
-            "Multiple keys map to the same intendedTrackType '" + label + "'.");
+            "Multiple keys map to the same stream label '" + label + "'.");
       }
       (*encryption_key_map)[label] =
           std::make_unique<EncryptionKey>(*encryption_key);
@@ -249,8 +387,17 @@ Status CpixKeySource::GetCryptoPeriodKey(
 std::unique_ptr<CpixKeySource> CpixKeySource::Create(
     const CpixEncryptionParams& cpix_params,
     FourCC protection_scheme) {
+  HttpCpixFetcher fetcher;
+  return CreateWithFetcher(cpix_params, protection_scheme, &fetcher);
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::CreateWithFetcher(
+    const CpixEncryptionParams& cpix_params,
+    FourCC protection_scheme,
+    CpixFetcher* fetcher) {
+  DCHECK(fetcher);
   EncryptionKeyMap encryption_key_map;
-  Status status = BuildEncryptionKeyMap(cpix_params, protection_scheme,
+  Status status = BuildEncryptionKeyMap(cpix_params, protection_scheme, fetcher,
                                         &encryption_key_map);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();

@@ -14,6 +14,7 @@
 #include <absl/log/check.h>
 #include <absl/strings/ascii.h>
 #include <absl/strings/escaping.h>
+#include <absl/strings/numbers.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
@@ -163,30 +164,73 @@ Status ParseUsageRule(xmlNodePtr node, CpixUsageRule* usage_rule) {
   RETURN_IF_ERROR(
       ParseUuid(*kid, "ContentKeyUsageRule@kid", &usage_rule->key_id));
 
-  // Usage rules narrow key usage with filter elements (VideoFilter,
-  // AudioFilter, BitrateFilter, LabelFilter, KeyPeriodFilter). Silently
-  // ignoring a filter would apply the key more broadly than the document
-  // allows, so reject documents that use them.
+  usage_rule->intended_track_type =
+      GetAttribute(node, "intendedTrackType").value_or("");
+
+  // Usage rules narrow key usage with filter elements. Silently ignoring a
+  // filter (or an unsupported filter attribute) would apply the key more
+  // broadly than the document allows, so anything not understood is
+  // rejected.
   for (xmlNodePtr child = node->children; child; child = child->next) {
     if (child->type != XML_ELEMENT_NODE)
       continue;
-    return Status(
-        error::UNIMPLEMENTED,
-        "ContentKeyUsageRule for key " + *kid + " contains a filter element " +
-            reinterpret_cast<const char*>(child->name) +
-            ", which is not supported yet. Only usage rules expressed with "
-            "the 'intendedTrackType' attribute are supported.");
+    if (IsElement(child, "VideoFilter")) {
+      for (const char* attribute : {"hdr", "wcg", "minFps", "maxFps"}) {
+        if (GetAttribute(child, attribute)) {
+          return Status(error::UNIMPLEMENTED,
+                        "ContentKeyUsageRule for key " + *kid +
+                            " contains a VideoFilter with the '" + attribute +
+                            "' attribute, which is not supported yet.");
+        }
+      }
+      CpixVideoFilter video_filter;
+      std::optional<std::string> min_pixels = GetAttribute(child, "minPixels");
+      if (min_pixels &&
+          (!absl::SimpleAtoi(*min_pixels, &video_filter.min_pixels) ||
+           video_filter.min_pixels < 0)) {
+        return Status(error::INVALID_ARGUMENT,
+                      "Invalid VideoFilter@minPixels for key " + *kid + ": " +
+                          *min_pixels);
+      }
+      std::optional<std::string> max_pixels = GetAttribute(child, "maxPixels");
+      if (max_pixels &&
+          (!absl::SimpleAtoi(*max_pixels, &video_filter.max_pixels) ||
+           video_filter.max_pixels < 0)) {
+        return Status(error::INVALID_ARGUMENT,
+                      "Invalid VideoFilter@maxPixels for key " + *kid + ": " +
+                          *max_pixels);
+      }
+      usage_rule->video_filters.push_back(video_filter);
+    } else if (IsElement(child, "AudioFilter")) {
+      for (const char* attribute : {"minChannels", "maxChannels"}) {
+        if (GetAttribute(child, attribute)) {
+          return Status(error::UNIMPLEMENTED,
+                        "ContentKeyUsageRule for key " + *kid +
+                            " contains an AudioFilter with the '" + attribute +
+                            "' attribute, which is not supported yet.");
+        }
+      }
+      usage_rule->has_audio_filter = true;
+    } else {
+      return Status(
+          error::UNIMPLEMENTED,
+          "ContentKeyUsageRule for key " + *kid + " contains a " +
+              reinterpret_cast<const char*>(child->name) +
+              " element, which is not supported yet. Only VideoFilter, "
+              "AudioFilter and the 'intendedTrackType' attribute are "
+              "supported.");
+    }
   }
 
-  std::optional<std::string> intended_track_type =
-      GetAttribute(node, "intendedTrackType");
-  if (!intended_track_type || intended_track_type->empty()) {
+  if (usage_rule->has_audio_filter && !usage_rule->video_filters.empty()) {
+    // Per the CPIX specification, filters of different types are combined
+    // with AND, so a rule with both an audio and a video filter can never
+    // match any stream.
     return Status(error::INVALID_ARGUMENT,
                   "ContentKeyUsageRule for key " + *kid +
-                      " has no 'intendedTrackType' attribute, which is "
-                      "required to map the key to streams.");
+                      " contains both an AudioFilter and a VideoFilter, so "
+                      "it cannot match any stream.");
   }
-  usage_rule->intended_track_type = *intended_track_type;
   return Status::OK;
 }
 

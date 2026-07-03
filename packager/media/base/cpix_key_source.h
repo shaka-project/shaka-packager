@@ -19,6 +19,22 @@
 namespace shaka {
 namespace media {
 
+/// Fetches CPIX documents over HTTP(S). Replaceable for testing.
+class CpixFetcher {
+ public:
+  virtual ~CpixFetcher() = default;
+
+  /// Fetches the CPIX document at @a url. If @a request_body is non-empty
+  /// it is sent with POST and the response body is the document; otherwise
+  /// the document is fetched with GET.
+  /// @param headers contains extra HTTP headers in "Name: value" form.
+  /// @param[out] response receives the response body. Should not be NULL.
+  virtual Status Fetch(const std::string& url,
+                       const std::string& request_body,
+                       const std::vector<std::string>& headers,
+                       std::string* response) = 0;
+};
+
 /// A key source that uses keys from a CPIX (DASH-IF Content Protection
 /// Information Exchange) document. Keys are mapped to streams through the
 /// document's ContentKeyUsageRuleList: the `intendedTrackType` attribute is
@@ -42,7 +58,7 @@ class CpixKeySource : public KeySource {
   /// @}
 
   /// Creates a new CpixKeySource from the given parameters. Returns null if
-  /// the document cannot be read or is malformed.
+  /// the document cannot be read or fetched, or is malformed.
   /// @param cpix_params contains parameters to setup the key source.
   /// @param protection_scheme is the protection scheme the content will be
   ///        encrypted with. It is validated against the document's
@@ -50,6 +66,13 @@ class CpixKeySource : public KeySource {
   static std::unique_ptr<CpixKeySource> Create(
       const CpixEncryptionParams& cpix_params,
       FourCC protection_scheme);
+
+  /// Same as above, with an injected document fetcher. Should be used for
+  /// testing only.
+  static std::unique_ptr<CpixKeySource> CreateWithFetcher(
+      const CpixEncryptionParams& cpix_params,
+      FourCC protection_scheme,
+      CpixFetcher* fetcher);
 
  private:
   explicit CpixKeySource(EncryptionKeyMap&& encryption_key_map);

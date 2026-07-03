@@ -7,6 +7,7 @@
 #include <packager/media/base/cpix_parser.h>
 
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -235,7 +236,7 @@ TEST(CpixParserTest, RejectsDrmSystemWithoutSystemId) {
   EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
-TEST(CpixParserTest, RejectsUsageRuleWithFilter) {
+TEST(CpixParserTest, ParsesVideoAndAudioFilters) {
   const std::string document_text = std::string(R"(<CPIX>
     <ContentKeyList><ContentKey kid=")") +
                                     kKeyId1Uuid + R"(">
@@ -244,16 +245,34 @@ TEST(CpixParserTest, RejectsUsageRuleWithFilter) {
     </ContentKey></ContentKeyList>
     <ContentKeyUsageRuleList>
       <ContentKeyUsageRule kid=")" + kKeyId1Uuid +
-                                    R"(" intendedTrackType="UHD1">
-        <VideoFilter minPixels="2073600"/>
+                                    R"(">
+        <VideoFilter minPixels="1000" maxPixels="2000"/>
+        <VideoFilter minPixels="3000"/>
+      </ContentKeyUsageRule>
+      <ContentKeyUsageRule kid=")" + kKeyId1Uuid +
+                                    R"(">
+        <AudioFilter/>
       </ContentKeyUsageRule>
     </ContentKeyUsageRuleList></CPIX>)";
   CpixDocument document;
-  Status status = ParseCpixDocument(document_text, &document);
-  EXPECT_EQ(error::UNIMPLEMENTED, status.error_code());
+  ASSERT_OK(ParseCpixDocument(document_text, &document));
+  ASSERT_EQ(2u, document.usage_rules.size());
+
+  const CpixUsageRule& video_rule = document.usage_rules[0];
+  EXPECT_FALSE(video_rule.has_audio_filter);
+  ASSERT_EQ(2u, video_rule.video_filters.size());
+  EXPECT_EQ(1000, video_rule.video_filters[0].min_pixels);
+  EXPECT_EQ(2000, video_rule.video_filters[0].max_pixels);
+  EXPECT_EQ(3000, video_rule.video_filters[1].min_pixels);
+  EXPECT_EQ(std::numeric_limits<int64_t>::max(),
+            video_rule.video_filters[1].max_pixels);
+
+  const CpixUsageRule& audio_rule = document.usage_rules[1];
+  EXPECT_TRUE(audio_rule.has_audio_filter);
+  EXPECT_TRUE(audio_rule.video_filters.empty());
 }
 
-TEST(CpixParserTest, RejectsUsageRuleWithoutIntendedTrackType) {
+TEST(CpixParserTest, AcceptsUsageRuleWithoutIntendedTrackTypeOrFilters) {
   const std::string document_text = std::string(R"(<CPIX>
     <ContentKeyList><ContentKey kid=")") +
                                     kKeyId1Uuid + R"(">
@@ -263,6 +282,63 @@ TEST(CpixParserTest, RejectsUsageRuleWithoutIntendedTrackType) {
     <ContentKeyUsageRuleList>
       <ContentKeyUsageRule kid=")" + kKeyId1Uuid +
                                     R"("/>
+    </ContentKeyUsageRuleList></CPIX>)";
+  CpixDocument document;
+  ASSERT_OK(ParseCpixDocument(document_text, &document));
+  ASSERT_EQ(1u, document.usage_rules.size());
+  EXPECT_TRUE(document.usage_rules[0].intended_track_type.empty());
+  EXPECT_FALSE(document.usage_rules[0].has_audio_filter);
+  EXPECT_TRUE(document.usage_rules[0].video_filters.empty());
+}
+
+TEST(CpixParserTest, RejectsUnsupportedFilterElement) {
+  const std::string document_text = std::string(R"(<CPIX>
+    <ContentKeyList><ContentKey kid=")") +
+                                    kKeyId1Uuid + R"(">
+      <Data><Secret><PlainValue>)" + kKey1Base64 +
+                                    R"(</PlainValue></Secret></Data>
+    </ContentKey></ContentKeyList>
+    <ContentKeyUsageRuleList>
+      <ContentKeyUsageRule kid=")" + kKeyId1Uuid +
+                                    R"(">
+        <BitrateFilter maxBitrate="4000000"/>
+      </ContentKeyUsageRule>
+    </ContentKeyUsageRuleList></CPIX>)";
+  CpixDocument document;
+  Status status = ParseCpixDocument(document_text, &document);
+  EXPECT_EQ(error::UNIMPLEMENTED, status.error_code());
+}
+
+TEST(CpixParserTest, RejectsVideoFilterWithHdrAttribute) {
+  const std::string document_text = std::string(R"(<CPIX>
+    <ContentKeyList><ContentKey kid=")") +
+                                    kKeyId1Uuid + R"(">
+      <Data><Secret><PlainValue>)" + kKey1Base64 +
+                                    R"(</PlainValue></Secret></Data>
+    </ContentKey></ContentKeyList>
+    <ContentKeyUsageRuleList>
+      <ContentKeyUsageRule kid=")" + kKeyId1Uuid +
+                                    R"(">
+        <VideoFilter hdr="true"/>
+      </ContentKeyUsageRule>
+    </ContentKeyUsageRuleList></CPIX>)";
+  CpixDocument document;
+  Status status = ParseCpixDocument(document_text, &document);
+  EXPECT_EQ(error::UNIMPLEMENTED, status.error_code());
+}
+
+TEST(CpixParserTest, RejectsRuleWithBothAudioAndVideoFilters) {
+  const std::string document_text = std::string(R"(<CPIX>
+    <ContentKeyList><ContentKey kid=")") +
+                                    kKeyId1Uuid + R"(">
+      <Data><Secret><PlainValue>)" + kKey1Base64 +
+                                    R"(</PlainValue></Secret></Data>
+    </ContentKey></ContentKeyList>
+    <ContentKeyUsageRuleList>
+      <ContentKeyUsageRule kid=")" + kKeyId1Uuid +
+                                    R"(">
+        <VideoFilter/><AudioFilter/>
+      </ContentKeyUsageRule>
     </ContentKeyUsageRuleList></CPIX>)";
   CpixDocument document;
   Status status = ParseCpixDocument(document_text, &document);

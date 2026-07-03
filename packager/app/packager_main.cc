@@ -481,7 +481,14 @@ std::optional<PackagingParams> GetPackagingParams() {
       break;
     }
     case KeyProvider::kCpix: {
-      encryption_params.cpix.document_source = absl::GetFlag(FLAGS_cpix);
+      CpixEncryptionParams& cpix = encryption_params.cpix;
+      cpix.document_source = absl::GetFlag(FLAGS_cpix);
+      cpix.request_document_source = absl::GetFlag(FLAGS_cpix_request_file);
+      cpix.headers =
+          SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_cpix_headers), ';');
+      cpix.max_sd_pixels = absl::GetFlag(FLAGS_max_sd_pixels);
+      cpix.max_hd_pixels = absl::GetFlag(FLAGS_max_hd_pixels);
+      cpix.max_uhd1_pixels = absl::GetFlag(FLAGS_max_uhd1_pixels);
       break;
     }
     case KeyProvider::kNone:

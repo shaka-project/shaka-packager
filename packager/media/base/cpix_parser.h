@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_BASE_CPIX_PARSER_H_
 
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -41,13 +42,29 @@ struct CpixDrmSystem {
   std::vector<uint8_t> pssh;
 };
 
-/// A usage rule from a CPIX ContentKeyUsageRuleList, mapping a key to the
-/// intended track type (DRM label).
+/// A video filter from a usage rule, restricting the rule to video streams
+/// within a pixel count (width x height) range. Both bounds are inclusive.
+struct CpixVideoFilter {
+  /// From the optional `minPixels` attribute. 0 if not present.
+  int64_t min_pixels = 0;
+  /// From the optional `maxPixels` attribute. Unbounded if not present.
+  int64_t max_pixels = std::numeric_limits<int64_t>::max();
+};
+
+/// A usage rule from a CPIX ContentKeyUsageRuleList, mapping a key to
+/// streams by intended track type (DRM label) and/or filters.
 struct CpixUsageRule {
   /// 16-byte CENC key ID, from the `kid` attribute.
   std::vector<uint8_t> key_id;
-  /// The `intendedTrackType` attribute, e.g. "SD", "HD", "AUDIO".
+  /// The optional `intendedTrackType` attribute, e.g. "SD", "HD", "AUDIO".
+  /// Empty if not present.
   std::string intended_track_type;
+  /// True if the rule contains an `AudioFilter` element, restricting the
+  /// rule to audio streams.
+  bool has_audio_filter = false;
+  /// `VideoFilter` elements, restricting the rule to video streams. Multiple
+  /// filters form a union of their pixel ranges.
+  std::vector<CpixVideoFilter> video_filters;
 };
 
 /// In-memory representation of the parts of a CPIX 2.3 document

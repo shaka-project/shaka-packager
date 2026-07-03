@@ -20,6 +20,18 @@ ABSL_FLAG(bool,
           "--protection_systems may be used to generate signaling for "
           "additional protection systems.");
 ABSL_FLAG(std::string, cpix, "", "Path or URL to the CPIX document.");
+ABSL_FLAG(std::string,
+          cpix_request_file,
+          "",
+          "Optional path to a CPIX request document. If set, --cpix must be "
+          "an HTTP(S) URL; the request document is POSTed to it and the "
+          "response is used as the CPIX document (SPEKE style exchange).");
+ABSL_FLAG(std::string,
+          cpix_headers,
+          "",
+          "Optional semicolon separated list of HTTP headers in 'Name: "
+          "value' form to send when fetching the CPIX document, e.g. for "
+          "authentication.");
 
 namespace shaka {
 
@@ -29,6 +41,16 @@ bool ValidateCpixCryptoFlags() {
   const bool cpix_crypto = absl::GetFlag(FLAGS_enable_cpix_encryption);
   if (!ValidateFlag("cpix", absl::GetFlag(FLAGS_cpix), cpix_crypto,
                     /* optional= */ false, "--enable_cpix_encryption")) {
+    success = false;
+  }
+  if (!ValidateFlag("cpix_request_file", absl::GetFlag(FLAGS_cpix_request_file),
+                    cpix_crypto,
+                    /* optional= */ true, "--enable_cpix_encryption")) {
+    success = false;
+  }
+  if (!ValidateFlag("cpix_headers", absl::GetFlag(FLAGS_cpix_headers),
+                    cpix_crypto, /* optional= */ true,
+                    "--enable_cpix_encryption")) {
     success = false;
   }
   return success;

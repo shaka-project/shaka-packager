@@ -278,5 +278,174 @@ TEST_F(CpixKeySourceTest, GetCryptoPeriodKeyIsNotSupported) {
   EXPECT_EQ(error::UNIMPLEMENTED, status.error_code());
 }
 
+namespace {
+
+class FakeCpixFetcher : public CpixFetcher {
+ public:
+  Status Fetch(const std::string& url,
+               const std::string& request_body,
+               const std::vector<std::string>& headers,
+               std::string* response) override {
+    last_url = url;
+    last_request_body = request_body;
+    last_headers = headers;
+    if (!status.ok())
+      return status;
+    *response = response_body;
+    return Status::OK;
+  }
+
+  std::string response_body;
+  Status status = Status::OK;
+
+  std::string last_url;
+  std::string last_request_body;
+  std::vector<std::string> last_headers;
+};
+
+}  // namespace
+
+TEST_F(CpixKeySourceTest, FetchesDocumentFromUrlWithHeaders) {
+  FakeCpixFetcher fetcher;
+  fetcher.response_body = TwoKeyDocument();
+
+  CpixEncryptionParams params;
+  params.document_source = "https://key-server.example.com/cpix";
+  params.headers = {"x-dt-auth-token: secret"};
+  std::unique_ptr<CpixKeySource> key_source =
+      CpixKeySource::CreateWithFetcher(params, FOURCC_cenc, &fetcher);
+  ASSERT_NE(nullptr, key_source);
+
+  EXPECT_EQ("https://key-server.example.com/cpix", fetcher.last_url);
+  EXPECT_TRUE(fetcher.last_request_body.empty());
+  EXPECT_EQ(params.headers, fetcher.last_headers);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("SD", &key));
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_id);
+}
+
+TEST_F(CpixKeySourceTest, PostsRequestDocument) {
+  const char kRequestDocument[] = "<CPIX>a request</CPIX>";
+  ASSERT_TRUE(
+      File::WriteStringToFile("memory://request.cpix", kRequestDocument));
+
+  FakeCpixFetcher fetcher;
+  fetcher.response_body = TwoKeyDocument();
+
+  CpixEncryptionParams params;
+  params.document_source = "https://key-server.example.com/cpix";
+  params.request_document_source = "memory://request.cpix";
+  std::unique_ptr<CpixKeySource> key_source =
+      CpixKeySource::CreateWithFetcher(params, FOURCC_cenc, &fetcher);
+  ASSERT_NE(nullptr, key_source);
+
+  EXPECT_EQ(kRequestDocument, fetcher.last_request_body);
+}
+
+TEST_F(CpixKeySourceTest, RequestDocumentWithLocalSourceFails) {
+  ASSERT_TRUE(File::WriteStringToFile(kDocumentPath, TwoKeyDocument()));
+  ASSERT_TRUE(File::WriteStringToFile("memory://request.cpix", "<CPIX/>"));
+
+  CpixEncryptionParams params;
+  params.document_source = kDocumentPath;
+  params.request_document_source = "memory://request.cpix";
+  EXPECT_EQ(nullptr, CpixKeySource::Create(params, FOURCC_cenc));
+}
+
+TEST_F(CpixKeySourceTest, FetchErrorFails) {
+  FakeCpixFetcher fetcher;
+  fetcher.status = Status(error::HTTP_FAILURE, "server error");
+
+  CpixEncryptionParams params;
+  params.document_source = "https://key-server.example.com/cpix";
+  EXPECT_EQ(nullptr,
+            CpixKeySource::CreateWithFetcher(params, FOURCC_cenc, &fetcher));
+}
+
+TEST_F(CpixKeySourceTest, VideoFilterMapsToPixelBuckets) {
+  // Key 1 covers SD ([0, max_sd_pixels]), key 2 covers everything above.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      ContentKeyElement(kKeyId2Uuid, kKey2Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId1Uuid +
+      "\"><VideoFilter maxPixels=\"442368\"/></ContentKeyUsageRule>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId2Uuid +
+      "\"><VideoFilter minPixels=\"442369\"/></ContentKeyUsageRule>"
+      "</ContentKeyUsageRuleList></CPIX>";
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("SD", &key));
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_id);
+  ASSERT_OK(key_source->GetKey("HD", &key));
+  EXPECT_HEX_EQ(kKeyId2Hex, key.key_id);
+  ASSERT_OK(key_source->GetKey("UHD1", &key));
+  EXPECT_HEX_EQ(kKeyId2Hex, key.key_id);
+  ASSERT_OK(key_source->GetKey("UHD2", &key));
+  EXPECT_HEX_EQ(kKeyId2Hex, key.key_id);
+
+  // No audio key in this document.
+  Status status = key_source->GetKey("AUDIO", &key);
+  EXPECT_EQ(error::NOT_FOUND, status.error_code());
+}
+
+TEST_F(CpixKeySourceTest, AudioFilterMapsToAudioLabel) {
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId1Uuid +
+      "\"><AudioFilter/></ContentKeyUsageRule>"
+      "</ContentKeyUsageRuleList></CPIX>";
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("AUDIO", &key));
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_id);
+}
+
+TEST_F(CpixKeySourceTest, MisalignedVideoFilterFails) {
+  // The filter boundary at 100000 pixels falls inside the SD bucket.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId1Uuid +
+      "\"><VideoFilter maxPixels=\"100000\"/></ContentKeyUsageRule>"
+      "</ContentKeyUsageRuleList></CPIX>";
+  EXPECT_EQ(nullptr, CreateFromDocument(document_text));
+}
+
+TEST_F(CpixKeySourceTest, EmptyUsageRuleActsAsDefaultKey) {
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      ContentKeyElement(kKeyId2Uuid, kKey2Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId1Uuid +
+      "\"><AudioFilter/></ContentKeyUsageRule>"
+      "<ContentKeyUsageRule kid=\"" +
+      kKeyId2Uuid + "\"/></ContentKeyUsageRuleList></CPIX>";
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
+
+  // Audio streams use key 1; anything else falls back to key 2.
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("AUDIO", &key));
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_id);
+  ASSERT_OK(key_source->GetKey("HD", &key));
+  EXPECT_HEX_EQ(kKeyId2Hex, key.key_id);
+}
+
 }  // namespace media
 }  // namespace shaka
