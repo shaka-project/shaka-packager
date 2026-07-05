@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <iterator>
-#include <limits>
+#include <string>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 

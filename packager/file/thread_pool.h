@@ -7,6 +7,7 @@
 #ifndef PACKAGER_FILE_THREAD_POOL_H_
 #define PACKAGER_FILE_THREAD_POOL_H_
 
+#include <cstddef>
 #include <functional>
 #include <queue>
 

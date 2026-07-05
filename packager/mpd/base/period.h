@@ -12,7 +12,9 @@
 #include <cstdint>
 #include <list>
 #include <map>
+#include <memory>
 #include <optional>
+#include <string>
 
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/media_info.pb.h>

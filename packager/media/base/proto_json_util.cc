@@ -6,6 +6,9 @@
 
 #include <packager/media/base/proto_json_util.h>
 
+#include <string>
+
+#include <absl/log/absl_check.h>
 #include <absl/log/log.h>
 #include <google/protobuf/util/json_util.h>
 

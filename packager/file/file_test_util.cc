@@ -6,7 +6,12 @@
 
 #include <packager/file/file_test_util.h>
 
+#include <stdlib.h>
+#include <unistd.h>
+
 #include <filesystem>
+#include <string>
+#include <system_error>
 
 namespace shaka {
 

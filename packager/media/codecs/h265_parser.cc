@@ -8,12 +8,18 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
+#include <packager/media/codecs/h26x_bit_reader.h>
 #include <packager/media/codecs/nalu_reader.h>
 
 #define TRUE_OR_RETURN(a)                            \

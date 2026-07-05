@@ -6,8 +6,14 @@
 
 #include <packager/media/replicator/replicator.h>
 
+#include <cstddef>
+#include <memory>
+#include <utility>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
+
+#include <packager/media/base/media_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

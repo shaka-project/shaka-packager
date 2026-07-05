@@ -9,8 +9,9 @@
 #ifndef APP_MPD_FLAGS_H_
 #define APP_MPD_FLAGS_H_
 
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(bool, generate_static_live_mpd);
 ABSL_DECLARE_FLAG(bool, output_media_info);

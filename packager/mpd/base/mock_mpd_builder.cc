@@ -6,7 +6,15 @@
 
 #include <packager/mpd/base/mock_mpd_builder.h>
 
+#include <cstdint>
+#include <memory>
+
+#include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/media_info.pb.h>
+#include <packager/mpd/base/mpd_builder.h>
+#include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/period.h>
+#include <packager/mpd/base/representation.h>
 
 namespace shaka {
 namespace {

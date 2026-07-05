@@ -6,11 +6,16 @@
 
 #include <packager/media/base/video_stream_info.h>
 
-#include <absl/log/log.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include <absl/strings/str_format.h>
 
 #include <packager/macros/logging.h>
 #include <packager/media/base/limits.h>
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

@@ -7,17 +7,22 @@
 #include <packager/mpd/test/xml_compare.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <map>
+#include <optional>
+#include <ostream>
 #include <string>
 #include <utility>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/strip.h>
+#include <absl/strings/ascii.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <libxml/xmlstring.h>
 
-#include <packager/macros/logging.h>
+#include <packager/mpd/base/xml/scoped_xml_ptr.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 

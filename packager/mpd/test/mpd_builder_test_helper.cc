@@ -6,12 +6,17 @@
 
 #include <packager/mpd/test/mpd_builder_test_helper.h>
 
+#include <cstddef>
 #include <filesystem>
+#include <ostream>
+#include <string>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <google/protobuf/text_format.h>
 #include <gtest/gtest.h>
+#include <libxml/parser.h>
+#include <libxml/xmlschemas.h>
 
 #include <packager/media/test/test_data_util.h>
 #include <packager/mpd/base/media_info.pb.h>

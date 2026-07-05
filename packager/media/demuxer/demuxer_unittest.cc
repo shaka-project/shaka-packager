@@ -6,12 +6,19 @@
 
 #include <packager/media/demuxer/demuxer.h>
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/key_source.h>
 #include <packager/media/base/media_handler_test_base.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/test/test_data_util.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {

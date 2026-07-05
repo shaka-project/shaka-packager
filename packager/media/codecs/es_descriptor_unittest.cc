@@ -4,6 +4,11 @@
 
 #include <packager/media/codecs/es_descriptor.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

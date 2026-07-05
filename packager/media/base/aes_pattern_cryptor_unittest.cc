@@ -6,10 +6,17 @@
 
 #include <packager/media/base/aes_pattern_cryptor.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/mock_aes_cryptor.h>
 
 using ::testing::_;

@@ -6,12 +6,17 @@
 
 #include <packager/media/base/decryptor_source.h>
 
+#include <cstdint>
 #include <iterator>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/key_source.h>
 #include <packager/media/base/raw_key_source.h>
+#include <packager/status.h>
 
 using ::testing::_;
 using ::testing::DoAll;

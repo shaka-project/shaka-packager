@@ -9,8 +9,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include <packager/macros/classes.h>
+#include <packager/media/base/range.h>
 #include <packager/media/formats/webm/mkv_writer.h>
 #include <packager/media/formats/webm/segmenter.h>
 #include <packager/status.h>

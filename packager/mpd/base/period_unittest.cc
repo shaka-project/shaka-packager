@@ -6,9 +6,18 @@
 
 #include <packager/mpd/base/period.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/mock_mpd_builder.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/test/mpd_builder_test_helper.h>

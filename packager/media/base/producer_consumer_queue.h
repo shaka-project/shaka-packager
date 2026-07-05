@@ -8,10 +8,12 @@
 #define PACKAGER_MEDIA_BASE_PRODUCER_CONSUMER_QUEUE_H_
 
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
 #include <deque>
 
+#include <absl/base/thread_annotations.h>
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 #include <absl/synchronization/mutex.h>
 #include <absl/time/time.h>

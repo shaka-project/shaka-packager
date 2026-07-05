@@ -6,11 +6,15 @@
 
 #include <packager/media/chunking/sync_point_queue.h>
 
-#include <algorithm>
+#include <iterator>
 #include <limits>
+#include <memory>
+#include <utility>
 
 #include <absl/log/check.h>
+#include <absl/synchronization/mutex.h>
 
+#include <packager/ad_cue_generator_params.h>
 #include <packager/media/base/media_handler.h>
 
 namespace shaka {

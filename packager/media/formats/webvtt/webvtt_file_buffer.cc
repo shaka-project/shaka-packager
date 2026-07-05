@@ -6,9 +6,14 @@
 
 #include <packager/media/formats/webvtt/webvtt_file_buffer.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+
 #include <absl/log/check.h>
 #include <absl/strings/str_format.h>
 
+#include <packager/file.h>
 #include <packager/media/base/text_sample.h>
 #include <packager/media/formats/webvtt/webvtt_utils.h>
 

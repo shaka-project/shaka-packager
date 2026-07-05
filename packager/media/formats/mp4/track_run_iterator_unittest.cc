@@ -4,15 +4,19 @@
 
 #include <packager/media/formats/mp4/track_run_iterator.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <iterator>
 #include <memory>
+#include <vector>
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
-#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 #include <packager/flag_saver.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 
 ABSL_DECLARE_FLAG(bool, mp4_reset_initial_composition_offset_to_zero);

@@ -6,12 +6,14 @@
 
 #include <packager/media/codecs/ac4_parser.h>
 
-#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/rcheck.h>
 

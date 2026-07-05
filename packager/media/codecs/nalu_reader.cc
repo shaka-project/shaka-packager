@@ -6,14 +6,16 @@
 
 #include <packager/media/codecs/nalu_reader.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
-#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {

@@ -7,6 +7,9 @@
 #include <packager/mpd/util/mpd_writer.h>
 
 #include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>

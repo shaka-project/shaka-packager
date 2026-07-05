@@ -6,12 +6,20 @@
 
 #include <packager/media/codecs/hevc_decoder_configuration_record.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <string>
+#include <vector>
+
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>
 
 #include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/media/codecs/h265_parser.h>
 #include <packager/utils/bytes_to_string_view.h>

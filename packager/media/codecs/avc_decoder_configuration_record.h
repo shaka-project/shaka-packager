@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/fourccs.h>

@@ -6,7 +6,11 @@
 
 #include <packager/media/base/muxer_util.h>
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
+
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

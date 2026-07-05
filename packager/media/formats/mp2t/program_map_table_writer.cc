@@ -6,14 +6,17 @@
 
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
 
-#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/codecs/hls_audio_util.h>
 #include <packager/media/formats/mp2t/ts_packet_writer_util.h>
 #include <packager/media/formats/mp2t/ts_stream_type.h>

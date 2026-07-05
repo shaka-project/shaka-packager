@@ -4,8 +4,11 @@
 
 #include <packager/media/formats/mp2t/adts_header.h>
 
-#include <absl/log/log.h>
-#include <absl/strings/numbers.h>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include <packager/utils/hex_parser.h>

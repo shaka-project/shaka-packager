@@ -6,10 +6,12 @@
 
 #include <packager/media/codecs/iamf_audio_util.h>
 
+#include <cstdint>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include <packager/media/base/stream_info.h>
-#include <packager/media/test/test_data_util.h>
 
 namespace shaka {
 namespace media {

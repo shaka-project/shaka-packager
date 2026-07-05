@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_CODECS_DECODER_CONFIGURATION_RECORD_H_
 #define PACKAGER_MEDIA_CODECS_DECODER_CONFIGURATION_RECORD_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/macros/classes.h>
 #include <packager/media/codecs/nalu_reader.h>

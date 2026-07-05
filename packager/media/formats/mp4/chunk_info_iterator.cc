@@ -7,10 +7,13 @@
 #include <packager/media/formats/mp4/chunk_info_iterator.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
+
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {

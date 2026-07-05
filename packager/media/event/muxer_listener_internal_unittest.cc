@@ -6,8 +6,15 @@
 
 #include <packager/media/event/muxer_listener_internal.h>
 
+#include <cstdint>
+#include <memory>
+
 #include <gtest/gtest.h>
 
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/event/muxer_listener.h>
 #include <packager/media/event/muxer_listener_test_helper.h>
 #include <packager/mpd/base/media_info.pb.h>
 

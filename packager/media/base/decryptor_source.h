@@ -7,13 +7,14 @@
 #ifndef PACKAGER_MEDIA_BASE_DECRYPTOR_SOURCE_H_
 #define PACKAGER_MEDIA_BASE_DECRYPTOR_SOURCE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <vector>
 
 #include <packager/macros/classes.h>
-#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/key_source.h>
 

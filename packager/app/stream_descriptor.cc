@@ -6,11 +6,19 @@
 
 #include <packager/app/stream_descriptor.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include <absl/log/log.h>
 #include <absl/strings/numbers.h>
-#include <absl/strings/str_split.h>
+#include <absl/strings/string_view.h>
 
 #include <packager/kv_pairs/kv_pairs.h>
+#include <packager/packager.h>
 #include <packager/utils/string_trim_split.h>
 
 namespace shaka {

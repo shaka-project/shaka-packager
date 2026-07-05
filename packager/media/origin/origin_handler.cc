@@ -6,6 +6,9 @@
 
 #include <packager/media/origin/origin_handler.h>
 
+#include <memory>
+
+#include <packager/media/base/media_handler.h>
 #include <packager/status.h>
 
 namespace shaka {

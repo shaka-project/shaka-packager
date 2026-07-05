@@ -6,13 +6,23 @@
 
 #include <packager/hls/base/media_playlist.h>
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+
 #include <absl/strings/str_format.h>
+#include <absl/time/time.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/file/file_test_util.h>
+#include <packager/hls_params.h>
+#include <packager/mpd/base/media_info.pb.h>
 #include <packager/version/version.h>
 
 namespace shaka {

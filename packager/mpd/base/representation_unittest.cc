@@ -7,6 +7,11 @@
 #include <packager/mpd/base/representation.h>
 
 #include <cinttypes>
+#include <cstdint>
+#include <list>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
@@ -18,7 +23,9 @@
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/flag_saver.h>
+#include <packager/mpd/base/bandwidth_estimator.h>
 #include <packager/mpd/base/mpd_options.h>
+#include <packager/mpd/base/segment_info.h>
 #include <packager/mpd/test/mpd_builder_test_helper.h>
 #include <packager/mpd/test/xml_compare.h>
 

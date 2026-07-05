@@ -6,8 +6,12 @@
 
 #include <packager/app/single_thread_job_manager.h>
 
+#include <memory>
+#include <utility>
+
+#include <packager/app/job_manager.h>
 #include <packager/media/chunking/sync_point_queue.h>
-#include <packager/media/origin/origin_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

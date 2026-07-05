@@ -7,13 +7,14 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/macros/classes.h>
+#include <packager/media/formats/mp4/key_frame_info.h>
 #include <packager/status.h>
 
 namespace shaka {
@@ -25,7 +26,6 @@ class StreamInfo;
 
 namespace mp4 {
 
-struct KeyFrameInfo;
 struct SegmentReference;
 struct TrackFragment;
 

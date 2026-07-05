@@ -7,9 +7,12 @@
 #include <packager/media/event/muxer_listener_factory.h>
 
 #include <list>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/hls/base/hls_notifier.h>

@@ -6,6 +6,10 @@
 
 #include <packager/media/base/bit_writer.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
 #include <absl/log/check.h>
 
 namespace shaka {

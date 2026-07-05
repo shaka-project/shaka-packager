@@ -6,6 +6,9 @@
 
 #include <packager/version/version.h>
 
+#include <string>
+
+#include <absl/base/thread_annotations.h>
 #include <absl/synchronization/mutex.h>
 
 namespace shaka {

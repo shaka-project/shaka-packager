@@ -7,6 +7,9 @@
 #include <packager/status/status_test_util.h>
 
 #include <gtest/gtest-spi.h>
+#include <gtest/gtest.h>
+
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -7,11 +7,16 @@
 #ifndef PACKAGER_MEDIA_CHUNKING_TEXT_CHUNKER_H_
 #define PACKAGER_MEDIA_CHUNKING_TEXT_CHUNKER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <list>
+#include <memory>
 
 #include <packager/chunking_params.h>
 #include <packager/media/base/media_handler.h>
-#include <packager/media/base/timestamp_util.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

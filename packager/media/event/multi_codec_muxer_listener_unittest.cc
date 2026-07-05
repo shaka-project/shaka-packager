@@ -6,11 +6,17 @@
 
 #include <packager/media/event/multi_codec_muxer_listener.h>
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/event/mock_muxer_listener.h>
+#include <packager/media/event/muxer_listener.h>
 #include <packager/media/event/muxer_listener_test_helper.h>
 
 namespace shaka {

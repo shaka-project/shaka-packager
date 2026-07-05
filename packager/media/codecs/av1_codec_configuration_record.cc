@@ -6,6 +6,10 @@
 
 #include <packager/media/codecs/av1_codec_configuration_record.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+
 #include <absl/strings/str_format.h>
 
 #include <packager/media/base/bit_reader.h>

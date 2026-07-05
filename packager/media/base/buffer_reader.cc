@@ -6,8 +6,12 @@
 
 #include <packager/media/base/buffer_reader.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

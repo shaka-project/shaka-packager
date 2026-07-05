@@ -6,6 +6,10 @@
 
 #include <packager/kv_pairs/kv_pairs.h>
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include <absl/strings/str_split.h>
 
 namespace shaka {

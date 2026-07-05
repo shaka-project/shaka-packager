@@ -6,17 +6,21 @@
 
 #include <packager/media/formats/mp2t/ts_writer.h>
 
-#include <filesystem>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <iterator>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/buffer_writer.h>
-#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/formats/mp2t/pes_packet.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
-#include <filesystem>
 
 using ::testing::_;
 using ::testing::InSequence;

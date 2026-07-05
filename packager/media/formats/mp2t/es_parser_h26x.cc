@@ -4,17 +4,21 @@
 
 #include <packager/media/formats/mp2t/es_parser_h26x.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/offset_byte_queue.h>
 #include <packager/media/base/timestamp.h>
-#include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
+#include <packager/media/codecs/nalu_reader.h>
+#include <packager/media/formats/mp2t/es_parser.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {

@@ -6,16 +6,19 @@
 
 #include <packager/mpd/base/xml/xml_node.h>
 
+#include <cstdint>
 #include <list>
+#include <string>
+#include <utility>
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
-#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
 
 #include <packager/flag_saver.h>
+#include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/segment_info.h>
 #include <packager/mpd/test/mpd_builder_test_helper.h>
 #include <packager/mpd/test/xml_compare.h>

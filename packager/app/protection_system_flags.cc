@@ -8,6 +8,10 @@
 
 #include <packager/app/protection_system_flags.h>
 
+#include <string>
+
+#include <absl/flags/flag.h>
+
 ABSL_FLAG(
     std::string,
     protection_systems,

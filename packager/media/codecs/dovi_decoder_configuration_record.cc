@@ -6,9 +6,14 @@
 
 #include <packager/media/codecs/dovi_decoder_configuration_record.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <absl/strings/str_format.h>
 
 #include <packager/media/base/bit_reader.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>
 
 namespace shaka {

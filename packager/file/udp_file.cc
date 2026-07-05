@@ -6,6 +6,14 @@
 
 #include <packager/file/udp_file.h>
 
+#include <cstdint>
+#include <memory>
+
+#include <asm-generic/socket.h>
+#include <bits/types/struct_timeval.h>
+
+#include <packager/file.h>
+
 #if defined(OS_WIN)
 #include <ws2tcpip.h>
 #define close closesocket
@@ -16,7 +24,6 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
 #define EINTR_CODE EINTR

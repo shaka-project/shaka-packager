@@ -6,9 +6,15 @@
 
 #include <packager/media/chunking/segment_coordinator.h>
 
+#include <cstddef>
+#include <memory>
+#include <utility>
+
 #include <absl/log/log.h>
 
 #include <packager/macros/status.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

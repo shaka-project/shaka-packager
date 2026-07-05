@@ -6,20 +6,32 @@
 
 #include <packager/hls/base/simple_hls_notifier.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
+#include <iterator>
+#include <list>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/flag_saver.h>
+#include <packager/hls/base/master_playlist.h>
+#include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/mock_media_playlist.h>
+#include <packager/hls_params.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/widevine_pssh_data.pb.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 ABSL_DECLARE_FLAG(bool, enable_legacy_widevine_hls_signaling);
 

@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <string>
 
 #include <packager/macros/classes.h>
 #include <packager/media/formats/webm/webm_parser.h>

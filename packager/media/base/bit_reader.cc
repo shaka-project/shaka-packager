@@ -5,6 +5,8 @@
 #include <packager/media/base/bit_reader.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 
 #include <absl/log/check.h>
 

@@ -7,14 +7,24 @@
 #include <packager/media/formats/mp4/single_segment_segmenter.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
+#include <packager/file/file_closer.h>
 #include <packager/file/file_util.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/muxer_options.h>
-#include <packager/media/event/progress_listener.h>
+#include <packager/media/base/range.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/key_frame_info.h>
+#include <packager/media/formats/mp4/segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
