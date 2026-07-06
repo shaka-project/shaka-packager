@@ -8,6 +8,10 @@
 
 #include <packager/app/cpix_encryption_flags.h>
 
+#include <string>
+
+#include <absl/flags/flag.h>
+
 #include <packager/app/validate_flag.h>
 
 ABSL_FLAG(bool,

@@ -7,6 +7,8 @@
 #include <packager/media/base/aes_key_wrap.h>
 
 #include <cstddef>
+#include <cstdint>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
