@@ -1266,6 +1266,21 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(cpix_encryption=True, output_hls=True))
     self._CheckTestResults('encryption-cpix-fmp4-hls')
 
+  def testCpixWidevineEncryptionAndFmp4Hls(self):
+    # A Widevine DRMSystem in the document produces an EXT-X-KEY with the
+    # Widevine urn:uuid: KEYFORMAT; the common system is not signaled in HLS
+    # for CENC content.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        self._GetFlags(
+            cpix_encryption=True,
+            cpix_document='cpix_widevine.xml',
+            output_hls=True))
+    self._CheckTestResults('encryption-cpix-widevine-fmp4-hls')
+
   def testCpixEncryptionAndAvcTs(self):
     # TS output is encrypted with Apple Sample AES regardless of
     # --protection_scheme, so a key bound to commonEncryptionScheme="cbcs"
