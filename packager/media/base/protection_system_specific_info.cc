@@ -6,9 +6,14 @@
 
 #include <packager/media/base/protection_system_specific_info.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
+#include <memory>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/buffer_writer.h>

@@ -13,7 +13,6 @@
 #include <gmock/gmock.h>
 #include <libxml/tree.h>
 
-#include <packager/mpd/base/xml/scoped_xml_ptr.h>
 #include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {

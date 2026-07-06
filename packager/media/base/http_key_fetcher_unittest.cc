@@ -6,11 +6,13 @@
 
 #include <packager/media/base/http_key_fetcher.h>
 
-#include <algorithm>
+#include <cstdint>
+#include <string>
 
-#include <absl/log/log.h>
+#include <gtest/gtest.h>
 
 #include <packager/media/test/test_web_server.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {

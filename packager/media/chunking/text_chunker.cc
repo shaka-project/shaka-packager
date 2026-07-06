@@ -6,9 +6,21 @@
 
 #include <packager/media/chunking/text_chunker.h>
 
-#include <absl/log/check.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <utility>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/chunking_params.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/timestamp_util.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

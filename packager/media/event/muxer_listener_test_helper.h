@@ -8,15 +8,15 @@
 #define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_
 
 #include <cstdint>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include <packager/media/base/audio_stream_info.h>
-#include <packager/media/base/key_source.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/event/muxer_listener.h>
-#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 

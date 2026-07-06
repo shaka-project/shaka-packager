@@ -6,8 +6,15 @@
 
 #include <packager/media/codecs/vp8_parser.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <packager/media/base/stream_info.h>
+#include <packager/media/codecs/vpx_parser.h>
 
 using ::testing::ElementsAre;
 

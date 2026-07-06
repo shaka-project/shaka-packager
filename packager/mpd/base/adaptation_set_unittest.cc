@@ -6,6 +6,10 @@
 
 #include <packager/mpd/base/adaptation_set.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

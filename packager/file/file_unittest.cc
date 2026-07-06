@@ -6,13 +6,20 @@
 
 #include <packager/file.h>
 
+#include <clocale>
+#include <cstdint>
 #include <cstdio>
 #include <filesystem>
-#include <locale>
+#include <memory>
+#include <string>
+#include <system_error>
+#include <vector>
 
 #include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
 #include <gtest/gtest.h>
 
+#include <packager/buffer_callback_params.h>
 #include <packager/file/file_test_util.h>
 #include <packager/flag_saver.h>
 

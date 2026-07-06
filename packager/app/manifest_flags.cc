@@ -6,6 +6,11 @@
 
 #include <packager/app/manifest_flags.h>
 
+#include <cstdint>
+#include <string>
+
+#include <absl/flags/flag.h>
+
 ABSL_FLAG(double,
           time_shift_buffer_depth,
           1800.0,

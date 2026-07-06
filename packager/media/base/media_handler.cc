@@ -6,7 +6,14 @@
 
 #include <packager/media/base/media_handler.h>
 
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <packager/macros/status.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

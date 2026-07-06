@@ -7,8 +7,13 @@
 #ifndef PACKAGER_MEDIA_BASE_VIDEO_STREAM_INFO_H_
 #define PACKAGER_MEDIA_BASE_VIDEO_STREAM_INFO_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/stream_info.h>
 
 namespace shaka {

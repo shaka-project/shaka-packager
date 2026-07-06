@@ -6,7 +6,10 @@
 
 #include <packager/media/base/protection_system_specific_info.h>
 
+#include <cstdint>
 #include <iterator>
+#include <memory>
+#include <vector>
 
 #include <gtest/gtest.h>
 

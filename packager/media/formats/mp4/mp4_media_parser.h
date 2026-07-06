@@ -8,12 +8,11 @@
 #define PACKAGER_MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 
 #include <cstdint>
-#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/decryptor_source.h>

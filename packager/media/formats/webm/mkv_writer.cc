@@ -6,7 +6,14 @@
 
 #include <packager/media/formats/webm/mkv_writer.h>
 
+#include <cstdint>
+#include <string>
+
 #include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxertypes.h>
+
+#include <packager/file.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

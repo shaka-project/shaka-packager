@@ -6,14 +6,19 @@
 
 #include <packager/media/base/producer_consumer_queue.h>
 
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
 #include <thread>
 
-#include <absl/log/log.h>
 #include <absl/synchronization/notification.h>
 #include <gtest/gtest.h>
 
 #include <packager/macros/classes.h>
 #include <packager/macros/logging.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {

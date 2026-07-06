@@ -6,12 +6,14 @@
 
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include <packager/media/base/buffer_writer.h>
-#include <packager/media/formats/mp2t/continuity_counter.h>
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

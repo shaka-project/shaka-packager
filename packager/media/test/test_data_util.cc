@@ -4,6 +4,13 @@
 
 #include <packager/media/test/test_data_util.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <filesystem>
+#include <string>
+#include <vector>
+
 #include <absl/log/log.h>
 
 namespace shaka {

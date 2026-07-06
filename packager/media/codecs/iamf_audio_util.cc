@@ -6,7 +6,13 @@
 
 #include <packager/media/codecs/iamf_audio_util.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <iomanip>
+#include <ios>
+#include <vector>
+
+#include <absl/log/log.h>
 
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/fourccs.h>

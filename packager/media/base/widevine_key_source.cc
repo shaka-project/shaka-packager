@@ -6,16 +6,27 @@
 
 #include <packager/media/base/widevine_key_source.h>
 
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <iterator>
+#include <memory>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 #include <absl/base/internal/endian.h>
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
-#include <absl/strings/escaping.h>
+#include <absl/log/log.h>
+#include <absl/synchronization/mutex.h>
 
-#include <packager/macros/logging.h>
+#include <packager/crypto_params.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/http_key_fetcher.h>
+#include <packager/media/base/key_source.h>
 #include <packager/media/base/producer_consumer_queue.h>
 #include <packager/media/base/protection_system_ids.h>
 #include <packager/media/base/protection_system_specific_info.h>
@@ -24,6 +35,7 @@
 #include <packager/media/base/rcheck.h>
 #include <packager/media/base/request_signer.h>
 #include <packager/media/base/widevine_common_encryption.pb.h>
+#include <packager/status.h>
 
 ABSL_FLAG(std::string,
           video_feature,

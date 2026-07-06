@@ -6,10 +6,18 @@
 
 #include <packager/media/chunking/chunking_handler.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/chunking_params.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_handler_test_base.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 using ::testing::_;

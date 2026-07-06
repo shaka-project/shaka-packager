@@ -6,10 +6,10 @@
 
 #include <packager/media/codecs/ac4_parser.h>
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include <packager/media/test/test_data_util.h>
 
 using ::testing::ElementsAre;
 

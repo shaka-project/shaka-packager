@@ -9,23 +9,25 @@
 #include <algorithm>  // std::max
 #include <cstdint>
 #include <filesystem>
+#include <list>
+#include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_join.h>
 
+#include <packager/cea_caption.h>
 #include <packager/file.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/tag.h>
+#include <packager/kv_pairs/kv_pairs.h>
 #include <packager/macros/logging.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/version/version.h>
-
-#include "packager/kv_pairs/kv_pairs.h"
-#include "packager/utils/string_trim_split.h"
 
 namespace shaka {
 namespace hls {

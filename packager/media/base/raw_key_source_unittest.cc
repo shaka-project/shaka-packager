@@ -6,10 +6,16 @@
 
 #include <packager/media/base/raw_key_source.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <absl/strings/escaping.h>
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/crypto_params.h>
+#include <packager/media/base/key_source.h>
 #include <packager/status/status_test_util.h>
 
 #define EXPECT_HEX_EQ(expected_hex, actual)                           \

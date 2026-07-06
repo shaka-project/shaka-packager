@@ -6,6 +6,11 @@
 
 #include <packager/media/crypto/sample_aes_ec3_cryptor.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

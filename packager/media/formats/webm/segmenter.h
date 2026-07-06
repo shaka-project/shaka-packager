@@ -7,8 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_SEGMENTER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <mkvmuxer/mkvmuxer.h>
 

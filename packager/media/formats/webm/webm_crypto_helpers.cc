@@ -4,11 +4,15 @@
 
 #include <packager/media/formats/webm/webm_crypto_helpers.h>
 
-#include <absl/base/internal/endian.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <vector>
+
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/decrypt_config.h>
 #include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {

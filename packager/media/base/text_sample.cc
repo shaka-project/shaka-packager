@@ -7,9 +7,9 @@
 #include <packager/media/base/text_sample.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
-
-#include <absl/log/log.h>
+#include <string>
 
 namespace shaka {
 namespace media {

@@ -6,7 +6,6 @@
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_
 
 #include <cstdint>
-#include <memory>
 #include <string>
 
 namespace shaka {

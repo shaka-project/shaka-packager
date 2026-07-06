@@ -5,7 +5,9 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_READER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_BOX_READER_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <vector>
@@ -14,7 +16,6 @@
 #include <absl/log/log.h>
 
 #include <packager/macros/classes.h>
-#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>

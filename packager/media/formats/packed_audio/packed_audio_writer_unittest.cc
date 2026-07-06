@@ -6,13 +6,25 @@
 
 #include <packager/media/formats/packed_audio/packed_audio_writer.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/file/file_test_util.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/range.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/event/mock_muxer_listener.h>
+#include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 using ::testing::_;

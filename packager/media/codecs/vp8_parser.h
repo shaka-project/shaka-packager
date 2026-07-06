@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <vector>
 
 #include <packager/macros/classes.h>
 #include <packager/media/codecs/vpx_parser.h>

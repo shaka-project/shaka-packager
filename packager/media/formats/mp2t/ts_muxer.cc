@@ -6,14 +6,32 @@
 
 #include <packager/media/formats/mp2t/ts_muxer.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
+#include <packager/media/base/range.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp2t/ts_segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

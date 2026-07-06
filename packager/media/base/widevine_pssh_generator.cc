@@ -6,9 +6,17 @@
 
 #include <packager/media/base/widevine_pssh_generator.h>
 
+#include <cstdint>
+#include <iterator>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/pssh_generator.h>
 #include <packager/media/base/widevine_pssh_data.pb.h>
 
 namespace shaka {

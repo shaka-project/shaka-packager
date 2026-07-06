@@ -9,8 +9,10 @@
 #ifndef APP_MUXER_FLAGS_H_
 #define APP_MUXER_FLAGS_H_
 
+#include <cstdint>
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(double, clear_lead);
 ABSL_DECLARE_FLAG(double, segment_duration);

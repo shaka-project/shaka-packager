@@ -10,7 +10,6 @@
 #define PACKAGER_APP_PACKAGER_UTIL_H_
 
 #include <memory>
-#include <vector>
 
 #include <packager/media/base/fourccs.h>
 

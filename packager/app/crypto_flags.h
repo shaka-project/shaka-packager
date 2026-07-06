@@ -10,8 +10,10 @@
 #ifndef PACKAGER_APP_CRYPTO_FLAGS_H_
 #define PACKAGER_APP_CRYPTO_FLAGS_H_
 
+#include <cstdint>
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(std::string, protection_scheme);
 ABSL_DECLARE_FLAG(int32_t, crypt_byte_block);

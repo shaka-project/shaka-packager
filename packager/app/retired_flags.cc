@@ -9,7 +9,11 @@
 
 #include <packager/app/retired_flags.h>
 
+#include <cstdint>
 #include <cstdio>
+#include <string>
+
+#include <absl/flags/flag.h>
 
 ABSL_FLAG(std::string, profile, "", "This flag is deprecated. Do not use.");
 ABSL_FLAG(bool, single_segment, true, "This flag is deprecated. Do not use.");

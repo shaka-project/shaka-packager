@@ -7,6 +7,7 @@
 #ifndef PACKAGER_PUBLIC_HLS_PARAMS_H_
 #define PACKAGER_PUBLIC_HLS_PARAMS_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>

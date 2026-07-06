@@ -7,13 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
 
 #include <packager/media/base/media_parser.h>
-#include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/formats/webvtt/text_readers.h>
 

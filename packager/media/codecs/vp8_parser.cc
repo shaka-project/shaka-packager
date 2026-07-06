@@ -6,12 +6,17 @@
 
 #include <packager/media/codecs/vp8_parser.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
+#include <packager/media/codecs/vpx_parser.h>
 
 namespace shaka {
 namespace media {

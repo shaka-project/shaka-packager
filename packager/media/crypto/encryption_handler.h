@@ -7,11 +7,20 @@
 #ifndef PACKAGER_MEDIA_CRYPTO_ENCRYPTION_HANDLER_H_
 #define PACKAGER_MEDIA_CRYPTO_ENCRYPTION_HANDLER_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <packager/crypto_params.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

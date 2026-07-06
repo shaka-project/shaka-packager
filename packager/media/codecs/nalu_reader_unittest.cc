@@ -6,7 +6,13 @@
 
 #include <packager/media/codecs/nalu_reader.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {

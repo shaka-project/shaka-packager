@@ -6,15 +6,19 @@
 
 #include <packager/media/base/aes_cryptor.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <mbedtls/cipher.h>
 #include <mbedtls/entropy.h>
 
 #include <packager/macros/compiler.h>
 #include <packager/macros/crypto.h>
+#include <packager/media/base/fourccs.h>
 
 namespace {
 

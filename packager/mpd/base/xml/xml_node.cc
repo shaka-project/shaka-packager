@@ -8,21 +8,27 @@
 
 #include <cinttypes>
 #include <cmath>
-#include <limits>
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <map>
 #include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <absl/base/internal/endian.h>
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/escaping.h>
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>
 #include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlstring.h>
 
 #include <packager/macros/compiler.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/segment_info.h>

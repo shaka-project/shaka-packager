@@ -7,11 +7,14 @@
 #include <packager/media/formats/webm/seek_head.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <common/webmids.h>
+#include <mkvmuxer/mkvmuxertypes.h>
 #include <mkvmuxer/mkvmuxerutil.h>
 
 using namespace mkvmuxer;

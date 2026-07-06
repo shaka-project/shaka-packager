@@ -6,12 +6,19 @@
 
 #include <packager/media/formats/webvtt/webvtt_parser.h>
 
+#include <cstdint>
 #include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
+#include <packager/media/base/media_parser.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 
 namespace shaka {
 namespace media {

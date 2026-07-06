@@ -6,13 +6,24 @@
 
 #include <packager/mpd/base/mpd_utils.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/strings/ascii.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <libxml/tree.h>
+#include <libxml/xmlstring.h>
 
 #include <packager/macros/logging.h>
 #include <packager/media/base/fourccs.h>
@@ -20,6 +31,7 @@
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/content_protection_element.h>
+#include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/representation.h>
 #include <packager/mpd/base/xml/scoped_xml_ptr.h>
 

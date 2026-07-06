@@ -6,8 +6,16 @@
 
 #include <packager/media/crypto/aes_encryptor_factory.h>
 
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+#include <absl/log/log.h>
+
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/aes_pattern_cryptor.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/crypto/sample_aes_ec3_cryptor.h>
 
 namespace shaka {

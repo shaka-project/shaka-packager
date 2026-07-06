@@ -5,15 +5,23 @@
 #include <packager/media/formats/mp4/track_run_iterator.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/chunk_info_iterator.h>
 #include <packager/media/formats/mp4/composition_offset_iterator.h>
 #include <packager/media/formats/mp4/decoding_time_iterator.h>

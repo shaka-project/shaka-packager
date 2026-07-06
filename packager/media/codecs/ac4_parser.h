@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <cstdlib>
-#include <vector>
 
 namespace shaka {
 namespace media {

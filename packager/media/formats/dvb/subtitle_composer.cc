@@ -6,13 +6,22 @@
 
 #include <packager/media/formats/dvb/subtitle_composer.h>
 
+#include <png.h>
+#include <pngconf.h>
+
+#include <csetjmp>
+#include <cstdint>
 #include <cstring>
+#include <memory>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <png.h>
 
-#include <packager/macros/logging.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/dvb/dvb_image.h>
 
 namespace shaka {
 namespace media {

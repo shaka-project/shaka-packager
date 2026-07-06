@@ -6,10 +6,20 @@
 
 #include <packager/media/formats/webvtt/webvtt_muxer.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
-#include <packager/macros/status.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_muxer.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/formats/webvtt/webvtt_file_buffer.h>
 #include <packager/media/formats/webvtt/webvtt_utils.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

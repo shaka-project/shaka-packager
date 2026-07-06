@@ -6,15 +6,20 @@
 
 #include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <limits>
+#include <vector>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/nalu_reader.h>
 #include <packager/utils/bytes_to_string_view.h>
 
 // TODO(kqyang): Move byte to unit stream convertion to muxer and make it a

@@ -5,9 +5,14 @@
 #include <packager/media/formats/webm/webm_cluster_parser.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <functional>
+#include <map>
+#include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <absl/log/check.h>
@@ -17,11 +22,19 @@
 #include <gtest/gtest.h>
 
 #include <packager/macros/classes.h>
-#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_track_config.h>
 #include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
 #include <packager/media/formats/webm/cluster_builder.h>
-#include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_tracks_parser.h>
+#include <packager/status.h>
 
 using ::testing::_;
 using ::testing::DoAll;

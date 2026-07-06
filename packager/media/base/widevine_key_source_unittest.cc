@@ -6,20 +6,31 @@
 
 #include <packager/media/base/widevine_key_source.h>
 
-#include <algorithm>
 #include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <iterator>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/crypto_params.h>
 #include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/key_fetcher.h>
+#include <packager/media/base/key_source.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/request_signer.h>
-#include <packager/media/base/widevine_pssh_generator.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 using ::testing::_;

@@ -5,25 +5,34 @@
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <limits>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/numbers.h>
 
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
 #include <packager/media/base/audio_stream_info.h>
-#include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/base/video_util.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
 #include <packager/media/codecs/ac3_audio_util.h>
 #include <packager/media/codecs/ac4_audio_util.h>
 #include <packager/media/codecs/av1_codec_configuration_record.h>
@@ -37,6 +46,7 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
 #include <packager/media/formats/mp4/track_run_iterator.h>
+#include <packager/status.h>
 
 ABSL_FLAG(bool,
           use_dovi_supplemental_codecs,

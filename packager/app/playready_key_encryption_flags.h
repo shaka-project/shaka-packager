@@ -9,8 +9,9 @@
 #ifndef APP_PLAYREADY_KEY_ENCRYPTION_FLAGS_H_
 #define APP_PLAYREADY_KEY_ENCRYPTION_FLAGS_H_
 
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(bool, enable_playready_encryption);
 ABSL_DECLARE_FLAG(std::string, playready_server_url);

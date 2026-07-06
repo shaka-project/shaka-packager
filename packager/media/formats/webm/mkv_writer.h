@@ -7,11 +7,14 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_MKV_WRITER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_MKV_WRITER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include <mkvmuxer/mkvmuxer.h>
+#include <mkvmuxer/mkvmuxertypes.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/macros/classes.h>
 #include <packager/status.h>

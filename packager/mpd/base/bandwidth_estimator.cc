@@ -8,12 +8,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <numeric>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 
 namespace shaka {
 

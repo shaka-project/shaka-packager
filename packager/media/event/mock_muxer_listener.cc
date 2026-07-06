@@ -6,6 +6,8 @@
 
 #include <packager/media/event/mock_muxer_listener.h>
 
+#include <packager/media/base/range.h>
+
 namespace shaka {
 namespace media {
 

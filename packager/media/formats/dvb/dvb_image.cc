@@ -7,6 +7,7 @@
 #include <packager/media/formats/dvb/dvb_image.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <tuple>
 

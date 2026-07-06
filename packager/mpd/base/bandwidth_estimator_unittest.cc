@@ -6,6 +6,8 @@
 
 #include <packager/mpd/base/bandwidth_estimator.h>
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
 
 namespace shaka {

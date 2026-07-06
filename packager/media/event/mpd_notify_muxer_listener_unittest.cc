@@ -6,7 +6,9 @@
 
 #include <packager/media/event/mpd_notify_muxer_listener.h>
 
-#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include <absl/log/check.h>
@@ -15,12 +17,16 @@
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 
-#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/event/muxer_listener.h>
 #include <packager/media/event/muxer_listener_test_helper.h>
-#include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/mock_mpd_notifier.h>
 #include <packager/mpd/base/mpd_notifier.h>
+#include <packager/mpd/base/mpd_options.h>
 
 using ::testing::_;
 using ::testing::InSequence;

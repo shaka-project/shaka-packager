@@ -7,13 +7,16 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_BUFFER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_BOX_BUFFER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include <absl/log/check.h>
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/formats/mp4/box.h>
 #include <packager/media/formats/mp4/box_reader.h>
 

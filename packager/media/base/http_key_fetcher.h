@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_BASE_HTTP_KEY_FETCHER_H_
 #define PACKAGER_MEDIA_BASE_HTTP_KEY_FETCHER_H_
 
+#include <cstdint>
 #include <string>
 
 #include <packager/file/http_file.h>

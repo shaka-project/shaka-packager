@@ -8,11 +8,10 @@
 #define MPD_BASE_MOCK_MPD_BUILDER_H_
 
 #include <cstdint>
+#include <string>
 
-#include <absl/synchronization/mutex.h>
 #include <gmock/gmock.h>
 
-#include <packager/macros/classes.h>
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/mpd_builder.h>
