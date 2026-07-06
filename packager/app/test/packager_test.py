@@ -470,6 +470,7 @@ class PackagerAppTest(unittest.TestCase):
                 decryption=False,
                 cpix_encryption=False,
                 cpix_decryption=False,
+                cpix_document='cpix.xml',
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
@@ -525,7 +526,7 @@ class PackagerAppTest(unittest.TestCase):
     elif cpix_encryption:
       flags += [
           '--enable_cpix_encryption',
-          '--cpix=' + os.path.join(self.golden_file_dir, 'cpix.xml'),
+          '--cpix=' + os.path.join(self.golden_file_dir, cpix_document),
           '--clear_lead={0}'.format(self.clear_lead)
       ]
 
@@ -548,7 +549,7 @@ class PackagerAppTest(unittest.TestCase):
     elif cpix_decryption:
       flags += [
           '--enable_cpix_decryption',
-          '--cpix=' + os.path.join(self.golden_file_dir, 'cpix.xml'),
+          '--cpix=' + os.path.join(self.golden_file_dir, cpix_document),
       ]
 
     if key_rotation:
@@ -1255,6 +1256,30 @@ class PackagerFunctionalTest(PackagerAppTest):
       if extension not in ['mpd', 'm3u8', 'media_info']:
         self._Decrypt(os.path.join(self.tmp_dir, file_name), cpix=True)
     self._CheckTestResults('encryption-cpix')
+
+  def testCpixEncryptionAndFmp4Hls(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        self._GetFlags(cpix_encryption=True, output_hls=True))
+    self._CheckTestResults('encryption-cpix-fmp4-hls')
+
+  def testCpixEncryptionAndAvcTs(self):
+    # TS output is encrypted with Apple Sample AES regardless of
+    # --protection_scheme, so a key bound to commonEncryptionScheme="cbcs"
+    # in the document must be accepted.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         segmented=True,
+                         hls=True,
+                         test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            cpix_encryption=True,
+            cpix_document='cpix_cbcs.xml',
+            output_hls=True))
+    self._CheckTestResults('encryption-cpix-avc-ts')
 
   def testEncryptionWithMultiDrms(self):
     self.assertPackageSuccess(
