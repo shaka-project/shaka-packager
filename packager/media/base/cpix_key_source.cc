@@ -366,6 +366,13 @@ Status DecryptDocument(const CpixEncryptionParams& cpix_params,
                   "Unsupported MAC algorithm '" + mac_algorithm + "'. Only " +
                       kAlgorithmHmacSha512 + " is supported.");
   }
+  if (mac_algorithm.empty()) {
+    // MACMethod is optional in CPIX, but without it the encrypted content
+    // keys are decrypted with no integrity verification.
+    LOG(WARNING) << "The CPIX document declares no MACMethod; encrypted "
+                    "content keys are decrypted without integrity "
+                    "verification.";
+  }
 
   for (CpixContentKey& content_key : document->content_keys) {
     if (!content_key.encrypted_key)
@@ -577,16 +584,18 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
 
   for (const UsedKey& used_key : used_keys) {
     const CpixContentKey& content_key = *used_key.content_key;
-    auto encryption_key = std::make_unique<EncryptionKey>();
-    encryption_key->key_id = content_key.key_id;
-    encryption_key->key_ids = key_ids;
-    encryption_key->key = content_key.key;
-    encryption_key->iv = content_key.iv;
-    encryption_key->common_encryption_scheme =
+    EncryptionKey encryption_key;
+    encryption_key.key_id = content_key.key_id;
+    encryption_key.key = content_key.key;
+    encryption_key.iv = content_key.iv;
+    encryption_key.common_encryption_scheme =
         content_key.common_encryption_scheme;
     if (!for_decryption) {
+      // key_ids and the DRM signaling are only used to build PSSH info for
+      // encryption; decryption looks up keys by key ID alone.
+      encryption_key.key_ids = key_ids;
       RETURN_IF_ERROR(GetKeySystemInfo(document, content_key,
-                                       &encryption_key->key_system_info));
+                                       &encryption_key.key_system_info));
     }
 
     for (const std::string& label : used_key.labels) {
@@ -596,7 +605,7 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
             "Multiple keys map to the same stream label '" + label + "'.");
       }
       (*encryption_key_map)[label] =
-          std::make_unique<EncryptionKey>(*encryption_key);
+          std::make_unique<EncryptionKey>(encryption_key);
     }
   }
   return Status::OK;
