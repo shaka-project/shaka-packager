@@ -7,7 +7,12 @@
 #include <packager/file/file_test_util.h>
 
 #include <stdlib.h>
+
+#if defined(OS_WIN)
+#include <windows.h>
+#else
 #include <unistd.h>
+#endif
 
 #include <filesystem>
 #include <string>
