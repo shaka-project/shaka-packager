@@ -183,6 +183,14 @@ Status FillProtectionSystemInfo(const EncryptionParams& encryption_params,
     AddProtectionSystemIfNotExist(info, encryption_config);
   }
 
+  if (encryption_config->key_system_info.empty()) {
+    LOG(WARNING) << "The stream is encrypted but carries no DRM signaling "
+                    "(PSSH); players may not be able to acquire the keys. "
+                    "Add DRM signaling to the key source (e.g. a DRMSystem "
+                    "element in the CPIX document), or use "
+                    "--protection_systems to generate it.";
+  }
+
   return Status::OK;
 }
 

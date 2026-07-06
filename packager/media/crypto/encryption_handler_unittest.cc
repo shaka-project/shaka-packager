@@ -672,6 +672,28 @@ TEST_F(EncryptionHandlerPsshTest, GeneratesPssh) {
                            IsPsshInfoWithSystemId(playready_system_id)));
 }
 
+TEST_F(EncryptionHandlerPsshTest, NoDefaultPsshForCpixWithoutSignaling) {
+  // The DRM signaling in a CPIX document is authoritative: a key without
+  // signaling gets no default common PSSH, only a warning.
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = FOURCC_cenc;
+  encryption_params.key_provider = KeyProvider::kCpix;
+  SetUpEncryptionHandler(encryption_params);
+
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+
+  EXPECT_THAT(GetOutputStreamDataVector(),
+              ElementsAre(IsStreamInfo(_, kTimeScale, kEncrypted, _)));
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+  EXPECT_TRUE(stream_info->encryption_config().key_system_info.empty());
+}
+
 TEST_F(EncryptionHandlerPsshTest, UsesKeyInfoFirst) {
   EncryptionParams encryption_params;
   encryption_params.protection_scheme = FOURCC_cenc;
