@@ -45,6 +45,11 @@ struct EncryptionKey {
   std::vector<std::vector<uint8_t>> key_ids;
   std::vector<uint8_t> key;
   std::vector<uint8_t> iv;
+  /// The Common Encryption scheme this key is restricted to (e.g. 'cenc' or
+  /// 'cbcs'), or empty if the key may be used with any scheme. Enforced where
+  /// the stream's actual protection scheme is known, since the scheme may be
+  /// overridden per stream (e.g. Apple Sample AES for TS output).
+  std::string common_encryption_scheme;
 };
 
 typedef std::map<std::string, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;

@@ -116,8 +116,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kCpix: {
-      encryption_key_source =
-          CpixKeySource::Create(encryption_params.cpix, protection_scheme);
+      encryption_key_source = CpixKeySource::Create(encryption_params.cpix);
       break;
     }
     default:

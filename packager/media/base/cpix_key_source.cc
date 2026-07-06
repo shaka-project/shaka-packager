@@ -28,7 +28,6 @@
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/aes_key_wrap.h>
 #include <packager/media/base/cpix_parser.h>
-#include <packager/media/base/fourccs.h>
 #include <packager/media/base/http_key_fetcher.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/rsa_key.h>
@@ -374,8 +373,7 @@ Status DecryptDocument(const CpixEncryptionParams& cpix_params,
   return Status::OK;
 }
 
-Status ValidateContentKey(const CpixContentKey& content_key,
-                          FourCC protection_scheme) {
+Status ValidateContentKey(const CpixContentKey& content_key) {
   if (content_key.key_id.size() != 16) {
     return Status(error::INVALID_ARGUMENT,
                   "Invalid key ID size '" +
@@ -398,19 +396,10 @@ Status ValidateContentKey(const CpixContentKey& content_key,
                       KeyIdToString(content_key.key_id) +
                       ", must be 8 or 16 bytes.");
   }
-  if (protection_scheme != FOURCC_NULL &&
-      !content_key.common_encryption_scheme.empty() &&
-      content_key.common_encryption_scheme !=
-          FourCCToString(protection_scheme)) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Key " + KeyIdToString(content_key.key_id) +
-                      " is bound to common encryption scheme '" +
-                      content_key.common_encryption_scheme +
-                      "' in the CPIX document, but the protection scheme is "
-                      "'" +
-                      FourCCToString(protection_scheme) +
-                      "'. Use a matching --protection_scheme.");
-  }
+  // The commonEncryptionScheme binding is not validated here: the protection
+  // scheme may be overridden per stream (e.g. Apple Sample AES for TS
+  // output), so it is enforced by the encryption handler where the stream's
+  // actual scheme is known.
   return Status::OK;
 }
 
@@ -455,7 +444,6 @@ Status GetKeySystemInfo(
 }
 
 Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
-                             FourCC protection_scheme,
                              CpixFetcher* fetcher,
                              bool for_decryption,
                              EncryptionKeyMap* encryption_key_map) {
@@ -493,54 +481,96 @@ Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
   RETURN_IF_ERROR(ParseCpixDocument(xml, &document));
   RETURN_IF_ERROR(DecryptDocument(cpix_params, &document));
 
-  std::vector<std::vector<uint8_t>> key_ids;
-  for (const CpixContentKey& content_key : document.content_keys)
-    key_ids.emplace_back(content_key.key_id);
-
-  for (const CpixDrmSystem& drm_system : document.drm_systems) {
-    if (std::find(key_ids.begin(), key_ids.end(), drm_system.key_id) ==
-        key_ids.end()) {
-      return Status(error::INVALID_ARGUMENT,
-                    "DRMSystem " + KeyIdToString(drm_system.system_id) +
-                        " references unknown key " +
-                        KeyIdToString(drm_system.key_id) + ".");
+  // DRM signaling is only used for encryption; decryption needs the raw key
+  // values only, so an imperfect DRMSystemList should not fail decryption.
+  if (!for_decryption) {
+    for (const CpixDrmSystem& drm_system : document.drm_systems) {
+      const bool known_key = std::any_of(
+          document.content_keys.begin(), document.content_keys.end(),
+          [&drm_system](const CpixContentKey& content_key) {
+            return content_key.key_id == drm_system.key_id;
+          });
+      if (!known_key) {
+        return Status(error::INVALID_ARGUMENT,
+                      "DRMSystem " + KeyIdToString(drm_system.system_id) +
+                          " references unknown key " +
+                          KeyIdToString(drm_system.key_id) + ".");
+      }
     }
   }
 
+  // Determine the stream labels of each key first, so that keys that are not
+  // used by this packaging run are skipped rather than validated.
+  struct UsedKey {
+    const CpixContentKey* content_key;
+    std::set<std::string> labels;
+  };
+  std::vector<UsedKey> used_keys;
   for (const CpixContentKey& content_key : document.content_keys) {
-    RETURN_IF_ERROR(ValidateContentKey(content_key, protection_scheme));
-
-    auto encryption_key = std::make_unique<EncryptionKey>();
-    encryption_key->key_id = content_key.key_id;
-    encryption_key->key_ids = key_ids;
-    encryption_key->key = content_key.key;
-    encryption_key->iv = content_key.iv;
-    RETURN_IF_ERROR(GetKeySystemInfo(document, content_key,
-                                     &encryption_key->key_system_info));
-
     std::set<std::string> labels;
     if (for_decryption) {
       // Decryption looks up keys by key ID only; a synthetic unique label
       // keeps every key in the map without requiring usage rules.
       labels.insert(KeyIdToString(content_key.key_id));
-    }
-    for (const CpixUsageRule& usage_rule : document.usage_rules) {
-      if (!for_decryption && usage_rule.key_id == content_key.key_id)
-        RETURN_IF_ERROR(RuleToLabels(usage_rule, cpix_params, &labels));
-    }
-    if (labels.empty()) {
-      if (document.usage_rules.empty() && document.content_keys.size() == 1) {
-        // A single key without usage rules applies to all streams.
-        labels.insert(kEmptyDrmLabel);
-      } else {
-        return Status(error::INVALID_ARGUMENT,
-                      "Key " + KeyIdToString(content_key.key_id) +
-                          " is not referenced by any ContentKeyUsageRule, so "
-                          "it cannot be mapped to streams.");
+    } else {
+      for (const CpixUsageRule& usage_rule : document.usage_rules) {
+        if (usage_rule.key_id == content_key.key_id)
+          RETURN_IF_ERROR(RuleToLabels(usage_rule, cpix_params, &labels));
+      }
+      if (labels.empty()) {
+        if (document.usage_rules.empty() && document.content_keys.size() == 1) {
+          // A single key without usage rules applies to all streams.
+          labels.insert(kEmptyDrmLabel);
+        } else {
+          // Usage rules are optional per key, e.g. for keys intended for
+          // other workflows or track types not packaged in this run.
+          LOG(WARNING) << "Ignoring key " << KeyIdToString(content_key.key_id)
+                       << ": it is not referenced by any "
+                          "ContentKeyUsageRule.";
+          continue;
+        }
       }
     }
 
-    for (const std::string& label : labels) {
+    Status valid = ValidateContentKey(content_key);
+    if (!valid.ok()) {
+      if (for_decryption) {
+        // The key may not be needed to decrypt the input streams; if it is,
+        // the key lookup will fail with a clear error later.
+        LOG(WARNING) << "Ignoring key " << KeyIdToString(content_key.key_id)
+                     << ": " << valid.error_message();
+        continue;
+      }
+      return valid;
+    }
+    used_keys.push_back({&content_key, std::move(labels)});
+  }
+
+  if (used_keys.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "No usable content key in the CPIX document could be "
+                  "mapped to streams.");
+  }
+
+  std::vector<std::vector<uint8_t>> key_ids;
+  for (const UsedKey& used_key : used_keys)
+    key_ids.emplace_back(used_key.content_key->key_id);
+
+  for (const UsedKey& used_key : used_keys) {
+    const CpixContentKey& content_key = *used_key.content_key;
+    auto encryption_key = std::make_unique<EncryptionKey>();
+    encryption_key->key_id = content_key.key_id;
+    encryption_key->key_ids = key_ids;
+    encryption_key->key = content_key.key;
+    encryption_key->iv = content_key.iv;
+    encryption_key->common_encryption_scheme =
+        content_key.common_encryption_scheme;
+    if (!for_decryption) {
+      RETURN_IF_ERROR(GetKeySystemInfo(document, content_key,
+                                       &encryption_key->key_system_info));
+    }
+
+    for (const std::string& label : used_key.labels) {
       if (encryption_key_map->find(label) != encryption_key_map->end()) {
         return Status(
             error::INVALID_ARGUMENT,
@@ -612,20 +642,18 @@ Status CpixKeySource::GetCryptoPeriodKey(
 }
 
 std::unique_ptr<CpixKeySource> CpixKeySource::Create(
-    const CpixEncryptionParams& cpix_params,
-    FourCC protection_scheme) {
+    const CpixEncryptionParams& cpix_params) {
   HttpCpixFetcher fetcher;
-  return CreateWithFetcher(cpix_params, protection_scheme, &fetcher);
+  return CreateWithFetcher(cpix_params, &fetcher);
 }
 
 std::unique_ptr<CpixKeySource> CpixKeySource::CreateWithFetcher(
     const CpixEncryptionParams& cpix_params,
-    FourCC protection_scheme,
     CpixFetcher* fetcher) {
   DCHECK(fetcher);
   EncryptionKeyMap encryption_key_map;
   Status status =
-      BuildEncryptionKeyMap(cpix_params, protection_scheme, fetcher,
+      BuildEncryptionKeyMap(cpix_params, fetcher,
                             /* for_decryption= */ false, &encryption_key_map);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();
@@ -640,7 +668,7 @@ std::unique_ptr<CpixKeySource> CpixKeySource::CreateForDecryption(
   HttpCpixFetcher fetcher;
   EncryptionKeyMap encryption_key_map;
   Status status =
-      BuildEncryptionKeyMap(cpix_params, FOURCC_NULL, &fetcher,
+      BuildEncryptionKeyMap(cpix_params, &fetcher,
                             /* for_decryption= */ true, &encryption_key_map);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();

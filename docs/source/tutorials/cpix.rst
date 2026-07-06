@@ -42,10 +42,14 @@ Keys are mapped to streams through the document's *ContentKeyUsageRuleList*:
   both constraints.
 * A rule with no filters, or a document with a single key and no usage rules,
   maps the key to all streams.
+* A key that is not referenced by any usage rule is ignored, e.g. keys
+  intended for other workflows or for track types not packaged in the run.
 
 DRM signaling comes from the document's *DRMSystemList* and is authoritative:
 no default protection system is generated. *--protection_systems* may still
 be used to generate signaling for additional protection systems.
+
+Key rotation (*--crypto_period_duration*) is not supported with CPIX.
 
 Encrypted documents
 -------------------

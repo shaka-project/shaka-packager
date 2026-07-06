@@ -13,7 +13,6 @@
 #include <vector>
 
 #include <packager/crypto_params.h>
-#include <packager/media/base/fourccs.h>
 #include <packager/media/base/key_source.h>
 
 namespace shaka {
@@ -58,20 +57,17 @@ class CpixKeySource : public KeySource {
   /// @}
 
   /// Creates a new CpixKeySource from the given parameters. Returns null if
-  /// the document cannot be read or fetched, or is malformed.
+  /// the document cannot be read or fetched, or is malformed. A key's
+  /// `commonEncryptionScheme` binding is carried on the returned keys and
+  /// enforced where the stream's actual protection scheme is known.
   /// @param cpix_params contains parameters to setup the key source.
-  /// @param protection_scheme is the protection scheme the content will be
-  ///        encrypted with. It is validated against the document's
-  ///        `commonEncryptionScheme` attributes if present.
   static std::unique_ptr<CpixKeySource> Create(
-      const CpixEncryptionParams& cpix_params,
-      FourCC protection_scheme);
+      const CpixEncryptionParams& cpix_params);
 
   /// Same as above, with an injected document fetcher. Should be used for
   /// testing only.
   static std::unique_ptr<CpixKeySource> CreateWithFetcher(
       const CpixEncryptionParams& cpix_params,
-      FourCC protection_scheme,
       CpixFetcher* fetcher);
 
   /// Creates a new CpixKeySource for decryption. Keys are looked up by key

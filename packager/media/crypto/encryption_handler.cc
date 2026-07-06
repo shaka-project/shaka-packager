@@ -17,6 +17,7 @@
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/common_pssh_generator.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/playready_pssh_generator.h>
@@ -44,6 +45,28 @@ const uint8_t kKeyRotationDefaultKey[] = {
 const uint8_t kKeyRotationDefaultIv[] = {
     0, 0, 0, 0, 0, 0, 0, 0,
 };
+
+// Whether a key restricted to |common_encryption_scheme| may be used with
+// |protection_scheme|. The scheme of a stream may differ from the Common
+// Encryption scheme it is signaled with, so this cannot be validated before
+// the stream's actual protection scheme is known.
+bool SchemeBindingAllows(const std::string& common_encryption_scheme,
+                         FourCC protection_scheme) {
+  if (common_encryption_scheme.empty())
+    return true;
+  if (common_encryption_scheme == FourCCToString(protection_scheme))
+    return true;
+  // Apple Sample AES applies the 'cbcs' pattern scheme to TS streams.
+  if (protection_scheme == kAppleSampleAesProtectionScheme &&
+      common_encryption_scheme == "cbcs") {
+    return true;
+  }
+  // AES-128 full-segment encryption is not a Common Encryption scheme, so a
+  // Common Encryption scheme restriction cannot apply to it.
+  if (protection_scheme == kAes128ProtectionScheme)
+    return true;
+  return false;
+}
 
 std::string GetStreamLabelForEncryption(
     const StreamInfo& stream_info,
@@ -256,6 +279,17 @@ Status EncryptionHandler::ProcessStreamInfo(const StreamInfo& clear_info) {
                              std::end(kKeyRotationDefaultIv));
   } else {
     RETURN_IF_ERROR(key_source_->GetKey(stream_label_, &encryption_key));
+    if (!SchemeBindingAllows(encryption_key.common_encryption_scheme,
+                             protection_scheme_)) {
+      return Status(error::INVALID_ARGUMENT,
+                    "The key for stream label '" + stream_label_ +
+                        "' is restricted to common encryption scheme '" +
+                        encryption_key.common_encryption_scheme +
+                        "', but the stream uses protection scheme '" +
+                        FourCCToString(protection_scheme_) +
+                        "'. Use a key without the restriction or a matching "
+                        "--protection_scheme.");
+    }
   }
   if (!CreateEncryptor(encryption_key))
     return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");

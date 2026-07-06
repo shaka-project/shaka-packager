@@ -445,6 +445,12 @@ std::optional<PackagingParams> GetPackagingParams() {
 
     encryption_params.crypto_period_duration_in_seconds =
         absl::GetFlag(FLAGS_crypto_period_duration);
+    if (encryption_params.crypto_period_duration_in_seconds != 0 &&
+        encryption_params.key_provider == KeyProvider::kCpix) {
+      LOG(ERROR) << "--crypto_period_duration (key rotation) is not "
+                    "supported with --enable_cpix_encryption.";
+      return std::nullopt;
+    }
     encryption_params.vp9_subsample_encryption =
         absl::GetFlag(FLAGS_vp9_subsample_encryption);
     encryption_params.cencv1 = absl::GetFlag(FLAGS_cencv1);

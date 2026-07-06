@@ -90,12 +90,11 @@ class CpixKeySourceTest : public ::testing::Test {
   void TearDown() override { MemoryFile::DeleteAll(); }
 
   std::unique_ptr<CpixKeySource> CreateFromDocument(
-      const std::string& document_text,
-      FourCC protection_scheme = FOURCC_cenc) {
+      const std::string& document_text) {
     EXPECT_TRUE(File::WriteStringToFile(kDocumentPath, document_text));
     CpixEncryptionParams params;
     params.document_source = kDocumentPath;
-    return CpixKeySource::Create(params, protection_scheme);
+    return CpixKeySource::Create(params);
   }
 };
 
@@ -226,22 +225,20 @@ TEST_F(CpixKeySourceTest, DuplicateTrackTypeFails) {
   EXPECT_EQ(nullptr, CreateFromDocument(document_text));
 }
 
-TEST_F(CpixKeySourceTest, MatchingCommonEncryptionSchemeSucceeds) {
+TEST_F(CpixKeySourceTest, CommonEncryptionSchemeIsCarriedOnTheKey) {
+  // The binding is not validated here: the protection scheme may be
+  // overridden per stream, so it is enforced by the encryption handler.
   const std::string document_text =
       std::string("<CPIX><ContentKeyList>") +
       ContentKeyElement(kKeyId1Uuid, kKey1Base64,
                         "commonEncryptionScheme=\"cbcs\"") +
       "</ContentKeyList></CPIX>";
-  EXPECT_NE(nullptr, CreateFromDocument(document_text, FOURCC_cbcs));
-}
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
 
-TEST_F(CpixKeySourceTest, MismatchingCommonEncryptionSchemeFails) {
-  const std::string document_text =
-      std::string("<CPIX><ContentKeyList>") +
-      ContentKeyElement(kKeyId1Uuid, kKey1Base64,
-                        "commonEncryptionScheme=\"cbcs\"") +
-      "</ContentKeyList></CPIX>";
-  EXPECT_EQ(nullptr, CreateFromDocument(document_text, FOURCC_cenc));
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("SD", &key));
+  EXPECT_EQ("cbcs", key.common_encryption_scheme);
 }
 
 TEST_F(CpixKeySourceTest, MismatchingPsshSystemIdFails) {
@@ -263,6 +260,51 @@ TEST_F(CpixKeySourceTest, DrmSystemForUnknownKeyFails) {
   EXPECT_EQ(nullptr, CreateFromDocument(document_text));
 }
 
+TEST_F(CpixKeySourceTest, DecryptionIgnoresDrmSignaling) {
+  // A DRMSystem referencing an unknown key and a PSSH element whose system
+  // ID does not match the box contents; decryption only needs the key
+  // values, so neither should fail it.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      "</ContentKeyList><DRMSystemList><DRMSystem kid=\"" + kKeyId2Uuid +
+      "\" systemId=\"" + kSystemId1Uuid + "\"/><DRMSystem kid=\"" +
+      kKeyId1Uuid + "\" systemId=\"" + kSystemId2Uuid + "\"><PSSH>" +
+      kPsshBox1Base64 + "</PSSH></DRMSystem></DRMSystemList></CPIX>";
+  ASSERT_TRUE(File::WriteStringToFile(kDocumentPath, document_text));
+  CpixEncryptionParams params;
+  params.document_source = kDocumentPath;
+  std::unique_ptr<CpixKeySource> key_source =
+      CpixKeySource::CreateForDecryption(params);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey(HexStringToVector(kKeyId1Hex), &key));
+  EXPECT_HEX_EQ(kKey1Hex, key.key);
+}
+
+TEST_F(CpixKeySourceTest, KeyWithoutUsageRuleIsIgnored) {
+  // Key 2 is not referenced by any usage rule, e.g. because it is meant for
+  // a track type that is not packaged in this run. It should be skipped, not
+  // fail the whole document.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      ContentKeyElement(kKeyId2Uuid, kKey2Base64, "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>" +
+      UsageRuleElement(kKeyId1Uuid, "SD") + "</ContentKeyUsageRuleList></CPIX>";
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("SD", &key));
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_id);
+  // The ignored key is not mapped and not listed in key_ids.
+  ASSERT_EQ(1u, key.key_ids.size());
+  EXPECT_HEX_EQ(kKeyId1Hex, key.key_ids[0]);
+  EXPECT_EQ(error::NOT_FOUND, key_source->GetKey("AUDIO", &key).error_code());
+}
+
 TEST_F(CpixKeySourceTest, InvalidKeySizeFails) {
   // 8-byte key value instead of the required 16.
   const std::string document_text =
@@ -272,10 +314,49 @@ TEST_F(CpixKeySourceTest, InvalidKeySizeFails) {
   EXPECT_EQ(nullptr, CreateFromDocument(document_text));
 }
 
+TEST_F(CpixKeySourceTest, InvalidUnusedKeyIsIgnored) {
+  // The 8-byte key is never referenced by a usage rule, so it should be
+  // skipped without being validated.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      ContentKeyElement(kKeyId2Uuid, "AAECAwQFBgc=", "") +
+      "</ContentKeyList><ContentKeyUsageRuleList>" +
+      UsageRuleElement(kKeyId1Uuid, "SD") + "</ContentKeyUsageRuleList></CPIX>";
+  std::unique_ptr<CpixKeySource> key_source = CreateFromDocument(document_text);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey("SD", &key));
+  EXPECT_HEX_EQ(kKey1Hex, key.key);
+}
+
+TEST_F(CpixKeySourceTest, DecryptionIgnoresInvalidKeys) {
+  // The invalid 8-byte key may not be needed to decrypt the input streams,
+  // so it is skipped instead of failing the whole document.
+  const std::string document_text =
+      std::string("<CPIX><ContentKeyList>") +
+      ContentKeyElement(kKeyId1Uuid, kKey1Base64, "") +
+      ContentKeyElement(kKeyId2Uuid, "AAECAwQFBgc=", "") +
+      "</ContentKeyList></CPIX>";
+  ASSERT_TRUE(File::WriteStringToFile(kDocumentPath, document_text));
+  CpixEncryptionParams params;
+  params.document_source = kDocumentPath;
+  std::unique_ptr<CpixKeySource> key_source =
+      CpixKeySource::CreateForDecryption(params);
+  ASSERT_NE(nullptr, key_source);
+
+  EncryptionKey key;
+  ASSERT_OK(key_source->GetKey(HexStringToVector(kKeyId1Hex), &key));
+  EXPECT_EQ(
+      error::NOT_FOUND,
+      key_source->GetKey(HexStringToVector(kKeyId2Hex), &key).error_code());
+}
+
 TEST_F(CpixKeySourceTest, MissingDocumentFails) {
   CpixEncryptionParams params;
   params.document_source = "memory://does-not-exist.cpix";
-  EXPECT_EQ(nullptr, CpixKeySource::Create(params, FOURCC_cenc));
+  EXPECT_EQ(nullptr, CpixKeySource::Create(params));
 }
 
 TEST_F(CpixKeySourceTest, FetchKeysIsNoOp) {
@@ -330,7 +411,7 @@ TEST_F(CpixKeySourceTest, FetchesDocumentFromUrlWithHeaders) {
   params.document_source = "https://key-server.example.com/cpix";
   params.headers = {"x-dt-auth-token: secret"};
   std::unique_ptr<CpixKeySource> key_source =
-      CpixKeySource::CreateWithFetcher(params, FOURCC_cenc, &fetcher);
+      CpixKeySource::CreateWithFetcher(params, &fetcher);
   ASSERT_NE(nullptr, key_source);
 
   EXPECT_EQ("https://key-server.example.com/cpix", fetcher.last_url);
@@ -354,7 +435,7 @@ TEST_F(CpixKeySourceTest, PostsRequestDocument) {
   params.document_source = "https://key-server.example.com/cpix";
   params.request_document_source = "memory://request.cpix";
   std::unique_ptr<CpixKeySource> key_source =
-      CpixKeySource::CreateWithFetcher(params, FOURCC_cenc, &fetcher);
+      CpixKeySource::CreateWithFetcher(params, &fetcher);
   ASSERT_NE(nullptr, key_source);
 
   EXPECT_EQ(kRequestDocument, fetcher.last_request_body);
@@ -367,7 +448,7 @@ TEST_F(CpixKeySourceTest, RequestDocumentWithLocalSourceFails) {
   CpixEncryptionParams params;
   params.document_source = kDocumentPath;
   params.request_document_source = "memory://request.cpix";
-  EXPECT_EQ(nullptr, CpixKeySource::Create(params, FOURCC_cenc));
+  EXPECT_EQ(nullptr, CpixKeySource::Create(params));
 }
 
 TEST_F(CpixKeySourceTest, FetchErrorFails) {
@@ -376,8 +457,7 @@ TEST_F(CpixKeySourceTest, FetchErrorFails) {
 
   CpixEncryptionParams params;
   params.document_source = "https://key-server.example.com/cpix";
-  EXPECT_EQ(nullptr,
-            CpixKeySource::CreateWithFetcher(params, FOURCC_cenc, &fetcher));
+  EXPECT_EQ(nullptr, CpixKeySource::CreateWithFetcher(params, &fetcher));
 }
 
 TEST_F(CpixKeySourceTest, VideoFilterMapsToPixelBuckets) {
@@ -577,7 +657,7 @@ class CpixKeySourceEncryptedTest : public CpixKeySourceTest {
     CpixEncryptionParams params;
     params.document_source = kDocumentPath;
     params.private_key_source = kPrivateKeyPath;
-    return CpixKeySource::Create(params, FOURCC_cenc);
+    return CpixKeySource::Create(params);
   }
 
   RsaTestData rsa_test_data_;
