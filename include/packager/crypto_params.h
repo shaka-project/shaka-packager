@@ -166,6 +166,12 @@ struct CpixEncryptionParams {
   /// usage rules (VideoFilter@minPixels/@maxPixels) into the SD/HD/UHD1/UHD2
   /// stream labels. Filter boundaries must align with these thresholds. The
   /// defaults match the packager's default stream label function.
+  ///
+  /// These must be kept consistent with the thresholds behind
+  /// `EncryptionParams::stream_label_func`, or keys will be mapped to
+  /// different streams than the labels they were resolved to. The command
+  /// line application fills both from the same flags; API users providing a
+  /// custom `stream_label_func` must set these to match it.
   int max_sd_pixels = 768 * 576;
   int max_hd_pixels = 1920 * 1080;
   int max_uhd1_pixels = 4096 * 2160;

@@ -67,6 +67,14 @@ class HttpCpixFetcher : public CpixFetcher {
   }
 };
 
+std::string PixelRangeToString(int64_t min_pixels, int64_t max_pixels) {
+  return "[" + std::to_string(min_pixels) + ", " +
+         (max_pixels == std::numeric_limits<int64_t>::max()
+              ? "unbounded"
+              : std::to_string(max_pixels)) +
+         "]";
+}
+
 // Maps a video filter's pixel range to the video stream labels (SD, HD,
 // UHD1, UHD2) it covers. The filter must fully cover every label bucket it
 // touches; otherwise the mapping would be ambiguous.
@@ -96,13 +104,24 @@ Status VideoFilterToLabels(const CpixVideoFilter& video_filter,
     const bool covers = video_filter.min_pixels <= bucket.min_pixels &&
                         video_filter.max_pixels >= bucket.max_pixels;
     if (!covers) {
+      std::string bucket_ranges;
+      for (const auto& other_bucket : kBuckets) {
+        bucket_ranges += std::string(" ") + other_bucket.label + " " +
+                         PixelRangeToString(other_bucket.min_pixels,
+                                            other_bucket.max_pixels);
+      }
       return Status(
           error::INVALID_ARGUMENT,
-          "The VideoFilter pixel range of the usage rule for key " +
-              key_id_string +
-              " does not align with the SD/HD/UHD pixel thresholds. Adjust "
-              "--max_sd_pixels, --max_hd_pixels and --max_uhd1_pixels to "
-              "match the ranges in the CPIX document.");
+          "The VideoFilter pixel range " +
+              PixelRangeToString(video_filter.min_pixels,
+                                 video_filter.max_pixels) +
+              " of the usage rule for key " + key_id_string +
+              " only partially covers the " + bucket.label + " label bucket " +
+              PixelRangeToString(bucket.min_pixels, bucket.max_pixels) +
+              ". Filter boundaries must align with the label buckets:" +
+              bucket_ranges +
+              ". Adjust --max_sd_pixels, --max_hd_pixels and "
+              "--max_uhd1_pixels to match the ranges in the CPIX document.");
     }
     labels->insert(bucket.label);
     matched = true;
