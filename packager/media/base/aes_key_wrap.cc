@@ -22,11 +22,12 @@ bool IsValidWrappingKeySize(size_t size) {
   return size == 16 || size == 24 || size == 32;
 }
 
-bool AesKeyWrapInternal(bool wrap,
-                        const std::vector<uint8_t>& wrapping_key,
-                        const std::vector<uint8_t>& input,
-                        std::vector<uint8_t>* output) {
-  DCHECK(output);
+}  // namespace
+
+bool AesKeyUnwrap(const std::vector<uint8_t>& wrapping_key,
+                  const std::vector<uint8_t>& wrapped_data,
+                  std::vector<uint8_t>* data) {
+  DCHECK(data);
   if (!IsValidWrappingKeySize(wrapping_key.size())) {
     LOG(ERROR) << "Invalid AES key wrap key size: " << wrapping_key.size();
     return false;
@@ -36,44 +37,26 @@ bool AesKeyWrapInternal(bool wrap,
   mbedtls_nist_kw_init(&context);
   int rv = mbedtls_nist_kw_setkey(
       &context, MBEDTLS_CIPHER_ID_AES, wrapping_key.data(),
-      static_cast<unsigned>(wrapping_key.size()) * 8, wrap);
+      static_cast<unsigned>(wrapping_key.size()) * 8,
+      /* is_wrap= */ 0);
   if (rv != 0) {
-    LOG(ERROR) << "AES key wrap setkey failed: " << rv;
+    LOG(ERROR) << "AES key unwrap setkey failed: " << rv;
     mbedtls_nist_kw_free(&context);
     return false;
   }
 
-  // Wrapping adds 8 bytes; unwrapping removes 8 bytes.
-  output->resize(input.size() + 8);
+  data->resize(wrapped_data.size());
   size_t output_size = 0;
-  rv = wrap ? mbedtls_nist_kw_wrap(&context, MBEDTLS_KW_MODE_KW, input.data(),
-                                   input.size(), output->data(), &output_size,
-                                   output->size())
-            : mbedtls_nist_kw_unwrap(&context, MBEDTLS_KW_MODE_KW, input.data(),
-                                     input.size(), output->data(), &output_size,
-                                     output->size());
+  rv = mbedtls_nist_kw_unwrap(&context, MBEDTLS_KW_MODE_KW, wrapped_data.data(),
+                              wrapped_data.size(), data->data(), &output_size,
+                              data->size());
   mbedtls_nist_kw_free(&context);
   if (rv != 0) {
-    LOG(ERROR) << "AES key " << (wrap ? "wrap" : "unwrap") << " failed: " << rv;
+    LOG(ERROR) << "AES key unwrap failed: " << rv;
     return false;
   }
-  output->resize(output_size);
+  data->resize(output_size);
   return true;
-}
-
-}  // namespace
-
-bool AesKeyWrap(const std::vector<uint8_t>& wrapping_key,
-                const std::vector<uint8_t>& data,
-                std::vector<uint8_t>* wrapped_data) {
-  return AesKeyWrapInternal(/* wrap= */ true, wrapping_key, data, wrapped_data);
-}
-
-bool AesKeyUnwrap(const std::vector<uint8_t>& wrapping_key,
-                  const std::vector<uint8_t>& wrapped_data,
-                  std::vector<uint8_t>* data) {
-  return AesKeyWrapInternal(/* wrap= */ false, wrapping_key, wrapped_data,
-                            data);
 }
 
 }  // namespace media

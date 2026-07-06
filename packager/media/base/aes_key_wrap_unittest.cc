@@ -32,17 +32,6 @@ const char kWrapped128With256Hex[] =
 
 }  // namespace
 
-TEST(AesKeyWrapTest, WrapRfc3394Vectors) {
-  std::vector<uint8_t> wrapped;
-  ASSERT_TRUE(AesKeyWrap(HexStringToVector(kKek128Hex),
-                         HexStringToVector(kData128Hex), &wrapped));
-  EXPECT_EQ(HexStringToVector(kWrapped128With128Hex), wrapped);
-
-  ASSERT_TRUE(AesKeyWrap(HexStringToVector(kKek256Hex),
-                         HexStringToVector(kData128Hex), &wrapped));
-  EXPECT_EQ(HexStringToVector(kWrapped128With256Hex), wrapped);
-}
-
 TEST(AesKeyWrapTest, UnwrapRfc3394Vectors) {
   std::vector<uint8_t> data;
   ASSERT_TRUE(AesKeyUnwrap(HexStringToVector(kKek128Hex),
@@ -68,9 +57,9 @@ TEST(AesKeyWrapTest, UnwrapTamperedDataFails) {
 }
 
 TEST(AesKeyWrapTest, InvalidKeySizeFails) {
-  std::vector<uint8_t> output;
-  EXPECT_FALSE(AesKeyWrap(HexStringToVector("0102"),
-                          HexStringToVector(kData128Hex), &output));
+  std::vector<uint8_t> data;
+  EXPECT_FALSE(AesKeyUnwrap(HexStringToVector("0102"),
+                            HexStringToVector(kWrapped128With128Hex), &data));
 }
 
 }  // namespace media

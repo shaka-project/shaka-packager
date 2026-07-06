@@ -158,28 +158,26 @@ Status ApplyIntendedTrackType(const CpixUsageRule& usage_rule,
 Status RuleToLabels(const CpixUsageRule& usage_rule,
                     const CpixEncryptionParams& cpix_params,
                     std::set<std::string>* labels) {
+  if (!usage_rule.has_audio_filter && usage_rule.video_filters.empty()) {
+    labels->insert(usage_rule.intended_track_type.empty()
+                       ? kEmptyDrmLabel
+                       : usage_rule.intended_track_type);
+    return Status::OK;
+  }
+
   const std::string key_id_string = KeyIdToString(usage_rule.key_id);
   std::set<std::string> rule_labels;
   if (usage_rule.has_audio_filter) {
     rule_labels.insert("AUDIO");
-    RETURN_IF_ERROR(
-        ApplyIntendedTrackType(usage_rule, key_id_string, &rule_labels));
-    labels->insert(rule_labels.begin(), rule_labels.end());
-    return Status::OK;
-  }
-  if (!usage_rule.video_filters.empty()) {
+  } else {
     for (const CpixVideoFilter& video_filter : usage_rule.video_filters) {
       RETURN_IF_ERROR(VideoFilterToLabels(video_filter, cpix_params,
                                           key_id_string, &rule_labels));
     }
-    RETURN_IF_ERROR(
-        ApplyIntendedTrackType(usage_rule, key_id_string, &rule_labels));
-    labels->insert(rule_labels.begin(), rule_labels.end());
-    return Status::OK;
   }
-  labels->insert(usage_rule.intended_track_type.empty()
-                     ? kEmptyDrmLabel
-                     : usage_rule.intended_track_type);
+  RETURN_IF_ERROR(
+      ApplyIntendedTrackType(usage_rule, key_id_string, &rule_labels));
+  labels->insert(rule_labels.begin(), rule_labels.end());
   return Status::OK;
 }
 
@@ -286,11 +284,11 @@ Status DecryptContentKeyValue(const std::vector<uint8_t>& document_key,
 // the recipient private key and verifying each value's MAC.
 Status DecryptDocument(const CpixEncryptionParams& cpix_params,
                        CpixDocument* document) {
-  bool any_encrypted = false;
-  for (const CpixContentKey& content_key : document->content_keys) {
-    if (content_key.encrypted_key)
-      any_encrypted = true;
-  }
+  const bool any_encrypted =
+      std::any_of(document->content_keys.begin(), document->content_keys.end(),
+                  [](const CpixContentKey& content_key) {
+                    return content_key.encrypted_key.has_value();
+                  });
   if (!any_encrypted) {
     if (!cpix_params.private_key_source.empty()) {
       LOG(WARNING) << "--cpix_private_key is set, but the CPIX document is "
@@ -443,21 +441,20 @@ Status GetKeySystemInfo(
     ProtectionSystemSpecificInfo info;
     info.system_id = drm_system.system_id;
     if (!drm_system.pssh.empty()) {
+      const std::string error_context = "The PSSH element of DRMSystem " +
+                                        KeyIdToString(drm_system.system_id) +
+                                        " for key " +
+                                        KeyIdToString(content_key.key_id);
       std::vector<ProtectionSystemSpecificInfo> parsed_boxes;
       if (!ProtectionSystemSpecificInfo::ParseBoxes(
               drm_system.pssh.data(), drm_system.pssh.size(), &parsed_boxes)) {
         return Status(error::INVALID_ARGUMENT,
-                      "The PSSH element of DRMSystem " +
-                          KeyIdToString(drm_system.system_id) + " for key " +
-                          KeyIdToString(content_key.key_id) +
-                          " does not contain full PSSH boxes.");
+                      error_context + " does not contain full PSSH boxes.");
       }
       for (const ProtectionSystemSpecificInfo& parsed : parsed_boxes) {
         if (parsed.system_id != drm_system.system_id) {
           return Status(error::INVALID_ARGUMENT,
-                        "The PSSH element of DRMSystem " +
-                            KeyIdToString(drm_system.system_id) + " for key " +
-                            KeyIdToString(content_key.key_id) +
+                        error_context +
                             " contains a PSSH box with mismatching system ID " +
                             KeyIdToString(parsed.system_id) + ".");
         }
@@ -678,26 +675,23 @@ std::unique_ptr<CpixKeySource> CpixKeySource::Create(
 std::unique_ptr<CpixKeySource> CpixKeySource::CreateWithFetcher(
     const CpixEncryptionParams& cpix_params,
     CpixFetcher* fetcher) {
-  DCHECK(fetcher);
-  EncryptionKeyMap encryption_key_map;
-  Status status =
-      BuildEncryptionKeyMap(cpix_params, fetcher,
-                            /* for_decryption= */ false, &encryption_key_map);
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();
-    return nullptr;
-  }
-  return std::unique_ptr<CpixKeySource>(
-      new CpixKeySource(std::move(encryption_key_map)));
+  return CreateInternal(cpix_params, fetcher, /* for_decryption= */ false);
 }
 
 std::unique_ptr<CpixKeySource> CpixKeySource::CreateForDecryption(
     const CpixEncryptionParams& cpix_params) {
   HttpCpixFetcher fetcher;
+  return CreateInternal(cpix_params, &fetcher, /* for_decryption= */ true);
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::CreateInternal(
+    const CpixEncryptionParams& cpix_params,
+    CpixFetcher* fetcher,
+    bool for_decryption) {
+  DCHECK(fetcher);
   EncryptionKeyMap encryption_key_map;
-  Status status =
-      BuildEncryptionKeyMap(cpix_params, &fetcher,
-                            /* for_decryption= */ true, &encryption_key_map);
+  Status status = BuildEncryptionKeyMap(cpix_params, fetcher, for_decryption,
+                                        &encryption_key_map);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();
     return nullptr;

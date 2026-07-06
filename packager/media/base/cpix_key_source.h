@@ -79,6 +79,11 @@ class CpixKeySource : public KeySource {
       const CpixEncryptionParams& cpix_params);
 
  private:
+  static std::unique_ptr<CpixKeySource> CreateInternal(
+      const CpixEncryptionParams& cpix_params,
+      CpixFetcher* fetcher,
+      bool for_decryption);
+
   explicit CpixKeySource(EncryptionKeyMap&& encryption_key_map);
   CpixKeySource(const CpixKeySource&) = delete;
   CpixKeySource& operator=(const CpixKeySource&) = delete;
