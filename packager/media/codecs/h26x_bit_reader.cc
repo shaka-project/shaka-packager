@@ -7,8 +7,11 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <absl/log/check.h>
+#if !defined(OS_WIN)
 #include <sys/types.h>
+#endif
+
+#include <absl/log/check.h>
 
 namespace shaka {
 namespace media {

@@ -9,11 +9,6 @@
 #include <cstdint>
 #include <memory>
 
-#include <asm-generic/socket.h>
-#include <bits/types/struct_timeval.h>
-
-#include <packager/file.h>
-
 #if defined(OS_WIN)
 #include <ws2tcpip.h>
 #define close closesocket
@@ -24,6 +19,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
 #define EINTR_CODE EINTR
@@ -39,6 +35,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/file.h>
 #include <packager/file/udp_options.h>
 #include <packager/macros/classes.h>
 #include <packager/macros/compiler.h>
