@@ -7,6 +7,7 @@
 #include <packager/file/udp_file.h>
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 
 #if defined(OS_WIN)
@@ -29,8 +30,6 @@
 #define IP_MULTICAST_ALL 49
 #endif
 #endif  // defined(OS_WIN)
-
-#include <limits>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
