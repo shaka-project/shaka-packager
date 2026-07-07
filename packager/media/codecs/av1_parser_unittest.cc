@@ -6,6 +6,9 @@
 
 #include <packager/media/codecs/av1_parser.h>
 
+#include <cstdint>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

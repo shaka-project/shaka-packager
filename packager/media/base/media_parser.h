@@ -10,11 +10,9 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include <packager/macros/classes.h>
-#include <packager/media/base/container_names.h>
 
 namespace shaka {
 namespace media {

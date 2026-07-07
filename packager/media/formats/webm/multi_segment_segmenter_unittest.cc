@@ -4,12 +4,19 @@
 
 #include <packager/media/formats/webm/multi_segment_segmenter.h>
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
 #include <gtest/gtest.h>
 
+#include <packager/file.h>
+#include <packager/file/file_test_util.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_util.h>
+#include <packager/media/formats/webm/segmenter.h>
 #include <packager/media/formats/webm/segmenter_test_base.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

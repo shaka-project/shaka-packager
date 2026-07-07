@@ -6,10 +6,12 @@
 
 #include <packager/file/callback_file.h>
 
+#include <cstdint>
+
 #include <absl/log/log.h>
 
+#include <packager/file.h>
 #include <packager/macros/compiler.h>
-#include <packager/macros/logging.h>
 
 namespace shaka {
 

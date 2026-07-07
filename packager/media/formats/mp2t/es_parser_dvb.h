@@ -7,14 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_DVB_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_DVB_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <functional>
+#include <string>
 #include <unordered_map>
 
-#include <packager/media/base/byte_queue.h>
 #include <packager/media/formats/dvb/dvb_sub_parser.h>
 #include <packager/media/formats/mp2t/es_parser.h>
-#include <functional>
 
 namespace shaka {
 namespace media {

@@ -6,10 +6,21 @@
 
 #include <packager/media/formats/ttml/ttml_generator.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <string>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/media/base/rcheck.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/mpd/base/xml/xml_node.h>
 
 namespace shaka {
 namespace media {

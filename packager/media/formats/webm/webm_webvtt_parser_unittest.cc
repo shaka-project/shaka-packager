@@ -4,6 +4,10 @@
 
 #include <packager/media/formats/webm/webm_webvtt_parser.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

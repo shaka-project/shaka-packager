@@ -6,7 +6,13 @@
 
 #include <packager/app/muxer_factory.h>
 
+#include <memory>
+
+#include <absl/log/log.h>
+
+#include <packager/media/base/container_names.h>
 #include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/formats/mp2t/ts_muxer.h>
 #include <packager/media/formats/mp4/mp4_muxer.h>
 #include <packager/media/formats/packed_audio/packed_audio_writer.h>
@@ -14,6 +20,7 @@
 #include <packager/media/formats/webm/webm_muxer.h>
 #include <packager/media/formats/webvtt/webvtt_muxer.h>
 #include <packager/packager.h>
+#include <packager/utils/clock.h>
 
 namespace shaka {
 namespace media {

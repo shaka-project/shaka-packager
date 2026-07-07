@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <vector>
 
+#include <absl/base/thread_annotations.h>
 #include <absl/synchronization/mutex.h>
 
 #include <packager/macros/classes.h>

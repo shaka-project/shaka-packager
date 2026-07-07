@@ -6,6 +6,15 @@
 
 #include <packager/media/event/combined_muxer_listener.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <packager/media/base/fourccs.h>
+#include <packager/media/event/muxer_listener.h>
+
 namespace shaka {
 namespace media {
 

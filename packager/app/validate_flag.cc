@@ -9,6 +9,7 @@
 #include <packager/app/validate_flag.h>
 
 #include <cstdio>
+#include <string>
 
 namespace shaka {
 

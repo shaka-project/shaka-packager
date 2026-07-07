@@ -6,9 +6,17 @@
 
 #include <packager/media/trick_play/trick_play_handler.h>
 
-#include <absl/log/check.h>
-#include <absl/log/log.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
 
+#include <absl/log/check.h>
+
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/status.h>
 

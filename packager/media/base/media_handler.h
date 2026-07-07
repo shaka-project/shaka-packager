@@ -7,10 +7,15 @@
 #ifndef PACKAGER_MEDIA_BASE_MEDIA_HANDLER_H_
 #define PACKAGER_MEDIA_BASE_MEDIA_HANDLER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include <packager/media/base/encryption_config.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>

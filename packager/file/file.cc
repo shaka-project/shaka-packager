@@ -8,8 +8,16 @@
 
 #include <algorithm>
 #include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <filesystem>
+#include <limits>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <system_error>
+#include <utility>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
@@ -17,14 +25,15 @@
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
+#include <packager/buffer_callback_params.h>
 #include <packager/file/callback_file.h>
+#include <packager/file/file_closer.h>
 #include <packager/file/file_util.h>
 #include <packager/file/http_file.h>
 #include <packager/file/local_file.h>
 #include <packager/file/memory_file.h>
 #include <packager/file/threaded_io_file.h>
 #include <packager/file/udp_file.h>
-#include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
 
 ABSL_FLAG(uint64_t,

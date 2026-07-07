@@ -6,6 +6,10 @@
 
 #include <packager/media/base/id3_tag.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>

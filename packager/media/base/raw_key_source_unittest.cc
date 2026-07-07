@@ -6,9 +6,13 @@
 
 #include <packager/media/base/raw_key_source.h>
 
-#include <gmock/gmock.h>
+#include <memory>
+#include <string>
+
 #include <gtest/gtest.h>
 
+#include <packager/crypto_params.h>
+#include <packager/media/base/key_source.h>
 #include <packager/media/base/test/hex_test_util.h>
 #include <packager/status/status_test_util.h>
 

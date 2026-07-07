@@ -8,23 +8,37 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <ctime>
 #include <filesystem>
+#include <iomanip>
+#include <list>
+#include <map>
 #include <optional>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/synchronization/mutex.h>
+#include <libxml/parser.h>
 
 #include <packager/file/file_util.h>
 #include <packager/macros/classes.h>
 #include <packager/macros/logging.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/mpd/base/adaptation_set.h>
+#include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/period.h>
 #include <packager/mpd/base/representation.h>
+#include <packager/mpd/base/xml/xml_node.h>
+#include <packager/mpd_params.h>
+#include <packager/utils/clock.h>
 #include <packager/version/version.h>
 
 namespace shaka {

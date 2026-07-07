@@ -8,9 +8,9 @@
 #define PACKAGER_MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 
 #include <cstdint>
-#include <memory>
 #include <string>
 
+#include <packager/file.h>
 #include <packager/macros/classes.h>
 #include <packager/media/formats/webm/mkv_writer.h>
 #include <packager/media/formats/webm/single_segment_segmenter.h>

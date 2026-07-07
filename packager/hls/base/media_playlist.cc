@@ -9,17 +9,27 @@
 #include <algorithm>
 #include <cinttypes>
 #include <cmath>
+#include <cstdint>
+#include <filesystem>
+#include <iterator>
+#include <list>
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
+#include <absl/time/civil_time.h>
+#include <absl/time/time.h>
 
 #include <packager/file.h>
 #include <packager/hls/base/tag.h>
+#include <packager/hls_params.h>
 #include <packager/macros/logging.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/version/version.h>

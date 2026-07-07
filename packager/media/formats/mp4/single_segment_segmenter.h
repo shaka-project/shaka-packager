@@ -7,10 +7,20 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/macros/classes.h>
+#include <packager/media/base/range.h>
 #include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

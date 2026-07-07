@@ -10,11 +10,13 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <absl/synchronization/notification.h>
 
 #include <packager/file.h>
 #include <packager/file/io_cache.h>
+#include <packager/status.h>
 
 typedef void CURL;
 struct curl_slist;

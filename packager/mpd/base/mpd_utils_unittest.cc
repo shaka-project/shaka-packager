@@ -6,10 +6,14 @@
 
 #include <packager/mpd/base/mpd_utils.h>
 
-#include <memory>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #include <absl/strings/escaping.h>
+#include <absl/strings/string_view.h>
 #include <absl/types/span.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/mpd/base/adaptation_set.h>

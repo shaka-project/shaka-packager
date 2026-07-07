@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_BASE_ENCRYPTION_CONFIG_H_
 
 #include <cstdint>
+#include <vector>
 
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/protection_system_specific_info.h>

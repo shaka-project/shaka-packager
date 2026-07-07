@@ -6,9 +6,14 @@
 
 #include <packager/media/codecs/hls_audio_util.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

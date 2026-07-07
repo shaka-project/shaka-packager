@@ -6,6 +6,7 @@
 
 #include <packager/media/base/video_util.h>
 
+#include <cstdint>
 #include <limits>
 
 namespace {

@@ -6,12 +6,21 @@
 
 #include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/id3_tag.h>
 #include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/codecs/aac_audio_specific_config.h>
 #include <packager/status/status_test_util.h>
 

@@ -9,8 +9,9 @@
 #ifndef PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_
 #define PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_
 
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(std::string, protection_systems);
 

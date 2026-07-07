@@ -6,14 +6,26 @@
 
 #include <packager/media/base/muxer.h>
 
-#include <algorithm>
-#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
+#include <absl/log/log.h>
 
 #include <packager/macros/compiler.h>
-#include <packager/macros/logging.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/event/progress_listener.h>
+#include <packager/status.h>
+#include <packager/utils/clock.h>
 
 namespace shaka {
 namespace media {

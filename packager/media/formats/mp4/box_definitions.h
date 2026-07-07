@@ -5,7 +5,9 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include <packager/media/base/decrypt_config.h>

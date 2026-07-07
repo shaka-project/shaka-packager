@@ -4,7 +4,11 @@
 
 #include <packager/media/base/container_names.h>
 
+#include <cstdint>
 #include <cstring>
+#include <iterator>
+#include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
 

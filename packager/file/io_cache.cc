@@ -7,12 +7,12 @@
 #include <packager/file/io_cache.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-
-#include <packager/macros/logging.h>
+#include <absl/synchronization/mutex.h>
 
 namespace shaka {
 

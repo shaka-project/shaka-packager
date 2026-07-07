@@ -4,11 +4,11 @@
 
 #include <packager/media/base/offset_byte_queue.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 
 namespace shaka {
 namespace media {

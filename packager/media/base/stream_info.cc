@@ -7,8 +7,10 @@
 #include <packager/media/base/stream_info.h>
 
 #include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 
-#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/macros/logging.h>

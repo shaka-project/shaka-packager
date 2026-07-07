@@ -6,9 +6,13 @@
 
 #include <packager/media/event/vod_media_info_dump_muxer_listener.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>
@@ -19,7 +23,8 @@
 #include <packager/macros/classes.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_options.h>
-#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/event/muxer_listener.h>
 #include <packager/media/event/muxer_listener_test_helper.h>
 #include <packager/mpd/base/media_info.pb.h>
 

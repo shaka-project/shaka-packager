@@ -11,12 +11,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <absl/synchronization/mutex.h>
 
+#include <packager/mpd/base/mpd_builder.h>
 #include <packager/mpd/base/mpd_notifier.h>
-#include <packager/mpd/base/mpd_notifier_util.h>
 
 namespace shaka {
 

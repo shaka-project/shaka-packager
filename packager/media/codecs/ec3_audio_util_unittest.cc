@@ -6,6 +6,9 @@
 
 #include <packager/media/codecs/ec3_audio_util.h>
 
+#include <cstdint>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 namespace shaka {

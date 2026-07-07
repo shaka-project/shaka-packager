@@ -6,12 +6,19 @@
 
 #include <packager/media/codecs/video_slice_header_parser.h>
 
-#include <absl/log/check.h>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
-#include <packager/macros/logging.h>
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
 #include <packager/media/base/rcheck.h>
 #include <packager/media/codecs/avc_decoder_configuration_record.h>
+#include <packager/media/codecs/h264_parser.h>
+#include <packager/media/codecs/h265_parser.h>
 #include <packager/media/codecs/hevc_decoder_configuration_record.h>
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {

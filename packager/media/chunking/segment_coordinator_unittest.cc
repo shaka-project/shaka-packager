@@ -6,11 +6,20 @@
 
 #include <packager/media/chunking/segment_coordinator.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
+#include <memory>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/macros/status.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 using ::testing::_;

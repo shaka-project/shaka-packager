@@ -7,12 +7,13 @@
 #ifndef PACKAGER_APP_MUXER_FACTORY_H_
 #define PACKAGER_APP_MUXER_FACTORY_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include <packager/media/base/container_names.h>
 #include <packager/mp4_output_params.h>
-#include <packager/mpd/base/mpd_builder.h>
+#include <packager/utils/clock.h>
 
 namespace shaka {
 struct PackagingParams;

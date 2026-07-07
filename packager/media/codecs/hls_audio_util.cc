@@ -6,10 +6,16 @@
 
 #include <packager/media/codecs/hls_audio_util.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/codecs/aac_audio_specific_config.h>
 
 namespace shaka {

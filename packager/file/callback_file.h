@@ -5,7 +5,9 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <cstdint>
+#include <string>
 
+#include <packager/buffer_callback_params.h>
 #include <packager/file.h>
 
 namespace shaka {

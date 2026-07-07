@@ -6,6 +6,10 @@
 
 #include <packager/media/codecs/av1_codec_configuration_record.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 namespace shaka {

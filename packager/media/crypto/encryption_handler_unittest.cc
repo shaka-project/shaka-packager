@@ -6,17 +6,34 @@
 
 #include <packager/media/crypto/encryption_handler.h>
 
-#include <absl/log/log.h>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/crypto_params.h>
 #include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/mock_aes_cryptor.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/crypto/aes_encryptor_factory.h>
 #include <packager/media/crypto/subsample_generator.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {

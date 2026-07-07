@@ -7,13 +7,21 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_MUXER_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <vector>
+#include <memory>
+#include <string>
 
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/macros/classes.h>
+#include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/encryption_config.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/formats/mp2t/ts_segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

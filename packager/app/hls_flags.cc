@@ -6,7 +6,11 @@
 
 #include <packager/app/hls_flags.h>
 
+#include <cstdint>
 #include <optional>
+#include <string>
+
+#include <absl/flags/flag.h>
 
 ABSL_FLAG(std::string,
           hls_master_playlist_output,

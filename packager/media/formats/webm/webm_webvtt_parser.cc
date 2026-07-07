@@ -4,6 +4,9 @@
 
 #include <packager/media/formats/webm/webm_webvtt_parser.h>
 
+#include <cstdint>
+#include <string>
+
 namespace shaka {
 namespace media {
 

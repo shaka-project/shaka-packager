@@ -6,12 +6,27 @@
 
 #include <packager/media/base/media_handler_test_base.h>
 
+#include <cctype>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <absl/log/check.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <packager/macros/compiler.h>
 #include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/video_stream_info.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace {

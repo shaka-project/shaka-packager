@@ -6,10 +6,17 @@
 
 #include <packager/media/base/aes_encryptor.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <vector>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <mbedtls/cipher.h>
 
 #include <packager/macros/crypto.h>
+#include <packager/media/base/aes_cryptor.h>
 
 namespace {
 

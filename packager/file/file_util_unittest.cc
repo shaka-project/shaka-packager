@@ -6,6 +6,8 @@
 
 #include <packager/file/file_util.h>
 
+#include <string>
+
 #include <absl/log/log.h>
 #include <gtest/gtest.h>
 

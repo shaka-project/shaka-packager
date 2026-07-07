@@ -6,7 +6,10 @@
 
 #include <packager/media/formats/dvb/dvb_image.h>
 
-#include <gmock/gmock.h>
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
+
 #include <gtest/gtest.h>
 
 #include <packager/media/base/rcheck.h>

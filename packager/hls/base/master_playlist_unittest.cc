@@ -6,16 +6,21 @@
 
 #include <packager/hls/base/master_playlist.h>
 
+#include <cstdint>
 #include <filesystem>
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/cea_caption.h>
 #include <packager/file.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls/base/mock_media_playlist.h>
 #include <packager/version/version.h>
-#include <filesystem>
 
 namespace shaka {
 namespace hls {

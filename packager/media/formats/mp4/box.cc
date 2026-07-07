@@ -6,9 +6,13 @@
 
 #include <packager/media/formats/mp4/box.h>
 
-#include <absl/log/check.h>
-#include <absl/log/log.h>
+#include <cstddef>
+#include <cstdint>
 
+#include <absl/log/check.h>
+
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
 #include <packager/media/formats/mp4/box_buffer.h>
 
 namespace shaka {

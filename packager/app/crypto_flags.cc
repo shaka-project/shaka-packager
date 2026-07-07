@@ -6,7 +6,9 @@
 
 #include <packager/app/crypto_flags.h>
 
+#include <cstdint>
 #include <cstdio>
+#include <string>
 
 #include <absl/flags/flag.h>
 

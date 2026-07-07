@@ -6,13 +6,18 @@
 
 #include <packager/media/formats/dvb/dvb_sub_parser.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include <absl/log/check.h>
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/dvb/dvb_image.h>
 
 namespace shaka {
 namespace media {

@@ -4,6 +4,10 @@
 
 #include <packager/media/codecs/aac_audio_specific_config.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 namespace shaka {

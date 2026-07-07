@@ -14,11 +14,13 @@
 #include <string>
 #include <vector>
 
+#include <absl/time/time.h>
+
 #include <packager/hls_params.h>
 #include <packager/macros/classes.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/mpd/base/bandwidth_estimator.h>
 #include <packager/mpd/base/media_info.pb.h>
-#include "packager/media/base/fourccs.h"
 
 namespace shaka {
 

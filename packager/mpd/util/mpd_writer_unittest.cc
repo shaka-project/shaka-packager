@@ -7,12 +7,17 @@
 #include <packager/mpd/util/mpd_writer.h>
 
 #include <filesystem>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/file/file_test_util.h>
 #include <packager/mpd/base/mock_mpd_notifier.h>
+#include <packager/mpd/base/mpd_notifier.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/test/mpd_builder_test_helper.h>
 

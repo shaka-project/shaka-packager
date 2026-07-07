@@ -6,12 +6,21 @@
 
 #include <packager/media/crypto/subsample_generator.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/av1_parser.h>
+#include <packager/media/codecs/nalu_reader.h>
 #include <packager/media/codecs/video_slice_header_parser.h>
 #include <packager/media/codecs/vpx_parser.h>
 #include <packager/status/status_test_util.h>

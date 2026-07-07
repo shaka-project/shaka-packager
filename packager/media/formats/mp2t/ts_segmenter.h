@@ -9,10 +9,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
-#include <packager/file.h>
 #include <packager/macros/classes.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/formats/mp2t/pes_packet_generator.h>
 #include <packager/media/formats/mp2t/ts_writer.h>
 #include <packager/status.h>

@@ -4,8 +4,14 @@
 
 #include <packager/media/codecs/h26x_bit_reader.h>
 
+#include <cstddef>
+#include <cstdint>
+
+#if !defined(OS_WIN)
+#include <sys/types.h>
+#endif
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

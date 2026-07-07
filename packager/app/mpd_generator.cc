@@ -5,6 +5,12 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <iostream>
+#include <string>
+#include <vector>
+
+#include <absl/flags/declare.h>
+#include <absl/flags/flag.h>
+#include <absl/strings/string_view.h>
 
 #if defined(OS_WIN)
 #include <codecvt>

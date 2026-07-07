@@ -6,7 +6,15 @@
 
 #include <packager/media/base/http_key_fetcher.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <packager/file/file_closer.h>
+#include <packager/file/http_file.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -7,15 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_SEGMENTER_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <map>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/encryption_config.h>
-#include <packager/media/base/fourccs.h>
 #include <packager/media/base/range.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/status.h>

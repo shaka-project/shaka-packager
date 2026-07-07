@@ -4,13 +4,33 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <optional>
+#include <string>
 #include <vector>
+
+#include <absl/base/log_severity.h>
+#include <absl/flags/declare.h>
+#include <absl/strings/ascii.h>
+#include <absl/strings/string_view.h>
+
+#include <packager/ad_cue_generator_params.h>
+#include <packager/cea_caption.h>
+#include <packager/chunking_params.h>
+#include <packager/crypto_params.h>
+#include <packager/hls_params.h>
+#include <packager/mp4_output_params.h>
+#include <packager/mpd_params.h>
+#include <packager/packager.h>
+#include <packager/status.h>
 
 #if defined(OS_WIN)
 #include <codecvt>
-#include <functional>
 #endif  // defined(OS_WIN)
 
 #include <absl/flags/flag.h>
@@ -22,7 +42,6 @@
 #include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <absl/strings/str_split.h>
 
 #include <packager/app/ad_cue_generator_flags.h>
 #include <packager/app/cpix_encryption_flags.h>
@@ -40,6 +59,7 @@
 #include <packager/file.h>
 #include <packager/kv_pairs/kv_pairs.h>
 #include <packager/tools/license_notice.h>
+#include <packager/utils/hex_parser.h>
 #include <packager/utils/string_trim_split.h>
 
 ABSL_FLAG(bool, dump_stream_info, false, "Dump demuxed stream info.");

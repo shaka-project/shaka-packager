@@ -10,9 +10,11 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <string>
 #include <thread>
 #include <vector>
 
+#include <absl/base/thread_annotations.h>
 #include <absl/synchronization/mutex.h>
 
 #include <packager/status.h>

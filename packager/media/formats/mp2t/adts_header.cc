@@ -6,6 +6,11 @@
 
 #include <packager/media/formats/mp2t/adts_header.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <absl/log/check.h>
 
 #include <packager/macros/logging.h>

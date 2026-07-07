@@ -9,8 +9,9 @@
 #ifndef PACKAGER_APP_RAW_KEY_ENCRYPTION_FLAGS_H_
 #define PACKAGER_APP_RAW_KEY_ENCRYPTION_FLAGS_H_
 
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 #include <packager/utils/absl_flag_hexbytes.h>
 

@@ -8,6 +8,7 @@
 #define PACKAGER_FILE_LOCAL_FILE_H_
 
 #include <cstdint>
+#include <cstdio>
 #include <string>
 
 #include <packager/file.h>

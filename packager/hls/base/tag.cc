@@ -7,6 +7,8 @@
 #include <packager/hls/base/tag.h>
 
 #include <cinttypes>
+#include <cstdint>
+#include <string>
 
 #include <absl/strings/str_format.h>
 

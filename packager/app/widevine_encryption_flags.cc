@@ -8,7 +8,8 @@
 
 #include <packager/app/widevine_encryption_flags.h>
 
-#include <string_view>
+#include <cstdint>
+#include <string>
 
 #include <absl/flags/flag.h>
 #include <absl/log/log.h>
@@ -16,6 +17,7 @@
 #include <absl/strings/match.h>
 
 #include <packager/app/validate_flag.h>
+#include <packager/utils/absl_flag_hexbytes.h>
 
 ABSL_FLAG(bool,
           enable_widevine_encryption,

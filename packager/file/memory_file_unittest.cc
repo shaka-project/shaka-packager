@@ -4,6 +4,8 @@
 
 #include <packager/file/memory_file.h>
 
+#include <cstdint>
+#include <cstring>
 #include <memory>
 
 #include <gtest/gtest.h>

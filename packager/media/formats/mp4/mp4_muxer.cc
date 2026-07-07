@@ -7,20 +7,28 @@
 #include <packager/media/formats/mp4/mp4_muxer.h>
 
 #include <algorithm>
-#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <absl/strings/numbers.h>
+#include <absl/strings/string_view.h>
 
-#include <packager/file.h>
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
-#include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/encryption_config.h>
 #include <packager/media/base/fourccs.h>
-#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer.h>
+#include <packager/media/base/range.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/es_descriptor.h>
@@ -30,6 +38,7 @@
 #include <packager/media/formats/mp4/multi_segment_segmenter.h>
 #include <packager/media/formats/mp4/single_segment_segmenter.h>
 #include <packager/media/formats/ttml/ttml_generator.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
