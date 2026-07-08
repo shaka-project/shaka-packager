@@ -1,0 +1,15 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/shaka-project/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="bear-640x360-audio-init.mp4"
+#EXTINF:1.022,
+bear-640x360-audio-1.m4s
+#EXT-X-DISCONTINUITY
+#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="data:text/plain;base64,AAAANHBzc2gBAAAA7e+LqXnWSs6jyCfc1R0h7QAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==",KEYID=0x31323334353637383930313233343536,KEYFORMATVERSIONS="1",KEYFORMAT="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"
+#EXTINF:0.998,
+bear-640x360-audio-2.m4s
+#EXTINF:0.720,
+bear-640x360-audio-3.m4s
+#EXT-X-ENDLIST

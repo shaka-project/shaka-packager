@@ -1,0 +1,707 @@
+// Copyright 2026 Google LLC. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+
+#include <packager/media/base/cpix_key_source.h>
+
+#include <algorithm>
+#include <cstdint>
+#include <limits>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/strings/escaping.h>
+#include <absl/strings/match.h>
+#include <mbedtls/md.h>
+
+#include <packager/file.h>
+#include <packager/macros/compiler.h>
+#include <packager/macros/status.h>
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/aes_key_wrap.h>
+#include <packager/media/base/cpix_parser.h>
+#include <packager/media/base/http_key_fetcher.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/rsa_key.h>
+#include <packager/utils/bytes_to_string_view.h>
+
+namespace {
+const char kEmptyDrmLabel[] = "";
+}  // namespace
+
+namespace shaka {
+namespace media {
+namespace {
+
+const char kXmlContentType[] = "application/xml";
+
+std::string KeyIdToString(const std::vector<uint8_t>& key_id) {
+  return absl::BytesToHexString(byte_vector_to_string_view(key_id));
+}
+
+bool IsHttpUrl(const std::string& source) {
+  return absl::StartsWith(source, "http://") ||
+         absl::StartsWith(source, "https://");
+}
+
+// Fetches CPIX documents over HTTP(S) via HttpKeyFetcher.
+class HttpCpixFetcher : public CpixFetcher {
+ public:
+  Status Fetch(const std::string& url,
+               const std::string& request_body,
+               const std::vector<std::string>& headers,
+               std::string* response) override {
+    HttpKeyFetcher fetcher;
+    fetcher.set_content_type(kXmlContentType);
+    fetcher.set_extra_headers(headers);
+    return request_body.empty() ? fetcher.Get(url, response)
+                                : fetcher.Post(url, request_body, response);
+  }
+};
+
+std::string PixelRangeToString(int64_t min_pixels, int64_t max_pixels) {
+  return "[" + std::to_string(min_pixels) + ", " +
+         (max_pixels == std::numeric_limits<int64_t>::max()
+              ? "unbounded"
+              : std::to_string(max_pixels)) +
+         "]";
+}
+
+// Maps a video filter's pixel range to the video stream labels (SD, HD,
+// UHD1, UHD2) it covers. The filter must fully cover every label bucket it
+// touches; otherwise the mapping would be ambiguous.
+Status VideoFilterToLabels(const CpixVideoFilter& video_filter,
+                           const CpixEncryptionParams& cpix_params,
+                           const std::string& key_id_string,
+                           std::set<std::string>* labels) {
+  const int64_t kUnbounded = std::numeric_limits<int64_t>::max();
+  const struct {
+    const char* label;
+    int64_t min_pixels;
+    int64_t max_pixels;
+  } kBuckets[] = {
+      {"SD", 0, cpix_params.max_sd_pixels},
+      {"HD", int64_t{cpix_params.max_sd_pixels} + 1, cpix_params.max_hd_pixels},
+      {"UHD1", int64_t{cpix_params.max_hd_pixels} + 1,
+       cpix_params.max_uhd1_pixels},
+      {"UHD2", int64_t{cpix_params.max_uhd1_pixels} + 1, kUnbounded},
+  };
+
+  bool matched = false;
+  for (const auto& bucket : kBuckets) {
+    const bool overlaps = video_filter.min_pixels <= bucket.max_pixels &&
+                          video_filter.max_pixels >= bucket.min_pixels;
+    if (!overlaps)
+      continue;
+    const bool covers = video_filter.min_pixels <= bucket.min_pixels &&
+                        video_filter.max_pixels >= bucket.max_pixels;
+    if (!covers) {
+      std::string bucket_ranges;
+      for (const auto& other_bucket : kBuckets) {
+        bucket_ranges += std::string(" ") + other_bucket.label + " " +
+                         PixelRangeToString(other_bucket.min_pixels,
+                                            other_bucket.max_pixels);
+      }
+      return Status(
+          error::INVALID_ARGUMENT,
+          "The VideoFilter pixel range " +
+              PixelRangeToString(video_filter.min_pixels,
+                                 video_filter.max_pixels) +
+              " of the usage rule for key " + key_id_string +
+              " only partially covers the " + bucket.label + " label bucket " +
+              PixelRangeToString(bucket.min_pixels, bucket.max_pixels) +
+              ". Filter boundaries must align with the label buckets:" +
+              bucket_ranges +
+              ". Adjust --max_sd_pixels, --max_hd_pixels and "
+              "--max_uhd1_pixels to match the ranges in the CPIX document.");
+    }
+    labels->insert(bucket.label);
+    matched = true;
+  }
+  if (!matched) {
+    return Status(error::INVALID_ARGUMENT,
+                  "The VideoFilter of the usage rule for key " + key_id_string +
+                      " matches no pixel range.");
+  }
+  return Status::OK;
+}
+
+Status ApplyIntendedTrackType(const CpixUsageRule& usage_rule,
+                              const std::string& key_id_string,
+                              std::set<std::string>* labels) {
+  if (usage_rule.intended_track_type.empty())
+    return Status::OK;
+
+  if (labels->find(usage_rule.intended_track_type) == labels->end()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "ContentKeyUsageRule for key " + key_id_string +
+                      " has intendedTrackType '" +
+                      usage_rule.intended_track_type +
+                      "' that does not match its filters.");
+  }
+  labels->clear();
+  labels->insert(usage_rule.intended_track_type);
+  return Status::OK;
+}
+
+// Resolves the stream labels a usage rule applies to. Filters narrow the rule;
+// if 'intendedTrackType' is also present, it must match the filtered labels.
+// A rule with neither applies to all streams (the default label).
+Status RuleToLabels(const CpixUsageRule& usage_rule,
+                    const CpixEncryptionParams& cpix_params,
+                    std::set<std::string>* labels) {
+  if (!usage_rule.has_audio_filter && usage_rule.video_filters.empty()) {
+    labels->insert(usage_rule.intended_track_type.empty()
+                       ? kEmptyDrmLabel
+                       : usage_rule.intended_track_type);
+    return Status::OK;
+  }
+
+  const std::string key_id_string = KeyIdToString(usage_rule.key_id);
+  std::set<std::string> rule_labels;
+  if (usage_rule.has_audio_filter) {
+    rule_labels.insert("AUDIO");
+  } else {
+    for (const CpixVideoFilter& video_filter : usage_rule.video_filters) {
+      RETURN_IF_ERROR(VideoFilterToLabels(video_filter, cpix_params,
+                                          key_id_string, &rule_labels));
+    }
+  }
+  RETURN_IF_ERROR(
+      ApplyIntendedTrackType(usage_rule, key_id_string, &rule_labels));
+  labels->insert(rule_labels.begin(), rule_labels.end());
+  return Status::OK;
+}
+
+const char kAlgorithmRsaOaep[] =
+    "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p";
+const char kAlgorithmAes256Cbc[] =
+    "http://www.w3.org/2001/04/xmlenc#aes256-cbc";
+const char kAlgorithmKwAes256[] = "http://www.w3.org/2001/04/xmlenc#kw-aes256";
+const char kAlgorithmHmacSha512[] =
+    "http://www.w3.org/2001/04/xmldsig-more#hmac-sha512";
+
+Status RsaOaepDecrypt(RsaPrivateKey* private_key,
+                      const CpixEncryptedValue& encrypted_value,
+                      const std::string& error_context,
+                      std::vector<uint8_t>* plaintext) {
+  if (!encrypted_value.algorithm.empty() &&
+      encrypted_value.algorithm != kAlgorithmRsaOaep) {
+    return Status(error::UNIMPLEMENTED,
+                  "Unsupported encryption algorithm '" +
+                      encrypted_value.algorithm + "' for " + error_context +
+                      ". Only " + kAlgorithmRsaOaep + " is supported.");
+  }
+  const std::string ciphertext(encrypted_value.cipher_value.begin(),
+                               encrypted_value.cipher_value.end());
+  std::string decrypted;
+  if (!private_key->Decrypt(ciphertext, &decrypted)) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Failed to decrypt " + error_context +
+                      ". The CPIX document may be intended for a different "
+                      "recipient.");
+  }
+  plaintext->assign(decrypted.begin(), decrypted.end());
+  return Status::OK;
+}
+
+std::vector<uint8_t> HmacSha512(const std::vector<uint8_t>& key,
+                                const std::vector<uint8_t>& data) {
+  const mbedtls_md_info_t* md_info =
+      mbedtls_md_info_from_type(MBEDTLS_MD_SHA512);
+  DCHECK(md_info);
+  std::vector<uint8_t> mac(mbedtls_md_get_size(md_info));
+  CHECK_EQ(0, mbedtls_md_hmac(md_info, key.data(), key.size(), data.data(),
+                              data.size(), mac.data()));
+  return mac;
+}
+
+Status DecryptContentKeyValue(const std::vector<uint8_t>& document_key,
+                              const CpixEncryptedValue& encrypted_value,
+                              const std::string& key_id_string,
+                              std::vector<uint8_t>* key) {
+  if (encrypted_value.algorithm == kAlgorithmAes256Cbc) {
+    if (encrypted_value.cipher_value.size() < 32 ||
+        encrypted_value.cipher_value.size() % 16 != 0) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Invalid AES-CBC ciphertext size " +
+                        std::to_string(encrypted_value.cipher_value.size()) +
+                        " for key " + key_id_string + ".");
+    }
+    const std::vector<uint8_t> iv(encrypted_value.cipher_value.begin(),
+                                  encrypted_value.cipher_value.begin() + 16);
+    const std::vector<uint8_t> ciphertext(
+        encrypted_value.cipher_value.begin() + 16,
+        encrypted_value.cipher_value.end());
+    AesCbcDecryptor decryptor(kNoPadding);
+    if (!decryptor.InitializeWithIv(document_key, iv)) {
+      return Status(error::INTERNAL_ERROR,
+                    "Failed to initialize the AES-CBC decryptor.");
+    }
+    std::vector<uint8_t> padded;
+    if (!decryptor.Crypt(ciphertext, &padded)) {
+      return Status(
+          error::INVALID_ARGUMENT,
+          "Failed to decrypt the value of key " + key_id_string + ".");
+    }
+    // Strip XML Encryption block padding: the last byte holds the padding
+    // length; the padding byte values themselves are arbitrary.
+    const uint8_t padding_size = padded.back();
+    if (padding_size < 1 || padding_size > 16 ||
+        padding_size >= padded.size()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Invalid padding in the encrypted value of key " +
+                        key_id_string + ". The document key may be incorrect.");
+    }
+    key->assign(padded.begin(), padded.end() - padding_size);
+    return Status::OK;
+  }
+  if (encrypted_value.algorithm == kAlgorithmKwAes256) {
+    if (!AesKeyUnwrap(document_key, encrypted_value.cipher_value, key)) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Failed to unwrap the value of key " + key_id_string +
+                        ". The document may be corrupted.");
+    }
+    return Status::OK;
+  }
+  return Status(error::UNIMPLEMENTED,
+                "Unsupported encryption algorithm '" +
+                    encrypted_value.algorithm + "' for key " + key_id_string +
+                    ". Only " + kAlgorithmAes256Cbc + " and " +
+                    kAlgorithmKwAes256 + " are supported.");
+}
+
+// Decrypts encrypted content key values in |document| in place, after
+// unwrapping the document key (and MAC key) from the DeliveryData matching
+// the recipient private key and verifying each value's MAC.
+Status DecryptDocument(const CpixEncryptionParams& cpix_params,
+                       CpixDocument* document) {
+  const bool any_encrypted =
+      std::any_of(document->content_keys.begin(), document->content_keys.end(),
+                  [](const CpixContentKey& content_key) {
+                    return content_key.encrypted_key.has_value();
+                  });
+  if (!any_encrypted) {
+    if (!cpix_params.private_key_source.empty()) {
+      LOG(WARNING) << "--cpix_private_key is set, but the CPIX document is "
+                      "not encrypted.";
+    }
+    return Status::OK;
+  }
+  if (cpix_params.private_key_source.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "The CPIX document contains encrypted content keys. "
+                  "Provide the recipient private key to decrypt them.");
+  }
+  if (document->delivery_data.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "The CPIX document contains encrypted content keys but no "
+                  "DeliveryData with a document key.");
+  }
+
+  std::string private_key_data;
+  if (!File::ReadFileToString(cpix_params.private_key_source.c_str(),
+                              &private_key_data)) {
+    return Status(error::FILE_FAILURE,
+                  "Failed to read the CPIX private key from '" +
+                      cpix_params.private_key_source + "'.");
+  }
+  // mbedtls requires PEM input to include the terminating NUL.
+  if (private_key_data.find("-----BEGIN") != std::string::npos)
+    private_key_data.push_back('\0');
+  std::unique_ptr<RsaPrivateKey> private_key(
+      RsaPrivateKey::Create(private_key_data));
+  if (!private_key) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Failed to load the RSA private key from '" +
+                      cpix_params.private_key_source + "'.");
+  }
+
+  // Multiple DeliveryData elements address multiple recipients; find the one
+  // our private key can decrypt.
+  std::vector<uint8_t> document_key;
+  std::vector<uint8_t> mac_key;
+  std::string mac_algorithm;
+  Status last_error = Status::OK;
+  bool document_key_decrypted = false;
+  for (const CpixDeliveryData& delivery_data : document->delivery_data) {
+    std::vector<uint8_t> candidate_key;
+    Status status =
+        RsaOaepDecrypt(private_key.get(), delivery_data.document_key,
+                       "the document key", &candidate_key);
+    if (!status.ok()) {
+      last_error = status;
+      continue;
+    }
+    document_key = std::move(candidate_key);
+    mac_algorithm = delivery_data.mac_algorithm;
+    if (!mac_algorithm.empty()) {
+      RETURN_IF_ERROR(RsaOaepDecrypt(private_key.get(), delivery_data.mac_key,
+                                     "the MAC key", &mac_key));
+    }
+    document_key_decrypted = true;
+    break;
+  }
+  if (!document_key_decrypted)
+    return last_error;
+
+  if (document_key.size() != 32) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Invalid CPIX document key size " +
+                      std::to_string(document_key.size()) +
+                      ", must be 32 bytes.");
+  }
+  if (!mac_algorithm.empty() && mac_algorithm != kAlgorithmHmacSha512) {
+    return Status(error::UNIMPLEMENTED,
+                  "Unsupported MAC algorithm '" + mac_algorithm + "'. Only " +
+                      kAlgorithmHmacSha512 + " is supported.");
+  }
+  if (mac_algorithm.empty()) {
+    // MACMethod is optional in CPIX, but without it the encrypted content
+    // keys are decrypted with no integrity verification.
+    LOG(WARNING) << "The CPIX document declares no MACMethod; encrypted "
+                    "content keys are decrypted without integrity "
+                    "verification.";
+  }
+
+  for (CpixContentKey& content_key : document->content_keys) {
+    if (!content_key.encrypted_key)
+      continue;
+    const CpixEncryptedValue& encrypted_value = *content_key.encrypted_key;
+    const std::string key_id_string = KeyIdToString(content_key.key_id);
+    if (!mac_algorithm.empty()) {
+      if (encrypted_value.value_mac.empty()) {
+        return Status(error::INVALID_ARGUMENT,
+                      "The document declares a MACMethod, but key " +
+                          key_id_string + " has no ValueMAC.");
+      }
+      if (HmacSha512(mac_key, encrypted_value.cipher_value) !=
+          encrypted_value.value_mac) {
+        return Status(error::INVALID_ARGUMENT,
+                      "ValueMAC verification failed for key " + key_id_string +
+                          ". The document may be corrupted or tampered "
+                          "with.");
+      }
+    }
+    RETURN_IF_ERROR(DecryptContentKeyValue(document_key, encrypted_value,
+                                           key_id_string, &content_key.key));
+  }
+  return Status::OK;
+}
+
+Status ValidateContentKey(const CpixContentKey& content_key) {
+  if (content_key.key_id.size() != 16) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Invalid key ID size '" +
+                      std::to_string(content_key.key_id.size()) +
+                      "', must be 16 bytes.");
+  }
+  if (content_key.key.size() != 16) {
+    // CENC only supports AES-128, i.e. 16 bytes.
+    return Status(error::INVALID_ARGUMENT,
+                  "Invalid key size '" +
+                      std::to_string(content_key.key.size()) + "' for key " +
+                      KeyIdToString(content_key.key_id) +
+                      ", must be 16 bytes.");
+  }
+  if (!content_key.iv.empty() && content_key.iv.size() != 8 &&
+      content_key.iv.size() != 16) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Invalid explicitIV size '" +
+                      std::to_string(content_key.iv.size()) + "' for key " +
+                      KeyIdToString(content_key.key_id) +
+                      ", must be 8 or 16 bytes.");
+  }
+  // The commonEncryptionScheme binding is not validated here: the protection
+  // scheme may be overridden per stream (e.g. Apple Sample AES for TS
+  // output), so it is enforced by the encryption handler where the stream's
+  // actual scheme is known.
+  return Status::OK;
+}
+
+// Collects the DRM signaling for |content_key| from the document's
+// DRMSystemList. The PSSH element must contain full PSSH box(es) whose
+// system ID matches the DRMSystem's systemId attribute.
+Status GetKeySystemInfo(
+    const CpixDocument& document,
+    const CpixContentKey& content_key,
+    std::vector<ProtectionSystemSpecificInfo>* key_system_info) {
+  for (const CpixDrmSystem& drm_system : document.drm_systems) {
+    if (drm_system.key_id != content_key.key_id)
+      continue;
+
+    ProtectionSystemSpecificInfo info;
+    info.system_id = drm_system.system_id;
+    if (!drm_system.pssh.empty()) {
+      const std::string error_context = "The PSSH element of DRMSystem " +
+                                        KeyIdToString(drm_system.system_id) +
+                                        " for key " +
+                                        KeyIdToString(content_key.key_id);
+      std::vector<ProtectionSystemSpecificInfo> parsed_boxes;
+      if (!ProtectionSystemSpecificInfo::ParseBoxes(
+              drm_system.pssh.data(), drm_system.pssh.size(), &parsed_boxes)) {
+        return Status(error::INVALID_ARGUMENT,
+                      error_context + " does not contain full PSSH boxes.");
+      }
+      for (const ProtectionSystemSpecificInfo& parsed : parsed_boxes) {
+        if (parsed.system_id != drm_system.system_id) {
+          return Status(error::INVALID_ARGUMENT,
+                        error_context +
+                            " contains a PSSH box with mismatching system ID " +
+                            KeyIdToString(parsed.system_id) + ".");
+        }
+      }
+      info.psshs = drm_system.pssh;
+    }
+    key_system_info->push_back(std::move(info));
+  }
+  return Status::OK;
+}
+
+Status BuildEncryptionKeyMap(const CpixEncryptionParams& cpix_params,
+                             CpixFetcher* fetcher,
+                             bool for_decryption,
+                             EncryptionKeyMap* encryption_key_map) {
+  if (cpix_params.document_source.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "CPIX document source should not be empty.");
+  }
+
+  std::string xml;
+  if (IsHttpUrl(cpix_params.document_source)) {
+    std::string request_body;
+    if (!cpix_params.request_document_source.empty() &&
+        !File::ReadFileToString(cpix_params.request_document_source.c_str(),
+                                &request_body)) {
+      return Status(error::FILE_FAILURE,
+                    "Failed to read CPIX request document from '" +
+                        cpix_params.request_document_source + "'.");
+    }
+    RETURN_IF_ERROR(fetcher->Fetch(cpix_params.document_source, request_body,
+                                   cpix_params.headers, &xml));
+  } else {
+    if (!cpix_params.request_document_source.empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "A CPIX request document requires the CPIX document "
+                    "source to be an HTTP(S) URL to POST it to.");
+    }
+    if (!File::ReadFileToString(cpix_params.document_source.c_str(), &xml)) {
+      return Status(error::FILE_FAILURE, "Failed to read CPIX document from '" +
+                                             cpix_params.document_source +
+                                             "'.");
+    }
+  }
+
+  CpixDocument document;
+  RETURN_IF_ERROR(ParseCpixDocument(xml, &document));
+  RETURN_IF_ERROR(DecryptDocument(cpix_params, &document));
+
+  // DRM signaling is only used for encryption; decryption needs the raw key
+  // values only, so an imperfect DRMSystemList should not fail decryption.
+  if (!for_decryption) {
+    for (const CpixDrmSystem& drm_system : document.drm_systems) {
+      const bool known_key = std::any_of(
+          document.content_keys.begin(), document.content_keys.end(),
+          [&drm_system](const CpixContentKey& content_key) {
+            return content_key.key_id == drm_system.key_id;
+          });
+      if (!known_key) {
+        return Status(error::INVALID_ARGUMENT,
+                      "DRMSystem " + KeyIdToString(drm_system.system_id) +
+                          " references unknown key " +
+                          KeyIdToString(drm_system.key_id) + ".");
+      }
+    }
+  }
+
+  // Determine the stream labels of each key first, so that keys that are not
+  // used by this packaging run are skipped rather than validated.
+  struct UsedKey {
+    const CpixContentKey* content_key;
+    std::set<std::string> labels;
+  };
+  std::vector<UsedKey> used_keys;
+  for (const CpixContentKey& content_key : document.content_keys) {
+    std::set<std::string> labels;
+    if (for_decryption) {
+      // Decryption looks up keys by key ID only; a synthetic unique label
+      // keeps every key in the map without requiring usage rules.
+      labels.insert(KeyIdToString(content_key.key_id));
+    } else {
+      for (const CpixUsageRule& usage_rule : document.usage_rules) {
+        if (usage_rule.key_id == content_key.key_id)
+          RETURN_IF_ERROR(RuleToLabels(usage_rule, cpix_params, &labels));
+      }
+      if (labels.empty()) {
+        if (document.usage_rules.empty() && document.content_keys.size() == 1) {
+          // A single key without usage rules applies to all streams.
+          labels.insert(kEmptyDrmLabel);
+        } else {
+          // Usage rules are optional per key, e.g. for keys intended for
+          // other workflows or track types not packaged in this run.
+          LOG(WARNING) << "Ignoring key " << KeyIdToString(content_key.key_id)
+                       << ": it is not referenced by any "
+                          "ContentKeyUsageRule.";
+          continue;
+        }
+      }
+    }
+
+    Status valid = ValidateContentKey(content_key);
+    if (!valid.ok()) {
+      if (for_decryption) {
+        // The key may not be needed to decrypt the input streams; if it is,
+        // the key lookup will fail with a clear error later.
+        LOG(WARNING) << "Ignoring key " << KeyIdToString(content_key.key_id)
+                     << ": " << valid.error_message();
+        continue;
+      }
+      return valid;
+    }
+    used_keys.push_back({&content_key, std::move(labels)});
+  }
+
+  if (used_keys.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "No usable content key in the CPIX document could be "
+                  "mapped to streams.");
+  }
+
+  std::vector<std::vector<uint8_t>> key_ids;
+  for (const UsedKey& used_key : used_keys)
+    key_ids.emplace_back(used_key.content_key->key_id);
+
+  for (const UsedKey& used_key : used_keys) {
+    const CpixContentKey& content_key = *used_key.content_key;
+    EncryptionKey encryption_key;
+    encryption_key.key_id = content_key.key_id;
+    encryption_key.key = content_key.key;
+    encryption_key.iv = content_key.iv;
+    encryption_key.common_encryption_scheme =
+        content_key.common_encryption_scheme;
+    if (!for_decryption) {
+      // key_ids and the DRM signaling are only used to build PSSH info for
+      // encryption; decryption looks up keys by key ID alone.
+      encryption_key.key_ids = key_ids;
+      RETURN_IF_ERROR(GetKeySystemInfo(document, content_key,
+                                       &encryption_key.key_system_info));
+    }
+
+    for (const std::string& label : used_key.labels) {
+      if (encryption_key_map->find(label) != encryption_key_map->end()) {
+        return Status(
+            error::INVALID_ARGUMENT,
+            "Multiple keys map to the same stream label '" + label + "'.");
+      }
+      (*encryption_key_map)[label] =
+          std::make_unique<EncryptionKey>(encryption_key);
+    }
+  }
+  return Status::OK;
+}
+
+}  // namespace
+
+CpixKeySource::~CpixKeySource() {}
+
+Status CpixKeySource::FetchKeys(EmeInitDataType init_data_type,
+                                const std::vector<uint8_t>& init_data) {
+  UNUSED(init_data_type);
+  UNUSED(init_data);
+  // All keys are fetched upfront when the key source is created.
+  return Status::OK;
+}
+
+Status CpixKeySource::GetKey(const std::string& stream_label,
+                             EncryptionKey* key) {
+  DCHECK(key);
+  // Try to find the key with label |stream_label|. If it is not available,
+  // fall back to the default empty label if it is available.
+  auto iter = encryption_key_map_.find(stream_label);
+  if (iter == encryption_key_map_.end()) {
+    iter = encryption_key_map_.find(kEmptyDrmLabel);
+    if (iter == encryption_key_map_.end()) {
+      return Status(error::NOT_FOUND, "Key for '" + stream_label +
+                                          "' was not found in the CPIX "
+                                          "document.");
+    }
+  }
+  *key = *iter->second;
+  return Status::OK;
+}
+
+Status CpixKeySource::GetKey(const std::vector<uint8_t>& key_id,
+                             EncryptionKey* key) {
+  DCHECK(key);
+  for (const auto& pair : encryption_key_map_) {
+    if (pair.second->key_id == key_id) {
+      *key = *pair.second;
+      return Status::OK;
+    }
+  }
+  return Status(error::NOT_FOUND,
+                "Key for key_id=" +
+                    absl::BytesToHexString(byte_vector_to_string_view(key_id)) +
+                    " was not found in the CPIX document.");
+}
+
+Status CpixKeySource::GetCryptoPeriodKey(
+    uint32_t crypto_period_index,
+    int32_t crypto_period_duration_in_seconds,
+    const std::string& stream_label,
+    EncryptionKey* key) {
+  UNUSED(crypto_period_index);
+  UNUSED(crypto_period_duration_in_seconds);
+  UNUSED(stream_label);
+  UNUSED(key);
+  return Status(error::UNIMPLEMENTED,
+                "The CPIX key source does not support key rotation.");
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::Create(
+    const CpixEncryptionParams& cpix_params) {
+  HttpCpixFetcher fetcher;
+  return CreateWithFetcher(cpix_params, &fetcher);
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::CreateWithFetcher(
+    const CpixEncryptionParams& cpix_params,
+    CpixFetcher* fetcher) {
+  return CreateInternal(cpix_params, fetcher, /* for_decryption= */ false);
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::CreateForDecryption(
+    const CpixEncryptionParams& cpix_params) {
+  HttpCpixFetcher fetcher;
+  return CreateInternal(cpix_params, &fetcher, /* for_decryption= */ true);
+}
+
+std::unique_ptr<CpixKeySource> CpixKeySource::CreateInternal(
+    const CpixEncryptionParams& cpix_params,
+    CpixFetcher* fetcher,
+    bool for_decryption) {
+  DCHECK(fetcher);
+  EncryptionKeyMap encryption_key_map;
+  Status status = BuildEncryptionKeyMap(cpix_params, fetcher, for_decryption,
+                                        &encryption_key_map);
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to create CPIX key source: " << status.ToString();
+    return nullptr;
+  }
+  return std::unique_ptr<CpixKeySource>(
+      new CpixKeySource(std::move(encryption_key_map)));
+}
+
+CpixKeySource::CpixKeySource(EncryptionKeyMap&& encryption_key_map)
+    : encryption_key_map_(std::move(encryption_key_map)) {}
+
+}  // namespace media
+}  // namespace shaka

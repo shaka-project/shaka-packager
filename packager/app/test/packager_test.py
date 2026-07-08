@@ -468,6 +468,9 @@ class PackagerAppTest(unittest.TestCase):
                 skip_byte_block=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
+                cpix_encryption=False,
+                cpix_decryption=False,
+                cpix_document='cpix.xml',
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
@@ -520,6 +523,12 @@ class PackagerAppTest(unittest.TestCase):
           fairplay_key_uri = ('skd://www.license.com/getkey?'
                               'KeyId=31323334-3536-3738-3930-313233343536')
           flags += ['--hls_key_uri=' + fairplay_key_uri]
+    elif cpix_encryption:
+      flags += [
+          '--enable_cpix_encryption',
+          '--cpix=' + os.path.join(self.golden_file_dir, cpix_document),
+          '--clear_lead={0}'.format(self.clear_lead)
+      ]
 
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
@@ -536,6 +545,11 @@ class PackagerAppTest(unittest.TestCase):
           '--enable_raw_key_decryption',
           '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
                                                     self.encryption_key)
+      ]
+    elif cpix_decryption:
+      flags += [
+          '--enable_cpix_decryption',
+          '--cpix=' + os.path.join(self.golden_file_dir, cpix_document),
       ]
 
     if key_rotation:
@@ -609,12 +623,15 @@ class PackagerAppTest(unittest.TestCase):
     self.assertIn('Found 1 stream(s).', stream_info)
     self.assertIn(info, stream_info)
 
-  def _Decrypt(self, file_path):
+  def _Decrypt(self, file_path, cpix=False):
     streams = [
         self._GetStream(
             '0', output_file_prefix='decrypted', test_file=file_path)
     ]
-    self.assertPackageSuccess(streams, self._GetFlags(decryption=True))
+    flags = (
+        self._GetFlags(cpix_decryption=True)
+        if cpix else self._GetFlags(decryption=True))
+    self.assertPackageSuccess(streams, flags)
 
   def _CheckTestResults(self,
                         test_dir,
@@ -1223,6 +1240,61 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('encryption', verify_decryption=True)
+
+  def testCpixEncryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(cpix_encryption=True, output_dash=True))
+    self._CheckTestResults('encryption-cpix', verify_decryption=True)
+
+  def testCpixDecryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(cpix_encryption=True, output_dash=True))
+    for file_name in os.listdir(self.tmp_dir):
+      extension = os.path.splitext(file_name)[1][1:]
+      if extension not in ['mpd', 'm3u8', 'media_info']:
+        self._Decrypt(os.path.join(self.tmp_dir, file_name), cpix=True)
+    self._CheckTestResults('encryption-cpix')
+
+  def testCpixEncryptionAndFmp4Hls(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        self._GetFlags(cpix_encryption=True, output_hls=True))
+    self._CheckTestResults('encryption-cpix-fmp4-hls')
+
+  def testCpixWidevineEncryptionAndFmp4Hls(self):
+    # A Widevine DRMSystem in the document produces an EXT-X-KEY with the
+    # Widevine urn:uuid: KEYFORMAT; the common system is not signaled in HLS
+    # for CENC content.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        self._GetFlags(
+            cpix_encryption=True,
+            cpix_document='cpix_widevine.xml',
+            output_hls=True))
+    self._CheckTestResults('encryption-cpix-widevine-fmp4-hls')
+
+  def testCpixEncryptionAndAvcTs(self):
+    # TS output is encrypted with Apple Sample AES regardless of
+    # --protection_scheme, so a key bound to commonEncryptionScheme="cbcs"
+    # in the document must be accepted.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         segmented=True,
+                         hls=True,
+                         test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            cpix_encryption=True,
+            cpix_document='cpix_cbcs.xml',
+            output_hls=True))
+    self._CheckTestResults('encryption-cpix-avc-ts')
 
   def testEncryptionWithMultiDrms(self):
     self.assertPackageSuccess(

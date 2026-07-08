@@ -12,6 +12,7 @@ add_library(media_base STATIC
     aes_cryptor.cc
     aes_decryptor.cc
     aes_encryptor.cc
+    aes_key_wrap.cc
     aes_pattern_cryptor.cc
     audio_stream_info.cc
     audio_timestamp_helper.cc
@@ -23,6 +24,8 @@ add_library(media_base STATIC
     cc_stream_filter.cc
     common_pssh_generator.cc
     container_names.cc
+    cpix_key_source.cc
+    cpix_parser.cc
     decrypt_config.cc
     decryptor_source.cc
     http_key_fetcher.cc
@@ -80,6 +83,7 @@ target_link_libraries(media_handler_test_base
 
 add_executable(media_base_unittest
     aes_cryptor_unittest.cc
+    aes_key_wrap_unittest.cc
     aes_pattern_cryptor_unittest.cc
     audio_stream_info_unittest.cc
     audio_timestamp_helper_unittest.cc
@@ -87,6 +91,8 @@ add_executable(media_base_unittest
     bit_writer_unittest.cc
     buffer_writer_unittest.cc
     container_names_unittest.cc
+    cpix_key_source_unittest.cc
+    cpix_parser_unittest.cc
     decryptor_source_unittest.cc
     http_key_fetcher_unittest.cc
     id3_tag_unittest.cc

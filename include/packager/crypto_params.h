@@ -22,6 +22,7 @@ enum class KeyProvider {
   kRawKey,
   kWidevine,
   kPlayReady,
+  kCpix,
 };
 
 /// Protection systems that handle decryption during playback.  This affects the
@@ -141,16 +142,52 @@ struct RawKeyParams {
   std::map<StreamLabel, KeyInfo> key_map;
 };
 
+/// CPIX (DASH-IF Content Protection Information Exchange) encryption
+/// parameters. Content keys, DRM signaling (PSSH) and key to stream mapping
+/// are read from a CPIX document.
+struct CpixEncryptionParams {
+  /// Path or HTTP(S) URL to the CPIX document. URLs are fetched with GET,
+  /// unless `request_document_source` is also set, in which case the request
+  /// document is sent with POST and the response is used as the CPIX
+  /// document.
+  std::string document_source;
+  /// Optional path to a CPIX request document. If set, `document_source`
+  /// must be an HTTP(S) URL; the request document is POSTed to it (SPEKE
+  /// style request/response exchange).
+  std::string request_document_source;
+  /// Optional HTTP headers, e.g. for authentication, in "Name: value" form.
+  /// Only used when `document_source` is an HTTP(S) URL.
+  std::vector<std::string> headers;
+  /// Path to the recipient RSA private key (PEM or DER), used to decrypt
+  /// encrypted CPIX documents. Required when the document's content keys
+  /// are encrypted (DeliveryData).
+  std::string private_key_source;
+  /// Pixel thresholds used to translate the document's video filter based
+  /// usage rules (VideoFilter@minPixels/@maxPixels) into the SD/HD/UHD1/UHD2
+  /// stream labels. Filter boundaries must align with these thresholds. The
+  /// defaults match the packager's default stream label function.
+  ///
+  /// These must be kept consistent with the thresholds behind
+  /// `EncryptionParams::stream_label_func`, or keys will be mapped to
+  /// different streams than the labels they were resolved to. The command
+  /// line application fills both from the same flags; API users providing a
+  /// custom `stream_label_func` must set these to match it.
+  int max_sd_pixels = 768 * 576;
+  int max_hd_pixels = 1920 * 1080;
+  int max_uhd1_pixels = 4096 * 2160;
+};
+
 /// Encryption parameters.
 struct EncryptionParams {
   /// Specifies the key provider, which determines which key provider is used
   /// and which encryption params is valid. 'kNone' means not to encrypt the
   /// streams.
   KeyProvider key_provider = KeyProvider::kNone;
-  // Only one of the three fields is valid.
+  // Only one of the four fields is valid.
   WidevineEncryptionParams widevine;
   PlayReadyEncryptionParams playready;
   RawKeyParams raw_key;
+  CpixEncryptionParams cpix;
 
   /// The protection systems to generate, multiple can be OR'd together.
   ProtectionSystem protection_systems = ProtectionSystem::kNone;
@@ -233,9 +270,12 @@ struct DecryptionParams {
   /// and which encryption params is valid. 'kNone' means not to decrypt the
   /// streams.
   KeyProvider key_provider = KeyProvider::kNone;
-  // Only one of the two fields is valid.
+  // Only one of the three fields is valid.
   WidevineDecryptionParams widevine;
   RawKeyParams raw_key;
+  /// For decryption, keys are looked up by key ID; the key to stream mapping
+  /// fields of the params are not used.
+  CpixEncryptionParams cpix;
 };
 
 }  // namespace shaka

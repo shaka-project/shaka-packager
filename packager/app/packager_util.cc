@@ -12,6 +12,7 @@
 #include <absl/log/log.h>
 
 #include <packager/crypto_params.h>
+#include <packager/media/base/cpix_key_source.h>
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/playready_key_source.h>
 #include <packager/media/base/raw_key_source.h>
@@ -116,6 +117,10 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       }
       break;
     }
+    case KeyProvider::kCpix: {
+      encryption_key_source = CpixKeySource::Create(encryption_params.cpix);
+      break;
+    }
     default:
       break;
   }
@@ -150,6 +155,11 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
     }
     case KeyProvider::kRawKey: {
       decryption_key_source = RawKeySource::Create(decryption_params.raw_key);
+      break;
+    }
+    case KeyProvider::kCpix: {
+      decryption_key_source =
+          CpixKeySource::CreateForDecryption(decryption_params.cpix);
       break;
     }
     default:

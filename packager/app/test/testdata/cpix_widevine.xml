@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpix:CPIX xmlns:cpix="urn:dashif:org:cpix"
+    xmlns:pskc="urn:ietf:params:xml:ns:keyprov:pskc">
+  <cpix:ContentKeyList>
+    <cpix:ContentKey kid="31323334-3536-3738-3930-313233343536"
+        explicitIV="MzQ1Njc4OTA=">
+      <cpix:Data>
+        <pskc:Secret>
+          <pskc:PlainValue>MjM0NTY3ODkwITIzNDU2Nw==</pskc:PlainValue>
+        </pskc:Secret>
+      </cpix:Data>
+    </cpix:ContentKey>
+  </cpix:ContentKeyList>
+  <cpix:DRMSystemList>
+    <cpix:DRMSystem kid="31323334-3536-3738-3930-313233343536"
+        systemId="edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
+      <cpix:PSSH>AAAANHBzc2gBAAAA7e+LqXnWSs6jyCfc1R0h7QAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cpix:PSSH>
+    </cpix:DRMSystem>
+  </cpix:DRMSystemList>
+</cpix:CPIX>

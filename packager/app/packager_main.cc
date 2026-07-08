@@ -44,6 +44,7 @@
 #include <absl/strings/str_format.h>
 
 #include <packager/app/ad_cue_generator_flags.h>
+#include <packager/app/cpix_encryption_flags.h>
 #include <packager/app/crypto_flags.h>
 #include <packager/app/hls_flags.h>
 #include <packager/app/manifest_flags.h>
@@ -122,8 +123,9 @@ const char kUsage[] =
     "  - drm_label: Optional value for custom DRM label, which defines the\n"
     "    encryption key applied to the stream. Typical values include AUDIO,\n"
     "    SD, HD, UHD1, UHD2. For raw key, it should be a label defined in\n"
-    "    --keys. If not provided, the DRM label is derived from stream type\n"
-    "    (video, audio), resolution, etc.\n"
+    "    --keys. For CPIX, it should match an intendedTrackType in the\n"
+    "    document. If not provided, the DRM label is derived from stream\n"
+    "    type (video, audio), resolution, etc.\n"
     "    Note that it is case sensitive.\n"
     "  - trick_play_factor (tpf): Optional value which specifies the trick\n"
     "    play, a.k.a. trick mode, stream sampling rate among key frames.\n"
@@ -437,10 +439,15 @@ std::optional<PackagingParams> GetPackagingParams() {
     encryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
+  if (absl::GetFlag(FLAGS_enable_cpix_encryption)) {
+    encryption_params.key_provider = KeyProvider::kCpix;
+    ++num_key_providers;
+  }
   if (num_key_providers > 1) {
     LOG(ERROR) << "Only one of --enable_widevine_encryption, "
                   "--enable_playready_encryption, "
-                  "--enable_raw_key_encryption can be enabled.";
+                  "--enable_raw_key_encryption, "
+                  "--enable_cpix_encryption can be enabled.";
     return std::nullopt;
   }
 
@@ -458,6 +465,12 @@ std::optional<PackagingParams> GetPackagingParams() {
 
     encryption_params.crypto_period_duration_in_seconds =
         absl::GetFlag(FLAGS_crypto_period_duration);
+    if (encryption_params.crypto_period_duration_in_seconds != 0 &&
+        encryption_params.key_provider == KeyProvider::kCpix) {
+      LOG(ERROR) << "--crypto_period_duration (key rotation) is not "
+                    "supported with --enable_cpix_encryption.";
+      return std::nullopt;
+    }
     encryption_params.vp9_subsample_encryption =
         absl::GetFlag(FLAGS_vp9_subsample_encryption);
     encryption_params.cencv1 = absl::GetFlag(FLAGS_cencv1);
@@ -493,6 +506,18 @@ std::optional<PackagingParams> GetPackagingParams() {
         return std::nullopt;
       break;
     }
+    case KeyProvider::kCpix: {
+      CpixEncryptionParams& cpix = encryption_params.cpix;
+      cpix.document_source = absl::GetFlag(FLAGS_cpix);
+      cpix.request_document_source = absl::GetFlag(FLAGS_cpix_request_file);
+      cpix.headers =
+          SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_cpix_headers), ';');
+      cpix.private_key_source = absl::GetFlag(FLAGS_cpix_private_key);
+      cpix.max_sd_pixels = absl::GetFlag(FLAGS_max_sd_pixels);
+      cpix.max_hd_pixels = absl::GetFlag(FLAGS_max_hd_pixels);
+      cpix.max_uhd1_pixels = absl::GetFlag(FLAGS_max_uhd1_pixels);
+      break;
+    }
     case KeyProvider::kNone:
       break;
   }
@@ -507,9 +532,14 @@ std::optional<PackagingParams> GetPackagingParams() {
     decryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
+  if (absl::GetFlag(FLAGS_enable_cpix_decryption)) {
+    decryption_params.key_provider = KeyProvider::kCpix;
+    ++num_key_providers;
+  }
   if (num_key_providers > 1) {
     LOG(ERROR) << "Only one of --enable_widevine_decryption, "
-                  "--enable_raw_key_decryption can be enabled.";
+                  "--enable_raw_key_decryption, --enable_cpix_decryption can "
+                  "be enabled.";
     return std::nullopt;
   }
   switch (decryption_params.key_provider) {
@@ -523,6 +553,15 @@ std::optional<PackagingParams> GetPackagingParams() {
     case KeyProvider::kRawKey: {
       if (!GetRawKeyParams(&decryption_params.raw_key))
         return std::nullopt;
+      break;
+    }
+    case KeyProvider::kCpix: {
+      CpixEncryptionParams& cpix = decryption_params.cpix;
+      cpix.document_source = absl::GetFlag(FLAGS_cpix);
+      cpix.request_document_source = absl::GetFlag(FLAGS_cpix_request_file);
+      cpix.headers =
+          SplitAndTrimSkipEmpty(absl::GetFlag(FLAGS_cpix_headers), ';');
+      cpix.private_key_source = absl::GetFlag(FLAGS_cpix_private_key);
       break;
     }
     case KeyProvider::kPlayReady:
@@ -666,8 +705,8 @@ int PackagerMain(int argc, char** argv) {
   absl::InitializeLog();
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
-      !ValidatePRCryptoFlags() || !ValidateCryptoFlags() ||
-      !ValidateRetiredFlags()) {
+      !ValidatePRCryptoFlags() || !ValidateCpixCryptoFlags() ||
+      !ValidateCryptoFlags() || !ValidateRetiredFlags()) {
     return kArgumentValidationFailed;
   }
 
