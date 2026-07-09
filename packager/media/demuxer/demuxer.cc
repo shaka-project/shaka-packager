@@ -298,8 +298,7 @@ void Demuxer::ParserInitEvent(
       track_id_to_stream_index_map_[stream_info->track_id()] = stream_index;
       stream_indexes_.push_back(stream_index);
       auto iter = language_overrides_.find(stream_index);
-      if (iter != language_overrides_.end() &&
-          stream_info->stream_type() != kStreamVideo) {
+      if (iter != language_overrides_.end()) {
         stream_info->set_language(iter->second);
       }
       if (stream_info->is_encrypted()) {

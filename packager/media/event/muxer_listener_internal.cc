@@ -87,6 +87,12 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   video_info->set_height(video_stream_info->height());
   video_info->set_time_scale(video_stream_info->time_scale());
 
+  const std::string& language = video_stream_info->language();
+  // ISO-639-2/T defines language "und" which we also want to ignore.
+  if (!language.empty() && language != "und") {
+    video_info->set_language(language);
+  }
+
   if (video_stream_info->pixel_width() > 0)
     video_info->set_pixel_width(video_stream_info->pixel_width());
 

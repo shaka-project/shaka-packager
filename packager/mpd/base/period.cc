@@ -251,13 +251,21 @@ bool Period::SetNewAdaptationSetAttributes(
   new_adaptation_set->set_codec(codec);
 
   if (media_info.has_video_info()) {
-    // Because 'language' is ignored for videos, |adaptation_sets| must have
-    // all the video AdaptationSets.
-    if (adaptation_sets.size() > 1) {
-      new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
-    } else if (adaptation_sets.size() == 1) {
-      (*adaptation_sets.begin())->AddRole(AdaptationSet::kRoleMain);
-      new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+    // |adaptation_sets| holds the video AdaptationSets that share this set's
+    // key (same codec, language and roles). When several role-less video sets
+    // coexist (e.g. distinguished only by their content protection), they are
+    // marked 'main' so a client can tell they are alternatives of the main
+    // picture. Sets carrying an explicit role (sign, caption, ...) already
+    // declare what they are and must not be stamped 'main'; because roles are
+    // part of the key, every set in this bucket shares the same explicit role,
+    // so guarding on the new set's roles covers the existing ones too.
+    if (media_info.dash_roles().empty()) {
+      if (adaptation_sets.size() > 1) {
+        new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+      } else if (adaptation_sets.size() == 1) {
+        (*adaptation_sets.begin())->AddRole(AdaptationSet::kRoleMain);
+        new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+      }
     }
 
     if (media_info.video_info().has_playback_rate()) {

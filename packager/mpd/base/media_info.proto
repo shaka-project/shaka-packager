@@ -55,6 +55,12 @@ message MediaInfo {
     // Fro Dolby Vision back compatiable content.
     optional string supplemental_codec = 13;
     optional uint32 compatible_brand = 14;
+
+    // Language of the video track, e.g. for sign-language renditions. Normally
+    // absent for main picture. When set, it is emitted as @lang on the
+    // AdaptationSet and keeps different-language video tracks in separate
+    // AdaptationSets.
+    optional string language = 15;
   }
 
   message AudioInfo {

@@ -106,6 +106,11 @@ std::string GetLanguage(const MediaInfo& media_info) {
     lang = media_info.audio_info().language();
   } else if (media_info.has_text_info()) {
     lang = media_info.text_info().language();
+  } else if (media_info.has_video_info()) {
+    // Normally empty; set for language-tagged video such as sign-language
+    // renditions. Including it here both stamps @lang on the AdaptationSet and
+    // keeps different-language video tracks in separate AdaptationSets.
+    lang = media_info.video_info().language();
   }
   return LanguageToShortestForm(lang);
 }
