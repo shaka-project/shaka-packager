@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.9.0](https://github.com/shaka-project/shaka-packager/compare/v3.8.0...v3.9.0) (2026-07-08)
+
+
+### Features
+
+* add CPIX support for encryption and decryption keys ([#1590](https://github.com/shaka-project/shaka-packager/issues/1590)) ([22c64d3](https://github.com/shaka-project/shaka-packager/commit/22c64d3c941de3738a944ed21e477eb8d7a047e4))
+
 ## [3.8.0](https://github.com/shaka-project/shaka-packager/compare/v3.7.2...v3.8.0) (2026-06-29)
 
 
