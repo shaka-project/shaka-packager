@@ -18,7 +18,10 @@
 
 #include <packager/file/file_closer.h>
 #include <packager/file/file_util.h>
+#include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/range.h>
 #include <packager/media/formats/mp4/box_definitions.h>
@@ -207,6 +210,68 @@ Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_number) {
         first_sap_time - vod_ref.earliest_presentation_time;
   }
 
+  Status status;
+  size_t segment_size = fragment_buffer()->Size();
+  if (aes128_encryption_config().protection_scheme == kAes128ProtectionScheme) {
+    // Encrypt this subsegment (all fragments accumulated since the last
+    // flush) as one standalone CBC stream, mirroring
+    // MultiSegmentSegmenter::WriteSegment's whole-segment encryption. Per
+    // RFC 8216 §5.2, PKCS7 padding is required. Doing this per-subsegment
+    // (rather than encrypting the whole single-file asset as one stream)
+    // keeps every HLS #EXT-X-BYTERANGE slice independently decryptable, the
+    // same access granularity multi-segment mode gets for free from having
+    // one file per segment. Without this, single_segment=true silently wrote
+    // the AES-128 config to the wrong segmenter and produced a CLEARTEXT
+    // asset while the manifest still advertised #EXT-X-KEY:METHOD=AES-128,
+    // so an unpadded plaintext byte range could never AES-CBC-decrypt. See
+    // https://github.com/shaka-project/shaka-packager/issues/1587.
+    std::vector<uint8_t> plaintext(
+        fragment_buffer()->Buffer(),
+        fragment_buffer()->Buffer() + fragment_buffer()->Size());
+    fragment_buffer()->Clear();
+
+    AesCbcEncryptor encryptor(kPkcs5Padding, AesCryptor::kUseConstantIv);
+    if (!encryptor.InitializeWithIv(aes128_encryption_config().key,
+                                    aes128_encryption_config().constant_iv)) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "AES-128: failed to initialize encryptor for MP4 segment.");
+    }
+    std::vector<uint8_t> ciphertext;
+    if (!encryptor.Crypt(plaintext, &ciphertext)) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "AES-128: segment encryption failed.");
+    }
+
+    // The manifest byte range must reflect what is actually written to
+    // disk, i.e. the padded ciphertext, not the natural (pre-encryption)
+    // fragment size accumulated above.
+    vod_ref.referenced_size = static_cast<uint32_t>(ciphertext.size());
+    segment_size = ciphertext.size();
+
+    BufferWriter ciphertext_buffer;
+    ciphertext_buffer.AppendVector(ciphertext);
+    status = ciphertext_buffer.WriteToFile(temp_file_.get());
+    // Key-frame byte offsets are meaningless once whole-subsegment CBC
+    // encryption is applied (a keyframe partway through a subsegment is no
+    // longer independently seekable in the ciphertext), so, like
+    // MultiSegmentSegmenter, skip I-frame playlist reporting for AES-128.
+  } else {
+    if (muxer_listener()) {
+      for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
+        // Unlike multisegment-segmenter, there is no (sub)segment header
+        // (styp, sidx), so this is already the offset within the
+        // (sub)segment.
+        muxer_listener()->OnKeyFrame(key_frame_info.timestamp,
+                                     key_frame_info.start_byte_offset,
+                                     key_frame_info.size);
+      }
+    }
+    // Append fragment buffer to temp file.
+    status = fragment_buffer()->WriteToFile(temp_file_.get());
+  }
+  if (!status.ok())
+    return status;
+
   // Create segment if it does not exist yet.
   if (vod_sidx_ == NULL) {
     vod_sidx_.reset(new SegmentIndex());
@@ -214,22 +279,10 @@ Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_number) {
     vod_sidx_->timescale = sidx()->timescale;
     vod_sidx_->earliest_presentation_time = vod_ref.earliest_presentation_time;
   }
+  // Pushed after the AES-128 branch above (which may have corrected
+  // |vod_ref.referenced_size| to the actual ciphertext length) so
+  // GetSegmentRanges() reports byte ranges that match what was written.
   vod_sidx_->references.push_back(vod_ref);
-
-  if (muxer_listener()) {
-    for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
-      // Unlike multisegment-segmenter, there is no (sub)segment header (styp,
-      // sidx), so this is already the offset within the (sub)segment.
-      muxer_listener()->OnKeyFrame(key_frame_info.timestamp,
-                                   key_frame_info.start_byte_offset,
-                                   key_frame_info.size);
-    }
-  }
-  // Append fragment buffer to temp file.
-  size_t segment_size = fragment_buffer()->Size();
-  Status status = fragment_buffer()->WriteToFile(temp_file_.get());
-  if (!status.ok())
-    return status;
 
   UpdateProgress(vod_ref.subsegment_duration);
   if (muxer_listener()) {

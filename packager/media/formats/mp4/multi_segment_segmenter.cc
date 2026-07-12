@@ -144,6 +144,15 @@ Status MultiSegmentSegmenter::WriteSegment(int64_t segment_number) {
     // Encrypt the whole segment (header + fragment) as one CBC stream.
     // Per RFC 8216 §5.2, PKCS7 padding is required.
     buffer->AppendBuffer(*fragment_buffer());
+    // AppendBuffer() above copies the accumulated fragment bytes into
+    // |buffer|; it does not drain |fragment_buffer()|. The non-AES-128
+    // branch below drains it as a side effect of WriteToFile() (see
+    // BufferWriter::WriteToFile, which clears its buffer after writing),
+    // so without this explicit Clear() the same bytes are copied again on
+    // every subsequent segment, causing unbounded cumulative growth across
+    // the whole asset. See
+    // https://github.com/shaka-project/shaka-packager/issues/1588.
+    fragment_buffer()->Clear();
     AesCbcEncryptor encryptor(kPkcs5Padding, AesCryptor::kUseConstantIv);
     if (!encryptor.InitializeWithIv(aes128_encryption_config().key,
                                     aes128_encryption_config().constant_iv)) {

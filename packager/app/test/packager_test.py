@@ -1612,6 +1612,20 @@ class PackagerFunctionalTest(PackagerAppTest):
         flags)
     self._CheckTestResults('fmp4-hls-with-aes128-encryption')
 
+  def testSingleSegmentMp4HlsWithAes128Encryption(self):
+    # https://github.com/shaka-project/shaka-packager/issues/1587
+    # AES-128 whole-subsegment encryption for single-file (VOD, no
+    # --segment_template) fMP4/CMAF HLS. Each #EXT-X-BYTERANGE slice in the
+    # generated playlist must be an independent, correctly PKCS7-padded
+    # AES-CBC ciphertext -- i.e. every byte range length is a multiple of 16.
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], output_format='mp4', hls=True),
+        flags)
+    self._CheckTestResults('single-segment-mp4-hls-with-aes128-encryption')
+
   def testAvcAc3TsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
