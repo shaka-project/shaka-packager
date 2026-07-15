@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.9.1](https://github.com/shaka-project/shaka-packager/compare/v3.9.0...v3.9.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* correct AES-128 whole-segment encryption for MP4/CMAF HLS ([#1594](https://github.com/shaka-project/shaka-packager/issues/1594)) ([a01ce20](https://github.com/shaka-project/shaka-packager/commit/a01ce20f97e28bcd021b8b7e4de1522ec1b9c999)), closes [#1588](https://github.com/shaka-project/shaka-packager/issues/1588) [#1587](https://github.com/shaka-project/shaka-packager/issues/1587)
+
 ## [3.9.0](https://github.com/shaka-project/shaka-packager/compare/v3.8.0...v3.9.0) (2026-07-08)
 
 
