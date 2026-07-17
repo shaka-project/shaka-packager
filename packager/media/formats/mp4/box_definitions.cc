@@ -718,6 +718,9 @@ bool DecodingTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = static_cast<uint32_t>(decoding_time.size());
   RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt32(&count));
 
+  if (buffer->Reading())
+    RCHECK(count <= buffer->BytesLeft() / sizeof(DecodingTime));
+
   decoding_time.resize(count);
   for (uint32_t i = 0; i < count; ++i) {
     RCHECK(buffer->ReadWriteUInt32(&decoding_time[i].sample_count) &&
