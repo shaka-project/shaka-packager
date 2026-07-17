@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [3.9.2](https://github.com/shaka-project/shaka-packager/compare/v3.9.1...v3.9.2) (2026-07-17)
+
+
+### Bug Fixes
+
+* **isobmff:** validate stts entry count before allocation ([#1597](https://github.com/shaka-project/shaka-packager/issues/1597)) ([7c011ac](https://github.com/shaka-project/shaka-packager/commit/7c011aca277d0957366300ad79379cb519d348dc))
+* revert [#1540](https://github.com/shaka-project/shaka-packager/issues/1540) cipher-block alignment to restore one-subsample-per-NALU layout ([#1598](https://github.com/shaka-project/shaka-packager/issues/1598)) ([14529b6](https://github.com/shaka-project/shaka-packager/commit/14529b669dec6f2d91338663d7b5bc41e66c4ce2))
+
 ## [3.9.1](https://github.com/shaka-project/shaka-packager/compare/v3.9.0...v3.9.1) (2026-07-15)
 
 
