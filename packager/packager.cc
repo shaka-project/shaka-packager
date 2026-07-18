@@ -734,11 +734,6 @@ Status CreateAudioVideoJobs(
         handlers.emplace_back(std::make_shared<ChunkingHandler>(
             packaging_params.chunking_params));
         handlers.emplace_back(segment_coordinator);
-        Status enc_handler_status;
-        handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
-                                                      encryption_key_source,
-                                                      &enc_handler_status));
-        RETURN_IF_ERROR(enc_handler_status);
       } else {
         // For text: SegmentCoordinator before TextChunker
         // So it can forward SegmentInfo from video/audio to TextChunker
@@ -768,6 +763,19 @@ Status CreateAudioVideoJobs(
 
     std::vector<std::shared_ptr<MediaHandler>> handlers;
     handlers.emplace_back(replicator);
+
+    // Encryption is set up per-output rather than once per shared stream so
+    // that outputs which share the same input and stream selector can have
+    // independent encryption settings (e.g. an encrypted main stream and a
+    // clear trick-play or skip_encryption output, or different drm_labels).
+    // See https://github.com/shaka-project/shaka-packager/issues/987.
+    if (!is_text) {
+      Status enc_handler_status;
+      handlers.emplace_back(CreateEncryptionHandler(
+          packaging_params, stream, encryption_key_source,
+          &enc_handler_status));
+      RETURN_IF_ERROR(enc_handler_status);
+    }
 
     // Trick play is optional.
     if (stream.trick_play_factor) {

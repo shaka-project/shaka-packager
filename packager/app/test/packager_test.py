@@ -1373,6 +1373,23 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults(
         'encryption-of-only-video-stream', verify_decryption=True)
 
+  def testEncryptionOfSameStreamWithAndWithoutSkipEncryption(self):
+    # Regression test for https://github.com/shaka-project/shaka-packager/
+    # issues/987. Two outputs that share the same input and stream selector
+    # must honor their own skip_encryption setting independently; the encrypted
+    # output must be encrypted while the skip_encryption output stays clear,
+    # regardless of the order in which they are listed.
+    streams = [
+        self._GetStream('video'),
+        self._GetStream('video', skip_encryption=True),
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults(
+        'encryption-of-same-stream-with-and-without-skip-encryption',
+        verify_decryption=True)
+
   def testEncryptionAndTrickPlay(self):
     streams = [
         self._GetStream('audio'),
