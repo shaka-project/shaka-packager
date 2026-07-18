@@ -99,6 +99,9 @@ bool ParseIfSuperframeIndex(const uint8_t* data,
                             size_t data_size,
                             std::vector<VPxFrameInfo>* vpx_frames) {
   vpx_frames->clear();
+  // An empty buffer has no superframe index byte to read; guard against the
+  // out-of-bounds read of data[data_size - 1] when data_size == 0.
+  RCHECK(data_size > 0);
   uint8_t superframe_marker = data[data_size - 1];
   VPxFrameInfo vpx_frame;
   if ((superframe_marker & 0xe0) != 0xc0) {

@@ -1466,6 +1466,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
       for (int j = ref_num_positive_pics - 1; j >= 0; j--) {
         int d_poc = ref_pic_sets[ref_rps_idx].delta_poc_s1[j] + delta_rps;
         if (d_poc < 0 && use_delta[ref_num_negative_pics + j]) {
+          TRUE_OR_RETURN(i < kMaxRefPicSetCount);
           out_ref_pic_set->delta_poc_s0[i] = d_poc;
           out_ref_pic_set->used_by_curr_pic_s0[i] =
               used_by_curr_pic[ref_num_negative_pics + j];
@@ -1473,6 +1474,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
         }
       }
       if (delta_rps < 0 && use_delta[ref_num_delta_pocs]) {
+        TRUE_OR_RETURN(i < kMaxRefPicSetCount);
         out_ref_pic_set->delta_poc_s0[i] = delta_rps;
         out_ref_pic_set->used_by_curr_pic_s0[i] =
             used_by_curr_pic[ref_num_delta_pocs];
@@ -1481,6 +1483,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
       for (int j = 0; j < ref_num_negative_pics; j++) {
         int d_poc = ref_pic_sets[ref_rps_idx].delta_poc_s0[j] + delta_rps;
         if (d_poc < 0 && use_delta[j]) {
+          TRUE_OR_RETURN(i < kMaxRefPicSetCount);
           out_ref_pic_set->delta_poc_s0[i] = d_poc;
           out_ref_pic_set->used_by_curr_pic_s0[i] = used_by_curr_pic[j];
           i++;
@@ -1495,12 +1498,14 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
       for (int j = ref_num_negative_pics - 1; j >= 0; j--) {
         int d_poc = ref_pic_sets[ref_rps_idx].delta_poc_s0[j] + delta_rps;
         if (d_poc > 0 && use_delta[j]) {
+          TRUE_OR_RETURN(i < kMaxRefPicSetCount);
           out_ref_pic_set->delta_poc_s1[i] = d_poc;
           out_ref_pic_set->used_by_curr_pic_s1[i] = used_by_curr_pic[j];
           i++;
         }
       }
       if (delta_rps > 0 && use_delta[ref_num_delta_pocs]) {
+        TRUE_OR_RETURN(i < kMaxRefPicSetCount);
         out_ref_pic_set->delta_poc_s1[i] = delta_rps;
         out_ref_pic_set->used_by_curr_pic_s1[i] =
             used_by_curr_pic[ref_num_delta_pocs];
@@ -1509,6 +1514,7 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
       for (int j = 0; j < ref_num_positive_pics; j++) {
         int d_poc = ref_pic_sets[ref_rps_idx].delta_poc_s1[j] + delta_rps;
         if (d_poc > 0 && use_delta[ref_num_negative_pics + j]) {
+          TRUE_OR_RETURN(i < kMaxRefPicSetCount);
           out_ref_pic_set->delta_poc_s1[i] = d_poc;
           out_ref_pic_set->used_by_curr_pic_s1[i] =
               used_by_curr_pic[ref_num_negative_pics + j];

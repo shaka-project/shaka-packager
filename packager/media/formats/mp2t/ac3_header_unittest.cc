@@ -162,6 +162,19 @@ TEST_F(Ac3HeaderTest, ParseVariousDataSize) {
   EXPECT_FALSE(ac3_header.Parse(ac3_frame_44100_hz_.data(), 5));
 }
 
+TEST_F(Ac3HeaderTest, GetFrameSizeWithoutParsingRejectsReservedFscod) {
+  // fscod == 3 is reserved. GetFrameSizeWithoutParsing() does not validate it
+  // before indexing the frame-size table, where it produced a negative
+  // (out-of-bounds) column index. It must return 0 instead. In the byte after
+  // the 16-bit CRC (data[4] = 0xC0): fscod = 0b11 = 3, frmsizecod = 0.
+  const uint8_t kFrame[] = {0x0B, 0x77, 0x00, 0x00, 0xC0,
+                            0x00, 0x00, 0x00, 0x00, 0x00};
+  Ac3Header ac3_header;
+  ASSERT_TRUE(ac3_header.IsSyncWord(kFrame));
+  EXPECT_EQ(static_cast<size_t>(0),
+            ac3_header.GetFrameSizeWithoutParsing(kFrame, sizeof(kFrame)));
+}
+
 }  // Namespace mp2t
 }  // namespace media
 }  // namespace shaka

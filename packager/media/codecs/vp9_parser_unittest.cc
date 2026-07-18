@@ -67,6 +67,15 @@ TEST(VP9ParserTest, Superframe) {
   ASSERT_FALSE(parser.Parse(data, std::size(data), &frames));
 }
 
+TEST(VP9ParserTest, EmptyBuffer) {
+  // An empty buffer must not read past the front of the buffer when looking for
+  // the superframe marker at data[data_size - 1].
+  VP9Parser parser;
+  std::vector<VPxFrameInfo> frames;
+  const uint8_t data[] = {0x00};
+  ASSERT_FALSE(parser.Parse(data, 0, &frames));
+}
+
 TEST(VP9ParserTest, KeyframeChroma420) {
   const uint8_t kData[] = {
       0x82, 0x49, 0x83, 0x42, 0x00, 0x01, 0xf0, 0x00, 0x74, 0x04, 0x38, 0x24,

@@ -369,6 +369,31 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_FALSE(iter_->IsRunValid());
 }
 
+TEST_F(TrackRunIteratorTest, OutOfRangeSampleDescriptionIndexUsesFirstEntry) {
+  // Regression test: sample_description_index is one-indexed, and the code
+  // converts it to a zero-based desc_idx. A value pointing exactly one past the
+  // last entry (desc_idx == entries.size()) previously slipped through the
+  // range check (which used '>' instead of '>=') and read one element past the
+  // audio_entries vector. It must instead fall back to the first entry.
+  SampleDescription& audio_stsd =
+      moov_.tracks[0].media.information.sample_table.description;
+  ASSERT_EQ(audio_stsd.audio_entries.size(), 1u);
+  const uint32_t kMarkerSampleRate = 44100;
+  audio_stsd.audio_entries[0].samplerate = kMarkerSampleRate;
+
+  iter_.reset(new TrackRunIterator(&moov_));
+  MovieFragment moof = CreateFragment();
+  // One past the last valid one-based index (size 1 -> index 2 is out of
+  // range).
+  moof.tracks[0].header.sample_description_index =
+      static_cast<uint32_t>(audio_stsd.audio_entries.size()) + 1;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  ASSERT_TRUE(iter_->IsRunValid());
+  ASSERT_TRUE(iter_->is_audio());
+  EXPECT_EQ(iter_->audio_description().samplerate, kMarkerSampleRate);
+}
+
 TEST_F(TrackRunIteratorTest, TrackExtendsDefaultsTest) {
   moov_.extends.tracks[0].default_sample_duration = 50;
   moov_.extends.tracks[0].default_sample_size = 3;

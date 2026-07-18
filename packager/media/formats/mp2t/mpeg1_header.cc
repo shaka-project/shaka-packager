@@ -143,7 +143,9 @@ bool Mpeg1Header::Parse(const uint8_t* mpeg1_frame, size_t mpeg1_frame_size) {
 
   uint8_t btr_idx;
   RCHECK(frame.ReadBits(4, &btr_idx));
-  RCHECK(btr_idx > 0);
+  // btr_idx == 0 is "free format" and btr_idx == 0b1111 is the reserved "bad"
+  // value; both are out of range for kMpeg1BitrateTable (indices 0..14).
+  RCHECK(btr_idx > 0 && btr_idx < kMpeg1BitrateTableSize);
   bitrate_ = Mpeg1BitRate(btr_idx, version_, layer_);
 
   uint8_t sr_idx;
@@ -184,7 +186,7 @@ size_t Mpeg1Header::GetFrameSizeWithoutParsing(const uint8_t* data,
   uint8_t padded = (data[2] & 0b00000010) >> 1;
 
   if ((version == kMpeg1V_INV) || (layer == kMpeg1L_INV) || (btr_idx == 0) ||
-      (sr_idx == 0b11))
+      (btr_idx >= kMpeg1BitrateTableSize) || (sr_idx == 0b11))
     return 0;
 
   uint32_t bitrate = Mpeg1BitRate(btr_idx, version, layer);
