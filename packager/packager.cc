@@ -771,9 +771,9 @@ Status CreateAudioVideoJobs(
     // See https://github.com/shaka-project/shaka-packager/issues/987.
     if (!is_text) {
       Status enc_handler_status;
-      handlers.emplace_back(CreateEncryptionHandler(
-          packaging_params, stream, encryption_key_source,
-          &enc_handler_status));
+      handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
+                                                    encryption_key_source,
+                                                    &enc_handler_status));
       RETURN_IF_ERROR(enc_handler_status);
     }
 
