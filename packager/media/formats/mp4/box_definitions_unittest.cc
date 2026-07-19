@@ -1192,6 +1192,31 @@ TEST_F(BoxDefinitionsTest, VPCodecConfiguration) {
   EXPECT_EQ(codec_configuration, codec_configuration_readback);
 }
 
+TEST_F(BoxDefinitionsTest, VideoSampleEntryWithEmptyCodecConfiguration) {
+  // Regression test for
+  // https://github.com/shaka-project/shaka-packager/issues/1142.
+  // If a higher layer leaves the CodecConfiguration empty, the box must not be
+  // serialized with a declared size (0) that disagrees with the bytes written,
+  // which previously corrupted the whole file. The empty box is skipped, so the
+  // total bytes written match the computed size and the entry round-trips.
+  VideoSampleEntry entry;
+  entry.format = FOURCC_avc1;
+  entry.data_reference_index = 1;
+  entry.width = 800;
+  entry.height = 600;
+  entry.codec_configuration.box_type = FOURCC_avcC;
+  // codec_configuration.data intentionally left empty.
+
+  entry.Write(this->buffer_.get());
+  EXPECT_EQ(entry.ComputeSize(), this->buffer_->Size());
+
+  VideoSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  EXPECT_EQ(entry.width, entry_readback.width);
+  EXPECT_EQ(entry.height, entry_readback.height);
+  EXPECT_TRUE(entry_readback.codec_configuration.data.empty());
+}
+
 TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
   AudioSampleEntry entry;
   entry.format = FOURCC_dtse;
