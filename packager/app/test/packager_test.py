@@ -555,8 +555,11 @@ class PackagerAppTest(unittest.TestCase):
     if key_rotation:
       flags.append('--crypto_period_duration=1')
 
-    if not include_pssh_in_stream:
-      flags.append('--mp4_include_pssh_in_stream=false')
+    # Pass the flag explicitly (unless None) so tests are unaffected by the
+    # default, which depends on --generate_dash_if_iop_compliant_mpd (see #640).
+    if include_pssh_in_stream is not None:
+      flags.append('--mp4_include_pssh_in_stream=' +
+                   ('true' if include_pssh_in_stream else 'false'))
 
     if not dash_if_iop:
       flags.append('--generate_dash_if_iop_compliant_mpd=false')
@@ -1415,6 +1418,18 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
             encryption=True, include_pssh_in_stream=False, output_dash=True))
+    self._CheckTestResults('encryption-and-no-pssh-in-stream')
+
+  def testEncryptionDashIfIopExcludesPsshFromStreamByDefault(self):
+    # With --generate_dash_if_iop_compliant_mpd enabled (the default) and no
+    # explicit --mp4_include_pssh_in_stream, pssh must be excluded from the
+    # media files (it is carried in the manifest instead). The output is
+    # therefore identical to the explicit include_pssh_in_stream=False case.
+    # https://github.com/shaka-project/shaka-packager/issues/640
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True, include_pssh_in_stream=None, output_dash=True))
     self._CheckTestResults('encryption-and-no-pssh-in-stream')
 
   def testEncryptionCbc1(self):
