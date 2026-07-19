@@ -52,8 +52,11 @@ const size_t kFrameSizeCodeTable[][3] = {
 // @return the size of the frame (header + payload).
 size_t CalcFrameSize(uint8_t fscod, uint8_t frmsizecod) {
   const size_t kNumFscode = std::size(kAc3SampleRateTable);
-  DCHECK_LT(fscod, kNumFscode);
-  DCHECK_LT(frmsizecod, std::size(kFrameSizeCodeTable));
+  // fscod == 3 (reserved) and out-of-range frmsizecod are not indices into the
+  // tables. GetFrameSizeWithoutParsing() feeds unvalidated values here, so
+  // check at runtime rather than relying on DCHECK (compiled out in release).
+  if (fscod >= kNumFscode || frmsizecod >= std::size(kFrameSizeCodeTable))
+    return 0;
   // The order of frequencies are reversed in |kFrameSizeCodeTable| compared to
   // |kAc3SampleRateTable|.
   const int index = kNumFscode - 1 - fscod;

@@ -238,7 +238,7 @@ bool TrackRunIterator::Init() {
       tri.track_type = stsd.type;
       if (tri.track_type == kAudio) {
         RCHECK(!stsd.audio_entries.empty());
-        if (desc_idx > stsd.audio_entries.size())
+        if (desc_idx >= stsd.audio_entries.size())
           desc_idx = 0;
         tri.audio_description = &stsd.audio_entries[desc_idx];
         // We don't support encrypted non-fragmented mp4 for now.
@@ -246,7 +246,7 @@ bool TrackRunIterator::Init() {
                    .default_is_protected == 0);
       } else if (tri.track_type == kVideo) {
         RCHECK(!stsd.video_entries.empty());
-        if (desc_idx > stsd.video_entries.size())
+        if (desc_idx >= stsd.video_entries.size())
           desc_idx = 0;
         tri.video_description = &stsd.video_entries[desc_idx];
         // We don't support encrypted non-fragmented mp4 for now.
@@ -333,13 +333,13 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     switch (stsd.type) {
       case kAudio:
         RCHECK(!stsd.audio_entries.empty());
-        if (desc_idx > stsd.audio_entries.size())
+        if (desc_idx >= stsd.audio_entries.size())
           desc_idx = 0;
         audio_sample_entry = &stsd.audio_entries[desc_idx];
         break;
       case kVideo:
         RCHECK(!stsd.video_entries.empty());
-        if (desc_idx > stsd.video_entries.size())
+        if (desc_idx >= stsd.video_entries.size())
           desc_idx = 0;
         video_sample_entry = &stsd.video_entries[desc_idx];
         break;
