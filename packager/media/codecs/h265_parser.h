@@ -460,7 +460,7 @@ class H265Parser {
                            H26xBitReader* br);
 
   Result SkipSubLayerHrdParameters(int cpb_cnt_minus1,
-                                   bool sub_pic_hdr_params_present_flag,
+                                   bool sub_pic_hrd_params_present_flag,
                                    H26xBitReader* br);
 
   Result ByteAlignment(H26xBitReader* br);
