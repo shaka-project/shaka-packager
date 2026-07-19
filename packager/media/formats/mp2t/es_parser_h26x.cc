@@ -237,8 +237,7 @@ bool EsParserH26x::ParseInternal() {
     if (!video_slice_info.valid)
       continue;
 
-    // Check if it is the first VCL NAL unit of a primary coded picture. It is
-    // always true for H265 as nuh_layer_id shall be == 0 at this point.
+    // Check if it is the first VCL NAL unit of a primary coded picture.
     bool is_first_vcl_nalu = true;
     if (type_ == Nalu::kH264) {
       if (current_video_slice_info_.valid) {
@@ -248,6 +247,15 @@ bool EsParserH26x::ParseInternal() {
             video_slice_info.frame_num != current_video_slice_info_.frame_num ||
             video_slice_info.pps_id != current_video_slice_info_.pps_id;
       }
+    } else {
+      // ITU H.265: a coded picture may consist of multiple slice segments. Only
+      // the first slice segment (first_slice_segment_in_pic_flag == 1) starts a
+      // new access unit; subsequent slice segments of the same picture belong
+      // to the current access unit. Treating every slice as a new access unit
+      // would call EmitFrame once per slice, but there is only one timing
+      // descriptor per picture, so later slices would fail to emit. See
+      // https://github.com/shaka-project/shaka-packager/issues/1363.
+      is_first_vcl_nalu = video_slice_info.first_slice_segment_in_pic_flag;
     }
     if (!is_first_vcl_nalu) {
       // This isn't the first VCL NAL unit. Next access unit should start after
