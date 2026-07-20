@@ -43,6 +43,8 @@ class MP4Muxer : public Muxer {
   ~MP4Muxer() override;
 
  private:
+  friend class MP4MuxerTest;
+
   // Muxer implementation overrides.
   Status InitializeMuxer() override;
   Status Finalize() override;

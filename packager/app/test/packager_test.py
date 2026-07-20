@@ -1064,6 +1064,16 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess([stream], self._GetFlags(output_dash=True))
     self._CheckTestResults('video-no-edit-list')
 
+  def testVideoBFrameNegativePts(self):
+    # Regression test for
+    # https://github.com/shaka-project/shaka-packager/issues/1265: a video whose
+    # first sample has a negative presentation timestamp together with a
+    # pts/dts offset (B-frames) previously failed to mux. The edit list shifts
+    # the decode time to a non-negative baseMediaDecodeTime.
+    stream = self._GetStream('video', test_file='bframe-negative-pts.mp4')
+    self.assertPackageSuccess([stream], self._GetFlags(output_dash=True))
+    self._CheckTestResults('video-bframe-negative-pts')
+
   def testAvcAacTs(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
