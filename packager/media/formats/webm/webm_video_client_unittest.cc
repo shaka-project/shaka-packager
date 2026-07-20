@@ -44,6 +44,8 @@ class WebMVideoClientTest : public testing::Test {
     client_.OnUInt(kWebMIdPixelHeight, height);
   }
 
+  void SetAlphaMode(int64_t value) { client_.OnUInt(kWebMIdAlphaMode, value); }
+
  protected:
   WebMVideoClient client_;
 };
@@ -283,6 +285,30 @@ TEST_F(WebMVideoClientTest, GetVideoStreamInfo_AV1WithColorInfo) {
   // (AV1 handles color info differently)
   const std::vector<uint8_t>& colr_data = video_info->colr_data();
   EXPECT_TRUE(colr_data.empty());
+}
+
+TEST_F(WebMVideoClientTest, GetVideoStreamInfo_VP8WithAlpha) {
+  // AlphaMode == 1 signals a per-frame alpha (transparency) plane and must be
+  // propagated so the muxer re-emits the AlphaMode element.
+  // https://github.com/shaka-project/shaka-packager/issues/1168
+  SetPixelDimensions(1280, 720);
+  SetAlphaMode(1);
+
+  std::vector<uint8_t> codec_private;
+  auto video_info =
+      client_.GetVideoStreamInfo(1, "V_VP8", codec_private, false);
+  ASSERT_NE(nullptr, video_info);
+  EXPECT_TRUE(video_info->is_alpha());
+}
+
+TEST_F(WebMVideoClientTest, GetVideoStreamInfo_VP9NoAlphaByDefault) {
+  SetPixelDimensions(1920, 1080);
+
+  std::vector<uint8_t> codec_private;
+  auto video_info =
+      client_.GetVideoStreamInfo(1, "V_VP9", codec_private, false);
+  ASSERT_NE(nullptr, video_info);
+  EXPECT_FALSE(video_info->is_alpha());
 }
 
 TEST_F(WebMVideoClientTest, GetVpCodecConfig_ColorRange) {

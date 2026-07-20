@@ -1162,6 +1162,18 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vp9-webm')
 
+  def testVp8WebmAlpha(self):
+    # The alpha (transparency) channel of a VP8/VP9 WebM must be preserved
+    # through packaging: both the per-frame alpha data (BlockAdditional) and the
+    # track-level AlphaMode element.
+    # https://github.com/shaka-project/shaka-packager/issues/1168
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['vp8-alpha.webm']),
+        self._GetFlags(output_dash=True))
+    self._CheckTestResults('vp8-webm-alpha')
+
   def testVp9WebmWithBlockgroup(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'], test_files=['bear-vp9-blockgroup.webm']),

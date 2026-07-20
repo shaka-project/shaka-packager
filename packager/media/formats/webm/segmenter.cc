@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <absl/base/internal/endian.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <common/webmids.h>
@@ -357,6 +358,18 @@ Status Segmenter::InitializeVideoTrack(const VideoStreamInfo& info,
   track->set_display_height(info.height());
   track->set_display_width(info.width() * info.pixel_width() /
                            info.pixel_height());
+
+  // Preserve the alpha (transparency) channel for VP8/VP9. The alpha plane is
+  // carried per-frame in BlockAdditional elements (see WriteFrame); this track
+  // element signals players to use it. Without it, the alpha data is ignored
+  // and transparency is lost. See
+  // https://github.com/shaka-project/shaka-packager/issues/1168.
+  if (info.is_alpha()) {
+    if (!track->SetAlphaMode(VideoTrack::kAlpha)) {
+      return Status(error::INTERNAL_ERROR, "Failed to set AlphaMode on track");
+    }
+  }
+
   return Status::OK;
 }
 
@@ -409,10 +422,14 @@ Status Segmenter::WriteFrame(bool write_duration) {
 
   if (prev_sample_->side_data_size() > 0) {
     uint64_t block_add_id;
-    // First 8 bytes of side_data is the BlockAddID element's value, which is
-    // done to mimic ffmpeg behavior. See webm_cluster_parser.cc for details.
+    // First 8 bytes of side_data is the BlockAddID element's value, stored in
+    // big-endian by the parser (see webm_cluster_parser.cc). Convert it back to
+    // host order; otherwise the BlockAddID is written byte-swapped (e.g. 1
+    // becomes 0x0100000000000000), which breaks alpha playback since players
+    // require BlockAddID == 1 for the alpha plane.
     CHECK_GT(prev_sample_->side_data_size(), sizeof(block_add_id));
     memcpy(&block_add_id, prev_sample_->side_data(), sizeof(block_add_id));
+    block_add_id = absl::big_endian::ToHost64(block_add_id);
     if (!frame.AddAdditionalData(
             prev_sample_->side_data() + sizeof(block_add_id),
             prev_sample_->side_data_size() - sizeof(block_add_id),
