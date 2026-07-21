@@ -34,5 +34,15 @@ TEST(AV1ParserTest, ParseIFrameSuccess) {
   EXPECT_THAT(tiles, ElementsAre(AV1Parser::Tile{0x1d, 0x4e1}));
 }
 
+TEST(AV1ParserTest, ParseConfigOBUSuccess) {
+  const std::vector<uint8_t> buffer = ReadTestDataFile("av1-hdr-config.obu");
+  ASSERT_FALSE(buffer.empty());
+
+  AV1Parser parser;
+  std::vector<AV1Parser::Tile> tiles;
+  ASSERT_TRUE(parser.Parse(buffer.data(), buffer.size(), &tiles));
+  EXPECT_THAT(tiles, ElementsAre());
+}
+
 }  // namespace media
 }  // namespace shaka
