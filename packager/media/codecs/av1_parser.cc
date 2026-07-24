@@ -301,9 +301,10 @@ bool AV1Parser::ParseOpenBitstreamUnit(BitReader* reader,
       RCHECK(ParseFrameObu(obu_header, obu_size, reader, tiles));
       break;
     default:
-      // Skip all OBUs we are not interested.
+      // Skip all OBUs we are not interested. Because this skips the entire
+      // OBU, do not then validate the trailing bits; just return early
       RCHECK(reader->SkipBits(obu_size * 8));
-      break;
+      return true;
   }
 
   const size_t current_position = reader->bit_position();
