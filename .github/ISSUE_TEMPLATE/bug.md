@@ -1,3 +1,10 @@
+---
+name: Bug report
+about: Report a bug in Shaka Packager
+title: ''
+type: Bug
+---
+
 ## System info
 **Operating System**: <e.g. macOS Sierra, Ubuntu 14.04 trusty etc>
 **Shaka Packager Version**: <e.g. v1.6.1, commit SHA etc>
