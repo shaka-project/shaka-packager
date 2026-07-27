@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.9.3](https://github.com/shaka-project/shaka-packager/compare/v3.9.2...v3.9.3) (2026-07-27)
+
+
+### Bug Fixes
+
+* Fix parsing of av1 metadata OBUs ([#1611](https://github.com/shaka-project/shaka-packager/issues/1611)) ([207fb00](https://github.com/shaka-project/shaka-packager/commit/207fb007edd833611851e20816ff8dd6d4055e0a))
+
 ## [3.9.2](https://github.com/shaka-project/shaka-packager/compare/v3.9.1...v3.9.2) (2026-07-17)
 
 
