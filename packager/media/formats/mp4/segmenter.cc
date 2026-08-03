@@ -87,8 +87,18 @@ Status Segmenter::Initialize(
       edit_list_offset = edit_list.edits.front().media_time;
     }
 
-    fragmenters_[i].reset(
-        new Fragmenter(streams[i], &moof_->tracks[i], edit_list_offset));
+    // Take the sample description count from the table the muxer actually
+    // built, so a fragment can never reference an entry that is not there.
+    const SampleDescription& sample_description =
+        moov_->tracks[i].media.information.sample_table.description;
+    const size_t num_sample_descriptions =
+        sample_description.video_entries.size() +
+        sample_description.audio_entries.size() +
+        sample_description.text_entries.size();
+
+    fragmenters_[i].reset(new Fragmenter(streams[i], &moof_->tracks[i],
+                                         edit_list_offset,
+                                         num_sample_descriptions));
   }
 
   // Choose the first stream if there is no VIDEO.

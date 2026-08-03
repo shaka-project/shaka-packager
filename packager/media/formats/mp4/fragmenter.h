@@ -7,6 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -37,9 +38,13 @@ class Fragmenter {
   /// @param traf points to a TrackFragment box.
   /// @param edit_list_offset is the edit list offset that is encoded in Edit
   ///        List. It should be 0 if there is no EditList.
+  /// @param num_sample_descriptions is the number of entries in the track's
+  ///        sample description table ('stsd'). It bounds the
+  ///        sample_description_index this fragmenter may emit.
   Fragmenter(std::shared_ptr<const StreamInfo> info,
              TrackFragment* traf,
-             int64_t edit_list_offset);
+             int64_t edit_list_offset,
+             size_t num_sample_descriptions);
 
   ~Fragmenter();
 
@@ -91,6 +96,7 @@ class Fragmenter {
   std::shared_ptr<const StreamInfo> stream_info_;
   TrackFragment* traf_ = nullptr;
   int64_t edit_list_offset_ = 0;
+  size_t num_sample_descriptions_ = 1;
   int64_t seek_preroll_ = 0;
   bool fragment_initialized_ = false;
   bool fragment_finalized_ = false;
