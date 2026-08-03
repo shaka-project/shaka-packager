@@ -788,10 +788,9 @@ class PackagerFunctionalTest(PackagerAppTest):
                                           'bear-640x360-av.mp4')
     self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
 
-    # The complaint in https://github.com/shaka-project/shaka-packager/issues/1480
-    # was that a file muxed together outside of Packager reports its streams as
-    # clear. Both tracks of a file Packager multiplexed itself keep their
-    # encryption signalling.
+    # The complaint in issue #1480 was that a file muxed together outside of
+    # Packager reports its streams as clear. Both tracks of a file Packager
+    # multiplexed itself keep their encryption signalling.
     output = self.output[-1]
     stream_info = self.packager.DumpStreamInfo(output)
     self.assertIn('Found 2 stream(s).', stream_info)
