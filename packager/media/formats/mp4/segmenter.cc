@@ -6,8 +6,10 @@
 
 #include <packager/media/formats/mp4/segmenter.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,6 +18,7 @@
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/macros/status.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/encryption_config.h>
 #include <packager/media/base/fourccs.h>
@@ -71,6 +74,7 @@ Status Segmenter::Initialize(
   moof_->tracks.resize(streams.size());
   fragmenters_.resize(streams.size());
   stream_durations_.resize(streams.size());
+  pending_events_.resize(streams.size());
 
   for (uint32_t i = 0; i < streams.size(); ++i) {
     moof_->tracks[i].header.track_id = i + 1;
@@ -117,6 +121,25 @@ Status Segmenter::Initialize(
 }
 
 Status Segmenter::Finalize() {
+  // With more than one track, some tracks may still hold queued data and the
+  // last fragment is usually left unwritten, because tracks rarely end at
+  // exactly the same timestamp. Writing a fragment unblocks the tracks waiting
+  // on it, which may in turn produce another fragment, so alternate between
+  // the two until there is nothing left.
+  for (;;) {
+    RETURN_IF_ERROR(DrainPendingEvents());
+    bool wrote_fragment = false;
+    RETURN_IF_ERROR(FlushRemainingFragments(&wrote_fragment));
+    if (!wrote_fragment)
+      break;
+  }
+  for (const std::deque<PendingEvent>& pending : pending_events_) {
+    if (!pending.empty()) {
+      return Status(error::MUXER_FAILURE,
+                    "Not all media samples could be written to the output.");
+    }
+  }
+
   // Set movie duration. Note that the duration in mvhd, tkhd, mdhd should not
   // be touched, i.e. kept at 0. The updated moov box will be written to output
   // file for VOD and static live case only.
@@ -133,18 +156,35 @@ Status Segmenter::Finalize() {
 }
 
 Status Segmenter::AddSample(size_t stream_id, const MediaSample& sample) {
+  DCHECK_LT(stream_id, fragmenters_.size());
+
+  // A fragment covers every track, so a track that already reached the segment
+  // boundary has to wait for the others before it can start the next fragment.
+  // Queue its data until the current fragment has been written out.
+  if (fragmenters_[stream_id]->fragment_finalized() ||
+      !pending_events_[stream_id].empty()) {
+    if (fragmenters_.size() == 1) {
+      return Status(error::FRAGMENT_FINALIZED,
+                    "Current fragment is finalized already.");
+    }
+    PendingEvent event;
+    event.sample = sample.Clone();
+    pending_events_[stream_id].push_back(std::move(event));
+    return Status::OK;
+  }
+  return AddSampleInternal(stream_id, sample);
+}
+
+Status Segmenter::AddSampleInternal(size_t stream_id,
+                                    const MediaSample& sample) {
   // Set default sample duration if it has not been set yet.
   if (moov_->extends.tracks[stream_id].default_sample_duration == 0) {
     moov_->extends.tracks[stream_id].default_sample_duration =
         sample.duration();
   }
 
-  DCHECK_LT(stream_id, fragmenters_.size());
   Fragmenter* fragmenter = fragmenters_[stream_id].get();
-  if (fragmenter->fragment_finalized()) {
-    return Status(error::FRAGMENT_FINALIZED,
-                  "Current fragment is finalized already.");
-  }
+  DCHECK(!fragmenter->fragment_finalized());
 
   Status status = fragmenter->AddSample(sample);
   if (!status.ok())
@@ -162,6 +202,67 @@ Status Segmenter::AddSample(size_t stream_id, const MediaSample& sample) {
 
 Status Segmenter::FinalizeSegment(size_t stream_id,
                                   const SegmentInfo& segment_info) {
+  DCHECK_LT(stream_id, fragmenters_.size());
+
+  if (fragmenters_.size() > 1 &&
+      (fragmenters_[stream_id]->fragment_finalized() ||
+       !pending_events_[stream_id].empty())) {
+    // Keep this boundary behind whatever this track already has queued, so it
+    // is replayed in the order it arrived.
+    PendingEvent event;
+    event.segment_info = segment_info;
+    pending_events_[stream_id].push_back(std::move(event));
+    return Status::OK;
+  }
+
+  RETURN_IF_ERROR(FinalizeSegmentInternal(stream_id, segment_info));
+  return DrainPendingEvents();
+}
+
+Status Segmenter::DrainPendingEvents() {
+  bool made_progress = true;
+  while (made_progress) {
+    made_progress = false;
+    for (size_t i = 0; i < pending_events_.size(); ++i) {
+      while (!pending_events_[i].empty() &&
+             !fragmenters_[i]->fragment_finalized()) {
+        const PendingEvent event = std::move(pending_events_[i].front());
+        pending_events_[i].pop_front();
+        made_progress = true;
+        if (event.sample) {
+          RETURN_IF_ERROR(AddSampleInternal(i, *event.sample));
+        } else {
+          // This may write out the fragment, which unblocks other streams; the
+          // outer loop picks them up on the next pass.
+          RETURN_IF_ERROR(FinalizeSegmentInternal(i, event.segment_info));
+        }
+      }
+    }
+  }
+  return Status::OK;
+}
+
+Status Segmenter::FlushRemainingFragments(bool* wrote_fragment) {
+  // Nothing else is coming at this point, so close whatever fragment each
+  // track still has open and write out the tracks that hold data, instead of
+  // waiting on tracks that have already run out of it.
+  std::vector<size_t> stream_ids;
+  for (size_t i = 0; i < fragmenters_.size(); ++i) {
+    if (fragmenters_[i]->fragment_initialized())
+      RETURN_IF_ERROR(fragmenters_[i]->FinalizeFragment());
+    if (fragmenters_[i]->fragment_finalized())
+      stream_ids.push_back(i);
+  }
+  *wrote_fragment = !stream_ids.empty();
+  if (stream_ids.empty())
+    return Status::OK;
+  return WriteFragment(last_segment_info_, stream_ids);
+}
+
+Status Segmenter::FinalizeSegmentInternal(size_t stream_id,
+                                          const SegmentInfo& segment_info) {
+  last_segment_info_ = segment_info;
+
   if (segment_info.key_rotation_encryption_config) {
     FinalizeFragmentForKeyRotation(
         stream_id, segment_info.is_encrypted,
@@ -181,14 +282,37 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
       return Status::OK;
   }
 
+  std::vector<size_t> stream_ids(fragmenters_.size());
+  for (size_t i = 0; i < stream_ids.size(); ++i)
+    stream_ids[i] = i;
+  return WriteFragment(segment_info, stream_ids);
+}
+
+Status Segmenter::WriteFragment(const SegmentInfo& segment_info,
+                                const std::vector<size_t>& stream_ids) {
+  DCHECK(!stream_ids.empty());
+
+  // 'moof' normally describes every track. A trailing fragment may cover only
+  // the tracks that still had data when the others reached end of stream, so
+  // assemble the box from just those tracks in that case.
+  MovieFragment partial_moof;
+  MovieFragment* moof = moof_.get();
+  if (stream_ids.size() != fragmenters_.size()) {
+    partial_moof.header = moof_->header;
+    partial_moof.pssh = moof_->pssh;
+    for (size_t stream_id : stream_ids)
+      partial_moof.tracks.push_back(moof_->tracks[stream_id]);
+    moof = &partial_moof;
+  }
+
   MediaData mdat;
   // Data offset relative to 'moof': moof size + mdat header size.
-  // The code will also update box sizes for moof_ and its child boxes.
-  uint64_t data_offset = moof_->ComputeSize() + mdat.HeaderSize();
+  // The code will also update box sizes for moof and its child boxes.
+  uint64_t data_offset = moof->ComputeSize() + mdat.HeaderSize();
   // 'traf' should follow 'mfhd' moof header box.
-  uint64_t next_traf_position = moof_->HeaderSize() + moof_->header.box_size();
-  for (size_t i = 0; i < moof_->tracks.size(); ++i) {
-    TrackFragment& traf = moof_->tracks[i];
+  uint64_t next_traf_position = moof->HeaderSize() + moof->header.box_size();
+  for (size_t i = 0; i < moof->tracks.size(); ++i) {
+    TrackFragment& traf = moof->tracks[i];
     if (traf.auxiliary_offset.offsets.size() > 0) {
       DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);
       DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());
@@ -202,24 +326,32 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
           sizeof(uint32_t);  // for sample count field in 'senc'
     }
     traf.runs[0].data_offset = data_offset + mdat.data_size;
-    mdat.data_size += static_cast<uint32_t>(fragmenters_[i]->data()->Size());
+    mdat.data_size +=
+        static_cast<uint32_t>(fragmenters_[stream_ids[i]]->data()->Size());
   }
 
-  // Generate segment reference.
+  // Generate segment reference. The reference stream may be absent from a
+  // trailing fragment, in which case fall back to the first track present.
+  const uint32_t reference_stream_id = GetReferenceStreamId();
+  const bool has_reference_stream =
+      std::find(stream_ids.begin(), stream_ids.end(), reference_stream_id) !=
+      stream_ids.end();
   sidx_->references.resize(sidx_->references.size() + 1);
-  fragmenters_[GetReferenceStreamId()]->GenerateSegmentReference(
-      &sidx_->references[sidx_->references.size() - 1]);
+  fragmenters_[has_reference_stream ? reference_stream_id : stream_ids.front()]
+      ->GenerateSegmentReference(
+          &sidx_->references[sidx_->references.size() - 1]);
   sidx_->references[sidx_->references.size() - 1].referenced_size =
       data_offset + mdat.data_size;
 
   const uint64_t moof_start_offset = fragment_buffer_->Size();
 
   // Write the fragment to buffer.
-  moof_->Write(fragment_buffer_.get());
+  moof->Write(fragment_buffer_.get());
   mdat.WriteHeader(fragment_buffer_.get());
 
   bool first_key_frame = true;
-  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_) {
+  for (size_t stream_id : stream_ids) {
+    const std::unique_ptr<Fragmenter>& fragmenter = fragmenters_[stream_id];
     // https://goo.gl/xcFus6 6. Trick play requirements
     // 6.10. If using fMP4, I-frame segments must include the 'moof' header
     // associated with the I-frame. It also implies that only the first key
@@ -243,14 +375,12 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   if (segment_info.is_chunk) {
     // Finalize the completed chunk for the LL-DASH case.
-    status = DoFinalizeChunk(segment_info.segment_number);
-    if (!status.ok())
-      return status;
+    RETURN_IF_ERROR(DoFinalizeChunk(segment_info.segment_number));
   }
 
   if (!segment_info.is_subsegment || segment_info.is_final_chunk_in_seg) {
     // Finalize the segment.
-    status = DoFinalizeSegment(segment_info.segment_number);
+    Status status = DoFinalizeSegment(segment_info.segment_number);
 
     // Reset segment information to initial state.
     sidx_->references.clear();

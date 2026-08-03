@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -32,6 +33,12 @@ class MediaSample;
 /// Muxer is responsible for taking elementary stream samples and producing
 /// media containers. An optional KeySource can be provided to Muxer
 /// to generate encrypted outputs.
+///
+/// A Muxer usually has a single input stream, but it may be connected to more
+/// than one input stream to produce a multiplexed (multi-track) output file.
+/// In that case @a streams() is indexed by the input stream index and the
+/// output is only finalized once every input stream has been flushed. Not all
+/// Muxer implementations support more than one input stream.
 class Muxer : public MediaHandler {
  public:
   explicit Muxer(const MuxerOptions& options);
@@ -49,6 +56,9 @@ class Muxer : public MediaHandler {
   /// @param progress_listener should not be NULL.
   void SetProgressListener(std::unique_ptr<ProgressListener> progress_listener);
 
+  /// @return The stream infos of the input streams, indexed by input stream
+  ///         index. An entry is null until the StreamInfo for that input
+  ///         stream has been received.
   const std::vector<std::shared_ptr<const StreamInfo>>& streams() const {
     return streams_;
   }
@@ -72,6 +82,9 @@ class Muxer : public MediaHandler {
   const MuxerOptions& options() const { return options_; }
   MuxerListener* muxer_listener() { return muxer_listener_.get(); }
   ProgressListener* progress_listener() { return progress_listener_.get(); }
+
+  /// @return true if the StreamInfo of every input stream has been received.
+  bool AllStreamInfoReceived() const;
 
   uint64_t Now() const {
     auto duration = clock_->now().time_since_epoch();
@@ -104,12 +117,24 @@ class Muxer : public MediaHandler {
   virtual Status FinalizeSegment(size_t stream_id,
                                  const SegmentInfo& segment_info) = 0;
 
+  // Called when an input stream has been flushed, i.e. it will not produce any
+  // more samples. This is called before Finalize() and, unlike Finalize(), it
+  // is called once per input stream. Subclasses that support multiplexed
+  // output use it to stop waiting on a stream that turned out to be empty.
+  virtual Status OnStreamEnded(size_t stream_id);
+
   // Re-initialize Muxer. Could be called on StreamInfo or CueEvent.
-  // |timestamp| may be used to set the output file name.
-  Status ReinitializeMuxer(int64_t timestamp);
+  // |timestamp| may be used to set the output file name. |stream_id| is the
+  // input stream index the event was received on.
+  Status ReinitializeMuxer(int64_t timestamp, size_t stream_id);
 
   MuxerOptions options_;
+  // Indexed by input stream index; entries are null until the corresponding
+  // StreamInfo has been received.
   std::vector<std::shared_ptr<const StreamInfo>> streams_;
+  // Input stream indices that have been flushed. The output is finalized once
+  // this covers every input stream.
+  std::set<size_t> flushed_streams_;
   std::vector<uint8_t> current_key_id_;
   bool encryption_started_ = false;
   bool cancelled_ = false;

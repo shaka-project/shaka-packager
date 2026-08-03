@@ -747,6 +747,58 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']), self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video')
 
+  def _GetMultiplexedStreams(self, descriptors, output_file_name, **kwargs):
+    """Build stream descriptors that all write to one multiplexed output file.
+
+    Args:
+      descriptors: Stream selectors, e.g. ['audio', 'video'].
+      output_file_name: Name of the single output file, relative to tmp_dir.
+      **kwargs: Extra key=value pairs appended to every stream descriptor.
+
+    Returns:
+      A list of stream descriptor strings.
+    """
+    test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
+    output_file_path = os.path.join(self.tmp_dir, output_file_name)
+    self.output.append(output_file_path)
+
+    streams = []
+    for descriptor in descriptors:
+      stream = StreamDescriptor(test_file)
+      stream.Append('stream', descriptor)
+      stream.Append('output', output_file_path)
+      for key, value in kwargs.items():
+        stream.Append(key, value)
+      streams.append(str(stream))
+    return streams
+
+  def testMultiplexedAudioVideoInSingleMp4(self):
+    streams = self._GetMultiplexedStreams(['audio', 'video'],
+                                          'bear-640x360-av.mp4')
+    self.assertPackageSuccess(streams, self._GetFlags())
+
+    output = self.output[-1]
+    stream_info = self.packager.DumpStreamInfo(output)
+    self.assertIn('Found 2 stream(s).', stream_info)
+
+    self._CheckTestResults('multiplexed-audio-video')
+
+  def testMultiplexedAudioVideoInSingleMp4WithEncryption(self):
+    streams = self._GetMultiplexedStreams(['audio', 'video'],
+                                          'bear-640x360-av.mp4')
+    self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
+
+    # The complaint in https://github.com/shaka-project/shaka-packager/issues/1480
+    # was that a file muxed together outside of Packager reports its streams as
+    # clear. Both tracks of a file Packager multiplexed itself keep their
+    # encryption signalling.
+    output = self.output[-1]
+    stream_info = self.packager.DumpStreamInfo(output)
+    self.assertIn('Found 2 stream(s).', stream_info)
+    self.assertEqual(stream_info.count('is_encrypted: true'), 2)
+
+    self._CheckTestResults('multiplexed-audio-video-with-encryption')
+
   def testAudioVideoWithAccessibilitiesAndRoles(self):
     streams = [
         self._GetStream(

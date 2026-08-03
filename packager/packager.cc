@@ -286,6 +286,72 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
   return Status::OK;
 }
 
+// Several stream descriptors may share one output file, in which case each of
+// them becomes a track of a single multiplexed file. That combination is much
+// more constrained than one-file-per-stream packaging, so check the whole group
+// up front and explain exactly what is not supported rather than failing deep
+// inside the pipeline.
+Status ValidateMultiplexedOutput(const PackagingParams& packaging_params,
+                                 const StreamDescriptor& first,
+                                 const StreamDescriptor& current) {
+  const std::string& output = current.output;
+
+  if (first.stream_selector == current.stream_selector) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Seeing duplicated outputs '" + output +
+                      "' for the same stream in stream descriptors. Every "
+                      "output must be unique.");
+  }
+
+  if (first.input != current.input) {
+    return Status(
+        error::INVALID_ARGUMENT,
+        "Cannot multiplex streams from different inputs ('" + first.input +
+            "' and '" + current.input + "') into output '" + output +
+            "'. Streams sharing an output must come from the same input file.");
+  }
+
+  if (GetOutputFormat(first) != CONTAINER_MOV ||
+      GetOutputFormat(current) != CONTAINER_MOV) {
+    return Status(error::UNIMPLEMENTED,
+                  "Multiplexing multiple streams into output '" + output +
+                      "' is only supported for MP4.");
+  }
+
+  if (IsTextStream(first) || IsTextStream(current)) {
+    return Status(error::UNIMPLEMENTED,
+                  "Multiplexing text streams into output '" + output +
+                      "' is not supported.");
+  }
+
+  if (!first.segment_template.empty() || !current.segment_template.empty()) {
+    return Status(error::UNIMPLEMENTED,
+                  "Multiplexing multiple streams into output '" + output +
+                      "' is not supported with segment_template.");
+  }
+
+  if (first.trick_play_factor != 0 || current.trick_play_factor != 0) {
+    return Status(error::UNIMPLEMENTED,
+                  "Multiplexing multiple streams into output '" + output +
+                      "' is not supported for trick play streams.");
+  }
+
+  // A multiplexed file holds several tracks, but a DASH Representation or an
+  // HLS Variant Stream describes exactly one. There is no way to signal such a
+  // file in the manifests Packager generates.
+  if (!packaging_params.mpd_params.mpd_output.empty() ||
+      !packaging_params.hls_params.master_playlist_output.empty() ||
+      packaging_params.output_media_info) {
+    return Status(error::UNIMPLEMENTED,
+                  "Multiplexing multiple streams into output '" + output +
+                      "' is not supported with manifest generation "
+                      "(--mpd_output, --hls_master_playlist_output or "
+                      "--output_media_info).");
+  }
+
+  return Status::OK;
+}
+
 Status ValidateParams(const PackagingParams& packaging_params,
                       const std::vector<StreamDescriptor>& stream_descriptors) {
   if (!packaging_params.chunking_params.segment_sap_aligned &&
@@ -309,7 +375,7 @@ Status ValidateParams(const PackagingParams& packaging_params,
   // generates multiple segments specified using segment template.
   const bool on_demand_dash_profile =
       stream_descriptors.begin()->segment_template.empty();
-  std::set<std::string> outputs;
+  std::map<std::string, std::vector<const StreamDescriptor*>> outputs;
   std::set<std::string> segment_templates;
   for (const auto& descriptor : stream_descriptors) {
     if (on_demand_dash_profile != descriptor.segment_template.empty()) {
@@ -337,13 +403,14 @@ Status ValidateParams(const PackagingParams& packaging_params,
     }
 
     if (!descriptor.output.empty()) {
-      if (outputs.find(descriptor.output) != outputs.end()) {
-        return Status(
-            error::INVALID_ARGUMENT,
-            "Seeing duplicated outputs '" + descriptor.output +
-                "' in stream descriptors. Every output must be unique.");
+      // Sharing an output is how a multiplexed (multi-track) file is requested,
+      // e.g. audio and video written to a single mp4.
+      std::vector<const StreamDescriptor*>& group = outputs[descriptor.output];
+      for (const StreamDescriptor* previous : group) {
+        RETURN_IF_ERROR(
+            ValidateMultiplexedOutput(packaging_params, *previous, descriptor));
       }
-      outputs.insert(descriptor.output);
+      group.push_back(&descriptor);
     }
     if (!descriptor.segment_template.empty()) {
       if (segment_templates.find(descriptor.segment_template) !=
@@ -651,6 +718,20 @@ Status CreateAudioVideoJobs(
   std::map<std::string, std::shared_ptr<SegmentCoordinator>>
       segment_coordinators;
 
+  // Outputs written to by more than one stream descriptor, i.e. multiplexed
+  // outputs. Those share a single Muxer, with one input stream per track.
+  std::set<std::string> multiplexed_outputs;
+  {
+    std::set<std::string> seen_outputs;
+    for (const StreamDescriptor& stream : streams) {
+      if (stream.output.empty())
+        continue;
+      if (!seen_outputs.insert(stream.output).second)
+        multiplexed_outputs.insert(stream.output);
+    }
+  }
+  std::map<std::string, std::shared_ptr<Muxer>> multiplexed_muxers;
+
   for (const StreamDescriptor& stream : streams) {
     bool seen_input_before = sources.find(stream.input) != sources.end();
     if (seen_input_before) {
@@ -754,17 +835,32 @@ Status CreateAudioVideoJobs(
 
     // Create the muxer (output) for this track.
     const auto output_format = GetOutputFormat(stream);
-    std::shared_ptr<Muxer> muxer =
-        muxer_factory->CreateMuxer(output_format, stream);
-    if (!muxer) {
-      return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +
-                                                 stream.input + ":" +
-                                                 stream.stream_selector);
-    }
+    const bool is_multiplexed =
+        multiplexed_outputs.find(stream.output) != multiplexed_outputs.end();
 
-    std::unique_ptr<MuxerListener> muxer_listener =
-        muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
-    muxer->SetMuxerListener(std::move(muxer_listener));
+    std::shared_ptr<Muxer> muxer;
+    if (is_multiplexed) {
+      // Every descriptor writing to this output feeds the same Muxer, which
+      // turns them into the tracks of one file.
+      muxer = multiplexed_muxers[stream.output];
+    }
+    if (!muxer) {
+      muxer = muxer_factory->CreateMuxer(output_format, stream);
+      if (!muxer) {
+        return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +
+                                                   stream.input + ":" +
+                                                   stream.stream_selector);
+      }
+      if (is_multiplexed) {
+        // A MuxerListener describes a single track, so it cannot represent a
+        // multiplexed file. ValidateMultiplexedOutput() already rejected the
+        // manifest options that would need one.
+        multiplexed_muxers[stream.output] = muxer;
+      } else {
+        muxer->SetMuxerListener(muxer_listener_factory->CreateListener(
+            ToMuxerListenerData(stream)));
+      }
+    }
 
     std::vector<std::shared_ptr<MediaHandler>> handlers;
     handlers.emplace_back(replicator);
