@@ -220,8 +220,7 @@ def _FindBoxes(data, start, end, name):
     if box_type == name:
       yield payload_start, box_end
     elif box_type in containers:
-      for found in _FindBoxes(data, payload_start, box_end, name):
-        yield found
+      yield from _FindBoxes(data, payload_start, box_end, name)
 
 
 def _GetStsdEntryCount(init_segment_data):
