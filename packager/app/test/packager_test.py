@@ -13,7 +13,6 @@ import logging
 import os
 import re
 import shutil
-import struct
 import subprocess
 import tempfile
 import unittest
@@ -187,63 +186,6 @@ class DiffFilesPolicy(object):
       shutil.rmtree(gold_dir)
 
     shutil.copytree(out_dir, gold_dir)
-
-
-def _ReadFile(path):
-  with open(path, 'rb') as f:
-    return f.read()
-
-
-def _IterBoxes(data, start, end):
-  """Yields (type, payload_start, box_end) for the boxes in a byte range."""
-  offset = start
-  while offset + 8 <= end:
-    size = struct.unpack('>I', data[offset:offset + 8][:4])[0]
-    box_type = data[offset + 4:offset + 8].decode('latin-1')
-    header_size = 8
-    if size == 1:
-      size = struct.unpack('>Q', data[offset + 8:offset + 16])[0]
-      header_size = 16
-    elif size == 0:
-      size = end - offset
-    if size < header_size or offset + size > end:
-      return
-    yield box_type, offset + header_size, offset + size
-    offset += size
-
-
-def _FindBoxes(data, start, end, name):
-  """Yields (payload_start, box_end) of every box called |name|, recursively."""
-  containers = frozenset(
-      ['moov', 'trak', 'mdia', 'minf', 'stbl', 'moof', 'traf'])
-  for box_type, payload_start, box_end in _IterBoxes(data, start, end):
-    if box_type == name:
-      yield payload_start, box_end
-    elif box_type in containers:
-      yield from _FindBoxes(data, payload_start, box_end, name)
-
-
-def _GetStsdEntryCount(init_segment_data):
-  """Returns the number of sample description entries, or None if no 'stsd'."""
-  data = init_segment_data
-  for payload_start, _ in _FindBoxes(data, 0, len(data), 'stsd'):
-    # FullBox version+flags, then entry_count.
-    return struct.unpack('>I', data[payload_start + 4:payload_start + 8])[0]
-  return None
-
-
-def _GetTfhdSampleDescriptionIndexes(segment_data):
-  """Returns the sample_description_index of every 'tfhd' that carries one."""
-  data = segment_data
-  indexes = []
-  for payload_start, _ in _FindBoxes(data, 0, len(data), 'tfhd'):
-    flags = struct.unpack('>I', data[payload_start:payload_start + 4])[0]
-    offset = payload_start + 4 + 4  # version/flags, then track_id.
-    if flags & 0x000001:  # base-data-offset-present
-      offset += 8
-    if flags & 0x000002:  # sample-description-index-present
-      indexes.append(struct.unpack('>I', data[offset:offset + 4])[0])
-  return indexes
 
 
 def _UpdateMediaInfoPaths(media_info_filepath):
@@ -680,26 +622,6 @@ class PackagerAppTest(unittest.TestCase):
     stream_info = self.packager.DumpStreamInfo(stream)
     self.assertIn('Found 1 stream(s).', stream_info)
     self.assertIn(info, stream_info)
-
-  def _AssertSampleDescriptionIndexInRange(self, init_path, segment_data):
-    """Asserts every fragment points at a sample description that exists.
-
-    tfhd.sample_description_index is a 1-based index into the track's sample
-    description table (ISO/IEC 14496-12 8.8.7). Pointing past the end of that
-    table makes players fail to resolve the sample entry.
-    See https://github.com/shaka-project/shaka-packager/issues/1616.
-
-    Args:
-      init_path: Path of the init segment holding the 'stsd' box.
-      segment_data: Bytes of a media segment, decrypted if necessary.
-    """
-    entry_count = _GetStsdEntryCount(_ReadFile(init_path))
-    self.assertIsNotNone(entry_count)
-    indexes = _GetTfhdSampleDescriptionIndexes(segment_data)
-    self.assertTrue(indexes)
-    for index in indexes:
-      self.assertGreaterEqual(index, 1)
-      self.assertLessEqual(index, entry_count)
 
   def _Decrypt(self, file_path, cpix=False):
     streams = [
@@ -1688,23 +1610,10 @@ class PackagerFunctionalTest(PackagerAppTest):
                          segmented=True,
                          hls=True),
         flags)
-
-    # The samples of an AES-128 stream are not sample-encrypted -- the whole
-    # segment is -- so no encrypted sample description is generated and the
-    # track has a single one. Every fragment must point at it.
-    # https://github.com/shaka-project/shaka-packager/issues/1616
-    for name in ('bear-640x360-video', 'bear-640x360-audio'):
-      init_path = os.path.join(self.tmp_dir, '%s-init.mp4' % name)
-      segment = _ReadFile(os.path.join(self.tmp_dir, '%s-1.m4s' % name))
-      playlist = _ReadFile(
-          os.path.join(self.tmp_dir, '%s.m3u8' % name)).decode()
-      iv = re.search(r'IV=0x([0-9A-Fa-f]+)', playlist).group(1)
-      segment = subprocess.run(
-          ['openssl', 'enc', '-d', '-aes-128-cbc', '-nopad', '-K',
-           self.encryption_key, '-iv', iv],
-          input=segment, stdout=subprocess.PIPE, check=True).stdout
-      self._AssertSampleDescriptionIndexInRange(init_path, segment)
-
+    # The golden segments cover tfhd.sample_description_index staying within
+    # the track's single sample description entry. See FragmenterTest in
+    # packager/media/formats/mp4/fragmenter_unittest.cc and
+    # https://github.com/shaka-project/shaka-packager/issues/1616.
     self._CheckTestResults('fmp4-hls-with-aes128-encryption')
 
   def testSingleSegmentMp4HlsWithAes128Encryption(self):
