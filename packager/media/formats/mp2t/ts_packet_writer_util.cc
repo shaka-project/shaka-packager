@@ -6,8 +6,11 @@
 
 #include <packager/media/formats/mp2t/ts_packet_writer_util.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/formats/mp2t/continuity_counter.h>

@@ -10,6 +10,7 @@
 #define PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
 
 #include <cstdint>
+#include <string>
 
 #include <packager/status.h>
 

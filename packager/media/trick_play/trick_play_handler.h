@@ -7,10 +7,15 @@
 #ifndef PACKAGER_MEDIA_BASE_TRICK_PLAY_HANDLER_H_
 #define PACKAGER_MEDIA_BASE_TRICK_PLAY_HANDLER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <list>
+#include <memory>
 
 #include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

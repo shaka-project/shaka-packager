@@ -6,6 +6,9 @@
 
 #include <packager/media/codecs/h265_parser.h>
 
+#include <cstdint>
+#include <iterator>
+
 #include <gtest/gtest.h>
 
 #include <packager/media/codecs/nalu_reader.h>

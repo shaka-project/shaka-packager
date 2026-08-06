@@ -6,11 +6,16 @@
 
 #include <packager/media/base/buffer_writer.h>
 
-#include <filesystem>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <limits>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <absl/log/log.h>
+#include <gtest/gtest.h>
 
 #include <packager/file.h>
 #include <packager/file/file_test_util.h>

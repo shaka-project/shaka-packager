@@ -468,6 +468,9 @@ class PackagerAppTest(unittest.TestCase):
                 skip_byte_block=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
+                cpix_encryption=False,
+                cpix_decryption=False,
+                cpix_document='cpix.xml',
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
@@ -520,6 +523,12 @@ class PackagerAppTest(unittest.TestCase):
           fairplay_key_uri = ('skd://www.license.com/getkey?'
                               'KeyId=31323334-3536-3738-3930-313233343536')
           flags += ['--hls_key_uri=' + fairplay_key_uri]
+    elif cpix_encryption:
+      flags += [
+          '--enable_cpix_encryption',
+          '--cpix=' + os.path.join(self.golden_file_dir, cpix_document),
+          '--clear_lead={0}'.format(self.clear_lead)
+      ]
 
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
@@ -536,6 +545,11 @@ class PackagerAppTest(unittest.TestCase):
           '--enable_raw_key_decryption',
           '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
                                                     self.encryption_key)
+      ]
+    elif cpix_decryption:
+      flags += [
+          '--enable_cpix_decryption',
+          '--cpix=' + os.path.join(self.golden_file_dir, cpix_document),
       ]
 
     if key_rotation:
@@ -609,12 +623,15 @@ class PackagerAppTest(unittest.TestCase):
     self.assertIn('Found 1 stream(s).', stream_info)
     self.assertIn(info, stream_info)
 
-  def _Decrypt(self, file_path):
+  def _Decrypt(self, file_path, cpix=False):
     streams = [
         self._GetStream(
             '0', output_file_prefix='decrypted', test_file=file_path)
     ]
-    self.assertPackageSuccess(streams, self._GetFlags(decryption=True))
+    flags = (
+        self._GetFlags(cpix_decryption=True)
+        if cpix else self._GetFlags(decryption=True))
+    self.assertPackageSuccess(streams, flags)
 
   def _CheckTestResults(self,
                         test_dir,
@@ -1252,6 +1269,61 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('encryption', verify_decryption=True)
 
+  def testCpixEncryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(cpix_encryption=True, output_dash=True))
+    self._CheckTestResults('encryption-cpix', verify_decryption=True)
+
+  def testCpixDecryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(cpix_encryption=True, output_dash=True))
+    for file_name in os.listdir(self.tmp_dir):
+      extension = os.path.splitext(file_name)[1][1:]
+      if extension not in ['mpd', 'm3u8', 'media_info']:
+        self._Decrypt(os.path.join(self.tmp_dir, file_name), cpix=True)
+    self._CheckTestResults('encryption-cpix')
+
+  def testCpixEncryptionAndFmp4Hls(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        self._GetFlags(cpix_encryption=True, output_hls=True))
+    self._CheckTestResults('encryption-cpix-fmp4-hls')
+
+  def testCpixWidevineEncryptionAndFmp4Hls(self):
+    # A Widevine DRMSystem in the document produces an EXT-X-KEY with the
+    # Widevine urn:uuid: KEYFORMAT; the common system is not signaled in HLS
+    # for CENC content.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        self._GetFlags(
+            cpix_encryption=True,
+            cpix_document='cpix_widevine.xml',
+            output_hls=True))
+    self._CheckTestResults('encryption-cpix-widevine-fmp4-hls')
+
+  def testCpixEncryptionAndAvcTs(self):
+    # TS output is encrypted with Apple Sample AES regardless of
+    # --protection_scheme, so a key bound to commonEncryptionScheme="cbcs"
+    # in the document must be accepted.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         segmented=True,
+                         hls=True,
+                         test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            cpix_encryption=True,
+            cpix_document='cpix_cbcs.xml',
+            output_hls=True))
+    self._CheckTestResults('encryption-cpix-avc-ts')
+
   def testEncryptionWithMultiDrms(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
@@ -1459,6 +1531,31 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
 
+  def testDashOnDemandMultiPeriodVttInMp4(self):
+    # Regression test for issue #1493: on-demand DASH multi-period with
+    # VTT-in-MP4 must have presentationTimeOffset on period 1+ SegmentBase.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('text', test_file='bear-english.vtt',
+                        output_format='mp4'),
+    ]
+    flags = self._GetFlags(output_dash=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-ondemand-multiperiod-vtt-in-mp4')
+
+  def testDashOnDemandMultiPeriodPlainVtt(self):
+    # Regression test for issue #1493: on-demand DASH multi-period with
+    # plain VTT must have presentationTimeOffset on period 1+ SegmentBase.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('text', test_file='bear-english.vtt'),
+    ]
+    flags = self._GetFlags(output_dash=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-ondemand-multiperiod-plain-vtt')
+
   def testWebmSubsampleEncryption(self):
     streams = [
         self._GetStream('video', test_file='bear-320x180-vp9-altref.webm')
@@ -1515,6 +1612,47 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(
             encryption=True, protection_systems='FairPlay', output_hls=True))
     self._CheckTestResults('avc-ts-with-encryption-and-fairplay')
+
+  def testAvcTsWithAes128Encryption(self):
+    # AES-128 encrypts entire TS segments with AES-128-CBC; the HLS playlist
+    # uses METHOD=AES-128 with no KEYFORMAT (identity, per RFC 8216).
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         segmented=True,
+                         hls=True,
+                         test_files=['bear-640x360.ts']),
+        flags)
+    self._CheckTestResults('avc-ts-with-aes128-encryption')
+
+  def testFmp4HlsWithAes128Encryption(self):
+    # AES-128 whole-segment encryption for fMP4/CMAF HLS. No sinf/encv/pssh.
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         output_format='mp4',
+                         segmented=True,
+                         hls=True),
+        flags)
+    self._CheckTestResults('fmp4-hls-with-aes128-encryption')
+
+  def testSingleSegmentMp4HlsWithAes128Encryption(self):
+    # https://github.com/shaka-project/shaka-packager/issues/1587
+    # AES-128 whole-subsegment encryption for single-file (VOD, no
+    # --segment_template) fMP4/CMAF HLS. Each #EXT-X-BYTERANGE slice in the
+    # generated playlist must be an independent, correctly PKCS7-padded
+    # AES-CBC ciphertext -- i.e. every byte range length is a multiple of 16.
+    flags = self._GetFlags(
+        encryption=True, protection_scheme='aes128', output_hls=True)
+    flags += ['--hls_key_uri', 'https://keys.example.com/stream.key']
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], output_format='mp4', hls=True),
+        flags)
+    self._CheckTestResults('single-segment-mp4-hls-with-aes128-encryption')
 
   def testAvcAc3TsWithEncryption(self):
     # Currently we only support live packaging for ts.

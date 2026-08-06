@@ -7,18 +7,28 @@
 #include <packager/media/crypto/subsample_generator.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/macros/compiler.h>
 #include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/ac4_parser.h>
 #include <packager/media/codecs/av1_parser.h>
+#include <packager/media/codecs/nalu_reader.h>
 #include <packager/media/codecs/video_slice_header_parser.h>
-#include <packager/media/codecs/vp8_parser.h>
 #include <packager/media/codecs/vp9_parser.h>
+#include <packager/media/codecs/vpx_parser.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -85,21 +95,19 @@ class SubsampleOrganizer {
     DCHECK_LT(clear_bytes, std::numeric_limits<uint32_t>::max());
     DCHECK_LT(cipher_bytes, std::numeric_limits<uint32_t>::max());
 
-    size_t clear_at_end = 0;
     if (align_protected_data_ && cipher_bytes != 0) {
-      clear_at_end = cipher_bytes % kAesBlockSize;
-      cipher_bytes -= clear_at_end;
+      const size_t misalign_bytes = cipher_bytes % kAesBlockSize;
+      clear_bytes += misalign_bytes;
+      cipher_bytes -= misalign_bytes;
     }
 
     accumulated_clear_bytes_ += clear_bytes;
     // Accumulated clear bytes are handled later.
-    if (cipher_bytes == 0) {
-      accumulated_clear_bytes_ += clear_at_end;
+    if (cipher_bytes == 0)
       return;
-    }
 
     PushSubsample(accumulated_clear_bytes_, cipher_bytes);
-    accumulated_clear_bytes_ = clear_at_end;
+    accumulated_clear_bytes_ = 0;
   }
 
  private:

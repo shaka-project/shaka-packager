@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <packager/media/base/fourccs.h>
 #include <packager/media/event/muxer_listener.h>
 
 namespace shaka {

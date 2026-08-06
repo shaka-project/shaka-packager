@@ -7,10 +7,18 @@
 #include <packager/media/formats/dvb/dvb_sub_parser.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <ios>
+#include <memory>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/media/base/bit_reader.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/dvb/dvb_image.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {

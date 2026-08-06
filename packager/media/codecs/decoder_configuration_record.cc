@@ -6,6 +6,11 @@
 
 #include <packager/media/codecs/decoder_configuration_record.h>
 
+#include <cstddef>
+#include <cstdint>
+
+#include <packager/media/codecs/nalu_reader.h>
+
 namespace shaka {
 namespace media {
 

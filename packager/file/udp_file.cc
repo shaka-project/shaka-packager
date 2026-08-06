@@ -6,6 +6,10 @@
 
 #include <packager/file/udp_file.h>
 
+#include <cstdint>
+#include <limits>
+#include <memory>
+
 #if defined(OS_WIN)
 #include <ws2tcpip.h>
 #define close closesocket
@@ -27,11 +31,10 @@
 #endif
 #endif  // defined(OS_WIN)
 
-#include <limits>
-
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/file.h>
 #include <packager/file/udp_options.h>
 #include <packager/macros/classes.h>
 #include <packager/macros/compiler.h>

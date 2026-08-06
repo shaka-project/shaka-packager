@@ -8,12 +8,10 @@
 #define SHAKA_PACKAGER_ABSL_FLAG_HEXBYTES_H
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
-#include <absl/flags/flag.h>
-#include <absl/strings/ascii.h>
-#include <absl/strings/escaping.h>
-
-#include <packager/utils/hex_parser.h>
+#include <absl/strings/string_view.h>
 
 // Custom flag type for hexadecimal byte array
 namespace shaka {

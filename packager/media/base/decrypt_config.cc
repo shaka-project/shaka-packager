@@ -4,8 +4,13 @@
 
 #include <packager/media/base/decrypt_config.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
+
+#include <packager/media/base/fourccs.h>
 
 namespace shaka {
 namespace media {

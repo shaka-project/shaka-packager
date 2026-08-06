@@ -6,8 +6,12 @@
 
 #include <packager/media/codecs/ac4_audio_util.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <absl/strings/str_format.h>
 
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/rcheck.h>

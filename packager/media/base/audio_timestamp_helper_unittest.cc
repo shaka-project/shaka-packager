@@ -4,6 +4,8 @@
 
 #include <packager/media/base/audio_timestamp_helper.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 
 #include <gtest/gtest.h>

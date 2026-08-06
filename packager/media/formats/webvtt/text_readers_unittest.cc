@@ -6,11 +6,12 @@
 
 #include <packager/media/formats/webvtt/text_readers.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include <packager/file.h>
-#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

@@ -6,17 +6,23 @@
 
 #include <packager/media/formats/mp2t/ts_segmenter.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
-#include <packager/macros/status.h>
-#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_util.h>
-#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp2t/pes_packet.h>
+#include <packager/media/formats/mp2t/pes_packet_generator.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
+#include <packager/media/formats/mp2t/ts_writer.h>
 #include <packager/status.h>
 
 namespace shaka {

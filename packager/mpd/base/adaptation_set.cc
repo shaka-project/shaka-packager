@@ -6,11 +6,19 @@
 
 #include <packager/mpd/base/adaptation_set.h>
 
+#include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <utility>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/macros/classes.h>

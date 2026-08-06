@@ -6,11 +6,21 @@
 
 #include <packager/media/formats/webm/encryptor.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include <absl/log/check.h>
+#include <mkvmuxer/mkvmuxer.h>
 
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/decrypt_config.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/formats/webm/webm_constants.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

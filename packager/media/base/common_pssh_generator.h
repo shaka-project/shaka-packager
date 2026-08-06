@@ -8,6 +8,8 @@
 #define PACKAGER_MEDIA_BASE_COMMON_PSSH_GENERATOR_H_
 
 #include <cstdint>
+#include <optional>
+#include <vector>
 
 #include <packager/media/base/pssh_generator.h>
 

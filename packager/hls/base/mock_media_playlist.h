@@ -8,10 +8,13 @@
 #define PACKAGER_HLS_BASE_MOCK_MEDIA_PLAYLIST_H_
 
 #include <cstdint>
+#include <filesystem>
+#include <string>
 
 #include <gmock/gmock.h>
 
 #include <packager/hls/base/media_playlist.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 namespace hls {

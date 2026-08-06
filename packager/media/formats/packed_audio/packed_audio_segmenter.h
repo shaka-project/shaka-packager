@@ -9,6 +9,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/stream_info.h>

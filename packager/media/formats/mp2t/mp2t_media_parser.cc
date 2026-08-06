@@ -4,12 +4,21 @@
 
 #include <packager/media/formats/mp2t/mp2t_media_parser.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <deque>
 #include <functional>
+#include <ios>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/media_parser.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>

@@ -5,6 +5,13 @@
 #include <packager/media/formats/webm/webm_cluster_parser.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include <absl/base/internal/endian.h>
@@ -12,12 +19,24 @@
 #include <absl/log/log.h>
 
 #include <packager/macros/logging.h>
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/timestamp.h>
+#include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/vp8_parser.h>
 #include <packager/media/codecs/vp9_parser.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
+#include <packager/media/codecs/vpx_parser.h>
 #include <packager/media/codecs/webvtt_util.h>
 #include <packager/media/formats/webm/webm_constants.h>
 #include <packager/media/formats/webm/webm_crypto_helpers.h>
+#include <packager/media/formats/webm/webm_parser.h>
+#include <packager/media/formats/webm/webm_tracks_parser.h>
 #include <packager/media/formats/webm/webm_webvtt_parser.h>
 
 namespace shaka {

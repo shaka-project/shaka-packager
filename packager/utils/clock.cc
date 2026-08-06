@@ -6,6 +6,8 @@
 
 #include <packager/utils/clock.h>
 
+#include <chrono>
+
 namespace shaka {
 
 Clock::time_point Clock::now() noexcept {

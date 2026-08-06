@@ -8,8 +8,12 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <cstring>
+#include <functional>
+#include <memory>
 #include <thread>
+#include <vector>
 
 #include <gtest/gtest.h>
 

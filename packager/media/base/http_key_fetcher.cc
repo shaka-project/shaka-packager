@@ -6,7 +6,15 @@
 
 #include <packager/media/base/http_key_fetcher.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <packager/file/file_closer.h>
+#include <packager/file/http_file.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -51,13 +59,16 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
                                      std::string* response) {
   std::string content_type;
   std::vector<std::string> headers;
-  if (data.find("soap:Envelope") != std::string::npos) {
+  if (!content_type_.empty()) {
+    content_type = content_type_;
+  } else if (data.find("soap:Envelope") != std::string::npos) {
     // Adds Http headers for SOAP requests.
     content_type = kXmlContentType;
     headers.push_back(kSoapActionHeader);
   } else {
     content_type = kJsonContentType;
   }
+  headers.insert(headers.end(), extra_headers_.begin(), extra_headers_.end());
 
   std::unique_ptr<HttpFile, FileCloser> file(
       new HttpFile(method, path, content_type, headers, timeout_in_seconds_));

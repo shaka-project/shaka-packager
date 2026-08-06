@@ -6,11 +6,17 @@
 
 #include <packager/file/callback_file.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/buffer_callback_params.h>
 #include <packager/file.h>
 #include <packager/file/file_closer.h>
 #include <packager/macros/compiler.h>

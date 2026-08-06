@@ -8,10 +8,20 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <map>
+#include <memory>
 #include <optional>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/strings/ascii.h>
 #include <absl/strings/match.h>
 #include <absl/strings/str_format.h>
 
@@ -19,14 +29,21 @@
 #include <packager/app/muxer_factory.h>
 #include <packager/app/packager_util.h>
 #include <packager/app/single_thread_job_manager.h>
+#include <packager/buffer_callback_params.h>
+#include <packager/cea_caption.h>
+#include <packager/chunking_params.h>
+#include <packager/crypto_params.h>
 #include <packager/file.h>
 #include <packager/hls/base/hls_notifier.h>
 #include <packager/hls/base/simple_hls_notifier.h>
-#include <packager/macros/logging.h>
+#include <packager/hls_params.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/cc_stream_filter.h>
+#include <packager/media/base/container_names.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
 #include <packager/media/chunking/chunking_handler.h>
 #include <packager/media/chunking/cue_alignment_handler.h>
@@ -43,6 +60,8 @@
 #include <packager/media/trick_play/trick_play_handler.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/simple_mpd_notifier.h>
+#include <packager/status.h>
+#include <packager/utils/clock.h>
 #include <packager/version/version.h>
 
 namespace shaka {
@@ -479,7 +498,8 @@ Status CreateDemuxer(const StreamDescriptor& stream,
 std::shared_ptr<MediaHandler> CreateEncryptionHandler(
     const PackagingParams& packaging_params,
     const StreamDescriptor& stream,
-    KeySource* key_source) {
+    KeySource* key_source,
+    Status* status) {
   if (stream.skip_encryption) {
     return nullptr;
   }
@@ -491,15 +511,34 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   // Make a copy so that we can modify it for this specific stream.
   EncryptionParams encryption_params = packaging_params.encryption_params;
 
-  // Use Sample AES in MPEG2TS.
+  // AES-128 whole-segment encryption is only supported for MPEG2TS and MP4.
+  // Reject early for containers that have no implementation (e.g. WebM).
+  if (encryption_params.protection_scheme ==
+      EncryptionParams::kProtectionSchemeAes128) {
+    const MediaContainerName output_format = GetOutputFormat(stream);
+    if (output_format != CONTAINER_MPEG2TS && output_format != CONTAINER_AAC &&
+        output_format != CONTAINER_AC3 && output_format != CONTAINER_EAC3 &&
+        output_format != CONTAINER_MOV) {
+      *status = Status(error::INVALID_ARGUMENT,
+                       "protection_scheme=aes128 is not supported for this "
+                       "output container.");
+      return nullptr;
+    }
+  }
+
+  // Use Sample AES in MPEG2TS, unless the user explicitly chose AES-128
+  // full-segment encryption which handles TS at the segment level.
   // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
   // will support CENC in TS in the future.
   if (GetOutputFormat(stream) == CONTAINER_MPEG2TS ||
       GetOutputFormat(stream) == CONTAINER_AAC ||
       GetOutputFormat(stream) == CONTAINER_AC3 ||
       GetOutputFormat(stream) == CONTAINER_EAC3) {
-    VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
-    encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+    if (encryption_params.protection_scheme !=
+        EncryptionParams::kProtectionSchemeAes128) {
+      VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
+      encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+    }
   }
 
   if (!stream.drm_label.empty()) {
@@ -695,8 +734,11 @@ Status CreateAudioVideoJobs(
         handlers.emplace_back(std::make_shared<ChunkingHandler>(
             packaging_params.chunking_params));
         handlers.emplace_back(segment_coordinator);
+        Status enc_handler_status;
         handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
-                                                      encryption_key_source));
+                                                      encryption_key_source,
+                                                      &enc_handler_status));
+        RETURN_IF_ERROR(enc_handler_status);
       } else {
         // For text: SegmentCoordinator before TextChunker
         // So it can forward SegmentInfo from video/audio to TextChunker

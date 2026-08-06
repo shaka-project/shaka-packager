@@ -7,7 +7,6 @@
 #ifndef SHAKA_PACKAGER_TEST_CLOCK_H
 #define SHAKA_PACKAGER_TEST_CLOCK_H
 
-#include <chrono>
 #include <string>
 
 #include <packager/utils/clock.h>

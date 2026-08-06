@@ -6,9 +6,23 @@
 
 #include <packager/media/formats/mp2t/es_parser_dvb.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+#include <absl/log/log.h>
+
 #include <packager/media/base/bit_reader.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/timestamp.h>
+#include <packager/media/formats/dvb/dvb_sub_parser.h>
+#include <packager/media/formats/mp2t/es_parser.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {

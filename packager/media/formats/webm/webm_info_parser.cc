@@ -4,12 +4,16 @@
 
 #include <packager/media/formats/webm/webm_info_parser.h>
 
+#include <chrono>
+#include <cstdint>
 #include <ctime>
+#include <ios>
+#include <string>
 
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

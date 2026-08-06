@@ -6,15 +6,18 @@
 
 #include <packager/media/codecs/nal_unit_to_byte_stream_converter.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <list>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
 #include <packager/macros/compiler.h>
-#include <packager/media/base/bit_reader.h>
-#include <packager/media/base/buffer_reader.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/decrypt_config.h>
 #include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {

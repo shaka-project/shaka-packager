@@ -7,10 +7,14 @@
 #ifndef PACKAGER_MEDIA_CHUNKING_SEGMENT_COORDINATOR_H_
 #define PACKAGER_MEDIA_CHUNKING_SEGMENT_COORDINATOR_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <set>
 
 #include <packager/media/base/media_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

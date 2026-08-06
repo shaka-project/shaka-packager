@@ -7,11 +7,18 @@
 #include <packager/media/base/aes_pattern_cryptor.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
 #include <packager/macros/crypto.h>
+#include <packager/media/base/aes_cryptor.h>
 
 namespace shaka {
 namespace media {

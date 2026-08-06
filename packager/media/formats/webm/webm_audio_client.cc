@@ -4,8 +4,17 @@
 
 #include <packager/media/formats/webm/webm_audio_client.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <ios>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <absl/log/log.h>
 
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/formats/webm/webm_constants.h>
 
 namespace {

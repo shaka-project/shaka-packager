@@ -4,10 +4,16 @@
 
 #include <packager/media/formats/webm/webm_content_encodings_client.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
 #include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_content_encodings.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace shaka {
 namespace media {

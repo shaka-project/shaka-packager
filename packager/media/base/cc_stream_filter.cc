@@ -6,11 +6,18 @@
 
 #include <packager/media/base/cc_stream_filter.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <absl/log/log.h>
 
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

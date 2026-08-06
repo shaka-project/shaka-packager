@@ -7,7 +7,6 @@
 #ifndef MPD_BASE_MPD_OPTIONS_H_
 #define MPD_BASE_MPD_OPTIONS_H_
 
-#include <string>
 
 #include <packager/mpd_params.h>
 

@@ -6,6 +6,15 @@
 
 #include <packager/file/http_file.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <ios>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
@@ -14,11 +23,14 @@
 #include <absl/strings/escaping.h>
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>
+#include <curl/easy.h>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
+#include <packager/file/io_cache.h>
 #include <packager/file/thread_pool.h>
 #include <packager/macros/compiler.h>
-#include <packager/macros/logging.h>
+#include <packager/status.h>
 #include <packager/version/version.h>
 
 ABSL_FLAG(std::string,

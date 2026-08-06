@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <mkvmuxer/mkvmuxer.h>
+#include <mkvmuxer/mkvmuxertypes.h>
 
 namespace shaka {
 namespace media {

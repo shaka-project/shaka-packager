@@ -7,20 +7,28 @@
 #include <packager/media/formats/mp4/mp4_muxer.h>
 
 #include <algorithm>
-#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
-#include <absl/strings/numbers.h>
+#include <absl/strings/string_view.h>
 
-#include <packager/file.h>
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
-#include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/encryption_config.h>
 #include <packager/media/base/fourccs.h>
-#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer.h>
+#include <packager/media/base/range.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/es_descriptor.h>
@@ -32,6 +40,7 @@
 #include <packager/media/formats/mp4/multi_segment_segmenter.h>
 #include <packager/media/formats/mp4/single_segment_segmenter.h>
 #include <packager/media/formats/ttml/ttml_generator.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -320,14 +329,19 @@ Status MP4Muxer::DelayInitializeMuxer() {
     }
 
     if (stream->is_encrypted() && options().mp4_params.include_pssh_in_stream) {
-      moov->pssh.clear();
-      const auto& key_system_info = stream->encryption_config().key_system_info;
-      for (const ProtectionSystemSpecificInfo& system : key_system_info) {
-        if (system.psshs.empty())
-          continue;
-        ProtectionSystemSpecificHeader pssh;
-        pssh.raw_box = system.psshs;
-        moov->pssh.push_back(pssh);
+      // AES-128 has no DRM system; skip pssh.
+      if (stream->encryption_config().protection_scheme !=
+          kAes128ProtectionScheme) {
+        moov->pssh.clear();
+        const auto& key_system_info =
+            stream->encryption_config().key_system_info;
+        for (const ProtectionSystemSpecificInfo& system : key_system_info) {
+          if (system.psshs.empty())
+            continue;
+          ProtectionSystemSpecificHeader pssh;
+          pssh.raw_box = system.psshs;
+          moov->pssh.push_back(pssh);
+        }
       }
     }
     if (stream->codec() == kCodecAC4 &&
@@ -356,6 +370,17 @@ Status MP4Muxer::DelayInitializeMuxer() {
       segmenter_->Initialize(streams(), muxer_listener(), progress_listener());
   if (!segmenter_initialized.ok())
     return segmenter_initialized;
+
+  // For AES-128, pass the encryption config to the segmenter for
+  // whole-segment encryption.
+  for (const auto& stream : streams()) {
+    if (stream->is_encrypted() &&
+        stream->encryption_config().protection_scheme ==
+            kAes128ProtectionScheme) {
+      segmenter_->SetAes128EncryptionConfig(stream->encryption_config());
+      break;
+    }
+  }
 
   FireOnMediaStartEvent();
   return Status::OK;
@@ -493,14 +518,18 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   sample_description.video_entries.push_back(video);
 
   if (video_info->is_encrypted()) {
-    if (video_info->has_clear_lead()) {
-      // Add a second entry for clear content.
-      sample_description.video_entries.push_back(video);
+    // AES-128 encrypts at the segment level; no encv/sinf box needed.
+    if (video_info->encryption_config().protection_scheme !=
+        kAes128ProtectionScheme) {
+      if (video_info->has_clear_lead()) {
+        // Add a second entry for clear content.
+        sample_description.video_entries.push_back(video);
+      }
+      // Convert the first entry to an encrypted entry.
+      VideoSampleEntry& entry = sample_description.video_entries[0];
+      GenerateSinf(entry.format, video_info->encryption_config(), &entry.sinf);
+      entry.format = FOURCC_encv;
     }
-    // Convert the first entry to an encrypted entry.
-    VideoSampleEntry& entry = sample_description.video_entries[0];
-    GenerateSinf(entry.format, video_info->encryption_config(), &entry.sinf);
-    entry.format = FOURCC_encv;
   }
   return true;
 }
@@ -613,14 +642,18 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   sample_description.audio_entries.push_back(audio);
 
   if (audio_info->is_encrypted()) {
-    if (audio_info->has_clear_lead()) {
-      // Add a second entry for clear content.
-      sample_description.audio_entries.push_back(audio);
+    // AES-128 encrypts at the segment level; no enca/sinf box needed.
+    if (audio_info->encryption_config().protection_scheme !=
+        kAes128ProtectionScheme) {
+      if (audio_info->has_clear_lead()) {
+        // Add a second entry for clear content.
+        sample_description.audio_entries.push_back(audio);
+      }
+      // Convert the first entry to an encrypted entry.
+      AudioSampleEntry& entry = sample_description.audio_entries[0];
+      GenerateSinf(entry.format, audio_info->encryption_config(), &entry.sinf);
+      entry.format = FOURCC_enca;
     }
-    // Convert the first entry to an encrypted entry.
-    AudioSampleEntry& entry = sample_description.audio_entries[0];
-    GenerateSinf(entry.format, audio_info->encryption_config(), &entry.sinf);
-    entry.format = FOURCC_enca;
   }
 
   if (audio_info->seek_preroll_ns() > 0) {

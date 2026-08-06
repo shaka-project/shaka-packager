@@ -8,8 +8,6 @@
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_UTILS_H_
 
 #include <cstdint>
-#include <list>
-#include <memory>
 #include <string>
 #include <string_view>
 

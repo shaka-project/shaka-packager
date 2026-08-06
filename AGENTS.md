@@ -19,6 +19,18 @@ cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Debug -G Ninja
 Debug is the default for development. Use `-DCMAKE_BUILD_TYPE=Release` for
 distribution builds (as used in CI). Build output lands in `build/`.
 
+**macOS (Homebrew) note:** Add `-DCMAKE_POLICY_VERSION_MINIMUM=3.5` to
+suppress a c-ares CMake policy warning that otherwise aborts configuration:
+```shell
+cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Debug -G Ninja -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+```
+Homebrew tools (`cmake`, `ninja`, `clang-format`) must be in `PATH`. In
+non-interactive shells (scripts, CI, AI agents) this is not set automatically
+— add it explicitly:
+```shell
+export PATH="/opt/homebrew/bin:$PATH"
+```
+
 **Build:**
 ```shell
 cmake --build build/ --parallel
@@ -109,9 +121,32 @@ ctest -C Debug -V --test-dir build/
 End-to-end tests run the `packager` binary against real media and compare
 output to golden files in `packager/app/test/testdata/`.
 
-**To regenerate goldens:**
+**Run integration/golden tests directly** (required — the ctest entry for
+these passes the wrong paths on some setups):
 ```shell
-./build/packager/packager_test.py --test_update_golden_files
+PACKAGER_BIN=build/packager/packager \
+MPD_GENERATOR_BIN=build/packager/mpd_generator \
+PACKAGER_SRC_DIR=$(pwd) \
+python3 packager/app/test/packager_test.py
+```
+`PACKAGER_SRC_DIR` is required. Without it the script computes incorrect
+paths to test data and golden files.
+
+**To regenerate goldens** (all tests):
+```shell
+PACKAGER_BIN=build/packager/packager \
+MPD_GENERATOR_BIN=build/packager/mpd_generator \
+PACKAGER_SRC_DIR=$(pwd) \
+python3 packager/app/test/packager_test.py --test_update_golden_files
+```
+
+**To regenerate goldens for a single test:**
+```shell
+PACKAGER_BIN=build/packager/packager \
+MPD_GENERATOR_BIN=build/packager/mpd_generator \
+PACKAGER_SRC_DIR=$(pwd) \
+python3 packager/app/test/packager_test.py \
+  PackagerFunctionalTest.<TestName> --test_update_golden_files
 ```
 
 Before committing updated goldens, verify that it makes sense for them to

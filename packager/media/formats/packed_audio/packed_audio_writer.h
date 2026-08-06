@@ -7,10 +7,18 @@
 #ifndef PACKAGER_MEDIA_FORMATS_PACKED_AUDIO_PACKED_AUDIO_WRITER_H_
 #define PACKAGER_MEDIA_FORMATS_PACKED_AUDIO_PACKED_AUDIO_WRITER_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <string>
 
+#include <packager/file.h>
 #include <packager/file/file_closer.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

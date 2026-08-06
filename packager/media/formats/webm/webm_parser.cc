@@ -12,7 +12,13 @@
 
 #include <packager/media/formats/webm/webm_parser.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <ios>
+#include <iterator>
 #include <limits>
+#include <string>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>

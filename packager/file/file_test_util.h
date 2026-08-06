@@ -7,13 +7,11 @@
 #ifndef MEDIA_FILE_FILE_TEST_UTIL_H_
 #define MEDIA_FILE_FILE_TEST_UTIL_H_
 
-#include <iterator>
 #include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/file.h>
 
 namespace shaka {
 

@@ -4,9 +4,10 @@
 
 #include <packager/media/formats/mp2t/ts_section_pmt.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
 #include <vector>
-
-#include <absl/log/log.h>
 
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>

@@ -4,15 +4,25 @@
 
 #include <packager/media/formats/webm/webm_video_client.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <ios>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <absl/log/log.h>
 
 #include <packager/macros/logging.h>
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
 #include <packager/media/base/video_util.h>
 #include <packager/media/codecs/av1_codec_configuration_record.h>
 #include <packager/media/codecs/vp_codec_configuration_record.h>
 #include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_parser.h>
 
 namespace {
 

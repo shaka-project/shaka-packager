@@ -6,7 +6,13 @@
 
 #include <packager/media/codecs/video_slice_header_parser.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/codecs/nalu_reader.h>
 
 namespace shaka {
 namespace media {

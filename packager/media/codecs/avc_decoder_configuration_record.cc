@@ -6,13 +6,19 @@
 
 #include <packager/media/codecs/avc_decoder_configuration_record.h>
 
+#include <cstdint>
+#include <iterator>
+#include <string>
+
+#include <absl/log/log.h>
 #include <absl/strings/ascii.h>
 #include <absl/strings/escaping.h>
 
-#include <packager/macros/logging.h>
 #include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>
 #include <packager/media/codecs/h264_parser.h>
+#include <packager/media/codecs/nalu_reader.h>
 #include <packager/utils/bytes_to_string_view.h>
 
 namespace shaka {

@@ -6,11 +6,14 @@
 
 #include <packager/media/formats/mp4/composition_offset_iterator.h>
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <gtest/gtest.h>
 
 #include <packager/macros/classes.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace shaka {
 namespace media {

@@ -6,9 +6,17 @@
 
 #include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
 
+#include <cstdint>
+#include <iostream>
+#include <iterator>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include <absl/strings/escaping.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/video_stream_info.h>
 #include <packager/media/test/test_data_util.h>
 
 namespace {

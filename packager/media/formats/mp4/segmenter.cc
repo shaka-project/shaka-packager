@@ -6,22 +6,31 @@
 
 #include <packager/media/formats/mp4/segmenter.h>
 
-#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/id3_tag.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
+#include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/stream_info.h>
-#include <packager/media/chunking/chunking_handler.h>
 #include <packager/media/event/progress_listener.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/fragmenter.h>
 #include <packager/media/formats/mp4/key_frame_info.h>
+#include <packager/status.h>
 #include <packager/version/version.h>
 
 namespace shaka {

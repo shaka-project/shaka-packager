@@ -7,15 +7,23 @@
 #include <packager/media/formats/webm/two_pass_single_segment_segmenter.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <utility>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <common/webmids.h>
 #include <mkvmuxer/mkvmuxer.h>
 #include <mkvmuxer/mkvmuxerutil.h>
 
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/file/file_util.h>
-#include <packager/media/base/media_sample.h>
 #include <packager/media/base/muxer_options.h>
-#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/single_segment_segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

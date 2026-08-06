@@ -6,14 +6,22 @@
 
 #include <packager/media/test/test_web_server.h>
 
-#include <chrono>
+#include <mongoose.h>
+
+#include <cstddef>
+#include <memory>
 #include <random>
 #include <string_view>
+#include <thread>
+#include <vector>
 
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
-#include <mongoose.h>
+#include <absl/synchronization/mutex.h>
+#include <absl/time/clock.h>
+#include <absl/time/time.h>
 #include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 // A full replacement for our former use of httpbin.org in tests.  This
 // embedded web server can:

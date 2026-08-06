@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_BASE_BYTE_QUEUE_H_
 #define PACKAGER_MEDIA_BASE_BYTE_QUEUE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 

@@ -8,6 +8,10 @@
 
 #include <packager/app/mpd_flags.h>
 
+#include <string>
+
+#include <absl/flags/flag.h>
+
 ABSL_FLAG(bool,
           generate_static_live_mpd,
           false,

@@ -8,7 +8,9 @@
 #define MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/pssh_generator.h>

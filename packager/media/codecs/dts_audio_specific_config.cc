@@ -5,6 +5,9 @@
 
 #include <packager/media/codecs/dts_audio_specific_config.h>
 
+#include <cstdint>
+#include <vector>
+
 #include <packager/media/base/bit_reader.h>
 #include <packager/media/base/rcheck.h>
 

@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_TAG_H_
 #define PACKAGER_HLS_BASE_TAG_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 

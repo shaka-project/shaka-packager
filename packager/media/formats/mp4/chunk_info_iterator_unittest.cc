@@ -6,13 +6,15 @@
 
 #include <packager/media/formats/mp4/chunk_info_iterator.h>
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 #include <packager/macros/classes.h>
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace {
 struct ChunkProperty {

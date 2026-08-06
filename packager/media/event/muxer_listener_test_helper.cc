@@ -6,8 +6,15 @@
 
 #include <packager/media/event/muxer_listener_test_helper.h>
 
-#include <gtest/gtest.h>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <vector>
 
+#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/range.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
 #include <packager/media/event/muxer_listener.h>
 
 namespace shaka {

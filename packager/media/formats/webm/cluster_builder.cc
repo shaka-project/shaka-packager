@@ -4,8 +4,12 @@
 
 #include <packager/media/formats/webm/cluster_builder.h>
 
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <utility>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/media/formats/webm/webm_constants.h>
 

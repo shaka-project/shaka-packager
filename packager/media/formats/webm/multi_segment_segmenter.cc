@@ -6,15 +6,25 @@
 
 #include <packager/media/formats/webm/multi_segment_segmenter.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 #include <mkvmuxer/mkvmuxer.h>
 
-#include <packager/macros/logging.h>
+#include <packager/file.h>
 #include <packager/macros/status.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
-#include <packager/media/base/stream_info.h>
+#include <packager/media/base/range.h>
 #include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/webm/mkv_writer.h>
+#include <packager/media/formats/webm/segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

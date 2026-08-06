@@ -7,6 +7,7 @@
 #ifndef PACKAGER_PUBLIC_MPD_PARAMS_H_
 #define PACKAGER_PUBLIC_MPD_PARAMS_H_
 
+#include <cstddef>
 #include <string>
 #include <vector>
 

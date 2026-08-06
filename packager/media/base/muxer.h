@@ -9,16 +9,20 @@
 #ifndef PACKAGER_MEDIA_BASE_MUXER_H_
 #define PACKAGER_MEDIA_BASE_MUXER_H_
 
+#include <chrono>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer_options.h>
+#include <packager/media/base/text_sample.h>
 #include <packager/media/event/muxer_listener.h>
 #include <packager/media/event/progress_listener.h>
-#include <packager/mpd/base/mpd_builder.h>
 #include <packager/status.h>
+#include <packager/utils/clock.h>
 
 namespace shaka {
 namespace media {

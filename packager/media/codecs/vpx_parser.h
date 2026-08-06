@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <vector>
 
 #include <packager/macros/classes.h>
 #include <packager/media/codecs/vp_codec_configuration_record.h>

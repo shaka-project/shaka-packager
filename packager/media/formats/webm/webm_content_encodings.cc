@@ -4,8 +4,9 @@
 
 #include <packager/media/formats/webm/webm_content_encodings.h>
 
+#include <cstdint>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

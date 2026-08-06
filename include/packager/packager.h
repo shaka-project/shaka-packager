@@ -19,7 +19,6 @@
 #include <packager/chunking_params.h>
 #include <packager/crypto_params.h>
 #include <packager/export.h>
-#include <packager/file.h>
 #include <packager/hls_params.h>
 #include <packager/mp4_output_params.h>
 #include <packager/mpd_params.h>

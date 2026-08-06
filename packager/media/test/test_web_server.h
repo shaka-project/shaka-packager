@@ -9,8 +9,10 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <thread>
 
+#include <absl/base/thread_annotations.h>
 #include <absl/synchronization/mutex.h>
 #include <absl/time/time.h>
 

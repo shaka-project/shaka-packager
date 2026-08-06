@@ -7,12 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_TELETEXT_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_TELETEXT_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include <packager/media/base/text_stream_info.h>
+#include <packager/media/base/text_sample.h>
 #include <packager/media/formats/mp2t/es_parser.h>
 
 namespace shaka {

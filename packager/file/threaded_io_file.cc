@@ -6,8 +6,18 @@
 
 #include <packager/file/threaded_io_file.h>
 
-#include <absl/log/check.h>
+#include <atomic>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <utility>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <absl/synchronization/mutex.h>
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/file/thread_pool.h>
 
 namespace shaka {

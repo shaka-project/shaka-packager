@@ -6,10 +6,23 @@
 
 #include <packager/media/formats/webm/segmenter_test_base.h>
 
-#include <absl/log/check.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+#include <gtest/gtest.h>
+
+#include <packager/file.h>
 #include <packager/file/memory_file.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer_options.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/video_stream_info.h>
 #include <packager/media/formats/webm/webm_constants.h>
+#include <packager/media/formats/webm/webm_parser.h>
 #include <packager/version/version.h>
 
 namespace shaka {

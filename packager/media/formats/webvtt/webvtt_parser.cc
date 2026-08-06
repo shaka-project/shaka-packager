@@ -6,13 +6,23 @@
 
 #include <packager/media/formats/webvtt/webvtt_parser.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/strings/ascii.h>
+#include <absl/strings/match.h>
 #include <absl/strings/numbers.h>
-#include <absl/strings/str_format.h>
-#include <absl/strings/str_split.h>
 
 #include <packager/kv_pairs/kv_pairs.h>
+#include <packager/media/base/media_parser.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>
 #include <packager/media/formats/webvtt/webvtt_utils.h>
 #include <packager/utils/string_trim_split.h>

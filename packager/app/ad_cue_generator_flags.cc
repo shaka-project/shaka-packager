@@ -8,6 +8,10 @@
 
 #include <packager/app/ad_cue_generator_flags.h>
 
+#include <string>
+
+#include <absl/flags/flag.h>
+
 ABSL_FLAG(std::string,
           ad_cues,
           "",

@@ -6,10 +6,13 @@
 
 #include <packager/media/formats/webvtt/text_readers.h>
 
+#include <cstdint>
 #include <cstring>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

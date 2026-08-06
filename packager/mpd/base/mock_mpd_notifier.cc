@@ -6,6 +6,9 @@
 
 #include <packager/mpd/base/mock_mpd_notifier.h>
 
+#include <packager/mpd/base/mpd_notifier.h>
+#include <packager/mpd/base/mpd_options.h>
+
 namespace shaka {
 
 MockMpdNotifier::MockMpdNotifier(const MpdOptions& mpd_options)

@@ -7,8 +7,11 @@
 #ifndef PACKAGER_APP_HLS_FLAGS_H_
 #define PACKAGER_APP_HLS_FLAGS_H_
 
+#include <cstdint>
+#include <optional>
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(std::string, hls_master_playlist_output);
 ABSL_DECLARE_FLAG(std::string, hls_base_url);
