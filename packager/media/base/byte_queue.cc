@@ -4,8 +4,12 @@
 
 #include <packager/media/base/byte_queue.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 namespace shaka {
 namespace media {

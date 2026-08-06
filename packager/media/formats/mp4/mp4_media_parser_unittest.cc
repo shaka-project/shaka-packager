@@ -6,18 +6,28 @@
 
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <absl/log/log.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <packager/macros/logging.h>
+#include <packager/media/base/key_source.h>
+#include <packager/media/base/media_parser.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/raw_key_source.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/test/test_data_util.h>
+#include <packager/status.h>
 
 using ::testing::_;
 using ::testing::DoAll;

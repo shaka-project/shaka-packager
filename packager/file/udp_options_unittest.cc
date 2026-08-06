@@ -6,6 +6,8 @@
 
 #include <packager/file/udp_options.h>
 
+#include <string>
+
 #include <absl/flags/declare.h>
 #include <absl/flags/flag.h>
 #include <gtest/gtest.h>

@@ -6,17 +6,13 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_AUDIO_H_
 
 #include <cstdint>
-#include <functional>
 #include <list>
 #include <memory>
 #include <utility>
 
-#include <packager/macros/classes.h>
-#include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/byte_queue.h>
 #include <packager/media/formats/mp2t/es_parser.h>
 #include <packager/media/formats/mp2t/ts_stream_type.h>
-#include <functional>
 
 namespace shaka {
 namespace media {

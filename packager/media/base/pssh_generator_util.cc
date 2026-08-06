@@ -6,7 +6,9 @@
 
 #include <packager/media/base/pssh_generator_util.h>
 
+#include <cstdint>
 #include <string>
+#include <vector>
 
 #include <packager/media/base/widevine_pssh_data.pb.h>
 

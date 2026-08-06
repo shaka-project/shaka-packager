@@ -7,16 +7,17 @@
 #include <packager/media/base/muxer_util.h>
 
 #include <cinttypes>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <absl/strings/str_split.h>
 
-#include <packager/media/base/video_stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace {

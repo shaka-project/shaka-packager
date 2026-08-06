@@ -9,7 +9,9 @@
 
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>

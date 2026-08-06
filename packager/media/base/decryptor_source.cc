@@ -6,11 +6,24 @@
 
 #include <packager/media/base/decryptor_source.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/aes_pattern_cryptor.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/key_source.h>
+#include <packager/status.h>
 
 namespace {
 // Return true if [encrypted_buffer, encrypted_buffer + buffer_size) overlaps

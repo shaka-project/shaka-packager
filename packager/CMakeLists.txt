@@ -182,6 +182,8 @@ endif()
 add_executable(packager
   app/ad_cue_generator_flags.cc
   app/ad_cue_generator_flags.h
+  app/cpix_encryption_flags.cc
+  app/cpix_encryption_flags.h
   app/crypto_flags.cc
   app/crypto_flags.h
   app/hls_flags.cc

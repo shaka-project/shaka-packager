@@ -6,6 +6,8 @@
 
 #include <packager/media/base/video_util.h>
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
 
 using ::testing::TestWithParam;

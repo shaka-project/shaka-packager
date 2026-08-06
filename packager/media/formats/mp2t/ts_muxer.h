@@ -7,11 +7,21 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_MUXER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_MUXER_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
+#include <string>
 
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/macros/classes.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/formats/mp2t/ts_segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -35,10 +45,15 @@ class TsMuxer : public Muxer {
                       BufferWriter* segment_buffer);
   Status CloseFile(std::unique_ptr<File, FileCloser> file);
 
+  // Encrypts |segment_buffer| in-place if AES-128 is active.
+  void EncryptSegmentIfNeeded(BufferWriter* segment_buffer);
+
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
 
   std::unique_ptr<TsSegmenter> segmenter_;
+  // Populated when protection_scheme == kAes128ProtectionScheme.
+  EncryptionConfig aes128_encryption_config_;
   int64_t sample_durations_[2] = {0, 0};
   size_t num_samples_ = 0;
 

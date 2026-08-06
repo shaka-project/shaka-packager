@@ -10,14 +10,19 @@
 #include <cctype>
 #include <cinttypes>
 #include <cmath>
-#include <unordered_set>
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <string>
+#include <string_view>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 
-#include <packager/macros/logging.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 
 namespace shaka {
 namespace media {

@@ -7,6 +7,8 @@
 #ifndef APP_MPD_GENERATOR_FLAGS_H_
 #define APP_MPD_GENERATOR_FLAGS_H_
 
+#include <string>
+
 #include <absl/flags/flag.h>
 
 ABSL_FLAG(std::string,

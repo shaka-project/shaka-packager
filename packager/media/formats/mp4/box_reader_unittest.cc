@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <packager/media/formats/mp4/box_buffer.h>
+#include <packager/media/formats/mp4/box_reader.h>
 
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 #include <packager/macros/logging.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/media/formats/mp4/box.h>
+#include <packager/media/formats/mp4/box_buffer.h>
 
 namespace shaka {
 namespace media {

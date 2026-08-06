@@ -5,10 +5,13 @@
 
 #include <packager/media/formats/webm/webm_video_client.h>
 
-#include <gmock/gmock.h>
+#include <cstdint>
+#include <vector>
+
 #include <gtest/gtest.h>
 
-#include <packager/media/base/video_stream_info.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/codecs/vp_codec_configuration_record.h>
 #include <packager/media/formats/webm/webm_constants.h>
 
 namespace shaka {

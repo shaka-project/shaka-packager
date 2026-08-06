@@ -7,10 +7,18 @@
 #include <packager/media/crypto/sample_aes_ec3_cryptor.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <ios>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 
+#include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/buffer_reader.h>
 
 namespace shaka {

@@ -6,6 +6,12 @@
 //
 // Defines command line flags for raw key encryption/decryption.
 
+#include <packager/app/raw_key_encryption_flags.h>
+
+#include <string>
+
+#include <absl/flags/flag.h>
+
 #include <packager/app/validate_flag.h>
 #include <packager/utils/absl_flag_hexbytes.h>
 

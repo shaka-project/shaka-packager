@@ -6,10 +6,15 @@
 
 #include <packager/media/base/common_pssh_generator.h>
 
-#include <packager/macros/classes.h>
+#include <cstdint>
+#include <iterator>
+#include <optional>
+#include <vector>
+
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/pssh_generator.h>
 
 namespace shaka {
 namespace media {

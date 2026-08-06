@@ -10,9 +10,9 @@
 #define PACKAGER_APP_MANIFEST_FLAGS_H_
 
 #include <cstdint>
+#include <string>
 
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(double, time_shift_buffer_depth);
 ABSL_DECLARE_FLAG(bool, event_to_vod_on_end_of_stream);

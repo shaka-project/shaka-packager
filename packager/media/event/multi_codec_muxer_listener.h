@@ -7,7 +7,10 @@
 #ifndef PACKAGER_MEDIA_EVENT_MULTI_CODEC_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_MULTI_CODEC_MUXER_LISTENER_H_
 
+#include <cstdint>
+
 #include <packager/media/event/combined_muxer_listener.h>
+#include <packager/media/event/muxer_listener.h>
 
 namespace shaka {
 namespace media {

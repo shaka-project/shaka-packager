@@ -2,13 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <packager/media/formats/webm/two_pass_single_segment_segmenter.h>
-
+#include <cstdint>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
+#include <packager/file/file_test_util.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/formats/webm/segmenter.h>
 #include <packager/media/formats/webm/segmenter_test_base.h>
+#include <packager/media/formats/webm/two_pass_single_segment_segmenter.h>
+#include <packager/status/status_test_util.h>
 
 namespace shaka {
 namespace media {

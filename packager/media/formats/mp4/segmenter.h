@@ -7,14 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_SEGMENTER_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <map>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include <packager/macros/classes.h>
-#include <packager/media/base/fourccs.h>
+#include <packager/media/base/encryption_config.h>
 #include <packager/media/base/range.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/status.h>
@@ -22,7 +21,6 @@
 namespace shaka {
 namespace media {
 
-struct EncryptionConfig;
 struct MuxerOptions;
 struct SegmentInfo;
 
@@ -98,6 +96,10 @@ class Segmenter {
   /// @return The total length, in seconds, of segmented media files.
   double GetDuration() const;
 
+  void SetAes128EncryptionConfig(const EncryptionConfig& config) {
+    aes128_encryption_config_ = config;
+  }
+
   /// @return The sample duration in the timescale of the media.
   ///         Returns 0 if no samples are added yet.
   int64_t sample_duration() const {
@@ -123,6 +125,10 @@ class Segmenter {
 
   void set_progress_target(uint64_t progress_target) {
     progress_target_ = progress_target;
+  }
+
+  const EncryptionConfig& aes128_encryption_config() const {
+    return aes128_encryption_config_;
   }
 
  private:
@@ -153,6 +159,8 @@ class Segmenter {
   size_t num_samples_ = 0;
   std::vector<uint64_t> stream_durations_;
   std::vector<KeyFrameInfo> key_frame_infos_;
+  // Only set for AES-128; holds key/IV for whole-segment encryption.
+  EncryptionConfig aes128_encryption_config_;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

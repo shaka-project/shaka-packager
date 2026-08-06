@@ -6,10 +6,32 @@
 
 #include <packager/media/formats/mp2t/ts_muxer.h>
 
-#include <absl/log/check.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include <absl/log/check.h>
+#include <absl/log/log.h>
+
+#include <packager/file.h>
+#include <packager/file/file_closer.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/muxer.h>
+#include <packager/media/base/muxer_options.h>
 #include <packager/media/base/muxer_util.h>
+#include <packager/media/base/range.h>
+#include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp2t/ts_segmenter.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -38,6 +60,14 @@ Status TsMuxer::InitializeMuxer() {
 
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
   Status status = segmenter_->Initialize(*streams()[0]);
+
+  // Capture AES-128 encryption config once so FinalizeSegment can encrypt.
+  const auto& stream = *streams()[0];
+  if (stream.is_encrypted() &&
+      stream.encryption_config().protection_scheme == kAes128ProtectionScheme) {
+    aes128_encryption_config_ = stream.encryption_config();
+  }
+
   FireOnMediaStartEvent();
   return status;
 }
@@ -86,6 +116,8 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
 
   const int64_t file_size = segmenter_->segment_buffer()->Size();
 
+  EncryptSegmentIfNeeded(segmenter_->segment_buffer());
+
   RETURN_IF_ERROR(WriteSegment(segment_path, segmenter_->segment_buffer()));
 
   total_duration_ += segment_info.duration;
@@ -102,6 +134,35 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
   segmenter_->set_segment_started(false);
 
   return Status::OK;
+}
+
+void TsMuxer::EncryptSegmentIfNeeded(BufferWriter* segment_buffer) {
+  if (aes128_encryption_config_.protection_scheme != kAes128ProtectionScheme)
+    return;
+  if (segment_buffer->Size() == 0)
+    return;
+
+  // AES-128 HLS: encrypt the entire TS segment as one CBC stream.
+  // Per RFC 8216 §5.2, PKCS7 padding is required; TS packet size (188 bytes)
+  // is not a multiple of 16, so segments are not guaranteed to be
+  // block-aligned.
+  AesCbcEncryptor encryptor(kPkcs5Padding, AesCryptor::kUseConstantIv);
+  if (!encryptor.InitializeWithIv(aes128_encryption_config_.key,
+                                  aes128_encryption_config_.constant_iv)) {
+    LOG(ERROR) << "AES-128: failed to initialize encryptor for segment.";
+    return;
+  }
+
+  std::vector<uint8_t> plaintext(
+      segment_buffer->Buffer(),
+      segment_buffer->Buffer() + segment_buffer->Size());
+  std::vector<uint8_t> ciphertext;
+  if (!encryptor.Crypt(plaintext, &ciphertext)) {
+    LOG(ERROR) << "AES-128: encryption failed for segment.";
+    return;
+  }
+  segment_buffer->Clear();
+  segment_buffer->AppendVector(ciphertext);
 }
 
 Status TsMuxer::WriteSegment(const std::string& segment_path,

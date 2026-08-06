@@ -9,22 +9,37 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
+#include <packager/crypto_params.h>
 #include <packager/macros/status.h>
-#include <packager/media/base/aes_encryptor.h>
-#include <packager/media/base/audio_stream_info.h>
+#include <packager/media/base/aes_cryptor.h>
 #include <packager/media/base/common_pssh_generator.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/key_source.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/playready_pssh_generator.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/pssh_generator.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/base/widevine_pssh_generator.h>
 #include <packager/media/crypto/aes_encryptor_factory.h>
 #include <packager/media/crypto/subsample_generator.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
@@ -44,6 +59,28 @@ const uint8_t kKeyRotationDefaultKey[] = {
 const uint8_t kKeyRotationDefaultIv[] = {
     0, 0, 0, 0, 0, 0, 0, 0,
 };
+
+// Whether a key restricted to |common_encryption_scheme| may be used with
+// |protection_scheme|. The scheme of a stream may differ from the Common
+// Encryption scheme it is signaled with, so this cannot be validated before
+// the stream's actual protection scheme is known.
+bool SchemeBindingAllows(const std::string& common_encryption_scheme,
+                         FourCC protection_scheme) {
+  if (common_encryption_scheme.empty())
+    return true;
+  if (common_encryption_scheme == FourCCToString(protection_scheme))
+    return true;
+  // Apple Sample AES applies the 'cbcs' pattern scheme to TS streams.
+  if (protection_scheme == kAppleSampleAesProtectionScheme &&
+      common_encryption_scheme == "cbcs") {
+    return true;
+  }
+  // AES-128 full-segment encryption is not a Common Encryption scheme, so a
+  // Common Encryption scheme restriction cannot apply to it.
+  if (protection_scheme == kAes128ProtectionScheme)
+    return true;
+  return false;
+}
 
 std::string GetStreamLabelForEncryption(
     const StreamInfo& stream_info,
@@ -106,9 +143,13 @@ void FillPsshGenerators(
                                   std::end(kMarlinSystemId));
   }
 
+  // The DRM signaling in a CPIX document is authoritative, so no default
+  // PSSH is generated for the CPIX key provider; --protection_systems can
+  // still be used to generate signaling for additional systems.
   if (pssh_generators->empty() && no_pssh_systems->empty() &&
       (encryption_params.key_provider != KeyProvider::kRawKey ||
-       encryption_params.raw_key.pssh.empty())) {
+       encryption_params.raw_key.pssh.empty()) &&
+      encryption_params.key_provider != KeyProvider::kCpix) {
     pssh_generators->emplace_back(new CommonPsshGenerator());
   }
 }
@@ -154,6 +195,14 @@ Status FillProtectionSystemInfo(const EncryptionParams& encryption_params,
     ProtectionSystemSpecificInfo info;
     info.system_id = no_pssh_system;
     AddProtectionSystemIfNotExist(info, encryption_config);
+  }
+
+  if (encryption_config->key_system_info.empty()) {
+    LOG(WARNING) << "The stream is encrypted but carries no DRM signaling "
+                    "(PSSH); players may not be able to acquire the keys. "
+                    "Add DRM signaling to the key source (e.g. a DRMSystem "
+                    "element in the CPIX document), or use "
+                    "--protection_systems to generate it.";
   }
 
   return Status::OK;
@@ -252,6 +301,17 @@ Status EncryptionHandler::ProcessStreamInfo(const StreamInfo& clear_info) {
                              std::end(kKeyRotationDefaultIv));
   } else {
     RETURN_IF_ERROR(key_source_->GetKey(stream_label_, &encryption_key));
+    if (!SchemeBindingAllows(encryption_key.common_encryption_scheme,
+                             protection_scheme_)) {
+      return Status(error::INVALID_ARGUMENT,
+                    "The key for stream label '" + stream_label_ +
+                        "' is restricted to common encryption scheme '" +
+                        encryption_key.common_encryption_scheme +
+                        "', but the stream uses protection scheme '" +
+                        FourCCToString(protection_scheme_) +
+                        "'. Use a key without the restriction or a matching "
+                        "--protection_scheme.");
+    }
   }
   if (!CreateEncryptor(encryption_key))
     return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
@@ -266,6 +326,13 @@ Status EncryptionHandler::ProcessStreamInfo(const StreamInfo& clear_info) {
 Status EncryptionHandler::ProcessMediaSample(
     std::shared_ptr<const MediaSample> clear_sample) {
   DCHECK(clear_sample);
+
+  // AES-128 encrypts full TS segments in TsWriter, not individual samples.
+  // Pass samples through as clear so TsWriter can build the unencrypted
+  // transport stream buffer which is then encrypted as a whole unit.
+  if (protection_scheme_ == kAes128ProtectionScheme) {
+    return DispatchMediaSample(kStreamIndex, std::move(clear_sample));
+  }
 
   // Process the frame even if the frame is not encrypted as the next
   // (encrypted) frame may be dependent on this clear frame.
@@ -387,6 +454,12 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   }
 
   encryption_config_->key_id = encryption_key.key_id;
+
+  // For HLS AES-128, store the raw key so TsWriter can encrypt full segments.
+  if (protection_scheme_ == kAes128ProtectionScheme) {
+    encryption_config_->key = encryption_key.key;
+  }
+
   const auto status = FillProtectionSystemInfo(
       encryption_params_, encryption_key, encryption_config_.get());
   return status.ok();

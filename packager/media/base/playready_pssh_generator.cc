@@ -6,9 +6,11 @@
 
 #include <packager/media/base/playready_pssh_generator.h>
 
-#include <algorithm>
-#include <memory>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <absl/log/check.h>
@@ -20,7 +22,10 @@
 #include <packager/macros/crypto.h>
 #include <packager/macros/logging.h>
 #include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/pssh_generator.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

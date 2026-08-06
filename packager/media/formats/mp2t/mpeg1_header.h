@@ -1,6 +1,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_MPEG1_HEADER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_MPEG1_HEADER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

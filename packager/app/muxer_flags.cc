@@ -8,6 +8,11 @@
 
 #include <packager/app/muxer_flags.h>
 
+#include <cstdint>
+#include <string>
+
+#include <absl/flags/flag.h>
+
 #include <packager/chunking_params.h>
 
 ABSL_FLAG(double,

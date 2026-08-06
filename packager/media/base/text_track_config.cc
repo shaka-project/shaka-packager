@@ -4,6 +4,8 @@
 
 #include <packager/media/base/text_track_config.h>
 
+#include <string>
+
 namespace shaka {
 namespace media {
 

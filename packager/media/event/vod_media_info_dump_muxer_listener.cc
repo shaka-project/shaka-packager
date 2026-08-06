@@ -6,7 +6,11 @@
 
 #include <packager/media/event/vod_media_info_dump_muxer_listener.h>
 
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
@@ -15,6 +19,7 @@
 #include <packager/file.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/stream_info.h>

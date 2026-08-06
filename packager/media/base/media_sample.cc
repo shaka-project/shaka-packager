@@ -7,10 +7,17 @@
 #include <packager/media/base/media_sample.h>
 
 #include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 #include <absl/strings/str_format.h>
+
+#include <packager/media/base/decrypt_config.h>
 
 namespace shaka {
 namespace media {

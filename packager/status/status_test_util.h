@@ -9,7 +9,6 @@
 
 #include <gtest/gtest.h>
 
-#include <packager/status.h>
 
 #define EXPECT_OK(val) EXPECT_EQ(shaka::Status::OK, (val))
 #define ASSERT_OK(val) ASSERT_EQ(shaka::Status::OK, (val))

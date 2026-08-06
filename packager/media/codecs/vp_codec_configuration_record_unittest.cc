@@ -6,7 +6,13 @@
 
 #include <packager/media/codecs/vp_codec_configuration_record.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

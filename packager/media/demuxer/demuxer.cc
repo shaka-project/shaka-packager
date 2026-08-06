@@ -7,26 +7,37 @@
 #include <packager/media/demuxer/demuxer.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
+#include <absl/strings/string_view.h>
 
 #include <packager/file.h>
 #include <packager/macros/compiler.h>
 #include <packager/macros/logging.h>
-#include <packager/media/base/decryptor_source.h>
+#include <packager/media/base/container_names.h>
 #include <packager/media/base/key_source.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
 #include <packager/media/formats/mp2t/mp2t_media_parser.h>
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 #include <packager/media/formats/webm/webm_media_parser.h>
 #include <packager/media/formats/webvtt/webvtt_parser.h>
 #include <packager/media/formats/wvm/wvm_media_parser.h>
+#include <packager/status.h>
 
 namespace {
 // 65KB, sufficient to determine the container and likely all init data.

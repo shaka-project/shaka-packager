@@ -6,9 +6,20 @@
 
 #include <packager/media/formats/ttml/ttml_to_mp4_handler.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <absl/log/check.h>
 
 #include <packager/macros/status.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

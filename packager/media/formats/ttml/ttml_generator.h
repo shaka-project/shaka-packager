@@ -7,11 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_TTML_TTML_GENERATOR_H_
 #define PACKAGER_MEDIA_FORMATS_TTML_TTML_GENERATOR_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <list>
 #include <map>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 #include <packager/media/base/text_sample.h>
 #include <packager/media/base/text_stream_info.h>

@@ -6,7 +6,12 @@
 
 #include <packager/mpd/base/simple_mpd_notifier.h>
 
-#include <filesystem>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <google/protobuf/util/message_differencer.h>

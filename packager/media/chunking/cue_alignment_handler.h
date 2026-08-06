@@ -7,11 +7,15 @@
 #ifndef PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
 #define PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
 
+#include <cstddef>
 #include <deque>
 #include <list>
+#include <memory>
 
 #include <packager/media/base/media_handler.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/chunking/sync_point_queue.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

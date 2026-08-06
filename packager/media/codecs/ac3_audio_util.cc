@@ -6,6 +6,11 @@
 
 #include <packager/media/codecs/ac3_audio_util.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
+#include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 
 #include <packager/media/base/bit_reader.h>

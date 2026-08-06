@@ -7,9 +7,10 @@
 #ifndef PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_
 #define PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_
 
-#include <sys/types.h>
-
+#include <cstddef>
 #include <cstdint>
+
+#include <sys/types.h>
 
 #include <packager/macros/classes.h>
 

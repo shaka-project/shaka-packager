@@ -6,7 +6,12 @@
 
 #include <packager/media/codecs/dovi_decoder_configuration_record.h>
 
+#include <cstdint>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/base/fourccs.h>
 
 namespace shaka {
 namespace media {

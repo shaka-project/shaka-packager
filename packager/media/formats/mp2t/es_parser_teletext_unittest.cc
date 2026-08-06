@@ -4,13 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <absl/log/log.h>
-#include <gtest/gtest.h>
-#include <functional>
+#include <packager/media/formats/mp2t/es_parser_teletext.h>
 
-#include "packager/media/base/text_sample.h"
-#include "packager/media/base/text_stream_info.h"
-#include "packager/media/formats/mp2t/es_parser_teletext.h"
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <vector>
+
+#include <gtest/gtest.h>
+
+#include <packager/media/base/stream_info.h>
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 
 namespace shaka {
 namespace media {

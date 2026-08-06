@@ -9,8 +9,10 @@
 #ifndef APP_WIDEVINE_ENCRYPTION_FLAGS_H_
 #define APP_WIDEVINE_ENCRYPTION_FLAGS_H_
 
+#include <cstdint>
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 #include <packager/utils/absl_flag_hexbytes.h>
 

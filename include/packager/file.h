@@ -13,7 +13,6 @@
 #include <packager/buffer_callback_params.h>
 #include <packager/export.h>
 #include <packager/macros/classes.h>
-#include <packager/status.h>
 
 namespace shaka {
 

@@ -13,7 +13,10 @@
 #include <memory>
 
 #include <libxml/tree.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
 #include <libxml/xmlschemas.h>
+#include <libxml/xmlstring.h>
 
 namespace shaka {
 namespace xml {

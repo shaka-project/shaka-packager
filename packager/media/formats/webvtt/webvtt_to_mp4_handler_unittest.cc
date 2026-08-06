@@ -6,11 +6,20 @@
 
 #include <packager/media/formats/webvtt/webvtt_to_mp4_handler.h>
 
+#include <cctype>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <absl/log/check.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_handler_test_base.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 using testing::_;

@@ -7,10 +7,13 @@
 #ifndef PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include <packager/media/base/fourccs.h>
 #include <packager/media/event/muxer_listener.h>
 
 namespace shaka {

@@ -6,6 +6,13 @@
 
 #include <packager/media/base/pssh_generator.h>
 
+#include <cstdint>
+#include <optional>
+#include <vector>
+
+#include <packager/media/base/protection_system_specific_info.h>
+#include <packager/status.h>
+
 namespace shaka {
 namespace media {
 namespace {

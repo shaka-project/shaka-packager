@@ -7,8 +7,9 @@
 #ifndef PACKAGER_APP_AD_CUE_GENERATOR_FLAGS_H_
 #define PACKAGER_APP_AD_CUE_GENERATOR_FLAGS_H_
 
+#include <string>
+
 #include <absl/flags/declare.h>
-#include <absl/flags/flag.h>
 
 ABSL_DECLARE_FLAG(std::string, ad_cues);
 

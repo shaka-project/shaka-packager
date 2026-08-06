@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_BASE_ENCRYPTION_CONFIG_H_
 
 #include <cstdint>
+#include <vector>
 
 #include <packager/media/base/fourccs.h>
 #include <packager/media/base/protection_system_specific_info.h>
@@ -23,6 +24,9 @@ struct EncryptionConfig {
   std::vector<uint8_t> constant_iv;
   std::vector<uint8_t> key_id;
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
+  // Only populated for HLS AES-128 (kAes128ProtectionScheme). Holds the raw
+  // encryption key so TsWriter can perform segment-level CBC encryption.
+  std::vector<uint8_t> key;
 };
 
 }  // namespace media

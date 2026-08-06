@@ -6,8 +6,16 @@
 
 #include <packager/media/crypto/aes_encryptor_factory.h>
 
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+#include <absl/log/log.h>
+
 #include <packager/media/base/aes_encryptor.h>
 #include <packager/media/base/aes_pattern_cryptor.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/crypto/sample_aes_ec3_cryptor.h>
 
 namespace shaka {
@@ -41,6 +49,11 @@ std::unique_ptr<AesCryptor> AesEncryptorFactory::CreateEncryptor(
           AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
           AesCryptor::kUseConstantIv,
           std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
+      break;
+    case kAes128ProtectionScheme:
+      // HLS AES-128: whole-segment CBC with PKCS7 padding (RFC 8216 §5.2).
+      encryptor.reset(
+          new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
       break;
     case kAppleSampleAesProtectionScheme:
       if (crypt_byte_block == 0 && skip_byte_block == 0) {

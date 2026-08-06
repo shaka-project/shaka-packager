@@ -7,13 +7,12 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_TEXT_READERS_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_TEXT_READERS_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include <packager/media/base/byte_queue.h>
-#include <packager/status.h>
 
 namespace shaka {
 class File;

@@ -4,9 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/id3_tag.h"
+#include <packager/media/base/id3_tag.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <iterator>
+#include <string>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

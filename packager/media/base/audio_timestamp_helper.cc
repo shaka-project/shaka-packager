@@ -4,8 +4,9 @@
 
 #include <packager/media/base/audio_timestamp_helper.h>
 
+#include <cstdint>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/media/base/timestamp.h>
 

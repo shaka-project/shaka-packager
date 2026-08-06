@@ -18,13 +18,19 @@
 
 #include <packager/media/base/rsa_key.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
-#include <vector>
+#include <string>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/entropy.h>
 #include <mbedtls/error.h>
 #include <mbedtls/md.h>
+#include <mbedtls/pk.h>
+#include <mbedtls/rsa.h>
 
 namespace {
 

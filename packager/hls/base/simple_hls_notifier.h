@@ -15,12 +15,14 @@
 #include <vector>
 
 #include <absl/synchronization/mutex.h>
+#include <absl/time/time.h>
 
 #include <packager/hls/base/hls_notifier.h>
 #include <packager/hls/base/master_playlist.h>
 #include <packager/hls/base/media_playlist.h>
 #include <packager/hls_params.h>
 #include <packager/macros/classes.h>
+#include <packager/mpd/base/media_info.pb.h>
 
 namespace shaka {
 namespace hls {

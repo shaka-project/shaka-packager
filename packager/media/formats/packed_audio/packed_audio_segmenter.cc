@@ -6,15 +6,22 @@
 
 #include <packager/media/formats/packed_audio/packed_audio_segmenter.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/macros/status.h>
 #include <packager/media/base/id3_tag.h>
 #include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/codecs/aac_audio_specific_config.h>
 #include <packager/media/codecs/hls_audio_util.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

@@ -6,17 +6,34 @@
 
 #include <packager/media/crypto/encryption_handler.h>
 
-#include <absl/log/log.h>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/crypto_params.h>
 #include <packager/media/base/aes_cryptor.h>
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/encryption_config.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/media_handler.h>
 #include <packager/media/base/media_handler_test_base.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/mock_aes_cryptor.h>
 #include <packager/media/base/protection_system_ids.h>
+#include <packager/media/base/protection_system_specific_info.h>
 #include <packager/media/base/raw_key_source.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/crypto/aes_encryptor_factory.h>
 #include <packager/media/crypto/subsample_generator.h>
+#include <packager/status.h>
 #include <packager/status/status_test_util.h>
 
 namespace shaka {
@@ -199,6 +216,40 @@ TEST_F(EncryptionHandlerTest, CreateEncryptorFailed) {
   InjectEncryptorFactoryForTesting(std::move(mock_encryptor_factory));
 
   ASSERT_NOT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+}
+
+TEST_F(EncryptionHandlerTest, MismatchingSchemeBindingFails) {
+  EncryptionKey mock_encryption_key = GetMockEncryptionKey();
+  mock_encryption_key.common_encryption_scheme = "cbcs";
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(mock_encryption_key), Return(Status::OK)));
+
+  // The default protection scheme is 'cenc', which the key is not bound to.
+  ASSERT_NOT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+}
+
+TEST_F(EncryptionHandlerTest, SampleAesAcceptsCbcsSchemeBinding) {
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+  SetUpEncryptionHandler(encryption_params);
+
+  EncryptionKey mock_encryption_key = GetMockEncryptionKey();
+  mock_encryption_key.common_encryption_scheme = "cbcs";
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(mock_encryption_key), Return(Status::OK)));
+
+  std::unique_ptr<MockAesEncryptorFactory> mock_encryptor_factory(
+      new MockAesEncryptorFactory);
+  EXPECT_CALL(*mock_encryptor_factory, CreateEncryptor(_, _, _, _, _, _))
+      .WillOnce(
+          Return(ByMove(std::unique_ptr<AesCryptor>(new MockAesCryptor))));
+  InjectEncryptorFactoryForTesting(std::move(mock_encryptor_factory));
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
       kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
 }
 
@@ -636,6 +687,28 @@ TEST_F(EncryptionHandlerPsshTest, GeneratesPssh) {
       stream_info->encryption_config().key_system_info,
       UnorderedElementsAre(IsPsshInfoWithSystemId(widevine_system_id),
                            IsPsshInfoWithSystemId(playready_system_id)));
+}
+
+TEST_F(EncryptionHandlerPsshTest, NoDefaultPsshForCpixWithoutSignaling) {
+  // The DRM signaling in a CPIX document is authoritative: a key without
+  // signaling gets no default common PSSH, only a warning.
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = FOURCC_cenc;
+  encryption_params.key_provider = KeyProvider::kCpix;
+  SetUpEncryptionHandler(encryption_params);
+
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+
+  EXPECT_THAT(GetOutputStreamDataVector(),
+              ElementsAre(IsStreamInfo(_, kTimeScale, kEncrypted, _)));
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+  EXPECT_TRUE(stream_info->encryption_config().key_system_info.empty());
 }
 
 TEST_F(EncryptionHandlerPsshTest, UsesKeyInfoFirst) {

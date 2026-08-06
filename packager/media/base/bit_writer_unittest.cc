@@ -6,6 +6,9 @@
 
 #include <packager/media/base/bit_writer.h>
 
+#include <cstdint>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

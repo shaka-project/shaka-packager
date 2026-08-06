@@ -7,7 +7,11 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_TEXT_PADDER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_TEXT_PADDER_H_
 
+#include <cstdint>
+#include <memory>
+
 #include <packager/media/base/media_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

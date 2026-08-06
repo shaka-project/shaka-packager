@@ -6,6 +6,10 @@
 
 #include <packager/status.h>
 
+#include <ostream>
+#include <string>
+#include <utility>
+
 #include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 

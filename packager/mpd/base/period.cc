@@ -6,6 +6,14 @@
 
 #include <packager/mpd/base/period.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <absl/strings/match.h>

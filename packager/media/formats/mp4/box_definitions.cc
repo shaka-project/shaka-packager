@@ -5,7 +5,13 @@
 #include <packager/media/formats/mp4/box_definitions.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 #include <limits>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
@@ -13,8 +19,12 @@
 
 #include <packager/macros/logging.h>
 #include <packager/media/base/bit_reader.h>
+#include <packager/media/base/buffer_writer.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/es_descriptor.h>
 #include <packager/media/formats/mp4/box_buffer.h>
+#include <packager/media/formats/mp4/box_reader.h>
 
 ABSL_FLAG(bool,
           mvex_before_trak,
@@ -707,6 +717,9 @@ FourCC DecodingTimeToSample::BoxType() const {
 bool DecodingTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = static_cast<uint32_t>(decoding_time.size());
   RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt32(&count));
+
+  if (buffer->Reading())
+    RCHECK(count <= buffer->BytesLeft() / sizeof(DecodingTime));
 
   decoding_time.resize(count);
   for (uint32_t i = 0; i < count; ++i) {

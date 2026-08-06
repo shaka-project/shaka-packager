@@ -6,14 +6,22 @@
 
 #include <packager/media/formats/mp4/box_definitions.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 #include <limits>
 #include <memory>
+#include <vector>
 
+#include <absl/log/log.h>
 #include <gtest/gtest.h>
 
 #include <packager/media/base/buffer_writer.h>
-#include <packager/media/base/protection_system_specific_info.h>
-#include <packager/media/formats/mp4/box_definitions_comparison.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/formats/mp4/box.h>
+#include <packager/media/formats/mp4/box_definitions_comparison.h>  // IWYU pragma: keep
 #include <packager/media/formats/mp4/box_reader.h>
 
 namespace shaka {

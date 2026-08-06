@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/cea_caption.h"
+#include <packager/cea_caption.h>
 
 namespace shaka {
 namespace hls {

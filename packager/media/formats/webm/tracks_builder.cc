@@ -4,8 +4,12 @@
 
 #include <packager/media/formats/webm/tracks_builder.h>
 
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <vector>
+
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/media/formats/webm/webm_constants.h>
 

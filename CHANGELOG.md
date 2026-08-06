@@ -1,6 +1,51 @@
 # Changelog
 
 
+## [3.9.3](https://github.com/shaka-project/shaka-packager/compare/v3.9.2...v3.9.3) (2026-07-27)
+
+
+### Bug Fixes
+
+* Fix parsing of av1 metadata OBUs ([#1611](https://github.com/shaka-project/shaka-packager/issues/1611)) ([207fb00](https://github.com/shaka-project/shaka-packager/commit/207fb007edd833611851e20816ff8dd6d4055e0a))
+
+## [3.9.2](https://github.com/shaka-project/shaka-packager/compare/v3.9.1...v3.9.2) (2026-07-17)
+
+
+### Bug Fixes
+
+* **isobmff:** validate stts entry count before allocation ([#1597](https://github.com/shaka-project/shaka-packager/issues/1597)) ([7c011ac](https://github.com/shaka-project/shaka-packager/commit/7c011aca277d0957366300ad79379cb519d348dc))
+* revert [#1540](https://github.com/shaka-project/shaka-packager/issues/1540) cipher-block alignment to restore one-subsample-per-NALU layout ([#1598](https://github.com/shaka-project/shaka-packager/issues/1598)) ([14529b6](https://github.com/shaka-project/shaka-packager/commit/14529b669dec6f2d91338663d7b5bc41e66c4ce2))
+
+## [3.9.1](https://github.com/shaka-project/shaka-packager/compare/v3.9.0...v3.9.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* correct AES-128 whole-segment encryption for MP4/CMAF HLS ([#1594](https://github.com/shaka-project/shaka-packager/issues/1594)) ([a01ce20](https://github.com/shaka-project/shaka-packager/commit/a01ce20f97e28bcd021b8b7e4de1522ec1b9c999)), closes [#1588](https://github.com/shaka-project/shaka-packager/issues/1588) [#1587](https://github.com/shaka-project/shaka-packager/issues/1587)
+
+## [3.9.0](https://github.com/shaka-project/shaka-packager/compare/v3.8.0...v3.9.0) (2026-07-08)
+
+
+### Features
+
+* add CPIX support for encryption and decryption keys ([#1590](https://github.com/shaka-project/shaka-packager/issues/1590)) ([22c64d3](https://github.com/shaka-project/shaka-packager/commit/22c64d3c941de3738a944ed21e477eb8d7a047e4))
+
+## [3.8.0](https://github.com/shaka-project/shaka-packager/compare/v3.7.2...v3.8.0) (2026-06-29)
+
+
+### Features
+
+* add HLS AES-128 clear-key encryption for TS + MP4 ([#1572](https://github.com/shaka-project/shaka-packager/issues/1572)) ([9d96f9c](https://github.com/shaka-project/shaka-packager/commit/9d96f9c29a3ce246bac37af4b5e1138232457762))
+
+
+### Bug Fixes
+
+* DASH ondemand mpd - use SegmentBase for single-file text tracks in multi period manifest ([#1579](https://github.com/shaka-project/shaka-packager/issues/1579)) ([b35c3cc](https://github.com/shaka-project/shaka-packager/commit/b35c3ccab639c55dcac7c758c23e264fb42343a9))
+* hls default yes ([#1578](https://github.com/shaka-project/shaka-packager/issues/1578)) ([49f9d8e](https://github.com/shaka-project/shaka-packager/commit/49f9d8e27eb98ffd579e8ba0f855dcf0f0a48c8c))
+* **hls:** emit EXT-X-MEDIA tags in command-line order, not by GROUP-ID ([#1374](https://github.com/shaka-project/shaka-packager/issues/1374)) ([b1580dd](https://github.com/shaka-project/shaka-packager/commit/b1580dd18b804a5d082d50558da38bca4acdef6a))
+* normalize video_full_range_flag to 0 or 1 in av1 codec string ([#1586](https://github.com/shaka-project/shaka-packager/issues/1586)) ([f2fb7ef](https://github.com/shaka-project/shaka-packager/commit/f2fb7ef2a7af6c0eadc7e136939469586a2bdb4d))
+* pssh-box tool missing python_edition_defaults ([#1581](https://github.com/shaka-project/shaka-packager/issues/1581)) ([a528a6f](https://github.com/shaka-project/shaka-packager/commit/a528a6fc589d762eef0837622770b2f6d075cade))
+
 ## [3.7.2](https://github.com/shaka-project/shaka-packager/compare/v3.7.1...v3.7.2) (2026-04-09)
 
 

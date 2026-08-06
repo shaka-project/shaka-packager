@@ -6,7 +6,9 @@
 
 #include <packager/media/base/language_utils.h>
 
+#include <cstddef>
 #include <iterator>
+#include <string>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>

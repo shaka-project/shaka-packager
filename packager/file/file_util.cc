@@ -6,6 +6,11 @@
 
 #include <packager/file/file_util.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <string>
+
 #if defined(OS_WIN)
 #include <windows.h>
 #else

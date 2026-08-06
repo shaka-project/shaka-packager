@@ -8,7 +8,6 @@
 #define MEDIA_FILE_UDP_FILE_H_
 
 #include <cstdint>
-#include <string>
 
 #if defined(OS_WIN)
 #include <windows.h>

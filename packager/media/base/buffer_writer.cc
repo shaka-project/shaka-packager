@@ -6,11 +6,16 @@
 
 #include <packager/media/base/buffer_writer.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <absl/base/internal/endian.h>
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/file.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

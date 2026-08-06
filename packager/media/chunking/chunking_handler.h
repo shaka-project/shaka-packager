@@ -7,15 +7,17 @@
 #ifndef PACKAGER_MEDIA_CHUNKING_CHUNKING_HANDLER_
 #define PACKAGER_MEDIA_CHUNKING_CHUNKING_HANDLER_
 
-#include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <optional>
-#include <queue>
-
-#include <absl/log/log.h>
 
 #include <packager/chunking_params.h>
 #include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/timestamp_util.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

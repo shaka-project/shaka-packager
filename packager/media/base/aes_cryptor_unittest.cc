@@ -4,16 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <packager/media/base/aes_decryptor.h>
-#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/aes_cryptor.h>
 
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <memory>
+#include <ostream>
+#include <string>
+#include <vector>
 
 #include <absl/log/log.h>
 #include <absl/strings/escaping.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/aes_decryptor.h>
+#include <packager/media/base/aes_encryptor.h>
+#include <packager/media/base/fourccs.h>
 #include <packager/utils/bytes_to_string_view.h>
 
 namespace {

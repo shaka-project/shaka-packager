@@ -8,21 +8,27 @@
 
 #include <cinttypes>
 #include <cmath>
-#include <limits>
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <map>
 #include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <absl/base/internal/endian.h>
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
 #include <absl/log/log.h>
-#include <absl/strings/escaping.h>
-#include <absl/strings/numbers.h>
 #include <absl/strings/str_format.h>
 #include <curl/curl.h>
 #include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlstring.h>
 
 #include <packager/macros/compiler.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/mpd/base/content_protection_element.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/segment_info.h>
@@ -416,29 +422,27 @@ bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
                                            bool use_segment_list,
                                            double target_segment_duration) {
-  const bool use_single_segment_url_with_media =
-      media_info.has_text_info() && media_info.has_presentation_time_offset();
-
-  if (media_info.has_media_file_url() && !use_single_segment_url_with_media) {
+  if (media_info.has_media_file_url()) {
     XmlNode base_url("BaseURL");
     base_url.SetUrlEncodedContent(media_info.media_file_url());
 
     RCHECK(AddChild(std::move(base_url)));
   }
 
+  // For single-file text tracks with a presentationTimeOffset we still need a
+  // SegmentBase element to carry the offset — SegmentBase is correct here
+  // because the track is a single segment, not a segmented stream.
   const bool need_segment_base_or_list =
       use_segment_list || media_info.has_index_range() ||
       media_info.has_init_range() ||
       (media_info.has_reference_time_scale() && !media_info.has_text_info()) ||
-      use_single_segment_url_with_media;
+      (media_info.has_text_info() && media_info.has_presentation_time_offset());
 
   if (!need_segment_base_or_list) {
     return true;
   }
 
-  XmlNode child(use_segment_list || use_single_segment_url_with_media
-                    ? "SegmentList"
-                    : "SegmentBase");
+  XmlNode child(use_segment_list ? "SegmentList" : "SegmentBase");
 
   // Forcing SegmentList for longer audio causes sidx atom to not be
   // generated, therefore indexRange is not added to MPD if flag is set.
@@ -451,7 +455,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
     RCHECK(child.SetIntegerAttribute("timescale",
                                      media_info.reference_time_scale()));
 
-    if (use_segment_list && !use_single_segment_url_with_media) {
+    if (use_segment_list) {
       const auto duration_seconds = static_cast<int64_t>(
           floor(target_segment_duration * media_info.reference_time_scale()));
       RCHECK(child.SetIntegerAttribute("duration", duration_seconds));
@@ -469,13 +473,6 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info,
         "range", RangeToString(media_info.init_range())));
 
     RCHECK(child.AddChild(std::move(initialization)));
-  }
-
-  if (use_single_segment_url_with_media) {
-    XmlNode media_url("SegmentURL");
-    RCHECK(media_url.SetStringAttribute(
-        "media", urlEncode(media_info.media_file_url())));
-    RCHECK(child.AddChild(std::move(media_url)));
   }
 
   // Since the SegmentURLs here do not have a @media element,

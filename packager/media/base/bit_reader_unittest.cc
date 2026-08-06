@@ -4,6 +4,8 @@
 
 #include <packager/media/base/bit_reader.h>
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
 
 namespace shaka {

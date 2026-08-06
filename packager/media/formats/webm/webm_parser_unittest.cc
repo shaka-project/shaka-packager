@@ -4,6 +4,13 @@
 
 #include <packager/media/formats/webm/webm_parser.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <string>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

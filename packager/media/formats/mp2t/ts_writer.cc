@@ -7,11 +7,15 @@
 #include <packager/media/formats/mp2t/ts_writer.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <memory>
+#include <utility>
 
 #include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
-#include <packager/media/base/media_sample.h>
 #include <packager/media/formats/mp2t/pes_packet.h>
 #include <packager/media/formats/mp2t/program_map_table_writer.h>
 #include <packager/media/formats/mp2t/ts_packet_writer_util.h>

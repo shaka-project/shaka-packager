@@ -6,9 +6,10 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 
 #include <cstdint>
-#include <functional>
 #include <memory>
 
+#include <packager/media/codecs/nalu_reader.h>
+#include <packager/media/formats/mp2t/es_parser.h>
 #include <packager/media/formats/mp2t/es_parser_h26x.h>
 
 namespace shaka {

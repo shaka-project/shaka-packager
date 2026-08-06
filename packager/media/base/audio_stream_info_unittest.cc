@@ -6,7 +6,12 @@
 
 #include <packager/media/base/audio_stream_info.h>
 
+#include <cstdint>
+#include <string>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/base/stream_info.h>
 
 namespace shaka {
 namespace media {

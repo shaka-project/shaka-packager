@@ -11,6 +11,7 @@
 
 #include <packager/media/base/media_handler.h>
 #include <packager/media/formats/ttml/ttml_generator.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

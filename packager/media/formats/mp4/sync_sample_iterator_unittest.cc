@@ -6,7 +6,11 @@
 
 #include <packager/media/formats/mp4/sync_sample_iterator.h>
 
+#include <cstdint>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/formats/mp4/box_definitions.h>
 
 namespace {
 const uint32_t kNumSamples = 100;

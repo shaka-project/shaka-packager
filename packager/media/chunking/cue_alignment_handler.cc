@@ -7,11 +7,19 @@
 #include <packager/media/chunking/cue_alignment_handler.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <utility>
 
 #include <absl/log/check.h>
+#include <absl/log/log.h>
 
 #include <packager/macros/logging.h>
 #include <packager/macros/status.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/stream_info.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

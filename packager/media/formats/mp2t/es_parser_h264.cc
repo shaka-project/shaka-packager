@@ -5,16 +5,22 @@
 #include <packager/media/formats/mp2t/es_parser_h264.h>
 
 #include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <absl/log/log.h>
 
-#include <packager/macros/logging.h>
-#include <packager/media/base/media_sample.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/stream_info.h>
 #include <packager/media/base/timestamp.h>
 #include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/avc_decoder_configuration_record.h>
 #include <packager/media/codecs/h264_byte_to_unit_stream_converter.h>
 #include <packager/media/codecs/h264_parser.h>
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
+#include <packager/media/codecs/nalu_reader.h>
+#include <packager/media/formats/mp2t/es_parser_h26x.h>
 #include <packager/media/formats/mp2t/mp2t_common.h>
 
 namespace shaka {

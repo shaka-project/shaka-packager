@@ -11,16 +11,15 @@
 #ifndef MPD_BASE_MPD_BUILDER_H_
 #define MPD_BASE_MPD_BUILDER_H_
 
-#include <chrono>
 #include <cstdint>
 #include <list>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include <libxml/tree.h>
 
-#include <packager/macros/classes.h>
 #include <packager/mpd/base/mpd_options.h>
 #include <packager/mpd/base/xml/xml_node.h>
 #include <packager/utils/clock.h>

@@ -6,10 +6,13 @@
 
 #include <packager/file/thread_pool.h>
 
+#include <functional>
 #include <thread>
+#include <utility>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/synchronization/mutex.h>
 #include <absl/time/time.h>
 
 namespace shaka {

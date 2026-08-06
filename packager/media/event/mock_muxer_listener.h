@@ -8,11 +8,15 @@
 #define PACKAGER_MEDIA_EVENT_MOCK_MUXER_LISTENER_H_
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #include <gmock/gmock.h>
 
+#include <packager/media/base/fourccs.h>
 #include <packager/media/base/muxer_options.h>
 #include <packager/media/base/protection_system_specific_info.h>
+#include <packager/media/base/range.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/event/muxer_listener.h>
 

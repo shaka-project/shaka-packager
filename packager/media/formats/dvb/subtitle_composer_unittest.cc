@@ -6,8 +6,15 @@
 
 #include <packager/media/formats/dvb/subtitle_composer.h>
 
-#include <gmock/gmock.h>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/base/text_sample.h>
+#include <packager/media/formats/dvb/dvb_image.h>
 
 namespace shaka {
 namespace media {

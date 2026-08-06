@@ -6,6 +6,8 @@
 #define PACKAGER_MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_
 
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/byte_queue.h>

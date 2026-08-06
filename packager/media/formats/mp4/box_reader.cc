@@ -5,14 +5,21 @@
 #include <packager/media/formats/mp4/box_reader.h>
 
 #include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <ios>
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
 #include <absl/strings/str_format.h>
 
 #include <packager/macros/logging.h>
+#include <packager/media/base/buffer_reader.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/base/rcheck.h>
 #include <packager/media/formats/mp4/box.h>
 
 namespace shaka {

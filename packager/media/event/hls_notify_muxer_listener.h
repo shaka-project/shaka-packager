@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include <packager/media/base/fourccs.h>
 #include <packager/media/event/event_info.h>
 #include <packager/media/event/muxer_listener.h>
 #include <packager/mpd/base/media_info.pb.h>

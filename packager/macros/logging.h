@@ -7,7 +7,6 @@
 #ifndef PACKAGER_MACROS_LOGGING_H_
 #define PACKAGER_MACROS_LOGGING_H_
 
-#include <absl/log/globals.h>
 #include <absl/log/log.h>
 
 /// A macro to declare that you intentionally did not implement a method.

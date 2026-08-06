@@ -12,8 +12,10 @@
 #include <string>
 #include <vector>
 
+#include <packager/crypto_params.h>
 #include <packager/macros/classes.h>
 #include <packager/media/base/key_source.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

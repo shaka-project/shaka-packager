@@ -6,6 +6,8 @@
 
 #include <packager/status.h>
 
+#include <string>
+
 #include <absl/strings/str_format.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

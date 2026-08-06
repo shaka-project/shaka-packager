@@ -5,10 +5,14 @@
 
 #include <packager/media/codecs/h264_parser.h>
 
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <absl/log/log.h>
 #include <gtest/gtest.h>
 
-#include <packager/macros/logging.h>
+#include <packager/media/codecs/nalu_reader.h>
 #include <packager/media/test/test_data_util.h>
 
 namespace shaka {

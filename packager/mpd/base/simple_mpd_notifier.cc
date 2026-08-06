@@ -6,11 +6,17 @@
 
 #include <packager/mpd/base/simple_mpd_notifier.h>
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <absl/log/check.h>
 #include <absl/log/log.h>
+#include <absl/synchronization/mutex.h>
 
 #include <packager/mpd/base/adaptation_set.h>
 #include <packager/mpd/base/mpd_builder.h>
+#include <packager/mpd/base/mpd_notifier.h>
 #include <packager/mpd/base/mpd_notifier_util.h>
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/period.h>

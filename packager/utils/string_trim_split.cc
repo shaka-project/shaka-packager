@@ -6,7 +6,12 @@
 
 #include <packager/utils/string_trim_split.h>
 
+#include <string>
+#include <vector>
+
+#include <absl/strings/ascii.h>
 #include <absl/strings/str_split.h>
+#include <absl/strings/string_view.h>
 
 namespace shaka {
 std::vector<std::string> SplitAndTrimSkipEmpty(const std::string& str,

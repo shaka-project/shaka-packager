@@ -6,8 +6,14 @@
 
 #include <packager/media/formats/ttml/ttml_generator.h>
 
-#include <gmock/gmock.h>
+#include <cstdint>
+#include <map>
+#include <string>
+
 #include <gtest/gtest.h>
+
+#include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
 
 namespace shaka {
 namespace media {

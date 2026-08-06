@@ -6,14 +6,16 @@
 
 #include <packager/media/codecs/h265_byte_to_unit_stream_converter.h>
 
-#include <limits>
+#include <cstdint>
+#include <vector>
 
 #include <absl/log/check.h>
-#include <absl/log/log.h>
 
 #include <packager/media/base/buffer_writer.h>
 #include <packager/media/base/rcheck.h>
+#include <packager/media/base/video_stream_info.h>
 #include <packager/media/codecs/h265_parser.h>
+#include <packager/media/codecs/h26x_byte_to_unit_stream_converter.h>
 
 namespace shaka {
 namespace media {

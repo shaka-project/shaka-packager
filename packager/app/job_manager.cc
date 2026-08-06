@@ -6,12 +6,19 @@
 
 #include <packager/app/job_manager.h>
 
+#include <functional>
+#include <memory>
 #include <set>
+#include <string>
+#include <thread>
+#include <utility>
 
 #include <absl/log/check.h>
+#include <absl/synchronization/mutex.h>
 
 #include <packager/media/chunking/sync_point_queue.h>
 #include <packager/media/origin/origin_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {

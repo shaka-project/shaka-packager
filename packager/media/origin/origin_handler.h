@@ -7,7 +7,10 @@
 #ifndef PACKAGER_MEDIA_ORIGIN_ORIGIN_HANDLER_H_
 #define PACKAGER_MEDIA_ORIGIN_ORIGIN_HANDLER_H_
 
+#include <memory>
+
 #include <packager/media/base/media_handler.h>
+#include <packager/status.h>
 
 namespace shaka {
 namespace media {
