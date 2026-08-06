@@ -29,9 +29,9 @@
 #include <packager/media/codecs/ac4_audio_util.h>
 #include <packager/media/codecs/dts_audio_specific_config.h>
 #include <packager/media/codecs/ec3_audio_util.h>
+#include <packager/media/event/muxer_listener.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/media/formats/mp4/box_reader.h>
-#include <packager/media/event/muxer_listener.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/utils/bytes_to_string_view.h>
 
