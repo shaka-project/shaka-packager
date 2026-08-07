@@ -4,6 +4,8 @@
   <Period id="0">
     <AdaptationSet id="0" contentType="audio" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
       <SupplementalProperty schemeIdUri="urn:mpeg:dash:preselection:2016"/>
+      <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
+      <Label lang="en">Dialog Neutral</Label>
       <Representation id="0" bandwidth="350144" codecs="ac-4.02.01.01" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="tag:dolby.com,2015:dash:audio_channel_configuration:2015" value="800000"/>
         <BaseURL>shaka_out.mp4</BaseURL>

@@ -344,13 +344,11 @@ Status MP4Muxer::DelayInitializeMuxer() {
         }
       }
     }
-    if (stream->codec() == kCodecAC4 &&
-        options().mp4_params.signal_ac4_de_preselection) {
+    if (stream->codec() == kCodecAC4 && !stream->meta_box_data().empty()) {
       if (!meta) {
         meta = std::make_unique<Meta>();
         meta->handler.handler_type = FOURCC_meta;
       }
-      meta->handler.handler_type = FOURCC_meta;
       meta->raw_box = stream->meta_box_data();
     }
   }

@@ -320,18 +320,21 @@ bool Period::SetNewAdaptationSetAttributes(
       } else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
         new_adaptation_set->ForceSubsegmentStartswithSAP(1);
       }
-      if (codec == "ac-4" &&
-          mpd_options_.mpd_params.signal_ac4_de_preselection) {
-        // Find preselection with the highest selection_priority among all
-        // AC-4 preselections. Set labels and roles accordingly.
+      if (codec == "ac-4") {
+        // The adaptation set should contain Label, and Role elements associated
+        // with the default (highest ranked) preselection in the Dolby AC-4
+        // track. If there is no priority, then the first preselection is used.
+        // If there are no preselections, then no Label or Role elements are
+        // added to the AdaptationSet.
         const MediaInfo::Ac4Preselection* ac4_preselection_with_max_priority =
             nullptr;
-        uint32_t max_selection_priority = 0;
+        int32_t max_selection_priority = -1;
         for (const auto& preselection : media_info.audio_info()
                                             .codec_specific_data()
                                             .ac4_preselections()) {
           if (preselection.has_selection_priority() &&
-              preselection.selection_priority() > max_selection_priority) {
+              (int32_t)preselection.selection_priority() >
+                  max_selection_priority) {
             max_selection_priority = preselection.selection_priority();
             ac4_preselection_with_max_priority = &preselection;
           }

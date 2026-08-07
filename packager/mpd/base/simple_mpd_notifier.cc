@@ -65,8 +65,7 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
       adaptation_set->AddRepresentation(adjusted_media_info);
   if (!representation)
     return false;
-  if (adaptation_set->codec() == "ac-4" &&
-      period->mpd_options().mpd_params.signal_ac4_de_preselection) {
+  if (adaptation_set->codec() == "ac-4") {
     // Add AC-4 preselections.
     if (adjusted_media_info.has_audio_info() &&
         adjusted_media_info.audio_info()

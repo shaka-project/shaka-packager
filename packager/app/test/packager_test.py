@@ -1065,7 +1065,6 @@ class PackagerFunctionalTest(PackagerAppTest):
     # Build flags per AC-4 dialog enhancement params
     flags = self._GetFlags(output_dash=True)
     flags += [
-      '--signal_ac4_de_preselection',
       '--mpd_output', os.path.join(self.tmp_dir, 'output.mpd')
     ]
 

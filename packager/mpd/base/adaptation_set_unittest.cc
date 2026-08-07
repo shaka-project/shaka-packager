@@ -1173,11 +1173,13 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
   EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
-// Test AddPreselectionLabel with language and label.
-TEST_F(AdaptationSetTest, AddPreselectionLabel) {
+// Test AddPreselectionLabelElement with language and label.
+TEST_F(AdaptationSetTest, AddPreselectionLabelElement) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("en", "Dialog +4dB"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("de", "Dialog +4dB"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("en", "Dialog +4dB"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("de", "Dialog +4dB"));
 
   EXPECT_THAT(adaptation_set_xml,
               XmlNodeEqual("<AdaptationSet>"
@@ -1186,23 +1188,24 @@ TEST_F(AdaptationSetTest, AddPreselectionLabel) {
                            "</AdaptationSet>"));
 }
 
-// Test AddPreselectionLabel with empty language.
-TEST_F(AdaptationSetTest, AddPreselectionLabelNoLanguage) {
+// Test AddPreselectionLabelElement with empty language.
+TEST_F(AdaptationSetTest, AddPreselectionLabelElementNoLanguage) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("", "No Language"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("", "No Language"));
 
   EXPECT_THAT(adaptation_set_xml, XmlNodeEqual("<AdaptationSet>"
                                                "  <Label>No Language</Label>"
                                                "</AdaptationSet>"));
 }
 
-// Test AddPreselectionRole with scheme and value.
-TEST_F(AdaptationSetTest, AddPreselectionRole) {
+// Test AddPreselectionRoleElement with scheme and value.
+TEST_F(AdaptationSetTest, AddPreselectionRoleElement) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011",
-                                                     "main"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011",
-                                                     "alternate"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", "main"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", "alternate"));
 
   EXPECT_THAT(adaptation_set_xml,
               XmlNodeEqual("<AdaptationSet>"
@@ -1213,11 +1216,11 @@ TEST_F(AdaptationSetTest, AddPreselectionRole) {
                            "</AdaptationSet>"));
 }
 
-// Test AddPreselectionRole with empty value.
-TEST_F(AdaptationSetTest, AddPreselectionRoleNoValue) {
+// Test AddPreselectionRoleElement with empty value.
+TEST_F(AdaptationSetTest, AddPreselectionRoleElementNoValue) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(
-      adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011", ""));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", ""));
 
   EXPECT_THAT(adaptation_set_xml,
               XmlNodeEqual("<AdaptationSet>"
@@ -1225,13 +1228,14 @@ TEST_F(AdaptationSetTest, AddPreselectionRoleNoValue) {
                            "</AdaptationSet>"));
 }
 
-// Test combination of AddPreselectionLabel and AddPreselectionRole.
-TEST_F(AdaptationSetTest, AddPreselectionLabelAndRole) {
+// Test combination of AddPreselectionLabelElement and
+// AddPreselectionRoleElement.
+TEST_F(AdaptationSetTest, AddPreselectionLabelElementAndRole) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(
-      adaptation_set_xml.AddPreselectionLabel("en", "Dialog Enhancement"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRole("urn:mpeg:dash:role:2011",
-                                                     "main"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabelElement(
+      "en", "Dialog Enhancement"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", "main"));
 
   EXPECT_THAT(adaptation_set_xml,
               XmlNodeEqual("<AdaptationSet>"
@@ -1244,9 +1248,12 @@ TEST_F(AdaptationSetTest, AddPreselectionLabelAndRole) {
 // Test multiple labels with different languages for AC-4 preselection.
 TEST_F(AdaptationSetTest, AddPreselectionMultipleLabels) {
   xml::AdaptationSetXmlNode adaptation_set_xml;
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("en", "Enhanced Audio"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("es", "Audio Mejorado"));
-  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabel("fr", "Audio Amélioré"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("en", "Enhanced Audio"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("es", "Audio Mejorado"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("fr", "Audio Amélioré"));
 
   EXPECT_THAT(adaptation_set_xml,
               XmlNodeEqual("<AdaptationSet>"
