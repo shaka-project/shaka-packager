@@ -102,7 +102,7 @@ TEST(PreselectionTest, GetXmlWithLabels) {
       "  <SupplementalProperty "
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
       "value=\"0.0\"/>"
-      "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
+      "  <Label lang=\"en\">Dialog +4dB</Label>"
       "</Preselection>";
 
   EXPECT_THAT(*xml_node, XmlNodeEqual(kExpectedXml));
@@ -186,7 +186,7 @@ TEST(PreselectionTest, GetXmlComplete) {
       "  <SupplementalProperty "
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
       "value=\"4.0\"/>"
-      "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
+      "  <Label lang=\"en\">Dialog +4dB</Label>"
       "  <Accessibility schemeIdUri=\"urn:mpeg:dash:role:2011\" "
       "value=\"enhanced-audio-intelligibility\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"
@@ -212,8 +212,8 @@ TEST(PreselectionTest, GetXmlWithMultipleLabelsAndRoles) {
       "  <SupplementalProperty "
       "schemeIdUri=\"tag:dolby.com,2018:dash:audio_dialog_gain:2025\" "
       "value=\"0.0\"/>"
-      "  <Label lang=\"en\" value=\"Dialog +4dB\"/>"
-      "  <Label lang=\"de\" value=\"Dialog +4dB\"/>"
+      "  <Label lang=\"en\">Dialog +4dB</Label>"
+      "  <Label lang=\"de\">Dialog +4dB</Label>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"alternate\"/>"
       "</Preselection>";

@@ -16,24 +16,24 @@
     </AdaptationSet>
     <Preselection id="1000" preselectionComponents="0" lang="en" tag="0" selectionPriority="0">
       <SupplementalProperty schemeIdUri="tag:dolby.com,2018:dash:audio_dialog_gain:2025" value="0.0"/>
-      <Label lang="en" value="Dialog Neutral"/>
+      <Label lang="en">Dialog Neutral</Label>
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
     </Preselection>
     <Preselection id="1001" preselectionComponents="0" lang="en" tag="1" selectionPriority="0">
       <SupplementalProperty schemeIdUri="tag:dolby.com,2018:dash:audio_dialog_gain:2025" value="3.0"/>
-      <Label lang="en" value="Dialog +3dB"/>
+      <Label lang="en">Dialog +3dB</Label>
       <Accessibility schemeIdUri="urn:mpeg:dash:role:2011" value="enhanced-audio-intelligibility"/>
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="alternate"/>
     </Preselection>
     <Preselection id="1002" preselectionComponents="0" lang="en" tag="2" selectionPriority="0">
       <SupplementalProperty schemeIdUri="tag:dolby.com,2018:dash:audio_dialog_gain:2025" value="6.0"/>
-      <Label lang="en" value="Dialog +6dB"/>
+      <Label lang="en">Dialog +6dB</Label>
       <Accessibility schemeIdUri="urn:mpeg:dash:role:2011" value="enhanced-audio-intelligibility"/>
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="alternate"/>
     </Preselection>
     <Preselection id="1003" preselectionComponents="0" lang="en" tag="3" selectionPriority="0">
       <SupplementalProperty schemeIdUri="tag:dolby.com,2018:dash:audio_dialog_gain:2025" value="12.0"/>
-      <Label lang="en" value="Dialog +12dB"/>
+      <Label lang="en">Dialog +12dB</Label>
       <Accessibility schemeIdUri="urn:mpeg:dash:role:2011" value="enhanced-audio-intelligibility"/>
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="alternate"/>
     </Preselection>

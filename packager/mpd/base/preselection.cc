@@ -39,8 +39,7 @@ std::unique_ptr<xml::XmlNode> Preselection::GetXml() const {
     xml::XmlNode label_node("Label");
     if (!label_node.SetStringAttribute("lang", l.lang))
       return nullptr;
-    if (!label_node.SetStringAttribute("value", l.value))
-      return nullptr;
+    label_node.SetContent(l.value);
     if (!node->AddChild(std::move(label_node)))
       return nullptr;
   }
