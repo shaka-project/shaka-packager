@@ -100,8 +100,15 @@ bool BoxReader::ReadChild(Box* child) {
   DCHECK(scanned_);
   FourCC child_type = child->BoxType();
 
-  ChildMap::iterator itr = children_.find(child_type);
-  RCHECK(itr != children_.end());
+  // Use lower_bound() rather than find(): with multiple children of the same
+  // type (e.g. the 'url ' entries of a 'dref'), multimap::find() may return
+  // ANY element with the key — commonly the tree root, not the first in the
+  // stream — so repeated ReadChild+erase calls would consume same-type
+  // children out of order and scramble their payloads. lower_bound() is
+  // guaranteed to return the first of the equal range, and multimap preserves
+  // insertion (stream) order for equivalent keys.
+  ChildMap::iterator itr = children_.lower_bound(child_type);
+  RCHECK(itr != children_.end() && itr->first == child_type);
   DVLOG(2) << "Found a " << FourCCToString(child_type) << " box.";
   RCHECK(child->Parse(itr->second.get()));
   children_.erase(itr);
