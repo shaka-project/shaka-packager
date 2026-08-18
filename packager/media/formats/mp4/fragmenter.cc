@@ -248,6 +248,14 @@ void Fragmenter::GenerateSegmentReference(SegmentReference* reference) const {
 }
 
 Status Fragmenter::FinalizeFragmentForEncryption() {
+  if (stream_info_->encryption_config().protection_scheme ==
+      kAes128ProtectionScheme) {
+    // AES-128 encrypts at the segment level: the stsd has a single plain
+    // entry and there is no per-sample encryption information, so the
+    // sample description index must stay 1.
+    return Status::OK;
+  }
+
   SampleEncryption& sample_encryption = traf_->sample_encryption;
   if (sample_encryption.sample_encryption_entries.empty()) {
     // This fragment is not encrypted.
