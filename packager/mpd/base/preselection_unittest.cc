@@ -17,7 +17,7 @@ namespace shaka {
 namespace {
 
 const char kTestLanguage[] = "en";
-const char kTestGroupId[] = "1000";
+const uint32_t kTestGroupId = 1000;
 const char kTestPreselectionTag[] = "1";
 const uint32_t kTestAdaptationId = 1;
 const uint32_t kTestSelectionPriority = 3;
@@ -257,7 +257,7 @@ TEST(PreselectionTest, CreateFromAc4PreselectionBasic) {
       ac4_preselection, kTestAdaptationId);
 
   ASSERT_NE(nullptr, preselection);
-  EXPECT_EQ("1001", preselection->id());
+  EXPECT_EQ(1001u, preselection->id());
   EXPECT_EQ(kTestAdaptationId, preselection->preselection_components());
   EXPECT_EQ("en", preselection->lang());
   EXPECT_EQ("2", preselection->tag());

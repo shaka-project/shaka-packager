@@ -74,6 +74,9 @@ class Period {
 
   const MpdOptions& mpd_options() const { return mpd_options_; }
 
+  const std::list<std::unique_ptr<Preselection>>& preselection_list() const {
+    return preselection_list_;
+  }
   void AddPreselection(std::unique_ptr<Preselection> preselection) {
     preselection_list_.push_back(std::move(preselection));
   }

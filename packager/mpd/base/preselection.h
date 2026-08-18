@@ -32,7 +32,7 @@ struct AccessibilityDescriptor {
 
 class Preselection {
  public:
-  Preselection(const std::string& id,
+  Preselection(uint32_t id,
                uint32_t preselection_components,
                const std::string& lang,
                const std::string& tag,
@@ -43,7 +43,8 @@ class Preselection {
         tag_(tag),
         selection_priority_(selection_priority) {}
 
-  const std::string& id() const { return id_; }
+  uint32_t id() const { return id_; }
+  void set_id(uint32_t id) { id_ = id; }
   uint32_t preselection_components() const { return preselection_components_; }
   const std::string& lang() const { return lang_; }
   const std::string& tag() const { return tag_; }
@@ -73,7 +74,7 @@ class Preselection {
       uint32_t adaptation_id);
 
  private:
-  std::string id_;
+  uint32_t id_;
   uint32_t preselection_components_;
   std::string lang_;
   std::string tag_;

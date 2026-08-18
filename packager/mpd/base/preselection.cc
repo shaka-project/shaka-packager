@@ -14,7 +14,7 @@ namespace shaka {
 
 std::unique_ptr<xml::XmlNode> Preselection::GetXml() const {
   auto node = std::make_unique<xml::XmlNode>("Preselection");
-  if (!node->SetStringAttribute("id", id_))
+  if (!node->SetStringAttribute("id", std::to_string(id_)))
     return nullptr;
   if (!node->SetStringAttribute("preselectionComponents",
                                 std::to_string(preselection_components_)))
@@ -67,8 +67,9 @@ std::unique_ptr<xml::XmlNode> Preselection::GetXml() const {
 std::unique_ptr<Preselection> Preselection::CreateFromAc4Preselection(
     const MediaInfo::Ac4Preselection& ac4_preselection,
     uint32_t adaptation_id) {
+  uint32_t group_id = std::stoul(ac4_preselection.group_id());
   auto preselection = std::make_unique<Preselection>(
-      ac4_preselection.group_id(), adaptation_id, ac4_preselection.lang(),
+      group_id, adaptation_id, ac4_preselection.lang(),
       ac4_preselection.preselection_tag(),
       ac4_preselection.selection_priority());
 

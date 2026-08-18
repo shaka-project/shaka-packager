@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <set>
 
 #include <absl/flags/flag.h>
 #include <absl/log/check.h>
@@ -539,6 +540,23 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent) {
   AddContentProtectionElementsHelperTemplated(media_info, parent);
+}
+
+void SortAC4PreselectionId(Period* period) {
+  std::set<uint32_t> used_ids;
+  uint32_t last_assigned_id = 0;
+
+  for (auto& preselection : period->preselection_list()) {
+    uint32_t candidate_id = last_assigned_id + 1;
+    uint32_t id = preselection.get()->id();
+    candidate_id = id;
+    while (used_ids.count(candidate_id) > 0) {
+      candidate_id = last_assigned_id + 1;
+    }
+    preselection.get()->set_id(candidate_id);
+    used_ids.insert(candidate_id);
+    last_assigned_id = candidate_id;
+  }
 }
 
 }  // namespace shaka
