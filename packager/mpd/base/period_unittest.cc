@@ -914,6 +914,63 @@ TEST_P(PeriodTestWithContentProtection, DifferentProtectedContent) {
                 content_protection_in_adaptation_set_));
 }
 
+// --default_language / --default_text_language designate the main audio and
+// text renditions; a lone language-tagged video AdaptationSet must not pick up
+// the 'main' role from either of them.
+TEST_F(PeriodTest, VideoAdaptationSetDoesNotTakeMainRoleFromDefaultLanguage) {
+  mpd_options_.mpd_params.default_language = "en";
+  const char kEnglishVideoContent[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "  language: 'en'\n"
+      "}\n"
+      "container_type: 1\n";
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(Eq("en"), _, _))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+  EXPECT_CALL(*default_adaptation_set_ptr_, AddRole(_)).Times(0);
+
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kEnglishVideoContent),
+                content_protection_in_adaptation_set_));
+}
+
+// Same for --default_text_language, which is what the non-audio branch of the
+// default-language check consults: a video AdaptationSet's roles must not
+// depend on a text option at all.
+TEST_F(PeriodTest,
+       VideoAdaptationSetDoesNotTakeMainRoleFromDefaultTextLanguage) {
+  mpd_options_.mpd_params.default_text_language = "en";
+  const char kEnglishVideoContent[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "  language: 'en'\n"
+      "}\n"
+      "container_type: 1\n";
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(Eq("en"), _, _))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+  EXPECT_CALL(*default_adaptation_set_ptr_, AddRole(_)).Times(0);
+
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kEnglishVideoContent),
+                content_protection_in_adaptation_set_));
+}
+
 // Video AdaptationSets carrying an explicit role (e.g. 'sign') must never be
 // stamped with the 'main' role, even when two of them coexist in the same key
 // bucket (here kept distinct only by their content protection). Without the

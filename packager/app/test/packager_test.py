@@ -858,37 +858,57 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='por', hls=True),
+        self._GetStreams(['audio'], language='por', hls=True) +
+        self._GetStreams(['video'], hls=True),
         self._GetFlags(default_language='por', output_dash=True,
                        output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideUsingMixingCode(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='por', hls=True),
+        self._GetStreams(['audio'], language='por', hls=True) +
+        self._GetStreams(['video'], hls=True),
         self._GetFlags(default_language='pt', output_dash=True,
                        output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideUsingMixingCode2(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='pt', hls=True),
+        self._GetStreams(['audio'], language='pt', hls=True) +
+        self._GetStreams(['video'], hls=True),
         self._GetFlags(default_language='por', output_dash=True,
                        output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideUsingTwoCharacterCode(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='pt', hls=True),
+        self._GetStreams(['audio'], language='pt', hls=True) +
+        self._GetStreams(['video'], hls=True),
         self._GetFlags(default_language='pt', output_dash=True,
                        output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideWithSubtag(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='por-BR', hls=True),
+        self._GetStreams(['audio'], language='por-BR', hls=True) +
+        self._GetStreams(['video'], hls=True),
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
+
+  def testVideoWithSignLanguageRendition(self):
+    # A sign-language video rendition carries its own language and the 'sign'
+    # role. It must end up in an AdaptationSet of its own, tagged @lang, rather
+    # than being merged into the main picture's ABR ladder. The two renditions
+    # come from separate input files because stream descriptors sharing an input
+    # and stream selector describe one and the same source stream.
+    streams = self._GetStreams(['audio', 'video'],
+                               test_files=['bear-1280x720.mp4'])
+    streams += self._GetStreams(['video'],
+                                language='ase',
+                                dash_roles='sign',
+                                test_files=['bear-640x360.mp4'])
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self._CheckTestResults('video-with-sign-language-rendition')
 
   def testSegmentedWebVttWithLanguageOverride(self):
     streams = self._GetStreams(

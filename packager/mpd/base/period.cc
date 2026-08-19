@@ -227,7 +227,11 @@ bool Period::SetNewAdaptationSetAttributes(
       }
       new_adaptation_set->AddRole(role);
     }
-  } else if (!language.empty()) {
+  } else if (!language.empty() && !media_info.has_video_info()) {
+    // --default_language / --default_text_language designate the main audio and
+    // text renditions only. A video AdaptationSet's 'main' role is decided
+    // below, by whether several video sets coexist, so a language-tagged video
+    // track must not be matched against the text default here.
     const bool is_main_role =
         language == (media_info.has_audio_info()
                          ? GetDefaultAudioLanguage(mpd_options_)

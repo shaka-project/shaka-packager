@@ -299,7 +299,7 @@ void Demuxer::ParserInitEvent(
       stream_indexes_.push_back(stream_index);
       auto iter = language_overrides_.find(stream_index);
       if (iter != language_overrides_.end()) {
-        stream_info->set_language(iter->second);
+        stream_info->set_language_override(iter->second);
       }
       if (stream_info->is_encrypted()) {
         init_event_status_.Update(Status(error::INVALID_ARGUMENT,

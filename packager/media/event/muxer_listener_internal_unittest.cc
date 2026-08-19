@@ -79,6 +79,39 @@ TEST_F(MuxerListenerInternalVideoStreamTest, TransferCharacteristics) {
   EXPECT_EQ(18u, media_info.video_info().transfer_characteristics());
 }
 
+// A language the user explicitly asked for (the 'lang=' stream descriptor
+// field) is carried into MediaInfo, where it becomes @lang on the
+// AdaptationSet and splits video by language.
+TEST_F(MuxerListenerInternalVideoStreamTest, LanguageOverride) {
+  MediaInfo media_info;
+  video_stream_info_->set_language_override("nl");
+  ASSERT_TRUE(GenerateMediaInfo(MuxerOptions(), *video_stream_info_,
+                                kReferenceTimeScale,
+                                MuxerListener::kContainerMp4, &media_info));
+  EXPECT_EQ("nl", media_info.video_info().language());
+}
+
+// Language metadata that merely happened to be present in the input is not.
+// Encoders routinely stamp a language on the video track, and honoring it would
+// split an ABR ladder across AdaptationSets.
+TEST_F(MuxerListenerInternalVideoStreamTest, LanguageFromInputIsIgnored) {
+  MediaInfo media_info;
+  video_stream_info_->set_language("eng");
+  ASSERT_TRUE(GenerateMediaInfo(MuxerOptions(), *video_stream_info_,
+                                kReferenceTimeScale,
+                                MuxerListener::kContainerMp4, &media_info));
+  EXPECT_FALSE(media_info.video_info().has_language());
+}
+
+TEST_F(MuxerListenerInternalVideoStreamTest, UndefinedLanguageOverride) {
+  MediaInfo media_info;
+  video_stream_info_->set_language_override("und");
+  ASSERT_TRUE(GenerateMediaInfo(MuxerOptions(), *video_stream_info_,
+                                kReferenceTimeScale,
+                                MuxerListener::kContainerMp4, &media_info));
+  EXPECT_FALSE(media_info.video_info().has_language());
+}
+
 class MuxerListenerInternalAudioStreamTest : public MuxerListenerInternalTest {
 };
 

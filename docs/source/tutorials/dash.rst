@@ -62,6 +62,26 @@ The above packaging command creates five single track fragmented mp4 streams
 The above packaging command creates two extra trick play tracks, besides the files
 generated with the previous command.
 
+* on-demand with a sign-language rendition::
+
+    $ packager \
+      in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
+      in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
+      in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4 \
+      in=sign_language_asl.mp4,stream=video,lang=ase,dash_roles=sign,output=sign_asl.mp4 \
+      --mpd_output h264.mpd
+
+The two main picture streams form one AdaptationSet to adapt between. The signer
+gets an AdaptationSet of its own, carrying lang="ase" (American Sign Language)
+and Role sign, so a player can offer it as a separate rendition instead of
+switching to it for bandwidth reasons.
+
+.. note::
+
+    Give each rendition its own input file. Stream descriptors that share an
+    input file and stream selector describe one and the same source stream,
+    which can only carry one language tag.
+
 * static-live::
 
     $ packager \
