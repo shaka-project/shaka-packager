@@ -43,6 +43,11 @@ class EsParserH26x : public EsParser {
     // only for H.264).
     int pps_id = 0;
     int frame_num = 0;
+    // H.265 only: whether this is the first slice segment of a coded picture
+    // (first_slice_segment_in_pic_flag). Used to group multiple slices of the
+    // same picture into a single access unit. Defaults to true so single-slice
+    // and H.264 streams are unaffected.
+    bool first_slice_segment_in_pic_flag = true;
   };
 
   const H26xByteToUnitStreamConverter* stream_converter() const {

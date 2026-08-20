@@ -1074,6 +1074,19 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('avc-aac-ts')
 
+  def testHevcMultiSliceTs(self):
+    # Regression test for
+    # https://github.com/shaka-project/shaka-packager/issues/1363: HEVC in TS
+    # with multiple slices per picture previously failed to parse.
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='mp4',
+                         segmented=True,
+                         test_files=['hevc-multi-slice.ts']),
+        self._GetFlags(output_dash=True))
+    self._CheckTestResults('hevc-multi-slice-ts')
+
   def testAvcAc3Ts(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
