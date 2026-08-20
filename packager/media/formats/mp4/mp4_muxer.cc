@@ -480,8 +480,8 @@ Status MP4Muxer::UpdateEditListOffsetFromSample(size_t stream_id,
   //        presentation time does not equal its composition time.
   const int64_t pts_dts_offset = pts - dts;
   if (pts_dts_offset > 0) {
-    // The edit list offset is also used as the baseMediaDecodeTime bias in the
-    // fragmenter: decode_time = first_sample_dts + edit_list_offset_, which
+    // The edit list offset is also used as the baseMediaDecodeTime bias of this
+    // track in the fragmenter: decode_time = first_sample_dts + offset, which
     // must not be negative (it is stored as an unsigned tfdt). Using pts - dts
     // yields decode_time == pts, which is fine when pts >= 0. When pts < 0, use
     // -dts instead so decode_time == 0; presentation timestamps are unaffected
