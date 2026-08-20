@@ -542,20 +542,13 @@ void AddContentProtectionElements(const MediaInfo& media_info,
   AddContentProtectionElementsHelperTemplated(media_info, parent);
 }
 
-void SortAC4PreselectionId(Period* period) {
-  std::set<uint32_t> used_ids;
-  uint32_t last_assigned_id = 0;
-
+void AssignAC4PreselectionId(Period* period) {
+  uint32_t assigned_id = kDefaultAC4PreselectionId;
+  // Assign preselection id to each preselection in the period. The preselection
+  // id is used to identify the preselection in the AC-4 decoder.
   for (auto& preselection : period->preselection_list()) {
-    uint32_t candidate_id = last_assigned_id + 1;
-    uint32_t id = preselection.get()->id();
-    candidate_id = id;
-    while (used_ids.count(candidate_id) > 0) {
-      candidate_id = last_assigned_id + 1;
-    }
-    preselection.get()->set_id(candidate_id);
-    used_ids.insert(candidate_id);
-    last_assigned_id = candidate_id;
+    preselection.get()->set_id(assigned_id);
+    assigned_id++;
   }
 }
 

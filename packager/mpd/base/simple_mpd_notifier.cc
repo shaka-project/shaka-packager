@@ -81,7 +81,7 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
                 .ac4_preselections(i),
             adaptation_set->id()));
       }
-      SortAC4PreselectionId(period);
+      AssignAC4PreselectionId(period);
     }
   }
   *container_id = representation->id();

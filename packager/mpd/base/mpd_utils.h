@@ -29,6 +29,7 @@ const char kPsshElementName[] = "cenc:pssh";
 const char kMsproElementName[] = "mspr:pro";
 const uint32_t kTransferFunctionPQ = 16;
 const uint32_t kTransferFunctionHLG = 18;
+const uint32_t kDefaultAC4PreselectionId = 1000;
 
 bool HasVODOnlyFields(const MediaInfo& media_info);
 
@@ -100,7 +101,7 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 
 /// Sorts AC-4 preselection IDs within the given period.
 /// @param period is the period to sort the preselection IDs for.
-void SortAC4PreselectionId(Period* period);
+void AssignAC4PreselectionId(Period* period);
 }  // namespace shaka
 
 #endif  // MPD_BASE_MPD_UTILS_H_
