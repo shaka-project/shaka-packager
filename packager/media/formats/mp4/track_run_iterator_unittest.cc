@@ -369,6 +369,30 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_FALSE(iter_->IsRunValid());
 }
 
+TEST_F(TrackRunIteratorTest, HighTrackIdDoesNotOverflowNextFragmentDts) {
+  // Regression test for
+  // https://github.com/shaka-project/shaka-packager/issues/1368.
+  // track_ids are not required to be contiguous or bounded by the number of
+  // tracks. A file with a single track whose track_id is larger than the track
+  // count previously caused an out-of-bounds access on
+  // |next_fragment_start_dts_|, which is indexed by track_id - 1, resulting in
+  // a crash. Use track_id 101 to mirror the file from the issue.
+  const uint32_t kHighTrackId = 101;
+  moov_.tracks[0].header.track_id = kHighTrackId;
+  moov_.extends.tracks[0].track_id = kHighTrackId;
+
+  iter_.reset(new TrackRunIterator(&moov_));
+  MovieFragment moof = CreateFragment();
+  // Keep only the (audio) track and give it the high track_id.
+  moof.tracks.resize(1);
+  moof.tracks[0].header.track_id = kHighTrackId;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  ASSERT_TRUE(iter_->IsRunValid());
+  EXPECT_TRUE(iter_->is_audio());
+  EXPECT_EQ(iter_->track_id(), kHighTrackId);
+}
+
 TEST_F(TrackRunIteratorTest, TrackExtendsDefaultsTest) {
   moov_.extends.tracks[0].default_sample_duration = 50;
   moov_.extends.tracks[0].default_sample_size = 3;

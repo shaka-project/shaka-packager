@@ -1383,9 +1383,9 @@ H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
       TRUE_OR_RETURN(br->ReadUE(&ignored));
     }
 
-    bool vui_hdr_parameters_present_flag;
-    TRUE_OR_RETURN(br->ReadBool(&vui_hdr_parameters_present_flag));
-    if (vui_hdr_parameters_present_flag) {
+    bool vui_hrd_parameters_present_flag;
+    TRUE_OR_RETURN(br->ReadBool(&vui_hrd_parameters_present_flag));
+    if (vui_hrd_parameters_present_flag) {
       OK_OR_RETURN(SkipHrdParameters(true, max_num_sub_layers_minus1, br));
     }
   }
@@ -1726,15 +1726,15 @@ H265Parser::Result H265Parser::SkipHrdParameters(bool common_inf_present_flag,
                                                  int max_num_sub_layers_minus1,
                                                  H26xBitReader* br) {
   int ignored;
-  bool nal_hdr_parameters_present_flag = false;
-  bool vcl_hdr_parameters_present_flag = false;
-  bool sub_pic_hdr_params_present_flag = false;
+  bool nal_hrd_parameters_present_flag = false;
+  bool vcl_hrd_parameters_present_flag = false;
+  bool sub_pic_hrd_params_present_flag = false;
   if (common_inf_present_flag) {
-    TRUE_OR_RETURN(br->ReadBool(&nal_hdr_parameters_present_flag));
-    TRUE_OR_RETURN(br->ReadBool(&vcl_hdr_parameters_present_flag));
-    if (nal_hdr_parameters_present_flag || vcl_hdr_parameters_present_flag) {
-      TRUE_OR_RETURN(br->ReadBool(&sub_pic_hdr_params_present_flag));
-      if (sub_pic_hdr_params_present_flag) {
+    TRUE_OR_RETURN(br->ReadBool(&nal_hrd_parameters_present_flag));
+    TRUE_OR_RETURN(br->ReadBool(&vcl_hrd_parameters_present_flag));
+    if (nal_hrd_parameters_present_flag || vcl_hrd_parameters_present_flag) {
+      TRUE_OR_RETURN(br->ReadBool(&sub_pic_hrd_params_present_flag));
+      if (sub_pic_hrd_params_present_flag) {
         // tick_divisor_minus2, du_cpb_removal_delay_increment_length_minus1,
         // sub_pic_cpb_params_in_pic_timing_sei_flag
         // dpb_output_delay_du_length_minus1
@@ -1743,7 +1743,7 @@ H265Parser::Result H265Parser::SkipHrdParameters(bool common_inf_present_flag,
 
       // bit_rate_scale, cpb_size_scale
       TRUE_OR_RETURN(br->SkipBits(4 + 4));
-      if (sub_pic_hdr_params_present_flag)
+      if (sub_pic_hrd_params_present_flag)
         TRUE_OR_RETURN(br->SkipBits(4));  // cpb_size_du_scale
 
       // initial_cpb_removal_delay_length_minus1,
@@ -1755,7 +1755,7 @@ H265Parser::Result H265Parser::SkipHrdParameters(bool common_inf_present_flag,
   for (int i = 0; i <= max_num_sub_layers_minus1; i++) {
     bool fixed_pic_rate_general_flag;
     bool fixed_pic_rate_within_cvs_flag = true;
-    bool low_delay_hdr_flag = false;
+    bool low_delay_hrd_flag = false;
     int cpb_cnt_minus1 = 0;
     TRUE_OR_RETURN(br->ReadBool(&fixed_pic_rate_general_flag));
     if (!fixed_pic_rate_general_flag)
@@ -1763,17 +1763,17 @@ H265Parser::Result H265Parser::SkipHrdParameters(bool common_inf_present_flag,
     if (fixed_pic_rate_within_cvs_flag)
       TRUE_OR_RETURN(br->ReadUE(&ignored));  // elemental_duration_ic_tc_minus1
     else
-      TRUE_OR_RETURN(br->ReadBool(&low_delay_hdr_flag));
-    if (!low_delay_hdr_flag)
+      TRUE_OR_RETURN(br->ReadBool(&low_delay_hrd_flag));
+    if (!low_delay_hrd_flag)
       TRUE_OR_RETURN(br->ReadUE(&cpb_cnt_minus1));
 
-    if (nal_hdr_parameters_present_flag) {
+    if (nal_hrd_parameters_present_flag) {
       OK_OR_RETURN(SkipSubLayerHrdParameters(
-          cpb_cnt_minus1, sub_pic_hdr_params_present_flag, br));
+          cpb_cnt_minus1, sub_pic_hrd_params_present_flag, br));
     }
-    if (vcl_hdr_parameters_present_flag) {
+    if (vcl_hrd_parameters_present_flag) {
       OK_OR_RETURN(SkipSubLayerHrdParameters(
-          cpb_cnt_minus1, sub_pic_hdr_params_present_flag, br));
+          cpb_cnt_minus1, sub_pic_hrd_params_present_flag, br));
     }
   }
 
@@ -1782,13 +1782,13 @@ H265Parser::Result H265Parser::SkipHrdParameters(bool common_inf_present_flag,
 
 H265Parser::Result H265Parser::SkipSubLayerHrdParameters(
     int cpb_cnt_minus1,
-    bool sub_pic_hdr_params_present_flag,
+    bool sub_pic_hrd_params_present_flag,
     H26xBitReader* br) {
   int ignored;
   for (int i = 0; i <= cpb_cnt_minus1; i++) {
     TRUE_OR_RETURN(br->ReadUE(&ignored));  // bit_rate_value_minus1
     TRUE_OR_RETURN(br->ReadUE(&ignored));  // cpb_size_value_minus1
-    if (sub_pic_hdr_params_present_flag) {
+    if (sub_pic_hrd_params_present_flag) {
       TRUE_OR_RETURN(br->ReadUE(&ignored));  // cpb_size_du_value_minus1
       TRUE_OR_RETURN(br->ReadUE(&ignored));  // bit_rate_du_value_minus1
     }

@@ -555,8 +555,11 @@ class PackagerAppTest(unittest.TestCase):
     if key_rotation:
       flags.append('--crypto_period_duration=1')
 
-    if not include_pssh_in_stream:
-      flags.append('--mp4_include_pssh_in_stream=false')
+    # Pass the flag explicitly (unless None) so tests are unaffected by the
+    # default, which depends on --generate_dash_if_iop_compliant_mpd (see #640).
+    if include_pssh_in_stream is not None:
+      flags.append('--mp4_include_pssh_in_stream=' +
+                   ('true' if include_pssh_in_stream else 'false'))
 
     if not dash_if_iop:
       flags.append('--generate_dash_if_iop_compliant_mpd=false')
@@ -1115,6 +1118,16 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess([stream], self._GetFlags(output_dash=True))
     self._CheckTestResults('video-no-edit-list')
 
+  def testVideoBFrameNegativePts(self):
+    # Regression test for
+    # https://github.com/shaka-project/shaka-packager/issues/1265: a video whose
+    # first sample has a negative presentation timestamp together with a
+    # pts/dts offset (B-frames) previously failed to mux. The edit list shifts
+    # the decode time to a non-negative baseMediaDecodeTime.
+    stream = self._GetStream('video', test_file='bframe-negative-pts.mp4')
+    self.assertPackageSuccess([stream], self._GetFlags(output_dash=True))
+    self._CheckTestResults('video-bframe-negative-pts')
+
   def testAvcAacTs(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
@@ -1124,6 +1137,19 @@ class PackagerFunctionalTest(PackagerAppTest):
                          test_files=['bear-640x360.ts']),
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('avc-aac-ts')
+
+  def testHevcMultiSliceTs(self):
+    # Regression test for
+    # https://github.com/shaka-project/shaka-packager/issues/1363: HEVC in TS
+    # with multiple slices per picture previously failed to parse.
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='mp4',
+                         segmented=True,
+                         test_files=['hevc-multi-slice.ts']),
+        self._GetFlags(output_dash=True))
+    self._CheckTestResults('hevc-multi-slice-ts')
 
   def testAvcAc3Ts(self):
     # Currently we only support live packaging for ts.
@@ -1212,6 +1238,18 @@ class PackagerFunctionalTest(PackagerAppTest):
                          test_files=['bear-320x240-vp9-opus.webm']),
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vp9-webm')
+
+  def testVp8WebmAlpha(self):
+    # The alpha (transparency) channel of a VP8/VP9 WebM must be preserved
+    # through packaging: both the per-frame alpha data (BlockAdditional) and the
+    # track-level AlphaMode element.
+    # https://github.com/shaka-project/shaka-packager/issues/1168
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['vp8-alpha.webm']),
+        self._GetFlags(output_dash=True))
+    self._CheckTestResults('vp8-webm-alpha')
 
   def testVp9WebmWithBlockgroup(self):
     self.assertPackageSuccess(
@@ -1424,6 +1462,23 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults(
         'encryption-of-only-video-stream', verify_decryption=True)
 
+  def testEncryptionOfSameStreamWithAndWithoutSkipEncryption(self):
+    # Regression test for https://github.com/shaka-project/shaka-packager/
+    # issues/987. Two outputs that share the same input and stream selector
+    # must honor their own skip_encryption setting independently; the encrypted
+    # output must be encrypted while the skip_encryption output stays clear,
+    # regardless of the order in which they are listed.
+    streams = [
+        self._GetStream('video'),
+        self._GetStream('video', skip_encryption=True),
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults(
+        'encryption-of-same-stream-with-and-without-skip-encryption',
+        verify_decryption=True)
+
   def testEncryptionAndTrickPlay(self):
     streams = [
         self._GetStream('audio'),
@@ -1466,6 +1521,18 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
             encryption=True, include_pssh_in_stream=False, output_dash=True))
+    self._CheckTestResults('encryption-and-no-pssh-in-stream')
+
+  def testEncryptionDashIfIopExcludesPsshFromStreamByDefault(self):
+    # With --generate_dash_if_iop_compliant_mpd enabled (the default) and no
+    # explicit --mp4_include_pssh_in_stream, pssh must be excluded from the
+    # media files (it is carried in the manifest instead). The output is
+    # therefore identical to the explicit include_pssh_in_stream=False case.
+    # https://github.com/shaka-project/shaka-packager/issues/640
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True, include_pssh_in_stream=None, output_dash=True))
     self._CheckTestResults('encryption-and-no-pssh-in-stream')
 
   def testEncryptionCbc1(self):
