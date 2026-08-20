@@ -297,8 +297,20 @@ bool TrackRunIterator::Init() {
 bool TrackRunIterator::Init(const MovieFragment& moof) {
   runs_.clear();
 
-  const auto track_count = std::max(moof.tracks.size(), moov_->tracks.size());
-  next_fragment_start_dts_.resize(track_count, 0);
+  // |next_fragment_start_dts_| is indexed by |track_id - 1| (see below), so it
+  // must be large enough to hold the largest track_id. track_ids are not
+  // required to be contiguous or to start at 1, so this is not necessarily the
+  // same as the number of tracks: sizing by the track count caused an
+  // out-of-bounds access for files whose track_id exceeds the track count.
+  // See https://github.com/shaka-project/shaka-packager/issues/1368.
+  uint32_t max_track_id = 0;
+  for (const auto& track : moov_->tracks)
+    max_track_id = std::max(max_track_id, track.header.track_id);
+  for (const auto& moof_track : moof.tracks)
+    max_track_id = std::max(max_track_id, moof_track.header.track_id);
+  // Only grow: values persist across fragments and must not be dropped.
+  if (next_fragment_start_dts_.size() < max_track_id)
+    next_fragment_start_dts_.resize(max_track_id, 0);
   for (size_t i = 0; i < moof.tracks.size(); i++) {
     const TrackFragment& traf = moof.tracks[i];
     const auto track_index = traf.header.track_id - 1;
