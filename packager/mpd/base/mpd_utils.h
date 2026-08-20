@@ -99,8 +99,8 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent);
 
-/// Sorts AC-4 preselection IDs within the given period.
-/// @param period is the period to sort the preselection IDs for.
+/// Assigns AC-4 preselection IDs within the given period.
+/// @param period is the period to assign the preselection IDs for.
 void AssignAC4PreselectionId(Period* period);
 }  // namespace shaka
 
