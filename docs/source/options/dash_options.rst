@@ -86,6 +86,12 @@ DASH options
     Ignored if $Time$ is used in segment template, since $Time$ requires
     accurate Segment Timeline.
 
+--include_mspr_pro_for_playready, --noinclude_mspr_pro_for_playready
+
+    If enabled, PlayReady Object <mspr:pro> is inserted into the
+    <ContentProtection ...> element alongside <cenc:pssh> when using the
+    PlayReady protection system. Enabled by default.
+
 --dash_only=0|1
 
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
