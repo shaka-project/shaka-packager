@@ -108,6 +108,21 @@ TEST_F(Mpeg1HeaderTest, Parsing) {
   EXPECT_FALSE(mpeg1_header.Parse(frame_inv_4_.data(), frame_inv_4_.size()));
 }
 
+TEST_F(Mpeg1HeaderTest, RejectsReservedBitrateIndex) {
+  // btr_idx == 0b1111 is the reserved "bad" bitrate value. It is out of range
+  // for kMpeg1BitrateTable (valid indices 0..14) and must be rejected rather
+  // than used as an out-of-bounds table index. Byte 2 is 0xF0: btr_idx=0b1111,
+  // sr_idx=0. Boundary-condition audit.
+  std::vector<uint8_t> frame;
+  ASSERT_TRUE(shaka::ValidHexStringToBytes("FFFDF00444333332114322", &frame));
+
+  Mpeg1Header mpeg1_header;
+  ASSERT_TRUE(mpeg1_header.IsSyncWord(frame.data()));
+  EXPECT_EQ(static_cast<size_t>(0), mpeg1_header.GetFrameSizeWithoutParsing(
+                                        frame.data(), frame.size()));
+  EXPECT_FALSE(mpeg1_header.Parse(frame.data(), frame.size()));
+}
+
 }  // Namespace mp2t
 }  // namespace media
 }  // namespace shaka
