@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [3.10.0](https://github.com/shaka-project/shaka-packager/compare/v3.9.3...v3.10.0) (2026-08-21)
+
+
+### Features
+
+* omit PSSH in MP4 for DASH-IF IOP compliant output ([#1609](https://github.com/shaka-project/shaka-packager/issues/1609)) ([5c3deac](https://github.com/shaka-project/shaka-packager/commit/5c3deac8fce26ad7264d6baef5b91daa35611104)), closes [#640](https://github.com/shaka-project/shaka-packager/issues/640)
+
+
+### Bug Fixes
+
+* apply skip_encryption/drm_label per-output for shared streams ([#1601](https://github.com/shaka-project/shaka-packager/issues/1601)) ([0c38fe1](https://github.com/shaka-project/shaka-packager/commit/0c38fe16aa42132a5585703952473d84855a344f))
+* harden MP4/codec parsers against out-of-bounds boundary conditions ([#1603](https://github.com/shaka-project/shaka-packager/issues/1603)) ([4e891d2](https://github.com/shaka-project/shaka-packager/commit/4e891d293f127163aab7164b2469254ee673efb4))
+* **mp2t:** group multiple HEVC slices per picture into one access unit ([#1608](https://github.com/shaka-project/shaka-packager/issues/1608)) ([75d4297](https://github.com/shaka-project/shaka-packager/commit/75d4297c300fc9c38583202febde14e11917bdeb)), closes [#1363](https://github.com/shaka-project/shaka-packager/issues/1363)
+* **mp4:** size next_fragment_start_dts_ by max track_id to fix OOB crash ([#1602](https://github.com/shaka-project/shaka-packager/issues/1602)) ([b540ed8](https://github.com/shaka-project/shaka-packager/commit/b540ed842fbb309537065e2c20535d7ac3f68fbf)), closes [#1368](https://github.com/shaka-project/shaka-packager/issues/1368)
+* **mp4:** skip empty CodecConfiguration box instead of corrupting output ([#1606](https://github.com/shaka-project/shaka-packager/issues/1606)) ([2267ba0](https://github.com/shaka-project/shaka-packager/commit/2267ba0998286489ea838f09751d2c4a9021c6ac)), closes [#1142](https://github.com/shaka-project/shaka-packager/issues/1142)
+* **mp4:** support negative pts with a pts/dts offset via edit list ([#1610](https://github.com/shaka-project/shaka-packager/issues/1610)) ([f786419](https://github.com/shaka-project/shaka-packager/commit/f7864191bf0f83c66049cac1beb56b0f36a9f270)), closes [#1265](https://github.com/shaka-project/shaka-packager/issues/1265)
+* **webm:** preserve VP8/VP9 alpha (transparency) channel ([#1607](https://github.com/shaka-project/shaka-packager/issues/1607)) ([5b99ed0](https://github.com/shaka-project/shaka-packager/commit/5b99ed07470b511fbb17c726d509b1ec2dcd3ccb)), closes [#1168](https://github.com/shaka-project/shaka-packager/issues/1168)
+
 ## [3.9.3](https://github.com/shaka-project/shaka-packager/compare/v3.9.2...v3.9.3) (2026-07-27)
 
 
