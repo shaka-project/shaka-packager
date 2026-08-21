@@ -67,6 +67,11 @@ DASH options
     This applies to both audio and text tracks. The default language for text
     tracks can be overriden by  'default_text_language'.
 
+    Video tracks are not affected, even when tagged with a language. On a video
+    AdaptationSet, <Role ... value=\"main\" /> means that the set is one of
+    several alternatives of the main picture, and is signaled on that basis
+    alone rather than derived from these options.
+
 --default_text_language <text_language>
 
     Same as above, but this applies to text tracks only, and overrides the

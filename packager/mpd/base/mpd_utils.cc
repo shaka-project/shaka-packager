@@ -106,6 +106,13 @@ std::string GetLanguage(const MediaInfo& media_info) {
     lang = media_info.audio_info().language();
   } else if (media_info.has_text_info()) {
     lang = media_info.text_info().language();
+  } else if (media_info.has_video_info()) {
+    // Only populated when the user explicitly tagged the video track, e.g. for
+    // sign-language renditions. Including it here both stamps @lang on the
+    // AdaptationSet and keeps different-language video tracks in separate
+    // AdaptationSets, so an ABR ladder is only ever split when the user asked
+    // for the tags that split it.
+    lang = media_info.video_info().language();
   }
   return LanguageToShortestForm(lang);
 }
