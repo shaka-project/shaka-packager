@@ -20,6 +20,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <packager/media/base/audio_stream_info.h>
 #include <packager/media/base/key_source.h>
 #include <packager/media/base/media_parser.h>
 #include <packager/media/base/media_sample.h>
@@ -255,6 +256,16 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
   const int kFirstMoofOffset = 1308;
   EXPECT_TRUE(AppendDataInPieces(buffer.data() + kFirstMoofOffset,
                                  buffer.size() - kFirstMoofOffset, 512));
+}
+
+// The stsd samplerate field cannot represent rates above 65535 Hz; the
+// sample rate must come from the FLAC STREAMINFO in the dfLa box.
+TEST_F(MP4MediaParserTest, FlacHighSampleRateFromStreaminfo) {
+  ASSERT_TRUE(ParseMP4File("bear-flac-192kHz.mp4", 512));
+  EXPECT_EQ(1u, num_streams_);
+  const AudioStreamInfo* audio_info =
+      static_cast<AudioStreamInfo*>(stream_map_.begin()->second.get());
+  EXPECT_EQ(192000u, audio_info->sampling_frequency());
 }
 
 TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
