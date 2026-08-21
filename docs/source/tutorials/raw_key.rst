@@ -103,11 +103,11 @@ The examples below use the H264 streams created in :doc:`encoding`.
 
     Users are responsible for setting up the license servers and managing keys
     there unless they are using a cloud service provided by the DRM provider or
-    third_parties.
+    third parties.
 
 Refer to
 `player setup <https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html>`_
-on how to config the DRM in Shaka Player.
+on how to configure the DRM in Shaka Player.
 
 Test vectors used in this tutorial
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

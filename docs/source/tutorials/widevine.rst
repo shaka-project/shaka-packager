@@ -74,7 +74,9 @@ The examples below use the H264 streams created in :doc:`encoding`.
       --hls_master_playlist_output h264_master.m3u8
 
 The examples above generate Widevine protection system by default. It can be
-extended to support multi-drm with --protection_systems flag.
+extended to support multi-drm with --protection_systems flag. The content keys
+fetched from the Widevine key server are also used to generate the signaling
+for the other protection systems, so no additional keys have to be provided.
 
 * Example with multi-drm (Widevine and PlayReady)::
 
@@ -90,23 +92,23 @@ extended to support multi-drm with --protection_systems flag.
       --signer widevine_test \
       --aes_signing_key 1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9 \
       --aes_signing_iv d58ce954203b7c9a9a9d467f59839249 \
-      --protection_systems Widevine,PlayReady
+      --protection_systems Widevine,PlayReady \
       --mpd_output h264.mpd
 
 .. note::
 
     Users are responsible for setting up the license servers and managing keys
     there unless they are using a cloud service provided by the DRM provider or
-    third_parties.
+    third parties.
 
 Refer to
 `player setup <https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html>`_
-on how to config the DRM in Shaka Player.
+on how to configure the DRM in Shaka Player.
 
 Widevine test credential
 ------------------------
 
-Here is the test crendential used in this tutorial.
+Here is the test credential used in this tutorial.
 
 :key_server_url:
 
