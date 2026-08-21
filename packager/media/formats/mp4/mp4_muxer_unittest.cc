@@ -6,6 +6,7 @@
 
 #include <packager/media/formats/mp4/mp4_muxer.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #include <gtest/gtest.h>
@@ -25,8 +26,9 @@ class MP4MuxerTest : public ::testing::Test {
  protected:
   // Runs UpdateEditListOffsetFromSample on a first sample with the given
   // pts/dts and returns its status. On success |offset| receives the resulting
-  // edit_list_offset_.
+  // edit list offset of that track.
   Status ComputeEditListOffset(int64_t pts, int64_t dts, int64_t* offset) {
+    const size_t kStreamId = 0;
     MuxerOptions options;
     MP4Muxer muxer(options);
     const uint8_t kData[] = {0x00};
@@ -34,9 +36,9 @@ class MP4MuxerTest : public ::testing::Test {
         MediaSample::CopyFrom(kData, sizeof(kData), /*is_key_frame=*/true);
     sample->set_pts(pts);
     sample->set_dts(dts);
-    Status status = muxer.UpdateEditListOffsetFromSample(*sample);
+    Status status = muxer.UpdateEditListOffsetFromSample(kStreamId, *sample);
     if (status.ok() && offset)
-      *offset = muxer.edit_list_offset_.value();
+      *offset = muxer.edit_list_offsets_[kStreamId].value();
     return status;
   }
 

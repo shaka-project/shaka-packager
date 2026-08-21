@@ -11,8 +11,10 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <absl/log/check.h>
 #include <absl/log/log.h>
@@ -183,6 +185,12 @@ Status MP4Muxer::InitializeMuxer() {
 }
 
 Status MP4Muxer::Finalize() {
+  // Samples may still be buffered here if a track was flushed before every
+  // other track produced its first sample, e.g. a very short track in a
+  // multiplexed output.
+  if (to_be_initialized_ && !pending_samples_.empty())
+    RETURN_IF_ERROR(InitializeAndFlushPendingSamples());
+
   // This happens on streams that are not initialized, i.e. not going through
   // DelayInitializeMuxer, which can only happen if there are no samples from
   // the stream.
@@ -205,12 +213,53 @@ Status MP4Muxer::Finalize() {
 
 Status MP4Muxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
   if (to_be_initialized_) {
-    RETURN_IF_ERROR(UpdateEditListOffsetFromSample(sample));
-    RETURN_IF_ERROR(DelayInitializeMuxer());
-    to_be_initialized_ = false;
+    RETURN_IF_ERROR(UpdateEditListOffsetFromSample(stream_id, sample));
+    // The movie header cannot be built while another track's edit list offset
+    // is still unknown, so hold on to the samples until every track has
+    // provided its first one. With a single track this is only ever the one
+    // sample that triggers initialization.
+    pending_samples_.emplace_back(stream_id, sample.Clone());
+    if (!ReadyToInitialize())
+      return Status::OK;
+    return InitializeAndFlushPendingSamples();
   }
   DCHECK(segmenter_);
   return segmenter_->AddSample(stream_id, sample);
+}
+
+Status MP4Muxer::OnStreamEnded(size_t stream_id) {
+  if (!to_be_initialized_)
+    return Status::OK;
+  ended_streams_.insert(stream_id);
+  // A track that ended without any sample will never provide an edit list
+  // offset, so it must not hold initialization back any longer.
+  if (!pending_samples_.empty() && ReadyToInitialize())
+    return InitializeAndFlushPendingSamples();
+  return Status::OK;
+}
+
+bool MP4Muxer::ReadyToInitialize() const {
+  if (!AllStreamInfoReceived())
+    return false;
+  for (size_t i = 0; i < streams().size(); ++i) {
+    const bool has_offset =
+        i < edit_list_offsets_.size() && edit_list_offsets_[i].has_value();
+    if (!has_offset && ended_streams_.find(i) == ended_streams_.end())
+      return false;
+  }
+  return true;
+}
+
+Status MP4Muxer::InitializeAndFlushPendingSamples() {
+  RETURN_IF_ERROR(DelayInitializeMuxer());
+  to_be_initialized_ = false;
+  DCHECK(segmenter_);
+  // Replay in arrival order so the segmenter sees the same interleaving it
+  // would have seen without the delay.
+  for (const auto& pending : pending_samples_)
+    RETURN_IF_ERROR(segmenter_->AddSample(pending.first, *pending.second));
+  pending_samples_.clear();
+  return Status::OK;
 }
 
 Status MP4Muxer::FinalizeSegment(size_t stream_id,
@@ -225,6 +274,7 @@ Status MP4Muxer::FinalizeSegment(size_t stream_id,
 
 Status MP4Muxer::DelayInitializeMuxer() {
   DCHECK(!streams().empty());
+  DCHECK(AllStreamInfoReceived());
 
   std::unique_ptr<FileType> ftyp(new FileType);
   std::unique_ptr<Movie> moov(new Movie);
@@ -317,10 +367,15 @@ Status MP4Muxer::DelayInitializeMuxer() {
       return Status(error::MUXER_FAILURE, "Failed to generate trak.");
 
     // Generate EditList if needed. See UpdateEditListOffsetFromSample() for
-    // more information.
-    if (edit_list_offset_.value() > 0) {
+    // more information. Each track carries its own offset, derived from its own
+    // first sample and expressed in its own time scale.
+    const int64_t edit_list_offset =
+        i < edit_list_offsets_.size() && edit_list_offsets_[i]
+            ? edit_list_offsets_[i].value()
+            : 0;
+    if (edit_list_offset > 0) {
       EditListEntry entry;
-      entry.media_time = edit_list_offset_.value();
+      entry.media_time = edit_list_offset;
       entry.media_rate_integer = 1;
       trak.edit.list.edits.push_back(entry);
     }
@@ -329,11 +384,20 @@ Status MP4Muxer::DelayInitializeMuxer() {
       // AES-128 has no DRM system; skip pssh.
       if (stream->encryption_config().protection_scheme !=
           kAes128ProtectionScheme) {
-        moov->pssh.clear();
         const auto& key_system_info =
             stream->encryption_config().key_system_info;
         for (const ProtectionSystemSpecificInfo& system : key_system_info) {
           if (system.psshs.empty())
+            continue;
+          // 'pssh' lives at the movie level, so a multiplexed file carries the
+          // boxes of every encrypted track. Tracks encrypted under the same key
+          // produce identical boxes; keep only one of each.
+          const bool already_present =
+              std::any_of(moov->pssh.begin(), moov->pssh.end(),
+                          [&system](const ProtectionSystemSpecificHeader& p) {
+                            return p.raw_box == system.psshs;
+                          });
+          if (already_present)
             continue;
           ProtectionSystemSpecificHeader pssh;
           pssh.raw_box = system.psshs;
@@ -374,8 +438,11 @@ Status MP4Muxer::DelayInitializeMuxer() {
   return Status::OK;
 }
 
-Status MP4Muxer::UpdateEditListOffsetFromSample(const MediaSample& sample) {
-  if (edit_list_offset_)
+Status MP4Muxer::UpdateEditListOffsetFromSample(size_t stream_id,
+                                                const MediaSample& sample) {
+  if (edit_list_offsets_.size() <= stream_id)
+    edit_list_offsets_.resize(stream_id + 1);
+  if (edit_list_offsets_[stream_id])
     return Status::OK;
 
   const int64_t pts = sample.pts();
@@ -413,14 +480,14 @@ Status MP4Muxer::UpdateEditListOffsetFromSample(const MediaSample& sample) {
   //        presentation time does not equal its composition time.
   const int64_t pts_dts_offset = pts - dts;
   if (pts_dts_offset > 0) {
-    // The edit list offset is also used as the baseMediaDecodeTime bias in the
-    // fragmenter: decode_time = first_sample_dts + edit_list_offset_, which
+    // The edit list offset is also used as the baseMediaDecodeTime bias of this
+    // track in the fragmenter: decode_time = first_sample_dts + offset, which
     // must not be negative (it is stored as an unsigned tfdt). Using pts - dts
     // yields decode_time == pts, which is fine when pts >= 0. When pts < 0, use
     // -dts instead so decode_time == 0; presentation timestamps are unaffected
     // either way (the edit list cancels the bias). See
     // https://github.com/shaka-project/shaka-packager/issues/1265.
-    edit_list_offset_ = std::max(pts_dts_offset, -dts);
+    edit_list_offsets_[stream_id] = std::max(pts_dts_offset, -dts);
     return Status::OK;
   }
   if (pts_dts_offset < 0) {
@@ -429,7 +496,8 @@ Status MP4Muxer::UpdateEditListOffsetFromSample(const MediaSample& sample) {
                << dts << ").";
     return Status(error::MUXER_FAILURE, "Not expecting pts < dts.");
   }
-  edit_list_offset_ = std::max(-sample.pts(), static_cast<int64_t>(0));
+  edit_list_offsets_[stream_id] =
+      std::max(-sample.pts(), static_cast<int64_t>(0));
   return Status::OK;
 }
 

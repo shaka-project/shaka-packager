@@ -9,11 +9,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <vector>
 
 #include <packager/macros/classes.h>
 #include <packager/media/base/encryption_config.h>
+#include <packager/media/base/media_handler.h>
+#include <packager/media/base/media_sample.h>
 #include <packager/media/base/range.h>
 #include <packager/media/formats/mp4/box_definitions.h>
 #include <packager/status.h>
@@ -132,10 +135,32 @@ class Segmenter {
   }
 
  private:
+  // Data received for a stream that had to wait for the other streams to catch
+  // up. Exactly one of |sample| and |segment_info| is meaningful: |sample| is
+  // null for a segment boundary.
+  struct PendingEvent {
+    std::shared_ptr<const MediaSample> sample;
+    SegmentInfo segment_info;
+  };
+
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
   virtual Status DoFinalizeSegment(int64_t segment_number) = 0;
   virtual Status DoFinalizeChunk(int64_t segment_number) { return Status::OK; }
+
+  Status AddSampleInternal(size_t stream_id, const MediaSample& sample);
+  Status FinalizeSegmentInternal(size_t stream_id,
+                                 const SegmentInfo& segment_info);
+  // Interleave the finalized fragments of the given streams into one
+  // 'moof' + 'mdat' pair and append it to the fragment buffer.
+  Status WriteFragment(const SegmentInfo& segment_info,
+                       const std::vector<size_t>& stream_ids);
+  // Hand queued data back to the fragmenters that can accept it again, until
+  // no more progress can be made.
+  Status DrainPendingEvents();
+  // Write out a trailing fragment holding whatever the streams have left at
+  // end of stream. Sets @a wrote_fragment to false if there was nothing left.
+  Status FlushRemainingFragments(bool* wrote_fragment);
 
   uint32_t GetReferenceStreamId();
 
@@ -159,6 +184,12 @@ class Segmenter {
   size_t num_samples_ = 0;
   std::vector<uint64_t> stream_durations_;
   std::vector<KeyFrameInfo> key_frame_infos_;
+  // Per-stream queue of data received while that stream was waiting for the
+  // other streams. Always empty when there is only one stream.
+  std::vector<std::deque<PendingEvent>> pending_events_;
+  // The most recent segment info, used to write out a trailing fragment at
+  // finalization.
+  SegmentInfo last_segment_info_;
   // Only set for AES-128; holds key/IV for whole-segment encryption.
   EncryptionConfig aes128_encryption_config_;
 
