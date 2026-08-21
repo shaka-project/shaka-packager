@@ -333,6 +333,29 @@ TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
 
+TEST_F(WidevineKeySourceTest, RequestOnlyConfiguredTrackTypes) {
+  const char kExpectedRequestMessageWithTrackTypesFormat[] =
+      R"({"content_id":"%s","policy":"%s",)"
+      R"("tracks":[{"type":"SD"},{"type":"AUDIO"}],)"
+      R"("drm_types":["WIDEVINE"],"protection_scheme":"%s"})";
+  std::string expected_message =
+      absl::StrFormat(kExpectedRequestMessageWithTrackTypesFormat,
+                      Base64Encode(kContentId).c_str(), kPolicy,
+                      GetExpectedProtectionScheme().c_str());
+  EXPECT_CALL(*mock_request_signer_,
+              GenerateSignature(StrEq(expected_message), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
+
+  const Status kMockStatus = Status::UNKNOWN;
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+      .WillOnce(Return(kMockStatus));
+
+  CreateWidevineKeySource();
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
+  widevine_key_source_->set_track_types({"SD", "AUDIO"});
+  ASSERT_EQ(kMockStatus, widevine_key_source_->FetchKeys(content_id_, kPolicy));
+}
+
 TEST_F(WidevineKeySourceTest, RetryOnHttpTimeout) {
   std::string mock_response = absl::StrFormat(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());

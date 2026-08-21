@@ -10,6 +10,8 @@
 #define PACKAGER_APP_PACKAGER_UTIL_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <packager/media/base/fourccs.h>
 
@@ -30,11 +32,16 @@ class KeySource;
 /// fetches keys.
 /// @param protection_scheme specifies the protection scheme to be used for
 ///        encryption.
+/// @param used_drm_labels specifies the drm labels explicitly referenced by
+///        the stream descriptors. If non-empty, Widevine key requests are
+///        limited to these track types; otherwise all track types are
+///        requested.
 /// @return A std::unique_ptr containing a new KeySource, or nullptr if
 ///         encryption is not required.
 std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
-    const EncryptionParams& encryption_params);
+    const EncryptionParams& encryption_params,
+    const std::vector<std::string>& used_drm_labels);
 
 /// Create KeySource based on provided params for content decryption. Does not
 /// fetch keys.
