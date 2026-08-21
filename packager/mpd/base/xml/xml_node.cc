@@ -60,7 +60,7 @@ const char kDTSCCodec[] = "dtsc";
 const char kDTSECodec[] = "dtse";
 const char kDTSXCodec[] = "dtsx";
 
-std::string urlEncode(const std::string& input) {
+std::string urlEncodeSegment(const std::string& input) {
   // NOTE: According to the docs, "Since 7.82.0, the curl parameter is ignored".
   CURL* curl = NULL;
   char* output = curl_easy_escape(curl, input.c_str(), input.length());
@@ -70,6 +70,33 @@ std::string urlEncode(const std::string& input) {
     return encodedUrl;
   }
   return "";  // Return empty string if initialization fails
+}
+
+std::string urlEncode(const std::string& input) {
+  // Per RFC 3986, '/' separates path segments and must not be escaped.
+  // Escape each path segment individually. For absolute URLs, leave the
+  // scheme://authority prefix untouched.
+  size_t path_start = 0;
+  const size_t scheme_end = input.find("://");
+  if (scheme_end != std::string::npos) {
+    path_start = input.find('/', scheme_end + 3);
+    if (path_start == std::string::npos)
+      return input;  // scheme://authority with no path.
+  }
+  std::string result = input.substr(0, path_start);
+  std::string path = input.substr(path_start);
+  size_t start = 0;
+  while (true) {
+    const size_t slash = path.find('/', start);
+    result += urlEncodeSegment(
+        path.substr(start, slash == std::string::npos ? std::string::npos
+                                                      : slash - start));
+    if (slash == std::string::npos)
+      break;
+    result += '/';
+    start = slash + 1;
+  }
+  return result;
 }
 
 std::string RangeToString(const Range& range) {
