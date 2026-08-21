@@ -38,6 +38,8 @@ add_library(mpd_builder STATIC
   base/xml/scoped_xml_ptr.h
   base/xml/xml_node.cc
   base/xml/xml_node.h
+  base/preselection.cc
+  base/preselection.h
   )
 
 target_link_libraries(mpd_builder
@@ -49,6 +51,7 @@ target_link_libraries(mpd_builder
   LibXml2
   manifest_base
   media_base
+  mp4
   mpd_media_info_proto
   utils_clock
   libcurl
@@ -62,7 +65,7 @@ add_library(mpd_mocks STATIC
   base/mock_mpd_notifier.h
   )
 
-target_link_libraries(mpd_mocks gmock absl::synchronization LibXml2 mpd_media_info_proto)
+target_link_libraries(mpd_mocks gmock absl::synchronization LibXml2 mp4 mpd_media_info_proto)
 
 add_executable(mpd_unittest
   base/adaptation_set_unittest.cc
@@ -71,6 +74,7 @@ add_executable(mpd_unittest
   base/mpd_utils_unittest.cc
   base/period_unittest.cc
   base/representation_unittest.cc
+  base/preselection_unittest.cc
   base/simple_mpd_notifier_unittest.cc
   base/xml/xml_node_unittest.cc
   test/mpd_builder_test_helper.cc

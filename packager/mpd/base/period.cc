@@ -182,6 +182,13 @@ std::optional<xml::XmlNode> Period::GetXml(bool output_period_duration) {
       return std::nullopt;
   }
 
+  for (const auto& preselection : preselection_list_) {
+    auto preselection_xml = preselection->GetXml();
+    if (!preselection_xml || !period.AddChild(std::move(*preselection_xml))) {
+      return std::nullopt;
+    }
+  }
+
   if (output_period_duration) {
     if (!period.SetStringAttribute("duration",
                                    SecondsToXmlDuration(duration_seconds_))) {
@@ -312,6 +319,37 @@ bool Period::SetNewAdaptationSetAttributes(
         new_adaptation_set->ForceStartwithSAP(1);
       } else if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
         new_adaptation_set->ForceSubsegmentStartswithSAP(1);
+      }
+      if (codec == "ac-4") {
+        // The adaptation set should contain Label, and Role elements associated
+        // with the default (highest ranked) preselection in the Dolby AC-4
+        // track. If there is no priority, then the first preselection is used.
+        // If there are no preselections, then no Label or Role elements are
+        // added to the AdaptationSet.
+        const MediaInfo::Ac4Preselection* ac4_preselection_with_max_priority =
+            nullptr;
+        int32_t max_selection_priority = -1;
+        for (const auto& preselection : media_info.audio_info()
+                                            .codec_specific_data()
+                                            .ac4_preselections()) {
+          if (preselection.has_selection_priority() &&
+              (int32_t)preselection.selection_priority() >
+                  max_selection_priority) {
+            max_selection_priority = preselection.selection_priority();
+            ac4_preselection_with_max_priority = &preselection;
+          }
+        }
+        if (ac4_preselection_with_max_priority) {
+          for (auto& label : ac4_preselection_with_max_priority->labels()) {
+            new_adaptation_set->AddPreselectionLabel(label.lang(),
+                                                     label.value());
+          }
+          for (const auto& role_pair :
+               ac4_preselection_with_max_priority->roles()) {
+            new_adaptation_set->AddPreselectionRole(role_pair.scheme(),
+                                                    role_pair.value());
+          }
+        }
       }
     }
   } else if (media_info.has_text_info()) {

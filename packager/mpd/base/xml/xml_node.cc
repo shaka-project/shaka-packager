@@ -373,6 +373,28 @@ bool AdaptationSetXmlNode::AddLabelElement(const std::string& value) {
   return AddChild(std::move(descriptor));
 }
 
+bool AdaptationSetXmlNode::AddPreselectionLabelElement(
+    const std::string& language,
+    const std::string& label) {
+  XmlNode label_node("Label");
+  if (!language.empty()) {
+    RCHECK(label_node.SetStringAttribute("lang", language));
+  }
+  label_node.SetContent(label);
+  return AddChild(std::move(label_node));
+}
+
+bool AdaptationSetXmlNode::AddPreselectionRoleElement(
+    const std::string& scheme,
+    const std::string& value) {
+  XmlNode role_node("Role");
+  RCHECK(role_node.SetStringAttribute("schemeIdUri", scheme));
+  if (!value.empty()) {
+    RCHECK(role_node.SetStringAttribute("value", value));
+  }
+  return AddChild(std::move(role_node));
+}
+
 RepresentationXmlNode::RepresentationXmlNode()
     : RepresentationBaseXmlNode("Representation") {}
 RepresentationXmlNode::~RepresentationXmlNode() {}
