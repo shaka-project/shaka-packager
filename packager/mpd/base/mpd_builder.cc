@@ -181,7 +181,11 @@ std::optional<xml::XmlNode> MpdBuilder::GenerateMpd() {
   // Add baseurls to MPD.
   for (const std::string& base_url : base_urls_) {
     XmlNode xml_base_url("BaseURL");
-    xml_base_url.SetUrlEncodedContent(base_url);
+    // --base_urls values are already URLs; they get XML escaping on
+    // serialization and no URL encoding. AddContent takes the string as raw
+    // text — SetContent would run it through xmlNodeSetContent, which parses
+    // entity references and silently drops a raw '&'.
+    xml_base_url.AddContent(base_url);
 
     if (!mpd.AddChild(std::move(xml_base_url)))
       return std::nullopt;

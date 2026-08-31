@@ -167,6 +167,20 @@ TEST_F(OnDemandMpdBuilderTest, CheckXmlTest) {
                         " timescale=\"1000\" presentationTimeOffset=\"200\">"));
 }
 
+TEST_F(OnDemandMpdBuilderTest, BaseUrlsEmittedVerbatim) {
+  // --base_urls values are complete URLs supplied by the user: they get XML
+  // escaping on serialization and no URL encoding. Query strings used to be
+  // mangled into %3F/%26 (#1593).
+  mpd_.AddBaseUrl("https://cdn.example.com/v1/?token=a&b=2");
+  mpd_.AddBaseUrl("subtitles/");
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  EXPECT_THAT(mpd_doc, HasSubstr("<BaseURL>https://cdn.example.com/v1/"
+                                 "?token=a&amp;b=2</BaseURL>"));
+  EXPECT_THAT(mpd_doc, HasSubstr("<BaseURL>subtitles/</BaseURL>"));
+}
+
 TEST_F(OnDemandMpdBuilderTest, MultiplePeriodTest) {
   const double kPeriodStartTimeSeconds = 1.0;
   Period* period = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);

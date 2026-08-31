@@ -215,6 +215,21 @@ TEST(XmlNodeTest, AddContentProtectionElements) {
           "</Representation>"));
 }
 
+TEST(XmlNodeTest, UrlEncodedContentPreservesPathSeparators) {
+  XmlNode base_url("BaseURL");
+  base_url.SetUrlEncodedContent("subtitles/subs en&more.vtt");
+  EXPECT_THAT(base_url,
+              XmlNodeEqual(
+                  "<BaseURL>subtitles/subs%20en%26more.vtt</BaseURL>"));
+}
+
+TEST(XmlNodeTest, UrlEncodedContentEscapesEachNestedSegment) {
+  XmlNode base_url("BaseURL");
+  base_url.SetUrlEncodedContent("a b/c d/subs en.vtt");
+  EXPECT_THAT(base_url,
+              XmlNodeEqual("<BaseURL>a%20b/c%20d/subs%20en.vtt</BaseURL>"));
+}
+
 TEST(XmlNodeTest, AddEC3AudioInfo) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ec-3");
