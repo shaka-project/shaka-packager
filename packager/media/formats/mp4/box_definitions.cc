@@ -2085,17 +2085,24 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     RCHECK(ReadWriteHeaderInternal(buffer));
   }
 
-  // Convert from integer to 16.16 fixed point for writing.
-  samplerate <<= 16;
+  // The samplerate field is 16.16 fixed point and cannot represent rates
+  // above 65535 Hz. Write 0 for higher rates: readers treat 0 as "consult
+  // the codec configuration" (e.g. FLAC dfLa STREAMINFO carries the true
+  // rate), whereas a wrapped value reads back as a bogus rate
+  // (192 kHz would become 60928 Hz).
+  uint32_t samplerate_fixed16 =
+      samplerate > 0xFFFF ? 0 : samplerate << 16;
   RCHECK(buffer->IgnoreBytes(6) &&  // reserved.
          buffer->ReadWriteUInt16(&data_reference_index) &&
          buffer->IgnoreBytes(8) &&  // reserved.
          buffer->ReadWriteUInt16(&channelcount) &&
          buffer->ReadWriteUInt16(&samplesize) &&
          buffer->IgnoreBytes(4) &&  // predefined.
-         buffer->ReadWriteUInt32(&samplerate));
-  // Convert from 16.16 fixed point to integer.
-  samplerate >>= 16;
+         buffer->ReadWriteUInt32(&samplerate_fixed16));
+  if (buffer->Reading()) {
+    // Convert from 16.16 fixed point to integer.
+    samplerate = samplerate_fixed16 >> 16;
+  }
 
   RCHECK(buffer->PrepareChildren());
 
