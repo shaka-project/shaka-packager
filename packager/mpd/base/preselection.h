@@ -51,6 +51,9 @@ class Preselection {
   uint32_t selection_priority() const { return selection_priority_; }
   const std::vector<Label>& labels() const { return labels_; }
   const std::vector<Role>& roles() const { return roles_; }
+  const std::vector<AccessibilityDescriptor>& accessibilities() const {
+    return accessibilities_;
+  }
 
   void AddLabel(const std::string& lang, const std::string& label) {
     labels_.push_back({lang, label});

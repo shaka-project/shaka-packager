@@ -313,6 +313,36 @@ TEST(PreselectionTest, CreateFromAc4PreselectionWithRoles) {
   EXPECT_EQ("main", preselection->roles()[0].value);
 }
 
+TEST(PreselectionTest, CreateFromAc4PreselectionWithDescriptionRole) {
+  MediaInfo::Ac4Preselection ac4_preselection;
+  ac4_preselection.set_group_id("1003");
+  ac4_preselection.set_lang("en");
+  ac4_preselection.set_preselection_tag("4");
+  ac4_preselection.set_selection_priority(4);
+
+  auto* role1 = ac4_preselection.add_roles();
+  role1->set_scheme("urn:mpeg:dash:role:2011");
+  role1->set_value("description");
+
+  auto* role2 = ac4_preselection.add_roles();
+  role2->set_scheme("urn:mpeg:dash:role:2011");
+  role2->set_value("alternate");
+
+  auto preselection = Preselection::CreateFromAc4Preselection(
+      ac4_preselection, kTestAdaptationId);
+
+  ASSERT_NE(nullptr, preselection);
+  EXPECT_EQ(2u, preselection->roles().size());
+  EXPECT_EQ("urn:mpeg:dash:role:2011", preselection->roles()[0].scheme_id_uri);
+  EXPECT_EQ("alternate", preselection->roles()[0].value);
+  EXPECT_EQ("urn:tva:metadata:cs:AudioPurposeCS:2007",
+            preselection->accessibilities()[0].scheme_id_uri);
+  EXPECT_EQ("1", preselection->accessibilities()[0].value);
+  EXPECT_EQ("urn:mpeg:dash:role:2011",
+            preselection->accessibilities()[1].scheme_id_uri);
+  EXPECT_EQ("description", preselection->accessibilities()[1].value);
+}
+
 TEST(PreselectionTest, CreateFromAc4PreselectionWithDialogGain) {
   MediaInfo::Ac4Preselection ac4_preselection;
   ac4_preselection.set_group_id("1004");

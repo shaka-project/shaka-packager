@@ -80,7 +80,15 @@ std::unique_ptr<Preselection> Preselection::CreateFromAc4Preselection(
 
   for (int i = 0; i < ac4_preselection.roles_size(); ++i) {
     const auto& role = ac4_preselection.roles(i);
-    preselection->AddRole(role.scheme(), role.value());
+    std::string role_value = role.value();
+    if (role_value.find("description") != std::string::npos) {
+      // Add DVB compatible element
+      preselection->AddAccessibility("urn:tva:metadata:cs:AudioPurposeCS:2007",
+                                     "1");
+      preselection->AddAccessibility("urn:mpeg:dash:role:2011", "description");
+      role_value = "alternate";
+    }
+    preselection->AddRole(role.scheme(), role_value);
   }
 
   constexpr float kAc4DialogGainScale = 2.0f;
