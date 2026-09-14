@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -539,6 +540,16 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent) {
   AddContentProtectionElementsHelperTemplated(media_info, parent);
+}
+
+void AssignAC4PreselectionId(Period* period) {
+  uint32_t assigned_id = kDefaultAC4PreselectionId;
+  // Assign preselection id to each preselection in the period. The preselection
+  // id is used to identify the preselection in the AC-4 decoder.
+  for (auto& preselection : period->preselection_list()) {
+    preselection.get()->set_id(assigned_id);
+    assigned_id++;
+  }
 }
 
 }  // namespace shaka

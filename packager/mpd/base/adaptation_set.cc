@@ -413,6 +413,14 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     return std::nullopt;
   }
 
+  // Add supplemental property for AC4 preselection
+  if (codec_ == "ac-4" &&
+      (!ac4_preselection_roles_.empty() || !ac4_preselection_labels_.empty()) &&
+      !adaptation_set.AddSupplementalProperty("urn:mpeg:dash:preselection:2016",
+                                              "")) {
+    return std::nullopt;
+  }
+
   // Note: must be checked before checking segments_aligned_ (below). So that
   // segments_aligned_ is set before checking below.
   if (mpd_options_.mpd_type == MpdType::kStatic) {
@@ -482,8 +490,28 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
+  if (codec_ == "ac-4") {
+    // add Role in AC4 preselection
+    for (auto& role : ac4_preselection_roles_) {
+      if (!adaptation_set.AddPreselectionRoleElement(role.first, role.second))
+        return std::nullopt;
+    }
+  }
+
   if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
     return std::nullopt;
+
+  if (codec_ == "ac-4") {
+    // add Label in AC4 preselection
+    for (auto& label : ac4_preselection_labels_) {
+      if (label.second.empty()) {
+        continue;
+      }
+      if (!adaptation_set.AddPreselectionLabelElement(label.first,
+                                                      label.second))
+        return std::nullopt;
+    }
+  }
 
   for (const auto& representation_pair : representation_map_) {
     const auto& representation = representation_pair.second;

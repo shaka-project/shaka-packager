@@ -1173,4 +1173,94 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
   EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
+// Test AddPreselectionLabelElement with language and label.
+TEST_F(AdaptationSetTest, AddPreselectionLabelElement) {
+  xml::AdaptationSetXmlNode adaptation_set_xml;
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("en", "Dialog +4dB"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("de", "Dialog +4dB"));
+
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Dialog +4dB</Label>"
+                           "  <Label lang=\"de\">Dialog +4dB</Label>"
+                           "</AdaptationSet>"));
+}
+
+// Test AddPreselectionLabelElement with empty language.
+TEST_F(AdaptationSetTest, AddPreselectionLabelElementNoLanguage) {
+  xml::AdaptationSetXmlNode adaptation_set_xml;
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("", "No Language"));
+
+  EXPECT_THAT(adaptation_set_xml, XmlNodeEqual("<AdaptationSet>"
+                                               "  <Label>No Language</Label>"
+                                               "</AdaptationSet>"));
+}
+
+// Test AddPreselectionRoleElement with scheme and value.
+TEST_F(AdaptationSetTest, AddPreselectionRoleElement) {
+  xml::AdaptationSetXmlNode adaptation_set_xml;
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", "main"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", "alternate"));
+
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"main\"/>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"alternate\"/>"
+                           "</AdaptationSet>"));
+}
+
+// Test AddPreselectionRoleElement with empty value.
+TEST_F(AdaptationSetTest, AddPreselectionRoleElementNoValue) {
+  xml::AdaptationSetXmlNode adaptation_set_xml;
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", ""));
+
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\"/>"
+                           "</AdaptationSet>"));
+}
+
+// Test combination of AddPreselectionLabelElement and
+// AddPreselectionRoleElement.
+TEST_F(AdaptationSetTest, AddPreselectionLabelElementAndRole) {
+  xml::AdaptationSetXmlNode adaptation_set_xml;
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionLabelElement(
+      "en", "Dialog Enhancement"));
+  ASSERT_TRUE(adaptation_set_xml.AddPreselectionRoleElement(
+      "urn:mpeg:dash:role:2011", "main"));
+
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Dialog Enhancement</Label>"
+                           "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" "
+                           "value=\"main\"/>"
+                           "</AdaptationSet>"));
+}
+
+// Test multiple labels with different languages for AC-4 preselection.
+TEST_F(AdaptationSetTest, AddPreselectionMultipleLabels) {
+  xml::AdaptationSetXmlNode adaptation_set_xml;
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("en", "Enhanced Audio"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("es", "Audio Mejorado"));
+  ASSERT_TRUE(
+      adaptation_set_xml.AddPreselectionLabelElement("fr", "Audio Amélioré"));
+
+  EXPECT_THAT(adaptation_set_xml,
+              XmlNodeEqual("<AdaptationSet>"
+                           "  <Label lang=\"en\">Enhanced Audio</Label>"
+                           "  <Label lang=\"es\">Audio Mejorado</Label>"
+                           "  <Label lang=\"fr\">Audio Amélioré</Label>"
+                           "</AdaptationSet>"));
+}
+
 }  // namespace shaka
