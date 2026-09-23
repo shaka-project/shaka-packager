@@ -32,6 +32,7 @@
 #include <packager/media/base/media_sample.h>
 #include <packager/media/base/stream_info.h>
 #include <packager/media/base/text_sample.h>
+#include <packager/media/formats/aac/aac_media_parser.h>
 #include <packager/media/formats/mp2t/mp2t_media_parser.h>
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 #include <packager/media/formats/webm/webm_media_parser.h>
@@ -199,6 +200,9 @@ Status Demuxer::InitializeParser() {
   switch (container_name_) {
     case CONTAINER_MOV:
       parser_.reset(new mp4::MP4MediaParser());
+      break;
+    case CONTAINER_AAC:
+      parser_.reset(new aac::AacMediaParser());
       break;
     case CONTAINER_MPEG2TS:
       parser_.reset(new mp2t::Mp2tMediaParser());
