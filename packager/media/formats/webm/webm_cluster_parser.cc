@@ -484,6 +484,20 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
           std::vector<uint8_t> config_serialized;
           vp_config_.WriteMP4(&config_serialized);
           video_stream_info_->set_codec_config(config_serialized);
+          // Unspecified values stay at 0 so that they are not signaled in the
+          // manifests.
+          if (vp_config_.color_primaries() != AVCOL_PRI_UNSPECIFIED) {
+            video_stream_info_->set_color_primaries(
+                vp_config_.color_primaries());
+          }
+          if (vp_config_.transfer_characteristics() != AVCOL_TRC_UNSPECIFIED) {
+            video_stream_info_->set_transfer_characteristics(
+                vp_config_.transfer_characteristics());
+          }
+          if (vp_config_.matrix_coefficients() != AVCOL_SPC_UNSPECIFIED) {
+            video_stream_info_->set_matrix_coefficients(
+                vp_config_.matrix_coefficients());
+          }
         }
 
         streams.push_back(video_stream_info_);
