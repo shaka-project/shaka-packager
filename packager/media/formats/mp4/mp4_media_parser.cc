@@ -155,6 +155,21 @@ Codec ObjectTypeToCodec(ObjectType object_type) {
   }
 }
 
+// Extracts the sample rate from the STREAMINFO metadata block in a
+// FLACSpecificBox ('dfLa') payload. The stsd samplerate field is 16.16
+// fixed point and cannot represent rates above 65535 Hz, so STREAMINFO
+// (20-bit rate) is the authoritative source. Returns 0 on failure.
+uint32_t GetFlacStreaminfoSampleRate(const std::vector<uint8_t>& data) {
+  // METADATA_BLOCK_HEADER (4 bytes, type 0 = STREAMINFO) followed by a
+  // 34-byte STREAMINFO block; the 20-bit sample rate starts at bit 80.
+  const size_t kHeaderSize = 4;
+  const size_t kSampleRateOffset = kHeaderSize + 10;
+  if (data.size() < kSampleRateOffset + 3 || (data[0] & 0x7f) != 0)
+    return 0;
+  return (data[kSampleRateOffset] << 12) | (data[kSampleRateOffset + 1] << 4) |
+         (data[kSampleRateOffset + 2] >> 4);
+}
+
 std::vector<uint8_t> GetDOVIDecoderConfig(
     const std::vector<CodecConfiguration>& configs) {
   for (const CodecConfiguration& config : configs) {
@@ -612,9 +627,14 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_alac:
           codec_config = entry.alac.data;
           break;
-        case FOURCC_fLaC:
+        case FOURCC_fLaC: {
           codec_config = entry.dfla.data;
+          const uint32_t streaminfo_rate =
+              GetFlacStreaminfoSampleRate(codec_config);
+          if (streaminfo_rate != 0)
+            sampling_frequency = streaminfo_rate;
           break;
+        }
         case FOURCC_Opus:
           codec_config = entry.dops.opus_identification_header;
           codec_delay_ns =

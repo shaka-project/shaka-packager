@@ -1160,6 +1160,20 @@ TEST_F(BoxDefinitionsTest, MediaHandlerType) {
   ASSERT_EQ(FOURCC_vide, media_readback.handler.handler_type);
 }
 
+TEST_F(BoxDefinitionsTest, AudioSampleEntryHighSampleRateWritesZero) {
+  // 16.16 fixed point cannot represent rates above 65535 Hz. The writer
+  // must emit 0 ("consult the codec configuration") rather than a wrapped
+  // rate; 192 kHz used to read back as 60928 Hz.
+  AudioSampleEntry entry;
+  Fill(&entry);
+  entry.samplerate = 192000;
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(0u, entry_readback.samplerate);
+}
+
 TEST_F(BoxDefinitionsTest, AvcCodecConfiguration) {
   CodecConfiguration codec_configuration;
   Fill(&codec_configuration);
