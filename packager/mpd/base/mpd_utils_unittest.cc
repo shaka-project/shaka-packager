@@ -243,4 +243,27 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
   EXPECT_THAT(adaptation_set_.GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
+// Video tracks carrying a language (e.g. sign-language renditions) must land in
+// their own AdaptationSet keyed on that language, rather than being merged into
+// a single same-codec set. Regression test for the DASH representation mixup.
+TEST_F(MpdUtilsTest, GetAdaptationSetKeySeparatesVideoByLanguage) {
+  MediaInfo media_info;
+  media_info.set_container_type(MediaInfo::CONTAINER_MP4);
+  media_info.mutable_video_info()->set_codec("avc1.640028");
+
+  const std::string no_lang_key =
+      GetAdaptationSetKey(media_info, /*ignore_codec=*/false);
+
+  media_info.mutable_video_info()->set_language("nl");
+  const std::string nl_key =
+      GetAdaptationSetKey(media_info, /*ignore_codec=*/false);
+
+  media_info.mutable_video_info()->set_language("en");
+  const std::string en_key =
+      GetAdaptationSetKey(media_info, /*ignore_codec=*/false);
+
+  EXPECT_NE(nl_key, en_key);
+  EXPECT_NE(no_lang_key, nl_key);
+}
+
 }  // namespace shaka

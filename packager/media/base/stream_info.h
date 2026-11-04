@@ -110,6 +110,10 @@ class StreamInfo {
     return layered_codec_config_;
   }
   const std::string& language() const { return language_; }
+  // Whether |language| was set by a user-specified override, e.g. the 'lang='
+  // stream descriptor field, as opposed to being read from metadata in the
+  // input stream.
+  bool language_overridden() const { return language_overridden_; }
   bool is_encrypted() const { return is_encrypted_; }
   bool has_clear_lead() const { return has_clear_lead_; }
   const EncryptionConfig& encryption_config() const {
@@ -130,6 +134,13 @@ class StreamInfo {
     codec_string_ = codec_string;
   }
   void set_language(const std::string& language) { language_ = language; }
+  // Sets a user-specified language override. Kept distinct from
+  // |set_language| so that consumers can tell a language the user asked for
+  // from one that merely happened to be present in the input.
+  void set_language_override(const std::string& language) {
+    language_ = language;
+    language_overridden_ = true;
+  }
   void set_is_encrypted(bool is_encrypted) { is_encrypted_ = is_encrypted; }
   void set_has_clear_lead(bool has_clear_lead) {
     has_clear_lead_ = has_clear_lead;
@@ -149,6 +160,7 @@ class StreamInfo {
   Codec codec_;
   std::string codec_string_;
   std::string language_;
+  bool language_overridden_ = false;
   // Whether the stream is potentially encrypted.
   // Note that in a potentially encrypted stream, individual buffers
   // can be encrypted or not encrypted.

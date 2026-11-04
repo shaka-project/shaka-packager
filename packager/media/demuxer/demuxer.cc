@@ -298,9 +298,8 @@ void Demuxer::ParserInitEvent(
       track_id_to_stream_index_map_[stream_info->track_id()] = stream_index;
       stream_indexes_.push_back(stream_index);
       auto iter = language_overrides_.find(stream_index);
-      if (iter != language_overrides_.end() &&
-          stream_info->stream_type() != kStreamVideo) {
-        stream_info->set_language(iter->second);
+      if (iter != language_overrides_.end()) {
+        stream_info->set_language_override(iter->second);
       }
       if (stream_info->is_encrypted()) {
         init_event_status_.Update(Status(error::INVALID_ARGUMENT,

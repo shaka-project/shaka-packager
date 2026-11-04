@@ -87,6 +87,18 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   video_info->set_height(video_stream_info->height());
   video_info->set_time_scale(video_stream_info->time_scale());
 
+  // Only a language the user explicitly asked for is carried into MediaInfo.
+  // Video tracks routinely arrive tagged with an incidental language (many
+  // encoders stamp 'eng' on the video track), and treating that as meaningful
+  // would split an ABR ladder across AdaptationSets; see GetLanguage() in
+  // packager/mpd/base/mpd_utils.cc.
+  const std::string& language = video_stream_info->language();
+  // ISO-639-2/T defines language "und" which we also want to ignore.
+  if (video_stream_info->language_overridden() && !language.empty() &&
+      language != "und") {
+    video_info->set_language(language);
+  }
+
   if (video_stream_info->pixel_width() > 0)
     video_info->set_pixel_width(video_stream_info->pixel_width());
 

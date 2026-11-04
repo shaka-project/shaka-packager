@@ -51,6 +51,20 @@ These are the available fields:
     Optional value which contains a user-specified language tag. If specified,
     this value overrides any language metadata in the input stream.
 
+    Video streams are normally left untagged, since the main picture carries no
+    language. Tagging one is meaningful for a rendition that does, such as a
+    sign-language rendition. For DASH, the tag becomes AdaptationSet@lang and
+    places the stream in an AdaptationSet of its own, so that it is never
+    offered as an adaptive alternative to the untagged main picture. Combine it
+    with **dash_roles=sign** to signal what the rendition is.
+
+    Only a tag given here has that effect on the DASH manifest. Language
+    metadata found in an input video track is deliberately ignored, because
+    encoders commonly stamp an incidental language on the video track and
+    honoring it would scatter one adaptive ladder over several
+    AdaptationSets. Such metadata is still copied to the output container as
+    before; it just does not reach the manifest.
+
 :output_format (format):
 
     Optional value which specifies the format of the output files (MP4 or WebM).
