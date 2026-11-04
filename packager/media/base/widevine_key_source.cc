@@ -358,11 +358,16 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
   DCHECK(request);
   *request = *common_encryption_request_;
 
-  request->add_tracks()->set_type("SD");
-  request->add_tracks()->set_type("HD");
-  request->add_tracks()->set_type("UHD1");
-  request->add_tracks()->set_type("UHD2");
-  request->add_tracks()->set_type("AUDIO");
+  if (track_types_.empty()) {
+    request->add_tracks()->set_type("SD");
+    request->add_tracks()->set_type("HD");
+    request->add_tracks()->set_type("UHD1");
+    request->add_tracks()->set_type("UHD2");
+    request->add_tracks()->set_type("AUDIO");
+  } else {
+    for (const std::string& track_type : track_types_)
+      request->add_tracks()->set_type(track_type);
+  }
 
   request->add_drm_types(ModularDrmType::WIDEVINE);
 

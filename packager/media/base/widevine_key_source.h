@@ -87,6 +87,13 @@ class WidevineKeySource : public KeySource {
     enable_entitlement_license_ = enable_entitlement_license;
   }
 
+  /// Set the track types to request keys for. If not set or empty, all
+  /// track types (SD, HD, UHD1, UHD2, AUDIO) are requested.
+  /// Not protected by Mutex.  Must be called before FetchKeys().
+  void set_track_types(const std::vector<std::string>& track_types) {
+    track_types_ = track_types;
+  }
+
  private:
   typedef ProducerConsumerQueue<std::shared_ptr<EncryptionKeyMap>>
       EncryptionKeyQueue;
@@ -145,6 +152,7 @@ class WidevineKeySource : public KeySource {
   int32_t crypto_period_duration_in_seconds_ = 0;
   std::vector<uint8_t> group_id_;
   bool enable_entitlement_license_ = false;
+  std::vector<std::string> track_types_;
   std::unique_ptr<EncryptionKeyQueue> key_pool_;
 
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.

@@ -885,6 +885,25 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   return job_manager->InitializeJobs();
 }
 
+// Returns the distinct drm labels explicitly referenced by the stream
+// descriptors, or an empty vector if any encryptable stream omits the
+// label (in which case the key source must request all track types).
+std::vector<std::string> GetUsedDrmLabels(
+    const std::vector<StreamDescriptor>& stream_descriptors) {
+  std::vector<std::string> labels;
+  for (const StreamDescriptor& descriptor : stream_descriptors) {
+    if (descriptor.skip_encryption || descriptor.stream_selector == "text")
+      continue;
+    if (descriptor.drm_label.empty())
+      return {};
+    if (std::find(labels.begin(), labels.end(), descriptor.drm_label) ==
+        labels.end()) {
+      labels.push_back(descriptor.drm_label);
+    }
+  }
+  return labels;
+}
+
 }  // namespace
 }  // namespace media
 
@@ -921,7 +940,8 @@ Status Packager::Initialize(
     internal->encryption_key_source = CreateEncryptionKeySource(
         static_cast<media::FourCC>(
             packaging_params.encryption_params.protection_scheme),
-        packaging_params.encryption_params);
+        packaging_params.encryption_params,
+        media::GetUsedDrmLabels(stream_descriptors));
     if (!internal->encryption_key_source)
       return Status(error::INVALID_ARGUMENT, "Failed to create key source.");
   }

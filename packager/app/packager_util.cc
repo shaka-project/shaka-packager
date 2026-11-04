@@ -47,7 +47,8 @@ std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
 
 std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
-    const EncryptionParams& encryption_params) {
+    const EncryptionParams& encryption_params,
+    const std::vector<std::string>& used_drm_labels) {
   std::unique_ptr<KeySource> encryption_key_source;
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
@@ -74,6 +75,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       widevine_key_source->set_group_id(widevine.group_id);
       widevine_key_source->set_enable_entitlement_license(
           widevine.enable_entitlement_license);
+      widevine_key_source->set_track_types(used_drm_labels);
 
       Status status =
           widevine_key_source->FetchKeys(widevine.content_id, widevine.policy);
