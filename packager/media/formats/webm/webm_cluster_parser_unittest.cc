@@ -437,10 +437,9 @@ class WebMClusterParserTest : public testing::Test {
     audio_stream_info_->set_codec(audio_codec);
     video_stream_info_->set_codec(video_codec);
     return new WebMClusterParser(
-        kTimecodeScale, audio_stream_info_, video_stream_info_,
-        VPCodecConfigurationRecord(), audio_default_duration,
-        video_default_duration, text_tracks, ignored_tracks,
-        audio_encryption_key_id, video_encryption_key_id,
+        kTimecodeScale, audio_stream_info_, video_stream_info_, vp_config_,
+        audio_default_duration, video_default_duration, text_tracks,
+        ignored_tracks, audio_encryption_key_id, video_encryption_key_id,
         std::bind(&WebMClusterParserTest::NewSampleEvent, this, _1, _2),
         init_cb, &mock_key_source_);
   }
@@ -505,6 +504,7 @@ class WebMClusterParserTest : public testing::Test {
 
   std::shared_ptr<AudioStreamInfo> audio_stream_info_;
   std::shared_ptr<VideoStreamInfo> video_stream_info_;
+  VPCodecConfigurationRecord vp_config_;
   std::unique_ptr<WebMClusterParser> parser_;
   std::vector<std::shared_ptr<StreamInfo>> streams_from_init_event_;
   BufferQueue audio_buffers_;
@@ -871,6 +871,39 @@ TEST_F(WebMClusterParserTest, ParseVP9) {
   EXPECT_EQ(kStreamVideo, streams_from_init_event_[1]->stream_type());
   EXPECT_EQ("vp09.03.10.12.03.02.02.02.00",
             streams_from_init_event_[1]->codec_string());
+}
+
+TEST_F(WebMClusterParserTest, ParseVP9WithColorInfo) {
+  std::unique_ptr<Cluster> cluster(
+      CreateCluster(kVP9Frame, std::size(kVP9Frame)));
+  vp_config_.set_color_primaries(9);
+  vp_config_.set_transfer_characteristics(18);
+  vp_config_.set_matrix_coefficients(9);
+  parser_.reset(CreateParserWithCodec(kCodecVP9));
+
+  EXPECT_EQ(cluster->size(), parser_->Parse(cluster->data(), cluster->size()));
+
+  ASSERT_EQ(2u, streams_from_init_event_.size());
+  auto* video_info =
+      static_cast<VideoStreamInfo*>(streams_from_init_event_[1].get());
+  EXPECT_EQ(9u, video_info->color_primaries());
+  EXPECT_EQ(18u, video_info->transfer_characteristics());
+  EXPECT_EQ(9u, video_info->matrix_coefficients());
+}
+
+TEST_F(WebMClusterParserTest, ParseVP9WithoutColorInfo) {
+  std::unique_ptr<Cluster> cluster(
+      CreateCluster(kVP9Frame, std::size(kVP9Frame)));
+  parser_.reset(CreateParserWithCodec(kCodecVP9));
+
+  EXPECT_EQ(cluster->size(), parser_->Parse(cluster->data(), cluster->size()));
+
+  ASSERT_EQ(2u, streams_from_init_event_.size());
+  auto* video_info =
+      static_cast<VideoStreamInfo*>(streams_from_init_event_[1].get());
+  EXPECT_EQ(0u, video_info->color_primaries());
+  EXPECT_EQ(0u, video_info->transfer_characteristics());
+  EXPECT_EQ(0u, video_info->matrix_coefficients());
 }
 
 TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {

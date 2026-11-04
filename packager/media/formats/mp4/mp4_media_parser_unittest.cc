@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -333,6 +334,59 @@ TEST_F(MP4MediaParserTest, NonInterleavedFMP4) {
   EXPECT_TRUE(ParseMP4File("BigBuckBunny_10s.ismv", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(770u, num_samples_);
+}
+
+TEST_F(MP4MediaParserTest, VP9ColorInfoFromVpcC) {
+  std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-vp9.mp4");
+  ASSERT_FALSE(buffer.empty());
+
+  // Offset from the fourcc of 'vpcC' to its color fields: fourcc (4), version
+  // and flags (4), profile (1), level (1), bit depth, chroma and range (1).
+  const size_t kColorPrimariesOffset = 11;
+  const uint8_t kVpcC[] = {'v', 'p', 'c', 'C'};
+  auto vpcc = std::search(buffer.begin(), buffer.end(), std::begin(kVpcC),
+                          std::end(kVpcC));
+  ASSERT_NE(buffer.end(), vpcc);
+  ASSERT_LT(kColorPrimariesOffset + 2,
+            static_cast<size_t>(buffer.end() - vpcc));
+  vpcc[kColorPrimariesOffset] = 9;       // BT.2020.
+  vpcc[kColorPrimariesOffset + 1] = 18;  // HLG.
+  vpcc[kColorPrimariesOffset + 2] = 9;   // BT.2020 non-constant luminance.
+
+  // Stream info comes from the trailing 'moov' box, which is all the parser
+  // needs here. Its box header starts at the size field, before the fourcc.
+  const size_t kBoxSizeBytes = 4;
+  const uint8_t kMoov[] = {'m', 'o', 'o', 'v'};
+  auto moov = std::search(buffer.begin(), buffer.end(), std::begin(kMoov),
+                          std::end(kMoov));
+  ASSERT_NE(buffer.end(), moov);
+  ASSERT_LE(kBoxSizeBytes, static_cast<size_t>(moov - buffer.begin()));
+
+  InitializeParser(NULL);
+  EXPECT_TRUE(
+      AppendData(&*(moov - kBoxSizeBytes),
+                 static_cast<size_t>(buffer.end() - moov) + kBoxSizeBytes));
+
+  const int kVideoTrackId = 1;
+  auto* video_info =
+      reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get());
+  ASSERT_TRUE(video_info);
+  EXPECT_EQ(9u, video_info->color_primaries());
+  EXPECT_EQ(18u, video_info->transfer_characteristics());
+  EXPECT_EQ(9u, video_info->matrix_coefficients());
+}
+
+TEST_F(MP4MediaParserTest, VP9UnspecifiedColorInfoIsNotPropagated) {
+  // The 'vpcC' box in this content has unspecified color fields.
+  ASSERT_TRUE(ParseMP4File("bear-640x360-vp9.mp4", 512));
+
+  const int kVideoTrackId = 1;
+  auto* video_info =
+      reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get());
+  ASSERT_TRUE(video_info);
+  EXPECT_EQ(0u, video_info->color_primaries());
+  EXPECT_EQ(0u, video_info->transfer_characteristics());
+  EXPECT_EQ(0u, video_info->matrix_coefficients());
 }
 
 }  // namespace mp4

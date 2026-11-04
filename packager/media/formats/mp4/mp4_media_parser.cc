@@ -864,6 +864,14 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             vp_config.WriteMP4(&codec_configuration_data);
           }
           codec_string = vp_config.GetCodecString(video_codec);
+          // Unspecified values stay at 0 so that they are not signaled in the
+          // manifests.
+          if (vp_config.color_primaries() != AVCOL_PRI_UNSPECIFIED)
+            color_primaries = vp_config.color_primaries();
+          if (vp_config.transfer_characteristics() != AVCOL_TRC_UNSPECIFIED)
+            transfer_characteristics = vp_config.transfer_characteristics();
+          if (vp_config.matrix_coefficients() != AVCOL_SPC_UNSPECIFIED)
+            matrix_coefficients = vp_config.matrix_coefficients();
           break;
         }
         default:
