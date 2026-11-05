@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <list>
@@ -267,6 +268,14 @@ class MediaPlaylist {
     const char DVS_CHARACTERISTICS[] = "public.accessibility.describes-video";
     return characteristics_.size() == 1 &&
            characteristics_[0] == DVS_CHARACTERISTICS;
+  }
+
+  /// @return true if this is a closed caption / SDH rendition.
+  bool is_caption() const {
+    const char kTranscribesSpokenDialog[] =
+        "public.accessibility.transcribes-spoken-dialog";
+    return std::find(characteristics_.begin(), characteristics_.end(),
+                     kTranscribesSpokenDialog) != characteristics_.end();
   }
 
  private:

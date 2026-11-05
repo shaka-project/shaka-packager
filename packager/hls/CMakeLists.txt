@@ -38,6 +38,10 @@ add_executable(hls_unittest
 
 target_link_libraries(hls_unittest
   absl::flags
+  absl::log_entry
+  absl::log_severity
+  absl::log_sink
+  absl::log_sink_registry
   file
   file_test_util
   gmock
