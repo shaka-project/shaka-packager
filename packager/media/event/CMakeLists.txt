@@ -18,6 +18,7 @@ target_link_libraries(media_event
     mpd_media_info_proto
     media_base
     media_codecs
+    mp4
 )
 
 add_library(mock_muxer_listener STATIC

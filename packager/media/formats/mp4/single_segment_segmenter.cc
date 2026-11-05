@@ -35,8 +35,9 @@ namespace mp4 {
 
 SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
                                                std::unique_ptr<FileType> ftyp,
-                                               std::unique_ptr<Movie> moov)
-    : Segmenter(options, std::move(ftyp), std::move(moov)) {}
+                                               std::unique_ptr<Movie> moov,
+                                               std::unique_ptr<Meta> meta)
+    : Segmenter(options, std::move(ftyp), std::move(moov), std::move(meta)) {}
 
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {
   if (temp_file_)
@@ -51,6 +52,9 @@ bool SingleSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
   // In Finalize, ftyp and moov gets written first so offset must be 0.
   *offset = 0;
   *size = ftyp()->ComputeSize() + moov()->ComputeSize();
+  if (meta() && meta()->ComputeSize() > 0) {
+    *size += meta()->ComputeSize();
+  }
   return true;
 }
 
@@ -58,6 +62,9 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
   // Index range is right after init range so the offset must be the size of
   // ftyp and moov.
   *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
+  if (meta() && meta()->ComputeSize() > 0) {
+    *offset += meta()->ComputeSize();
+  }
   *size = options().mp4_params.generate_sidx_in_media_segments
               ? vod_sidx_->ComputeSize()
               : 0;
@@ -66,7 +73,10 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
 
 std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
   std::vector<Range> ranges;
+  uint64_t meta_size =
+      (meta() && meta()->ComputeSize() > 0) ? meta()->ComputeSize() : 0;
   uint64_t next_offset = ftyp()->ComputeSize() + moov()->ComputeSize() +
+                         meta_size +
                          (options().mp4_params.generate_sidx_in_media_segments
                               ? vod_sidx_->ComputeSize()
                               : 0) +
@@ -127,6 +137,9 @@ Status SingleSegmentSegmenter::DoFinalize() {
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
+  if (meta() && meta()->ComputeSize() > 0) {
+    meta()->Write(buffer.get());
+  }
 
   if (options().mp4_params.generate_sidx_in_media_segments)
     vod_sidx_->Write(buffer.get());

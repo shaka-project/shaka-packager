@@ -179,6 +179,12 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
   /// @param value is element's content.
   [[nodiscard]] bool AddLabelElement(const std::string& value);
 
+  [[nodiscard]] bool AddPreselectionLabelElement(const std::string& language,
+                                                 const std::string& label);
+
+  [[nodiscard]] bool AddPreselectionRoleElement(const std::string& scheme,
+                                                const std::string& value);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AdaptationSetXmlNode);
 };

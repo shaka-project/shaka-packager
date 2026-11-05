@@ -27,5 +27,4 @@ ABSL_DECLARE_FLAG(bool, allow_codec_switching);
 ABSL_DECLARE_FLAG(bool, include_mspr_pro_for_playready);
 ABSL_DECLARE_FLAG(bool, dash_force_segment_list);
 ABSL_DECLARE_FLAG(bool, low_latency_dash_mode);
-
 #endif  // APP_MPD_FLAGS_H_
