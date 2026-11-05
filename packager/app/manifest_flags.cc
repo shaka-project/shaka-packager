@@ -38,7 +38,10 @@ ABSL_FLAG(std::string,
           "have <Role ... value=\"main\" /> in the manifest; For HLS, the "
           "first audio/text rendition in a group tagged with this language "
           "will have 'DEFAULT' attribute set to 'YES'. This allows the "
-          "player to choose the correct default language for the content."
+          "player to choose the correct default language for the content. "
+          "For text, forced and caption/SDH renditions (hls_characteristics "
+          "with public.accessibility.transcribes-spoken-dialog) are only "
+          "chosen if the group has no plain text rendition in this language. "
           "This applies to both audio and text tracks. The default "
           "language for text tracks can be overriden by "
           "'--default_text_language'.");

@@ -97,7 +97,9 @@ These are the available fields:
     Forced Narrative subtitle that should be displayed when subtitles are otherwise
     off, for example used to caption short portions of the audio that might be in
     a foreign language. For DASH this will set role to **forced_subtitle**, for HLS
-    it will set FORCED=YES and AUTOSELECT=YES. Only valid for subtitles.
+    it will set FORCED=YES and AUTOSELECT=YES, and DEFAULT=YES only if the
+    group has no plain (non-forced, non-caption) subtitle in the default text
+    language. Only valid for subtitles.
 
 
 .. include:: /options/drm_stream_descriptors.rst

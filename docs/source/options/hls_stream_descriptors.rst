@@ -30,3 +30,14 @@ HLS specific stream descriptor fields
     Optional colon or semi-colon separated list of values for the
     CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
     http://bit.ly/2OOUkdB for details.
+
+    For subtitles, AUTOSELECT=YES is set on the first rendition of each distinct
+    combination of language, forced_subtitle and characteristics in a group. A
+    caption/SDH subtitle in the same language as a plain one therefore needs its
+    characteristics set (for example
+    ``public.accessibility.transcribes-spoken-dialog;public.accessibility.describes-music-and-sound``)
+    to get AUTOSELECT=YES; without them it is indistinguishable from the plain
+    subtitle and a warning is logged. A subtitle with
+    ``public.accessibility.transcribes-spoken-dialog`` only gets DEFAULT=YES if
+    the group has no plain (non-forced, non-caption) subtitle in the default
+    text language.

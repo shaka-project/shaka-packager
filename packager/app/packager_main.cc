@@ -145,6 +145,11 @@ const char kUsage[] =
     "  - hls_characteristics (charcs): Optional colon/semicolon separated\n"
     "    list of values for the CHARACTERISTICS attribute for EXT-X-MEDIA.\n"
     "    See CHARACTERISTICS attribute in http://bit.ly/2OOUkdB for details.\n"
+    "    Set it on caption/SDH subtitles (e.g.\n"
+    "    public.accessibility.transcribes-spoken-dialog) so they get\n"
+    "    AUTOSELECT=YES alongside a plain subtitle in the same language and\n"
+    "    are not chosen as DEFAULT while a plain one exists in the default\n"
+    "    text language.\n"
     "  - dash_accessibilities (accessibilities): Optional semicolon separated\n"
     "    list of values for DASH Accessibility elements. The value should be\n"
     "    in the format: scheme_id_uri=value.\n"
@@ -159,7 +164,9 @@ const char kUsage[] =
     "    should be displayed when subtitles are otherwise off, for example \n"
     "    used to caption short portions of the audio that might be in a \n"
     "    foreign language. For DASH this will set role to forced_subtitle, \n"
-    "    for HLS it will set FORCED=YES and AUTOSELECT=YES. \n"
+    "    for HLS it will set FORCED=YES and AUTOSELECT=YES, and DEFAULT=YES\n"
+    "    only if the group has no plain (non-forced, non-caption) subtitle\n"
+    "    in the default text language. \n"
     "    Only valid for subtitles.\n";
 
 // Labels for parameters in RawKey key info.

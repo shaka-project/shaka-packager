@@ -44,6 +44,11 @@ HLS options
     have 'DEFAULT' attribute set to 'YES'. This allows the player to choose the
     correct default language for the content.
 
+    For text, a rendition that is forced or whose hls_characteristics include
+    'public.accessibility.transcribes-spoken-dialog' (captions/SDH) is only
+    chosen if the group has no plain (non-forced, non-caption) text rendition
+    in this language.
+
     This applies to both audio and text tracks. The default language for text
     tracks can be overriden by  'default_text_language'.
 

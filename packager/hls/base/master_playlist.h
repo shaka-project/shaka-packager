@@ -9,6 +9,7 @@
 
 #include <filesystem>
 #include <list>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -54,6 +55,8 @@ class MasterPlaylist {
   MasterPlaylist& operator=(const MasterPlaylist&) = delete;
 
   std::string written_playlist_;
+  // Subtitle playlists already warned about, so live rewrites don't repeat it.
+  std::set<std::string> warned_duplicate_subtitles_;
   const std::filesystem::path file_name_;
   const std::string default_audio_language_;
   const std::string default_text_language_;

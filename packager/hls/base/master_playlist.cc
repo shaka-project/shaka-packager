@@ -6,13 +6,15 @@
 
 #include <packager/hls/base/master_playlist.h>
 
-#include <algorithm>  // std::max
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <list>
 #include <map>
 #include <set>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include <absl/log/check.h>
@@ -432,6 +434,7 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::vector<CeaCaption>& closed_captions,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
+                     std::set<std::string>* warned_duplicate_subtitles,
                      std::string* content) {
   std::list<MediaTags> audio_playlists;
   std::list<MediaTags> subtitle_playlists;
@@ -496,9 +499,9 @@ void AppendPlaylists(const std::string& default_audio_language,
   //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
   //   CHARACTERISTICS attributes that is distinct from those of other
   //   AUTOSELECT=YES members of its Group.
-  // We tag the first rendition in a group with a particular language with
-  // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
-  // the default language.
+  // For audio, we tag the first rendition in a group with a particular
+  // language with 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language
+  // matches the default language. Subtitles use the rules described below.
   std::map<std::string, std::set<std::string>> audio_group_languages;
   for (auto& pl : audio_playlists) {
     if (pl.playlist->is_dvs()) {
@@ -518,18 +521,47 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
-  std::map<std::string, std::set<std::string>> subtitle_group_languages;
+  // Key on the full (LANGUAGE, FORCED, CHARACTERISTICS) combination so an SDH
+  // track sharing a language still gets AUTOSELECT (Apple HLS Authoring 4.6).
+  using SubtitleKey =
+      std::tuple<std::string, std::string, bool, std::vector<std::string>>;
+  std::set<SubtitleKey> subtitle_autoselect_keys;
+  // Per group: first default-language rendition that is plain (not SDH, not
+  // forced), else the first default-language rendition at all.
+  std::map<std::string, MediaTags*> preferred_default_subtitle;
+  std::map<std::string, MediaTags*> fallback_default_subtitle;
   for (auto& pl : subtitle_playlists) {
     const std::string language = pl.playlist->language();
-    auto& languages = subtitle_group_languages[pl.group_id];
-    if (languages.find(language) == languages.end()) {
-      pl.is_default = !language.empty() && language == default_text_language;
+    const bool forced = pl.playlist->forced_subtitle();
+    std::vector<std::string> characteristics = pl.playlist->characteristics();
+    std::sort(characteristics.begin(), characteristics.end());
+    const bool is_first_of_key =
+        subtitle_autoselect_keys
+            .insert({pl.group_id, language, forced, std::move(characteristics)})
+            .second;
+    if (is_first_of_key || forced) {
       pl.is_autoselect = true;
-      languages.insert(language);
+    } else if (warned_duplicate_subtitles->insert(pl.playlist->file_name())
+                   .second) {
+      LOG(WARNING) << "Subtitle playlist " << pl.playlist->file_name()
+                   << " in group \"" << pl.group_id
+                   << "\" has the same LANGUAGE, FORCED and CHARACTERISTICS "
+                      "as an earlier one, so it will not be AUTOSELECT. If it "
+                      "is a caption/SDH track, set hls_characteristics on its "
+                      "stream.";
     }
-    if (pl.playlist->forced_subtitle()) {
-      pl.is_autoselect = true;
-    }
+    if (language.empty() || language != default_text_language)
+      continue;
+    fallback_default_subtitle.emplace(pl.group_id, &pl);
+    if (!pl.playlist->is_caption() && !forced)
+      preferred_default_subtitle.emplace(pl.group_id, &pl);
+  }
+  for (const auto& [group_id, fallback] : fallback_default_subtitle) {
+    auto preferred = preferred_default_subtitle.find(group_id);
+    if (preferred != preferred_default_subtitle.end())
+      preferred->second->is_default = true;
+    else
+      fallback->is_default = true;
   }
 
   if (!audio_playlists.empty()) {
@@ -654,7 +686,8 @@ bool MasterPlaylist::WriteMasterPlaylist(
   }
 
   AppendPlaylists(default_audio_language_, default_text_language_,
-                  closed_captions_, base_url, playlists, &content);
+                  closed_captions_, base_url, playlists,
+                  &warned_duplicate_subtitles_, &content);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)

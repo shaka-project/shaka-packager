@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+#include <absl/base/log_severity.h>
+#include <absl/log/log_entry.h>
+#include <absl/log/log_sink.h>
+#include <absl/log/log_sink_registry.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -28,6 +32,7 @@ namespace hls {
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::DoAll;
+using ::testing::HasSubstr;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -141,6 +146,23 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
 
   return playlist;
 }
+
+// Collects WARNING log messages emitted while it is alive.
+class WarningCollector : public absl::LogSink {
+ public:
+  WarningCollector() { absl::AddLogSink(this); }
+  ~WarningCollector() override { absl::RemoveLogSink(this); }
+
+  void Send(const absl::LogEntry& entry) override {
+    if (entry.log_severity() == absl::LogSeverity::kWarning)
+      warnings_.emplace_back(entry.text_message());
+  }
+
+  const std::vector<std::string>& warnings() const { return warnings_; }
+
+ private:
+  std::vector<std::string> warnings_;
+};
 }  // namespace
 
 class MasterPlaylistTest : public ::testing::Test {
@@ -627,6 +649,307 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistSubtitleAndSdhSameLanguage) {
+  master_playlist_.reset(new MasterPlaylist(
+      kDefaultMasterPlaylistName, kDefaultAudioLanguage, "en", {},
+      !kIsIndependentSegments, kCreateSessionKeys));
+
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  std::unique_ptr<MockMediaPlaylist> text =
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
+
+  std::unique_ptr<MockMediaPlaylist> text_sdh = CreateTextPlaylist(
+      "eng_sdh.m3u8", "english sdh", "textgroup", "textcodec", "en");
+  text_sdh->SetCharacteristicsForTesting(std::vector<std::string>{
+      "public.accessibility.transcribes-spoken-dialog",
+      "public.accessibility.describes-music-and-sound"});
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), text.get(), text_sdh.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
+      "AUTOSELECT=YES\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_sdh.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english sdh\","
+      "DEFAULT=NO,AUTOSELECT=YES,CHARACTERISTICS=\""
+      "public.accessibility.transcribes-spoken-dialog,"
+      "public.accessibility.describes-music-and-sound\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistSdhListedFirstNeverDefault) {
+  master_playlist_.reset(new MasterPlaylist(
+      kDefaultMasterPlaylistName, kDefaultAudioLanguage, "en", {},
+      !kIsIndependentSegments, kCreateSessionKeys));
+
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  std::unique_ptr<MockMediaPlaylist> text_sdh = CreateTextPlaylist(
+      "eng_sdh.m3u8", "english sdh", "textgroup", "textcodec", "en");
+  text_sdh->SetCharacteristicsForTesting(std::vector<std::string>{
+      "public.accessibility.transcribes-spoken-dialog",
+      "public.accessibility.describes-music-and-sound"});
+
+  std::unique_ptr<MockMediaPlaylist> text =
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), text_sdh.get(), text.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_sdh.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english sdh\","
+      "DEFAULT=NO,AUTOSELECT=YES,CHARACTERISTICS=\""
+      "public.accessibility.transcribes-spoken-dialog,"
+      "public.accessibility.describes-music-and-sound\"\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
+      "AUTOSELECT=YES\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistTwoPlainSameLanguage) {
+  master_playlist_.reset(new MasterPlaylist(
+      kDefaultMasterPlaylistName, kDefaultAudioLanguage, "en", {},
+      !kIsIndependentSegments, kCreateSessionKeys));
+
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  std::unique_ptr<MockMediaPlaylist> text_1 = CreateTextPlaylist(
+      "eng_1.m3u8", "english 1", "textgroup", "textcodec", "en");
+
+  std::unique_ptr<MockMediaPlaylist> text_2 = CreateTextPlaylist(
+      "eng_2.m3u8", "english 2", "textgroup", "textcodec", "en");
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), text_1.get(), text_2.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_1.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english 1\",DEFAULT=YES,"
+      "AUTOSELECT=YES\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_2.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english 2\",DEFAULT=NO\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistSingleSdhSubtitleKeepsDefault) {
+  master_playlist_.reset(new MasterPlaylist(
+      kDefaultMasterPlaylistName, kDefaultAudioLanguage, "en", {},
+      !kIsIndependentSegments, kCreateSessionKeys));
+
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  std::unique_ptr<MockMediaPlaylist> text_sdh = CreateTextPlaylist(
+      "eng_sdh.m3u8", "english sdh", "textgroup", "textcodec", "en");
+  text_sdh->SetCharacteristicsForTesting(std::vector<std::string>{
+      "public.accessibility.transcribes-spoken-dialog",
+      "public.accessibility.describes-music-and-sound"});
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), text_sdh.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_sdh.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english sdh\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHARACTERISTICS=\""
+      "public.accessibility.transcribes-spoken-dialog,"
+      "public.accessibility.describes-music-and-sound\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistForcedOnlyLanguageKeepsDefault) {
+  master_playlist_.reset(new MasterPlaylist(
+      kDefaultMasterPlaylistName, kDefaultAudioLanguage, "en", {},
+      !kIsIndependentSegments, kCreateSessionKeys));
+
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  std::unique_ptr<MockMediaPlaylist> text_forced = CreateTextPlaylist(
+      "eng_fn.m3u8", "english forced", "textgroup", "textcodec", "en");
+  text_forced->SetForcedSubtitleForTesting(true);
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), text_forced.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_fn.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english forced\","
+      "DEFAULT=YES,AUTOSELECT=YES,FORCED=YES\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistForcedListedFirstNeverDefault) {
+  master_playlist_.reset(new MasterPlaylist(
+      kDefaultMasterPlaylistName, kDefaultAudioLanguage, "en", {},
+      !kIsIndependentSegments, kCreateSessionKeys));
+
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  std::unique_ptr<MockMediaPlaylist> text_forced = CreateTextPlaylist(
+      "eng_fn.m3u8", "english forced", "textgroup", "textcodec", "en");
+  text_forced->SetForcedSubtitleForTesting(true);
+
+  std::unique_ptr<MockMediaPlaylist> text =
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video.get(), text_forced.get(), text.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(
+      File::ReadFileToString(master_playlist_path_.string().c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng_fn.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english forced\","
+      "DEFAULT=NO,AUTOSELECT=YES,FORCED=YES\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
+      "AUTOSELECT=YES\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\",CLOSED-CAPTIONS=NONE\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WarnsOnceForIndistinguishableSubtitles) {
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+  std::unique_ptr<MockMediaPlaylist> text_1 = CreateTextPlaylist(
+      "eng_1.m3u8", "english 1", "textgroup", "textcodec", "en");
+  std::unique_ptr<MockMediaPlaylist> text_2 = CreateTextPlaylist(
+      "eng_2.m3u8", "english 2", "textgroup", "textcodec", "en");
+
+  WarningCollector collector;
+  const char kBaseUrl[] = "http://playlists.org/";
+  // Live/event mode rewrites the master playlist on every segment.
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+        kBaseUrl, test_output_dir_, {video.get(), text_1.get(), text_2.get()}));
+  }
+
+  ASSERT_EQ(1u, collector.warnings().size());
+  EXPECT_THAT(collector.warnings()[0], HasSubstr("eng_2.m3u8"));
+  EXPECT_THAT(collector.warnings()[0], HasSubstr("\"textgroup\""));
+}
+
+TEST_F(MasterPlaylistTest, NoWarningForDistinctSubtitles) {
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+  std::unique_ptr<MockMediaPlaylist> text =
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
+  std::unique_ptr<MockMediaPlaylist> text_sdh = CreateTextPlaylist(
+      "eng_sdh.m3u8", "english sdh", "textgroup", "textcodec", "en");
+  text_sdh->SetCharacteristicsForTesting(std::vector<std::string>{
+      "public.accessibility.transcribes-spoken-dialog",
+      "public.accessibility.describes-music-and-sound"});
+  std::unique_ptr<MockMediaPlaylist> text_forced = CreateTextPlaylist(
+      "eng_fn.m3u8", "english forced", "textgroup", "textcodec", "en");
+  text_forced->SetForcedSubtitleForTesting(true);
+
+  WarningCollector collector;
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video.get(), text.get(), text_sdh.get(), text_forced.get()}));
+
+  EXPECT_TRUE(collector.warnings().empty());
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndDvsAudio) {

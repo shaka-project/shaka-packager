@@ -852,6 +852,39 @@ class PackagerFunctionalTest(PackagerAppTest):
                                                       output_hls=True))
     self._CheckTestResults('forced-subtitle')
 
+  def testHlsSubtitlesSameLanguagePlainSdhForced(self):
+    # Plain is listed last so DEFAULT=YES must skip the SDH and forced tracks.
+    streams = [
+        self._GetStream('audio', hls=True),
+        self._GetStream('video', hls=True),
+        self._GetStream(
+            'text',
+            test_file='bear-english.vtt',
+            language='en',
+            output_file_prefix='sdh',
+            hls=True,
+            hls_characteristics=(
+                'public.accessibility.transcribes-spoken-dialog;'
+                'public.accessibility.describes-music-and-sound')),
+        self._GetStream(
+            'text',
+            test_file='bear-english.vtt',
+            language='en',
+            output_file_prefix='forced',
+            hls=True,
+            forced_subtitle=True),
+        self._GetStream(
+            'text',
+            test_file='bear-english.vtt',
+            language='en',
+            output_file_prefix='plain',
+            hls=True),
+    ]
+
+    self.assertPackageSuccess(
+        streams, self._GetFlags(output_hls=True, default_language='en'))
+    self._CheckTestResults('hls-subtitles-same-language-plain-sdh-forced')
+
   def testDashStartNumber(self):
     audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
     streams = audio_video_streams
