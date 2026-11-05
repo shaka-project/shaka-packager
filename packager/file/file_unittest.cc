@@ -298,9 +298,9 @@ TEST_F(LocalFileTest, WriteInDirectory) {
   // Delete the temp file.
   DeleteFile(local_file_name_no_prefix_);
   // Treat that unique name as a temp folder which doesn't exist.
-  const std::string temp_folder = local_file_name_no_prefix_;
+  const std::string temp_folder = local_file_name_no_prefix_ + "-από";
   // Adjust the filename to include that folder.
-  local_file_name_no_prefix_ = temp_folder + "/foo.txt";
+  local_file_name_no_prefix_ = temp_folder + "/文件.txt";
   RecomputeLocalFileName();
 
   // Write file using File API.

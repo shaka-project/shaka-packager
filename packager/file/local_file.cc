@@ -140,7 +140,7 @@ bool LocalFile::Open() {
     }
   }
 
-  internal_file_ = fopen(file_path.u8string().c_str(), file_mode_.c_str());
+  internal_file_ = fopen(file_name().c_str(), file_mode_.c_str());
   return (internal_file_ != NULL);
 }
 
