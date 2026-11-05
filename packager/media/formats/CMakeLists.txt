@@ -5,6 +5,7 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 # Subdirectories with their own CMakeLists.txt, all of whose targets are built.
+add_subdirectory(aac)
 add_subdirectory(dvb)
 add_subdirectory(packed_audio)
 add_subdirectory(ttml)

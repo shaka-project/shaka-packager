@@ -9,6 +9,7 @@ add_library(demuxer STATIC
   demuxer.h)
 target_link_libraries(demuxer
   media_base
+  aac
   mp2t
   mp4
   webvtt
