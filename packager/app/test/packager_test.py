@@ -837,6 +837,29 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
     self._CheckTestResults('dash-label')
 
+  def testDashLabelWithRoles(self):
+    # Label must be written before Role, as in the MPD schema.
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream(
+            'text',
+            test_file='bear-english.vtt',
+            language='en',
+            output_file_prefix='plain',
+            dash_roles='subtitle;main',
+            dash_label='English'),
+        self._GetStream(
+            'text',
+            test_file='bear-english.vtt',
+            language='en',
+            output_file_prefix='cc',
+            dash_roles='caption;main',
+            dash_label='English (CC)'),
+    ]
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self._CheckTestResults('dash-label-with-roles')
+
   def testForcedSubtitle(self):
     streams = [
       self._GetStream('audio', hls=True),

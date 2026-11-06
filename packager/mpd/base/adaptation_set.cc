@@ -468,6 +468,10 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     return std::nullopt;
   }
 
+  // The MPD schema places Label (RepresentationBaseType) before Role.
+  if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
+    return std::nullopt;
+
   for (const AdaptationSet::Accessibility& accessibility : accessibilities_) {
     if (!adaptation_set.AddAccessibilityElement(accessibility.scheme,
                                                 accessibility.value)) {
@@ -481,9 +485,6 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
       return std::nullopt;
     }
   }
-
-  if (!label_.empty() && !adaptation_set.AddLabelElement(label_))
-    return std::nullopt;
 
   for (const auto& representation_pair : representation_map_) {
     const auto& representation = representation_pair.second;
