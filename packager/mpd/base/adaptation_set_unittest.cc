@@ -195,6 +195,39 @@ TEST_F(AdaptationSetTest, AdaptationAddRoleElementMain) {
   EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
 }
 
+// Label comes from RepresentationBaseType in the MPD schema, so it must be
+// written before Role.
+TEST_F(AdaptationSetTest, CheckLabelBeforeRole) {
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
+  adaptation_set->AddRole(AdaptationSet::kRoleCaption);
+  adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  const char kAudioMediaInfo[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "dash_label: 'English (CC)'\n"
+      "container_type: 1\n";
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
+
+  const char kExpectedOutput[] =
+      "<AdaptationSet contentType=\"audio\">\n"
+      "  <Label>English (CC)</Label>\n"
+      "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"caption\"/>\n"
+      "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
+      "  <Representation id=\"0\" bandwidth=\"0\" codecs=\"mp4a.40.2\"\n"
+      "   mimeType=\"audio/mp4\" audioSamplingRate=\"44100\">\n"
+      "    <AudioChannelConfiguration\n"
+      "     schemeIdUri=\n"
+      "      \"urn:mpeg:dash:23003:3:audio_channel_configuration:2011\"\n"
+      "     value=\"2\"/>\n"
+      "  </Representation>\n"
+      "</AdaptationSet>";
+  EXPECT_THAT(adaptation_set->GetXml(), XmlNodeEqual(kExpectedOutput));
+}
+
 // Add Role, ContentProtection, and Representation elements. Verify that
 // ContentProtection -> Role -> Representation are in order.
 TEST_F(AdaptationSetTest, CheckContentProtectionRoleRepresentationOrder) {
