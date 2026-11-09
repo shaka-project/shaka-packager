@@ -36,6 +36,7 @@ namespace shaka {
 namespace {
 
 const char kTestFile[] = "packager/media/test/data/bear-640x360.mp4";
+const char kTestFile2[] = "packager/media/test/data/bear-1280x720.mp4";
 const char kOutputVideo[] = "output_video.mp4";
 const char kOutputVideoTemplate[] = "output_video_$Number$.m4s";
 const char kOutputAudio[] = "output_audio.mp4";
@@ -154,7 +155,7 @@ TEST_F(PackagerTest, MixingSegmentTemplateAndSingleSegment) {
   ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
-TEST_F(PackagerTest, DuplicatedOutputs) {
+TEST_F(PackagerTest, DuplicatedOutputsForTheSameStream) {
   std::vector<StreamDescriptor> stream_descriptors;
   StreamDescriptor stream_descriptor;
 
@@ -164,9 +165,6 @@ TEST_F(PackagerTest, DuplicatedOutputs) {
   stream_descriptor.segment_template = GetFullPath(kOutputVideoTemplate);
   stream_descriptors.push_back(stream_descriptor);
 
-  stream_descriptor.input = kTestFile;
-  stream_descriptor.stream_selector = "audio";
-  stream_descriptor.output = GetFullPath(kOutputVideo);
   stream_descriptor.segment_template = GetFullPath(kOutputAudioTemplate);
   stream_descriptors.push_back(stream_descriptor);
 
@@ -174,6 +172,98 @@ TEST_F(PackagerTest, DuplicatedOutputs) {
   auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
   ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
   EXPECT_THAT(status.error_message(), HasSubstr("duplicated outputs"));
+}
+
+// Multiplexed output, i.e. several streams sharing one output file, is only
+// supported for plain MP4 files. The rest of these tests cover what is
+// rejected, and MultiplexedAudioVideoOutput covers what works.
+TEST_F(PackagerTest, MultiplexedOutputWithSegmentTemplate) {
+  std::vector<StreamDescriptor> stream_descriptors;
+  StreamDescriptor stream_descriptor;
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "video";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptor.segment_template = GetFullPath(kOutputVideoTemplate);
+  stream_descriptors.push_back(stream_descriptor);
+
+  stream_descriptor.stream_selector = "audio";
+  stream_descriptor.segment_template = GetFullPath(kOutputAudioTemplate);
+  stream_descriptors.push_back(stream_descriptor);
+
+  Packager packager;
+  auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
+  ASSERT_EQ(error::UNIMPLEMENTED, status.error_code());
+  EXPECT_THAT(status.error_message(), HasSubstr("segment_template"));
+}
+
+TEST_F(PackagerTest, MultiplexedOutputFromDifferentInputs) {
+  std::vector<StreamDescriptor> stream_descriptors;
+  StreamDescriptor stream_descriptor;
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "video";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptors.push_back(stream_descriptor);
+
+  stream_descriptor.input = kTestFile2;
+  stream_descriptor.stream_selector = "audio";
+  stream_descriptors.push_back(stream_descriptor);
+
+  Packager packager;
+  auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+  EXPECT_THAT(status.error_message(), HasSubstr("same input file"));
+}
+
+TEST_F(PackagerTest, MultiplexedOutputWithManifest) {
+  std::vector<StreamDescriptor> stream_descriptors;
+  StreamDescriptor stream_descriptor;
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "video";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptors.push_back(stream_descriptor);
+
+  stream_descriptor.stream_selector = "audio";
+  stream_descriptors.push_back(stream_descriptor);
+
+  // SetupPackagingParams() requests an MPD, which cannot describe a file that
+  // holds more than one track.
+  Packager packager;
+  auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
+  ASSERT_EQ(error::UNIMPLEMENTED, status.error_code());
+  EXPECT_THAT(status.error_message(), HasSubstr("manifest generation"));
+}
+
+TEST_F(PackagerTest, MultiplexedAudioVideoOutput) {
+  std::vector<StreamDescriptor> stream_descriptors;
+  StreamDescriptor stream_descriptor;
+
+  stream_descriptor.input = kTestFile;
+  stream_descriptor.stream_selector = "video";
+  stream_descriptor.output = GetFullPath(kOutputVideo);
+  stream_descriptors.push_back(stream_descriptor);
+
+  stream_descriptor.stream_selector = "audio";
+  stream_descriptors.push_back(stream_descriptor);
+
+  auto packaging_params = SetupPackagingParams();
+  packaging_params.mpd_params.mpd_output.clear();
+
+  Packager packager;
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, stream_descriptors));
+  ASSERT_EQ(Status::OK, packager.Run());
+
+  // Both streams end up in the one output file, and nothing is written for the
+  // second stream descriptor.
+  std::string content;
+  EXPECT_TRUE(
+      File::ReadFileToString(GetFullPath(kOutputVideo).c_str(), &content));
+  EXPECT_FALSE(content.empty());
+  EXPECT_FALSE(
+      File::ReadFileToString(GetFullPath(kOutputAudio).c_str(), &content));
 }
 
 TEST_F(PackagerTest, DuplicatedSegmentTemplates) {

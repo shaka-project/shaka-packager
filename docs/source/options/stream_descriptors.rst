@@ -25,6 +25,17 @@ These are the available fields:
 
     Required output file path (single file).
 
+    Several stream descriptors may name the same output file to multiplex them
+    into a single file with one track per stream, e.g. audio and video in one
+    MP4. Each stream keeps its own encryption settings, so ``drm_label`` can
+    still select a different key per track. Multiplexed output is limited to:
+
+    * MP4 output without ``segment_template``,
+    * audio and video streams (not text or trick play),
+    * streams read from the same ``input`` file,
+    * no manifest generation, since neither a DASH Representation nor an HLS
+      Variant Stream can describe a file that holds more than one track.
+
 :init_segment:
 
     initialization segment path (multiple file).
