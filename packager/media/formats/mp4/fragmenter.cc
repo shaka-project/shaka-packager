@@ -57,15 +57,18 @@ void NewSampleEncryptionEntry(const DecryptConfig& decrypt_config,
 
 Fragmenter::Fragmenter(std::shared_ptr<const StreamInfo> stream_info,
                        TrackFragment* traf,
-                       int64_t edit_list_offset)
+                       int64_t edit_list_offset,
+                       size_t num_sample_descriptions)
     : stream_info_(std::move(stream_info)),
       traf_(traf),
       edit_list_offset_(edit_list_offset),
+      num_sample_descriptions_(num_sample_descriptions),
       seek_preroll_(GetSeekPreroll(*stream_info_)),
       earliest_presentation_time_(kInvalidTime),
       first_sap_time_(kInvalidTime) {
   DCHECK(stream_info_);
   DCHECK(traf);
+  DCHECK_GT(num_sample_descriptions_, 0u);
 }
 
 Fragmenter::~Fragmenter() {}
@@ -250,11 +253,20 @@ void Fragmenter::GenerateSegmentReference(SegmentReference* reference) const {
 Status Fragmenter::FinalizeFragmentForEncryption() {
   SampleEncryption& sample_encryption = traf_->sample_encryption;
   if (sample_encryption.sample_encryption_entries.empty()) {
-    // This fragment is not encrypted.
-    // There are two sample description entries, an encrypted entry and a clear
-    // entry, are generated. The 1-based clear entry index is always 2.
+    // This fragment is not encrypted. When a clear lead is signalled the track
+    // carries two sample description entries, an encrypted one and a clear one,
+    // and the 1-based index of the clear entry is always 2.
     const uint32_t kClearSampleDescriptionIndex = 2;
-    traf_->header.sample_description_index = kClearSampleDescriptionIndex;
+    if (num_sample_descriptions_ >= kClearSampleDescriptionIndex) {
+      traf_->header.sample_description_index = kClearSampleDescriptionIndex;
+      return Status::OK;
+    }
+    // Otherwise there is no second entry to point at and the index must stay
+    // at 1. This is the case for whole-segment AES-128 encryption, which
+    // leaves the samples themselves clear and so generates no encrypted
+    // sample description to pair a clear one with. Pointing past the end of
+    // the table breaks players that resolve the sample description, see
+    // https://github.com/shaka-project/shaka-packager/issues/1616.
     return Status::OK;
   }
   if (sample_encryption.sample_encryption_entries.size() !=

@@ -1677,6 +1677,10 @@ class PackagerFunctionalTest(PackagerAppTest):
                          segmented=True,
                          hls=True),
         flags)
+    # The golden segments cover tfhd.sample_description_index staying within
+    # the track's single sample description entry. See FragmenterTest in
+    # packager/media/formats/mp4/fragmenter_unittest.cc and
+    # https://github.com/shaka-project/shaka-packager/issues/1616.
     self._CheckTestResults('fmp4-hls-with-aes128-encryption')
 
   def testSingleSegmentMp4HlsWithAes128Encryption(self):
