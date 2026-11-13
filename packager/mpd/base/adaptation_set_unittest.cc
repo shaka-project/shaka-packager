@@ -151,8 +151,8 @@ TEST_F(AdaptationSetTest, CopyRepresentation) {
   ASSERT_TRUE(new_representation);
 }
 
-// Representations for ad-cue periods are created via CopyRepresentation(), which
-// uses Representation's copy constructor instead of Init().
+// Representations for ad-cue periods are created via CopyRepresentation(),
+// which uses Representation's copy constructor instead of Init().
 TEST_F(AdaptationSetTest, CopyRepresentationPreservesSupplementalCodecs) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
@@ -182,7 +182,8 @@ TEST_F(AdaptationSetTest, CopyRepresentationPreservesSupplementalCodecs) {
       "scte214:supplementalCodecs=\"dvh1.08.01\" "
       "scte214:supplementalProfiles=\"db2g\" sar=\"1:1\" "
       "width=\"1280\" height=\"720\" frameRate=\"10/10\"/>\n";
-  EXPECT_THAT(copied_representation->GetXml(), XmlNodeEqual(kExpectedRepresentation));
+  EXPECT_THAT(copied_representation->GetXml(),
+              XmlNodeEqual(kExpectedRepresentation));
 }
 
 // Verify that language passed to the constructor sets the @lang field is set.
