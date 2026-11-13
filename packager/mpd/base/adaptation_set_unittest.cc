@@ -151,6 +151,41 @@ TEST_F(AdaptationSetTest, CopyRepresentation) {
   ASSERT_TRUE(new_representation);
 }
 
+// Representations for ad-cue periods are created via CopyRepresentation(),
+// which uses Representation's copy constructor instead of Init().
+TEST_F(AdaptationSetTest, CopyRepresentationPreservesSupplementalCodecs) {
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'hvc1.2.4.L90.90'\n"
+      "  supplemental_codec: 'dvh1.08.01'\n"
+      "  compatible_brand: 1684157031\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: CONTAINER_MP4\n";
+
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
+  Representation* representation =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
+
+  Representation* copied_representation =
+      adaptation_set->CopyRepresentation(*representation);
+  ASSERT_TRUE(copied_representation);
+
+  const char kExpectedRepresentation[] =
+      "<Representation id=\"0\" bandwidth=\"0\" "
+      "codecs=\"hvc1.2.4.L90.90\" mimeType=\"video/mp4\" "
+      "scte214:supplementalCodecs=\"dvh1.08.01\" "
+      "scte214:supplementalProfiles=\"db2g\" sar=\"1:1\" "
+      "width=\"1280\" height=\"720\" frameRate=\"10/10\"/>\n";
+  EXPECT_THAT(copied_representation->GetXml(),
+              XmlNodeEqual(kExpectedRepresentation));
+}
+
 // Verify that language passed to the constructor sets the @lang field is set.
 TEST_F(AdaptationSetTest, CheckLanguageAttributeSet) {
   auto adaptation_set = CreateAdaptationSet("en");

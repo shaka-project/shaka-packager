@@ -114,6 +114,8 @@ Representation::Representation(
                      std::move(state_change_listener)) {
   mime_type_ = representation.mime_type_;
   codecs_ = representation.codecs_;
+  supplemental_codecs_ = representation.supplemental_codecs_;
+  supplemental_profiles_ = representation.supplemental_profiles_;
 }
 
 Representation::~Representation() {}
