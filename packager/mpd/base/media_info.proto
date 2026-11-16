@@ -67,6 +67,26 @@ message MediaInfo {
     optional AudioCodecSpecificData codec_specific_data = 7;
   }
 
+  message Ac4Label {
+    required string lang = 1;
+    required string value = 2;
+  }
+
+  message Ac4Role {
+    required string scheme = 1;
+    optional string value = 2;
+  }
+
+  message Ac4Preselection {
+    required string group_id = 1;
+    required uint32 selection_priority = 2;
+    repeated Ac4Label labels = 3;
+    repeated Ac4Role roles = 4;
+    required float dialog_gain = 5;
+    optional string lang = 6;
+    required string preselection_tag = 7;
+  }
+
   message AudioCodecSpecificData {
     // EC3 Channel map bit fields, encoded based on ETSI TS 102 366 V1.3.1
     // Digital Audio Compression (AC-3, Enhanced AC-3) Standard E.1.3.1.8.
@@ -97,6 +117,16 @@ message MediaInfo {
     // ETSI TS 103 190-2 Digital Audio Compression (AC-4) Standard;
     // Part 2: Immersive and personalized audio 4.3.
     optional bool ac4_cbi_flag = 5;
+
+    // AC4 AJOC
+    optional bool ac4_joc_flag = 6;
+
+    // AC4 AJOC
+    optional uint32 ac4_joc_nums = 7;
+    // AC-4 DE (Dialog Enhancement) preselection box data.
+    // Stores the serialized Preselection boxes from the meta box.
+    // Each Preselection box is stored as a separate entry.
+    repeated Ac4Preselection ac4_preselections = 8;
   }
 
   message TextInfo {
