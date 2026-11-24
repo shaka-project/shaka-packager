@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
 #include <iterator>
 #include <list>
 #include <memory>
@@ -394,6 +395,52 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
                           Eq(false), Eq(false)))
       .WillOnce(Return(true));
   EXPECT_TRUE(notifier.Flush());
+}
+
+TEST_F(SimpleHlsNotifierTest, SignalFileAddsDiscontinuityToNextSegment) {
+  const std::filesystem::path signal_file =
+      std::filesystem::temp_directory_path() /
+      "shaka_hls_discontinuity_signal_test";
+  std::filesystem::remove(signal_file);
+  {
+    std::ofstream initial_signal(signal_file);
+    ASSERT_TRUE(initial_signal);
+    initial_signal << "epoch-1\n";
+  }
+  hls_params_.discontinuity_signal_file = signal_file.string();
+
+  auto* mock_media_playlist =
+      new MockMediaPlaylist("playlist.m3u8", "", "");
+  auto factory = std::make_unique<MockMediaPlaylistFactory>();
+  auto master_playlist = std::make_unique<MockMasterPlaylist>();
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
+      .WillOnce(Return(mock_media_playlist));
+
+  SimpleHlsNotifier notifier(hls_params_);
+  InjectMasterPlaylist(std::move(master_playlist), &notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &notifier);
+  EXPECT_TRUE(notifier.Init());
+  MediaInfo media_info;
+  uint32_t stream_id = 0;
+  EXPECT_TRUE(notifier.NotifyNewStream(
+      media_info, "playlist.m3u8", "name", "groupid", &stream_id));
+  EXPECT_CALL(*mock_media_playlist, GetLongestSegmentDuration())
+      .WillOnce(Return(2.0))
+      .WillOnce(Return(2.0));
+  EXPECT_CALL(*mock_media_playlist, AddSegment(_, _, _, _, _)).Times(2);
+  EXPECT_CALL(*mock_media_playlist, AddDiscontinuity()).Times(1);
+
+  EXPECT_TRUE(notifier.NotifyNewSegment(
+      stream_id, "old.m4s", 0, kAnyDuration, 0, kAnySize));
+  {
+    std::ofstream next_signal(signal_file, std::ios::trunc);
+    ASSERT_TRUE(next_signal);
+    next_signal << "epoch-2\n";
+  }
+  EXPECT_TRUE(notifier.NotifyNewSegment(
+      stream_id, "new.m4s", 0, kAnyDuration, 0, kAnySize));
+  std::filesystem::remove(signal_file);
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyKeyFrame) {

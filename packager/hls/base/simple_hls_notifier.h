@@ -87,9 +87,13 @@ class SimpleHlsNotifier : public HlsNotifier {
   struct StreamEntry {
     std::unique_ptr<MediaPlaylist> media_playlist;
     MediaPlaylist::EncryptionMethod encryption_method;
+    bool discontinuity_pending = false;
   };
 
+  void RefreshDiscontinuitySignal();
+
   std::string master_playlist_dir_;
+  std::string last_discontinuity_signal_;
   int32_t target_duration_ = 0;
   bool end_stream = false;
 

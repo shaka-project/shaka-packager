@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -299,6 +300,10 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
   const auto master_playlist_path =
       std::filesystem::u8path(hls_params.master_playlist_output);
   master_playlist_dir_ = master_playlist_path.parent_path().string();
+  if (!hls_params.discontinuity_signal_file.empty()) {
+    std::ifstream signal_file(hls_params.discontinuity_signal_file);
+    std::getline(signal_file, last_discontinuity_signal_);
+  }
   const std::string& default_audio_langauge = hls_params.default_language;
   const std::string& default_text_language =
       hls_params.default_text_language.empty()
@@ -393,7 +398,13 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
     return false;
   }
-  auto& media_playlist = stream_iterator->second->media_playlist;
+  RefreshDiscontinuitySignal();
+  auto& stream_entry = *stream_iterator->second;
+  auto& media_playlist = stream_entry.media_playlist;
+  if (stream_entry.discontinuity_pending) {
+    media_playlist->AddDiscontinuity();
+    stream_entry.discontinuity_pending = false;
+  }
   const std::string& segment_url =
       GenerateSegmentUrl(segment_name, hls_params().base_url,
                          master_playlist_dir_, media_playlist->file_name());
@@ -434,6 +445,25 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     }
   }
   return true;
+}
+
+void SimpleHlsNotifier::RefreshDiscontinuitySignal() {
+  const std::string& signal_file = hls_params().discontinuity_signal_file;
+  if (signal_file.empty()) {
+    return;
+  }
+
+  std::ifstream input(signal_file);
+  std::string signal;
+  if (!input || !std::getline(input, signal) || signal.empty() ||
+      signal == last_discontinuity_signal_) {
+    return;
+  }
+
+  last_discontinuity_signal_ = signal;
+  for (auto& stream : stream_map_) {
+    stream.second->discontinuity_pending = true;
+  }
 }
 
 bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,

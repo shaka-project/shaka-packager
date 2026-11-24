@@ -33,6 +33,8 @@ struct HlsParams {
   bool event_to_vod_on_end_of_stream = false;
   /// HLS master playlist output path.
   std::string master_playlist_output;
+  /// Optional file whose content change requests an HLS discontinuity.
+  std::string discontinuity_signal_file;
   /// The base URL for the Media Playlists and media files listed in the
   /// playlists. This is the prefix for the files.
   std::string base_url;

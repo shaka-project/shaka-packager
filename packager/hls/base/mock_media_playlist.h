@@ -35,6 +35,7 @@ class MockMediaPlaylist : public MediaPlaylist {
                     int64_t duration,
                     uint64_t start_byte_offset,
                     uint64_t size));
+  MOCK_METHOD0(AddDiscontinuity, void());
   MOCK_METHOD3(AddKeyFrame,
                void(int64_t timestamp,
                     uint64_t start_byte_offset,

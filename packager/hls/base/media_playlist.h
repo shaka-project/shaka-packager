@@ -145,6 +145,9 @@ class MediaPlaylist {
                           uint64_t start_byte_offset,
                           uint64_t size);
 
+  /// Add EXT-X-DISCONTINUITY before the next segment.
+  virtual void AddDiscontinuity();
+
   /// Set the reference time for EXT-X-PROGRAM-DATE-TIME. This is the wall clock
   /// time for when media timestamp is 0.
   virtual void SetReferenceTime(const absl::Time& reference_time);

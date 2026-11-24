@@ -635,6 +635,8 @@ std::optional<PackagingParams> GetPackagingParams() {
       absl::GetFlag(FLAGS_event_to_vod_on_end_of_stream);
   hls_params.master_playlist_output =
       absl::GetFlag(FLAGS_hls_master_playlist_output);
+  hls_params.discontinuity_signal_file =
+      absl::GetFlag(FLAGS_hls_discontinuity_signal_file);
   hls_params.base_url = absl::GetFlag(FLAGS_hls_base_url);
   hls_params.key_uri = absl::GetFlag(FLAGS_hls_key_uri);
   hls_params.time_shift_buffer_depth =

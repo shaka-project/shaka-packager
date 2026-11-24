@@ -18,6 +18,11 @@ ABSL_FLAG(std::string,
           "Output path for the master playlist for HLS. This flag must be"
           "used to output HLS.");
 ABSL_FLAG(std::string,
+          hls_discontinuity_signal_file,
+          "",
+          "Optional signal file; a changed non-empty token adds an HLS "
+          "discontinuity before the next segment in each media playlist.");
+ABSL_FLAG(std::string,
           hls_base_url,
           "",
           "The base URL for the Media Playlists and media files listed in "

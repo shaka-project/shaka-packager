@@ -1376,5 +1376,74 @@ TEST_F(MediaPlaylistMultiSegmentTest, ProgramDateTimeWithDiscontinuity) {
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
+TEST_F(LiveMediaPlaylistTest, ProgramDateTimeWithDiscontinuityAndWindowSlide) {
+  mutable_hls_params()->add_program_date_time = true;
+
+  absl::Time reference_time;
+  std::string err;
+  ASSERT_TRUE(absl::ParseTime("%Y-%m-%dT%H:%M:%E3SZ",
+                              "2025-10-12T14:00:00.000Z", &reference_time,
+                              &err))
+      << err;
+  media_playlist_->SetReferenceTime(reference_time);
+
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+  media_playlist_->AddSegment("file1.ts", 0, 10 * kTimeScale, kZeroByteOffset,
+                              kMBytes);
+  media_playlist_->AddDiscontinuity();
+  media_playlist_->AddSegment("file2.ts", 10 * kTimeScale, 10 * kTimeScale,
+                              kZeroByteOffset, kMBytes);
+  media_playlist_->AddSegment("file3.ts", 20 * kTimeScale, 10 * kTimeScale,
+                              kZeroByteOffset, kMBytes);
+  media_playlist_->AddSegment("file4.ts", 30 * kTimeScale, 10 * kTimeScale,
+                              kZeroByteOffset, kMBytes);
+
+  const char kExpectedOutput[] =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "#EXT-X-TARGETDURATION:10\n"
+      "#EXT-X-MEDIA-SEQUENCE:1\n"
+      "#EXT-X-DISCONTINUITY-SEQUENCE:1\n"
+      "#EXT-X-PROGRAM-DATE-TIME:2025-10-12T14:00:10.000Z\n"
+      "#EXTINF:10.000,\n"
+      "file2.ts\n"
+      "#EXTINF:10.000,\n"
+      "file3.ts\n"
+      "#EXTINF:10.000,\n"
+      "file4.ts\n";
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  ASSERT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false, false));
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(MediaPlaylistMultiSegmentTest, ExplicitDiscontinuityPrecedesNextSegment) {
+  valid_video_media_info_.set_segment_template_url("file$Number$.m4s");
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+  media_playlist_->AddSegment("file1.m4s", 0, kTimeScale, 0, kMBytes);
+  media_playlist_->AddDiscontinuity();
+  media_playlist_->AddSegment("file2.m4s", kTimeScale, kTimeScale, 0, kMBytes);
+
+  const char kExpectedOutput[] =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/shaka-project/shaka-packager "
+      "version test\n"
+      "#EXT-X-TARGETDURATION:1\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXTINF:1.000,\n"
+      "file1.m4s\n"
+      "#EXT-X-DISCONTINUITY\n"
+      "#EXTINF:1.000,\n"
+      "file2.m4s\n"
+      "#EXT-X-ENDLIST\n";
+
+  const char kMemoryFilePath[] = "memory://explicit-discontinuity.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath, false, true));
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
 }  // namespace hls
 }  // namespace shaka
