@@ -1629,7 +1629,14 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   if (codec_configuration.box_type == FOURCC_NULL)
     return false;
 
-  RCHECK(buffer->ReadWriteChild(&codec_configuration));
+  // CodecConfiguration is an optional child (its ComputeSize() is 0 when the
+  // data is empty). If a higher layer leaves it empty, it must be skipped
+  // rather than written via ReadWriteChild, which does not skip zero-sized
+  // boxes and would emit a box whose declared size disagrees with the bytes
+  // actually written, corrupting the file. Reading uses the same optional path
+  // so that such output still round-trips. See
+  // https://github.com/shaka-project/shaka-packager/issues/1142.
+  RCHECK(buffer->TryReadWriteChild(&codec_configuration));
 
   if (buffer->Reading()) {
     extra_codec_configs.clear();

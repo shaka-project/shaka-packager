@@ -9,6 +9,7 @@
 #include <packager/app/muxer_flags.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include <absl/flags/flag.h>
@@ -57,10 +58,13 @@ ABSL_FLAG(std::string,
           "",
           "Specify a directory in which to store temporary (intermediate) "
           " files. Used only if single_segment=true.");
-ABSL_FLAG(bool,
+ABSL_FLAG(std::optional<bool>,
           mp4_include_pssh_in_stream,
-          true,
-          "MP4 only: include pssh in the encrypted stream.");
+          std::nullopt,
+          "MP4 only: include pssh in the encrypted stream. Defaults to true, "
+          "except that when --generate_dash_if_iop_compliant_mpd is enabled "
+          "(the default) it defaults to false, because the pssh is carried in "
+          "the manifest instead. An explicit value always wins.");
 ABSL_FLAG(int32_t,
           transport_stream_timestamp_offset_ms,
           100,

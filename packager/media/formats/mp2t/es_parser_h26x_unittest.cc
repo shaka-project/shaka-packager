@@ -55,6 +55,11 @@ enum H26xNaluType {
   kH265VclKeyFrame = Nalu::H265_IDR_W_RADL,
   // Needs to be different than |kH265VCL| so we can tell the difference.
   kH265VclWithNuhLayer = Nalu::H265_TRAIL_R,
+  // A non-first slice segment of a multi-slice picture
+  // (first_slice_segment_in_pic_flag == 0). Same NAL type as |kH265Vcl|; a
+  // test-only high bit marks it as a continuation slice.
+  kH265ContSliceBit = 0x40,
+  kH265VclContSlice = Nalu::H265_TRAIL_N | kH265ContSliceBit,
 
   // Used to separate expected access units.
   kSeparator = 0xff,
@@ -106,6 +111,10 @@ class TestableEsParser : public EsParserH26x {
       } else {
         video_slice_info->is_key_frame = nalu.type() == Nalu::H265_IDR_W_RADL ||
                                          nalu.type() == Nalu::H265_IDR_N_LP;
+        // For testing purpose, first_slice_segment_in_pic_flag is coded in the
+        // first payload byte (0 == continuation slice).
+        video_slice_info->first_slice_segment_in_pic_flag =
+            nalu.data()[nalu.header_size()] != 0;
       }
       video_slice_info->pps_id = kTestPpsId;
       // for testing purpose, the frame_num is coded in the first byte of
@@ -150,11 +159,13 @@ std::vector<uint8_t> CreateNalu(Nalu::CodecType codec_type,
     ret[2] = i + 1;
   } else {
     ret.resize(4);
-    ret[0] = (type << 1);
+    ret[0] = ((type & 0x3f) << 1);
     // nuh_layer_id == 1, nuh_temporal_id_plus1 == 1
     ret[1] = (type == kH265VclWithNuhLayer ? 9 : 1);
-    // Add some extra data to tell consecutive frames apart.
-    ret[2] = 0xff;
+    // The first payload byte carries first_slice_segment_in_pic_flag: 0 marks a
+    // continuation slice, non-zero (0xff) marks a first/only slice. It doubles
+    // as extra data to tell consecutive frames apart.
+    ret[2] = (type & kH265ContSliceBit) ? 0x00 : 0xff;
     ret[3] = i + 1;
   }
   return ret;
@@ -333,6 +344,25 @@ TEST_F(EsParserH26xTest, H265SupportsNonZeroNuhLayerId) {
 
   RunTest(Nalu::kH265, kData, std::size(kData));
   EXPECT_EQ(5u, sample_count_);
+  EXPECT_TRUE(has_stream_info_);
+}
+
+TEST_F(EsParserH26xTest, H265MultipleSlicesPerPicture) {
+  // Regression test for
+  // https://github.com/shaka-project/shaka-packager/issues/1363.
+  // A coded picture may be split into multiple slice segments; only the first
+  // (first_slice_segment_in_pic_flag == 1) starts a new access unit. All slices
+  // of one picture must be emitted as a single frame. Previously each slice was
+  // treated as its own access unit, so the second slice failed to emit (there
+  // is only one timing descriptor per picture) and parsing failed.
+  const H26xNaluType kData[] = {
+      kSeparator, kH265Sps,          kH265VclKeyFrame,  kH265VclContSlice,
+      kSeparator, kH265Vcl,          kH265VclContSlice, kSeparator,
+      kH265Vcl,   kH265VclContSlice, kH265VclContSlice,
+  };
+
+  RunTest(Nalu::kH265, kData, std::size(kData));
+  EXPECT_EQ(3u, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
 

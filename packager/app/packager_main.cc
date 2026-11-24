@@ -572,8 +572,29 @@ std::optional<PackagingParams> GetPackagingParams() {
   Mp4OutputParams& mp4_params = packaging_params.mp4_output_params;
   mp4_params.generate_sidx_in_media_segments =
       absl::GetFlag(FLAGS_generate_sidx_in_media_segments);
-  mp4_params.include_pssh_in_stream =
+  // DASH-IF IOP and CMAF recommend against duplicating 'pssh' boxes in the
+  // media files when the same information is carried in the manifest. So when
+  // --mp4_include_pssh_in_stream is left unset, let
+  // --generate_dash_if_iop_compliant_mpd choose the default: exclude 'pssh'
+  // from the stream when generating an IOP compliant MPD, otherwise include it.
+  // An explicit --mp4_include_pssh_in_stream always wins. See
+  // https://github.com/shaka-project/shaka-packager/issues/640.
+  const std::optional<bool> include_pssh_in_stream =
       absl::GetFlag(FLAGS_mp4_include_pssh_in_stream);
+  if (include_pssh_in_stream.has_value()) {
+    mp4_params.include_pssh_in_stream = include_pssh_in_stream.value();
+  } else {
+    const bool iop_compliant =
+        absl::GetFlag(FLAGS_generate_dash_if_iop_compliant_mpd);
+    mp4_params.include_pssh_in_stream = !iop_compliant;
+    if (iop_compliant) {
+      LOG(INFO)
+          << "Excluding 'pssh' boxes from MP4 media files because "
+             "--generate_dash_if_iop_compliant_mpd is enabled; the 'pssh' "
+             "is carried in the manifest instead. Set "
+             "--mp4_include_pssh_in_stream=true to override.";
+    }
+  }
   mp4_params.low_latency_dash_mode = absl::GetFlag(FLAGS_low_latency_dash_mode);
 
   packaging_params.transport_stream_timestamp_offset_ms =

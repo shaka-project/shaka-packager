@@ -3,7 +3,10 @@ MP4 output options
 
 --mp4_include_pssh_in_stream
 
-    MP4 only: include pssh in the encrypted stream. Default enabled.
+    MP4 only: include pssh in the encrypted stream. Defaults to enabled,
+    except that when ``--generate_dash_if_iop_compliant_mpd`` is enabled (the
+    default) it defaults to disabled, because the pssh is carried in the
+    manifest instead. An explicit value always wins.
 
 --mp4_use_decoding_timestamp_in_timeline
 

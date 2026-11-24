@@ -99,6 +99,8 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
           video_slice_info->is_key_frame = is_key_frame;
           video_slice_info->frame_num = 0;  // frame_num is only for H264.
           video_slice_info->pps_id = shdr.pic_parameter_set_id;
+          video_slice_info->first_slice_segment_in_pic_flag =
+              shdr.first_slice_segment_in_pic_flag;
         } else if (status == H265Parser::kUnsupportedStream) {
           // Indicate the stream can't be parsed.
           new_stream_info_cb_(nullptr);

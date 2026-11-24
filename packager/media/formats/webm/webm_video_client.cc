@@ -149,6 +149,13 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     }
   }
 
+  // AlphaMode == 1 signals a per-frame alpha (transparency) plane, carried in
+  // BlockAdditional elements. Propagate it so the muxer re-emits the AlphaMode
+  // track element; without it players ignore the alpha data. See
+  // https://github.com/shaka-project/shaka-packager/issues/1168.
+  if (alpha_mode_ > 0)
+    video_stream_info->set_alpha(true);
+
   return video_stream_info;
 }
 

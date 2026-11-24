@@ -83,6 +83,9 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t playback_rate() const { return playback_rate_; }
   const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
   const std::vector<uint8_t>& colr_data() const { return colr_data_; }
+  /// @return true if the video carries an alpha (transparency) channel. Only
+  ///         set for WebM VP8/VP9 with a per-frame alpha plane (AlphaMode).
+  bool is_alpha() const { return is_alpha_; }
 
   void set_supplemental_codec(const std::string supplemental_codec) {
     supplemental_codec_ = supplemental_codec;
@@ -121,6 +124,7 @@ class VideoStreamInfo : public StreamInfo {
   void set_colr_data(const uint8_t* colr_data, size_t colr_data_size) {
     colr_data_.assign(colr_data, colr_data + colr_data_size);
   }
+  void set_alpha(bool is_alpha) { is_alpha_ = is_alpha; }
 
  private:
   // Extra codec configuration in a stream of mp4 boxes. It is only applicable
@@ -166,6 +170,10 @@ class VideoStreamInfo : public StreamInfo {
 
   // Raw colr atom data. It is only applicable to the mp4 container.
   std::vector<uint8_t> colr_data_;
+
+  // Whether the video has an alpha (transparency) channel. Only set for WebM
+  // VP8/VP9 with a per-frame alpha plane, signaled by the AlphaMode element.
+  bool is_alpha_ = false;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is
